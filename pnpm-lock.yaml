@@ -300,8 +300,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.0
       source-map:
-        specifier: 0.7.4
-        version: 0.7.4
+        specifier: 0.7.6
+        version: 0.7.6
       source-map-support:
         specifier: 0.5.21
         version: 0.5.21
@@ -508,29 +508,29 @@ importers:
   adev:
     dependencies:
       '@algolia/client-common':
-        specifier: 5.34.0
-        version: 5.34.0
+        specifier: 5.34.1
+        version: 5.34.1
       '@algolia/requester-browser-xhr':
-        specifier: 5.34.0
-        version: 5.34.0
+        specifier: 5.34.1
+        version: 5.34.1
       '@algolia/requester-node-http':
-        specifier: 5.34.0
-        version: 5.34.0
+        specifier: 5.34.1
+        version: 5.34.1
       '@angular-devkit/build-angular':
         specifier: 20.2.0-next.1
-        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.0-beta)
+        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.0-beta)
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/build':
         specifier: 20.2.0-next.1
-        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
+        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
       '@angular/cdk':
         specifier: 20.2.0-next.1
         version: 20.2.0-next.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.2.0-next.1
-        version: 20.2.0-next.1(@types/node@24.0.15)(chokidar@4.0.3)
+        version: 20.2.0-next.1(@types/node@24.1.0)(chokidar@4.0.3)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -640,8 +640,8 @@ importers:
         specifier: 21.1.7
         version: 21.1.7
       '@types/node':
-        specifier: 24.0.15
-        version: 24.0.15
+        specifier: 24.1.0
+        version: 24.1.0
       '@typescript/vfs':
         specifier: 1.6.1
         version: 1.6.1(typescript@5.9.0-beta)
@@ -655,8 +655,8 @@ importers:
         specifier: 5.5.0
         version: 5.5.0
       algoliasearch:
-        specifier: 5.34.0
-        version: 5.34.0
+        specifier: 5.34.1
+        version: 5.34.1
       angular-split:
         specifier: 20.0.0
         version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -806,7 +806,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.2.0-next.1
-        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
+        version: 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -844,8 +844,8 @@ importers:
         specifier: 2.0.13
         version: 2.0.13
       '@types/node':
-        specifier: 24.0.15
-        version: 24.0.15
+        specifier: 24.1.0
+        version: 24.1.0
       '@types/selenium-webdriver':
         specifier: 3.0.7
         version: 3.0.7
@@ -865,8 +865,8 @@ importers:
         specifier: 3.6.0
         version: 3.6.0
       source-map:
-        specifier: 0.7.4
-        version: 0.7.4
+        specifier: 0.7.6
+        version: 0.7.6
       tslib:
         specifier: 2.8.1
         version: 2.8.1
@@ -1225,6 +1225,16 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/client-abtesting@5.34.1:
+    resolution: {integrity: sha512-M4zb6J7q+pg9V9Xk0k1WDgvupfCtXcxjKGTrNVYemiredLVGOmvVIPAUjg2rx4QmK7DWNApWLsieYwk7PAaOXw==, tarball: https://registry.npmjs.org/@algolia/client-abtesting/-/client-abtesting-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/client-analytics@5.34.0:
     resolution: {integrity: sha512-WXIByjHNA106JO1Dj6b4viSX/yMN3oIB4qXr2MmyEmNq0MgfuPfPw8ayLRIZPa9Dp27hvM3G8MWJ4RG978HYFw==, tarball: https://registry.npmjs.org/@algolia/client-analytics/-/client-analytics-5.34.0.tgz}
     engines: {node: '>= 14.0.0'}
@@ -1235,8 +1245,23 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/client-analytics@5.34.1:
+    resolution: {integrity: sha512-h18zlL+bVUlbNE92olo1d/r6HQPkxhmP7yCpA1osERwpgC6F058kWm0O0aYdrHJIHtWBcs9aRqq7IkQSkpjPJg==, tarball: https://registry.npmjs.org/@algolia/client-analytics/-/client-analytics-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/client-common@5.34.0:
     resolution: {integrity: sha512-JeN1XJLZIkkv6yK0KT93CIXXk+cDPUGNg5xeH4fN9ZykYFDWYRyqgaDo+qvg4RXC3WWkdQ+hogQuuCk4Y3Eotw==, tarball: https://registry.npmjs.org/@algolia/client-common/-/client-common-5.34.0.tgz}
+    engines: {node: '>= 14.0.0'}
+    dev: false
+
+  /@algolia/client-common@5.34.1:
+    resolution: {integrity: sha512-otPWALs72KvmVuP0CN0DI6sqVx1jQWKi+/DgAiP8DysVMgiNlva3GDKTtAK6XVGlT08f4h32FNuL0yQODuCfKA==, tarball: https://registry.npmjs.org/@algolia/client-common/-/client-common-5.34.1.tgz}
     engines: {node: '>= 14.0.0'}
     dev: false
 
@@ -1250,6 +1275,16 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/client-insights@5.34.1:
+    resolution: {integrity: sha512-SNDb5wuEpQFM6S5Shk2iytLMusvGycm9uTuYh7cGa1h3U7O65OjjjIgQ0lLY5HPybHNtmXr4Zh/EZ23pZvAJHg==, tarball: https://registry.npmjs.org/@algolia/client-insights/-/client-insights-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/client-personalization@5.34.0:
     resolution: {integrity: sha512-g91NHhIZDkh1IUeNtsUd8V/ZxuBc2ByOfDqhCkoQY3Z/mZszhpn3Czn6AR5pE81fx793vMaiOZvQVB5QttArkQ==, tarball: https://registry.npmjs.org/@algolia/client-personalization/-/client-personalization-5.34.0.tgz}
     engines: {node: '>= 14.0.0'}
@@ -1258,6 +1293,16 @@ packages:
       '@algolia/requester-browser-xhr': 5.34.0
       '@algolia/requester-fetch': 5.34.0
       '@algolia/requester-node-http': 5.34.0
+    dev: false
+
+  /@algolia/client-personalization@5.34.1:
+    resolution: {integrity: sha512-T8z9KqYJOup83Hw0mgICYWfJoLh//FNWbf4roFd95ZJzZ4v1cN/hvr7Eqml1qWMoCkJb4y/XQjrXsJ6Y9XnMLw==, tarball: https://registry.npmjs.org/@algolia/client-personalization/-/client-personalization-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
     dev: false
 
   /@algolia/client-query-suggestions@5.34.0:
@@ -1270,6 +1315,16 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/client-query-suggestions@5.34.1:
+    resolution: {integrity: sha512-YA0kC4CwO1mc1dliNgbFgToweRa7Uihjz3izEaV4cXninF1v4SaOrPkQUsiFPprAffjMzOUoT7vahQZ/HZyiKQ==, tarball: https://registry.npmjs.org/@algolia/client-query-suggestions/-/client-query-suggestions-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/client-search@5.34.0:
     resolution: {integrity: sha512-m9tK4IqJmn+flEPRtuxuHgiHmrKV0su5fuVwVpq8/es4DMjWMgX1a7Lg1PktvO8AbKaTp9kTtBAPnwXpuCwmEg==, tarball: https://registry.npmjs.org/@algolia/client-search/-/client-search-5.34.0.tgz}
     engines: {node: '>= 14.0.0'}
@@ -1278,6 +1333,16 @@ packages:
       '@algolia/requester-browser-xhr': 5.34.0
       '@algolia/requester-fetch': 5.34.0
       '@algolia/requester-node-http': 5.34.0
+    dev: false
+
+  /@algolia/client-search@5.34.1:
+    resolution: {integrity: sha512-bt5hC9vvjaKvdvsgzfXJ42Sl3qjQqoi/FD8V7HOQgtNFhwSauZOlgLwFoUiw67sM+r7ehF7QDk5WRDgY7fAkIg==, tarball: https://registry.npmjs.org/@algolia/client-search/-/client-search-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
     dev: false
 
   /@algolia/ingestion@1.34.0:
@@ -1290,6 +1355,16 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/ingestion@1.34.1:
+    resolution: {integrity: sha512-QLxiBskQxFGzPqKZvBNEvNN95kgDCbBd2X29ZGfh6Sr2QOSU34US6Z9x2duiF4o9FwsB0i6eQ2c9vHfuH0lAQg==, tarball: https://registry.npmjs.org/@algolia/ingestion/-/ingestion-1.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/monitoring@1.34.0:
     resolution: {integrity: sha512-OJiDhlJX8ZdWAndc50Z6aUEW/YmnhFK2ul3rahMw5/c9Damh7+oY9SufoK2LimJejy+65Qka06YPG29v2G/vww==, tarball: https://registry.npmjs.org/@algolia/monitoring/-/monitoring-1.34.0.tgz}
     engines: {node: '>= 14.0.0'}
@@ -1298,6 +1373,16 @@ packages:
       '@algolia/requester-browser-xhr': 5.34.0
       '@algolia/requester-fetch': 5.34.0
       '@algolia/requester-node-http': 5.34.0
+    dev: false
+
+  /@algolia/monitoring@1.34.1:
+    resolution: {integrity: sha512-NteCvWcWXXdnPGyZH8rXHslcf2pM1WGDNMGNZFXLFtOt1Gf1Tjy2t0NZLp+Mxap3JMV4mbYmactbXrvpQf/lLA==, tarball: https://registry.npmjs.org/@algolia/monitoring/-/monitoring-1.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
     dev: false
 
   /@algolia/recommend@5.34.0:
@@ -1310,11 +1395,28 @@ packages:
       '@algolia/requester-node-http': 5.34.0
     dev: false
 
+  /@algolia/recommend@5.34.1:
+    resolution: {integrity: sha512-UdgDSrunLIBAAAxQlYLXYLnYFN4wkzkrAYx+wMLEk/pzASWyza3BkecbUFVqoYOBIgwo7Mt4iymzVtFkzL2uCQ==, tarball: https://registry.npmjs.org/@algolia/recommend/-/recommend-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
+    dev: false
+
   /@algolia/requester-browser-xhr@5.34.0:
     resolution: {integrity: sha512-gEI0xjzA/xvMpEdYmgQnf6AQKllhgKRtnEWmwDrnct+YPIruEHlx1dd7nRJTy/33MiYcCxkB4khXpNrHuqgp3Q==, tarball: https://registry.npmjs.org/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.34.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@algolia/client-common': 5.34.0
+    dev: false
+
+  /@algolia/requester-browser-xhr@5.34.1:
+    resolution: {integrity: sha512-567LfFTc9VOiPtuySQohoqaWMeohYWbXK71aMSin+SLMgeKX7hz5LrVmkmMQj9udwWK6/mtHEYZGPYHSuXpLQg==, tarball: https://registry.npmjs.org/@algolia/requester-browser-xhr/-/requester-browser-xhr-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
     dev: false
 
   /@algolia/requester-fetch@5.34.0:
@@ -1324,11 +1426,25 @@ packages:
       '@algolia/client-common': 5.34.0
     dev: false
 
+  /@algolia/requester-fetch@5.34.1:
+    resolution: {integrity: sha512-YRbygPgGBEik5U593JvyjgxFjcsyZMR25eIQxNHvSQumdAzt5A4E4Idw3yXnwhrmMdjML54ZXT7EAjnTjWy8Xw==, tarball: https://registry.npmjs.org/@algolia/requester-fetch/-/requester-fetch-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
+    dev: false
+
   /@algolia/requester-node-http@5.34.0:
     resolution: {integrity: sha512-409XlyIyEXrxyGjWxd0q5RASizHSRVUU0AXPCEdqnbcGEzbCgL1n7oYI8YxzE/RqZLha+PNwWCcTVn7EE5tyyQ==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.34.0.tgz}
     engines: {node: '>= 14.0.0'}
     dependencies:
       '@algolia/client-common': 5.34.0
+    dev: false
+
+  /@algolia/requester-node-http@5.34.1:
+    resolution: {integrity: sha512-o0mqRYbS82Rt4DE02Od7RL6pNtV7oSxScPuIw8LW4aqO2V5eCF05Pry/SnUgcI/Vb2QCYC66hytBCqzyC/toZA==, tarball: https://registry.npmjs.org/@algolia/requester-node-http/-/requester-node-http-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-common': 5.34.1
     dev: false
 
   /@ampproject/remapping@2.3.0:
@@ -1499,7 +1615,7 @@ packages:
       - yaml
     dev: false
 
-  /@angular-devkit/build-angular@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.0-beta):
+  /@angular-devkit/build-angular@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.0-beta):
     resolution: {integrity: sha512-b9WxCuWFuUQu8FyOfss4BNdpquFEmJqw0ke1bmI9r/atN6U0tlsHWntdrKNX0+s06MfeDwGUz4I2Pwa7XcCKyQ==, tarball: https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-20.2.0-next.1.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1553,7 +1669,7 @@ packages:
       '@angular-devkit/architect': 0.2002.0-next.1(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-next.1(chokidar@4.0.3)(webpack-dev-server@5.2.2)(webpack@5.100.2)
       '@angular-devkit/core': 20.2.0-next.1(chokidar@4.0.3)
-      '@angular/build': 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
+      '@angular/build': 20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/platform-browser': link:packages/platform-browser
@@ -1693,7 +1809,7 @@ packages:
       - chokidar
     dev: false
 
-  /@angular/build@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta):
+  /@angular/build@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta):
     resolution: {integrity: sha512-eh983fDoIr7UdMCzKbfQBt56/5SzOaYZ+uQTSxoDTr+ewcb3gGJPuxJOSBaB/tQr7iGapCwnRaAwAUu98q77VA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.2.0-next.1.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1751,7 +1867,7 @@ packages:
       '@babel/core': 7.28.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.14(@types/node@24.0.15)
+      '@inquirer/confirm': 5.1.14(@types/node@24.1.0)
       '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.0.5)
       beasties: 0.3.5
       browserslist: 4.25.1
@@ -1773,7 +1889,7 @@ packages:
       tinyglobby: 0.2.14
       tslib: 2.8.1
       typescript: 5.9.0-beta
-      vite: 7.0.5(@types/node@24.0.15)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.0.5(@types/node@24.1.0)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
       watchpack: 2.4.4
     optionalDependencies:
       lmdb: 3.4.1
@@ -1890,7 +2006,7 @@ packages:
       - yaml
     dev: false
 
-  /@angular/build@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.0.15)(chokidar@4.0.3)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta):
+  /@angular/build@20.2.0-next.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/ssr@20.2.0-next.1)(@types/node@24.1.0)(chokidar@4.0.3)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.0-beta):
     resolution: {integrity: sha512-eh983fDoIr7UdMCzKbfQBt56/5SzOaYZ+uQTSxoDTr+ewcb3gGJPuxJOSBaB/tQr7iGapCwnRaAwAUu98q77VA==, tarball: https://registry.npmjs.org/@angular/build/-/build-20.2.0-next.1.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
@@ -1947,7 +2063,7 @@ packages:
       '@babel/core': 7.28.0
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-split-export-declaration': 7.24.7
-      '@inquirer/confirm': 5.1.14(@types/node@24.0.15)
+      '@inquirer/confirm': 5.1.14(@types/node@24.1.0)
       '@vitejs/plugin-basic-ssl': 2.1.0(vite@7.0.5)
       beasties: 0.3.5
       browserslist: 4.25.1
@@ -1971,7 +2087,7 @@ packages:
       tinyglobby: 0.2.14
       tslib: 2.8.1
       typescript: 5.9.0-beta
-      vite: 7.0.5(@types/node@24.0.15)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.0.5(@types/node@24.1.0)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
       watchpack: 2.4.4
     optionalDependencies:
       lmdb: 3.4.1
@@ -2033,7 +2149,7 @@ packages:
       - supports-color
     dev: false
 
-  /@angular/cli@20.2.0-next.1(@types/node@24.0.15)(chokidar@4.0.3):
+  /@angular/cli@20.2.0-next.1(@types/node@24.1.0)(chokidar@4.0.3):
     resolution: {integrity: sha512-qhP/j/wjktzc6+uLPBGHsCseQUY7itRxWn3/V1kpZ0Y5J6pBMetjzNxWSADjPhzDEjKX13jdnpWB6DPeaq6now==, tarball: https://registry.npmjs.org/@angular/cli/-/cli-20.2.0-next.1.tgz}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
@@ -2041,8 +2157,8 @@ packages:
       '@angular-devkit/architect': 0.2002.0-next.1(chokidar@4.0.3)
       '@angular-devkit/core': 20.2.0-next.1(chokidar@4.0.3)
       '@angular-devkit/schematics': 20.2.0-next.1(chokidar@4.0.3)
-      '@inquirer/prompts': 7.7.1(@types/node@24.0.15)
-      '@listr2/prompt-adapter-inquirer': 3.0.1(@inquirer/prompts@7.7.1)(@types/node@24.0.15)(listr2@9.0.1)
+      '@inquirer/prompts': 7.7.1(@types/node@24.1.0)
+      '@listr2/prompt-adapter-inquirer': 3.0.1(@inquirer/prompts@7.7.1)(@types/node@24.1.0)(listr2@9.0.1)
       '@modelcontextprotocol/sdk': 1.16.0
       '@schematics/angular': 20.2.0-next.1(chokidar@4.0.3)
       '@yarnpkg/lockfile': 1.1.0
@@ -4266,7 +4382,7 @@ packages:
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/checkbox@4.2.0(@types/node@24.0.15):
+  /@inquirer/checkbox@4.2.0(@types/node@24.1.0):
     resolution: {integrity: sha512-fdSw07FLJEU5vbpOPzXo5c6xmMGDzbZE2+niuDHX5N6mc6V0Ebso/q3xiHra4D73+PMsC8MJmcaZKuAAoaQsSA==, tarball: https://registry.npmjs.org/@inquirer/checkbox/-/checkbox-4.2.0.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4275,10 +4391,10 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
       '@inquirer/figures': 1.0.13
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
     dev: false
@@ -4296,7 +4412,7 @@ packages:
       '@inquirer/type': 3.0.8(@types/node@18.19.115)
       '@types/node': 18.19.115
 
-  /@inquirer/confirm@5.1.14(@types/node@24.0.15):
+  /@inquirer/confirm@5.1.14(@types/node@24.1.0):
     resolution: {integrity: sha512-5yR4IBfe0kXe59r1YCTG8WXkUbl7Z35HK87Sw+WUyGD8wNUx7JvY7laahzeytyE1oLn74bQnL7hstctQxisQ8Q==, tarball: https://registry.npmjs.org/@inquirer/confirm/-/confirm-5.1.14.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4305,9 +4421,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
     dev: false
 
   /@inquirer/core@10.1.15(@types/node@18.19.115):
@@ -4329,7 +4445,7 @@ packages:
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/core@10.1.15(@types/node@24.0.15):
+  /@inquirer/core@10.1.15(@types/node@24.1.0):
     resolution: {integrity: sha512-8xrp836RZvKkpNbVvgWUlxjT4CraKk2q+I3Ksy+seI2zkcE+y6wNs1BVhgcv8VyImFecUhdQrYLdW32pAjwBdA==, tarball: https://registry.npmjs.org/@inquirer/core/-/core-10.1.15.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4339,8 +4455,8 @@ packages:
         optional: true
     dependencies:
       '@inquirer/figures': 1.0.13
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       mute-stream: 2.0.0
@@ -4363,7 +4479,7 @@ packages:
       '@types/node': 18.19.115
       external-editor: 3.1.0
 
-  /@inquirer/editor@4.2.15(@types/node@24.0.15):
+  /@inquirer/editor@4.2.15(@types/node@24.1.0):
     resolution: {integrity: sha512-wst31XT8DnGOSS4nNJDIklGKnf+8shuauVrWzgKegWUe28zfCftcWZ2vktGdzJgcylWSS2SrDnYUb6alZcwnCQ==, tarball: https://registry.npmjs.org/@inquirer/editor/-/editor-4.2.15.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4372,9 +4488,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       external-editor: 3.1.0
     dev: false
 
@@ -4392,7 +4508,7 @@ packages:
       '@types/node': 18.19.115
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/expand@4.0.17(@types/node@24.0.15):
+  /@inquirer/expand@4.0.17(@types/node@24.1.0):
     resolution: {integrity: sha512-PSqy9VmJx/VbE3CT453yOfNa+PykpKg/0SYP7odez1/NWBGuDXgPhp4AeGYYKjhLn5lUUavVS/JbeYMPdH50Mw==, tarball: https://registry.npmjs.org/@inquirer/expand/-/expand-4.0.17.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4401,9 +4517,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       yoctocolors-cjs: 2.1.2
     dev: false
 
@@ -4424,7 +4540,7 @@ packages:
       '@inquirer/type': 3.0.8(@types/node@18.19.115)
       '@types/node': 18.19.115
 
-  /@inquirer/input@4.2.1(@types/node@24.0.15):
+  /@inquirer/input@4.2.1(@types/node@24.1.0):
     resolution: {integrity: sha512-tVC+O1rBl0lJpoUZv4xY+WGWY8V5b0zxU1XDsMsIHYregdh7bN5X5QnIONNBAl0K765FYlAfNHS2Bhn7SSOVow==, tarball: https://registry.npmjs.org/@inquirer/input/-/input-4.2.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4433,9 +4549,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
     dev: false
 
   /@inquirer/number@3.0.17(@types/node@18.19.115):
@@ -4451,7 +4567,7 @@ packages:
       '@inquirer/type': 3.0.8(@types/node@18.19.115)
       '@types/node': 18.19.115
 
-  /@inquirer/number@3.0.17(@types/node@24.0.15):
+  /@inquirer/number@3.0.17(@types/node@24.1.0):
     resolution: {integrity: sha512-GcvGHkyIgfZgVnnimURdOueMk0CztycfC8NZTiIY9arIAkeOgt6zG57G+7vC59Jns3UX27LMkPKnKWAOF5xEYg==, tarball: https://registry.npmjs.org/@inquirer/number/-/number-3.0.17.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4460,9 +4576,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
     dev: false
 
   /@inquirer/password@4.0.17(@types/node@18.19.115):
@@ -4479,7 +4595,7 @@ packages:
       '@types/node': 18.19.115
       ansi-escapes: 4.3.2
 
-  /@inquirer/password@4.0.17(@types/node@24.0.15):
+  /@inquirer/password@4.0.17(@types/node@24.1.0):
     resolution: {integrity: sha512-DJolTnNeZ00E1+1TW+8614F7rOJJCM4y4BAGQ3Gq6kQIG+OJ4zr3GLjIjVVJCbKsk2jmkmv6v2kQuN/vriHdZA==, tarball: https://registry.npmjs.org/@inquirer/password/-/password-4.0.17.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4488,9 +4604,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       ansi-escapes: 4.3.2
     dev: false
 
@@ -4515,7 +4631,7 @@ packages:
       '@inquirer/select': 4.3.1(@types/node@18.19.115)
       '@types/node': 18.19.115
 
-  /@inquirer/prompts@7.7.1(@types/node@24.0.15):
+  /@inquirer/prompts@7.7.1(@types/node@24.1.0):
     resolution: {integrity: sha512-XDxPrEWeWUBy8scAXzXuFY45r/q49R0g72bUzgQXZ1DY/xEFX+ESDMkTQolcb5jRBzaNJX2W8XQl6krMNDTjaA==, tarball: https://registry.npmjs.org/@inquirer/prompts/-/prompts-7.7.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4524,17 +4640,17 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/checkbox': 4.2.0(@types/node@24.0.15)
-      '@inquirer/confirm': 5.1.14(@types/node@24.0.15)
-      '@inquirer/editor': 4.2.15(@types/node@24.0.15)
-      '@inquirer/expand': 4.0.17(@types/node@24.0.15)
-      '@inquirer/input': 4.2.1(@types/node@24.0.15)
-      '@inquirer/number': 3.0.17(@types/node@24.0.15)
-      '@inquirer/password': 4.0.17(@types/node@24.0.15)
-      '@inquirer/rawlist': 4.1.5(@types/node@24.0.15)
-      '@inquirer/search': 3.0.17(@types/node@24.0.15)
-      '@inquirer/select': 4.3.1(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/checkbox': 4.2.0(@types/node@24.1.0)
+      '@inquirer/confirm': 5.1.14(@types/node@24.1.0)
+      '@inquirer/editor': 4.2.15(@types/node@24.1.0)
+      '@inquirer/expand': 4.0.17(@types/node@24.1.0)
+      '@inquirer/input': 4.2.1(@types/node@24.1.0)
+      '@inquirer/number': 3.0.17(@types/node@24.1.0)
+      '@inquirer/password': 4.0.17(@types/node@24.1.0)
+      '@inquirer/rawlist': 4.1.5(@types/node@24.1.0)
+      '@inquirer/search': 3.0.17(@types/node@24.1.0)
+      '@inquirer/select': 4.3.1(@types/node@24.1.0)
+      '@types/node': 24.1.0
     dev: false
 
   /@inquirer/rawlist@4.1.5(@types/node@18.19.115):
@@ -4551,7 +4667,7 @@ packages:
       '@types/node': 18.19.115
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/rawlist@4.1.5(@types/node@24.0.15):
+  /@inquirer/rawlist@4.1.5(@types/node@24.1.0):
     resolution: {integrity: sha512-R5qMyGJqtDdi4Ht521iAkNqyB6p2UPuZUbMifakg1sWtu24gc2Z8CJuw8rP081OckNDMgtDCuLe42Q2Kr3BolA==, tarball: https://registry.npmjs.org/@inquirer/rawlist/-/rawlist-4.1.5.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4560,9 +4676,9 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       yoctocolors-cjs: 2.1.2
     dev: false
 
@@ -4581,7 +4697,7 @@ packages:
       '@types/node': 18.19.115
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/search@3.0.17(@types/node@24.0.15):
+  /@inquirer/search@3.0.17(@types/node@24.1.0):
     resolution: {integrity: sha512-CuBU4BAGFqRYors4TNCYzy9X3DpKtgIW4Boi0WNkm4Ei1hvY9acxKdBdyqzqBCEe4YxSdaQQsasJlFlUJNgojw==, tarball: https://registry.npmjs.org/@inquirer/search/-/search-3.0.17.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4590,10 +4706,10 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
       '@inquirer/figures': 1.0.13
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       yoctocolors-cjs: 2.1.2
     dev: false
 
@@ -4613,7 +4729,7 @@ packages:
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
 
-  /@inquirer/select@4.3.1(@types/node@24.0.15):
+  /@inquirer/select@4.3.1(@types/node@24.1.0):
     resolution: {integrity: sha512-Gfl/5sqOF5vS/LIrSndFgOh7jgoe0UXEizDqahFRkq5aJBLegZ6WjuMh/hVEJwlFQjyLq1z9fRtvUMkb7jM1LA==, tarball: https://registry.npmjs.org/@inquirer/select/-/select-4.3.1.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4622,10 +4738,10 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.0.15)
+      '@inquirer/core': 10.1.15(@types/node@24.1.0)
       '@inquirer/figures': 1.0.13
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
-      '@types/node': 24.0.15
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
+      '@types/node': 24.1.0
       ansi-escapes: 4.3.2
       yoctocolors-cjs: 2.1.2
     dev: false
@@ -4641,7 +4757,7 @@ packages:
     dependencies:
       '@types/node': 18.19.115
 
-  /@inquirer/type@3.0.8(@types/node@24.0.15):
+  /@inquirer/type@3.0.8(@types/node@24.1.0):
     resolution: {integrity: sha512-lg9Whz8onIHRthWaN1Q9EGLa/0LFJjyM8mEUbL1eTi6yMGvBf8gvyDLtxSXztQsxMvhxxNpJYrwa1YHdq+w4Jw==, tarball: https://registry.npmjs.org/@inquirer/type/-/type-3.0.8.tgz}
     engines: {node: '>=18'}
     peerDependencies:
@@ -4650,7 +4766,7 @@ packages:
       '@types/node':
         optional: true
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@isaacs/balanced-match@4.0.1:
@@ -5097,15 +5213,15 @@ packages:
       - '@types/node'
     dev: false
 
-  /@listr2/prompt-adapter-inquirer@3.0.1(@inquirer/prompts@7.7.1)(@types/node@24.0.15)(listr2@9.0.1):
+  /@listr2/prompt-adapter-inquirer@3.0.1(@inquirer/prompts@7.7.1)(@types/node@24.1.0)(listr2@9.0.1):
     resolution: {integrity: sha512-3XFmGwm3u6ioREG+ynAQB7FoxfajgQnMhIu8wC5eo/Lsih4aKDg0VuIMGaOsYn7hJSJagSeaD4K8yfpkEoDEmA==, tarball: https://registry.npmjs.org/@listr2/prompt-adapter-inquirer/-/prompt-adapter-inquirer-3.0.1.tgz}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@inquirer/prompts': '>= 3 < 8'
       listr2: 9.0.1
     dependencies:
-      '@inquirer/prompts': 7.7.1(@types/node@24.0.15)
-      '@inquirer/type': 3.0.8(@types/node@24.0.15)
+      '@inquirer/prompts': 7.7.1(@types/node@24.1.0)
+      '@inquirer/type': 3.0.8(@types/node@24.1.0)
       listr2: 9.0.1
     transitivePeerDependencies:
       - '@types/node'
@@ -6536,13 +6652,13 @@ packages:
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==, tarball: https://registry.npmjs.org/@types/body-parser/-/body-parser-1.19.6.tgz}
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/bonjour@3.5.13:
     resolution: {integrity: sha512-z9fJ5Im06zvUL548KvYNecEVlA7cVDkGUi6kZusb04mpyEFKCIZJvloCcmpmLaIahDpOQGHaHmG6imtPMmPXGQ==, tarball: https://registry.npmjs.org/@types/bonjour/-/bonjour-3.5.13.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/cacheable-request@6.0.3:
@@ -6550,7 +6666,7 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       '@types/responselike': 1.0.3
 
   /@types/caseless@0.12.5:
@@ -6578,13 +6694,13 @@ packages:
     resolution: {integrity: sha512-n6Cr2xS1h4uAulPRdlw6Jl6s1oG8KrVilPN2yUITEs+K48EzMJJ3W1xy8K5eWuFvjp3R74AOIGSmp2UfBJ8HFw==, tarball: https://registry.npmjs.org/@types/connect-history-api-fallback/-/connect-history-api-fallback-1.5.4.tgz}
     dependencies:
       '@types/express-serve-static-core': 5.0.6
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/connect@3.4.38:
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==, tarball: https://registry.npmjs.org/@types/connect/-/connect-3.4.38.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/convert-source-map@2.0.3:
@@ -6781,7 +6897,7 @@ packages:
   /@types/express-serve-static-core@4.19.6:
     resolution: {integrity: sha512-N4LZ2xG7DatVqhCZzOGb1Yi5lMbXSZcmdLDe9EzSndPV2HpWYWzRbaerl2n27irrm94EPpprqa8KpskPT085+A==, tarball: https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-4.19.6.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.5
@@ -6790,7 +6906,7 @@ packages:
   /@types/express-serve-static-core@5.0.6:
     resolution: {integrity: sha512-3xhRnjJPkULekpSzgtoNYYcTWgEZkp4myc+Saevii5JPnHNvHMRlBSHDbs7Bh1iPPoVTERHEZXyhyLbMEsExsA==, tarball: https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-5.0.6.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.5
@@ -6850,7 +6966,7 @@ packages:
   /@types/http-proxy@1.17.16:
     resolution: {integrity: sha512-sdWoUajOB1cd0A8cRRQ1cfyWNbmFKLAqBB89Y8x5iYyG/mkJHc0YUH8pdWBy2omi9qtCpiIgGjuwO0dQST2l5w==, tarball: https://registry.npmjs.org/@types/http-proxy/-/http-proxy-1.17.16.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/istanbul-lib-coverage@2.0.6:
@@ -6882,7 +6998,7 @@ packages:
   /@types/jsdom@21.1.7:
     resolution: {integrity: sha512-yOriVnggzrnQ3a9OKOCxaVuSug3w3/SbOj5i7VwXWZEyUNl3bLF9V3MfxGbZKuwqJOQyRfqXyROBB1CoZLFWzA==, tarball: https://registry.npmjs.org/@types/jsdom/-/jsdom-21.1.7.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
 
@@ -6892,7 +7008,7 @@ packages:
   /@types/keyv@3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==, tarball: https://registry.npmjs.org/@types/keyv/-/keyv-3.1.4.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
 
   /@types/live-server@1.2.3:
     resolution: {integrity: sha512-s8SQNTnUgaYQemV1Nt7SILh5ChYbWVg8ONLBbcmjHcpAwpyHh7MXBIpwgwPNvx19lIbBWszQJ3k8ynNIHLtlyg==, tarball: https://registry.npmjs.org/@types/live-server/-/live-server-1.2.3.tgz}
@@ -6914,7 +7030,7 @@ packages:
   /@types/node-forge@1.3.12:
     resolution: {integrity: sha512-a0ToKlRVnUw3aXKQq2F+krxZKq7B8LEQijzPn5RdFAMatARD2JX9o8FBpMXOOrjob0uc13aN+V/AXniOXW4d9A==, tarball: https://registry.npmjs.org/@types/node-forge/-/node-forge-1.3.12.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/node@10.17.60:
@@ -6940,8 +7056,8 @@ packages:
     dependencies:
       undici-types: 7.8.0
 
-  /@types/node@24.0.15:
-    resolution: {integrity: sha512-oaeTSbCef7U/z7rDeJA138xpG3NuKc64/rZ2qmUFkFJmnMsAPaluIifqyWd8hSSMxyP9oie3dLAqYPblag9KgA==, tarball: https://registry.npmjs.org/@types/node/-/node-24.0.15.tgz}
+  /@types/node@24.1.0:
+    resolution: {integrity: sha512-ut5FthK5moxFKH2T1CUOC6ctR67rQRvvHdFLCD2Ql6KXmMuCrjsSsRI9UsLCm9M18BMwClv4pn327UvB7eeO1w==, tarball: https://registry.npmjs.org/@types/node/-/node-24.1.0.tgz}
     dependencies:
       undici-types: 7.8.0
 
@@ -7015,7 +7131,7 @@ packages:
   /@types/responselike@1.0.3:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==, tarball: https://registry.npmjs.org/@types/responselike/-/responselike-1.0.3.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
 
   /@types/retry@0.12.2:
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==, tarball: https://registry.npmjs.org/@types/retry/-/retry-0.12.2.tgz}
@@ -7043,7 +7159,7 @@ packages:
     resolution: {integrity: sha512-z6F2D3cOStZvuk2SaP6YrwkNO65iTZcwA2ZkSABegdkAh/lf+Aa/YQndZVfmEXT5vgAp6zv06VQ3ejSVjAny4w==, tarball: https://registry.npmjs.org/@types/send/-/send-0.17.5.tgz}
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/serve-index@1.9.4:
@@ -7056,7 +7172,7 @@ packages:
     resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==, tarball: https://registry.npmjs.org/@types/serve-static/-/serve-static-1.15.8.tgz}
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       '@types/send': 0.17.5
     dev: false
 
@@ -7078,7 +7194,7 @@ packages:
   /@types/sockjs@0.3.36:
     resolution: {integrity: sha512-MK9V6NzAS1+Ud7JV9lJLFqW85VbC9dq3LmwZCuBe4wBDgKC0Kj/jd8Xl+nSviU+Qc3+m7umHHyHg//2KSa0a0Q==, tarball: https://registry.npmjs.org/@types/sockjs/-/sockjs-0.3.36.tgz}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
     dev: false
 
   /@types/stack-trace@0.0.33:
@@ -7299,7 +7415,7 @@ packages:
     peerDependencies:
       vite: ^6.0.0 || ^7.0.0
     dependencies:
-      vite: 7.0.5(@types/node@24.0.15)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
+      vite: 7.0.5(@types/node@24.1.0)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)
     dev: false
 
   /@vitest/expect@3.2.4:
@@ -7715,6 +7831,25 @@ packages:
       '@algolia/requester-browser-xhr': 5.34.0
       '@algolia/requester-fetch': 5.34.0
       '@algolia/requester-node-http': 5.34.0
+    dev: false
+
+  /algoliasearch@5.34.1:
+    resolution: {integrity: sha512-s70HlfBgswgEdmCYkUJG8i/ULYhbkk8N9+N8JsWUwszcp7eauPEr5tIX4BY0qDGeKWQ/qZvmt4mxwTusYY23sg==, tarball: https://registry.npmjs.org/algoliasearch/-/algoliasearch-5.34.1.tgz}
+    engines: {node: '>= 14.0.0'}
+    dependencies:
+      '@algolia/client-abtesting': 5.34.1
+      '@algolia/client-analytics': 5.34.1
+      '@algolia/client-common': 5.34.1
+      '@algolia/client-insights': 5.34.1
+      '@algolia/client-personalization': 5.34.1
+      '@algolia/client-query-suggestions': 5.34.1
+      '@algolia/client-search': 5.34.1
+      '@algolia/ingestion': 1.34.1
+      '@algolia/monitoring': 1.34.1
+      '@algolia/recommend': 5.34.1
+      '@algolia/requester-browser-xhr': 5.34.1
+      '@algolia/requester-fetch': 5.34.1
+      '@algolia/requester-node-http': 5.34.1
     dev: false
 
   /angular-mocks@1.5.11:
@@ -14217,7 +14352,7 @@ packages:
     resolution: {integrity: sha512-7vuh85V5cdDofPyxn58nrPjBktZo0u9x1g8WtjQol+jZDaE+fhN+cIvTj11GndBnMnyfrUOG1sZQxCdjKh+DKg==, tarball: https://registry.npmjs.org/jest-worker/-/jest-worker-27.5.1.tgz}
     engines: {node: '>= 10.13.0'}
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
     dev: false
@@ -18659,6 +18794,11 @@ packages:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==, tarball: https://registry.npmjs.org/source-map/-/source-map-0.7.4.tgz}
     engines: {node: '>= 8'}
 
+  /source-map@0.7.6:
+    resolution: {integrity: sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ==, tarball: https://registry.npmjs.org/source-map/-/source-map-0.7.6.tgz}
+    engines: {node: '>= 12'}
+    dev: false
+
   /sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==, tarball: https://registry.npmjs.org/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz}
     deprecated: Please use @jridgewell/sourcemap-codec instead
@@ -20469,7 +20609,7 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /vite@7.0.5(@types/node@24.0.15)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3):
+  /vite@7.0.5(@types/node@24.1.0)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3):
     resolution: {integrity: sha512-1mncVwJxy2C9ThLwz0+2GKZyEXuC3MyWtAAlNftlZZXZDP3AJt5FmwcMit/IGGaNZ8ZOB2BNO/HFUB+CpN0NQw==, tarball: https://registry.npmjs.org/vite/-/vite-7.0.5.tgz}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
@@ -20509,7 +20649,7 @@ packages:
       yaml:
         optional: true
     dependencies:
-      '@types/node': 24.0.15
+      '@types/node': 24.1.0
       esbuild: 0.25.8
       fdir: 6.4.6(picomatch@4.0.3)
       less: 4.4.0
