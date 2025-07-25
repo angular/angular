@@ -236,10 +236,9 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly syncValid: Signal<boolean>;
   /**
-   * A signal indicating whether the field is currently unsubmitted, submitted, or in the process of
-   * being submitted.
+   * A signal indicating whether the field is currently in the process of being submitted.
    */
-  readonly submittedStatus: Signal<SubmittedStatus>;
+  readonly submitting: Signal<boolean>;
   /**
    * The property key in the parent field under which this field is stored. If the parent field is
    * array-valued, for example, this is the index of this field in that array.
@@ -271,11 +270,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Note this does not change the data model, which can be reset directly if desired.
    */
   reset(): void;
-
-  /**
-   * Resets the `submittedStatus` of the field and all descendant fields to unsubmitted.
-   */
-  resetSubmittedStatus(): void;
 }
 
 /**

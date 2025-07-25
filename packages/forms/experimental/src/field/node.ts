@@ -145,21 +145,14 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get submittedStatus(): Signal<SubmittedStatus> {
-    return this.submitState.submittedStatus;
+  get submitting(): Signal<boolean> {
+    return this.submitState.submitting;
   }
 
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
   property<M>(prop: Property<M>): M | undefined;
   property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
     return this.propertyState.get(prop);
-  }
-
-  /**
-   * Resets the submitted status of this field and all of its children.
-   */
-  resetSubmittedStatus(): void {
-    this.submitState.reset();
   }
 
   /**

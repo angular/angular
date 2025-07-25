@@ -16,7 +16,7 @@ import type {FieldNode} from './node';
  * State of a `FieldNode` that's associated with form submission.
  */
 export class FieldSubmitState {
-  readonly selfSubmittedStatus = signal<SubmittedStatus>('unsubmitted');
+  readonly selfSubmitting = signal<boolean>(false);
   readonly serverErrors: WritableSignal<readonly ValidationError[]>;
 
   constructor(private readonly node: FieldNode) {
@@ -27,22 +27,13 @@ export class FieldSubmitState {
   }
 
   /**
-   * The submitted status of the form.
+   * Whether this form is currently being submitted.
    */
-  readonly submittedStatus: Signal<SubmittedStatus> = computed(() =>
-    this.selfSubmittedStatus() !== 'unsubmitted'
-      ? this.selfSubmittedStatus()
-      : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
-  );
+  readonly submitting: Signal<boolean> = computed(() => {
+    return this.selfSubmitting() || (this.node.structure.parent?.submitting() ?? false);
+  });
 
   setServerErrors(result: Exclude<TreeValidationResult, null | undefined>) {
     this.serverErrors.set(isArray(result) ? result.map(stripField) : [stripField(result)]);
-  }
-
-  reset(): void {
-    this.selfSubmittedStatus.set('unsubmitted');
-    for (const child of this.node.structure.children()) {
-      child.submitState.reset();
-    }
   }
 }

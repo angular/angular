@@ -139,8 +139,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     property<M>(prop: Property<M>): M | undefined;
     readonly readonly: Signal<boolean>;
     reset(): void;
-    resetSubmittedStatus(): void;
-    readonly submittedStatus: Signal<SubmittedStatus>;
+    readonly submitting: Signal<boolean>;
     readonly syncErrors: Signal<ValidationError[]>;
     readonly syncValid: Signal<boolean>;
     readonly touched: Signal<boolean>;
@@ -213,8 +212,6 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     get pending(): boolean | null;
     // (undocumented)
     get pristine(): boolean;
-    // (undocumented)
-    get submitted(): boolean;
     // (undocumented)
     get touched(): boolean;
     // (undocumented)
