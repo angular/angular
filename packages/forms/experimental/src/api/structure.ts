@@ -326,7 +326,7 @@ export function schema<T>(fn: SchemaFn<T>): Schema<T> {
   return SchemaImpl.create(fn) as unknown as Schema<T>;
 }
 
-/** Marks a {@link node} and its descrendants as touched. */
+/** Marks a {@link node} and its descendants as touched. */
 function markAllAsTouched(node: FieldNode) {
   node.markAsTouched();
   for (const child of node.structure.children()) {
