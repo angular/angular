@@ -21,6 +21,7 @@ import {
   ChangeDetectionStrategy,
   Compiler,
   Component,
+  DestroyRef,
   EnvironmentInjector,
   InjectionToken,
   Injector,
@@ -28,7 +29,6 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
-  provideZoneChangeDetection,
   RendererFactory2,
   TemplateRef,
   Type,
@@ -940,7 +940,6 @@ describe('AppRef', () => {
     beforeEach(() => {
       stableCalled = false;
       TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
         declarations: [
           SyncComp,
           MicroTaskComp,
@@ -964,7 +963,7 @@ describe('AppRef', () => {
       zone.run(() => appRef.tick());
 
       let i = 0;
-      appRef.isStable.subscribe({
+      const sub = appRef.isStable.subscribe({
         next: (stable: boolean) => {
           if (stable) {
             expect(i).toBeLessThan(expected.length);
@@ -973,6 +972,7 @@ describe('AppRef', () => {
           }
         },
       });
+      fixture.debugElement.injector.get(DestroyRef).onDestroy(() => sub.unsubscribe());
     }
 
     it('isStable should fire on synchronous component loading', waitForAsync(() => {
