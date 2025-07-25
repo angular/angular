@@ -57,7 +57,7 @@ jobs:
       - name: Test build
         run: yarn devtools:build:chrome
       - name: Cypress run
-        uses: cypress-io/github-action@6c143abc292aa835d827652c2ea025d098311070 # v6.10.1
+        uses: cypress-io/github-action@b8ba51a856ba5f4c15cf39007636d4ab04f23e3c # v6.10.2
         with:
           command: yarn devtools:test:e2e
           start: yarn bazel run //devtools/src:devserver
