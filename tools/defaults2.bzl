@@ -12,6 +12,7 @@ load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
+load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
 load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
 
@@ -38,6 +39,7 @@ http_server = _http_server
 api_golden_test = _api_golden_test
 api_golden_test_npm_package = _api_golden_test_npm_package
 copy_to_bin = _copy_to_bin
+tsec_test = _tsec_test
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

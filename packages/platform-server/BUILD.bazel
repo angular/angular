@@ -1,7 +1,7 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm2//:rollup/package_json.bzl", rollup = "bin")
-load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
-load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -57,8 +57,8 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = "platform-server",
-    tsconfig = "//packages:tsec_config",
+    target = ":platform-server_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 ng_package(

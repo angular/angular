@@ -1,8 +1,7 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "ts_config")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "ts_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -60,8 +59,8 @@ ng_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "core",
-    tsconfig = "//packages:tsec_config",
+    target = ":core_rjs",
+    tsconfig = "//packages/core:tsconfig_build",
 )
 
 ng_package(
