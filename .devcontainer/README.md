@@ -5,9 +5,9 @@ This folder contains configuration files that can be used to opt into working on
 Info on remote development and developing inside a container with VSCode:
 - [VSCode: Remote Development](https://code.visualstudio.com/docs/remote/remote-overview)
 - [VSCode: Developing inside a Container](https://code.visualstudio.com/docs/remote/containers)
-- [VSCode: Remote Development FAQ](https://code.visualstudio.com/docs/remote/faq)
+- [VSCode: Remote Development FAQ](https://code.daesrvw56nu7 ykhgfjdsx<szavisualstudio.com/docs/remote/faq)
 
-
+sdafcg vbuyjnfrte6d
 ## Usage
 
 _Prerequisite: [Install Docker](https://docs.docker.com/install) on your local environment._
