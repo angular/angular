@@ -8,23 +8,23 @@ The Angular compiler includes "extended diagnostics" which identify many of thes
 
 Currently, Angular supports the following extended diagnostics:
 
-| Code     | Name                                                              |
-| :------- | :---------------------------------------------------------------- |
-| `NG8101` | [`invalidBananaInBox`](extended-diagnostics/NG8101)               |
-| `NG8102` | [`nullishCoalescingNotNullable`](extended-diagnostics/NG8102)     |
-| `NG8103` | [`missingControlFlowDirective`](extended-diagnostics/NG8103)      |
-| `NG8104` | [`textAttributeNotBinding`](extended-diagnostics/NG8104)          |
-| `NG8105` | [`missingNgForOfLet`](extended-diagnostics/NG8105)                |
-| `NG8106` | [`suffixNotSupported`](extended-diagnostics/NG8106)               |
-| `NG8107` | [`optionalChainNotNullable`](extended-diagnostics/NG8107)         |
-| `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)           |
-| `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)     |
-| `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111)  |
-| `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)          |
-| `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114) |
-| `NG8115` | [`uninvokedTrackFunction`](extended-diagnostics/NG8115)           |
-| `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)       |
-| `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8114) |
+| Code     | Name                                                                  |
+| :------- |:----------------------------------------------------------------------|
+| `NG8101` | [`invalidBananaInBox`](extended-diagnostics/NG8101)                   |
+| `NG8102` | [`nullishCoalescingNotNullable`](extended-diagnostics/NG8102)         |
+| `NG8103` | [`missingControlFlowDirective`](extended-diagnostics/NG8103)          |
+| `NG8104` | [`textAttributeNotBinding`](extended-diagnostics/NG8104)              |
+| `NG8105` | [`missingNgForOfLet`](extended-diagnostics/NG8105)                    |
+| `NG8106` | [`suffixNotSupported`](extended-diagnostics/NG8106)                   |
+| `NG8107` | [`optionalChainNotNullable`](extended-diagnostics/NG8107)             |
+| `NG8108` | [`skipHydrationNotStatic`](extended-diagnostics/NG8108)               |
+| `NG8109` | [`interpolatedSignalNotInvoked`](extended-diagnostics/NG8109)         |
+| `NG8111` | [`uninvokedFunctionInEventBinding`](extended-diagnostics/NG8111)      |
+| `NG8113` | [`unusedStandaloneImports`](extended-diagnostics/NG8113)              |
+| `NG8114` | [`unparenthesizedNullishCoalescing`](extended-diagnostics/NG8114)     |
+| `NG8115` | [`uninvokedTrackFunction`](extended-diagnostics/NG8115)               |
+| `NG8116` | [`missingStructuralDirective`](extended-diagnostics/NG8116)           |
+| `NG8117` | [`uninvokedFunctionInTextInterpolation`](extended-diagnostics/NG8117) |
 
 ## Configuration
 
