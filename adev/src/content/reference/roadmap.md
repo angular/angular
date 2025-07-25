@@ -19,12 +19,12 @@ Start developing with the latest Angular features from our roadmap. This list re
 
 ### Available to experiment with
 
-* [Zoneless change detection](/guide/zoneless)
 * [Resource API](/guide/signals/resource)
 * [httpResource](/api/common/http/httpResource)
 
 ### Production ready
 
+* [Zoneless change detection](/guide/zoneless)
 * [Linked Signal API](/guide/signals/linked-signal)
 * [Incremental hydration](/guide/incremental-hydration)
 * [Effect API](/api/core/effect)
@@ -54,7 +54,7 @@ Start developing with the latest Angular features from our roadmap. This list re
 
   In v19 we introduced zoneless support in server-side rendering, addressed some edge cases, and created a schematic to scaffold zoneless projects. We transitioned <a href="https://fonts.google.com/">Google Fonts</a> to zoneless which improved performance, developer experience, and allowed us to identify gaps that we need to address before moving this feature to developer preview.
 
-  As of Angular v20, Zoneless Angular is now in developer preview and includes improvements in error handling and server-side rendering.
+  As of Angular v20.2, Zoneless Angular is now stable and includes improvements in error handling and server-side rendering.
   </docs-card>
   <docs-card title="Signal integrations" href="">
   We're working towards improving the integration of fundamental Angular packages, such as forms, HTTP, and router, with Signals. As part of this project, we'll seek opportunities to introduce convenient signal-based APIs or wrappers to improve the holistic developer experience.
