@@ -34,9 +34,9 @@ http_archive(
 
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "304c51726b727d53277dd28fcda1b8e43b7e46818530b8d6265e7be98d5e2b25",
-    strip_prefix = "rules_js-2.3.8",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v2.3.8/rules_js-v2.3.8.tar.gz",
+    sha256 = "ca638e0aa33b087706bc7f5e887ce01cdf6ec82de00660f22409fa8be34a8ce2",
+    strip_prefix = "rules_js-2.4.1",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v2.4.1/rules_js-v2.4.1.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -181,8 +181,8 @@ aspect_bazel_lib_dependencies()
 # TODO: Remove when karma webtest is no longer used
 http_archive(
     name = "io_bazel_rules_webtesting",
-    sha256 = "e9abb7658b6a129740c0b3ef6f5a2370864e102a5ba5ffca2cea565829ed825a",
-    urls = ["https://github.com/bazelbuild/rules_webtesting/releases/download/0.3.5/rules_webtesting.tar.gz"],
+    sha256 = "574f1c0aa072c187194d60beda7f5be15e139a5e0096089a7710818eec3a4f62",
+    urls = ["https://github.com/bazelbuild/rules_webtesting/releases/download/0.4.1/rules_webtesting-0.4.1.tar.gz"],
 )
 
 # Setup the rules_webtesting toolchain
