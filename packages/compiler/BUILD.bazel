@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project")
+load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,8 +14,8 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "compiler",
-    tsconfig = "//packages:tsec_config",
+    target = ":compiler_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 ng_package(

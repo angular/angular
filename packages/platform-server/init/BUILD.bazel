@@ -1,7 +1,6 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm2//:rollup/package_json.bzl", rollup = "bin")
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -49,8 +48,8 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = "init",
-    tsconfig = "//packages:tsec_config",
+    target = ":init_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 filegroup(
