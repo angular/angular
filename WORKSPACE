@@ -152,8 +152,8 @@ http_archive(
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.0-beta | jq -r '.dist.integrity'
-    ts_integrity = "sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.1-rc | jq -r '.dist.integrity'
+    ts_integrity = "sha512-pWar+9HGLkLwxu2PX1ItWnWg80r6nZ8qVEyWVRsnlZyZeFkHeR+eCrZ9PcYeVZjdLvcd5p/WgycViI+lsTh2qg==",
     ts_version_from = "//:package.json",
 )
 

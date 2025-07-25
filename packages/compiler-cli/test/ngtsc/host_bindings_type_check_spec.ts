@@ -227,7 +227,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
-        `Argument of type 'MouseEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
+        `Argument of type 'PointerEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
@@ -252,7 +252,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
-        `Argument of type 'MouseEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
+        `Argument of type 'PointerEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
@@ -276,7 +276,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect((diags[0].messageText as ts.DiagnosticMessageChain).messageText).toBe(
-        `Argument of type 'MouseEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
+        `Argument of type 'PointerEvent' is not assignable to parameter of type 'KeyboardEvent'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });
@@ -530,7 +530,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(
-        `Argument of type 'MouseEvent' is not assignable to parameter of type 'string'.`,
+        `Argument of type 'PointerEvent' is not assignable to parameter of type 'string'.`,
       );
       expect(getDiagnosticSourceCode(diags[0])).toBe('$event');
     });

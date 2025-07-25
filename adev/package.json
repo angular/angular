@@ -64,11 +64,9 @@
     "shiki": "3.8.1",
     "tinyglobby": "0.2.14",
     "tslib": "2.8.1",
-    "typescript": "5.9.0-beta",
+    "typescript": "5.9.1-rc",
     "xhr2": "0.2.1",
     "zone.js": "0.15.1",
-
-
     "@algolia/client-common": "5.34.1",
     "@algolia/requester-browser-xhr": "5.34.1",
     "@algolia/requester-node-http": "5.34.1",
