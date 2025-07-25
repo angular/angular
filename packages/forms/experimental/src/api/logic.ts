@@ -145,7 +145,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  *
  * @param path The target path to set the aggregate property on.
  * @param prop The aggregate property
- * @param logic A function that recieves the `FieldContext` and returns a value to add to the aggregate property.
+ * @param logic A function that receives the `FieldContext` and returns a value to add to the aggregate property.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPropItem The type of value the property aggregates over.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
