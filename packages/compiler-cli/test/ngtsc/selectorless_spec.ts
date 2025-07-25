@@ -529,7 +529,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(diags[0].messageText).toBe(
-        `Argument of type 'MouseEvent' is not assignable to parameter of type 'number'.`,
+        `Argument of type 'PointerEvent' is not assignable to parameter of type 'number'.`,
       );
     });
 
