@@ -35,7 +35,7 @@ export class FieldSubmitState {
       : (this.node.structure.parent?.submitState.submittedStatus() ?? 'unsubmitted'),
   );
 
-  setServerErrors(result: Exclude<TreeValidationResult, false | null | undefined>) {
+  setServerErrors(result: Exclude<TreeValidationResult, null | undefined>) {
     this.serverErrors.set(isArray(result) ? result.map(stripField) : [stripField(result)]);
   }
 

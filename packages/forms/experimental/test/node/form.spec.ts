@@ -3,12 +3,12 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {inject, Injector, runInInjectionContext, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, validate} from '../../public_api';
+import {form, required, schema, validate} from '../../public_api';
 
 describe('form', () => {
   describe('injection context', () => {
@@ -66,6 +66,20 @@ describe('form', () => {
           {injector: injector},
         );
       });
+    });
+  });
+
+  it('should infer schema type', () => {
+    runInInjectionContext(TestBed.inject(Injector), () => {
+      const f = form(
+        signal<{x: string}>({x: ''}),
+        schema((p) => {
+          // Note: the primary purpose of this test is to verify that the line below does not have
+          // a type error due to `p` being of type `unknown`.
+          required(p.x);
+        }),
+      );
+      expect(f.x().valid()).toBe(false);
     });
   });
 });

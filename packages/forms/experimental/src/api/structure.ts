@@ -23,10 +23,16 @@ import type {
 } from './types';
 import {ValidationError, WithField} from './validation_errors';
 
+/** Options that may be specified when creating a form. */
 export interface FormOptions {
+  /**
+   * The injector to use for dependency injection. If this is not provided, the injector for the
+   * current [injection context](guide/di/dependency-injection-context), will be used.
+   */
   injector?: Injector;
 }
 
+/** Extracts the model, schema, and options from the arguments passed to `form()`. */
 function normalizeFormArgs<TValue>(
   args: any[],
 ): [WritableSignal<TValue>, SchemaOrSchemaFn<TValue> | undefined, FormOptions | undefined] {
@@ -65,28 +71,13 @@ function normalizeFormArgs<TValue>(
  * nameModel(); // {first: 'John', last: ''}
  * ```
  *
- * The form can also be created with a schema, which is a set of rules that define the logic for the
- * form. The schema can be either a pre-defined schema created with the `schema` function, or a
- * function that builds the schema by binding logic to a parts of the field structure.
- *
- * @example ```
- * const nameForm = form(signal({first: '', last: ''}), (name) => {
- *   required(name.first);
- *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
- * });
- * nameForm().valid(); // false
- * nameForm().value.set({first: 'John', last: 'Doe'});
- * nameForm().valid(); // true
- * ```
- *
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
- * @param options The form options
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
  */
-export function form<TValue>(model: WritableSignal<TValue>, options?: FormOptions): Field<TValue>;
+export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
@@ -121,21 +112,60 @@ export function form<TValue>(model: WritableSignal<TValue>, options?: FormOption
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
- * @param schema A schema or a function that binds logic to the form. This can be optionally
- * included to specify logic for the form (e.g. validation, disabled fields, etc.)
+ * @param schemaOrOptions The second argument can be either
+ *   1. A schema or a function used to specify logic for the form (e.g. validation, disabled fields, etc.).
+ *      When passing a schema, the form options can be passed as a third argument if needed.
+ *   2. The form options
+ * @return A `Field` representing a form around the data model
+ * @template TValue The type of the data model.
+ */
+export function form<TValue>(
+  model: WritableSignal<TValue>,
+  schemaOrOptions: SchemaOrSchemaFn<TValue> | FormOptions,
+): Field<TValue>;
+
+/**
+ * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
+ * the model data.
+ *
+ * `form` uses the given model as the source of truth and *does not* maintain its own copy of the
+ * data. This means that updating the value on a `FieldState` updates the originally passed in model
+ * as well.
+ *
+ * @example ```
+ * const nameModel = signal({first: '', last: ''});
+ * const nameForm = form(nameModel);
+ * nameForm.first().value.set('John');
+ * nameForm().value(); // {first: 'John', last: ''}
+ * nameModel(); // {first: 'John', last: ''}
+ * ```
+ *
+ * The form can also be created with a schema, which is a set of rules that define the logic for the
+ * form. The schema can be either a pre-defined schema created with the `schema` function, or a
+ * function that builds the schema by binding logic to a parts of the field structure.
+ *
+ * @example ```
+ * const nameForm = form(signal({first: '', last: ''}), (name) => {
+ *   required(name.first);
+ *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
+ * });
+ * nameForm().valid(); // false
+ * nameForm().value.set({first: 'John', last: 'Doe'});
+ * nameForm().valid(); // true
+ * ```
+ *
+ * @param model A writable signal that contains the model data for the form. The resulting field
+ * structure will match the shape of the model and any changes to the form data will be written to
+ * the model.
+ * @param schema A schema or a function used to specify logic for the form (e.g. validation, disabled fields, etc.)
  * @param options The form options
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
  */
 export function form<TValue>(
   model: WritableSignal<TValue>,
-  // TODO: Decide if we want `NoInfer` or not.
-  // Note: `NoInfer<...>` works here when the schema is defined inline, but not when it is defined
-  // ahead of time, e.g.
-  // const s = (p: FieldPath<string>) => { ... };
-  // const f = form(signal(''), s);
-  schema?: SchemaOrSchemaFn<TValue>,
-  options?: FormOptions,
+  schema: SchemaOrSchemaFn<TValue>,
+  options: FormOptions,
 ): Field<TValue>;
 
 export function form<TValue>(...args: any[]): Field<TValue> {
@@ -253,6 +283,7 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
   predicate: (value: TValue) => value is TNarrowed,
   schema: NoInfer<SchemaOrSchemaFn<TNarrowed>>,
 ): void;
+
 /**
  * Conditionally applies a predefined schema to a given `FieldPath`.
  *
@@ -267,6 +298,7 @@ export function applyWhenValue<TValue>(
   predicate: (value: TValue) => boolean,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void;
+
 export function applyWhenValue(
   path: FieldPath<unknown>,
   predicate: (value: unknown) => boolean,
@@ -300,7 +332,7 @@ export function applyWhenValue(
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
- * @param f The field to submit.
+ * @param form The field to submit.
  * @param action An asynchronous action used to submit the field. The action may return server
  * errors.
  * @template TValue The data type of the field being submitted.
@@ -318,6 +350,12 @@ export async function submit<TValue>(
   api.submitState.selfSubmittedStatus.set('submitted');
 }
 
-export function schema<T>(fn: SchemaFn<T>): Schema<T> {
-  return SchemaImpl.create(fn) as unknown as Schema<T>;
+/**
+ * Creates a `Schema` that adds logic rules to a form.
+ * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
+ * @returns A schema object that implements the given logic.
+ * @template TValue The value type of a `Field` that this schema binds to.
+ */
+export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
+  return SchemaImpl.create(fn) as unknown as Schema<TValue>;
 }

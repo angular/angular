@@ -97,11 +97,8 @@ export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLo
   readonly TElement[],
   TElement | readonly (TElement | TIgnore)[] | TIgnore | undefined
 > {
-  static ignoreFalseAndNull<TElement>(predicates: ReadonlyArray<BoundPredicate>) {
-    return new ArrayMergeIgnoreLogic<TElement, false | null>(
-      predicates,
-      (e: unknown) => e === false || e === null,
-    );
+  static ignoreNull<TElement>(predicates: ReadonlyArray<BoundPredicate>) {
+    return new ArrayMergeIgnoreLogic<TElement, null>(predicates, (e: unknown) => e === null);
   }
 
   constructor(
