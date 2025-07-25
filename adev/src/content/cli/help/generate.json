@@ -171,7 +171,8 @@
           "enum": [
             "Emulated",
             "None",
-            "ShadowDom"
+            "ShadowDom",
+            "LegacyShadowDom"
           ],
           "description": "Sets the view encapsulation mode for the application's components. This determines how component styles are scoped and applied."
         },
@@ -372,7 +373,8 @@
           "enum": [
             "Emulated",
             "None",
-            "ShadowDom"
+            "ShadowDom",
+            "LegacyShadowDom"
           ],
           "description": "Sets the view encapsulation mode for the component. This determines how the component's styles are scoped and applied."
         }

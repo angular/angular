@@ -30,4 +30,7 @@ Learn about how you can migrate your existing angular project to the latest feat
   <docs-card title="Self-closing tags" link="Migrate now" href="reference/migrations/self-closing-tags">
     Convert component templates to use self-closing tags where possible.
   </docs-card>
+  <docs-card title="Shadowdom" link="Migrate now" href="reference/migrations/shadowdom">
+    Convert existing Shadowdom encapsulation to use the deprecated LegacyShadowDom.
+  </docs-card>
 </docs-card-container>

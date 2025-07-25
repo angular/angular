@@ -20,6 +20,11 @@
       "version": "20.0.0",
       "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
       "factory": "./bundles/document-core.cjs#migrate"
+    },
+    "shadowdom-migration": {
+      "version": "20.0.0",
+      "description": "Migrates users onto legacy shadowdom encapsulation, making fixed shadowdom the default",
+      "factory": "./bundles/shadowdom-migration.cjs#migrate"
     }
   }
 }

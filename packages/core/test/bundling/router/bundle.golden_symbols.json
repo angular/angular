@@ -138,6 +138,7 @@
       "LOCALE_ID",
       "LQueries_",
       "LQuery_",
+      "LegacyShadowDomRenderer",
       "ListComponent",
       "Location",
       "LocationStrategy",

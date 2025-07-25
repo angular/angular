@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "ShadowDomToLegacyShadowDomMigration",
+  "title": "ShadowDom to LegacyShadowDom Migration",
+  "type": "object",
+  "properties": {},
+  "required": []
+}
