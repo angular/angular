@@ -6,46 +6,46 @@
 
 import * as i0 from '@angular/core';
 
-// @public
+// @public @deprecated
 export function animate(timings: string | number, styles?: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null): AnimationAnimateMetadata;
 
-// @public
+// @public @deprecated
 export function animateChild(options?: AnimateChildOptions | null): AnimationAnimateChildMetadata;
 
-// @public
+// @public @deprecated
 export interface AnimateChildOptions extends AnimationOptions {
     // (undocumented)
     duration?: number | string;
 }
 
-// @public
+// @public @deprecated
 export type AnimateTimings = {
     duration: number;
     delay: number;
     easing: string | null;
 };
 
-// @public
+// @public @deprecated
 export function animation(steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationReferenceMetadata;
 
-// @public
+// @public @deprecated
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationAnimateMetadata extends AnimationMetadata {
     styles: AnimationStyleMetadata | AnimationKeyframesSequenceMetadata | null;
     timings: string | number | AnimateTimings;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
     animation: AnimationReferenceMetadata;
     options: AnimationOptions | null;
 }
 
-// @public
+// @public @deprecated
 export abstract class AnimationBuilder {
     abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
     // (undocumented)
@@ -54,7 +54,7 @@ export abstract class AnimationBuilder {
     static ɵprov: i0.ɵɵInjectableDeclaration<AnimationBuilder>;
 }
 
-// @public
+// @public @deprecated
 interface AnimationEvent_2 {
     disabled: boolean;
     element: any;
@@ -66,29 +66,29 @@ interface AnimationEvent_2 {
 }
 export { AnimationEvent_2 as AnimationEvent }
 
-// @public
+// @public @deprecated
 export abstract class AnimationFactory {
     abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationGroupMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
     steps: AnimationMetadata[];
 }
 
-// @public
+// @public @deprecated
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
     steps: AnimationStyleMetadata[];
 }
 
-// @public
+// @public @deprecated
 export interface AnimationMetadata {
     // (undocumented)
     type: AnimationMetadataType;
 }
 
-// @public
+// @public @deprecated
 export enum AnimationMetadataType {
     Animate = 4,
     AnimateChild = 9,
@@ -105,7 +105,7 @@ export enum AnimationMetadataType {
     Trigger = 7
 }
 
-// @public
+// @public @deprecated
 export interface AnimationOptions {
     delay?: number | string;
     params?: {
@@ -113,7 +113,7 @@ export interface AnimationOptions {
     };
 }
 
-// @public
+// @public @deprecated
 export interface AnimationPlayer {
     beforeDestroy?: () => any;
     destroy(): void;
@@ -133,38 +133,38 @@ export interface AnimationPlayer {
     readonly totalTime: number;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationQueryMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
     options: AnimationQueryOptions | null;
     selector: string;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationQueryOptions extends AnimationOptions {
     limit?: number;
     optional?: boolean;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationReferenceMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
     options: AnimationOptions | null;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationSequenceMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
     steps: AnimationMetadata[];
 }
 
-// @public
+// @public @deprecated
 export interface AnimationStaggerMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
     timings: string | number;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationStateMetadata extends AnimationMetadata {
     name: string;
     options?: {
@@ -175,7 +175,7 @@ export interface AnimationStateMetadata extends AnimationMetadata {
     styles: AnimationStyleMetadata;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationStyleMetadata extends AnimationMetadata {
     offset: number | null;
     styles: '*' | {
@@ -185,7 +185,7 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
     } | '*'>;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationTransitionMetadata extends AnimationMetadata {
     animation: AnimationMetadata | AnimationMetadata[];
     expr: string | ((fromState: string, toState: string, element?: any, params?: {
@@ -194,7 +194,7 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
 }
 
-// @public
+// @public @deprecated
 export interface AnimationTriggerMetadata extends AnimationMetadata {
     definitions: AnimationMetadata[];
     name: string;
@@ -205,16 +205,16 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
     } | null;
 }
 
-// @public
+// @public @deprecated
 export const AUTO_STYLE = "*";
 
-// @public
+// @public @deprecated
 export function group(steps: AnimationMetadata[], options?: AnimationOptions | null): AnimationGroupMetadata;
 
-// @public
+// @public @deprecated
 export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
-// @public
+// @public @deprecated
 export class NoopAnimationPlayer implements AnimationPlayer {
     constructor(duration?: number, delay?: number);
     // (undocumented)
@@ -249,38 +249,38 @@ export class NoopAnimationPlayer implements AnimationPlayer {
     readonly totalTime: number;
 }
 
-// @public
+// @public @deprecated
 export function query(selector: string, animation: AnimationMetadata | AnimationMetadata[], options?: AnimationQueryOptions | null): AnimationQueryMetadata;
 
-// @public
+// @public @deprecated
 export function sequence(steps: AnimationMetadata[], options?: AnimationOptions | null): AnimationSequenceMetadata;
 
-// @public
+// @public @deprecated
 export function stagger(timings: string | number, animation: AnimationMetadata | AnimationMetadata[]): AnimationStaggerMetadata;
 
-// @public
+// @public @deprecated
 export function state(name: string, styles: AnimationStyleMetadata, options?: {
     params: {
         [name: string]: any;
     };
 }): AnimationStateMetadata;
 
-// @public
+// @public @deprecated
 export function style(tokens: '*' | {
     [key: string]: string | number;
 } | Array<'*' | {
     [key: string]: string | number;
 }>): AnimationStyleMetadata;
 
-// @public
+// @public @deprecated
 export function transition(stateChangeExpr: string | ((fromState: string, toState: string, element?: any, params?: {
     [key: string]: any;
 }) => boolean), steps: AnimationMetadata | AnimationMetadata[], options?: AnimationOptions | null): AnimationTransitionMetadata;
 
-// @public
+// @public @deprecated
 export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata;
 
-// @public
+// @public @deprecated
 export function useAnimation(animation: AnimationReferenceMetadata, options?: AnimationOptions | null): AnimationAnimateRefMetadata;
 
 // (No @packageDocumentation comment for this package)

@@ -68,6 +68,8 @@ import {AnimationPlayer} from './players/animation_player';
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 @Injectable({providedIn: 'root', useFactory: () => inject(BrowserAnimationBuilder)})
 export abstract class AnimationBuilder {
@@ -86,6 +88,8 @@ export abstract class AnimationBuilder {
  * method.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export abstract class AnimationFactory {
   /**

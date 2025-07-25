@@ -18,6 +18,8 @@
  * @see {@link animate}
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationPlayer {
   /**
@@ -116,6 +118,8 @@ export interface AnimationPlayer {
  * @see {@link AnimationPlayer}
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export class NoopAnimationPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];

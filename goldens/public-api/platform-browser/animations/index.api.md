@@ -12,7 +12,7 @@ import { Provider } from '@angular/core';
 
 export { ANIMATION_MODULE_TYPE }
 
-// @public
+// @public @deprecated
 export class BrowserAnimationsModule {
     static withConfig(config: BrowserAnimationsModuleConfig): ModuleWithProviders<BrowserAnimationsModule>;
     // (undocumented)
@@ -23,12 +23,12 @@ export class BrowserAnimationsModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<BrowserAnimationsModule, never, never, [typeof BrowserModule]>;
 }
 
-// @public
+// @public @deprecated
 export interface BrowserAnimationsModuleConfig {
     disableAnimations?: boolean;
 }
 
-// @public
+// @public @deprecated
 export class NoopAnimationsModule {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NoopAnimationsModule, never>;
@@ -38,10 +38,10 @@ export class NoopAnimationsModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<NoopAnimationsModule, never, never, [typeof BrowserModule]>;
 }
 
-// @public
+// @public @deprecated
 export function provideAnimations(): Provider[];
 
-// @public
+// @public @deprecated
 export function provideNoopAnimations(): Provider[];
 
 // (No @packageDocumentation comment for this package)

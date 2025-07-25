@@ -13,6 +13,8 @@ import {containsElement, getParentElement, invokeQuery, validateStyleProperty} f
 /**
  * @publicApi
  *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ *
  * `AnimationDriver` implentation for Noop animations
  */
 @Injectable()
@@ -72,6 +74,8 @@ export class NoopAnimationDriver implements AnimationDriver {
 
 /**
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export abstract class AnimationDriver {
   /**

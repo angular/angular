@@ -23,6 +23,8 @@ export type ɵStyleDataMap = Map<string, string | number>;
  * @see {@link animate}
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export declare type AnimateTimings = {
   /**
@@ -64,6 +66,8 @@ export declare type AnimateTimings = {
  * make use of `AnimationOptions`.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export declare interface AnimationOptions {
   /**
@@ -87,6 +91,8 @@ export declare interface AnimationOptions {
  * @see {@link animateChild}
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export declare interface AnimateChildOptions extends AnimationOptions {
   duration?: number | string;
@@ -99,6 +105,8 @@ export declare interface AnimateChildOptions extends AnimationOptions {
  * collects them into a corresponding `AnimationMetadata` object.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export enum AnimationMetadataType {
   /**
@@ -172,6 +180,8 @@ export enum AnimationMetadataType {
  * Specifies automatic styling.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export const AUTO_STYLE = '*';
 
@@ -179,6 +189,8 @@ export const AUTO_STYLE = '*';
  * Base for animation data structures.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationMetadata {
   type: AnimationMetadataType;
@@ -189,6 +201,8 @@ export interface AnimationMetadata {
  * `trigger()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationTriggerMetadata extends AnimationMetadata {
   /**
@@ -212,6 +226,8 @@ export interface AnimationTriggerMetadata extends AnimationMetadata {
  * Instantiated and returned by the [`state()`](api/animations/state) function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationStateMetadata extends AnimationMetadata {
   /**
@@ -235,6 +251,8 @@ export interface AnimationStateMetadata extends AnimationMetadata {
  * `transition()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationTransitionMetadata extends AnimationMetadata {
   /**
@@ -266,6 +284,8 @@ export interface AnimationTransitionMetadata extends AnimationMetadata {
  * passed to the `useAnimation()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationReferenceMetadata extends AnimationMetadata {
   /**
@@ -285,6 +305,8 @@ export interface AnimationReferenceMetadata extends AnimationMetadata {
  * the `query()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationQueryMetadata extends AnimationMetadata {
   /**
@@ -306,6 +328,8 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
  * the `keyframes()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
   /**
@@ -319,6 +343,8 @@ export interface AnimationKeyframesSequenceMetadata extends AnimationMetadata {
  * the `style()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationStyleMetadata extends AnimationMetadata {
   /**
@@ -336,6 +362,8 @@ export interface AnimationStyleMetadata extends AnimationMetadata {
  * the `animate()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationAnimateMetadata extends AnimationMetadata {
   /**
@@ -353,6 +381,8 @@ export interface AnimationAnimateMetadata extends AnimationMetadata {
  * Instantiated and returned by the `animateChild` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationAnimateChildMetadata extends AnimationMetadata {
   /**
@@ -368,6 +398,8 @@ export interface AnimationAnimateChildMetadata extends AnimationMetadata {
  * Instantiated and returned by the `useAnimation()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationAnimateRefMetadata extends AnimationMetadata {
   /**
@@ -387,6 +419,8 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
  * Instantiated and returned by the `sequence()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationSequenceMetadata extends AnimationMetadata {
   /**
@@ -406,6 +440,8 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
  * Instantiated and returned by the `group()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface AnimationGroupMetadata extends AnimationMetadata {
   /**
@@ -425,6 +461,8 @@ export interface AnimationGroupMetadata extends AnimationMetadata {
  * Passed to the `query()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export declare interface AnimationQueryOptions extends AnimationOptions {
   /**
@@ -447,6 +485,8 @@ export declare interface AnimationQueryOptions extends AnimationOptions {
  * Instantiated and returned by the `stagger()` function.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  **/
 export interface AnimationStaggerMetadata extends AnimationMetadata {
   /**
@@ -606,6 +646,8 @@ export interface AnimationStaggerMetadata extends AnimationMetadata {
  * the `.disabled` flag on the event is true.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function trigger(name: string, definitions: AnimationMetadata[]): AnimationTriggerMetadata {
   return {type: AnimationMetadataType.Trigger, name, definitions, options: {}};
@@ -668,6 +710,8 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function animate(
   timings: string | number,
@@ -708,6 +752,8 @@ export function animate(
  * instruction until all of the inner animation steps have completed.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function group(
   steps: AnimationMetadata[],
@@ -748,6 +794,8 @@ export function group(
  * steps have completed.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  **/
 export function sequence(
   steps: AnimationMetadata[],
@@ -794,6 +842,8 @@ export function sequence(
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  **/
 export function style(
   tokens: '*' | {[key: string]: string | number} | Array<'*' | {[key: string]: string | number}>,
@@ -829,6 +879,8 @@ export function style(
  * even when the animation ends.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  **/
 export function state(
   name: string,
@@ -882,6 +934,8 @@ export function state(
  *```
 
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata {
   return {type: AnimationMetadataType.Keyframes, steps};
@@ -1032,6 +1086,8 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *    ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  **/
 export function transition(
   stateChangeExpr:
@@ -1092,6 +1148,8 @@ export function transition(
  * animated, `useAnimation()` throws an error.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function animation(
   steps: AnimationMetadata | AnimationMetadata[],
@@ -1118,6 +1176,8 @@ export function animation(
  * and transitions are not handled by this API.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function animateChild(
   options: AnimateChildOptions | null = null,
@@ -1134,6 +1194,8 @@ export function animateChild(
  * @return An object that contains the animation parameters.
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function useAnimation(
   animation: AnimationReferenceMetadata,
@@ -1261,6 +1323,8 @@ export function useAnimation(
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function query(
   selector: string,
@@ -1349,6 +1413,8 @@ export function query(
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function stagger(
   timings: string | number,
