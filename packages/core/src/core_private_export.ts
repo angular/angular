@@ -175,4 +175,5 @@ export {ɵassertType} from './type_checking';
 export {
   ElementRegistry as ɵElementRegistry,
   AnimationRemovalRegistry as ɵAnimationRemovalRegistry,
+  ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED,
 } from './animation';
