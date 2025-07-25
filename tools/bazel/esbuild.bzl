@@ -1,5 +1,7 @@
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
-load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
+
+esbuild = _esbuild
 
 def esbuild_checked_in(name, **kwargs):
     esbuild(

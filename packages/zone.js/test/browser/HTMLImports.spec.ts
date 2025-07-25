@@ -64,7 +64,7 @@ if (supportsImports()) {
         testZone.run(function () {
           link = document.createElement('link');
           link.rel = 'import';
-          link.href = '/base/angular/packages/zone.js/test/assets/import.html';
+          link.href = '/packages/zone.js/test/assets/import.html';
           link.onload = function () {
             expect(Zone.current).toBe(testZone);
             document.head.removeChild(link);
