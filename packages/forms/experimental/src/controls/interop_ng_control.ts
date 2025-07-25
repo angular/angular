@@ -90,10 +90,6 @@ export class InteropNgControl
     return !this.field().touched();
   }
 
-  get submitted(): boolean {
-    return this.field().submittedStatus() === 'submitted';
-  }
-
   valueAccessor: ControlValueAccessor | null = null;
 
   hasValidator(validator: ValidatorFn): boolean {

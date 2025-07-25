@@ -786,7 +786,7 @@ describe('FieldNode', () => {
       expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'lastName'})]);
     });
 
-    it('maps errors to a field', async () => {
+    it('can read value from field state', async () => {
       const initialValue = {first: 'meow', last: 'wuf'};
       const data = signal(initialValue);
       const f = form(
@@ -837,23 +837,52 @@ describe('FieldNode', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
+      expect(f().submitting()).toBe(false);
 
-      expect(f().submittedStatus()).toBe('unsubmitted');
+      const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+      const result = submit(f, () => promise);
+      expect(f().submitting()).toBe(true);
 
-      let resolvePromise: VoidFunction | undefined;
-
-      const result = submit(f, () => {
-        return new Promise((r) => {
-          resolvePromise = r;
-        });
-      });
-
-      expect(f().submittedStatus()).toBe('submitting');
-
-      expect(resolvePromise).toBeDefined();
-      resolvePromise?.();
-
+      resolve([]);
       await result;
+    });
+
+    it('marks descendants as submitting', async () => {
+      const initialValue = {a: {b: 12}};
+      const data = signal(initialValue);
+      const f = form(data, {injector: TestBed.inject(Injector)});
+      expect(f.a.b().submitting()).toBe(false);
+
+      const {promise, resolve} = promiseWithResolvers<ValidationError[]>();
+      const result = submit(f, () => promise);
+      expect(f.a.b().submitting()).toBe(true);
+
+      resolve([]);
+      await result;
+    });
+
+    it('marks the form as touched', async () => {
+      const initialValue = {first: 'meow', last: 'wuf'};
+      const data = signal(initialValue);
+      const f = form(data, {injector: TestBed.inject(Injector)});
+
+      expect(f().touched()).toBe(false);
+
+      await submit(f, async () => []);
+
+      expect(f().touched()).toBe(true);
+    });
+
+    it('marks descendants as touched', async () => {
+      const initialValue = {a: {b: 12}};
+      const data = signal(initialValue);
+      const f = form(data, {injector: TestBed.inject(Injector)});
+
+      expect(f.a.b().touched()).toBe(false);
+
+      await submit(f, async () => []);
+
+      expect(f.a.b().touched()).toBe(true);
     });
 
     it('works on child fields', async () => {
@@ -878,6 +907,20 @@ describe('FieldNode', () => {
       });
 
       expect(submitSpy).toHaveBeenCalledWith('meow');
+    });
+
+    it('recovers from errors throw by submit action', async () => {
+      const f = form(signal(0), {injector: TestBed.inject(Injector)});
+      expect(f().submitting()).toBe(false);
+
+      const {promise, reject} = promiseWithResolvers<ValidationError[]>();
+      const submitPromise = submit(f, () => promise);
+      expect(f().submitting()).toBe(true);
+
+      const error = new Error('submit failed');
+      reject(error);
+      await expectAsync(submitPromise).toBeRejectedWith(error);
+      expect(f().submitting()).toBe(false);
     });
   });
 
@@ -1107,3 +1150,24 @@ describe('FieldNode', () => {
     });
   });
 });
+
+/**
+ * Replace with `Promise.withResolvers()` once it's available.
+ *
+ * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
+ */
+function promiseWithResolvers<T>(): {
+  promise: Promise<T>;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+} {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: any) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return {promise, resolve, reject};
+}
