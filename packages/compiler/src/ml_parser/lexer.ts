@@ -1088,10 +1088,15 @@ class _Tokenizer {
     while (!endPredicate()) {
       const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
-        this._endToken([this._processCarriageReturns(parts.join(''))], current);
-        parts.length = 0;
-        this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
-        this._beginToken(textTokenType);
+        const interpolationStartIsFromEntity = this._cursor.getChars(current).match(/&[^;]+;$/);
+        if (interpolationStartIsFromEntity) {
+          parts.push(this._interpolationConfig.start);
+        } else {
+          this._endToken([this._processCarriageReturns(parts.join(''))], current);
+          parts.length = 0;
+          this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
+          this._beginToken(textTokenType);
+        }
       } else if (this._cursor.peek() === chars.$AMPERSAND) {
         this._endToken([this._processCarriageReturns(parts.join(''))]);
         parts.length = 0;
