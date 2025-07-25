@@ -10,7 +10,7 @@ import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
 import {form} from '../../public_api';
-import {validateStandardSchema} from '../../src/api/standard_schema';
+import {validateStandardSchema} from '../../src/api/validators/standard_schema';
 
 // Note: Must run as a web test, since our node tests down-level `Promise` and zod relies on
 // `instanceof Promise` working correctly.

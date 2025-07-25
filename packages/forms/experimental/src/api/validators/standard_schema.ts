@@ -7,11 +7,11 @@
  */
 
 import {computed, resource, ɵisPromise} from '@angular/core';
-import {validateAsync} from './async';
-import {property, validateTree} from './logic';
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {Field, FieldPath} from './types';
-import {StandardSchemaValidationError, ValidationError, WithField} from './validation_errors';
+import {validateAsync} from '../async';
+import {property, validateTree} from '../logic';
+import {Field, FieldPath} from '../types';
+import {StandardSchemaValidationError, ValidationError, WithField} from '../validation_errors';
 
 /**
  * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a zod validator).
