@@ -14,6 +14,11 @@ copy_to_bin(
     srcs = ["package.json"],
 )
 
+copy_to_bin(
+    name = "tsec_exemption",
+    srcs = ["tsec-exemption.json"],
+)
+
 ts_project(
     name = "goog_types",
     srcs = ["goog.d.ts"],
@@ -30,15 +35,6 @@ ts_project(
         "//:node_modules/@types/hammerjs",
         "//:node_modules/tslib",
         "//:node_modules/zone.js",
-    ],
-)
-
-ts_config(
-    name = "tsec_config",
-    src = "tsconfig-tsec-base.json",
-    deps = [
-        ":tsconfig-build.json",
-        ":tsec-exemption.json",
     ],
 )
 

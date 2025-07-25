@@ -1,6 +1,5 @@
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,8 +24,8 @@ ng_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "async",
-    tsconfig = "//packages:tsec_config",
+    target = ":async_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 filegroup(
