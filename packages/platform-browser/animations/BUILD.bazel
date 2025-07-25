@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -24,8 +24,8 @@ ng_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "animations",
-    tsconfig = "//packages:tsec_config",
+    target = ":animations_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 filegroup(

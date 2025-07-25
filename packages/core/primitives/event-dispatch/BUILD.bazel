@@ -1,6 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ts_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,8 +18,8 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "event-dispatch",
-    tsconfig = "//packages:tsec_config",
+    target = ":event-dispatch_rjs",
+    tsconfig = "//packages/core:tsconfig_build",
 )
 
 filegroup(

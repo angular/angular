@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults.bzl", "generate_api_docs")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -23,8 +23,8 @@ ng_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "platform-browser",
-    tsconfig = "//packages:tsec_config",
+    target = ":platform-browser_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 ng_package(
