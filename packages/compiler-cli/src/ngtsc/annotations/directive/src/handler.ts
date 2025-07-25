@@ -296,6 +296,7 @@ export class DirectiveDecoratorHandler
       animationTriggerNames: null,
       isStandalone: analysis.meta.isStandalone,
       isSignal: analysis.meta.isSignal,
+      boundListenersMarkForCheck: analysis.meta.boundListenersMarkForCheck,
       imports: null,
       rawImports: null,
       deferredImports: null,

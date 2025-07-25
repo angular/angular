@@ -118,6 +118,8 @@ export interface R3DirectiveMetadata {
    */
   isSignal: boolean;
 
+  boundListenersMarkForCheck: boolean;
+
   /**
    * Additional directives applied to the directive host.
    */
@@ -287,6 +289,8 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
    * expression as appears in the decorator.
    */
   changeDetection: ChangeDetectionStrategy | o.Expression | null;
+
+  boundListenersMarkForCheck: boolean;
 
   /**
    * Relative path to the component's template from the root of the project.

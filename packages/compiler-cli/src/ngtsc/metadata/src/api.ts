@@ -250,6 +250,8 @@ export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
    */
   isSignal: boolean;
 
+  boundListenersMarkForCheck: boolean;
+
   /**
    * For standalone components, the list of imported types.
    */

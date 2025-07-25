@@ -267,6 +267,9 @@ export function getInitialLViewFlagsFromDef(def: ComponentDef<unknown>): LViewFl
   } else if (def.onPush) {
     flags = LViewFlags.Dirty;
   }
+  if (def.boundListenersMarkForCheck !== false) {
+    flags |= LViewFlags.BoundListenersMarkForCheck;
+  }
   return flags;
 }
 

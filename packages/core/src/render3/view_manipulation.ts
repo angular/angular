@@ -37,7 +37,9 @@ export function createAndRenderEmbeddedLView<T>(
 
     // Embedded views follow the change detection strategy of the view they're declared in.
     const isSignalView = declarationLView[FLAGS] & LViewFlags.SignalView;
-    const viewFlags = isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways;
+    const listenersMarkForCheck = declarationLView[FLAGS] & LViewFlags.BoundListenersMarkForCheck;
+    const viewFlags =
+      (isSignalView ? LViewFlags.SignalView : LViewFlags.CheckAlways) | listenersMarkForCheck;
     const embeddedLView = createLView<T>(
       declarationLView,
       embeddedTView,
