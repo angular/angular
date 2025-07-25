@@ -341,13 +341,17 @@ export async function submit<TValue>(
   form: Field<TValue>,
   action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
 ) {
-  const api = form() as FieldNode;
-  api.submitState.selfSubmittedStatus.set('submitting');
-  const errors = (await action(form)) || [];
-  for (const error of errors) {
-    ((error.field ?? form)() as FieldNode).submitState.setServerErrors(error);
+  const node = form() as FieldNode;
+  markAllAsTouched(node);
+  node.submitState.selfSubmitting.set(true);
+  try {
+    const errors = (await action(form)) || [];
+    for (const error of errors) {
+      ((error.field?.() as FieldNode) ?? node).submitState.setServerErrors(error);
+    }
+  } finally {
+    node.submitState.selfSubmitting.set(false);
   }
-  api.submitState.selfSubmittedStatus.set('submitted');
 }
 
 /**
@@ -358,4 +362,12 @@ export async function submit<TValue>(
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;
+}
+
+/** Marks a {@link node} and its descendants as touched. */
+function markAllAsTouched(node: FieldNode) {
+  node.markAsTouched();
+  for (const child of node.structure.children()) {
+    markAllAsTouched(child);
+  }
 }
