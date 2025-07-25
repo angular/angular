@@ -300,7 +300,7 @@ export function applyWhenValue(
  * registrationForm.username().errors(); // [{kind: 'server', message: 'Username already taken'}]
  * ```
  *
- * @param f The field to submit.
+ * @param form The field to submit.
  * @param action An asynchronous action used to submit the field. The action may return server
  * errors.
  * @template TValue The data type of the field being submitted.
@@ -309,15 +309,27 @@ export async function submit<TValue>(
   form: Field<TValue>,
   action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
 ) {
-  const api = form() as FieldNode;
-  api.submitState.selfSubmittedStatus.set('submitting');
-  const errors = (await action(form)) || [];
-  for (const error of errors) {
-    ((error.field ?? form)() as FieldNode).submitState.setServerErrors(error);
+  const node = form() as FieldNode;
+  markAllAsTouched(node);
+  node.submitState.selfSubmitting.set(true);
+  try {
+    const errors = (await action(form)) || [];
+    for (const error of errors) {
+      ((error.field?.() as FieldNode) ?? node).submitState.setServerErrors(error);
+    }
+  } finally {
+    node.submitState.selfSubmitting.set(false);
   }
-  api.submitState.selfSubmittedStatus.set('submitted');
 }
 
 export function schema<T>(fn: SchemaFn<T>): Schema<T> {
   return SchemaImpl.create(fn) as unknown as Schema<T>;
+}
+
+/** Marks a {@link node} and its descrendants as touched. */
+function markAllAsTouched(node: FieldNode) {
+  node.markAsTouched();
+  for (const child of node.structure.children()) {
+    markAllAsTouched(child);
+  }
 }
