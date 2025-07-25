@@ -25,7 +25,10 @@ import {ValidationError, WithField} from './validation_errors';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {
-  /** The injector to use for dependency injection. */
+  /**
+   * The injector to use for dependency injection. If this is not provided, the injector for the
+   * current [injection context](guide/di/dependency-injection-context), will be used.
+   */
   injector?: Injector;
 }
 

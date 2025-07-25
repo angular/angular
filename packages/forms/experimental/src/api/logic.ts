@@ -25,8 +25,8 @@ import {addDefaultField} from './validation_errors';
  * validation, touched/dirty, or other state of its parent field.
  *
  * @param path The target path to add the disabled logic to.
- * @param logic A `LogicFn<T, boolean | string>` that returns `true` (or a string reason) when the
- * field is disabled, and `false` when it is not disabled.
+ * @param logic A reactive function that returns `true` (or a string reason) when the field is disabled,
+ *   and `false` when it is not disabled.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
@@ -57,7 +57,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
  * the validation, touched/dirty, or other state of its parent field.
  *
  * @param path The target path to make readonly.
- * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is readonly.
+ * @param logic A reactive function that returns `true` when the field is readonly.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
@@ -84,7 +84,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
  * ```
  *
  * @param path The target path to add the hidden logic to.
- * @param logic A `LogicFn<T, boolean>` that returns `true` when the field is hidden.
+ * @param logic A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
@@ -99,7 +99,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
 }
 
 /**
- * Adds logic to a field to conditionally add validation errors to it.
+ * Adds logic to a field to determine if the field has validation errors.
  *
  * @param path The target path to add the validation logic to.
  * @param logic A `Validator` that returns the current validation errors.
@@ -117,7 +117,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
 }
 
 /**
- * Adds logic to a field to conditionally add validation errors to it or any of its child fields.
+ * Adds logic to a field to determine if the field or any of its child fields has validation errors.
  *
  * @param path The target path to add the validation logic to.
  * @param logic A `TreeValidator` that returns the current validation errors.
