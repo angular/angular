@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "tsec_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ts_project", "tsec_test")
 
 package(default_visibility = [
     "//devtools:__subpackages__",
@@ -25,8 +24,8 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "util",
-    tsconfig = "//packages:tsec_config",
+    target = ":util_rjs",
+    tsconfig = "//packages/core:tsconfig_build",
 )
 
 filegroup(
