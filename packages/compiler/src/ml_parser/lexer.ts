@@ -1088,10 +1088,13 @@ class _Tokenizer {
     while (!endPredicate()) {
       const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
-        const interpolationStartIsFromEntity = this._cursor.getChars(current).match(/&[^;]+;$/);
-        if (interpolationStartIsFromEntity) {
+        const chars = this._cursor.getChars(current);
+        const firstCharIsEntity = chars.endsWith(';') && chars.includes('&');
+        const secondCharIsEntity = this._cursor.peek() === 123 &&
+                                 this._cursor.getChars(current).match(/&[^;]+;$/);
+        
+        if (firstCharIsEntity || secondCharIsEntity) {
           parts.push(this._interpolationConfig.start);
-        } else {
           this._endToken([this._processCarriageReturns(parts.join(''))], current);
           parts.length = 0;
           this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
