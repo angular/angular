@@ -1193,6 +1193,21 @@ import {envIsSupported} from '../testing/utils';
       });
     });
 
+    describe('messageerror events', () => {
+      it('logs message deserialization errors', async () => {
+        await driver.initialized;
+
+        const debuggerLogSpy = spyOn(driver.debugger, 'log');
+
+        scope.handleMessageError('someClient');
+
+        expect(debuggerLogSpy).toHaveBeenCalledWith(
+          'Message error occurred - data could not be deserialized',
+          'Driver.onMessageError(origin: )',
+        );
+      });
+    });
+
     describe('notification close events', () => {
       it('broadcasts notification close events', async () => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');

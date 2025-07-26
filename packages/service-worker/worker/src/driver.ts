@@ -189,8 +189,8 @@ export class Driver implements Debuggable, UpdateSource {
       }
     });
 
-    // Handle the fetch, message, and push, notificationclick,
-    // notificationclose and pushsubscriptionchange events.
+    // Handle the fetch, message, push, notificationclick,
+    // notificationclose, pushsubscriptionchange, and messageerror events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
@@ -201,6 +201,7 @@ export class Driver implements Debuggable, UpdateSource {
       // based on the incorrect assumption that browsers don't support it.
       this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
     );
+    this.scope.addEventListener('messageerror', (event) => this.onMessageError(event));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -336,6 +337,15 @@ export class Driver implements Debuggable, UpdateSource {
   private onPushSubscriptionChange(event: PushSubscriptionChangeEvent): void {
     // Handle the pushsubscriptionchange event and keep the SW alive until it's handled.
     event.waitUntil(this.handlePushSubscriptionChange(event));
+  }
+
+  private onMessageError(event: MessageEvent): void {
+    // Handle message deserialization errors that occur when receiving messages
+    // that cannot be deserialized, typically due to corrupted data or unsupported formats.
+    this.debugger.log(
+      `Message error occurred - data could not be deserialized`,
+      `Driver.onMessageError(origin: ${event.origin})`,
+    );
   }
 
   private async ensureInitialized(event: ExtendableEvent): Promise<void> {
