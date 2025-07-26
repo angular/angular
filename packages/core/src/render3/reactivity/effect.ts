@@ -192,7 +192,6 @@ export function effect(
 }
 
 export interface EffectNode extends ReactiveNode, SchedulableEffect {
-  hasRun: boolean;
   cleanupFns: EffectCleanupFn[] | undefined;
   injector: Injector;
   notifier: ChangeDetectionScheduler;
@@ -218,7 +217,6 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
     consumerIsAlwaysLive: true,
     consumerAllowSignalWrites: true,
     dirty: true,
-    hasRun: false,
     cleanupFns: undefined,
     zone: null,
     kind: 'effect',
@@ -230,10 +228,10 @@ export const BASE_EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 
         throw new Error(`Schedulers cannot synchronously execute watches while scheduling.`);
       }
 
-      if (this.hasRun && !consumerPollProducersForChange(this)) {
+      if (this.version > 0 && !consumerPollProducersForChange(this)) {
         return;
       }
-      this.hasRun = true;
+      this.version++;
 
       const registerCleanupFn: EffectCleanupRegisterFn = (cleanupFn) =>
         (this.cleanupFns ??= []).push(cleanupFn);
