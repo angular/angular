@@ -152,7 +152,7 @@ type OperationCompletedEvent =
 export class NgswCommChannel {
   readonly worker: Observable<ServiceWorker>;
 
-  readonly registration: Observable<ServiceWorkerRegistration>;
+  readonly registration: Observable<ServiceWorkerRegistration | undefined>;
 
   readonly events: Observable<TypedEvent>;
 
@@ -192,9 +192,7 @@ export class NgswCommChannel {
       serviceWorker.addEventListener('controllerchange', updateController);
       updateController();
 
-      this.registration = <Observable<ServiceWorkerRegistration>>(
-        this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))
-      );
+      this.registration = this.worker.pipe(switchMap(() => serviceWorker.getRegistration()));
 
       const _events = new Subject<TypedEvent>();
       this.events = _events.asObservable();
