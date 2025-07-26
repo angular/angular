@@ -9,11 +9,21 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form} from '../../public_api';
+import {form, schema} from '../../public_api';
 import {validateStandardSchema} from '../../src/api/validators/standard_schema';
 
 // Note: Must run as a web test, since our node tests down-level `Promise` and zod relies on
 // `instanceof Promise` working correctly.
+
+interface Flight {
+  id: number;
+  from: string;
+  to: string;
+  date: string;
+  delayed: boolean;
+  delay: number;
+  delayReason: string;
+}
 
 describe('standard schema integration', () => {
   it('should perform sync validation using a standard schema', async () => {
@@ -81,5 +91,64 @@ describe('standard schema integration', () => {
         issue: jasmine.objectContaining({message: 'Invalid input'}),
       }),
     ]);
+  });
+
+  it('should support a partial schema', () => {
+    const zodFlight = z.object({
+      from: z.string().min(3),
+      to: z.string().min(3),
+    });
+
+    const s = schema<Flight>((p) => {
+      validateStandardSchema(p, zodFlight);
+    });
+
+    // Just expect schema to be defined, really just interested in testing the typing.
+    expect(s).toBeDefined();
+  });
+
+  it('should support zod looseObject', () => {
+    const zodFlight = z.looseObject({
+      from: z.string().min(3),
+      to: z.string().min(3),
+    });
+
+    const s = schema<Flight>((p) => {
+      validateStandardSchema(p, zodFlight);
+    });
+
+    // Just expect schema to be defined, really just interested in testing the typing.
+    expect(s).toBeDefined();
+  });
+
+  it('should type error on incompatible zod schema', () => {
+    const zodFlight = z.looseObject({
+      from: z.string().min(3),
+      to: z.string().min(3),
+      invalid: z.string(),
+    });
+
+    const s = schema<Flight>((p) => {
+      // @ts-expect-error
+      validateStandardSchema(p, zodFlight);
+    });
+
+    // Just expect schema to be defined, really just interested in testing the typing.
+    expect(s).toBeDefined();
+  });
+
+  it('should not allow unknown path', () => {
+    const zodName = z.object({
+      first: z.string().min(2),
+      last: z.string().min(3),
+    });
+
+    const s = schema((p) => {
+      //@ts-expect-error
+      validateStandardSchema(p, zodName);
+    });
+
+    // Just expect schema to be defined, really just interested in testing the typing.
+    expect(s).toBeDefined();
   });
 });

@@ -14,17 +14,29 @@ import {Field, FieldPath} from '../types';
 import {StandardSchemaValidationError, ValidationError, WithField} from '../validation_errors';
 
 /**
- * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a zod validator).
+ * Utility type that removes `{[key: string]: unknown}` from a given type.
+ * We strip this out of the `TSchema` type in `validateStandardSchema` in order to accomodate Zod's
+ * `looseObject` which includes `{[key: string]: unknown}` as part of the type.
+ */
+export type RemoveStringIndexUnknown<T> = {
+  [K in keyof T as string extends K ? (unknown extends T[K] ? never : K) : K]: T[K];
+};
+
+/**
+ * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a Zod validator).
  *
  * See https://github.com/standard-schema/standard-schema for more about standard schema.
  *
  * @param path The `FieldPath` to the field to validate.
  * @param schema The standard schema compatible validator to use for validation.
+ * @template TSchema The type of value
+ * @template TSchema The type validated by the schema. This may be either the full `TValue` type,
+ *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
  */
-export function validateStandardSchema<TValue>(
+export function validateStandardSchema<TSchema, TValue extends RemoveStringIndexUnknown<TSchema>>(
   path: FieldPath<TValue>,
-  schema: NoInfer<StandardSchemaV1<TValue>>,
+  schema: StandardSchemaV1<TSchema>,
 ) {
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator
@@ -67,7 +79,7 @@ export function validateStandardSchema<TValue>(
  * @param issue The `StandardSchemaV1.Issue` to convert.
  * @returns A `ValidationError` representing the issue.
  */
-export function standardIssueToFormTreeError(
+function standardIssueToFormTreeError(
   field: Field<unknown>,
   issue: StandardSchemaV1.Issue,
 ): WithField<StandardSchemaValidationError> {
