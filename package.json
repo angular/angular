@@ -156,8 +156,7 @@
     "webtreemap": "^2.0.1",
     "ws": "^8.15.0",
     "xhr2": "0.2.1",
-    "yargs": "^17.2.1",
-    "zod": "3.24.1"
+    "yargs": "^17.2.1"
   },
   "// 2": "devDependencies are not used under Bazel. Many can be removed after test.sh is deleted.",
   "devDependencies": {
@@ -232,7 +231,8 @@
     "tslint-no-toplevel-property-access": "0.0.2",
     "typed-graphqlify": "^3.1.1",
     "undici": "^6.15.0",
-    "vrsource-tslint-rules": "6.0.0"
+    "vrsource-tslint-rules": "6.0.0",
+    "zod": "^4.0.10"
   },
   "resolutions": {
     "https-proxy-agent": "7.0.6",
