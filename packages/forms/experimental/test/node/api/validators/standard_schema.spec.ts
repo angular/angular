@@ -9,11 +9,8 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form, schema} from '../../public_api';
-import {validateStandardSchema} from '../../src/api/validators/standard_schema';
-
-// Note: Must run as a web test, since our node tests down-level `Promise` and zod relies on
-// `instanceof Promise` working correctly.
+import {form, schema} from '../../../../public_api';
+import {validateStandardSchema} from '../../../../src/api/validators/standard_schema';
 
 interface Flight {
   id: number;
@@ -45,13 +42,17 @@ describe('standard schema integration', () => {
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
         kind: 'standardSchema',
-        issue: jasmine.objectContaining({message: 'Invalid input'}),
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=2 characters',
+        }),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
         kind: 'standardSchema',
-        issue: jasmine.objectContaining({message: 'Invalid input'}),
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=3 characters',
+        }),
       }),
     ]);
   });
@@ -82,13 +83,17 @@ describe('standard schema integration', () => {
     expect(nameForm.first().errors()).toEqual([
       jasmine.objectContaining({
         kind: 'standardSchema',
-        issue: jasmine.objectContaining({message: 'Invalid input'}),
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=2 characters',
+        }),
       }),
     ]);
     expect(nameForm.last().errors()).toEqual([
       jasmine.objectContaining({
         kind: 'standardSchema',
-        issue: jasmine.objectContaining({message: 'Invalid input'}),
+        issue: jasmine.objectContaining({
+          message: 'Too small: expected string to have >=3 characters',
+        }),
       }),
     ]);
   });
