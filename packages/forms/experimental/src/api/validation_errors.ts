@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isArray} from '../util/is_array';
 import type {StandardSchemaV1} from '@standard-schema/spec';
+import {isArray} from '../util/is_array';
 import {Field, Mutable, TreeValidationResult, TreeValidationResultWithField} from './types';
 
 /** Internal symbol used for class branding. */
@@ -88,6 +88,7 @@ export function addDefaultField<E extends ValidationError>(
  * Represents a `ValidationError` with an associated target field.
  */
 export type WithField<E extends ValidationError> = Omit<E, 'field'> & {
+  /** The field that has the error. */
   readonly field: Field<unknown>;
 };
 
@@ -330,9 +331,16 @@ export abstract class ValidationError {
  * A custom error that may contain additional properties
  */
 export class CustomValidationError extends ValidationError {
+  /**
+   * Allow the user to attach arbitrary other properties.
+   */
   [key: PropertyKey]: unknown;
 }
 
+/**
+ * Internal version of `NgValidationError`, we create this separately so we can change its type on
+ * the exported version to a type union of the possible sub-classes.
+ */
 abstract class _NgValidationError extends ValidationError {}
 
 /**
