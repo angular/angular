@@ -10,16 +10,7 @@ import ts from 'typescript';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
-import {
-  AbsoluteSourceSpan,
-  AST,
-  Call,
-  Interpolation,
-  PropertyRead,
-  SafeCall,
-  SafePropertyRead,
-  TmplAstNode,
-} from '@angular/compiler';
+import {AST, Interpolation, PropertyRead, SafePropertyRead, TmplAstNode} from '@angular/compiler';
 
 class UninvokedFunctionInTextInterpolation extends TemplateCheckWithVisitor<ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION> {
   override code = ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION as const;
@@ -31,9 +22,7 @@ class UninvokedFunctionInTextInterpolation extends TemplateCheckWithVisitor<Erro
   ): NgTemplateDiagnostic<ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION>[] {
     // interpolations like `{{ myFunction }}`
     if (node instanceof Interpolation) {
-      return node.expressions.flatMap((item) =>
-        assertExpressionInvoked(item, component, node.sourceSpan, ctx),
-      );
+      return node.expressions.flatMap((item) => assertExpressionInvoked(item, component, ctx));
     }
     return [];
   }
@@ -42,7 +31,6 @@ class UninvokedFunctionInTextInterpolation extends TemplateCheckWithVisitor<Erro
 function assertExpressionInvoked(
   expression: AST,
   component: ts.ClassDeclaration,
-  sourceSpan: AbsoluteSourceSpan,
   ctx: TemplateContext<ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION>,
 ): NgTemplateDiagnostic<ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION>[] {
   if (!(expression instanceof PropertyRead) && !(expression instanceof SafePropertyRead)) {
@@ -53,9 +41,7 @@ function assertExpressionInvoked(
 
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
     if (symbol.tsType.getCallSignatures()?.length > 0) {
-      const fullExpressionText = generateStringFromExpression(expression, sourceSpan.toString());
-
-      const errorString = `Function in text interpolation should be invoked: ${fullExpressionText}()`;
+      const errorString = `Function in text interpolation should be invoked: ${expression.name}()`;
       const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
         symbol.tcbLocation,
       )!;
@@ -64,10 +50,6 @@ function assertExpressionInvoked(
   }
 
   return [];
-}
-
-function generateStringFromExpression(expression: AST, source: string): string {
-  return source.substring(expression.span.start, expression.span.end);
 }
 
 export const factory: TemplateCheckFactory<
