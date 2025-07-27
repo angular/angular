@@ -6,10 +6,11 @@ Use Angular's built-in directives to manage forms, lists, styles, and what users
 
 The different types of Angular directives are as follows:
 
-| Directive Types                                          | Details                                                                           |
-| :------------------------------------------------------- | :-------------------------------------------------------------------------------- |
-| [Components](guide/components)                           | Used with a template. This type of directive is the most common directive type.   |
-| [Attribute directives](#built-in-attribute-directives)   | Change the appearance or behavior of an element, component, or another directive. |
+| Directive Types                                                  | Details                                                                           |
+| :--------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
+| [Components](guide/components)                                   | Used with a template. This type of directive is the most common directive type.   |
+| [Attribute directives](#built-in-attribute-directives)           | Change the appearance or behavior of an element, component, or another directive. |
+| [Structural directives](/guide/directives/structural-directives) | Change the DOM layout by adding and removing DOM elements.                        |
 
 This guide covers built-in [attribute directives](#built-in-attribute-directives).
 
@@ -19,11 +20,11 @@ Attribute directives listen to and modify the behavior of other HTML elements, a
 
 The most common attribute directives are as follows:
 
-| Common directives                                             | Details                                            |
-| :------------------------------------------------------------ | :------------------------------------------------- |
-| [`NgClass`](#adding-and-removing-classes-with-ngclass)        | Adds and removes a set of CSS classes.             |
-| [`NgStyle`](#setting-inline-styles-with-ngstyle)              | Adds and removes a set of HTML styles.             |
-| [`NgModel`](guide/forms/template-driven-forms)                | Adds two-way data binding to an HTML form element. |
+| Common directives                                      | Details                                            |
+| :----------------------------------------------------- | :------------------------------------------------- |
+| [`NgClass`](#adding-and-removing-classes-with-ngclass) | Adds and removes a set of CSS classes.             |
+| [`NgStyle`](#setting-inline-styles-with-ngstyle)       | Adds and removes a set of HTML styles.             |
+| [`NgModel`](guide/forms/template-driven-forms)         | Adds two-way data binding to an HTML form element. |
 
 HELPFUL: Built-in directives use only public APIs. They do not have special access to any private APIs that other directives can't access.
 
