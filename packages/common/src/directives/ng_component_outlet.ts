@@ -111,10 +111,6 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   @Input() ngComponentOutletContent?: any[][];
 
   @Input() ngComponentOutletNgModule?: Type<any>;
-  /**
-   * @deprecated This input is deprecated, use `ngComponentOutletNgModule` instead.
-   */
-  @Input() ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
 
   private _componentRef: ComponentRef<T> | undefined;
   private _moduleRef: NgModuleRef<any> | undefined;
@@ -175,10 +171,6 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           if (this.ngComponentOutletNgModule) {
             this._moduleRef = createNgModule(
               this.ngComponentOutletNgModule,
-              getParentInjector(injector),
-            );
-          } else if (this.ngComponentOutletNgModuleFactory) {
-            this._moduleRef = this.ngComponentOutletNgModuleFactory.create(
               getParentInjector(injector),
             );
           } else {
