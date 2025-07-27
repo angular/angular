@@ -15,7 +15,6 @@ import { IterableDiffers } from '@angular/core';
 import { KeyValueDiffers } from '@angular/core';
 import { ModuleWithProviders } from '@angular/core';
 import { NgIterable } from '@angular/core';
-import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
