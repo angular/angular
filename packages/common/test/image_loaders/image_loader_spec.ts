@@ -72,7 +72,7 @@ describe('Built-in image directive loaders', () => {
 
     it('should throw if an absolute URL is provided as a loader input', () => {
       const path = 'https://somesite.imgix.net';
-      const src = 'https://angular.io/img.png';
+      const src = 'https://angular.dev/img.png';
       const loader = createImgixLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
@@ -115,7 +115,7 @@ describe('Built-in image directive loaders', () => {
     describe('input validation', () => {
       it('should throw if an absolute URL is provided as a loader input', () => {
         const path = 'https://res.cloudinary.com/mysite';
-        const src = 'https://angular.io/img.png';
+        const src = 'https://angular.dev/img.png';
         const loader = createCloudinaryLoader(path);
         expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
       });
@@ -193,7 +193,7 @@ describe('Built-in image directive loaders', () => {
     describe('input validation', () => {
       it('should throw if an absolute URL is provided as a loader input', () => {
         const path = 'https://ik.imageengine.io/imagetest';
-        const src = 'https://angular.io/img.png';
+        const src = 'https://angular.dev/img.png';
         const loader = createImageKitLoader(path);
         expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
       });
@@ -242,7 +242,7 @@ describe('Built-in image directive loaders', () => {
 
     it('should throw if an absolute URL is provided as a loader input', () => {
       const path = 'https://mysite.com';
-      const src = 'https://angular.io/img.png';
+      const src = 'https://angular.dev/img.png';
       const loader = createCloudflareLoader(path);
       expect(() => loader({src})).toThrowError(absoluteUrlError(src, path));
     });
@@ -289,10 +289,10 @@ describe('Built-in image directive loaders', () => {
 
     it('should construct an image with an absolute URL', () => {
       const path = 'https://mysite.com';
-      const src = 'https://angular.io/img.png';
+      const src = 'https://angular.dev/img.png';
       const loader = createNetlifyLoader(path);
       expect(loader({src})).toBe(
-        'https://mysite.com/.netlify/images?url=https%3A%2F%2Fangular.io%2Fimg.png',
+        'https://mysite.com/.netlify/images?url=https%3A%2F%2Fangular.dev%2Fimg.png',
       );
     });
 
