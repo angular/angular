@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "nodejs_binary")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "js_binary", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -13,18 +12,24 @@ BIN_ENTRYPOINTS = [
 ts_project(
     name = "bin",
     srcs = glob(["*.ts"]),
+    # Disabled to remove doubling of runtime files as we are approaching the 70k limit when
+    # CLDR files are also included in the binary action.
+    enable_runtime_rnjs_interop = False,
     deps = [
-        "//:node_modules/@types/node",
         "//packages/common/locales/generate-locales-tool:generate-locales-tool_rjs",
     ],
 )
 
-[nodejs_binary(
+[js_binary(
     name = entrypoint,
     data = [
-        ":bin",
+        ":bin_rjs",
         "@cldr_json_data//:all_json",
         "@cldr_xml_data//:all_xml",
     ],
     entry_point = ":%s.js" % entrypoint,
+    no_copy_to_bin = [
+        "@cldr_xml_data//:all_xml",
+        "@cldr_json_data//:all_json",
+    ],
 ) for entrypoint in BIN_ENTRYPOINTS]

@@ -15,8 +15,7 @@ def _generate_api_manifest(ctx):
     manifest = ctx.actions.declare_file("manifest.json")
     args.add(manifest.path)
 
-    # Define an action that runs the nodejs_binary executable. This is
-    # the main thing that this rule does.
+    # Define an action that runs the executable.
     ctx.actions.run(
         inputs = depset(ctx.files.srcs),
         executable = ctx.executable._generate_api_manifest,

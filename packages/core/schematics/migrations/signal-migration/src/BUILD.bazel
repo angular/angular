@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "nodejs_binary")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "js_binary", "ts_project")
 
 ts_project(
     name = "src",
@@ -45,16 +44,16 @@ ts_project(
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "bin",
-    data = [":src"],
+    data = [":src_rjs"],
     entry_point = ":cli.js",
     visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
 )
 
-nodejs_binary(
+js_binary(
     name = "batch_test_bin",
-    data = [":src"],
+    data = [":src_rjs"],
     entry_point = ":batch/test_bin.js",
     visibility = ["//packages/core/schematics/migrations/signal-migration/test:__pkg__"],
 )

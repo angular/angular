@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
+import {writeFileSync} from 'fs';
 import {CldrData} from '../cldr-data';
 import {generateClosureLocaleFile} from '../closure-locale-file';
 import {generateBaseCurrencies} from '../locale-base-currencies';
@@ -17,7 +18,11 @@ function main() {
   const baseLocaleData = cldrData.getLocaleData(BASE_LOCALE)!;
   const baseCurrencies = generateBaseCurrencies(baseLocaleData);
 
-  process.stdout.write(generateClosureLocaleFile(cldrData, baseCurrencies));
+  writeFileSync(
+    'closure_locale_generated.ts',
+    generateClosureLocaleFile(cldrData, baseCurrencies),
+    {encoding: 'utf-8'},
+  );
 }
 
 main();

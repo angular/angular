@@ -1,7 +1,5 @@
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
-load("//tools:defaults.bzl", "nodejs_binary")
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "js_binary", "ts_project")
 
 ts_project(
     name = "test_runners_lib",
@@ -17,17 +15,17 @@ ts_project(
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "golden_test_runner",
     testonly = True,
-    data = [":test_runners_lib"],
+    data = [":test_runners_lib_rjs"],
     entry_point = ":golden_test_runner.js",
 )
 
 js_binary(
     name = "batch_runner",
     testonly = True,
-    data = [":test_runners_lib"],
+    data = [":test_runners_lib_rjs"],
     entry_point = ":batch_runner.js",
 )
 

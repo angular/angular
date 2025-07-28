@@ -18,8 +18,7 @@ def _render_api_to_html(ctx):
     args.add(html_output_directory.path)
     outputs = [html_output_directory]
 
-    # Define an action that runs the nodejs_binary executable. This is
-    # the main thing that this rule does.
+    # Define an action that runs the executable.
     ctx.actions.run(
         inputs = depset(ctx.files.srcs),
         executable = ctx.executable._render_api_to_html,

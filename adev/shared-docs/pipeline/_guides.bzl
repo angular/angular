@@ -29,8 +29,7 @@ def _generate_guides(ctx):
         # For each input file "xxx.md", we want to write an output file "xxx.html"
         html_outputs += [ctx.actions.declare_file("%s.html" % relative_basepath)]
 
-    # Define an action that runs the nodejs_binary executable. This is the main thing that this
-    # rule does. If mermaid blocks are enabled then a different executable is used.
+    # Define an action that runs the executable.
     if (ctx.attr.mermaid_blocks):
         ctx.actions.run(
             inputs = depset(ctx.files.srcs + ctx.files.data),
