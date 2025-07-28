@@ -10,15 +10,6 @@ import type {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
-
-import {
-  ChildFieldNodeOptions,
-  ChildFieldNodeStructure,
-  FieldNodeOptions,
-  FieldNodeStructure,
-  RootFieldNodeStructure,
-} from './structure';
-
 import {LogicNode} from '../logic_node_2';
 import {FieldPathNode} from '../path_node';
 import {FieldNodeContext} from './context';
@@ -26,18 +17,28 @@ import type {FormFieldManager} from './manager';
 import {FieldPropertyState} from './property';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
+import {
+  ChildFieldNodeOptions,
+  ChildFieldNodeStructure,
+  FieldNodeOptions,
+  FieldNodeStructure,
+  RootFieldNodeStructure,
+} from './structure';
 import {FieldSubmitState} from './submit';
 import {FieldValidationState} from './validation';
 
 /**
- * Internal node in the form graph for a given field.
+ * Internal node in the form tree for a given field.
  *
  * Field nodes have several responsibilities:
- *  - they track instance state for the particular field (touched)
- *  - they compute signals for derived state (valid, disabled, etc) based on their associated
+ *  - They track instance state for the particular field (touched)
+ *  - They compute signals for derived state (valid, disabled, etc) based on their associated
  *    `LogicNode`
- *  - they act as the public API for the field (they implement the `FieldState` interface)
- *  - they implement navigation of the form graph via `.parent` and `.getChild()`.
+ *  - They act as the public API for the field (they implement the `FieldState` interface)
+ *  - They implement navigation of the form tree via `.parent` and `.getChild()`.
+ *
+ * This class is largely a wrapper that aggregates several smaller pieces that each manage a subset of
+ * the responsibilities.
  */
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
@@ -191,20 +192,26 @@ export class FieldNode implements FieldState<unknown> {
     }
   }
 
+  /**
+   * Creates a new root field node for a new form.
+   */
   static newRoot<T>(
-    formRoot: FormFieldManager,
+    fieldManager: FormFieldManager,
     value: WritableSignal<T>,
     logicPath: FieldPathNode,
   ): FieldNode {
     return new FieldNode({
       kind: 'root',
-      fieldManager: formRoot,
+      fieldManager,
       value,
       logicPath,
       logic: logicPath.logic.build(),
     });
   }
 
+  /**
+   * Creates a child field node based on the given options.
+   */
   private static newChild(options: ChildFieldNodeOptions): FieldNode {
     return new FieldNode(options);
   }
