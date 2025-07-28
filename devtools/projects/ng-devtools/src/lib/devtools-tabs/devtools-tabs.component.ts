@@ -86,7 +86,7 @@ export class DevToolsTabsComponent {
   protected readonly routerGraphEnabled = this.settings.routerGraphEnabled;
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
-  readonly transferStateTabEnabled = signal(false);
+  protected readonly transferStateEnabled = this.settings.transferStateEnabled;
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);
@@ -107,7 +107,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
-    if (supportedApis.transferState && this.transferStateTabEnabled()) {
+    if (supportedApis.transferState && this.transferStateEnabled()) {
       tabs.push('Transfer State');
     }
 
@@ -210,7 +210,7 @@ export class DevToolsTabsComponent {
   }
 
   protected setTransferStateTab(enabled: boolean): void {
-    this.transferStateTabEnabled.set(enabled);
+    this.transferStateEnabled.set(enabled);
     if (!enabled && this.activeTab() === 'Transfer State') {
       this.activeTab.set('Components');
     }
