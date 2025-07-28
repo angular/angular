@@ -363,10 +363,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#8ea29eed9e8aa1143124de9d65d10fbba834bdea":
-  version "0.0.0-59c46175bf3a8870c0c2ceb9de1eb741fd50d415"
-  uid "8ea29eed9e8aa1143124de9d65d10fbba834bdea"
-  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#8ea29eed9e8aa1143124de9d65d10fbba834bdea"
+"@angular/ng-dev@https://github.com/angular/dev-infra-private-ng-dev-builds.git#f8509f6a9dc8664be0f5943afaa6c41ff71675b7":
+  version "0.0.0-124003d3ffca1053b011c7072de5f84762a75365"
+  uid f8509f6a9dc8664be0f5943afaa6c41ff71675b7
+  resolved "https://github.com/angular/dev-infra-private-ng-dev-builds.git#f8509f6a9dc8664be0f5943afaa6c41ff71675b7"
   dependencies:
     "@google-cloud/spanner" "8.0.0"
     "@google/genai" "^1.4.0"
