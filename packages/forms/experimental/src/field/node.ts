@@ -35,7 +35,7 @@ import {FieldValidationState} from './validation';
  *  - They compute signals for derived state (valid, disabled, etc) based on their associated
  *    `LogicNode`
  *  - They act as the public API for the field (they implement the `FieldState` interface)
- *  - They implement navigation of the form graph via `.parent` and `.getChild()`.
+ *  - They implement navigation of the form tree via `.parent` and `.getChild()`.
  *
  * This class is largely a wrapper aggregates several smaller pieces that each manage a subset of
  * the responsibilities.
