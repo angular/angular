@@ -368,6 +368,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/lifecycle-and-events',
           },
           {
+            label: 'Testing routing and navigation',
+            path: 'guide/routing/testing',
+            contentPath: 'guide/routing/testing',
+            status: 'new',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
