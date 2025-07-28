@@ -145,7 +145,7 @@
     @if (supportedApis().transferState) {
       <label mat-menu-item disableRipple>
         <mat-slide-toggle
-          [checked]="transferStateTabEnabled()"
+          [checked]="transferStateEnabled()"
           (change)="setTransferStateTab($event.checked)"
         />
         <span class="ng-mat-menu-label-text">Enable Transfer State Tab</span>

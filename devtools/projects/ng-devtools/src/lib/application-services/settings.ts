@@ -37,4 +37,10 @@ export class Settings {
     category: 'general',
     initialValue: false,
   });
+
+  readonly transferStateEnabled = this.settingsStore.create({
+    key: 'transfer_state_enabled',
+    category: 'general',
+    initialValue: false,
+  });
 }
