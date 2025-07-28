@@ -37,7 +37,7 @@ import {FieldValidationState} from './validation';
  *  - They act as the public API for the field (they implement the `FieldState` interface)
  *  - They implement navigation of the form tree via `.parent` and `.getChild()`.
  *
- * This class is largely a wrapper aggregates several smaller pieces that each manage a subset of
+ * This class is largely a wrapper that aggregates several smaller pieces that each manage a subset of
  * the responsibilities.
  */
 export class FieldNode implements FieldState<unknown> {
