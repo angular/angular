@@ -34,7 +34,7 @@ import {DownloadManager} from '../download-manager.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
 import {ClickOutside, IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
-import {IDXLauncher} from '../idx-launcher.service';
+import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
 
@@ -77,7 +77,7 @@ export class CodeEditor {
   private readonly diagnosticsState = inject(DiagnosticsState);
   private readonly downloadManager = inject(DownloadManager);
   private readonly stackblitzOpener = inject(StackBlitzOpener);
-  private readonly idxLauncher = inject(IDXLauncher);
+  private readonly firebaseStudioLauncher = inject(FirebaseStudioLauncher);
   private readonly title = inject(Title);
   private readonly location = inject(Location);
   private readonly environmentInjector = inject(EnvironmentInjector);
@@ -131,8 +131,8 @@ export class CodeEditor {
     });
   }
 
-  openCurrentSolutionInIDX(): void {
-    this.idxLauncher.openCurrentSolutionInIDX();
+  openCurrentSolutionInFirebaseStudio(): void {
+    this.firebaseStudioLauncher.openCurrentSolutionInFirebaseStudio();
   }
   async openCurrentCodeInStackBlitz(): Promise<void> {
     const title = this.title.getTitle();

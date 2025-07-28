@@ -14,10 +14,10 @@ import {injectNodeRuntimeSandbox} from './inject-node-runtime-sandbox';
 @Injectable({
   providedIn: 'root',
 })
-export class IDXLauncher {
+export class FirebaseStudioLauncher {
   private readonly environmentInjector = inject(EnvironmentInjector);
 
-  async openCurrentSolutionInIDX(): Promise<void> {
+  async openCurrentSolutionInFirebaseStudio(): Promise<void> {
     const nodeRuntimeSandbox = await injectNodeRuntimeSandbox(this.environmentInjector);
 
     const runtimeFiles = await nodeRuntimeSandbox.getSolutionFiles();
