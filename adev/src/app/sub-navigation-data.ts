@@ -387,6 +387,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
           },
+          {
+            label: 'Route transition animations',
+            path: 'guide/routing/route-transition-animations',
+            contentPath: 'guide/routing/route-transition-animations',
+          },
         ],
       },
       {
@@ -626,11 +631,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Animating your content',
             path: 'guide/animations/css',
             contentPath: 'guide/animations/css',
-          },
-          {
-            label: 'Route transition animations',
-            path: 'guide/animations/route-animations',
-            contentPath: 'guide/animations/route-animations',
           },
         ],
       },

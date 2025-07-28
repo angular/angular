@@ -111,7 +111,7 @@ Angular — Deliver web apps with confidence 🚀
 
 ## Animations
 - [Animations your content](https://angular.dev/guide/animations/css)
-- [Route transition animation](https://angular.dev/guide/animations/route-animations)
+- [Route transition animation](https://angular.dev/guide/routing/route-transition-animations)
 - [Migrating to native CSS animations](https://next.angular.dev/guide/animations/migration)
 
 ## APIs
