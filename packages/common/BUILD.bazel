@@ -1,4 +1,3 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
 load("//tools:defaults.bzl", "generate_api_docs")
 load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
@@ -6,18 +5,10 @@ load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", 
 package(default_visibility = ["//visibility:public"])
 
 # This generates the `src/i18n/currencies.ts` file through the `generate-locales` tool. Since
-# the base currencies file is checked-in for Google3, we add a `generated_file_test` to ensure
-# the checked-in file is up-to-date. To disambiguate from the test, we use a more precise target
-# name here.
+# the base locale file is checked-in for Google3, it is additionally stored in a golden location.
 generate_base_currencies_file(
-    name = "base_currencies_file_generated",
-    output_file = "base_currencies_generated.ts",
-)
-
-generated_file_test(
     name = "base_currencies_file",
     src = "src/i18n/currencies.ts",
-    generated = ":base_currencies_file_generated",
 )
 
 ng_project(
