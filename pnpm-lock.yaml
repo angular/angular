@@ -4161,7 +4161,7 @@ packages:
     dependencies:
       '@googleapis/sqladmin': 31.1.0
       gaxios: 7.1.1(supports-color@10.0.0)
-      google-auth-library: 10.1.0(supports-color@10.0.0)
+      google-auth-library: 10.2.0(supports-color@10.0.0)
       p-throttle: 7.0.0
     transitivePeerDependencies:
       - supports-color
@@ -4176,7 +4176,7 @@ packages:
       arrify: 2.0.1
       duplexify: 4.1.3
       extend: 3.0.2
-      google-auth-library: 10.1.0(supports-color@10.0.0)
+      google-auth-library: 10.2.0(supports-color@10.0.0)
       html-entities: 2.6.0
       retry-request: 8.0.0(supports-color@10.0.0)
       teeny-request: 10.1.0(supports-color@10.0.0)
@@ -4270,7 +4270,7 @@ packages:
       duplexify: 4.1.3
       events-intercept: 2.0.0
       extend: 3.0.2
-      google-auth-library: 10.1.0(supports-color@10.0.0)
+      google-auth-library: 10.2.0(supports-color@10.0.0)
       google-gax: 5.0.1(supports-color@10.0.0)
       grpc-gcp: 1.0.1
       is: 3.3.2
@@ -4913,21 +4913,21 @@ packages:
       tslib: 2.8.1
     dev: false
 
-  /@jsonjoy.com/json-pack@1.2.0(tslib@2.8.1):
-    resolution: {integrity: sha512-io1zEbbYcElht3tdlqEOFxZ0dMTYrHz9iMf0gqn1pPjZFTCgM5R4R5IMA20Chb2UPYYsxjzs8CgZ7Nb5n2K2rA==, tarball: https://registry.npmjs.org/@jsonjoy.com/json-pack/-/json-pack-1.2.0.tgz}
+  /@jsonjoy.com/json-pack@1.4.0(tslib@2.8.1):
+    resolution: {integrity: sha512-Akn8XZqN3xO9YGcgvIiTauBBXTP92QSvw6EcGha+p5nm7brhbwvev5gw4fi+ouLGrBpfPpb72+S5pxl4mkMIGQ==, tarball: https://registry.npmjs.org/@jsonjoy.com/json-pack/-/json-pack-1.4.0.tgz}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
     dependencies:
       '@jsonjoy.com/base64': 1.1.2(tslib@2.8.1)
-      '@jsonjoy.com/util': 1.6.0(tslib@2.8.1)
+      '@jsonjoy.com/util': 1.8.0(tslib@2.8.1)
       hyperdyperid: 1.2.0
       thingies: 1.21.0(tslib@2.8.1)
       tslib: 2.8.1
     dev: false
 
-  /@jsonjoy.com/util@1.6.0(tslib@2.8.1):
-    resolution: {integrity: sha512-sw/RMbehRhN68WRtcKCpQOPfnH6lLP4GJfqzi3iYej8tnzpZUDr6UkZYJjcjjC0FWEJOJbyM3PTIwxucUmDG2A==, tarball: https://registry.npmjs.org/@jsonjoy.com/util/-/util-1.6.0.tgz}
+  /@jsonjoy.com/util@1.8.0(tslib@2.8.1):
+    resolution: {integrity: sha512-HeR0JQNEdBozt+FrfyM5T0X3R+fIN0D+BRDkxPP5o41fTWzHfeZEqtK16aTW8haU+h+SG7XYq9PP5kobvOmkSA==, tarball: https://registry.npmjs.org/@jsonjoy.com/util/-/util-1.8.0.tgz}
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
@@ -5120,8 +5120,8 @@ packages:
       - supports-color
     dev: false
 
-  /@modelcontextprotocol/sdk@1.16.0:
-    resolution: {integrity: sha512-8ofX7gkZcLj9H9rSd50mCgm3SSF8C7XoclxJuLoV0Cz3rEQ1tv9MZRYYvJtm9n1BiEQQMzSmE/w2AEkNacLYfg==, tarball: https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.16.0.tgz}
+  /@modelcontextprotocol/sdk@1.17.0:
+    resolution: {integrity: sha512-qFfbWFA7r1Sd8D697L7GkTd36yqDuTkvz0KfOGkgXR8EUhQn3/EDNIR/qUdQNMT8IjmasBvHWuXeisxtXTQT2g==, tarball: https://registry.npmjs.org/@modelcontextprotocol/sdk/-/sdk-1.17.0.tgz}
     engines: {node: '>=18'}
     dependencies:
       ajv: 6.12.6
@@ -8253,7 +8253,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001727
-      electron-to-chromium: 1.5.190
+      electron-to-chromium: 1.5.191
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.1)
 
@@ -10169,8 +10169,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==, tarball: https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz}
 
-  /electron-to-chromium@1.5.190:
-    resolution: {integrity: sha512-k4McmnB2091YIsdCgkS0fMVMPOJgxl93ltFzaryXqwip1AaxeDqKCGLxkXODDA5Ab/D+tV5EL5+aTx76RvLRxw==, tarball: https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.190.tgz}
+  /electron-to-chromium@1.5.191:
+    resolution: {integrity: sha512-xcwe9ELcuxYLUFqZZxL19Z6HVKcvNkIwhbHUz7L3us6u12yR+7uY89dSl570f/IqNthx8dAw3tojG7i4Ni4tDA==, tarball: https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.191.tgz}
 
   /emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==, tarball: https://registry.npmjs.org/emoji-regex/-/emoji-regex-10.4.0.tgz}
@@ -11061,7 +11061,7 @@ packages:
       '@google-cloud/cloud-sql-connector': 1.8.2
       '@google-cloud/pubsub': 4.11.0
       '@inquirer/prompts': 7.7.1(@types/node@18.19.120)
-      '@modelcontextprotocol/sdk': 1.16.0
+      '@modelcontextprotocol/sdk': 1.17.0
       abort-controller: 3.0.0
       ajv: 8.17.1
       ajv-formats: 3.0.1
@@ -11697,8 +11697,8 @@ packages:
       sparkles: 2.1.0
     dev: true
 
-  /google-auth-library@10.1.0(supports-color@10.0.0):
-    resolution: {integrity: sha512-GspVjZj1RbyRWpQ9FbAXMKjFGzZwDKnUHi66JJ+tcjcu5/xYAP1pdlWotCuIkMwjfVsxxDvsGZXGLzRt72D0sQ==, tarball: https://registry.npmjs.org/google-auth-library/-/google-auth-library-10.1.0.tgz}
+  /google-auth-library@10.2.0(supports-color@10.0.0):
+    resolution: {integrity: sha512-gy/0hRx8+Ye0HlUm3GrfpR4lbmJQ6bJ7F44DmN7GtMxxzWSojLzx0Bhv/hj7Wlj7a2On0FcT8jrz8Y1c1nxCyg==, tarball: https://registry.npmjs.org/google-auth-library/-/google-auth-library-10.2.0.tgz}
     engines: {node: '>=18'}
     dependencies:
       base64-js: 1.5.1
@@ -11756,7 +11756,7 @@ packages:
       '@grpc/proto-loader': 0.7.15
       abort-controller: 3.0.0
       duplexify: 4.1.3
-      google-auth-library: 10.1.0(supports-color@10.0.0)
+      google-auth-library: 10.2.0(supports-color@10.0.0)
       google-logging-utils: 1.1.1
       node-fetch: 3.3.2
       object-hash: 3.0.0
@@ -11783,7 +11783,7 @@ packages:
     dependencies:
       extend: 3.0.2
       gaxios: 7.1.1(supports-color@10.0.0)
-      google-auth-library: 10.1.0(supports-color@10.0.0)
+      google-auth-library: 10.2.0(supports-color@10.0.0)
       qs: 6.14.0
       url-template: 2.0.8
     transitivePeerDependencies:
@@ -12336,11 +12336,11 @@ packages:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==, tarball: https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz}
     dev: true
 
-  /ignore-walk@7.0.0:
-    resolution: {integrity: sha512-T4gbf83A4NH95zvhVYZc+qWocBBGlpzUXLPGurJggw/WIOwicfXJChLDP/iBZnN5WqROSu5Bm3hhle4z8a8YGQ==, tarball: https://registry.npmjs.org/ignore-walk/-/ignore-walk-7.0.0.tgz}
-    engines: {node: ^18.17.0 || >=20.5.0}
+  /ignore-walk@8.0.0:
+    resolution: {integrity: sha512-FCeMZT4NiRQGh+YkeKMtWrOmBgWjHjMJ26WQWrRQyoyzqevdaGSakUaJW5xQYmjLlUVk2qUnCjYVBax9EKKg8A==, tarball: https://registry.npmjs.org/ignore-walk/-/ignore-walk-8.0.0.tgz}
+    engines: {node: ^20.17.0 || >=22.9.0}
     dependencies:
-      minimatch: 9.0.5
+      minimatch: 10.0.3
     dev: false
 
   /ignore@7.0.5:
@@ -13188,7 +13188,7 @@ packages:
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6(supports-color@10.0.0)
       is-potential-custom-element-name: 1.0.1
-      nwsapi: 2.2.20
+      nwsapi: 2.2.21
       parse5: 7.3.0
       rrweb-cssom: 0.8.0
       saxes: 6.0.0
@@ -13533,8 +13533,8 @@ packages:
     engines: {node: '>= 10.13.0'}
     dev: true
 
-  /launch-editor@2.10.0:
-    resolution: {integrity: sha512-D7dBRJo/qcGX9xlvt/6wUYzQxjh5G1RvZPgPv8vi4KRU99DVQL/oW7tnVOCCTm2HGeo3C5HvGE5Yrh6UBoZ0vA==, tarball: https://registry.npmjs.org/launch-editor/-/launch-editor-2.10.0.tgz}
+  /launch-editor@2.11.0:
+    resolution: {integrity: sha512-R/PIF14L6e2eHkhvQPu7jDRCr0msfCYCxbYiLgkkAGi0dVPWuM+RrsPu0a5dpuNe0KWGL3jpAkOlv53xGfPheQ==, tarball: https://registry.npmjs.org/launch-editor/-/launch-editor-2.11.0.tgz}
     dependencies:
       picocolors: 1.1.1
       shell-quote: 1.8.3
@@ -14098,12 +14098,12 @@ packages:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==, tarball: https://registry.npmjs.org/media-typer/-/media-typer-1.1.0.tgz}
     engines: {node: '>= 0.8'}
 
-  /memfs@4.17.2:
-    resolution: {integrity: sha512-NgYhCOWgovOXSzvYgUW0LQ7Qy72rWQMGGFJDoWg4G30RHd3z77VbYdtJ4fembJXBy8pMIUA31XNAupobOQlwdg==, tarball: https://registry.npmjs.org/memfs/-/memfs-4.17.2.tgz}
+  /memfs@4.23.0:
+    resolution: {integrity: sha512-SucHN2lcWf0jrnw+jP6FoVW6l/zGJiXfNMdApZzG0x/0mAIMdwAeR5mjfsCH5U3BoqpUEtqzz+dSQSO0H/eqxg==, tarball: https://registry.npmjs.org/memfs/-/memfs-4.23.0.tgz}
     engines: {node: '>= 4.0.0'}
     dependencies:
-      '@jsonjoy.com/json-pack': 1.2.0(tslib@2.8.1)
-      '@jsonjoy.com/util': 1.6.0(tslib@2.8.1)
+      '@jsonjoy.com/json-pack': 1.4.0(tslib@2.8.1)
+      '@jsonjoy.com/util': 1.8.0(tslib@2.8.1)
       tree-dump: 1.0.3(tslib@2.8.1)
       tslib: 2.8.1
     dev: false
@@ -14773,11 +14773,11 @@ packages:
       validate-npm-package-name: 6.0.2
     dev: false
 
-  /npm-packlist@10.0.0:
-    resolution: {integrity: sha512-rht9U6nS8WOBDc53eipZNPo5qkAV4X2rhKE2Oj1DYUQ3DieXfj0mKkVmjnf3iuNdtMd8WfLdi2L6ASkD/8a+Kg==, tarball: https://registry.npmjs.org/npm-packlist/-/npm-packlist-10.0.0.tgz}
+  /npm-packlist@10.0.1:
+    resolution: {integrity: sha512-vaC03b2PqJA6QqmwHi1jNU8fAPXEnnyv4j/W4PVfgm24C4/zZGSVut3z0YUeN0WIFCo1oGOL02+6LbvFK7JL4Q==, tarball: https://registry.npmjs.org/npm-packlist/-/npm-packlist-10.0.1.tgz}
     engines: {node: ^20.17.0 || >=22.9.0}
     dependencies:
-      ignore-walk: 7.0.0
+      ignore-walk: 8.0.0
     dev: false
 
   /npm-pick-manifest@10.0.0:
@@ -14819,8 +14819,8 @@ packages:
       boolbase: 1.0.0
     dev: false
 
-  /nwsapi@2.2.20:
-    resolution: {integrity: sha512-/ieB+mDe4MrrKMT8z+mQL8klXydZWGR5Dowt4RAGKbJ3kIGEx3X4ljUo+6V73IXtUPWgfOlU5B9MlGxFO5T+cA==, tarball: https://registry.npmjs.org/nwsapi/-/nwsapi-2.2.20.tgz}
+  /nwsapi@2.2.21:
+    resolution: {integrity: sha512-o6nIY3qwiSXl7/LuOU0Dmuctd34Yay0yeuZRLFmDPrrdHpXKFndPj3hM+YEPVHYC5fx2otBx4Ilc/gyYSAUaIA==, tarball: https://registry.npmjs.org/nwsapi/-/nwsapi-2.2.21.tgz}
 
   /oauth-sign@0.9.0:
     resolution: {integrity: sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==, tarball: https://registry.npmjs.org/oauth-sign/-/oauth-sign-0.9.0.tgz}
@@ -15172,7 +15172,7 @@ packages:
       fs-minipass: 3.0.3
       minipass: 7.1.2
       npm-package-arg: 12.0.2
-      npm-packlist: 10.0.0
+      npm-packlist: 10.0.1
       npm-pick-manifest: 10.0.0
       npm-registry-fetch: 18.0.2
       proc-log: 5.0.0
@@ -19231,7 +19231,7 @@ packages:
         optional: true
     dependencies:
       colorette: 2.0.20
-      memfs: 4.17.2
+      memfs: 4.23.0
       mime-types: 2.1.35
       on-finished: 2.4.1
       range-parser: 1.2.1
@@ -19270,7 +19270,7 @@ packages:
       graceful-fs: 4.2.11
       http-proxy-middleware: 2.0.9(@types/express@4.17.23)
       ipaddr.js: 2.2.0
-      launch-editor: 2.10.0
+      launch-editor: 2.11.0
       open: 10.2.0
       p-retry: 6.2.1
       schema-utils: 4.3.2
