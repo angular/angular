@@ -22,6 +22,11 @@ interface Flight {
   delayReason: string;
 }
 
+interface Trip {
+  departure: Flight;
+  return: Flight;
+}
+
 describe('standard schema integration', () => {
   it('should perform sync validation using a standard schema', async () => {
     const injector = TestBed.inject(Injector);
@@ -120,6 +125,25 @@ describe('standard schema integration', () => {
 
     const s = schema<Flight>((p) => {
       validateStandardSchema(p, zodFlight);
+    });
+
+    // Just expect schema to be defined, really just interested in testing the typing.
+    expect(s).toBeDefined();
+  });
+
+  it('should support zod looseObject on child', () => {
+    const zodFlight = z.looseObject({
+      from: z.string().min(3),
+      to: z.string().min(3),
+    });
+
+    const zodTrip = z.object({
+      departure: zodFlight,
+      return: zodFlight,
+    });
+
+    const s = schema<Trip>((p) => {
+      validateStandardSchema(p, zodTrip);
     });
 
     // Just expect schema to be defined, really just interested in testing the typing.

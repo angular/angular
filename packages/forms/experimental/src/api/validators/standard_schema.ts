@@ -14,14 +14,20 @@ import {Field, FieldPath} from '../types';
 import {StandardSchemaValidationError, ValidationError, WithField} from '../validation_errors';
 
 /**
- * Utility type that removes `{[key: string]: unknown}` from a given type.
+ * Utility type that removes `{[key: string]: unknown}` from a given type, recursively.
  * We strip this out of the `TSchema` type in `validateStandardSchema` in order to accomodate Zod's
  * `looseObject` which includes `{[key: string]: unknown}` as part of the type.
  */
-export type RemoveStringIndexUnknown<T> = {
-  [K in keyof T as string extends K ? (unknown extends T[K] ? never : K) : K]: T[K];
-};
-
+export type DeepStripStringIndexUnknown<T> =
+  T extends Record<PropertyKey, unknown>
+    ? {
+        [K in keyof T as string extends K
+          ? unknown extends T[K]
+            ? never
+            : K
+          : K]: DeepStripStringIndexUnknown<T[K]>;
+      }
+    : T;
 /**
  * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a Zod validator).
  *
@@ -34,10 +40,10 @@ export type RemoveStringIndexUnknown<T> = {
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
  */
-export function validateStandardSchema<TSchema, TValue extends RemoveStringIndexUnknown<TSchema>>(
-  path: FieldPath<TValue>,
-  schema: StandardSchemaV1<TSchema>,
-) {
+export function validateStandardSchema<
+  TSchema,
+  TValue extends DeepStripStringIndexUnknown<TSchema>,
+>(path: FieldPath<TValue>, schema: StandardSchemaV1<TSchema>) {
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator
   // handles the sync result, and the async validator handles the Promise.
