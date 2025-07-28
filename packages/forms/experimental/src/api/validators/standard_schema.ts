@@ -35,7 +35,6 @@ export type DeepStripStringIndexUnknown<T> =
  *
  * @param path The `FieldPath` to the field to validate.
  * @param schema The standard schema compatible validator to use for validation.
- * @template TSchema The type of value
  * @template TSchema The type validated by the schema. This may be either the full `TValue` type,
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
