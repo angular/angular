@@ -325,13 +325,6 @@ export class LogicContainer {
   }
 
   /**
-   * Checks whether this logic container has any data factories associated with it.
-   */
-  hasData() {
-    return this.propertyFactories.size > 0;
-  }
-
-  /**
    * Retrieves or creates the `AbstractLogic` for a given aggregate property.
    * @param prop The `AggregateProperty` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
