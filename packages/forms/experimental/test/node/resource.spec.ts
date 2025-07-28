@@ -274,7 +274,7 @@ describe('resources', () => {
     addressForm.street().value.set('123 Main St');
 
     TestBed.tick();
-    const req = backend.expectOne(() => true);
+    const req = backend.expectOne('/checkaddress?street=123%20Main%20St&city=&zip=');
     req.flush('Invalid!');
     await appRef.whenStable();
 
