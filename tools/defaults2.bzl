@@ -6,15 +6,16 @@ load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
-load("//tools/bazel:esbuild.bzl", _esbuild_checked_in = "esbuild_checked_in")
+load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
-load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _zoneless_web_test_suite = "zoneless_web_test_suite")
+load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
 load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
 
+esbuild = _esbuild
 zone_bundle = _zone_bundle
 js_binary = _js_binary
 js_test = _js_test
@@ -27,6 +28,7 @@ zone_compatible_jasmine_test = _zone_compatible_jasmine_test
 zoneless_jasmine_test = _zoneless_jasmine_test
 ng_web_test_suite = _ng_web_test_suite
 zoneless_web_test_suite = _zoneless_web_test_suite
+web_test = _web_test
 sass_binary = _sass_binary
 sass_library = _sass_library
 npm_sass_library = _npm_sass_library

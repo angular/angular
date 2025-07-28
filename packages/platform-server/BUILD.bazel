@@ -1,5 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
-load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
+load("@npm2//:rollup/package_json.bzl", rollup = "bin")
 load("//tools:defaults.bzl", "generate_api_docs", "tsec_test")
 load("//tools:defaults2.bzl", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
 
@@ -27,12 +27,24 @@ ng_project(
     ],
 )
 
-esbuild(
+rollup.rollup(
     name = "bundled_domino",
-    entry_point = "@npm//:node_modules/domino/lib/index.js",
-    format = "esm",
-    output = "src/bundled-domino.mjs",
-    deps = ["@npm//domino"],
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "src/bundled-domino.mjs",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=false",
+        "--file=packages/platform-server/src/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
 )
 
 js_library(

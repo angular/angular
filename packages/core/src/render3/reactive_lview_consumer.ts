@@ -70,7 +70,7 @@ export function getOrCreateTemporaryConsumer(lView: LView): ReactiveLViewConsume
   return consumer;
 }
 
-export const TEMPORARY_CONSUMER_NODE = {
+export const TEMPORARY_CONSUMER_NODE: ReactiveNode = {
   ...REACTIVE_NODE,
   consumerIsAlwaysLive: true,
   kind: 'template',
