@@ -261,4 +261,4 @@ You can retrieve animations off an element directly using [`Element.getAnimation
 
 ## Route Transitions
 
-You can use view transitions to animate between routes. See the [Route Transition Animations Guide](guide/animations/route-animations) to get started.
+You can use view transitions to animate between routes. See the [Route Transition Animations Guide](guide/routing/route-transition-animations) to get started.

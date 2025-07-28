@@ -33,5 +33,5 @@ You might also be interested in the following:
   <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
   <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
   <docs-pill href="guide/animations/complex-sequences" title="Complex animation sequences"/>
-  <docs-pill href="guide/animations/route-animations" title="Route transition animations"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
 </docs-pill-row>
