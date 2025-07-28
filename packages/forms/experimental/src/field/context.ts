@@ -12,6 +12,10 @@ import {FieldPathNode} from '../path_node';
 import {isArray} from '../util/is_array';
 import {FieldNode} from './node';
 
+/**
+ * The depth of the current path when evaluating a logic function.
+ * Do not set this directly, it is a context variable managed by `setBoundPathDepthForResolution`.
+ */
 let boundPathDepth = 0;
 
 /**
@@ -40,11 +44,10 @@ let boundPathDepth = 0;
  * the path we were bound to. We then require the resolution algorithm to walk at least that far up
  * the tree before finding a node that contains the logic for `s`.
  *
- * @param fn
- * @param depth
- * @returns
+ * @param fn A logic function that is bound to a particular path
+ * @param depth The depth in the field tree of the field the logic is bound to
+ * @returns A version of the logic function that is aware of its depth.
  */
-// TODO: Is there a way we can do this without needing to wrap each logic function?
 export function setBoundPathDepthForResolution<A extends any[], R>(
   fn: (...args: A) => R,
   depth: number,
@@ -63,10 +66,26 @@ export function setBoundPathDepthForResolution<A extends any[], R>(
  * `FieldContext` implementation, backed by a `FieldNode`.
  */
 export class FieldNodeContext implements FieldContext<unknown> {
+  /**
+   * Cache of paths that have been resolved for this context.
+   *
+   * For each resolved path we keep track of a signal of field that it maps to rather than a static
+   * field, since it theoretically could change. In practice for the current system it should not
+   * actually change, as they only place we currently track fields moving within the parent
+   * structure is for arrays, and paths do not currently support array indexing.
+   */
   private readonly cache = new WeakMap<FieldPath<unknown>, Signal<Field<unknown>>>();
 
-  constructor(private readonly node: FieldNode) {}
+  constructor(
+    /** The field node this context corresponds to. */
+    private readonly node: FieldNode,
+  ) {}
 
+  /**
+   * Resolves a target path relative to this context.
+   * @param target The path to resolve
+   * @returns The field corresponding to the target path.
+   */
   private resolve<U>(target: FieldPath<U>): Field<U> {
     if (!this.cache.has(target)) {
       const resolver = computed<Field<unknown>>(() => {
@@ -93,7 +112,12 @@ export class FieldNodeContext implements FieldContext<unknown> {
         for (let key of targetPathNode.keys) {
           field = field.structure.getChild(key);
           if (field === undefined) {
-            throw new Error(`Resolved field does not exist.`);
+            throw new Error(
+              `Cannot resolve path .${targetPathNode.keys.join('.')} relative to field ${[
+                '<root>',
+                ...this.node.structure.pathKeys(),
+              ].join('.')}.`,
+            );
           }
         }
 
