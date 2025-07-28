@@ -18,7 +18,6 @@ import {map} from 'rxjs/operators';
 // #docregion activated-route
 
 @Component({
-  // #enddocregion activated-route
   selector: 'example-app',
   template: '...',
   standalone: false,
