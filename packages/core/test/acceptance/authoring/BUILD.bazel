@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "nodejs_binary", "npm_package_bin")
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_project", "ng_web_test_suite", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "js_binary", "js_run_binary", "ng_project", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -31,22 +30,22 @@ ts_project(
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "test_compiler",
     testonly = True,
     data = [
-        ":test_compiler_lib",
+        ":test_compiler_lib_rjs",
         "//packages:package_json",
     ],
     entry_point = ":authoring_test_compiler.js",
 )
 
-npm_package_bin(
+js_run_binary(
     name = "processed_test_sources",
     testonly = True,
+    srcs = TEST_FILES,
     outs = ["transformed_%s" % file for file in TEST_FILES],
-    args = ["$(@D)"] + ["$(execpath %s)" % file for file in TEST_FILES],
-    data = TEST_FILES,
+    args = ["../../../$(@D)"] + ["$(rootpath %s)" % file for file in TEST_FILES],
     tool = ":test_compiler",
 )
 

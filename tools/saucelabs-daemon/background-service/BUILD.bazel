@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "nodejs_binary")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "js_binary", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,14 +15,17 @@ ts_project(
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "background-service",
     data = [
-        ":background-service_lib",
+        ":background-service_lib_rjs",
         "//:sauce_connect",
     ],
     entry_point = ":cli.js",
-    templated_args = [
+    fixed_args = [
         "$(rootpath //:sauce_connect)",
+    ],
+    no_copy_to_bin = [
+        "//:sauce_connect",
     ],
 )

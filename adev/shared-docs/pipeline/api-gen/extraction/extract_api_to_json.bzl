@@ -45,8 +45,7 @@ def _extract_api_to_json(ctx):
     # Pass the set of (optional) extra entries
     args.add_joined(ctx.files.extra_entries, join_with = ",")
 
-    # Define an action that runs the nodejs_binary executable. This is
-    # the main thing that this rule does.
+    # Define an action that runs the executable.
     ctx.actions.run(
         inputs = depset(ctx.files.srcs + ctx.files.extra_entries),
         executable = ctx.executable._extract_api_to_json,
