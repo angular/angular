@@ -18,12 +18,15 @@ import {
   ImplicitReceiver,
   KeyedRead,
   NonNullAssert,
+  ParenthesizedExpression,
   ParsedEvent,
   ParsedEventType,
   ParsedProperty,
   ParsedPropertyType,
   ParsedVariable,
   PropertyRead,
+  SafeKeyedRead,
+  SafePropertyRead,
   TemplateBinding,
   ThisReceiver,
   VariableBinding,
@@ -834,11 +837,29 @@ export class BindingParser {
     }
 
     if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
-      return true;
+      if (!hasRecursiveSafeReceiver(ast)) {
+        return true;
+      }
     }
 
     return false;
   }
+}
+
+function hasRecursiveSafeReceiver(ast: AST): boolean {
+  if (ast instanceof SafePropertyRead || ast instanceof SafeKeyedRead) {
+    return true;
+  }
+
+  if (ast instanceof ParenthesizedExpression) {
+    return hasRecursiveSafeReceiver(ast.expression);
+  }
+
+  if (ast instanceof PropertyRead || ast instanceof KeyedRead || ast instanceof Call) {
+    return hasRecursiveSafeReceiver(ast.receiver);
+  }
+
+  return false;
 }
 
 function isLegacyAnimationLabel(name: string): boolean {

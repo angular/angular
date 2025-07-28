@@ -596,6 +596,10 @@ describe('R3 template transform', () => {
         'v + 1',
         'foo.bar?.baz',
         `foo.bar?.['baz']`,
+        'foo?.bar.baz[0]',
+        'foo?.bar.baz[0].boo[0]',
+        'foo?.bar.baz()',
+        '(foo?.bar).baz', // not null-safe and would crash at runtime, but may not report an error without `strictNullChecks`
         'true',
         '123',
         'a.b()',
@@ -618,6 +622,13 @@ describe('R3 template transform', () => {
         expect(() => parse(`<div [(prop)]="${expression}"></div>`))
           .withContext(expression)
           .toThrowError(/Unsupported expression in a two-way binding/);
+      }
+
+      const supportedExpressions = ['(foo?.bar ?? bar).baz'];
+      for (const expression of supportedExpressions) {
+        expect(() => parse(`<div [(prop)]="${expression}"></div>`))
+          .withContext(expression)
+          .not.toThrowError();
       }
     });
 
