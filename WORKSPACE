@@ -80,7 +80,6 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//:tools/npm-patches/@angular+ng-dev+0.0.0-a6dcd24107d12114198251ee5d20cda814a1986a.patch",
-        "//:tools/npm-patches/dagre-d3-es+7.0.11.patch",
         "//tools:postinstall-patches.js",
     ],
     # Currently disabled due to:
@@ -101,6 +100,7 @@ npm_translate_lock(
         "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//:tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",
