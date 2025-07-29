@@ -1,6 +1,5 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
-load("//tools:defaults2.bzl", "http_server")
+load("//tools:defaults2.bzl", "copy_to_bin", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 

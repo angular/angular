@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults2.bzl", "copy_to_bin", "jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",

@@ -1,6 +1,5 @@
 load("@rules_angular//src/ng_package:index.bzl", _ng_package = "ng_package")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("//tools/bazel:ng_package_link_interop.bzl", "ng_package_link_interop")
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
@@ -94,13 +93,4 @@ def ng_package(name, readme_md = None, license_banner = None, license = None, de
         # should not be built unless it is a dependency of another rule
         tags = ["manual"],
         visibility = visibility,
-    )
-
-    # TODO(rules_js migration): Remove when adev uses pnpm workspaces.
-    ng_package_link_interop(
-        name = "%s__adev_link" % name,
-        package = ":%s" % name,
-        package_name = kwargs.get("package"),
-        package_path = "adev",
-        tags = ["manual"],
     )
