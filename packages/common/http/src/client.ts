@@ -58,12 +58,15 @@ function addBody<T>(
     reportProgress: options.reportProgress,
     responseType: options.responseType,
     withCredentials: options.withCredentials,
+    credentials: options.credentials,
     transferCache: options.transferCache,
     keepalive: options.keepalive,
     priority: options.priority,
     cache: options.cache,
     mode: options.mode,
     redirect: options.redirect,
+    integrity: options.integrity,
+    referrer: options.referrer,
   };
 }
 
