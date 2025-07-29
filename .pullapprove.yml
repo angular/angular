@@ -334,7 +334,6 @@ groups:
           'third_party/**/{*,.*}',
           'tools/bazel-repo-patches/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
-          'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/manual_api_docs/**/{*,.*}',
