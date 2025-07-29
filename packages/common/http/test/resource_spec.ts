@@ -319,4 +319,19 @@ describe('httpResource', () => {
     req = backend.expectOne('/data');
     req.flush([]);
   });
+
+  it('should reset past request data when using set()', async () => {
+    const backend = TestBed.inject(HttpTestingController);
+    const res = httpResource(() => '/data', {injector: TestBed.inject(Injector)});
+    TestBed.tick();
+    const req = backend.expectOne('/data');
+    req.flush([]);
+    await TestBed.inject(ApplicationRef).whenStable();
+
+    res.set([]);
+
+    expect(res.headers()).toBe(undefined);
+    expect(res.progress()).toBe(undefined);
+    expect(res.statusCode()).toBe(undefined);
+  });
 });
