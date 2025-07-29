@@ -1,6 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "http_server")
-load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
+load("//tools:defaults2.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 

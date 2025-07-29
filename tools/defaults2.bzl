@@ -4,6 +4,7 @@ load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
+load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
@@ -119,5 +120,26 @@ def ng_project(
         rule_impl = _ng_project,
         testonly = testonly,
         tsconfig = tsconfig,
+        **kwargs
+    )
+
+def generate_api_docs(**kwargs):
+    _generate_api_docs(
+        # We need to specify import mappings for Angular packages that import other Angular
+        # packages.
+        import_map = {
+            # We only need to specify top-level entry-points, and only those that
+            # are imported from other packages.
+            "//packages/animations:index.ts": "@angular/animations",
+            "//packages/common:index.ts": "@angular/common",
+            "//packages/core:index.ts": "@angular/core",
+            "//packages/forms:index.ts": "@angular/forms",
+            "//packages/localize:index.ts": "@angular/localize",
+            "//packages/platform-browser-dynamic:index.ts": "@angular/platform-browser-dynamic",
+            "//packages/platform-browser:index.ts": "@angular/platform-browser",
+            "//packages/platform-server:index.ts": "@angular/platform-server",
+            "//packages/router:index.ts": "@angular/router",
+            "//packages/upgrade:index.ts": "@angular/upgrade",
+        },
         **kwargs
     )
