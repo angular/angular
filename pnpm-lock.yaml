@@ -697,11 +697,11 @@ importers:
         specifier: 1.54.1
         version: 1.54.1
       preact:
-        specifier: 10.26.9
-        version: 10.26.9
+        specifier: 10.27.0
+        version: 10.27.0
       preact-render-to-string:
         specifier: 6.5.13
-        version: 6.5.13(preact@10.26.9)
+        version: 6.5.13(preact@10.27.0)
       prettier:
         specifier: 3.6.2
         version: 3.6.2
@@ -9398,26 +9398,26 @@ packages:
   /custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==, tarball: https://registry.npmjs.org/custom-event/-/custom-event-1.0.1.tgz}
 
-  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.32.1):
+  /cytoscape-cose-bilkent@4.1.0(cytoscape@3.33.0):
     resolution: {integrity: sha512-wgQlVIUJF13Quxiv5e1gstZ08rnZj2XaLHGoFMYXz7SkNfCDOOteKBE6SYRfA9WxxI/iBc3ajfDoc6hb/MRAHQ==, tarball: https://registry.npmjs.org/cytoscape-cose-bilkent/-/cytoscape-cose-bilkent-4.1.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 1.0.3
-      cytoscape: 3.32.1
+      cytoscape: 3.33.0
     dev: false
 
-  /cytoscape-fcose@2.2.0(cytoscape@3.32.1):
+  /cytoscape-fcose@2.2.0(cytoscape@3.33.0):
     resolution: {integrity: sha512-ki1/VuRIHFCzxWNrsshHYPs6L7TvLu3DL+TyIGEsRcvVERmxokbf5Gdk7mFxZnTdiGtnA4cfSmjZJMviqSuZrQ==, tarball: https://registry.npmjs.org/cytoscape-fcose/-/cytoscape-fcose-2.2.0.tgz}
     peerDependencies:
       cytoscape: ^3.2.0
     dependencies:
       cose-base: 2.2.0
-      cytoscape: 3.32.1
+      cytoscape: 3.33.0
     dev: false
 
-  /cytoscape@3.32.1:
-    resolution: {integrity: sha512-dbeqFTLYEwlFg7UGtcZhCCG/2WayX72zK3Sq323CEX29CY81tYfVhw1MIdduCtpstB0cTOhJswWlM/OEB3Xp+Q==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.32.1.tgz}
+  /cytoscape@3.33.0:
+    resolution: {integrity: sha512-2d2EwwhaxLWC8ahkH1PpQwCyu6EY3xDRdcEJXrLTb4fOUtVc+YWQalHU67rFS1a6ngj1fgv9dQLtJxP/KAFZEw==, tarball: https://registry.npmjs.org/cytoscape/-/cytoscape-3.33.0.tgz}
     engines: {node: '>=0.10'}
     dev: false
 
@@ -14142,9 +14142,9 @@ packages:
       '@iconify/utils': 2.3.0
       '@mermaid-js/parser': 0.6.2
       '@types/d3': 7.4.3
-      cytoscape: 3.32.1
-      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.32.1)
-      cytoscape-fcose: 2.2.0(cytoscape@3.32.1)
+      cytoscape: 3.33.0
+      cytoscape-cose-bilkent: 4.1.0(cytoscape@3.33.0)
+      cytoscape-fcose: 2.2.0(cytoscape@3.33.0)
       d3: 7.9.0
       d3-sankey: 0.12.3
       dagre-d3-es: 7.0.11
@@ -15699,16 +15699,16 @@ packages:
       xtend: 4.0.2
     dev: true
 
-  /preact-render-to-string@6.5.13(preact@10.26.9):
+  /preact-render-to-string@6.5.13(preact@10.27.0):
     resolution: {integrity: sha512-iGPd+hKPMFKsfpR2vL4kJ6ZPcFIoWZEcBf0Dpm3zOpdVvj77aY8RlLiQji5OMrngEyaxGogeakTb54uS2FvA6w==, tarball: https://registry.npmjs.org/preact-render-to-string/-/preact-render-to-string-6.5.13.tgz}
     peerDependencies:
       preact: '>=10'
     dependencies:
-      preact: 10.26.9
+      preact: 10.27.0
     dev: false
 
-  /preact@10.26.9:
-    resolution: {integrity: sha512-SSjF9vcnF27mJK1XyFMNJzFd5u3pQiATFqoaDy03XuN00u4ziveVVEGt5RKJrDR8MHE/wJo9Nnad56RLzS2RMA==, tarball: https://registry.npmjs.org/preact/-/preact-10.26.9.tgz}
+  /preact@10.27.0:
+    resolution: {integrity: sha512-/DTYoB6mwwgPytiqQTh/7SFRL98ZdiD8Sk8zIUVOxtwq4oWcwrcd1uno9fE/zZmUaUrFNYzbH14CPebOz9tZQw==, tarball: https://registry.npmjs.org/preact/-/preact-10.27.0.tgz}
     dev: false
 
   /prettier@3.6.2:
