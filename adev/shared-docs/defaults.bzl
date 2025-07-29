@@ -1,11 +1,13 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
-load("@aspect_rules_js//js:defs.bzl", _js_binary = "js_binary", _js_library = "js_library", _js_run_binary = "js_run_binary")
 load("@devinfra//bazel/private:path_relative_to_label.bzl", _path_relative_to_label = "path_relative_to_label")
 load(
     "//tools:defaults2.bzl",
     _jasmine_test = "jasmine_test",
+    _js_binary = "js_binary",
+    _js_library = "js_library",
+    _js_run_binary = "js_run_binary",
     _ng_package = "ng_package",
     _ng_project = "ng_project",
     _sass_binary = "sass_binary",

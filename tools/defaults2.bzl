@@ -1,4 +1,5 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
+load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@devinfra//bazel:extract_types_rjs.bzl", _extract_types = "extract_types")
@@ -44,6 +45,7 @@ api_golden_test = _api_golden_test
 api_golden_test_npm_package = _api_golden_test_npm_package
 copy_to_bin = _copy_to_bin
 tsec_test = _tsec_test
+js_library = _js_library
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):

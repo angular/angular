@@ -1,6 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "copy_to_bin", "js_library", "ng_web_test_suite", "ts_project")
 
 copy_to_bin(
     name = "static_assets",

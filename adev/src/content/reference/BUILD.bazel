@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("//adev/shared-docs:defaults.bzl", "js_library")
 load("//adev/shared-docs:index.bzl", "generate_guides")
 
 generate_guides(
