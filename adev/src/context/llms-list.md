@@ -100,7 +100,7 @@ adev/src/content/guide/testing/creating-component-harnesses.md
 ## Animations
 
 adev/src/content/guide/animations/css.md 
-adev/src/content/guide/animations/route-animations.md 
+adev/src/content/guide/routing/route-transition-animations.md 
 adev/src/content/guide/animations/migration.md
 
 ## Others

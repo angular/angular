@@ -240,6 +240,10 @@ const REDIRECT_ROUTES: Route[] = [
     path: 'guide/experimental/zoneless',
     redirectTo: '/guide/zoneless',
   },
+  {
+    path: 'guide/animations/route-animations',
+    redirectTo: '/guide/routing/route-transition-animations',
+  },
 ];
 
 export const routes: Route[] = [
