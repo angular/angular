@@ -1,5 +1,5 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "copy_to_bin")
 
 package(default_visibility = ["//visibility:public"])
 
