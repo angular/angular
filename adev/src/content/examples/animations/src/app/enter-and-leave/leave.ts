@@ -2,11 +2,11 @@
 import {Component, signal} from '@angular/core';
 
 @Component({
-  selector: 'app-remove',
-  templateUrl: 'remove.component.html',
-  styleUrls: ['remove.component.css'],
+  selector: 'app-leave',
+  templateUrl: 'leave.html',
+  styleUrls: ['leave.css'],
 })
-export class RemoveComponent {
+export class Leave {
   isShown = signal(false);
 
   toggle() {

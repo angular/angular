@@ -628,6 +628,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/animations/css',
           },
           {
+            label: 'Enter and Leave animations',
+            path: 'guide/animations/enter-and-leave',
+            contentPath: 'guide/animations/enter-and-leave',
+            status: 'new',
+          },
+          {
             label: 'Route transition animations',
             path: 'guide/animations/route-animations',
             contentPath: 'guide/animations/route-animations',

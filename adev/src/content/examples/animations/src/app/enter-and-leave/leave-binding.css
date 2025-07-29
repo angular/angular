@@ -1,0 +1,25 @@
+:host {
+  display: block;
+  height: 200px;
+}
+
+.leave-container {
+  border: 1px solid #dddddd;
+  margin-top: 1em;
+  padding: 20px 20px 0px 20px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 20px;
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+
+  @starting-style {
+    opacity: 0;
+  }
+}
+
+.leaving {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
