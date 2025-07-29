@@ -1,6 +1,7 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@devinfra//bazel:extract_types_rjs.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
@@ -17,6 +18,7 @@ load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
 load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
 
+extract_types = _extract_types
 esbuild = _esbuild
 zone_bundle = _zone_bundle
 js_binary = _js_binary
