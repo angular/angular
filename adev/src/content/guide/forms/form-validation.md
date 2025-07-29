@@ -254,8 +254,9 @@ The following example shows how to achieve this in a template-driven form.
 <docs-code language="html">
 
 <input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
-<app-spinner *ngIf="model.pending"></app-spinner>
-
+@if(model.pending) {
+  <app-spinner />
+}
 </docs-code>
 
 ### Implementing a custom async validator

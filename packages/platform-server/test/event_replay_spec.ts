@@ -16,6 +16,7 @@ import {
   inject,
   PendingTasks,
   PLATFORM_ID,
+  ɵgetDocument as getDocument,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {
@@ -33,7 +34,6 @@ import {
   prepareEnvironmentAndHydrate,
   resetTViewsFor,
 } from './dom_utils';
-import {getDocument} from '@angular/core/src/render3/interfaces/document';
 import {EVENT_DISPATCH_SCRIPT, ssr} from './hydration_utils';
 import {EVENT_DISPATCH_SCRIPT_ID} from '../src/utils';
 
@@ -71,7 +71,7 @@ describe('event replay', () => {
 
   beforeAll(async () => {
     globalThis.window = globalThis as unknown as Window & typeof globalThis;
-    await import('@angular/core/primitives/event-dispatch/contract_bundle_min.js' as string);
+    await import('../../core/primitives/event-dispatch/contract_bundle_min.js' as string);
   });
 
   beforeEach(() => {
@@ -207,7 +207,16 @@ describe('event replay', () => {
     appRef.tick();
     const appId = appRef.injector.get(APP_ID);
 
+    // Important: This is done intentionally because `ApplicationRef` registers
+    // `onDestroy` callbacks, and we want to ensure that they execute successfully
+    // without resulting in any errors. This is necessary because the bodies of
+    // these `onDestroy` callbacks use the `ngServerMode` variable.
+    // Prior to setting this flag, the unit test was throwing a "destroyed injector"
+    // error — but we weren't capturing it because we hadn't explicitly set the flag to false.
+    globalThis['ngServerMode'] = false;
     appRef.destroy();
+    globalThis['ngServerMode'] = undefined;
+
     // This ensure that `_ejsas` for the current application is cleaned up
     // once the application is destroyed.
     expect(window._ejsas![appId]).toBeUndefined();

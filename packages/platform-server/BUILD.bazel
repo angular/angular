@@ -1,11 +1,11 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "api_golden_test_npm_package", "esbuild", "generate_api_docs", "ng_module", "ng_package", "tsec_test")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm2//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults2.bzl", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "npm_package", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "platform-server",
-    package_name = "@angular/platform-server",
     srcs = glob(
         [
             "*.ts",
@@ -15,24 +15,35 @@ ng_module(
     ),
     deps = [
         ":bundled_domino_lib",
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/zone.js/lib:zone_d_ts",
-        "@npm//@types/node",
-        "@npm//rxjs",
-        "@npm//xhr2",
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
+        "//:node_modules/xhr2",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
     ],
 )
 
-esbuild(
+rollup.rollup(
     name = "bundled_domino",
-    entry_point = "@npm//:node_modules/domino/lib/index.js",
-    format = "esm",
-    output = "src/bundled-domino.mjs",
-    deps = ["@npm//domino"],
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "src/bundled-domino.mjs",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=false",
+        "--file=packages/platform-server/src/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
 )
 
 js_library(
@@ -45,8 +56,8 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = "platform-server",
-    tsconfig = "//packages:tsec_config",
+    target = ":platform-server_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 ng_package(
@@ -57,6 +68,7 @@ ng_package(
     externals = [
         "xhr2",
     ],
+    package = "@angular/platform-server",
     side_effect_entry_points = [
         "@angular/platform-server/init",
     ],
@@ -72,10 +84,18 @@ ng_package(
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
-        ":platform-server",
-        "//packages/platform-server/init",
-        "//packages/platform-server/testing",
+        ":platform-server_rjs",
+        "//packages/platform-server/init:init_rjs",
+        "//packages/platform-server/testing:testing_rjs",
     ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(
@@ -84,8 +104,8 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/platform-server",
-    npm_package = "angular/packages/platform-server/npm_package",
+    golden_dir = "goldens/public-api/platform-server",
+    npm_package = "packages/platform-server/npm_package",
 )
 
 filegroup(

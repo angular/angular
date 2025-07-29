@@ -1,26 +1,33 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "http_server", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "router_activated_route_examples",
     srcs = glob(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/router",
-        "//packages/zone.js/lib",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
 esbuild(
     name = "app_bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
     entry_point = ":main.ts",
-    deps = [":router_activated_route_examples"],
+    tsconfig = "//packages/examples:tsconfig_build",
+    deps = [
+        ":router_activated_route_examples_rjs",
+        "//packages/examples:tsconfig_build",
+    ],
 )
 
 http_server(

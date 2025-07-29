@@ -3,7 +3,7 @@
   "schematics": {
     "ng-add": {
       "description": "Add @angular/localize polyfill to a project.",
-      "factory": "./ng-add/ng_add_bundle.js",
+      "factory": "./ng-add/ng_add_bundle.cjs",
       "schema": "ng-add/schema.json"
     }
   }

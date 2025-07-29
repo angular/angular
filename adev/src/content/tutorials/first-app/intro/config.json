@@ -1,7 +1,6 @@
 {
   "title": "Your first Angular app",
   "type": "editor",
-  "src": "../steps/14-http/src",
-  "nextTutorial": "learn-angular",
+  "nextTutorial": "first-app",
   "openFiles": ["src/app/app.ts"]
 }

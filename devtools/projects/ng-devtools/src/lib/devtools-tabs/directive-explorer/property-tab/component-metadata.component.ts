@@ -14,6 +14,7 @@ import {
   inject,
   input,
 } from '@angular/core';
+
 import {
   AngularDirectiveMetadata,
   AcxDirectiveMetadata,
@@ -21,11 +22,13 @@ import {
 } from '../../../../../../protocol';
 
 import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
+import {DocsRefButtonComponent} from '../../../shared/docs-ref-button/docs-ref-button.component';
 
 @Component({
   selector: 'ng-component-metadata',
   templateUrl: './component-metadata.component.html',
   styleUrls: ['./component-metadata.component.scss'],
+  imports: [DocsRefButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComponentMetadataComponent {

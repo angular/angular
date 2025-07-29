@@ -1,5 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -8,10 +7,10 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    interop_deps = [
-        ":lib",
-    ],
     visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib_rjs",
+    ],
 )
 
 ng_project(
@@ -25,15 +24,12 @@ ng_project(
             "**/*.spec.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/rxjs-interop",
-        "//packages/router",
-    ],
     deps = [
-        "//:node_modules/algoliasearch",
-        "//:node_modules/rxjs",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev:node_modules/algoliasearch",
+        "//adev:node_modules/rxjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/providers:providers_rjs",
         "//adev/shared-docs/utils:utils_rjs",
@@ -46,17 +42,17 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":lib",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/providers",
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
+    deps = [
+        ":lib_rjs",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

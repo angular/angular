@@ -46,6 +46,16 @@ export class SwPush {
             title: string;
         };
     }>;
+    readonly notificationCloses: Observable<{
+        action: string;
+        notification: NotificationOptions & {
+            title: string;
+        };
+    }>;
+    readonly pushSubscriptionChanges: Observable<{
+        oldSubscription: PushSubscription | null;
+        newSubscription: PushSubscription | null;
+    }>;
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
@@ -62,6 +72,7 @@ export abstract class SwRegistrationOptions {
     enabled?: boolean;
     registrationStrategy?: string | (() => Observable<unknown>);
     scope?: string;
+    updateViaCache?: ServiceWorkerUpdateViaCache;
 }
 
 // @public
@@ -98,7 +109,7 @@ export interface VersionDetectedEvent {
 }
 
 // @public
-export type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | NoNewVersionDetectedEvent;
+export type VersionEvent = VersionDetectedEvent | VersionInstallationFailedEvent | VersionReadyEvent | VersionFailedEvent | NoNewVersionDetectedEvent;
 
 // @public
 export interface VersionInstallationFailedEvent {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {verifyNoBrowserErrors} from '../../../utilities/index';
 import {browser, by, element} from 'protractor';
 
 describe('Zippy Component', function () {

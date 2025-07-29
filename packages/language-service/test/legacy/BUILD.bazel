@@ -1,16 +1,16 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "legacy_lib",
     testonly = True,
     srcs = glob(["*.ts"]),
     deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/language-service/src",
-        "//packages/language-service/src/utils",
-        "@npm//typescript",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src/utils:utils_rjs",
     ],
 )
 
@@ -19,11 +19,12 @@ filegroup(
     srcs = [
         "//packages/common:common_rjs",
         "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
     ],
     output_group = "types",
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "legacy",
     data = [
         # Note that we used to depend on the npm_package of common, core, and
@@ -31,14 +32,17 @@ jasmine_node_test(
         # because we wanted to load the flat dts, which is only available in the
         # npm_package. Ivy does not currently produce flat dts, so we might
         # as well just depend on the outputs of ng_module.
-        "//packages/common",
-        "//packages/forms",
+        "//packages/common:common_rjs",
+        "//packages/forms:forms_rjs",
         ":package_types",
         ":project",
-    ],
-    deps = [
         ":legacy_lib",
+        # TODO(rules_js migration): determine how to get these to be provided from other deps as expected.
+        "//:node_modules/typescript",
+        "//:node_modules/semver",
+        "//:node_modules/magic-string",
     ],
+    shard_count = 4,
 )
 
 filegroup(

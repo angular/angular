@@ -11,8 +11,6 @@ import {
   BindingPipe,
   ImplicitReceiver,
   PropertyRead,
-  PropertyWrite,
-  RecursiveAstVisitor,
   SafePropertyRead,
   ThisReceiver,
 } from '../../expression_parser/ast';
@@ -986,11 +984,6 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     return super.visitSafePropertyRead(ast, context);
   }
 
-  override visitPropertyWrite(ast: PropertyWrite, context: any): any {
-    this.maybeMap(ast, ast.name);
-    return super.visitPropertyWrite(ast, context);
-  }
-
   private ingestScopedNode(node: ScopedNode) {
     const childScope = this.scope.getChildScope(node);
     const binder = new TemplateBinder(
@@ -1007,7 +1000,7 @@ class TemplateBinder extends CombinedRecursiveAstVisitor {
     binder.ingest(node);
   }
 
-  private maybeMap(ast: PropertyRead | SafePropertyRead | PropertyWrite, name: string): void {
+  private maybeMap(ast: PropertyRead | SafePropertyRead, name: string): void {
     // If the receiver of the expression isn't the `ImplicitReceiver`, this isn't the root of an
     // `AST` expression that maps to a `Variable` or `Reference`.
     if (!(ast.receiver instanceof ImplicitReceiver) || ast.receiver instanceof ThisReceiver) {
@@ -1120,7 +1113,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     const name = trigger.reference;
 
     if (name === null) {
-      let trigger: Element | null = null;
+      let target: Element | null = null;
 
       if (block.placeholder !== null) {
         for (const child of block.placeholder.children) {
@@ -1132,17 +1125,17 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
 
           // We can only infer the trigger if there's one root element node. Any other
           // nodes at the root make it so that we can't infer the trigger anymore.
-          if (trigger !== null) {
+          if (target !== null) {
             return null;
           }
 
           if (child instanceof Element) {
-            trigger = child;
+            target = child;
           }
         }
       }
 
-      return trigger;
+      return target;
     }
 
     const outsideRef = this.findEntityInScope(block, name);

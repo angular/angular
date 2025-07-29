@@ -1,32 +1,31 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/router",
-        "//packages/router/testing",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )
 

@@ -24,10 +24,6 @@
       "types": "./linker/babel/index.d.ts",
       "default": "./bundles/linker/babel/index.js"
     },
-    "./private/bazel": {
-      "types": "./private/bazel.d.ts",
-      "default": "./bundles/private/bazel.js"
-    },
     "./private/localize": {
       "types": "./private/localize.d.ts",
       "default": "./bundles/private/localize.js"
@@ -42,21 +38,23 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.27.1",
+    "@babel/core": "7.28.0",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^4.0.0",
     "convert-source-map": "^1.5.1",
     "semver": "^7.0.0",
     "tslib": "^2.3.0",
-    "yargs": "^17.2.1"
+    "yargs": "^18.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.8 <5.9"
+    "typescript": ">=5.8 <6.0"
   },
-  "devDependencies": {
-    "@angular/compiler": "workspace:*"
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
   },
   "repository": {
     "type": "git",

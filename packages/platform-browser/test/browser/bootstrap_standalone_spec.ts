@@ -16,9 +16,9 @@ import {
   NgModule,
   NgZone,
   PlatformRef,
+  ɵR3Injector as R3Injector,
+  ɵNoopNgZone as NoopNgZone,
 } from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
-import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {withBody} from '@angular/private/testing';
 
 import {bootstrapApplication, BrowserModule} from '../../src/browser';
@@ -132,7 +132,12 @@ describe('bootstrapApplication for standalone components', () => {
         fail('Expected to throw');
       } catch (e: unknown) {
         expect(e).toBeInstanceOf(Error);
-        expect((e as Error).message).toContain('No provider for InjectionToken ambient token!');
+        expect((e as Error).message).toContain(
+          'NG0201: No provider found for `InjectionToken ambient token`. ' +
+            'Source: Standalone[StandaloneCmp]. ' +
+            'Path: NeedsAmbientProvider -> InjectionToken ambient token. ' +
+            'Find more at https://angular.dev/errors/NG0201',
+        );
       }
     }),
   );

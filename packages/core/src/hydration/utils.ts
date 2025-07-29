@@ -36,7 +36,7 @@ import {
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
-import {hoverEventNames, interactionEventNames} from '../defer/dom_triggers';
+import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
 import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
 import {sharedMapFunction} from '../event_delegation_utils';
 import {isDetachedByI18n} from '../i18n/utils';
@@ -67,6 +67,13 @@ export const TRANSFER_STATE_DEFER_BLOCKS_INFO = '__nghDeferData__';
 export const NGH_DEFER_BLOCKS_KEY: StateKey<{[key: string]: SerializedDeferBlock}> = makeStateKey<{
   [key: string]: SerializedDeferBlock;
 }>(TRANSFER_STATE_DEFER_BLOCKS_INFO);
+
+/**
+ * Checks whether a given key is used by the framework for transferring hydration data.
+ */
+export function isInternalHydrationTransferStateKey(key: string): boolean {
+  return key === TRANSFER_STATE_TOKEN_ID || key === TRANSFER_STATE_DEFER_BLOCKS_INFO;
+}
 
 /**
  * The name of the attribute that would be added to host component

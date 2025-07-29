@@ -1,30 +1,29 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/common/http",
-        "//packages/common/http/testing",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/forms",
-        "//packages/forms/experimental",
-        "//packages/platform-browser",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-        "@npm//zod",
+        "//:node_modules/zod",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/forms:forms_rjs",
+        "//packages/forms/experimental:experimental_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
 # To run this:
 # yarn bazel test //packages/forms/experimental/test/node:test
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node_zoneless"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )

@@ -6,9 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, PlatformLocation, ɵgetDOM as getDOM} from '@angular/common';
-import {BrowserPlatformLocation} from '@angular/common/src/location/platform_location';
-import {NullViewportScroller, ViewportScroller} from '@angular/common/src/viewport_scroller';
+import {
+  DOCUMENT,
+  PlatformLocation,
+  ɵgetDOM as getDOM,
+  BrowserPlatformLocation,
+  ɵNullViewportScroller as NullViewportScroller,
+  ViewportScroller,
+} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {
   ApplicationRef,
@@ -23,10 +28,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {
-  Event,
   NavigationEnd,
   provideRouter,
   Router,
@@ -34,6 +37,7 @@ import {
   RouterOutlet,
   withEnabledBlockingInitialNavigation,
 } from '../index';
+import {useAutoTick} from './helpers';
 
 // This is needed, because all files under `packages/` are compiled together as part of the
 // [legacy-unit-tests-saucelabs][1] CI job, including the `lib.webworker.d.ts` typings brought in by
@@ -46,6 +50,7 @@ import {
 declare var window: Window;
 
 describe('bootstrap', () => {
+  useAutoTick();
   let log: any[] = [];
   let testProviders: any[] = null!;
 
@@ -139,7 +144,7 @@ describe('bootstrap', () => {
       }
     }
 
-    await platformBrowserDynamic([])
+    await platformBrowser([])
       .bootstrapModule(TestModule)
       .then((res) => {
         const router = res.injector.get(Router);
@@ -182,7 +187,7 @@ describe('bootstrap', () => {
     class TestModule {}
 
     await expectAsync(
-      Promise.all([platformBrowserDynamic([]).bootstrapModule(TestModule), navigationEndPromise]),
+      Promise.all([platformBrowser([]).bootstrapModule(TestModule), navigationEndPromise]),
     ).toBeResolved();
   });
 
@@ -217,7 +222,7 @@ describe('bootstrap', () => {
       }
     }
 
-    const bootstrapPromise = platformBrowserDynamic([])
+    const bootstrapPromise = platformBrowser([])
       .bootstrapModule(TestModule)
       .then((ref) => {
         const router = ref.injector.get(Router);
@@ -256,7 +261,7 @@ describe('bootstrap', () => {
       }
     }
 
-    const bootstrapPromise = platformBrowserDynamic([])
+    const bootstrapPromise = platformBrowser([])
       .bootstrapModule(TestModule)
       .then((ref) => {
         const router = ref.injector.get(Router);
@@ -293,7 +298,7 @@ describe('bootstrap', () => {
       constructor(router: Router) {}
     }
 
-    const bootstrapPromise = platformBrowserDynamic([])
+    const bootstrapPromise = platformBrowser([])
       .bootstrapModule(TestModule)
       .then((ref) => {
         const router = ref.injector.get(Router);
@@ -334,7 +339,7 @@ describe('bootstrap', () => {
       }
     }
 
-    const bootstrapPromise = platformBrowserDynamic([])
+    const bootstrapPromise = platformBrowser([])
       .bootstrapModule(TestModule)
       .then((ref) => {
         const router: Router = ref.injector.get(Router);
@@ -383,7 +388,7 @@ describe('bootstrap', () => {
       }
     }
 
-    const bootstrapPromise = platformBrowserDynamic([])
+    const bootstrapPromise = platformBrowser([])
       .bootstrapModule(TestModule)
       .then((ref) => {
         const router: Router = ref.injector.get(Router);
@@ -433,7 +438,7 @@ describe('bootstrap', () => {
       }
     }
 
-    platformBrowserDynamic([])
+    platformBrowser([])
       .bootstrapModule(TestModule)
       .then((res) => {
         const router = res.injector.get(Router);
@@ -452,7 +457,7 @@ describe('bootstrap', () => {
     })
     class TestModule {}
 
-    await platformBrowserDynamic([])
+    await platformBrowser([])
       .bootstrapModule(TestModule)
       .then((res) => {
         const router = res.injector.get(Router);
@@ -475,7 +480,7 @@ describe('bootstrap', () => {
     })
     class TestModule {}
 
-    await platformBrowserDynamic([])
+    await platformBrowser([])
       .bootstrapModule(TestModule)
       .then((res) => {
         const router = res.injector.get(Router);
@@ -544,7 +549,7 @@ describe('bootstrap', () => {
         });
       }
 
-      const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+      const res = await platformBrowser([]).bootstrapModule(TestModule);
       const router = res.injector.get(Router);
 
       await router.navigateByUrl('/aa');
@@ -591,7 +596,7 @@ describe('bootstrap', () => {
       spyOn(window, 'addEventListener').and.callThrough();
       spyOn(window, 'removeEventListener').and.callThrough();
 
-      const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+      const ngModuleRef = await platformBrowser().bootstrapModule(TestModule);
       ngModuleRef.destroy();
 
       expect(window.addEventListener).toHaveBeenCalledTimes(2);
@@ -628,7 +633,7 @@ describe('bootstrap', () => {
     class TestModule {}
 
     (async () => {
-      const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+      const res = await platformBrowser([]).bootstrapModule(TestModule);
       const router = res.injector.get(Router);
       router.events.subscribe(async (e) => {
         if (e instanceof NavigationEnd && e.url === '/b') {

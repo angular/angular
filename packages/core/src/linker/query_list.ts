@@ -26,12 +26,10 @@ function symbolIterator<T>(this: QueryList<T>): Iterator<T> {
  *
  * Implements an iterable interface, therefore it can be used in both ES6
  * javascript `for (var i of items)` loops as well as in Angular templates with
- * `*ngFor="let i of myList"`.
+ * `@for(i of myList; track $index)`.
  *
- * Changes can be observed by subscribing to the changes `Observable`.
- *
- * NOTE: In the future this class will implement an `Observable` interface.
- *
+ * Changes can be observed by subscribing to the `changes` `Observable`.
+ * *
  * @usageNotes
  * ### Example
  * ```ts

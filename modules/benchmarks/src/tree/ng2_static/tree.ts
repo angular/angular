@@ -25,9 +25,10 @@ function createTreeComponent(level: number, isLeaf: boolean) {
     selector: `tree${level}`,
     template: template,
     standalone: false,
+    jit: true,
   })
   class TreeComponent {
-    @Input() data: TreeNode;
+    @Input() data!: TreeNode;
     get bgColor() {
       return this.data.depth % 2 ? trustedEmptyColor : trustedGreyColor;
     }
@@ -40,6 +41,7 @@ function createTreeComponent(level: number, isLeaf: boolean) {
   selector: 'tree',
   template: `<tree0 *ngIf="data.left != null" [data]="data"></tree0>`,
   standalone: false,
+  jit: true,
 })
 export class RootTreeComponent {
   @Input() data: TreeNode = emptyTree;
@@ -51,7 +53,12 @@ export function createAppModule(): any {
     components.push(createTreeComponent(i, i === getMaxDepth()));
   }
 
-  @NgModule({imports: [BrowserModule], bootstrap: [RootTreeComponent], declarations: [components]})
+  @NgModule({
+    imports: [BrowserModule],
+    bootstrap: [RootTreeComponent],
+    declarations: [components],
+    jit: true,
+  })
   class AppModule {
     constructor(sanitizer: DomSanitizer) {
       trustedEmptyColor = sanitizer.bypassSecurityTrustStyle('');

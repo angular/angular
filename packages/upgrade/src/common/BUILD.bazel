@@ -11,8 +11,8 @@ ts_project(
     srcs = glob([
         "src/**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/core",
+    deps = [
+        "//packages/core:core_rjs",
     ],
 )
 

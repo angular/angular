@@ -1,6 +1,0 @@
-load("//integration:index.bzl", "ng_integration_test")
-
-ng_integration_test(
-    name = "test",
-    track_payload_size = "animations",
-)

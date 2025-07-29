@@ -1,16 +1,15 @@
-load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@npm2//:defs.bzl", "npm_link_all_packages")
-load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
-load("//tools:defaults.bzl", "api_golden_test", "extract_types", "pkg_npm", "ts_library")
-load("//tools:defaults2.bzl", "npm_package", "ts_config")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "api_golden_test", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
-    ":compiler-cli",
-    "//packages/compiler-cli/private",
-    "//packages/compiler-cli/linker",
-    "//packages/compiler-cli/linker/babel",
+    ":compiler-cli_rjs",
+    "//packages/compiler-cli/private:private_rjs",
+    "//packages/compiler-cli/linker:linker_rjs",
+    "//packages/compiler-cli/linker/babel:babel_rjs",
 ]
 
 npm_link_all_packages()
@@ -34,24 +33,16 @@ ts_config(
     ],
 )
 
-esbuild_config(
-    name = "esbuild_config",
-    config_file = "esbuild.config.js",
-)
-
 esbuild(
     name = "bundles",
-    config = ":esbuild_config",
+    config = "esbuild.config.js",
     entry_points = [
         ":index.ts",
         "//packages/compiler-cli:src/bin/ngc.ts",
         "//packages/compiler-cli:src/bin/ng_xi18n.ts",
-        "//packages/compiler-cli/linker:index.ts",
-        "//packages/compiler-cli/linker/babel:index.ts",
-        "//packages/compiler-cli/private:bazel.ts",
-        "//packages/compiler-cli/private:localize.ts",
-        "//packages/compiler-cli/private:migrations.ts",
-        "//packages/compiler-cli/private:tooling.ts",
+        "//packages/compiler-cli/linker:files",
+        "//packages/compiler-cli/linker/babel:files",
+        "//packages/compiler-cli/private:files",
     ],
     external = [
         "@angular/compiler",
@@ -66,13 +57,14 @@ esbuild(
         "yargs",
     ],
     format = "esm",
+    metafile = False,
     platform = "node",
     splitting = True,
-    target = "node12",
+    target = "node20",
     deps = PUBLIC_TARGETS,
 )
 
-ts_library(
+ts_project(
     name = "compiler-cli",
     srcs = glob(
         [
@@ -84,31 +76,29 @@ ts_library(
         ],
     ),
     deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/core",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/docs",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/incremental",
-        "//packages/compiler-cli/src/ngtsc/indexer",
-        "//packages/compiler-cli/src/ngtsc/logging",
-        "//packages/compiler-cli/src/ngtsc/perf",
-        "//packages/compiler-cli/src/ngtsc/program_driver",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/shims",
-        "//packages/compiler-cli/src/ngtsc/transform/jit",
-        "//packages/compiler-cli/src/ngtsc/translator",
-        "//packages/compiler-cli/src/ngtsc/typecheck",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "//packages/compiler-cli/src/ngtsc/util",
-        "@npm//@bazel/concatjs",
-        "@npm//@types/node",
-        "@npm//@types/yargs",
-        "@npm//chokidar",
-        "@npm//reflect-metadata",
-        "@npm//typescript",
+        "//:node_modules/@types/yargs",
+        "//:node_modules/chokidar",
+        "//:node_modules/reflect-metadata",
+        "//:node_modules/typescript",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:core_rjs",
+        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
+        "//packages/compiler-cli/src/ngtsc/docs:docs_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/incremental:incremental_rjs",
+        "//packages/compiler-cli/src/ngtsc/indexer:indexer_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
+        "//packages/compiler-cli/src/ngtsc/program_driver:program_driver_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/shims:shims_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform/jit:jit_rjs",
+        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck:typecheck_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
+        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
     ],
 )
 
@@ -128,7 +118,6 @@ pkg_npm(
     ],
     visibility = [
         "//adev:__pkg__",
-        "//adev/shared-docs/pipeline/api-gen:__subpackages__",
         "//integration:__subpackages__",
         "//modules/benchmarks:__subpackages__",
         "//modules/playground:__subpackages__",
@@ -136,7 +125,6 @@ pkg_npm(
         "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/core/test/bundling:__subpackages__",
         "//packages/core/test/playground/zone-signal-input:__pkg__",
-        "@npm//@angular/build-tooling/shared-scripts:__subpackages__",
     ],
     deps = [
         ":api_type_definitions",
@@ -144,53 +132,48 @@ pkg_npm(
     ],
 )
 
+# TODO(rules_js migration): Remove when adev uses pnpm workspaces.
+alias(
+    name = "npm_package__adev_link",
+    actual = ":npm_package",
+)
+
 # TODO(devversion): Temporary early `npm_package` for making compiler-cli usable in `rules_angular`.
 # Long-term, `pkg_npm` will be migrated to `npm_package` in general.
 npm_package(
     name = "pkg",
-    srcs = [":npm_package_nosub"],
-    data = [
-        # Needed because compiler is a dev dependency (to satisfy the peer dependency)
-        # and `rules_js` only makes transitive production dependencies available.
-        ":node_modules/@angular/compiler",
-    ],
+    srcs = [":npm_package"],
     replace_prefixes = {
-        "npm_package_nosub/": "",
+        "npm_package/": "",
     },
 )
 
 api_golden_test(
     name = "error_code_api",
     data = [
-        ":npm_package",
+        ":compiler-cli_rjs",
         "//goldens:public-api",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/error_code.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/error_code.api.md",
+    entry_point = "src/ngtsc/diagnostics/src/error_code.d.ts",
+    golden = "goldens/public-api/compiler-cli/error_code.api.md",
 )
 
 api_golden_test(
     name = "extended_template_diagnostic_name_api",
     data = [
-        ":npm_package",
+        ":compiler-cli_rjs",
         "//goldens:public-api",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/extended_template_diagnostic_name.api.md",
+    entry_point = "src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
+    golden = "goldens/public-api/compiler-cli/extended_template_diagnostic_name.api.md",
 )
 
 api_golden_test(
     name = "compiler_options_api",
     data = [
-        ":npm_package",
+        ":compiler-cli_rjs",
         "//goldens:public-api",
     ],
-    entry_point = "angular/packages/compiler-cli/npm_package/src/ngtsc/core/api/src/public_options.d.ts",
-    golden = "angular/goldens/public-api/compiler-cli/compiler_options.api.md",
-)
-
-# Controls whether the Ivy compiler produces performance traces as part of each build
-ng_perf_flag(
-    name = "ng_perf",
-    build_setting_default = False,
+    entry_point = "src/ngtsc/core/api/src/public_options.d.ts",
+    golden = "goldens/public-api/compiler-cli/compiler_options.api.md",
 )

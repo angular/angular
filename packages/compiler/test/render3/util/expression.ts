@@ -59,10 +59,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitKeyedRead(ast, null);
   }
-  override visitKeyedWrite(ast: e.KeyedWrite) {
-    this.recordAst(ast);
-    super.visitKeyedWrite(ast, null);
-  }
   override visitLiteralPrimitive(ast: e.LiteralPrimitive) {
     this.recordAst(ast);
     super.visitLiteralPrimitive(ast, null);
@@ -98,10 +94,6 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   override visitPropertyRead(ast: e.PropertyRead) {
     this.recordAst(ast);
     super.visitPropertyRead(ast, null);
-  }
-  override visitPropertyWrite(ast: e.PropertyWrite) {
-    this.recordAst(ast);
-    super.visitPropertyWrite(ast, null);
   }
   override visitSafePropertyRead(ast: e.SafePropertyRead) {
     this.recordAst(ast);

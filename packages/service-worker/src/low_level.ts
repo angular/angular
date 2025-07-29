@@ -71,6 +71,23 @@ export interface VersionReadyEvent {
 }
 
 /**
+ * An event emitted when a specific version of the app has encountered a critical failure
+ * that prevents it from functioning correctly.
+ *
+ * When a version fails, the service worker will notify all clients currently using that version
+ * and may degrade to serving only existing clients if the failed version was the latest one.
+ *
+ * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ *
+ * @publicApi
+ */
+export interface VersionFailedEvent {
+  type: 'VERSION_FAILED';
+  version: {hash: string; appData?: object};
+  error: string;
+}
+
+/**
  * A union of all event types that can be emitted by
  * {@link SwUpdate#versionUpdates}.
  *
@@ -80,6 +97,7 @@ export type VersionEvent =
   | VersionDetectedEvent
   | VersionInstallationFailedEvent
   | VersionReadyEvent
+  | VersionFailedEvent
   | NoNewVersionDetectedEvent;
 
 /**
@@ -174,8 +192,22 @@ export class NgswCommChannel {
       serviceWorker.addEventListener('controllerchange', updateController);
       updateController();
 
-      this.registration = <Observable<ServiceWorkerRegistration>>(
-        this.worker.pipe(switchMap(() => serviceWorker.getRegistration()))
+      this.registration = this.worker.pipe(
+        switchMap(() =>
+          serviceWorker.getRegistration().then((registration) => {
+            // The `getRegistration()` method may return undefined in
+            // non-secure contexts or incognito mode, where service worker
+            // registration might not be allowed.
+            if (!registration) {
+              throw new RuntimeError(
+                RuntimeErrorCode.SERVICE_WORKER_DISABLED_OR_NOT_SUPPORTED_BY_THIS_BROWSER,
+                (typeof ngDevMode === 'undefined' || ngDevMode) && ERR_SW_NOT_SUPPORTED,
+              );
+            }
+
+            return registration;
+          }),
+        ),
       );
 
       const _events = new Subject<TypedEvent>();

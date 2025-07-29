@@ -33,7 +33,6 @@ import {
 } from '@angular/compiler';
 import semver from 'semver';
 
-import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
@@ -42,6 +41,7 @@ import {GetSourceFileFn} from '../get_source_file';
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {LinkedDefinition, PartialLinker} from './partial_linker';
 import {extractForwardRef, PLACEHOLDER_VERSION} from './util';
+import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system/src/types';
 
 function makeDirectiveMetadata<TExpression>(
   directiveExpr: AstObject<R3DeclareDirectiveDependencyMetadata, TExpression>,
@@ -180,6 +180,18 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       }
     }
 
+    const baseMeta = toR3DirectiveMeta(metaObj, this.code, this.sourceUrl, version);
+    const deferBlockDependencies = this.createR3ComponentDeferMetadata(metaObj, template);
+    let hasDirectiveDependencies = false;
+
+    for (const depFn of deferBlockDependencies.blocks.values()) {
+      // We don't know what kind of dependency is referenced inside
+      // the defer blocks so consider any of them as directives.
+      if (depFn !== null) {
+        hasDirectiveDependencies = true;
+      }
+    }
+
     // Process the new style field:
     if (metaObj.has('dependencies')) {
       for (const dep of metaObj.getArray('dependencies')) {
@@ -189,6 +201,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
         switch (depObj.getString('kind')) {
           case 'directive':
           case 'component':
+            hasDirectiveDependencies = true;
             declarations.push(makeDirectiveMetadata(depObj, typeExpr));
             break;
           case 'pipe':
@@ -203,6 +216,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
             });
             break;
           case 'ngmodule':
+            hasDirectiveDependencies = true;
             declarations.push({
               kind: R3TemplateDependencyKind.NgModule,
               type: typeExpr,
@@ -216,7 +230,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
     }
 
     return {
-      ...toR3DirectiveMeta(metaObj, this.code, this.sourceUrl, version),
+      ...baseMeta,
       viewProviders: metaObj.has('viewProviders') ? metaObj.getOpaque('viewProviders') : null,
       template: {
         nodes: template.nodes,
@@ -226,7 +240,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       styles: metaObj.has('styles')
         ? metaObj.getArray('styles').map((entry) => entry.getString())
         : [],
-      defer: this.createR3ComponentDeferMetadata(metaObj, template),
+      defer: deferBlockDependencies,
       encapsulation: metaObj.has('encapsulation')
         ? parseEncapsulation(metaObj.getValue('encapsulation'))
         : ViewEncapsulation.Emulated,
@@ -239,6 +253,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
       relativeTemplatePath: null,
       i18nUseExternalIds: false,
       declarations,
+      hasDirectiveDependencies: !baseMeta.isStandalone || hasDirectiveDependencies,
     };
   }
 
@@ -322,8 +337,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression>
   private createR3ComponentDeferMetadata(
     metaObj: AstObject<R3DeclareComponentMetadata, TExpression>,
     template: ParsedTemplate,
-  ): R3ComponentDeferMetadata {
-    const result: R3ComponentDeferMetadata = {
+  ): R3ComponentDeferMetadata & {mode: DeferBlockDepsEmitMode.PerBlock} {
+    const result: R3ComponentDeferMetadata & {mode: DeferBlockDepsEmitMode.PerBlock} = {
       mode: DeferBlockDepsEmitMode.PerBlock,
       blocks: new Map<TmplAstDeferredBlock, o.Expression | null>(),
     };

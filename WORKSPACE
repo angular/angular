@@ -8,9 +8,6 @@ load("//:yarn.bzl", "YARN_LABEL")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    patches = [
-        "//tools/esm-interop:patches/bazel/nodejs_binary_esm_support.patch",
-    ],
     sha256 = "5dd1e5dea1322174c57d3ca7b899da381d516220793d0adef3ba03b9d23baa8e",
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.3/rules_nodejs-5.8.3.tar.gz"],
 )
@@ -34,9 +31,9 @@ http_archive(
 
 http_archive(
     name = "aspect_rules_js",
-    sha256 = "75c25a0f15a9e4592bbda45b57aa089e4bf17f9176fd735351e8c6444df87b52",
-    strip_prefix = "rules_js-2.1.0",
-    url = "https://github.com/aspect-build/rules_js/releases/download/v2.1.0/rules_js-v2.1.0.tar.gz",
+    sha256 = "304c51726b727d53277dd28fcda1b8e43b7e46818530b8d6265e7be98d5e2b25",
+    strip_prefix = "rules_js-2.3.8",
+    url = "https://github.com/aspect-build/rules_js/releases/download/v2.3.8/rules_js-v2.3.8.tar.gz",
 )
 
 load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
@@ -83,13 +80,8 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//:tools/npm-patches/@angular+ng-dev+0.0.0-a6dcd24107d12114198251ee5d20cda814a1986a.patch",
-        "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
+        "//:tools/npm-patches/dagre-d3-es+7.0.11.patch",
         "//tools:postinstall-patches.js",
-        "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65.patch",
-        "//tools/esm-interop:patches/npm/@bazel+concatjs+5.8.1.patch",
-        "//tools/esm-interop:patches/npm/@bazel+esbuild+5.7.1.patch",
-        "//tools/esm-interop:patches/npm/@bazel+protractor+5.7.1.patch",
-        "//tools/esm-interop:patches/npm/rxjs+6.6.7.patch",
     ],
     # Currently disabled due to:
     #  1. Missing Windows support currently.
@@ -106,10 +98,30 @@ load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 npm_translate_lock(
     name = "npm2",
     data = [
+        "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//adev:package.json",
+        "//adev/shared-docs:package.json",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//integration:package.json",
+        "//modules:package.json",
+        "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
+        "//packages/common:package.json",
         "//packages/compiler:package.json",
         "//packages/compiler-cli:package.json",
+        "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/elements:package.json",
+        "//packages/forms:package.json",
+        "//packages/localize:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/platform-browser-dynamic:package.json",
+        "//packages/platform-server:package.json",
+        "//packages/router:package.json",
+        "//packages/upgrade:package.json",
         "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",
@@ -125,24 +137,24 @@ npm_repositories()
 
 http_archive(
     name = "aspect_rules_ts",
-    sha256 = "9acd128abe77397505148eaa6895faed57839560dbf2177dd6285e51235e2724",
-    strip_prefix = "rules_ts-3.3.1",
-    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.3.1/rules_ts-v3.3.1.tar.gz",
+    sha256 = "09af62a0d46918d815b5f48b5ed0f5349b62c15fc42fcc3fef5c246504ff8d99",
+    strip_prefix = "rules_ts-3.6.3",
+    url = "https://github.com/aspect-build/rules_ts/releases/download/v3.6.3/rules_ts-v3.6.3.tar.gz",
 )
 
 load("@aspect_rules_ts//ts:repositories.bzl", "rules_ts_dependencies")
 
 rules_ts_dependencies(
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.8.2 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.1-rc | jq -r '.dist.integrity'
+    ts_integrity = "sha512-pWar+9HGLkLwxu2PX1ItWnWg80r6nZ8qVEyWVRsnlZyZeFkHeR+eCrZ9PcYeVZjdLvcd5p/WgycViI+lsTh2qg==",
     ts_version_from = "//:package.json",
 )
 
 http_archive(
     name = "aspect_rules_rollup",
-    sha256 = "c4062681968f5dcd3ce01e09e4ba73670c064744a7046211763e17c98ab8396e",
-    strip_prefix = "rules_rollup-2.0.0",
-    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.0/rules_rollup-v2.0.0.tar.gz",
+    sha256 = "0b8ac7d97cd660eb9a275600227e9c4268f5904cba962939d1a6ce9a0a059d2e",
+    strip_prefix = "rules_rollup-2.0.1",
+    url = "https://github.com/aspect-build/rules_rollup/releases/download/v2.0.1/rules_rollup-v2.0.1.tar.gz",
 )
 
 http_archive(
@@ -160,19 +172,17 @@ load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
 
-# Load protractor dependencies
-load("@npm//@bazel/protractor:package.bzl", "npm_bazel_protractor_dependencies")
-
-npm_bazel_protractor_dependencies()
+# TODO: Remove when karma webtest is no longer used
+http_archive(
+    name = "io_bazel_rules_webtesting",
+    sha256 = "e9abb7658b6a129740c0b3ef6f5a2370864e102a5ba5ffca2cea565829ed825a",
+    urls = ["https://github.com/bazelbuild/rules_webtesting/releases/download/0.3.5/rules_webtesting.tar.gz"],
+)
 
 # Setup the rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories()
-
-load("@npm//@angular/build-tooling/bazel/browsers:browser_repositories.bzl", "browser_repositories")
-
-browser_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
@@ -219,14 +229,6 @@ sass_repositories(
     yarn_script = YARN_LABEL,
 )
 
-# Register git toolchains
-register_toolchains(
-    "@npm//@angular/build-tooling/bazel/git-toolchain:git_linux_toolchain",
-    "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_x86_toolchain",
-    "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_arm64_toolchain",
-    "@npm//@angular/build-tooling/bazel/git-toolchain:git_windows_toolchain",
-)
-
 # Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
 http_archive(
     name = "sauce_connect_linux_amd64",
@@ -258,7 +260,7 @@ yarn_install(
 
 git_repository(
     name = "devinfra",
-    commit = "767656c052ba1531e2731a1cc7f0b07365bf89d5",
+    commit = "39c70c3c8c63165bc2df0efc7dcb3b3287b69685",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -270,9 +272,13 @@ load("@devinfra//bazel:setup_dependencies_2.bzl", "setup_dependencies_2")
 
 setup_dependencies_2()
 
+load("@devinfra//bazel/browsers:browser_repositories.bzl", "browser_repositories")
+
+browser_repositories()
+
 git_repository(
     name = "rules_angular",
-    commit = "ad3a2d652f41c953fad8f55c3959fde628fa8ebf",
+    commit = "8bf9ae3fa3017ec12877908533001daed9c6ce83",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
@@ -289,4 +295,61 @@ load("@rules_angular//setup:step_3.bzl", "rules_angular_step3")
 rules_angular_step3(
     angular_compiler_cli = "@angular//tools/bazel/rules_angular_store:node_modules/@angular/compiler-cli",
     typescript = "@angular//:node_modules/typescript",
+)
+
+git_repository(
+    name = "rules_browsers",
+    commit = "56ef8007ea07cd1916429bca8bb523433b0e9cdc",
+    remote = "https://github.com/devversion/rules_browsers.git",
+)
+
+load("@rules_browsers//setup:step_1.bzl", "rules_browsers_setup_1")
+
+rules_browsers_setup_1()
+
+load("@rules_browsers//setup:step_2.bzl", "rules_browsers_setup_2")
+
+rules_browsers_setup_2()
+
+http_archive(
+    name = "aspect_rules_esbuild",
+    sha256 = "530adfeae30bbbd097e8af845a44a04b641b680c5703b3bf885cbd384ffec779",
+    strip_prefix = "rules_esbuild-0.22.1",
+    url = "https://github.com/aspect-build/rules_esbuild/releases/download/v0.22.1/rules_esbuild-v0.22.1.tar.gz",
+)
+
+load("@aspect_rules_esbuild//esbuild:dependencies.bzl", "rules_esbuild_dependencies")
+
+rules_esbuild_dependencies()
+
+load("@aspect_rules_esbuild//esbuild:repositories.bzl", "LATEST_ESBUILD_VERSION", "esbuild_register_toolchains")
+
+esbuild_register_toolchains(
+    name = "esbuild",
+    esbuild_version = LATEST_ESBUILD_VERSION,
+)
+
+# Register git toolchains
+register_toolchains(
+    "@devinfra//bazel/git-toolchain:git_linux_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_x86_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@devinfra//bazel/git-toolchain:git_windows_toolchain",
+)
+
+git_repository(
+    name = "rules_sass",
+    commit = "cc1e845339fc45d3c8390445014d5824b85a0948",
+    remote = "https://github.com/devversion/rules_sass.git",
+)
+
+load("@rules_sass//src/toolchain:repositories.bzl", "setup_rules_sass")
+
+setup_rules_sass()
+
+http_archive(
+    name = "jq.bzl",
+    sha256 = "7b63435aa19cc6a0cfd1a82fbdf2c7a2f0a94db1a79ff7a4469ffa94286261ab",
+    strip_prefix = "jq.bzl-0.1.0",
+    url = "https://github.com/bazel-contrib/jq.bzl/releases/download/v0.1.0/jq.bzl-v0.1.0.tar.gz",
 )

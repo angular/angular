@@ -1,28 +1,31 @@
-load("//tools:defaults.bzl", "nodejs_binary", "ts_library")
+load("//tools:defaults2.bzl", "js_binary", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "background-service_lib",
     srcs = glob(["*.ts"]),
     deps = [
         "//:browser-providers",
-        "//tools/saucelabs-daemon",
-        "@npm//@types/node",
-        "@npm//@types/selenium-webdriver4",
-        "@npm//chalk",
-        "@npm//selenium-webdriver4",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/selenium-webdriver4",
+        "//:node_modules/chalk",
+        "//:node_modules/selenium-webdriver4",
+        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "background-service",
     data = [
-        ":background-service_lib",
+        ":background-service_lib_rjs",
         "//:sauce_connect",
     ],
-    entry_point = ":cli.ts",
-    templated_args = [
+    entry_point = ":cli.js",
+    fixed_args = [
         "$(rootpath //:sauce_connect)",
+    ],
+    no_copy_to_bin = [
+        "//:sauce_connect",
     ],
 )

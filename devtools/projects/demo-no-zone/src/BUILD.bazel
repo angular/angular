@@ -1,18 +1,14 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//tools:defaults.bzl", "esbuild", "http_server")
+load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project", "pkg_web")
 
 package(default_visibility = ["//:__subpackages__"])
 
 ng_project(
     name = "src",
     srcs = ["main.ts"],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
-    ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/demo-no-zone/src/app:app_rjs",
     ],
@@ -20,12 +16,16 @@ ng_project(
 
 esbuild(
     name = "bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_esm",
+    srcs = [
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = False,
     target = "es2016",
-    deps = [":src"],
+    deps = [":src_rjs"],
 )
 
 exports_files([
@@ -38,7 +38,6 @@ filegroup(
     srcs = [
         ":index.html",
         ":styles.css",
-        "//packages/zone.js/bundles:zone.umd.js",
     ],
 )
 

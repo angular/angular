@@ -9,20 +9,19 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
-const {getAdjustedChromeBinPathForWindows} = require('../adev/tools/windows-chromium-path');
+const {getAdjustedChromeBinPathForWindows} = require('./tools/windows-chromium-path');
 
 process.env.CHROME_BIN = getAdjustedChromeBinPathForWindows();
 
 module.exports = function (config) {
   config.set({
     basePath: '',
-    frameworks: ['jasmine', '@angular-devkit/build-angular'],
+    frameworks: ['jasmine'],
     plugins: [
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
-      require('@angular-devkit/build-angular/plugins/karma'),
       {'reporter:jasmine-seed': ['type', JasmineSeedReporter]},
     ],
     proxies: {

@@ -126,11 +126,12 @@ groups:
         ])
     reviewers:
       users:
-        - alxhub
+        - ~alxhub
         - AndrewKushnir
         - atscott
         - crisbeto
         - devversion
+        - thePunderWoman
         - kirjs
         - JoostK
         - mmalerba
@@ -166,7 +167,7 @@ groups:
         ])
     reviewers:
       users:
-        - alxhub
+        - ~alxhub
         - AndrewKushnir
         - atscott
         - crisbeto
@@ -174,7 +175,7 @@ groups:
         - kirjs
         - ~jelbourn
         - thePunderWoman
-        - pkozlowski-opensource
+        - ~pkozlowski-opensource
         - mmalerba
 
   # =========================================================
@@ -197,29 +198,14 @@ groups:
           ])
     reviewers:
       users:
-        - alxhub
+        - ~alxhub
         - jelbourn
         - josephperrott
-        - pkozlowski-opensource
+        - ~pkozlowski-opensource
     reviews:
       request: -1 # request reviews from everyone
       required: 2 # require at least 2 approvals
       reviewed_for: required
-
-  # =========================================================
-  #  Bazel
-  # =========================================================
-  bazel:
-    <<: *defaults
-    conditions:
-      - >
-        contains_any_globs(files, [
-          'packages/bazel/**/{*,.*}',
-          ])
-    reviewers:
-      users:
-        - devversion
-        - josephperrott
 
   # =========================================================
   #  zone.js
@@ -233,7 +219,17 @@ groups:
         ])
     reviewers:
       users:
-        - JiaLiPassion
+        - ~JiaLiPassion
+        - ~jelbourn
+        - ~alxhub
+        - AndrewKushnir
+        - atscott
+        - crisbeto
+        - devversion
+        - kirjs
+        - thePunderWoman
+        - ~pkozlowski-opensource
+        - mmalerba
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -271,7 +267,7 @@ groups:
     reviewers:
       users:
         - alan-agius4
-        - alxhub
+        - ~alxhub
         - AndrewKushnir
         - atscott
         - bencodezen
@@ -282,10 +278,9 @@ groups:
         - thePunderWoman
         - devversion
         - josephperrott
-        - pkozlowski-opensource
+        - ~pkozlowski-opensource
         - mgechev
         - MarkTechson
-        - kirjs
         - mmalerba
         - ~hawkgs
 
@@ -302,12 +297,13 @@ groups:
     reviewers:
       users:
         - AleksanderBodurri
-        - devversion
+        - ~devversion
         - dgp1130
-        - josephperrott
-        - mgechev
-        - MarkTechson
-        - ~JeanMeche
+        - hawkgs
+        - jkrems
+        - ~josephperrott
+        - JeanMeche
+        - milomg
 
   # =========================================================
   #  Dev-infra
@@ -321,6 +317,7 @@ groups:
           '.devcontainer/**/{*,.*}',
           '.github/**/{*,.*}',
           '.husky/**/{*,.*}',
+          '.gemini/**/{*,.*}',
           '.ng-dev/**/{*,.*}',
           '.vscode/**/{*,.*}',
           '.yarn/**/{*,.*}',
@@ -337,7 +334,6 @@ groups:
           'third_party/**/{*,.*}',
           'tools/bazel-repo-patches/**/{*,.*}',
           'tools/contributing-stats/**/{*,.*}',
-          'tools/esm-interop/**/{*,.*}',
           'tools/gulp-tasks/**/{*,.*}',
           'tools/legacy-saucelabs/**/{*,.*}',
           'tools/manual_api_docs/**/{*,.*}',
@@ -370,6 +366,7 @@ groups:
       users:
         - ~alan-agius4
       teams:
+        - angular-caretaker
         - framework-team
 
   # =========================================================
@@ -387,15 +384,17 @@ groups:
     reviewers:
       users:
         - AndrewKushnir
-        - alxhub
+        - ~alxhub
         - atscott
         - ~jelbourn
         - thePunderWoman
-        - pkozlowski-opensource
+        - ~pkozlowski-opensource
         - kirjs
         - mmalerba
         - crisbeto
         - devversion
+        - JeanMeche
+        - ~jkrems
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
@@ -414,17 +413,17 @@ groups:
       - *no-groups-above-this-rejected
       - >
         contains_any_globs(files, [
-          'goldens/size-tracking/**/{*,.*}'
+          'integration/**/size.json'
           ])
     reviewers:
       users:
-        - alxhub
+        - ~alxhub
         - AndrewKushnir
         - atscott
         - kirjs
         - ~jelbourn
         - thePunderWoman
-        - pkozlowski-opensource
+        - ~pkozlowski-opensource
         - mmalerba
     reviews:
       request: 2 # Request reviews from 2 people
@@ -447,7 +446,7 @@ groups:
         ])
     reviewers:
       users:
-        - alxhub
+        - ~alxhub
         - AndrewKushnir
         - andrewseguin
         - dgp1130
@@ -469,8 +468,8 @@ groups:
         ])
     reviewers:
       users:
-        - pkozlowski-opensource # Pawel Kozlowski
-        - alxhub # Alex Rickabaugh
+        - ~pkozlowski-opensource # Pawel Kozlowski
+        - ~alxhub # Alex Rickabaugh
         - thePunderWoman # Jessica Janiuk
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott

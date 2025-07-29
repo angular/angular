@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {verifyNoBrowserErrors} from '@angular/build-tooling/bazel/benchmark/driver-utilities';
+import {verifyNoBrowserErrors} from '../../../utilities/index';
 import {browser} from 'protractor';
 
 describe('jsonp', function () {
@@ -15,9 +15,9 @@ describe('jsonp', function () {
   describe('fetching', function () {
     const URL = '/';
 
-    it('should fetch and display people', function () {
+    it('should fetch and display people', async function () {
       browser.get(URL);
-      expect(getComponentText('jsonp-app', '.people')).toEqual('hello, caitp');
+      expect(await getComponentText('jsonp-app', '.people')).toEqual('hello, caitp');
     });
   });
 });

@@ -402,6 +402,10 @@ const valueToLabel = (value: any): string => {
     return stripUnderscore(value.name);
   }
 
+  if (typeof value !== 'string') {
+    return String(value);
+  }
+
   return stripUnderscore(value);
 };
 

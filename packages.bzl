@@ -10,7 +10,7 @@ def to_package_label(package_name):
         return "//packages/misc/angular-in-memory-web-api:npm_package"
 
     if package_name == "@angular/docs":
-        return "//adev/shared-docs:npm_package"
+        return "//adev/shared-docs:pkg"
 
     return "//packages/{package_name}:npm_package".format(package_name = package_name.replace("@angular/", ""))
 
@@ -50,7 +50,7 @@ UNPUBLISHED_PACKAGES = [
 ALL_PACKAGES = PUBLISHED_PACKAGES + UNPUBLISHED_PACKAGES
 
 # Packages used by integration tests
-INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "angular-in-memory-web-api")
+INTEGRATION_PACKAGES = _exclude_pkgs(PUBLISHED_PACKAGES, "zone.js", "angular-in-memory-web-api")
 
 # Package names under //packages that have `files_for_docgen` targets
 DOCS_ENTRYPOINTS = [

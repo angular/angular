@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Compiler, Component, getPlatform, NgModule, PlatformRef} from '@angular/core';
+import {Compiler, Component, getPlatform, NgModule} from '@angular/core';
 import {fakeAsync, inject, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
 import {BrowserDynamicTestingModule, platformBrowserDynamicTesting} from '../testing';
@@ -47,11 +47,9 @@ if (isBrowser) {
 
       it('should run async tests with ResourceLoaders', waitForAsync(() => {
         const resourceLoader = new ResourceLoaderImpl();
-        resourceLoader
-          .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
-          .then(() => {
-            actuallyDone = true;
-          });
+        resourceLoader.get('/packages/platform-browser/test/static_assets/test.html').then(() => {
+          actuallyDone = true;
+        });
       }), 10000); // Long timeout here because this test makes an actual ResourceLoader.
     });
 

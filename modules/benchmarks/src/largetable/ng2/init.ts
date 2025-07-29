@@ -6,16 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, NgModuleRef} from '@angular/core';
+import {ApplicationRef} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
 import {buildTable, emptyTable, initTableUtils} from '../util';
 
-import {AppModule, TableComponent} from './table';
+import {TableComponent} from './table';
 
-export function init(moduleRef: NgModuleRef<AppModule>) {
+export function init(appRef: ApplicationRef) {
   let table: TableComponent;
-  let appRef: ApplicationRef;
 
   function destroyDom() {
     table.data = emptyTable;
@@ -29,8 +28,6 @@ export function init(moduleRef: NgModuleRef<AppModule>) {
 
   function noop() {}
 
-  const injector = moduleRef.injector;
-  appRef = injector.get(ApplicationRef);
   table = appRef.components[0].instance;
 
   initTableUtils();

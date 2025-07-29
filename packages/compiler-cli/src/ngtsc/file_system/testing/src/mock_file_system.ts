@@ -34,6 +34,9 @@ export abstract class MockFileSystem implements FileSystem {
   readFile(path: AbsoluteFsPath): string {
     const {entity} = this.findFromPath(path);
     if (isFile(entity)) {
+      if (entity instanceof Uint8Array) {
+        return new TextDecoder().decode(entity);
+      }
       return entity.toString();
     } else {
       throw new MockFileSystemError('ENOENT', path, `File "${path}" does not exist.`);
@@ -43,7 +46,11 @@ export abstract class MockFileSystem implements FileSystem {
   readFileBuffer(path: AbsoluteFsPath): Uint8Array {
     const {entity} = this.findFromPath(path);
     if (isFile(entity)) {
-      return entity instanceof Uint8Array ? entity : new Buffer(entity);
+      if (entity instanceof Uint8Array) {
+        return entity;
+      }
+      const encoder = new TextEncoder();
+      return encoder.encode(entity);
     } else {
       throw new MockFileSystemError('ENOENT', path, `File "${path}" does not exist.`);
     }
@@ -384,7 +391,7 @@ class MockFileSystemError extends Error {
 }
 
 export function isFile(item: Entity | null): item is File {
-  return Buffer.isBuffer(item) || typeof item === 'string';
+  return item instanceof Uint8Array || typeof item === 'string';
 }
 
 export function isSymLink(item: Entity | null): item is SymLink {

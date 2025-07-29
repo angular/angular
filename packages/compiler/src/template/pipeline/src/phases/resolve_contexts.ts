@@ -8,12 +8,7 @@
 
 import * as o from '../../../../output/output_ast';
 import * as ir from '../../ir';
-import {
-  CompilationJob,
-  CompilationUnit,
-  ComponentCompilationJob,
-  ViewCompilationUnit,
-} from '../compilation';
+import {CompilationJob, CompilationUnit} from '../compilation';
 
 /**
  * Resolves `ir.ContextExpr` expressions (which represent embedded view or component contexts) to
@@ -47,6 +42,8 @@ function processLexicalScope(
             break;
         }
         break;
+      case ir.OpKind.Animation:
+      case ir.OpKind.AnimationListener:
       case ir.OpKind.Listener:
       case ir.OpKind.TwoWayListener:
         processLexicalScope(view, op.handlerOps);

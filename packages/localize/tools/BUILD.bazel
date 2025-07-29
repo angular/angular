@@ -1,7 +1,17 @@
-load("@npm//@bazel/esbuild:index.bzl", "esbuild", "esbuild_config")
-load("//tools:defaults.bzl", "extract_types", "pkg_npm", "ts_library")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "extract_types", "ts_config", "ts_project")
 
-ts_library(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
     name = "tools",
     srcs = glob(
         [
@@ -10,25 +20,20 @@ ts_library(
     ),
     visibility = ["//packages/localize/tools:__subpackages__"],
     deps = [
-        "//packages/compiler",
-        "//packages/compiler-cli/private",
-        "//packages/localize",
-        "@npm//@babel/core",
-        "@npm//@types/babel__core",
-        "@npm//@types/node",
-        "@npm//@types/yargs",
-        "@npm//tinyglobby",
+        "//:node_modules/@babel/core",
+        "//:node_modules/@types/babel__core",
+        "//:node_modules/@types/node",
+        "//:node_modules/@types/yargs",
+        "//:node_modules/tinyglobby",
+        "//packages/compiler:compiler_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/localize:localize_rjs",
     ],
-)
-
-esbuild_config(
-    name = "esbuild_config",
-    config_file = "esbuild.config.js",
 )
 
 esbuild(
     name = "bundles",
-    config = ":esbuild_config",
+    config = "esbuild.config.js",
     entry_points = [
         ":index.ts",
         ":src/extract/cli.ts",
@@ -44,17 +49,18 @@ esbuild(
         "tinyglobby",
     ],
     format = "esm",
+    metafile = False,
     platform = "node",
     splitting = True,
-    target = "node12",
+    target = "node20",
     deps = [
-        ":tools",
+        ":tools_rjs",
     ],
 )
 
 extract_types(
     name = "api_type_definitions",
-    deps = [":tools"],
+    deps = [":tools_rjs"],
 )
 
 pkg_npm(

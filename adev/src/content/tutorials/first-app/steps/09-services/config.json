@@ -2,5 +2,6 @@
   "title": "Angular services",
   "type": "editor",
   "answerSrc": "../10-routing/src",
+  "answerRootDir": "../10-routing/",
   "openFiles": ["src/app/home/home.ts"]
 }

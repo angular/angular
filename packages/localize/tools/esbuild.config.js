@@ -7,8 +7,7 @@
  */
 
 module.exports = {
-  resolveExtensions: ['.mjs'],
-  // Note: `@bazel/esbuild` has a bug and does not pass-through the format from Starlark.
+  resolveExtensions: ['.mjs', '.js'],
   format: 'esm',
   banner: {
     // Workaround for: https://github.com/evanw/esbuild/issues/946

@@ -9,8 +9,8 @@
 import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {runfiles} from '@bazel/runfiles';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {resolve} from 'node:path';
 import shx from 'shelljs';
 
 describe('test-bed-get migration', () => {
@@ -27,8 +27,9 @@ describe('test-bed-get migration', () => {
     return runner.runSchematic('test-bed-get', {}, tree);
   }
 
+  const migrationsJsonPath = resolve('../migrations.json');
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../migrations.json'));
+    runner = new SchematicTestRunner('test', migrationsJsonPath);
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
     tmpDirPath = getSystemPath(host.root);

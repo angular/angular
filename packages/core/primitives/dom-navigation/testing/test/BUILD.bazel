@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test", "zoneless_web_test_suite")
 
 ts_project(
     name = "test_lib",
@@ -7,27 +6,24 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/private/testing",
-    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//packages/core/primitives/dom-navigation/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+zoneless_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+zoneless_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

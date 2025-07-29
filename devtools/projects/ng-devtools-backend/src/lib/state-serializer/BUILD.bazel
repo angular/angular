@@ -1,6 +1,4 @@
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,23 +14,21 @@ ng_project(
     ],
 )
 
-karma_web_test_suite(
-    name = "test",
-    deps = [
-        ":test_lib",
-    ],
-)
-
 ts_test_library(
     name = "test_lib",
     srcs = [
         "prop-type.spec.ts",
         "state-serializer.spec.ts",
     ],
-    interop_deps = [
-        ":state-serializer",
-    ],
     deps = [
+        ":state-serializer_rjs",
         "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib_rjs",
     ],
 )

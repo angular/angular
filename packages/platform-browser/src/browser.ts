@@ -38,6 +38,7 @@ import {
   ɵTESTABILITY as TESTABILITY,
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
   inject,
+  ɵresolveComponentResources as resolveComponentResources,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -125,7 +126,20 @@ export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
 ): Promise<ApplicationRef> {
-  return internalCreateApplication({rootComponent, ...createProvidersConfig(options)});
+  const config = {rootComponent, ...createProvidersConfig(options)};
+
+  // Attempt to resolve component resources before bootstrapping in JIT mode,
+  // however don't interrupt the bootstrapping process.
+  if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
+    return resolveComponentResources(fetch)
+      .catch((error) => {
+        console.error(error);
+        return Promise.resolve();
+      })
+      .then(() => internalCreateApplication(config));
+  }
+
+  return internalCreateApplication(config);
 }
 
 /**

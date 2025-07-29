@@ -337,7 +337,7 @@ describe('quick info', () => {
           expectQuickInfo({
             templateOverride: `<div (click)="myClick($e¦vent)"></div>`,
             expectedSpanText: '$event',
-            expectedDisplayString: '(parameter) $event: MouseEvent',
+            expectedDisplayString: '(parameter) $event: PointerEvent',
           });
         });
       });
@@ -350,10 +350,10 @@ describe('quick info', () => {
           expectedSpanText: 'chart',
           expectedDisplayString: '(reference) chart: HTMLDivElement',
         });
-        expect(toText(documentation)).toEqual(
-          'Provides special properties (beyond the regular HTMLElement ' +
-            'interface it also has available to it by inheritance) for manipulating <div> elements.\n\n' +
-            '[MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLDivElement)',
+        expect(toText(documentation)).toContain(
+          'The **`HTMLDivElement`** interface provides special properties ' +
+            '(beyond the regular HTMLElement interface it also has available to it by inheritance) ' +
+            'for manipulating div elements.',
         );
       });
 
@@ -384,7 +384,7 @@ describe('quick info', () => {
           expectedSpanText: 'click',
           expectedDisplayString:
             '(event) HTMLDivElement.addEventListener<"click">(type: "click", listener: ' +
-            '(this: HTMLDivElement, ev: MouseEvent) => any, options?: boolean | ' +
+            '(this: HTMLDivElement, ev: PointerEvent) => any, options?: boolean | ' +
             'AddEventListenerOptions): void (+1 overload)',
         });
       });
@@ -648,7 +648,7 @@ describe('quick info', () => {
         expectQuickInfo({
           templateOverride: `<div (click)="void myClick($e¦vent)"></div>`,
           expectedSpanText: '$event',
-          expectedDisplayString: '(parameter) $event: MouseEvent',
+          expectedDisplayString: '(parameter) $event: PointerEvent',
         });
       });
 
@@ -996,7 +996,7 @@ describe('quick info', () => {
             }
           })
           export class AppCmp {
-            handleClick(event: MouseEvent) {}
+            handleClick(event: PointerEvent) {}
           }
         `;
 
@@ -1004,7 +1004,7 @@ describe('quick info', () => {
           source,
           moveTo: `'(click)': 'handleC¦lick($event)'`,
           expectedSpanText: 'handleClick',
-          expectedDisplayString: '(method) AppCmp.handleClick(event: MouseEvent): void',
+          expectedDisplayString: '(method) AppCmp.handleClick(event: PointerEvent): void',
         });
       });
 
@@ -1020,7 +1020,7 @@ describe('quick info', () => {
             }
           })
           export class AppCmp {
-            handleClick(event: MouseEvent) {}
+            handleClick(event: PointerEvent) {}
           }
         `;
 
@@ -1028,7 +1028,7 @@ describe('quick info', () => {
           source,
           moveTo: `'(click)': 'handleClick($ev¦ent)'`,
           expectedSpanText: '$event',
-          expectedDisplayString: '(parameter) $event: MouseEvent',
+          expectedDisplayString: '(parameter) $event: PointerEvent',
         });
       });
 

@@ -51,7 +51,6 @@ export {
   signalGetFn,
   signalSetFn,
   signalUpdateFn,
-  createSignalTuple,
 } from './src/signal';
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';

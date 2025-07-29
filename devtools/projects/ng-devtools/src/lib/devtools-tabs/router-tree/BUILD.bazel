@@ -1,33 +1,75 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_test_library")
 
 package(default_visibility = ["//:__subpackages__"])
 
 sass_binary(
     name = "router_tree_styles",
     src = "router-tree.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+sass_binary(
+    name = "router_details_row_styles",
+    src = "route-details-row.component.scss",
 )
 
 ng_project(
     name = "router-tree",
     srcs = [
+        "route-details-row.component.ts",
         "router-tree.component.ts",
-        "router-tree-visualizer.ts",
+        "router-tree-fns.ts",
     ],
     angular_assets = [
         ":router-tree.component.html",
         ":router_tree_styles",
-    ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
+        ":route-details-row.component.html",
+        ":router_details_row_styles",
     ],
     deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host:tree-visualizer-host_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ts_test_library(
+    name = "router_tree_test",
+    srcs = [
+        "route-details-row.component.spec.ts",
+        "router-tree.component.spec.ts",
+        "router-tree-fns.spec.ts",
+    ],
+    visibility = [
+        "//visibility:private",
+    ],
+    deps = [
+        ":router-tree_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
+        "//devtools/projects/protocol:protocol_rjs",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":router_tree_test_rjs",
     ],
 )

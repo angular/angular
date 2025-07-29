@@ -90,13 +90,13 @@ export class SelectDirective {
 
 </docs-step>
 <docs-step title="Add the 'selectFrom' input">
-Add a `selectFrom` `@Input()` property.
+Add a `selectFrom` `input()` property.
 
 ```ts
 export class SelectDirective {
   // ...
 
-  @Input({required: true}) selectFrom!: DataSource;
+  selectFrom = input.required<DataSource>();
 }
 ```
 
@@ -166,10 +166,11 @@ The following table provides shorthand examples:
 
 | Shorthand | How Angular interprets the syntax |
 |:--- |:--- |
-| `*ngFor="let item of [1,2,3]"` | `<ng-template ngFor let-item [ngForOf]="[1, 2, 3]">` |
-| `*ngFor="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template ngFor let-item [ngForOf]="[1,2,3]" let-items="ngForOf" [ngForTrackBy]="myTrack" let-i="index">` |
-| `*ngIf="exp"`| `<ng-template [ngIf]="exp">` |
-| `*ngIf="exp as value"` | `<ng-template [ngIf]="exp" let-value="ngIf">` |
+| `*myDir="let item of [1,2,3]"` | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">` |
+| `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
+| `*ngComponentOutlet="componentClass";` | `<ng-template [ngComponentOutlet]="componentClass">` |
+| `*ngComponentOutlet="componentClass; inputs: myInputs";` | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">` |
+| `*myDir="exp as value"` | `<ng-template [myDir]="exp" let-value="myDir">` |
 
 ## Improving template type checking for custom directives
 
@@ -200,9 +201,9 @@ To narrow the input expression by defining a type assertion function:
 // expression is narrowed to `User`.
 @Directive(...)
 class ActorIsUser {
-  @Input() actor: User|Robot;
+  actor = input<User | Robot>();
 
-  static ngTemplateGuard_actor(dir: ActorIsUser, expr: User|Robot): expr is User {
+  static ngTemplateGuard_actor(dir: ActorIsUser, expr: User | Robot): expr is User {
     // The return statement is unnecessary in practice, but included to
     // prevent TypeScript errors.
     return true;
@@ -217,7 +218,7 @@ Some directives only render their templates when an input is truthy. It's not po
 ```ts
 @Directive(...)
 class CustomIf {
-  @Input() condition!: any;
+  condition = input.required<boolean>();
 
   static ngTemplateGuard_condition: 'binding';
 }
@@ -241,7 +242,7 @@ export interface SelectTemplateContext<T> {
 export class SelectDirective<T> {
   // The directive's generic type `T` will be inferred from the `DataSource` type
   // passed to the input.
-  @Input({required: true}) selectFrom!: DataSource<T>;
+  selectFrom = input.required<DataSource<T>>();
 
   // Narrow the type of the context using the generic type of the directive.
   static ngTemplateContextGuard<T>(dir: SelectDirective<T>, ctx: any): ctx is SelectTemplateContext<T> {

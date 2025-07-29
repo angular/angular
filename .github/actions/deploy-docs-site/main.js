@@ -1,20 +1,16 @@
-
 import {createRequire as __cjsCompatRequire} from 'module';
 const require = __cjsCompatRequire(import.meta.url);
-
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
-  if (typeof require !== "undefined")
-    return require.apply(this, arguments);
-  throw new Error('Dynamic require of "' + x + '" is not supported');
+  if (typeof require !== "undefined") return require.apply(this, arguments);
+  throw Error('Dynamic require of "' + x + '" is not supported');
 });
 var __commonJS = (cb, mod) => function __require2() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
@@ -28,13 +24,13 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
-var __publicField = (obj, key, value) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-  return value;
-};
 
 // 
 var require_utils = __commonJS({
@@ -73,8 +69,7 @@ var require_command = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -83,8 +78,7 @@ var require_command = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -93,13 +87,10 @@ var require_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -164,8 +155,7 @@ var require_file_command = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -174,8 +164,7 @@ var require_file_command = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -184,13 +173,10 @@ var require_file_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -553,8 +539,7 @@ var require_lib = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -563,8 +548,7 @@ var require_lib = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -573,13 +557,10 @@ var require_lib = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -677,12 +658,12 @@ var require_lib = __commonJS({
     var RetryableHttpVerbs = ["OPTIONS", "GET", "DELETE", "HEAD"];
     var ExponentialBackoffCeiling = 10;
     var ExponentialBackoffTimeSlice = 5;
-    var HttpClientError = class extends Error {
+    var HttpClientError = class _HttpClientError extends Error {
       constructor(message, statusCode) {
         super(message);
         this.name = "HttpClientError";
         this.statusCode = statusCode;
-        Object.setPrototypeOf(this, HttpClientError.prototype);
+        Object.setPrototypeOf(this, _HttpClientError.prototype);
       }
     };
     exports.HttpClientError = HttpClientError;
@@ -801,6 +782,10 @@ var require_lib = __commonJS({
           return this.request(verb, requestUrl, stream, additionalHeaders);
         });
       }
+      /**
+       * Gets a typed object from an endpoint
+       * Be aware that not found returns a null.  Other errors (4xx, 5xx) reject the promise
+       */
       getJson(requestUrl, additionalHeaders = {}) {
         return __awaiter(this, void 0, void 0, function* () {
           additionalHeaders[Headers.Accept] = this._getExistingOrDefaultHeader(additionalHeaders, Headers.Accept, MediaTypes.ApplicationJson);
@@ -835,6 +820,11 @@ var require_lib = __commonJS({
           return this._processResponse(res, this.requestOptions);
         });
       }
+      /**
+       * Makes a raw http request.
+       * All other methods such as get, post, patch, and request ultimately call this.
+       * Prefer get, del, post and patch
+       */
       request(verb, requestUrl, data, headers) {
         return __awaiter(this, void 0, void 0, function* () {
           if (this._disposed) {
@@ -895,12 +885,20 @@ var require_lib = __commonJS({
           return response;
         });
       }
+      /**
+       * Needs to be called if keepAlive is set to true in request options.
+       */
       dispose() {
         if (this._agent) {
           this._agent.destroy();
         }
         this._disposed = true;
       }
+      /**
+       * Raw request.
+       * @param info
+       * @param data
+       */
       requestRaw(info, data) {
         return __awaiter(this, void 0, void 0, function* () {
           return new Promise((resolve, reject) => {
@@ -917,6 +915,12 @@ var require_lib = __commonJS({
           });
         });
       }
+      /**
+       * Raw request with callback.
+       * @param info
+       * @param data
+       * @param onResult
+       */
       requestRawWithCallback(info, data, onResult) {
         if (typeof data === "string") {
           if (!info.options.headers) {
@@ -960,6 +964,11 @@ var require_lib = __commonJS({
           req.end();
         }
       }
+      /**
+       * Gets an http agent. This function is useful when you need an http agent that handles
+       * routing through a proxy server - depending upon the url and proxy environment variables.
+       * @param serverUrl  The server URL where the request will be sent. For example, https://api.github.com
+       */
       getAgent(serverUrl) {
         const parsedUrl = new URL(serverUrl);
         return this._getAgent(parsedUrl);
@@ -1188,6 +1197,7 @@ var require_auth = __commonJS({
         }
         options.headers["Authorization"] = `Basic ${Buffer.from(`${this.username}:${this.password}`).toString("base64")}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
@@ -1202,12 +1212,15 @@ var require_auth = __commonJS({
       constructor(token) {
         this.token = token;
       }
+      // currently implements pre-authorization
+      // TODO: support preAuth = false where it hooks on 401
       prepareRequest(options) {
         if (!options.headers) {
           throw Error("The request has no headers");
         }
         options.headers["Authorization"] = `Bearer ${this.token}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
@@ -1222,12 +1235,15 @@ var require_auth = __commonJS({
       constructor(token) {
         this.token = token;
       }
+      // currently implements pre-authorization
+      // TODO: support preAuth = false where it hooks on 401
       prepareRequest(options) {
         if (!options.headers) {
           throw Error("The request has no headers");
         }
         options.headers["Authorization"] = `Basic ${Buffer.from(`PAT:${this.token}`).toString("base64")}`;
       }
+      // This handler cannot handle 401
       canHandleAuthentication() {
         return false;
       }
@@ -1277,13 +1293,13 @@ var require_oidc_utils = __commonJS({
     var http_client_1 = require_lib();
     var auth_1 = require_auth();
     var core_1 = require_core();
-    var OidcClient = class {
+    var OidcClient = class _OidcClient {
       static createHttpClient(allowRetry = true, maxRetry = 10) {
         const requestOptions = {
           allowRetries: allowRetry,
           maxRetries: maxRetry
         };
-        return new http_client_1.HttpClient("actions/oidc-client", [new auth_1.BearerCredentialHandler(OidcClient.getRequestToken())], requestOptions);
+        return new http_client_1.HttpClient("actions/oidc-client", [new auth_1.BearerCredentialHandler(_OidcClient.getRequestToken())], requestOptions);
       }
       static getRequestToken() {
         const token = process.env["ACTIONS_ID_TOKEN_REQUEST_TOKEN"];
@@ -1302,7 +1318,7 @@ var require_oidc_utils = __commonJS({
       static getCall(id_token_url) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-          const httpclient = OidcClient.createHttpClient();
+          const httpclient = _OidcClient.createHttpClient();
           const res = yield httpclient.getJson(id_token_url).catch((error) => {
             throw new Error(`Failed to get ID Token. 
  
@@ -1320,13 +1336,13 @@ var require_oidc_utils = __commonJS({
       static getIDToken(audience) {
         return __awaiter(this, void 0, void 0, function* () {
           try {
-            let id_token_url = OidcClient.getIDTokenUrl();
+            let id_token_url = _OidcClient.getIDTokenUrl();
             if (audience) {
               const encodedAudience = encodeURIComponent(audience);
               id_token_url = `${id_token_url}&audience=${encodedAudience}`;
             }
             (0, core_1.debug)(`ID token url is ${id_token_url}`);
-            const id_token = yield OidcClient.getCall(id_token_url);
+            const id_token = yield _OidcClient.getCall(id_token_url);
             (0, core_1.setSecret)(id_token);
             return id_token;
           } catch (error) {
@@ -1381,6 +1397,12 @@ var require_summary = __commonJS({
       constructor() {
         this._buffer = "";
       }
+      /**
+       * Finds the summary file path from the environment, rejects if env var is not found or file does not exist
+       * Also checks r/w permissions.
+       *
+       * @returns step summary file path
+       */
       filePath() {
         return __awaiter(this, void 0, void 0, function* () {
           if (this._filePath) {
@@ -1399,6 +1421,15 @@ var require_summary = __commonJS({
           return this._filePath;
         });
       }
+      /**
+       * Wraps content in an HTML tag, adding any HTML attributes
+       *
+       * @param {string} tag HTML tag to wrap
+       * @param {string | null} content content within the tag
+       * @param {[attribute: string]: string} attrs key-value list of HTML attributes to add
+       *
+       * @returns {string} content wrapped in HTML element
+       */
       wrap(tag, content, attrs = {}) {
         const htmlAttrs = Object.entries(attrs).map(([key, value]) => ` ${key}="${value}"`).join("");
         if (!content) {
@@ -1406,6 +1437,13 @@ var require_summary = __commonJS({
         }
         return `<${tag}${htmlAttrs}>${content}</${tag}>`;
       }
+      /**
+       * Writes text in the buffer to the summary buffer file and empties buffer. Will append by default.
+       *
+       * @param {SummaryWriteOptions} [options] (optional) options for write operation
+       *
+       * @returns {Promise<Summary>} summary instance
+       */
       write(options) {
         return __awaiter(this, void 0, void 0, function* () {
           const overwrite = !!(options === null || options === void 0 ? void 0 : options.overwrite);
@@ -1415,39 +1453,95 @@ var require_summary = __commonJS({
           return this.emptyBuffer();
         });
       }
+      /**
+       * Clears the summary buffer and wipes the summary file
+       *
+       * @returns {Summary} summary instance
+       */
       clear() {
         return __awaiter(this, void 0, void 0, function* () {
           return this.emptyBuffer().write({ overwrite: true });
         });
       }
+      /**
+       * Returns the current summary buffer as a string
+       *
+       * @returns {string} string of summary buffer
+       */
       stringify() {
         return this._buffer;
       }
+      /**
+       * If the summary buffer is empty
+       *
+       * @returns {boolen} true if the buffer is empty
+       */
       isEmptyBuffer() {
         return this._buffer.length === 0;
       }
+      /**
+       * Resets the summary buffer without writing to summary file
+       *
+       * @returns {Summary} summary instance
+       */
       emptyBuffer() {
         this._buffer = "";
         return this;
       }
+      /**
+       * Adds raw text to the summary buffer
+       *
+       * @param {string} text content to add
+       * @param {boolean} [addEOL=false] (optional) append an EOL to the raw text (default: false)
+       *
+       * @returns {Summary} summary instance
+       */
       addRaw(text, addEOL = false) {
         this._buffer += text;
         return addEOL ? this.addEOL() : this;
       }
+      /**
+       * Adds the operating system-specific end-of-line marker to the buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addEOL() {
         return this.addRaw(os_1.EOL);
       }
+      /**
+       * Adds an HTML codeblock to the summary buffer
+       *
+       * @param {string} code content to render within fenced code block
+       * @param {string} lang (optional) language to syntax highlight code
+       *
+       * @returns {Summary} summary instance
+       */
       addCodeBlock(code, lang) {
         const attrs = Object.assign({}, lang && { lang });
         const element = this.wrap("pre", this.wrap("code", code), attrs);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML list to the summary buffer
+       *
+       * @param {string[]} items list of items to render
+       * @param {boolean} [ordered=false] (optional) if the rendered list should be ordered or not (default: false)
+       *
+       * @returns {Summary} summary instance
+       */
       addList(items, ordered = false) {
         const tag = ordered ? "ol" : "ul";
         const listItems = items.map((item) => this.wrap("li", item)).join("");
         const element = this.wrap(tag, listItems);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML table to the summary buffer
+       *
+       * @param {SummaryTableCell[]} rows table rows
+       *
+       * @returns {Summary} summary instance
+       */
       addTable(rows) {
         const tableBody = rows.map((row) => {
           const cells = row.map((cell) => {
@@ -1464,35 +1558,86 @@ var require_summary = __commonJS({
         const element = this.wrap("table", tableBody);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds a collapsable HTML details element to the summary buffer
+       *
+       * @param {string} label text for the closed state
+       * @param {string} content collapsable content
+       *
+       * @returns {Summary} summary instance
+       */
       addDetails(label, content) {
         const element = this.wrap("details", this.wrap("summary", label) + content);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML image tag to the summary buffer
+       *
+       * @param {string} src path to the image you to embed
+       * @param {string} alt text description of the image
+       * @param {SummaryImageOptions} options (optional) addition image attributes
+       *
+       * @returns {Summary} summary instance
+       */
       addImage(src, alt, options) {
         const { width, height } = options || {};
         const attrs = Object.assign(Object.assign({}, width && { width }), height && { height });
         const element = this.wrap("img", null, Object.assign({ src, alt }, attrs));
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML section heading element
+       *
+       * @param {string} text heading text
+       * @param {number | string} [level=1] (optional) the heading level, default: 1
+       *
+       * @returns {Summary} summary instance
+       */
       addHeading(text, level) {
         const tag = `h${level}`;
         const allowedTag = ["h1", "h2", "h3", "h4", "h5", "h6"].includes(tag) ? tag : "h1";
         const element = this.wrap(allowedTag, text);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML thematic break (<hr>) to the summary buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addSeparator() {
         const element = this.wrap("hr", null);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML line break (<br>) to the summary buffer
+       *
+       * @returns {Summary} summary instance
+       */
       addBreak() {
         const element = this.wrap("br", null);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML blockquote to the summary buffer
+       *
+       * @param {string} text quote text
+       * @param {string} cite (optional) citation url
+       *
+       * @returns {Summary} summary instance
+       */
       addQuote(text, cite) {
         const attrs = Object.assign({}, cite && { cite });
         const element = this.wrap("blockquote", text, attrs);
         return this.addRaw(element).addEOL();
       }
+      /**
+       * Adds an HTML anchor tag to the summary buffer
+       *
+       * @param {string} text link text/content
+       * @param {string} href hyperlink
+       *
+       * @returns {Summary} summary instance
+       */
       addLink(text, href) {
         const element = this.wrap("a", text, { href });
         return this.addRaw(element).addEOL();
@@ -1509,8 +1654,7 @@ var require_path_utils = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -1519,8 +1663,7 @@ var require_path_utils = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1529,13 +1672,10 @@ var require_path_utils = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1563,14 +1703,12 @@ var require_io_util = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1579,13 +1717,10 @@ var require_io_util = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1741,14 +1876,12 @@ var require_io = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1757,13 +1890,10 @@ var require_io = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1994,14 +2124,12 @@ var require_toolrunner = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2010,13 +2138,10 @@ var require_toolrunner = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2256,6 +2381,15 @@ var require_toolrunner = __commonJS({
         }
         return result;
       }
+      /**
+       * Exec a tool.
+       * Output will be streamed to the live console.
+       * Returns promise with return code
+       *
+       * @param     tool     path to tool to exec
+       * @param     options  optional exec options.  See ExecOptions
+       * @returns   number
+       */
       exec() {
         return __awaiter(this, void 0, void 0, function* () {
           if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
@@ -2404,7 +2538,7 @@ var require_toolrunner = __commonJS({
       return args;
     }
     exports.argStringToArray = argStringToArray;
-    var ExecState = class extends events.EventEmitter {
+    var ExecState = class _ExecState extends events.EventEmitter {
       constructor(options, toolPath) {
         super();
         this.processClosed = false;
@@ -2431,7 +2565,7 @@ var require_toolrunner = __commonJS({
         if (this.processClosed) {
           this._setResult();
         } else if (this.processExited) {
-          this.timeout = timers_1.setTimeout(ExecState.HandleTimeout, this.delay, this);
+          this.timeout = timers_1.setTimeout(_ExecState.HandleTimeout, this.delay, this);
         }
       }
       _debug(message) {
@@ -2474,14 +2608,12 @@ var require_exec = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2490,13 +2622,10 @@ var require_exec = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2586,8 +2715,7 @@ var require_platform = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -2596,8 +2724,7 @@ var require_platform = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2606,13 +2733,10 @@ var require_platform = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2710,8 +2834,7 @@ var require_core = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -2720,8 +2843,7 @@ var require_core = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2730,13 +2852,10 @@ var require_core = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2948,6 +3067,9 @@ var require_context = __commonJS({
     var fs_1 = __require("fs");
     var os_1 = __require("os");
     var Context = class {
+      /**
+       * Hydrate the context from the environment
+       */
       constructor() {
         var _a, _b, _c;
         this.payload = {};
@@ -3000,8 +3122,7 @@ var require_utils2 = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -3010,8 +3131,7 @@ var require_utils2 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -3020,13 +3140,10 @@ var require_utils2 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -3259,24 +3376,6 @@ var require_before_after_hook = __commonJS({
 
 // 
 var require_dist_node2 = __commonJS({
-  ""(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    function getUserAgent2() {
-      if (typeof navigator === "object" && "userAgent" in navigator) {
-        return navigator.userAgent;
-      }
-      if (typeof process === "object" && process.version !== void 0) {
-        return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
-      }
-      return "<environment undetectable>";
-    }
-    exports.getUserAgent = getUserAgent2;
-  }
-});
-
-// 
-var require_dist_node3 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -3301,7 +3400,7 @@ var require_dist_node3 = __commonJS({
       endpoint: () => endpoint2
     });
     module.exports = __toCommonJS(dist_src_exports);
-    var import_universal_user_agent5 = require_dist_node2();
+    var import_universal_user_agent5 = require_dist_node();
     var VERSION9 = "9.0.6";
     var userAgent2 = `octokit-endpoint.js/${VERSION9} ${(0, import_universal_user_agent5.getUserAgent)()}`;
     var DEFAULTS2 = {
@@ -3622,25 +3721,7 @@ var require_dist_node3 = __commonJS({
 });
 
 // 
-var require_dist_node4 = __commonJS({
-  ""(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    function getUserAgent2() {
-      if (typeof navigator === "object" && "userAgent" in navigator) {
-        return navigator.userAgent;
-      }
-      if (typeof process === "object" && process.version !== void 0) {
-        return `Node.js/${process.version.substr(1)} (${process.platform}; ${process.arch})`;
-      }
-      return "<environment undetectable>";
-    }
-    exports.getUserAgent = getUserAgent2;
-  }
-});
-
-// 
-var require_dist_node5 = __commonJS({
+var require_dist_node3 = __commonJS({
   ""(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -3662,8 +3743,7 @@ var require_wrappy = __commonJS({
   ""(exports, module) {
     module.exports = wrappy;
     function wrappy(fn, cb) {
-      if (fn && cb)
-        return wrappy(fn)(cb);
+      if (fn && cb) return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
       Object.keys(fn).forEach(function(k) {
@@ -3710,8 +3790,7 @@ var require_once = __commonJS({
     });
     function once(fn) {
       var f = function() {
-        if (f.called)
-          return f.value;
+        if (f.called) return f.value;
         f.called = true;
         return f.value = fn.apply(this, arguments);
       };
@@ -3734,7 +3813,7 @@ var require_once = __commonJS({
 });
 
 // 
-var require_dist_node6 = __commonJS({
+var require_dist_node4 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __create2 = Object.create;
@@ -3756,6 +3835,10 @@ var require_dist_node6 = __commonJS({
       return to;
     };
     var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
       isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
       mod
     ));
@@ -3765,7 +3848,7 @@ var require_dist_node6 = __commonJS({
       RequestError: () => RequestError2
     });
     module.exports = __toCommonJS(dist_src_exports);
-    var import_deprecation = require_dist_node5();
+    var import_deprecation = require_dist_node3();
     var import_once = __toESM2(require_once());
     var logOnceCode = (0, import_once.default)((deprecation) => console.warn(deprecation));
     var logOnceHeaders = (0, import_once.default)((deprecation) => console.warn(deprecation));
@@ -3822,7 +3905,7 @@ var require_dist_node6 = __commonJS({
 });
 
 // 
-var require_dist_node7 = __commonJS({
+var require_dist_node5 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -3847,8 +3930,8 @@ var require_dist_node7 = __commonJS({
       request: () => request2
     });
     module.exports = __toCommonJS(dist_src_exports);
-    var import_endpoint2 = require_dist_node3();
-    var import_universal_user_agent5 = require_dist_node4();
+    var import_endpoint2 = require_dist_node2();
+    var import_universal_user_agent5 = require_dist_node();
     var VERSION9 = "8.4.1";
     function isPlainObject3(value) {
       if (typeof value !== "object" || value === null)
@@ -3861,7 +3944,7 @@ var require_dist_node7 = __commonJS({
       const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
       return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
     }
-    var import_request_error2 = require_dist_node6();
+    var import_request_error2 = require_dist_node4();
     function getBufferResponse(response) {
       return response.arrayBuffer();
     }
@@ -3890,6 +3973,8 @@ var require_dist_node7 = __commonJS({
         redirect: (_c = requestOptions.request) == null ? void 0 : _c.redirect,
         headers: requestOptions.headers,
         signal: (_d = requestOptions.request) == null ? void 0 : _d.signal,
+        // duplex must be set if request.body is ReadableStream or Async Iterables.
+        // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
         ...requestOptions.body && { duplex: "half" }
       }).then(async (response) => {
         url = response.url;
@@ -4030,7 +4115,7 @@ var require_dist_node7 = __commonJS({
 });
 
 // 
-var require_dist_node8 = __commonJS({
+var require_dist_node6 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -4057,11 +4142,11 @@ var require_dist_node8 = __commonJS({
       withCustomRequest: () => withCustomRequest2
     });
     module.exports = __toCommonJS(index_exports);
-    var import_request3 = require_dist_node7();
+    var import_request32 = require_dist_node5();
     var import_universal_user_agent5 = require_dist_node();
     var VERSION9 = "7.1.1";
-    var import_request22 = require_dist_node7();
-    var import_request4 = require_dist_node7();
+    var import_request22 = require_dist_node5();
+    var import_request5 = require_dist_node5();
     function _buildMessageForResponseErrors2(data) {
       return `Request failed due to following response errors:
 ` + data.errors.map((e) => ` - ${e.message}`).join("\n");
@@ -4099,8 +4184,7 @@ var require_dist_node8 = __commonJS({
           );
         }
         for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS2.includes(key))
-            continue;
+          if (!FORBIDDEN_VARIABLE_OPTIONS2.includes(key)) continue;
           return Promise.reject(
             new Error(
               `[@octokit/graphql] "${key}" cannot be used as variable name`
@@ -4151,7 +4235,7 @@ var require_dist_node8 = __commonJS({
         endpoint: newRequest.endpoint
       });
     }
-    var graphql22 = withDefaults4(import_request3.request, {
+    var graphql22 = withDefaults4(import_request32.request, {
       headers: {
         "user-agent": `octokit-graphql.js/${VERSION9} ${(0, import_universal_user_agent5.getUserAgent)()}`
       },
@@ -4168,7 +4252,7 @@ var require_dist_node8 = __commonJS({
 });
 
 // 
-var require_dist_node9 = __commonJS({
+var require_dist_node7 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -4239,7 +4323,7 @@ var require_dist_node9 = __commonJS({
 });
 
 // 
-var require_dist_node10 = __commonJS({
+var require_dist_node8 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -4266,14 +4350,29 @@ var require_dist_node10 = __commonJS({
     module.exports = __toCommonJS(index_exports);
     var import_universal_user_agent5 = require_dist_node();
     var import_before_after_hook2 = require_before_after_hook();
-    var import_request3 = require_dist_node7();
-    var import_graphql2 = require_dist_node8();
-    var import_auth_token2 = require_dist_node9();
-    var VERSION9 = "5.2.1";
+    var import_request5 = require_dist_node5();
+    var import_graphql2 = require_dist_node6();
+    var import_auth_token2 = require_dist_node7();
+    var VERSION9 = "5.2.2";
     var noop2 = () => {
     };
     var consoleWarn2 = console.warn.bind(console);
     var consoleError2 = console.error.bind(console);
+    function createLogger2(logger = {}) {
+      if (typeof logger.debug !== "function") {
+        logger.debug = noop2;
+      }
+      if (typeof logger.info !== "function") {
+        logger.info = noop2;
+      }
+      if (typeof logger.warn !== "function") {
+        logger.warn = consoleWarn2;
+      }
+      if (typeof logger.error !== "function") {
+        logger.error = consoleError2;
+      }
+      return logger;
+    }
     var userAgentTrail2 = `octokit-core.js/${VERSION9} ${(0, import_universal_user_agent5.getUserAgent)()}`;
     var Octokit3 = class {
       static {
@@ -4304,6 +4403,12 @@ var require_dist_node10 = __commonJS({
       static {
         this.plugins = [];
       }
+      /**
+       * Attach a plugin (or many) to your Octokit instance.
+       *
+       * @example
+       * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+       */
       static plugin(...newPlugins) {
         const currentPlugins = this.plugins;
         const NewOctokit = class extends this {
@@ -4318,9 +4423,10 @@ var require_dist_node10 = __commonJS({
       constructor(options = {}) {
         const hook2 = new import_before_after_hook2.Collection();
         const requestDefaults = {
-          baseUrl: import_request3.request.endpoint.DEFAULTS.baseUrl,
+          baseUrl: import_request5.request.endpoint.DEFAULTS.baseUrl,
           headers: {},
           request: Object.assign({}, options.request, {
+            // @ts-ignore internal usage only, no need to type
             hook: hook2.bind(null, "request")
           }),
           mediaType: {
@@ -4338,17 +4444,9 @@ var require_dist_node10 = __commonJS({
         if (options.timeZone) {
           requestDefaults.headers["time-zone"] = options.timeZone;
         }
-        this.request = import_request3.request.defaults(requestDefaults);
+        this.request = import_request5.request.defaults(requestDefaults);
         this.graphql = (0, import_graphql2.withCustomRequest)(this.request).defaults(requestDefaults);
-        this.log = Object.assign(
-          {
-            debug: noop2,
-            info: noop2,
-            warn: consoleWarn2,
-            error: consoleError2
-          },
-          options.log
-        );
+        this.log = createLogger2(options.log);
         this.hook = hook2;
         if (!options.authStrategy) {
           if (!options.auth) {
@@ -4367,6 +4465,11 @@ var require_dist_node10 = __commonJS({
               {
                 request: this.request,
                 log: this.log,
+                // we pass the current octokit instance as well as its constructor options
+                // to allow for authentication strategies that return a new octokit instance
+                // that shares the same internal state as the current one. The original
+                // requirement for this was the "event-octokit" authentication strategy
+                // of https://github.com/probot/octokit-auth-probot.
                 octokit: this,
                 octokitOptions: otherOptions
               },
@@ -4386,7 +4489,7 @@ var require_dist_node10 = __commonJS({
 });
 
 // 
-var require_dist_node11 = __commonJS({
+var require_dist_node9 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -6432,6 +6535,7 @@ var require_dist_node11 = __commonJS({
       getOwnPropertyDescriptor(target, methodName) {
         return {
           value: this.get(target, methodName),
+          // ensures method is in the cache
           configurable: true,
           writable: true,
           enumerable: true
@@ -6541,7 +6645,7 @@ var require_dist_node11 = __commonJS({
 });
 
 // 
-var require_dist_node12 = __commonJS({
+var require_dist_node10 = __commonJS({
   ""(exports, module) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -6924,8 +7028,7 @@ var require_utils3 = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -6934,8 +7037,7 @@ var require_utils3 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -6944,13 +7046,10 @@ var require_utils3 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -6959,9 +7058,9 @@ var require_utils3 = __commonJS({
     exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
     var Context = __importStar(require_context());
     var Utils = __importStar(require_utils2());
-    var core_1 = require_dist_node10();
-    var plugin_rest_endpoint_methods_1 = require_dist_node11();
-    var plugin_paginate_rest_1 = require_dist_node12();
+    var core_1 = require_dist_node8();
+    var plugin_rest_endpoint_methods_1 = require_dist_node9();
+    var plugin_paginate_rest_1 = require_dist_node10();
     exports.context = new Context.Context();
     var baseUrl = Utils.getApiBaseUrl();
     exports.defaults = {
@@ -6989,8 +7088,7 @@ var require_github = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -6999,8 +7097,7 @@ var require_github = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -7009,13 +7106,10 @@ var require_github = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -7073,8 +7167,7 @@ var require_tmp = __commonJS({
           const name = _generateTmpName(opts);
           fs.stat(name, function(err) {
             if (!err) {
-              if (tries-- > 0)
-                return _getUniqueName();
+              if (tries-- > 0) return _getUniqueName();
               return cb(new Error("Could not get a unique tmp filename, max tries reached " + name));
             }
             cb(null, name);
@@ -7101,11 +7194,9 @@ var require_tmp = __commonJS({
     function file(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
       tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err)
-          return cb(err);
+        if (err) return cb(err);
         fs.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
-          if (err2)
-            return cb(err2);
+          if (err2) return cb(err2);
           if (opts.discardDescriptor) {
             return fs.close(fd, function _discardCallback(possibleErr) {
               return cb(possibleErr, name, void 0, _prepareTmpFileRemoveCallback(name, -1, opts, false));
@@ -7135,11 +7226,9 @@ var require_tmp = __commonJS({
     function dir(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
       tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err)
-          return cb(err);
+        if (err) return cb(err);
         fs.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
-          if (err2)
-            return cb(err2);
+          if (err2) return cb(err2);
           cb(null, name, _prepareTmpDirRemoveCallback(name, opts, false));
         });
       });
@@ -7164,23 +7253,19 @@ var require_tmp = __commonJS({
         fs.close(fdPath[0], function() {
           fs.unlink(fdPath[1], _handler);
         });
-      else
-        fs.unlink(fdPath[1], _handler);
+      else fs.unlink(fdPath[1], _handler);
     }
     function _removeFileSync(fdPath) {
       let rethrownException = null;
       try {
-        if (0 <= fdPath[0])
-          fs.closeSync(fdPath[0]);
+        if (0 <= fdPath[0]) fs.closeSync(fdPath[0]);
       } catch (e) {
-        if (!_isEBADF(e) && !_isENOENT(e))
-          throw e;
+        if (!_isEBADF(e) && !_isENOENT(e)) throw e;
       } finally {
         try {
           fs.unlinkSync(fdPath[1]);
         } catch (e) {
-          if (!_isENOENT(e))
-            rethrownException = e;
+          if (!_isENOENT(e)) rethrownException = e;
         }
       }
       if (rethrownException !== null) {
@@ -7190,8 +7275,7 @@ var require_tmp = __commonJS({
     function _prepareTmpFileRemoveCallback(name, fd, opts, sync) {
       const removeCallbackSync = _prepareRemoveCallback(_removeFileSync, [fd, name], sync);
       const removeCallback = _prepareRemoveCallback(_removeFileAsync, [fd, name], sync, removeCallbackSync);
-      if (!opts.keep)
-        _removeObjects.unshift(removeCallbackSync);
+      if (!opts.keep) _removeObjects.unshift(removeCallbackSync);
       return sync ? removeCallbackSync : removeCallback;
     }
     function _prepareTmpDirRemoveCallback(name, opts, sync) {
@@ -7199,8 +7283,7 @@ var require_tmp = __commonJS({
       const removeFunctionSync = opts.unsafeCleanup ? FN_RIMRAF_SYNC : FN_RMDIR_SYNC;
       const removeCallbackSync = _prepareRemoveCallback(removeFunctionSync, name, sync);
       const removeCallback = _prepareRemoveCallback(removeFunction, name, sync, removeCallbackSync);
-      if (!opts.keep)
-        _removeObjects.unshift(removeCallbackSync);
+      if (!opts.keep) _removeObjects.unshift(removeCallbackSync);
       return sync ? removeCallbackSync : removeCallback;
     }
     function _prepareRemoveCallback(removeFunction, fileOrDirName, sync, cleanupCallbackSync) {
@@ -7209,8 +7292,7 @@ var require_tmp = __commonJS({
         if (!called) {
           const toRemove = cleanupCallbackSync || _cleanupCallback;
           const index = _removeObjects.indexOf(toRemove);
-          if (index >= 0)
-            _removeObjects.splice(index, 1);
+          if (index >= 0) _removeObjects.splice(index, 1);
           called = true;
           if (sync || removeFunction === FN_RMDIR_SYNC || removeFunction === FN_RIMRAF_SYNC) {
             return removeFunction(fileOrDirName);
@@ -7222,8 +7304,7 @@ var require_tmp = __commonJS({
       };
     }
     function _garbageCollector() {
-      if (!_gracefulCleanup)
-        return;
+      if (!_gracefulCleanup) return;
       while (_removeObjects.length) {
         try {
           _removeObjects[0]();
@@ -7366,7 +7447,8 @@ var require_constants = __commonJS({
     "use strict";
     var SEMVER_SPEC_VERSION = "2.0.0";
     var MAX_LENGTH = 256;
-    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || 9007199254740991;
+    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || /* istanbul ignore next */
+    9007199254740991;
     var MAX_SAFE_COMPONENT_LENGTH = 16;
     var MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
     var RELEASE_TYPES = [
@@ -7539,10 +7621,10 @@ var require_semver = __commonJS({
     var { safeRe: re, t } = require_re();
     var parseOptions = require_parse_options();
     var { compareIdentifiers } = require_identifiers();
-    var SemVer = class {
+    var SemVer = class _SemVer {
       constructor(version, options) {
         options = parseOptions(options);
-        if (version instanceof SemVer) {
+        if (version instanceof _SemVer) {
           if (version.loose === !!options.loose && version.includePrerelease === !!options.includePrerelease) {
             return version;
           } else {
@@ -7605,11 +7687,11 @@ var require_semver = __commonJS({
       }
       compare(other) {
         debug("SemVer.compare", this.version, this.options, other);
-        if (!(other instanceof SemVer)) {
+        if (!(other instanceof _SemVer)) {
           if (typeof other === "string" && other === this.version) {
             return 0;
           }
-          other = new SemVer(other, this.options);
+          other = new _SemVer(other, this.options);
         }
         if (other.version === this.version) {
           return 0;
@@ -7617,14 +7699,14 @@ var require_semver = __commonJS({
         return this.compareMain(other) || this.comparePre(other);
       }
       compareMain(other) {
-        if (!(other instanceof SemVer)) {
-          other = new SemVer(other, this.options);
+        if (!(other instanceof _SemVer)) {
+          other = new _SemVer(other, this.options);
         }
         return compareIdentifiers(this.major, other.major) || compareIdentifiers(this.minor, other.minor) || compareIdentifiers(this.patch, other.patch);
       }
       comparePre(other) {
-        if (!(other instanceof SemVer)) {
-          other = new SemVer(other, this.options);
+        if (!(other instanceof _SemVer)) {
+          other = new _SemVer(other, this.options);
         }
         if (this.prerelease.length && !other.prerelease.length) {
           return -1;
@@ -7652,8 +7734,8 @@ var require_semver = __commonJS({
         } while (++i);
       }
       compareBuild(other) {
-        if (!(other instanceof SemVer)) {
-          other = new SemVer(other, this.options);
+        if (!(other instanceof _SemVer)) {
+          other = new _SemVer(other, this.options);
         }
         let i = 0;
         do {
@@ -7673,6 +7755,8 @@ var require_semver = __commonJS({
           }
         } while (++i);
       }
+      // preminor will bump the version up to the next minor release, and immediately
+      // down to pre-release. premajor and prepatch work the same way.
       inc(release, identifier, identifierBase) {
         if (release.startsWith("pre")) {
           if (!identifier && identifierBase === false) {
@@ -7704,6 +7788,8 @@ var require_semver = __commonJS({
             this.inc("patch", identifier, identifierBase);
             this.inc("pre", identifier, identifierBase);
             break;
+          // If the input is a non-prerelease version, this acts the same as
+          // prepatch.
           case "prerelease":
             if (this.prerelease.length === 0) {
               this.inc("patch", identifier, identifierBase);
@@ -7737,6 +7823,8 @@ var require_semver = __commonJS({
             }
             this.prerelease = [];
             break;
+          // This probably shouldn't be used publicly.
+          // 1.0.0 'pre' would become 1.0.0-0 which is the wrong direction.
           case "pre": {
             const base = Number(identifierBase) ? 1 : 0;
             if (this.prerelease.length === 0) {
@@ -8207,14 +8295,14 @@ var require_range = __commonJS({
   ""(exports, module) {
     "use strict";
     var SPACE_CHARACTERS = /\s+/g;
-    var Range = class {
+    var Range = class _Range {
       constructor(range, options) {
         options = parseOptions(options);
-        if (range instanceof Range) {
+        if (range instanceof _Range) {
           if (range.loose === !!options.loose && range.includePrerelease === !!options.includePrerelease) {
             return range;
           } else {
-            return new Range(range.raw, options);
+            return new _Range(range.raw, options);
           }
         }
         if (range instanceof Comparator) {
@@ -8312,7 +8400,7 @@ var require_range = __commonJS({
         return result;
       }
       intersects(range, options) {
-        if (!(range instanceof Range)) {
+        if (!(range instanceof _Range)) {
           throw new TypeError("a Range is required");
         }
         return this.set.some((thisComparators) => {
@@ -8325,6 +8413,7 @@ var require_range = __commonJS({
           });
         });
       }
+      // if ANY of the sets match ALL of its comparators, then pass
       test(version) {
         if (!version) {
           return false;
@@ -8582,13 +8671,13 @@ var require_comparator = __commonJS({
   ""(exports, module) {
     "use strict";
     var ANY = Symbol("SemVer ANY");
-    var Comparator = class {
+    var Comparator = class _Comparator {
       static get ANY() {
         return ANY;
       }
       constructor(comp, options) {
         options = parseOptions(options);
-        if (comp instanceof Comparator) {
+        if (comp instanceof _Comparator) {
           if (comp.loose === !!options.loose) {
             return comp;
           } else {
@@ -8641,7 +8730,7 @@ var require_comparator = __commonJS({
         return cmp(version, this.operator, this.semver, this.options);
       }
       intersects(comp, options) {
-        if (!(comp instanceof Comparator)) {
+        if (!(comp instanceof _Comparator)) {
           throw new TypeError("a Comparator is required");
         }
         if (this.operator === "") {
@@ -8806,6 +8895,7 @@ var require_min_version = __commonJS({
                 compver.prerelease.push(0);
               }
               compver.raw = compver.format();
+            /* fallthrough */
             case "":
             case ">=":
               if (!setMin || gt(compver, setMin)) {
@@ -8815,6 +8905,7 @@ var require_min_version = __commonJS({
             case "<":
             case "<=":
               break;
+            /* istanbul ignore next */
             default:
               throw new Error(`Unexpected operation: ${comparator.operator}`);
           }
@@ -9017,19 +9108,18 @@ var require_subset = __commonJS({
       sub = new Range(sub, options);
       dom = new Range(dom, options);
       let sawNonNull = false;
-      OUTER:
-        for (const simpleSub of sub.set) {
-          for (const simpleDom of dom.set) {
-            const isSub = simpleSubset(simpleSub, simpleDom, options);
-            sawNonNull = sawNonNull || isSub !== null;
-            if (isSub) {
-              continue OUTER;
-            }
-          }
-          if (sawNonNull) {
-            return false;
+      OUTER: for (const simpleSub of sub.set) {
+        for (const simpleDom of dom.set) {
+          const isSub = simpleSubset(simpleSub, simpleDom, options);
+          sawNonNull = sawNonNull || isSub !== null;
+          if (isSub) {
+            continue OUTER;
           }
         }
+        if (sawNonNull) {
+          return false;
+        }
+      }
       return true;
     };
     var minimumVersionWithPreRelease = [new Comparator(">=0.0.0-0")];
@@ -9385,6 +9475,7 @@ var require_dist = __commonJS({
       var rendered = /* @__PURE__ */ new Map();
       var executingContext = context2;
       var currentContext = {
+        // The current context for execution.
         fragments: /* @__PURE__ */ new Map()
       };
       while (executingContext.fragments.size > 0) {
@@ -9396,6 +9487,7 @@ var require_dist = __commonJS({
         }
         executingContext = currentContext;
         currentContext = {
+          // Reset current context.
           fragments: /* @__PURE__ */ new Map()
         };
       }
@@ -9407,6 +9499,7 @@ var require_dist = __commonJS({
       };
       renderObject(void 0, value, context2);
       var currentContext = {
+        // The current context for execution.
         fragments: /* @__PURE__ */ new Map()
       };
       var output = "";
@@ -9464,9 +9557,7 @@ var require_dist = __commonJS({
       __assign = Object.assign || function __assign2(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
         }
         return t;
       };
@@ -9493,42 +9584,45 @@ var require_dist = __commonJS({
       var scalar = (_a = {}, _a[typeSymbol] = exports.GraphQLType.SCALAR, _a);
       return scalar;
     }
-    var types2 = function() {
-      function types3() {
-      }
-      Object.defineProperty(types3, "number", {
-        get: function() {
+    var types2 = (
+      /** @class */
+      function() {
+        function types3() {
+        }
+        Object.defineProperty(types3, "number", {
+          get: function() {
+            return scalarType();
+          },
+          enumerable: false,
+          configurable: true
+        });
+        Object.defineProperty(types3, "string", {
+          get: function() {
+            return scalarType();
+          },
+          enumerable: false,
+          configurable: true
+        });
+        Object.defineProperty(types3, "boolean", {
+          get: function() {
+            return scalarType();
+          },
+          enumerable: false,
+          configurable: true
+        });
+        types3.constant = function(_c) {
           return scalarType();
-        },
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(types3, "string", {
-        get: function() {
+        };
+        types3.oneOf = function(_e) {
           return scalarType();
-        },
-        enumerable: false,
-        configurable: true
-      });
-      Object.defineProperty(types3, "boolean", {
-        get: function() {
+        };
+        types3.custom = function() {
           return scalarType();
-        },
-        enumerable: false,
-        configurable: true
-      });
-      types3.constant = function(_c) {
-        return scalarType();
-      };
-      types3.oneOf = function(_e) {
-        return scalarType();
-      };
-      types3.custom = function() {
-        return scalarType();
-      };
-      types3.optional = types3;
-      return types3;
-    }();
+        };
+        types3.optional = types3;
+        return types3;
+      }()
+    );
     exports.alias = alias;
     exports.fragment = fragment;
     exports.fragmentToString = fragmentToString;
@@ -9760,8 +9854,7 @@ var require_cjs = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -9770,8 +9863,7 @@ var require_cjs = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0)
-        k2 = k;
+      if (k2 === void 0) k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -9780,21 +9872,16 @@ var require_cjs = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule)
-        return mod;
+      if (mod && mod.__esModule) return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod)
-          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
-            __createBinding(result, mod, k);
+        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
     };
     var __exportStar = exports && exports.__exportStar || function(m, exports2) {
-      for (var p in m)
-        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
-          __createBinding(exports2, m, p);
+      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p)) __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
@@ -9825,8 +9912,10 @@ var require_lib2 = __commonJS({
       delimiter: optDelimiter = delimiter
     }) => {
       const pathEnv = cmd.match(rSlash) ? [""] : [
+        // windows always checks the cwd first
         ...isWindows ? [process.cwd()] : [],
-        ...(optPath || "").split(optDelimiter)
+        ...(optPath || /* istanbul ignore next: very unusual */
+        "").split(optDelimiter)
       ];
       if (isWindows) {
         const pathExtExe = optPathExt || [".EXE", ".CMD", ".BAT", ".COM"].join(optDelimiter);
@@ -9899,16 +9988,21 @@ var require_lib2 = __commonJS({
 // 
 var require_lockfile = __commonJS({
   ""(exports, module) {
-    module.exports = function(modules) {
+    module.exports = /******/
+    function(modules) {
       var installedModules = {};
       function __webpack_require__(moduleId) {
         if (installedModules[moduleId]) {
           return installedModules[moduleId].exports;
         }
         var module2 = installedModules[moduleId] = {
+          /******/
           i: moduleId,
+          /******/
           l: false,
+          /******/
           exports: {}
+          /******/
         };
         modules[moduleId].call(module2.exports, module2, module2.exports, __webpack_require__);
         module2.l = true;
@@ -9922,18 +10016,28 @@ var require_lockfile = __commonJS({
       __webpack_require__.d = function(exports2, name, getter) {
         if (!__webpack_require__.o(exports2, name)) {
           Object.defineProperty(exports2, name, {
+            /******/
             configurable: false,
+            /******/
             enumerable: true,
+            /******/
             get: getter
+            /******/
           });
         }
       };
       __webpack_require__.n = function(module2) {
-        var getter = module2 && module2.__esModule ? function getDefault() {
-          return module2["default"];
-        } : function getModuleExports() {
-          return module2;
-        };
+        var getter = module2 && module2.__esModule ? (
+          /******/
+          function getDefault() {
+            return module2["default"];
+          }
+        ) : (
+          /******/
+          function getModuleExports() {
+            return module2;
+          }
+        );
         __webpack_require__.d(getter, "a", getter);
         return getter;
       };
@@ -9943,9 +10047,13 @@ var require_lockfile = __commonJS({
       __webpack_require__.p = "";
       return __webpack_require__(__webpack_require__.s = 14);
     }([
+      /* 0 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("path");
       },
+      /* 1 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         exports2.__esModule = true;
@@ -9981,12 +10089,18 @@ var require_lockfile = __commonJS({
           };
         };
       },
+      /* 2 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("util");
       },
+      /* 3 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("fs");
       },
+      /* 4 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -10020,6 +10134,8 @@ var require_lockfile = __commonJS({
         }
         exports2.ResponseError = ResponseError;
       },
+      /* 5 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -10096,13 +10212,11 @@ var require_lockfile = __commonJS({
                     for (var _iterator4 = destFiles, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator](); ; ) {
                       var _ref6;
                       if (_isArray4) {
-                        if (_i4 >= _iterator4.length)
-                          break;
+                        if (_i4 >= _iterator4.length) break;
                         _ref6 = _iterator4[_i4++];
                       } else {
                         _i4 = _iterator4.next();
-                        if (_i4.done)
-                          break;
+                        if (_i4.done) break;
                         _ref6 = _i4.value;
                       }
                       const file = _ref6;
@@ -10113,13 +10227,11 @@ var require_lockfile = __commonJS({
                           for (var _iterator5 = yield readdir(loc), _isArray5 = Array.isArray(_iterator5), _i5 = 0, _iterator5 = _isArray5 ? _iterator5 : _iterator5[Symbol.iterator](); ; ) {
                             var _ref7;
                             if (_isArray5) {
-                              if (_i5 >= _iterator5.length)
-                                break;
+                              if (_i5 >= _iterator5.length) break;
                               _ref7 = _iterator5[_i5++];
                             } else {
                               _i5 = _iterator5.next();
-                              if (_i5.done)
-                                break;
+                              if (_i5.done) break;
                               _ref7 = _i5.value;
                             }
                             const file2 = _ref7;
@@ -10160,13 +10272,11 @@ var require_lockfile = __commonJS({
                   for (var _iterator6 = srcFiles, _isArray6 = Array.isArray(_iterator6), _i6 = 0, _iterator6 = _isArray6 ? _iterator6 : _iterator6[Symbol.iterator](); ; ) {
                     var _ref8;
                     if (_isArray6) {
-                      if (_i6 >= _iterator6.length)
-                        break;
+                      if (_i6 >= _iterator6.length) break;
                       _ref8 = _iterator6[_i6++];
                     } else {
                       _i6 = _iterator6.next();
-                      if (_i6.done)
-                        break;
+                      if (_i6.done) break;
                       _ref8 = _i6.value;
                     }
                     const file = _ref8;
@@ -10212,13 +10322,11 @@ var require_lockfile = __commonJS({
             for (var _iterator = queue, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref2;
               if (_isArray) {
-                if (_i >= _iterator.length)
-                  break;
+                if (_i >= _iterator.length) break;
                 _ref2 = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done)
-                  break;
+                if (_i.done) break;
                 _ref2 = _i.value;
               }
               const item = _ref2;
@@ -10243,13 +10351,11 @@ var require_lockfile = __commonJS({
             for (var _iterator2 = artifactFiles, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ; ) {
               var _ref3;
               if (_isArray2) {
-                if (_i2 >= _iterator2.length)
-                  break;
+                if (_i2 >= _iterator2.length) break;
                 _ref3 = _iterator2[_i2++];
               } else {
                 _i2 = _iterator2.next();
-                if (_i2.done)
-                  break;
+                if (_i2.done) break;
                 _ref3 = _i2.value;
               }
               const file = _ref3;
@@ -10261,13 +10367,11 @@ var require_lockfile = __commonJS({
             for (var _iterator3 = possibleExtraneous, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator](); ; ) {
               var _ref4;
               if (_isArray3) {
-                if (_i3 >= _iterator3.length)
-                  break;
+                if (_i3 >= _iterator3.length) break;
                 _ref4 = _iterator3[_i3++];
               } else {
                 _i3 = _iterator3.next();
-                if (_i3.done)
-                  break;
+                if (_i3.done) break;
                 _ref4 = _i3.value;
               }
               const loc = _ref4;
@@ -10338,13 +10442,11 @@ var require_lockfile = __commonJS({
                     for (var _iterator10 = destFiles, _isArray10 = Array.isArray(_iterator10), _i10 = 0, _iterator10 = _isArray10 ? _iterator10 : _iterator10[Symbol.iterator](); ; ) {
                       var _ref14;
                       if (_isArray10) {
-                        if (_i10 >= _iterator10.length)
-                          break;
+                        if (_i10 >= _iterator10.length) break;
                         _ref14 = _iterator10[_i10++];
                       } else {
                         _i10 = _iterator10.next();
-                        if (_i10.done)
-                          break;
+                        if (_i10.done) break;
                         _ref14 = _i10.value;
                       }
                       const file = _ref14;
@@ -10355,13 +10457,11 @@ var require_lockfile = __commonJS({
                           for (var _iterator11 = yield readdir(loc), _isArray11 = Array.isArray(_iterator11), _i11 = 0, _iterator11 = _isArray11 ? _iterator11 : _iterator11[Symbol.iterator](); ; ) {
                             var _ref15;
                             if (_isArray11) {
-                              if (_i11 >= _iterator11.length)
-                                break;
+                              if (_i11 >= _iterator11.length) break;
                               _ref15 = _iterator11[_i11++];
                             } else {
                               _i11 = _iterator11.next();
-                              if (_i11.done)
-                                break;
+                              if (_i11.done) break;
                               _ref15 = _i11.value;
                             }
                             const file2 = _ref15;
@@ -10396,13 +10496,11 @@ var require_lockfile = __commonJS({
                   for (var _iterator12 = srcFiles, _isArray12 = Array.isArray(_iterator12), _i12 = 0, _iterator12 = _isArray12 ? _iterator12 : _iterator12[Symbol.iterator](); ; ) {
                     var _ref16;
                     if (_isArray12) {
-                      if (_i12 >= _iterator12.length)
-                        break;
+                      if (_i12 >= _iterator12.length) break;
                       _ref16 = _iterator12[_i12++];
                     } else {
                       _i12 = _iterator12.next();
-                      if (_i12.done)
-                        break;
+                      if (_i12.done) break;
                       _ref16 = _i12.value;
                     }
                     const file = _ref16;
@@ -10446,13 +10544,11 @@ var require_lockfile = __commonJS({
             for (var _iterator7 = queue, _isArray7 = Array.isArray(_iterator7), _i7 = 0, _iterator7 = _isArray7 ? _iterator7 : _iterator7[Symbol.iterator](); ; ) {
               var _ref10;
               if (_isArray7) {
-                if (_i7 >= _iterator7.length)
-                  break;
+                if (_i7 >= _iterator7.length) break;
                 _ref10 = _iterator7[_i7++];
               } else {
                 _i7 = _iterator7.next();
-                if (_i7.done)
-                  break;
+                if (_i7.done) break;
                 _ref10 = _i7.value;
               }
               const item = _ref10;
@@ -10475,13 +10571,11 @@ var require_lockfile = __commonJS({
             for (var _iterator8 = artifactFiles, _isArray8 = Array.isArray(_iterator8), _i8 = 0, _iterator8 = _isArray8 ? _iterator8 : _iterator8[Symbol.iterator](); ; ) {
               var _ref11;
               if (_isArray8) {
-                if (_i8 >= _iterator8.length)
-                  break;
+                if (_i8 >= _iterator8.length) break;
                 _ref11 = _iterator8[_i8++];
               } else {
                 _i8 = _iterator8.next();
-                if (_i8.done)
-                  break;
+                if (_i8.done) break;
                 _ref11 = _i8.value;
               }
               const file = _ref11;
@@ -10493,13 +10587,11 @@ var require_lockfile = __commonJS({
             for (var _iterator9 = possibleExtraneous, _isArray9 = Array.isArray(_iterator9), _i9 = 0, _iterator9 = _isArray9 ? _iterator9 : _iterator9[Symbol.iterator](); ; ) {
               var _ref12;
               if (_isArray9) {
-                if (_i9 >= _iterator9.length)
-                  break;
+                if (_i9 >= _iterator9.length) break;
                 _ref12 = _iterator9[_i9++];
               } else {
                 _i9 = _iterator9.next();
-                if (_i9.done)
-                  break;
+                if (_i9.done) break;
                 _ref12 = _i9.value;
               }
               const loc = _ref12;
@@ -10595,13 +10687,11 @@ var require_lockfile = __commonJS({
             for (var _iterator13 = files, _isArray13 = Array.isArray(_iterator13), _i13 = 0, _iterator13 = _isArray13 ? _iterator13 : _iterator13[Symbol.iterator](); ; ) {
               var _ref22;
               if (_isArray13) {
-                if (_i13 >= _iterator13.length)
-                  break;
+                if (_i13 >= _iterator13.length) break;
                 _ref22 = _iterator13[_i13++];
               } else {
                 _i13 = _iterator13.next();
-                if (_i13.done)
-                  break;
+                if (_i13.done) break;
                 _ref22 = _i13.value;
               }
               const file = _ref22;
@@ -10704,13 +10794,11 @@ var require_lockfile = __commonJS({
             for (var _iterator14 = filenames, _isArray14 = Array.isArray(_iterator14), _i14 = 0, _iterator14 = _isArray14 ? _iterator14 : _iterator14[Symbol.iterator](); ; ) {
               var _ref28;
               if (_isArray14) {
-                if (_i14 >= _iterator14.length)
-                  break;
+                if (_i14 >= _iterator14.length) break;
                 _ref28 = _iterator14[_i14++];
               } else {
                 _i14 = _iterator14.next();
-                if (_i14.done)
-                  break;
+                if (_i14.done) break;
                 _ref28 = _i14.value;
               }
               const name = _ref28;
@@ -10811,13 +10899,11 @@ var require_lockfile = __commonJS({
             for (var _iterator15 = paths, _isArray15 = Array.isArray(_iterator15), _i15 = 0, _iterator15 = _isArray15 ? _iterator15 : _iterator15[Symbol.iterator](); ; ) {
               var _ref35;
               if (_isArray15) {
-                if (_i15 >= _iterator15.length)
-                  break;
+                if (_i15 >= _iterator15.length) break;
                 _ref35 = _iterator15[_i15++];
               } else {
                 _i15 = _iterator15.next();
-                if (_i15.done)
-                  break;
+                if (_i15.done) break;
                 _ref35 = _i15.value;
               }
               const path = _ref35;
@@ -10842,13 +10928,11 @@ var require_lockfile = __commonJS({
             for (var _iterator16 = paths, _isArray16 = Array.isArray(_iterator16), _i16 = 0, _iterator16 = _isArray16 ? _iterator16 : _iterator16[Symbol.iterator](); ; ) {
               var _ref37;
               if (_isArray16) {
-                if (_i16 >= _iterator16.length)
-                  break;
+                if (_i16 >= _iterator16.length) break;
                 _ref37 = _iterator16[_i16++];
               } else {
                 _i16 = _iterator16.next();
-                if (_i16.done)
-                  break;
+                if (_i16.done) break;
                 _ref37 = _i16.value;
               }
               const folder = _ref37;
@@ -10917,8 +11001,7 @@ var require_lockfile = __commonJS({
             var newObj = {};
             if (obj != null) {
               for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key))
-                  newObj[key] = obj[key];
+                if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
               }
             }
             newObj.default = obj;
@@ -10982,6 +11065,8 @@ var require_lockfile = __commonJS({
         const cr = "\r".charCodeAt(0);
         const lf = "\n".charCodeAt(0);
       },
+      /* 6 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11071,6 +11156,8 @@ var require_lockfile = __commonJS({
           unknown: "red"
         };
       },
+      /* 7 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var NODE_ENV = process.env.NODE_ENV;
@@ -11103,15 +11190,20 @@ var require_lockfile = __commonJS({
         module2.exports = invariant;
       },
       ,
+      /* 9 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("crypto");
       },
       ,
+      /* 11 */
+      /***/
       function(module2, exports2) {
         var global = module2.exports = typeof window != "undefined" && window.Math == Math ? window : typeof self != "undefined" && self.Math == Math ? self : Function("return this")();
-        if (typeof __g == "number")
-          __g = global;
+        if (typeof __g == "number") __g = global;
       },
+      /* 12 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11194,6 +11286,8 @@ var require_lockfile = __commonJS({
           });
         }
       },
+      /* 13 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var store = __webpack_require__(107)("wks");
         var uid = __webpack_require__(111);
@@ -11204,6 +11298,8 @@ var require_lockfile = __commonJS({
         };
         $exports.store = store;
       },
+      /* 14 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11263,8 +11359,7 @@ var require_lockfile = __commonJS({
             var newObj = {};
             if (obj != null) {
               for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key))
-                  newObj[key] = obj[key];
+                if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
               }
             }
             newObj.default = obj;
@@ -11327,6 +11422,8 @@ var require_lockfile = __commonJS({
             this.cache = cache;
             this.parseResultType = parseResultType;
           }
+          // source string if the `cache` was parsed
+          // if true, we're parsing an old yarn file and need to update integrity fields
           hasEntriesExistWithoutIntegrity() {
             if (!this.cache) {
               return false;
@@ -11389,13 +11486,11 @@ var require_lockfile = __commonJS({
             for (var _iterator = sortedPatternsKeys, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref;
               if (_isArray) {
-                if (_i >= _iterator.length)
-                  break;
+                if (_i >= _iterator.length) break;
                 _ref = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done)
-                  break;
+                if (_i.done) break;
                 _ref = _i.value;
               }
               const pattern = _ref;
@@ -11437,11 +11532,15 @@ var require_lockfile = __commonJS({
       },
       ,
       ,
+      /* 17 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("stream");
       },
       ,
       ,
+      /* 20 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11453,13 +11552,11 @@ var require_lockfile = __commonJS({
             for (var _iterator = obj, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref;
               if (_isArray) {
-                if (_i >= _iterator.length)
-                  break;
+                if (_i >= _iterator.length) break;
                 _ref = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done)
-                  break;
+                if (_i.done) break;
                 _ref = _i.value;
               }
               const item = _ref;
@@ -11477,26 +11574,32 @@ var require_lockfile = __commonJS({
         }
       },
       ,
+      /* 22 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("assert");
       },
+      /* 23 */
+      /***/
       function(module2, exports2) {
         var core = module2.exports = { version: "2.5.7" };
-        if (typeof __e == "number")
-          __e = core;
+        if (typeof __e == "number") __e = core;
       },
       ,
       ,
       ,
+      /* 27 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var isObject = __webpack_require__(34);
         module2.exports = function(it) {
-          if (!isObject(it))
-            throw TypeError(it + " is not an object!");
+          if (!isObject(it)) throw TypeError(it + " is not an object!");
           return it;
         };
       },
       ,
+      /* 29 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11529,6 +11632,8 @@ var require_lockfile = __commonJS({
         }
       },
       ,
+      /* 31 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var dP = __webpack_require__(50);
         var createDesc = __webpack_require__(106);
@@ -11539,6 +11644,8 @@ var require_lockfile = __commonJS({
           return object;
         };
       },
+      /* 32 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var buffer = __webpack_require__(63);
         var Buffer2 = buffer.Buffer;
@@ -11592,6 +11699,8 @@ var require_lockfile = __commonJS({
           return buffer.SlowBuffer(size);
         };
       },
+      /* 33 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = !__webpack_require__(85)(function() {
           return Object.defineProperty({}, "a", { get: function() {
@@ -11599,20 +11708,28 @@ var require_lockfile = __commonJS({
           } }).a != 7;
         });
       },
+      /* 34 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(it) {
           return typeof it === "object" ? it !== null : typeof it === "function";
         };
       },
+      /* 35 */
+      /***/
       function(module2, exports2) {
         module2.exports = {};
       },
+      /* 36 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("os");
       },
       ,
       ,
       ,
+      /* 40 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11678,6 +11795,8 @@ var require_lockfile = __commonJS({
           });
         }
       },
+      /* 41 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var global = __webpack_require__(11);
         var core = __webpack_require__(23);
@@ -11696,12 +11815,10 @@ var require_lockfile = __commonJS({
           var expProto = exports3[PROTOTYPE];
           var target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE];
           var key, own, out;
-          if (IS_GLOBAL)
-            source = name;
+          if (IS_GLOBAL) source = name;
           for (key in source) {
             own = !IS_FORCED && target && target[key] !== void 0;
-            if (own && has(exports3, key))
-              continue;
+            if (own && has(exports3, key)) continue;
             out = own ? target[key] : source[key];
             exports3[key] = IS_GLOBAL && typeof target[key] != "function" ? source[key] : IS_BIND && own ? ctx(out, global) : IS_WRAP && target[key] == out ? function(C) {
               var F = function(a, b, c) {
@@ -11723,8 +11840,7 @@ var require_lockfile = __commonJS({
             }(out) : IS_PROTO && typeof out == "function" ? ctx(Function.call, out) : out;
             if (IS_PROTO) {
               (exports3.virtual || (exports3.virtual = {}))[key] = out;
-              if (type & $export.R && expProto && !expProto[key])
-                hide(expProto, key, out);
+              if (type & $export.R && expProto && !expProto[key]) hide(expProto, key, out);
             }
           }
         };
@@ -11738,11 +11854,12 @@ var require_lockfile = __commonJS({
         $export.R = 128;
         module2.exports = $export;
       },
+      /* 42 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         try {
           var util = __webpack_require__(2);
-          if (typeof util.inherits !== "function")
-            throw "";
+          if (typeof util.inherits !== "function") throw "";
           module2.exports = util.inherits;
         } catch (e) {
           module2.exports = __webpack_require__(224);
@@ -11750,6 +11867,8 @@ var require_lockfile = __commonJS({
       },
       ,
       ,
+      /* 45 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -11768,25 +11887,29 @@ var require_lockfile = __commonJS({
         const userHomeDir = (_rootUser || _load_rootUser()).default ? path.resolve("/usr/local/share") : home;
         exports2.default = userHomeDir;
       },
+      /* 46 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(it) {
-          if (typeof it != "function")
-            throw TypeError(it + " is not a function!");
+          if (typeof it != "function") throw TypeError(it + " is not a function!");
           return it;
         };
       },
+      /* 47 */
+      /***/
       function(module2, exports2) {
         var toString = {}.toString;
         module2.exports = function(it) {
           return toString.call(it).slice(8, -1);
         };
       },
+      /* 48 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var aFunction = __webpack_require__(46);
         module2.exports = function(fn, that, length) {
           aFunction(fn);
-          if (that === void 0)
-            return fn;
+          if (that === void 0) return fn;
           switch (length) {
             case 1:
               return function(a) {
@@ -11806,12 +11929,16 @@ var require_lockfile = __commonJS({
           };
         };
       },
+      /* 49 */
+      /***/
       function(module2, exports2) {
         var hasOwnProperty = {}.hasOwnProperty;
         module2.exports = function(it, key) {
           return hasOwnProperty.call(it, key);
         };
       },
+      /* 50 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var anObject = __webpack_require__(27);
         var IE8_DOM_DEFINE = __webpack_require__(184);
@@ -11821,24 +11948,25 @@ var require_lockfile = __commonJS({
           anObject(O);
           P = toPrimitive(P, true);
           anObject(Attributes);
-          if (IE8_DOM_DEFINE)
-            try {
-              return dP(O, P, Attributes);
-            } catch (e) {
-            }
-          if ("get" in Attributes || "set" in Attributes)
-            throw TypeError("Accessors not supported!");
-          if ("value" in Attributes)
-            O[P] = Attributes.value;
+          if (IE8_DOM_DEFINE) try {
+            return dP(O, P, Attributes);
+          } catch (e) {
+          }
+          if ("get" in Attributes || "set" in Attributes) throw TypeError("Accessors not supported!");
+          if ("value" in Attributes) O[P] = Attributes.value;
           return O;
         };
       },
       ,
       ,
       ,
+      /* 54 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("events");
       },
+      /* 55 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         const Buffer2 = __webpack_require__(32).Buffer;
@@ -11878,7 +12006,16 @@ var require_lockfile = __commonJS({
           }
           toString(opts) {
             if (opts && opts.strict) {
-              if (!(SPEC_ALGORITHMS.some((x) => x === this.algorithm) && this.digest.match(BASE64_REGEX) && (this.options || []).every((opt) => opt.match(VCHAR_REGEX)))) {
+              if (!// The spec has very restricted productions for algorithms.
+              // https://www.w3.org/TR/CSP2/#source-list-syntax
+              (SPEC_ALGORITHMS.some((x) => x === this.algorithm) && // Usually, if someone insists on using a "different" base64, we
+              // leave it as-is, since there's multiple standards, and the
+              // specified is not a URL-safe variant.
+              // https://www.w3.org/TR/CSP2/#base64_value
+              this.digest.match(BASE64_REGEX) && // Option syntax is strictly visual chars.
+              // https://w3c.github.io/webappsec-subresource-integrity/#grammardef-option-expression
+              // https://tools.ietf.org/html/rfc5234#appendix-B.1
+              (this.options || []).every((opt) => opt.match(VCHAR_REGEX)))) {
                 return "";
               }
             }
@@ -12170,6 +12307,8 @@ var require_lockfile = __commonJS({
           "sha256",
           "sha384",
           "sha512",
+          // TODO - it's unclear _which_ of these Node will actually use as its name
+          //        for the algorithm, so we guesswork it based on the OpenSSL names.
           "sha3",
           "sha3-256",
           "sha3-384",
@@ -12186,6 +12325,8 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 60 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = minimatch;
         minimatch.Minimatch = Minimatch;
@@ -12235,8 +12376,7 @@ var require_lockfile = __commonJS({
           return t;
         }
         minimatch.defaults = function(def) {
-          if (!def || !Object.keys(def).length)
-            return minimatch;
+          if (!def || !Object.keys(def).length) return minimatch;
           var orig = minimatch;
           var m = function minimatch2(p, pattern, options) {
             return orig.minimatch(p, pattern, ext(def, options));
@@ -12247,21 +12387,18 @@ var require_lockfile = __commonJS({
           return m;
         };
         Minimatch.defaults = function(def) {
-          if (!def || !Object.keys(def).length)
-            return Minimatch;
+          if (!def || !Object.keys(def).length) return Minimatch;
           return minimatch.defaults(def).Minimatch;
         };
         function minimatch(p, pattern, options) {
           if (typeof pattern !== "string") {
             throw new TypeError("glob pattern string required");
           }
-          if (!options)
-            options = {};
+          if (!options) options = {};
           if (!options.nocomment && pattern.charAt(0) === "#") {
             return false;
           }
-          if (pattern.trim() === "")
-            return p === "";
+          if (pattern.trim() === "") return p === "";
           return new Minimatch(pattern, options).match(p);
         }
         function Minimatch(pattern, options) {
@@ -12271,8 +12408,7 @@ var require_lockfile = __commonJS({
           if (typeof pattern !== "string") {
             throw new TypeError("glob pattern string required");
           }
-          if (!options)
-            options = {};
+          if (!options) options = {};
           pattern = pattern.trim();
           if (path.sep !== "/") {
             pattern = pattern.split(path.sep).join("/");
@@ -12290,8 +12426,7 @@ var require_lockfile = __commonJS({
         };
         Minimatch.prototype.make = make;
         function make() {
-          if (this._made)
-            return;
+          if (this._made) return;
           var pattern = this.pattern;
           var options = this.options;
           if (!options.nocomment && pattern.charAt(0) === "#") {
@@ -12304,8 +12439,7 @@ var require_lockfile = __commonJS({
           }
           this.parseNegate();
           var set = this.globSet = this.braceExpand();
-          if (options.debug)
-            this.debug = console.error;
+          if (options.debug) this.debug = console.error;
           this.debug(this.pattern, set);
           set = this.globParts = set.map(function(s) {
             return s.split(slashSplit);
@@ -12327,14 +12461,12 @@ var require_lockfile = __commonJS({
           var negate = false;
           var options = this.options;
           var negateOffset = 0;
-          if (options.nonegate)
-            return;
+          if (options.nonegate) return;
           for (var i = 0, l = pattern.length; i < l && pattern.charAt(i) === "!"; i++) {
             negate = !negate;
             negateOffset++;
           }
-          if (negateOffset)
-            this.pattern = pattern.substr(negateOffset);
+          if (negateOffset) this.pattern = pattern.substr(negateOffset);
           this.negate = negate;
         }
         minimatch.braceExpand = function(pattern, options) {
@@ -12365,10 +12497,8 @@ var require_lockfile = __commonJS({
             throw new TypeError("pattern is too long");
           }
           var options = this.options;
-          if (!options.noglobstar && pattern === "**")
-            return GLOBSTAR;
-          if (pattern === "")
-            return "";
+          if (!options.noglobstar && pattern === "**") return GLOBSTAR;
+          if (pattern === "") return "";
           var re = "";
           var hasMagic = !!options.nocase;
           var escaping = false;
@@ -12413,6 +12543,8 @@ var require_lockfile = __commonJS({
                 clearStateChar();
                 escaping = true;
                 continue;
+              // the various stateChar values
+              // for the "extglob" stuff.
               case "?":
               case "*":
               case "+":
@@ -12421,16 +12553,14 @@ var require_lockfile = __commonJS({
                 this.debug("%s	%s %s %j <-- stateChar", pattern, i, re, c);
                 if (inClass) {
                   this.debug("  in class");
-                  if (c === "!" && i === classStart + 1)
-                    c = "^";
+                  if (c === "!" && i === classStart + 1) c = "^";
                   re += c;
                   continue;
                 }
                 self2.debug("call clearStateChar %j", stateChar);
                 clearStateChar();
                 stateChar = c;
-                if (options.noext)
-                  clearStateChar();
+                if (options.noext) clearStateChar();
                 continue;
               case "(":
                 if (inClass) {
@@ -12475,6 +12605,7 @@ var require_lockfile = __commonJS({
                 clearStateChar();
                 re += "|";
                 continue;
+              // these are mostly the same in regexp and glob
               case "[":
                 clearStateChar();
                 if (inClass) {
@@ -12596,8 +12727,7 @@ var require_lockfile = __commonJS({
         };
         Minimatch.prototype.makeRe = makeRe;
         function makeRe() {
-          if (this.regexp || this.regexp === false)
-            return this.regexp;
+          if (this.regexp || this.regexp === false) return this.regexp;
           var set = this.set;
           if (!set.length) {
             this.regexp = false;
@@ -12612,8 +12742,7 @@ var require_lockfile = __commonJS({
             }).join("\\/");
           }).join("|");
           re = "^(?:" + re + ")$";
-          if (this.negate)
-            re = "^(?!" + re + ").*$";
+          if (this.negate) re = "^(?!" + re + ").*$";
           try {
             this.regexp = new RegExp(re, flags);
           } catch (ex) {
@@ -12635,12 +12764,9 @@ var require_lockfile = __commonJS({
         Minimatch.prototype.match = match;
         function match(f, partial) {
           this.debug("match", f, this.pattern);
-          if (this.comment)
-            return false;
-          if (this.empty)
-            return f === "";
-          if (f === "/" && partial)
-            return true;
+          if (this.comment) return false;
+          if (this.empty) return f === "";
+          if (f === "/" && partial) return true;
           var options = this.options;
           if (path.sep !== "/") {
             f = f.split(path.sep).join("/");
@@ -12653,8 +12779,7 @@ var require_lockfile = __commonJS({
           var i;
           for (i = f.length - 1; i >= 0; i--) {
             filename = f[i];
-            if (filename)
-              break;
+            if (filename) break;
           }
           for (i = 0; i < set.length; i++) {
             var pattern = set[i];
@@ -12664,13 +12789,11 @@ var require_lockfile = __commonJS({
             }
             var hit = this.matchOne(file, pattern, partial);
             if (hit) {
-              if (options.flipNegate)
-                return true;
+              if (options.flipNegate) return true;
               return !this.negate;
             }
           }
-          if (options.flipNegate)
-            return false;
+          if (options.flipNegate) return false;
           return this.negate;
         }
         Minimatch.prototype.matchOne = function(file, pattern, partial) {
@@ -12685,8 +12808,7 @@ var require_lockfile = __commonJS({
             var p = pattern[pi];
             var f = file[fi];
             this.debug(pattern, p, f);
-            if (p === false)
-              return false;
+            if (p === false) return false;
             if (p === GLOBSTAR) {
               this.debug("GLOBSTAR", [pattern, p, f]);
               var fr = fi;
@@ -12694,8 +12816,7 @@ var require_lockfile = __commonJS({
               if (pr === pl) {
                 this.debug("** at the end");
                 for (; fi < fl; fi++) {
-                  if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".")
-                    return false;
+                  if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".") return false;
                 }
                 return true;
               }
@@ -12716,8 +12837,7 @@ var require_lockfile = __commonJS({
               }
               if (partial) {
                 this.debug("\n>>> no match, partial?", file, fr, pattern, pr);
-                if (fr === fl)
-                  return true;
+                if (fr === fl) return true;
               }
               return false;
             }
@@ -12733,8 +12853,7 @@ var require_lockfile = __commonJS({
               hit = f.match(p);
               this.debug("pattern match", p, f, hit);
             }
-            if (!hit)
-              return false;
+            if (!hit) return false;
           }
           if (fi === fl && pi === pl) {
             return true;
@@ -12753,6 +12872,8 @@ var require_lockfile = __commonJS({
           return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         }
       },
+      /* 61 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var wrappy = __webpack_require__(123);
         module2.exports = wrappy(once);
@@ -12773,8 +12894,7 @@ var require_lockfile = __commonJS({
         });
         function once(fn) {
           var f = function() {
-            if (f.called)
-              return f.value;
+            if (f.called) return f.value;
             f.called = true;
             return f.value = fn.apply(this, arguments);
           };
@@ -12795,19 +12915,24 @@ var require_lockfile = __commonJS({
         }
       },
       ,
+      /* 63 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("buffer");
       },
       ,
       ,
       ,
+      /* 67 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(it) {
-          if (it == void 0)
-            throw TypeError("Can't call method on  " + it);
+          if (it == void 0) throw TypeError("Can't call method on  " + it);
           return it;
         };
       },
+      /* 68 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var isObject = __webpack_require__(34);
         var document2 = __webpack_require__(11).document;
@@ -12816,17 +12941,20 @@ var require_lockfile = __commonJS({
           return is ? document2.createElement(it) : {};
         };
       },
+      /* 69 */
+      /***/
       function(module2, exports2) {
         module2.exports = true;
       },
+      /* 70 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var aFunction = __webpack_require__(46);
         function PromiseCapability(C) {
           var resolve, reject;
           this.promise = new C(function($$resolve, $$reject) {
-            if (resolve !== void 0 || reject !== void 0)
-              throw TypeError("Bad Promise constructor");
+            if (resolve !== void 0 || reject !== void 0) throw TypeError("Bad Promise constructor");
             resolve = $$resolve;
             reject = $$reject;
           });
@@ -12837,15 +12965,18 @@ var require_lockfile = __commonJS({
           return new PromiseCapability(C);
         };
       },
+      /* 71 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var def = __webpack_require__(50).f;
         var has = __webpack_require__(49);
         var TAG = __webpack_require__(13)("toStringTag");
         module2.exports = function(it, tag, stat) {
-          if (it && !has(it = stat ? it : it.prototype, TAG))
-            def(it, TAG, { configurable: true, value: tag });
+          if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
         };
       },
+      /* 72 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var shared = __webpack_require__(107)("keys");
         var uid = __webpack_require__(111);
@@ -12853,6 +12984,8 @@ var require_lockfile = __commonJS({
           return shared[key] || (shared[key] = uid(key));
         };
       },
+      /* 73 */
+      /***/
       function(module2, exports2) {
         var ceil = Math.ceil;
         var floor = Math.floor;
@@ -12860,6 +12993,8 @@ var require_lockfile = __commonJS({
           return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
         };
       },
+      /* 74 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var IObject = __webpack_require__(131);
         var defined = __webpack_require__(67);
@@ -12867,6 +13002,8 @@ var require_lockfile = __commonJS({
           return IObject(defined(it));
         };
       },
+      /* 75 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = glob;
         var fs = __webpack_require__(3);
@@ -12890,10 +13027,8 @@ var require_lockfile = __commonJS({
         var isIgnored = common.isIgnored;
         var once = __webpack_require__(61);
         function glob(pattern, options, cb) {
-          if (typeof options === "function")
-            cb = options, options = {};
-          if (!options)
-            options = {};
+          if (typeof options === "function") cb = options, options = {};
+          if (!options) options = {};
           if (options.sync) {
             if (cb)
               throw new TypeError("callback provided to sync glob");
@@ -13087,6 +13222,7 @@ var require_lockfile = __commonJS({
           }
           var prefix;
           switch (n) {
+            // if not, then this is rather simple
             case pattern.length:
               this._processSimple(pattern.join("/"), index, cb);
               return;
@@ -13274,6 +13410,7 @@ var require_lockfile = __commonJS({
             return;
           switch (er.code) {
             case "ENOTSUP":
+            // https://github.com/isaacs/node-glob/issues/205
             case "ENOTDIR":
               var abs = this._makeAbs(f);
               this.cache[abs] = "FILE";
@@ -13286,6 +13423,7 @@ var require_lockfile = __commonJS({
               }
               break;
             case "ENOENT":
+            // not terribly unusual
             case "ELOOP":
             case "ENAMETOOLONG":
             case "UNKNOWN":
@@ -13419,6 +13557,8 @@ var require_lockfile = __commonJS({
           return cb(null, c, stat);
         };
       },
+      /* 76 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         function posix(path) {
@@ -13437,10 +13577,14 @@ var require_lockfile = __commonJS({
       },
       ,
       ,
+      /* 79 */
+      /***/
       function(module2, exports2) {
         module2.exports = __require("tty");
       },
       ,
+      /* 81 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -13698,13 +13842,11 @@ var require_lockfile = __commonJS({
                   for (var _iterator = keys, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
                     var _ref;
                     if (_isArray) {
-                      if (_i >= _iterator.length)
-                        break;
+                      if (_i >= _iterator.length) break;
                       _ref = _iterator[_i++];
                     } else {
                       _i = _iterator.next();
-                      if (_i.done)
-                        break;
+                      if (_i.done) break;
                       _ref = _i.value;
                     }
                     const key2 = _ref;
@@ -13717,13 +13859,11 @@ var require_lockfile = __commonJS({
                   for (var _iterator2 = keys, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ; ) {
                     var _ref2;
                     if (_isArray2) {
-                      if (_i2 >= _iterator2.length)
-                        break;
+                      if (_i2 >= _iterator2.length) break;
                       _ref2 = _iterator2[_i2++];
                     } else {
                       _i2 = _iterator2.next();
-                      if (_i2.done)
-                        break;
+                      if (_i2.done) break;
                       _ref2 = _i2.value;
                     }
                     const key2 = _ref2;
@@ -13801,6 +13941,8 @@ var require_lockfile = __commonJS({
       },
       ,
       ,
+      /* 84 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -13911,6 +14053,8 @@ var require_lockfile = __commonJS({
         }
         exports2.default = BlockingQueue;
       },
+      /* 85 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(exec) {
           try {
@@ -13934,10 +14078,12 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 100 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var cof = __webpack_require__(47);
         var TAG = __webpack_require__(13)("toStringTag");
-        var ARG = cof(function() {
+        var ARG = cof(/* @__PURE__ */ function() {
           return arguments;
         }()) == "Arguments";
         var tryGet = function(it, key) {
@@ -13951,13 +14097,19 @@ var require_lockfile = __commonJS({
           return it === void 0 ? "Undefined" : it === null ? "Null" : typeof (T = tryGet(O = Object(it), TAG)) == "string" ? T : ARG ? cof(O) : (B = cof(O)) == "Object" && typeof O.callee == "function" ? "Arguments" : B;
         };
       },
+      /* 101 */
+      /***/
       function(module2, exports2) {
         module2.exports = "constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf".split(",");
       },
+      /* 102 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var document2 = __webpack_require__(11).document;
         module2.exports = document2 && document2.documentElement;
       },
+      /* 103 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var LIBRARY = __webpack_require__(69);
@@ -13979,8 +14131,7 @@ var require_lockfile = __commonJS({
         module2.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
           $iterCreate(Constructor, NAME, next);
           var getMethod = function(kind) {
-            if (!BUGGY && kind in proto2)
-              return proto2[kind];
+            if (!BUGGY && kind in proto2) return proto2[kind];
             switch (kind) {
               case KEYS:
                 return function keys() {
@@ -14008,8 +14159,7 @@ var require_lockfile = __commonJS({
             IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
             if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
               setToStringTag(IteratorPrototype, TAG, true);
-              if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != "function")
-                hide(IteratorPrototype, ITERATOR, returnThis);
+              if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != "function") hide(IteratorPrototype, ITERATOR, returnThis);
             }
           }
           if (DEF_VALUES && $native && $native.name !== VALUES) {
@@ -14029,17 +14179,16 @@ var require_lockfile = __commonJS({
               keys: IS_SET ? $default : getMethod(KEYS),
               entries: $entries
             };
-            if (FORCED)
-              for (key in methods) {
-                if (!(key in proto2))
-                  redefine(proto2, key, methods[key]);
-              }
-            else
-              $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
+            if (FORCED) for (key in methods) {
+              if (!(key in proto2)) redefine(proto2, key, methods[key]);
+            }
+            else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
           }
           return methods;
         };
       },
+      /* 104 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(exec) {
           try {
@@ -14049,20 +14198,23 @@ var require_lockfile = __commonJS({
           }
         };
       },
+      /* 105 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var anObject = __webpack_require__(27);
         var isObject = __webpack_require__(34);
         var newPromiseCapability = __webpack_require__(70);
         module2.exports = function(C, x) {
           anObject(C);
-          if (isObject(x) && x.constructor === C)
-            return x;
+          if (isObject(x) && x.constructor === C) return x;
           var promiseCapability = newPromiseCapability.f(C);
           var resolve = promiseCapability.resolve;
           resolve(x);
           return promiseCapability.promise;
         };
       },
+      /* 106 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(bitmap, value) {
           return {
@@ -14073,6 +14225,8 @@ var require_lockfile = __commonJS({
           };
         };
       },
+      /* 107 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var core = __webpack_require__(23);
         var global = __webpack_require__(11);
@@ -14086,6 +14240,8 @@ var require_lockfile = __commonJS({
           copyright: "\xA9 2018 Denis Pushkarev (zloirock.ru)"
         });
       },
+      /* 108 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var anObject = __webpack_require__(27);
         var aFunction = __webpack_require__(46);
@@ -14096,6 +14252,8 @@ var require_lockfile = __commonJS({
           return C === void 0 || (S = anObject(C)[SPECIES]) == void 0 ? D : aFunction(S);
         };
       },
+      /* 109 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var ctx = __webpack_require__(48);
         var invoke = __webpack_require__(185);
@@ -14126,8 +14284,7 @@ var require_lockfile = __commonJS({
           setTask = function setImmediate(fn) {
             var args = [];
             var i = 1;
-            while (arguments.length > i)
-              args.push(arguments[i++]);
+            while (arguments.length > i) args.push(arguments[i++]);
             queue[++counter] = function() {
               invoke(typeof fn == "function" ? fn : Function(fn), args);
             };
@@ -14173,6 +14330,8 @@ var require_lockfile = __commonJS({
           clear: clearTask
         };
       },
+      /* 110 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var toInteger = __webpack_require__(73);
         var min = Math.min;
@@ -14180,6 +14339,8 @@ var require_lockfile = __commonJS({
           return it > 0 ? min(toInteger(it), 9007199254740991) : 0;
         };
       },
+      /* 111 */
+      /***/
       function(module2, exports2) {
         var id = 0;
         var px = Math.random();
@@ -14187,6 +14348,8 @@ var require_lockfile = __commonJS({
           return "Symbol(".concat(key === void 0 ? "" : key, ")_", (++id + px).toString(36));
         };
       },
+      /* 112 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         exports2 = module2.exports = createDebug.debug = createDebug["default"] = createDebug;
         exports2.coerce = coerce;
@@ -14209,10 +14372,9 @@ var require_lockfile = __commonJS({
         function createDebug(namespace) {
           var prevTime;
           function debug() {
-            if (!debug.enabled)
-              return;
+            if (!debug.enabled) return;
             var self2 = debug;
-            var curr = +new Date();
+            var curr = +/* @__PURE__ */ new Date();
             var ms = curr - (prevTime || curr);
             self2.diff = ms;
             self2.prev = prevTime;
@@ -14228,8 +14390,7 @@ var require_lockfile = __commonJS({
             }
             var index = 0;
             args[0] = args[0].replace(/%([a-zA-Z%])/g, function(match, format) {
-              if (match === "%%")
-                return match;
+              if (match === "%%") return match;
               index++;
               var formatter = exports2.formatters[format];
               if ("function" === typeof formatter) {
@@ -14272,8 +14433,7 @@ var require_lockfile = __commonJS({
           var split = (typeof namespaces === "string" ? namespaces : "").split(/[\s,]+/);
           var len = split.length;
           for (i = 0; i < len; i++) {
-            if (!split[i])
-              continue;
+            if (!split[i]) continue;
             namespaces = split[i].replace(/\*/g, ".*?");
             if (namespaces[0] === "-") {
               exports2.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
@@ -14307,12 +14467,13 @@ var require_lockfile = __commonJS({
           return false;
         }
         function coerce(val) {
-          if (val instanceof Error)
-            return val.stack || val.message;
+          if (val instanceof Error) return val.stack || val.message;
           return val;
         }
       },
       ,
+      /* 114 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = realpath;
         realpath.realpath = realpath;
@@ -14368,6 +14529,8 @@ var require_lockfile = __commonJS({
           fs.realpathSync = origRealpathSync;
         }
       },
+      /* 115 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         exports2.alphasort = alphasort;
         exports2.alphasorti = alphasorti;
@@ -14560,6 +14723,8 @@ var require_lockfile = __commonJS({
           });
         }
       },
+      /* 116 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var path = __webpack_require__(0);
         var fs = __webpack_require__(3);
@@ -14577,8 +14742,7 @@ var require_lockfile = __commonJS({
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
-          if (!made)
-            made = null;
+          if (!made) made = null;
           var cb = f || function() {
           };
           p = path.resolve(p);
@@ -14590,18 +14754,17 @@ var require_lockfile = __commonJS({
             switch (er.code) {
               case "ENOENT":
                 mkdirP(path.dirname(p), opts, function(er2, made2) {
-                  if (er2)
-                    cb(er2, made2);
-                  else
-                    mkdirP(p, opts, cb, made2);
+                  if (er2) cb(er2, made2);
+                  else mkdirP(p, opts, cb, made2);
                 });
                 break;
+              // In the case of any other error, just see if there's a dir
+              // there already.  If so, then hooray!  If not, then something
+              // is borked.
               default:
                 xfs.stat(p, function(er2, stat) {
-                  if (er2 || !stat.isDirectory())
-                    cb(er, made);
-                  else
-                    cb(null, made);
+                  if (er2 || !stat.isDirectory()) cb(er, made);
+                  else cb(null, made);
                 });
                 break;
             }
@@ -14616,8 +14779,7 @@ var require_lockfile = __commonJS({
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
-          if (!made)
-            made = null;
+          if (!made) made = null;
           p = path.resolve(p);
           try {
             xfs.mkdirSync(p, mode);
@@ -14628,6 +14790,9 @@ var require_lockfile = __commonJS({
                 made = sync(path.dirname(p), opts, made);
                 sync(p, opts, made);
                 break;
+              // In the case of any other error, just see if there's a dir
+              // there already.  If so, then hooray!  If not, then something
+              // is borked.
               default:
                 var stat;
                 try {
@@ -14635,8 +14800,7 @@ var require_lockfile = __commonJS({
                 } catch (err1) {
                   throw err0;
                 }
-                if (!stat.isDirectory())
-                  throw err0;
+                if (!stat.isDirectory()) throw err0;
                 break;
             }
           }
@@ -14648,6 +14812,8 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 122 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         module2.exports = (x) => {
@@ -14660,11 +14826,12 @@ var require_lockfile = __commonJS({
           return x;
         };
       },
+      /* 123 */
+      /***/
       function(module2, exports2) {
         module2.exports = wrappy;
         function wrappy(fn, cb) {
-          if (fn && cb)
-            return wrappy(fn)(cb);
+          if (fn && cb) return wrappy(fn)(cb);
           if (typeof fn !== "function")
             throw new TypeError("need wrapper function");
           Object.keys(fn).forEach(function(k) {
@@ -14694,12 +14861,16 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 131 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var cof = __webpack_require__(47);
         module2.exports = Object("z").propertyIsEnumerable(0) ? Object : function(it) {
           return cof(it) == "String" ? it.split("") : Object(it);
         };
       },
+      /* 132 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var $keys = __webpack_require__(195);
         var enumBugKeys = __webpack_require__(101);
@@ -14707,6 +14878,8 @@ var require_lockfile = __commonJS({
           return $keys(O, enumBugKeys);
         };
       },
+      /* 133 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var defined = __webpack_require__(67);
         module2.exports = function(it) {
@@ -14724,6 +14897,8 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 145 */
+      /***/
       function(module2, exports2) {
         module2.exports = { "name": "yarn", "installationMethod": "unknown", "version": "1.10.0-0", "license": "BSD-2-Clause", "preferGlobal": true, "description": "\u{1F4E6}\u{1F408} Fast, reliable, and secure dependency management.", "dependencies": { "@zkochan/cmd-shim": "^2.2.4", "babel-runtime": "^6.26.0", "bytes": "^3.0.0", "camelcase": "^4.0.0", "chalk": "^2.1.0", "commander": "^2.9.0", "death": "^1.0.0", "debug": "^3.0.0", "deep-equal": "^1.0.1", "detect-indent": "^5.0.0", "dnscache": "^1.0.1", "glob": "^7.1.1", "gunzip-maybe": "^1.4.0", "hash-for-dep": "^1.2.3", "imports-loader": "^0.8.0", "ini": "^1.3.4", "inquirer": "^3.0.1", "invariant": "^2.2.0", "is-builtin-module": "^2.0.0", "is-ci": "^1.0.10", "is-webpack-bundle": "^1.0.0", "leven": "^2.0.0", "loud-rejection": "^1.2.0", "micromatch": "^2.3.11", "mkdirp": "^0.5.1", "node-emoji": "^1.6.1", "normalize-url": "^2.0.0", "npm-logical-tree": "^1.2.1", "object-path": "^0.11.2", "proper-lockfile": "^2.0.0", "puka": "^1.0.0", "read": "^1.0.7", "request": "^2.87.0", "request-capture-har": "^1.2.2", "rimraf": "^2.5.0", "semver": "^5.1.0", "ssri": "^5.3.0", "strip-ansi": "^4.0.0", "strip-bom": "^3.0.0", "tar-fs": "^1.16.0", "tar-stream": "^1.6.1", "uuid": "^3.0.1", "v8-compile-cache": "^2.0.0", "validate-npm-package-license": "^3.0.3", "yn": "^2.0.0" }, "devDependencies": { "babel-core": "^6.26.0", "babel-eslint": "^7.2.3", "babel-loader": "^6.2.5", "babel-plugin-array-includes": "^2.0.3", "babel-plugin-transform-builtin-extend": "^1.1.2", "babel-plugin-transform-inline-imports-commonjs": "^1.0.0", "babel-plugin-transform-runtime": "^6.4.3", "babel-preset-env": "^1.6.0", "babel-preset-flow": "^6.23.0", "babel-preset-stage-0": "^6.0.0", "babylon": "^6.5.0", "commitizen": "^2.9.6", "cz-conventional-changelog": "^2.0.0", "eslint": "^4.3.0", "eslint-config-fb-strict": "^22.0.0", "eslint-plugin-babel": "^5.0.0", "eslint-plugin-flowtype": "^2.35.0", "eslint-plugin-jasmine": "^2.6.2", "eslint-plugin-jest": "^21.0.0", "eslint-plugin-jsx-a11y": "^6.0.2", "eslint-plugin-prefer-object-spread": "^1.2.1", "eslint-plugin-prettier": "^2.1.2", "eslint-plugin-react": "^7.1.0", "eslint-plugin-relay": "^0.0.24", "eslint-plugin-yarn-internal": "file:scripts/eslint-rules", "execa": "^0.10.0", "flow-bin": "^0.66.0", "git-release-notes": "^3.0.0", "gulp": "^3.9.0", "gulp-babel": "^7.0.0", "gulp-if": "^2.0.1", "gulp-newer": "^1.0.0", "gulp-plumber": "^1.0.1", "gulp-sourcemaps": "^2.2.0", "gulp-util": "^3.0.7", "gulp-watch": "^5.0.0", "jest": "^22.4.4", "jsinspect": "^0.12.6", "minimatch": "^3.0.4", "mock-stdin": "^0.3.0", "prettier": "^1.5.2", "temp": "^0.8.3", "webpack": "^2.1.0-beta.25", "yargs": "^6.3.0" }, "resolutions": { "sshpk": "^1.14.2" }, "engines": { "node": ">=4.0.0" }, "repository": "yarnpkg/yarn", "bin": { "yarn": "./bin/yarn.js", "yarnpkg": "./bin/yarn.js" }, "scripts": { "build": "gulp build", "build-bundle": "node ./scripts/build-webpack.js", "build-chocolatey": "powershell ./scripts/build-chocolatey.ps1", "build-deb": "./scripts/build-deb.sh", "build-dist": "bash ./scripts/build-dist.sh", "build-win-installer": "scripts\\build-windows-installer.bat", "changelog": "git-release-notes $(git describe --tags --abbrev=0 $(git describe --tags --abbrev=0)^)..$(git describe --tags --abbrev=0) scripts/changelog.md", "dupe-check": "yarn jsinspect ./src", "lint": "eslint . && flow check", "pkg-tests": "yarn --cwd packages/pkg-tests jest yarn.test.js", "prettier": "eslint src __tests__ --fix", "release-branch": "./scripts/release-branch.sh", "test": "yarn lint && yarn test-only", "test-only": "node --max_old_space_size=4096 ", "test-only-debug": "node --inspect-brk --max_old_space_size=4096 ", "test-coverage": "node --max_old_space_size=4096 ", "watch": "gulp watch", "commit": "git-cz" }, "jest": { "collectCoverageFrom": ["src/**/*.js"], "testEnvironment": "node", "modulePathIgnorePatterns": ["__tests__/fixtures/", "packages/pkg-tests/pkg-tests-fixtures", "dist/"], "testPathIgnorePatterns": ["__tests__/(fixtures|__mocks__)/", "updates/", "_(temp|mock|install|init|helpers).js$", "packages/pkg-tests"] }, "config": { "commitizen": { "path": "./" } } };
       },
@@ -14731,6 +14906,8 @@ var require_lockfile = __commonJS({
       ,
       ,
       ,
+      /* 150 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -14846,6 +15023,8 @@ ${indent}`);
       ,
       ,
       ,
+      /* 164 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -14976,6 +15155,8 @@ ${indent}`);
       ,
       ,
       ,
+      /* 169 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -14998,6 +15179,8 @@ ${indent}`);
         }
       },
       ,
+      /* 171 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         Object.defineProperty(exports2, "__esModule", {
@@ -15046,17 +15229,19 @@ ${indent}`);
         }
       },
       ,
+      /* 173 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = { "default": __webpack_require__(179), __esModule: true };
       },
+      /* 174 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         module2.exports = balanced;
         function balanced(a, b, str) {
-          if (a instanceof RegExp)
-            a = maybeMatch(a, str);
-          if (b instanceof RegExp)
-            b = maybeMatch(b, str);
+          if (a instanceof RegExp) a = maybeMatch(a, str);
+          if (b instanceof RegExp) b = maybeMatch(b, str);
           var r = range(a, b, str);
           return r && {
             start: r[0],
@@ -15102,6 +15287,8 @@ ${indent}`);
           return result;
         }
       },
+      /* 175 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var concatMap = __webpack_require__(178);
         var balanced = __webpack_require__(174);
@@ -15166,8 +15353,7 @@ ${indent}`);
         function expand2(str, isTop) {
           var expansions = [];
           var m = balanced("{", "}", str);
-          if (!m || /\$$/.test(m.pre))
-            return [str];
+          if (!m || /\$$/.test(m.pre)) return [str];
           var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
           var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m.body);
           var isSequence = isNumericSequence || isAlphaSequence;
@@ -15246,6 +15432,8 @@ ${indent}`);
           return expansions;
         }
       },
+      /* 176 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         function preserveCamelCase(str) {
@@ -15296,15 +15484,15 @@ ${indent}`);
         };
       },
       ,
+      /* 178 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(xs, fn) {
           var res = [];
           for (var i = 0; i < xs.length; i++) {
             var x = fn(xs[i], i);
-            if (isArray(x))
-              res.push.apply(res, x);
-            else
-              res.push(x);
+            if (isArray(x)) res.push.apply(res, x);
+            else res.push(x);
           }
           return res;
         };
@@ -15312,6 +15500,8 @@ ${indent}`);
           return Object.prototype.toString.call(xs) === "[object Array]";
         };
       },
+      /* 179 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         __webpack_require__(205);
         __webpack_require__(207);
@@ -15321,10 +15511,14 @@ ${indent}`);
         __webpack_require__(209);
         module2.exports = __webpack_require__(23).Promise;
       },
+      /* 180 */
+      /***/
       function(module2, exports2) {
         module2.exports = function() {
         };
       },
+      /* 181 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(it, Constructor, name, forbiddenField) {
           if (!(it instanceof Constructor) || forbiddenField !== void 0 && forbiddenField in it) {
@@ -15333,6 +15527,8 @@ ${indent}`);
           return it;
         };
       },
+      /* 182 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var toIObject = __webpack_require__(74);
         var toLength = __webpack_require__(110);
@@ -15343,22 +15539,19 @@ ${indent}`);
             var length = toLength(O.length);
             var index = toAbsoluteIndex(fromIndex, length);
             var value;
-            if (IS_INCLUDES && el != el)
-              while (length > index) {
-                value = O[index++];
-                if (value != value)
-                  return true;
-              }
-            else
-              for (; length > index; index++)
-                if (IS_INCLUDES || index in O) {
-                  if (O[index] === el)
-                    return IS_INCLUDES || index || 0;
-                }
+            if (IS_INCLUDES && el != el) while (length > index) {
+              value = O[index++];
+              if (value != value) return true;
+            }
+            else for (; length > index; index++) if (IS_INCLUDES || index in O) {
+              if (O[index] === el) return IS_INCLUDES || index || 0;
+            }
             return !IS_INCLUDES && -1;
           };
         };
       },
+      /* 183 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var ctx = __webpack_require__(48);
         var call = __webpack_require__(187);
@@ -15375,24 +15568,21 @@ ${indent}`);
           var f = ctx(fn, that, entries ? 2 : 1);
           var index = 0;
           var length, step, iterator2, result;
-          if (typeof iterFn != "function")
-            throw TypeError(iterable + " is not iterable!");
-          if (isArrayIter(iterFn))
-            for (length = toLength(iterable.length); length > index; index++) {
-              result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
-              if (result === BREAK || result === RETURN)
-                return result;
-            }
-          else
-            for (iterator2 = iterFn.call(iterable); !(step = iterator2.next()).done; ) {
-              result = call(iterator2, f, step.value, entries);
-              if (result === BREAK || result === RETURN)
-                return result;
-            }
+          if (typeof iterFn != "function") throw TypeError(iterable + " is not iterable!");
+          if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {
+            result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+            if (result === BREAK || result === RETURN) return result;
+          }
+          else for (iterator2 = iterFn.call(iterable); !(step = iterator2.next()).done; ) {
+            result = call(iterator2, f, step.value, entries);
+            if (result === BREAK || result === RETURN) return result;
+          }
         };
         exports2.BREAK = BREAK;
         exports2.RETURN = RETURN;
       },
+      /* 184 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = !__webpack_require__(33) && !__webpack_require__(85)(function() {
           return Object.defineProperty(__webpack_require__(68)("div"), "a", { get: function() {
@@ -15400,6 +15590,8 @@ ${indent}`);
           } }).a != 7;
         });
       },
+      /* 185 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(fn, args, that) {
           var un = that === void 0;
@@ -15418,6 +15610,8 @@ ${indent}`);
           return fn.apply(that, args);
         };
       },
+      /* 186 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var Iterators = __webpack_require__(35);
         var ITERATOR = __webpack_require__(13)("iterator");
@@ -15426,6 +15620,8 @@ ${indent}`);
           return it !== void 0 && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
         };
       },
+      /* 187 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var anObject = __webpack_require__(27);
         module2.exports = function(iterator2, fn, value, entries) {
@@ -15433,12 +15629,13 @@ ${indent}`);
             return entries ? fn(anObject(value)[0], value[1]) : fn(value);
           } catch (e) {
             var ret = iterator2["return"];
-            if (ret !== void 0)
-              anObject(ret.call(iterator2));
+            if (ret !== void 0) anObject(ret.call(iterator2));
             throw e;
           }
         };
       },
+      /* 188 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var create = __webpack_require__(192);
@@ -15453,6 +15650,8 @@ ${indent}`);
           setToStringTag(Constructor, NAME + " Iterator");
         };
       },
+      /* 189 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var ITERATOR = __webpack_require__(13)("iterator");
         var SAFE_CLOSING = false;
@@ -15467,8 +15666,7 @@ ${indent}`);
         } catch (e) {
         }
         module2.exports = function(exec, skipClosing) {
-          if (!skipClosing && !SAFE_CLOSING)
-            return false;
+          if (!skipClosing && !SAFE_CLOSING) return false;
           var safe = false;
           try {
             var arr = [7];
@@ -15485,11 +15683,15 @@ ${indent}`);
           return safe;
         };
       },
+      /* 190 */
+      /***/
       function(module2, exports2) {
         module2.exports = function(done, value) {
           return { value, done: !!done };
         };
       },
+      /* 191 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var global = __webpack_require__(11);
         var macrotask = __webpack_require__(109).set;
@@ -15501,24 +15703,20 @@ ${indent}`);
           var head, last, notify;
           var flush = function() {
             var parent, fn;
-            if (isNode && (parent = process4.domain))
-              parent.exit();
+            if (isNode && (parent = process4.domain)) parent.exit();
             while (head) {
               fn = head.fn;
               head = head.next;
               try {
                 fn();
               } catch (e) {
-                if (head)
-                  notify();
-                else
-                  last = void 0;
+                if (head) notify();
+                else last = void 0;
                 throw e;
               }
             }
             last = void 0;
-            if (parent)
-              parent.enter();
+            if (parent) parent.enter();
           };
           if (isNode) {
             notify = function() {
@@ -15543,8 +15741,7 @@ ${indent}`);
           }
           return function(fn) {
             var task = { fn, next: void 0 };
-            if (last)
-              last.next = task;
+            if (last) last.next = task;
             if (!head) {
               head = task;
               notify();
@@ -15553,6 +15750,8 @@ ${indent}`);
           };
         };
       },
+      /* 192 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var anObject = __webpack_require__(27);
         var dPs = __webpack_require__(193);
@@ -15575,8 +15774,7 @@ ${indent}`);
           iframeDocument.write(lt + "script" + gt + "document.F=Object" + lt + "/script" + gt);
           iframeDocument.close();
           createDict = iframeDocument.F;
-          while (i--)
-            delete createDict[PROTOTYPE][enumBugKeys[i]];
+          while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
           return createDict();
         };
         module2.exports = Object.create || function create(O, Properties) {
@@ -15586,11 +15784,12 @@ ${indent}`);
             result = new Empty();
             Empty[PROTOTYPE] = null;
             result[IE_PROTO] = O;
-          } else
-            result = createDict();
+          } else result = createDict();
           return Properties === void 0 ? result : dPs(result, Properties);
         };
       },
+      /* 193 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var dP = __webpack_require__(50);
         var anObject = __webpack_require__(27);
@@ -15601,11 +15800,12 @@ ${indent}`);
           var length = keys.length;
           var i = 0;
           var P;
-          while (length > i)
-            dP.f(O, P = keys[i++], Properties[P]);
+          while (length > i) dP.f(O, P = keys[i++], Properties[P]);
           return O;
         };
       },
+      /* 194 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var has = __webpack_require__(49);
         var toObject = __webpack_require__(133);
@@ -15613,14 +15813,15 @@ ${indent}`);
         var ObjectProto = Object.prototype;
         module2.exports = Object.getPrototypeOf || function(O) {
           O = toObject(O);
-          if (has(O, IE_PROTO))
-            return O[IE_PROTO];
+          if (has(O, IE_PROTO)) return O[IE_PROTO];
           if (typeof O.constructor == "function" && O instanceof O.constructor) {
             return O.constructor.prototype;
           }
           return O instanceof Object ? ObjectProto : null;
         };
       },
+      /* 195 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var has = __webpack_require__(49);
         var toIObject = __webpack_require__(74);
@@ -15631,31 +15832,32 @@ ${indent}`);
           var i = 0;
           var result = [];
           var key;
-          for (key in O)
-            if (key != IE_PROTO)
-              has(O, key) && result.push(key);
-          while (names.length > i)
-            if (has(O, key = names[i++])) {
-              ~arrayIndexOf(result, key) || result.push(key);
-            }
+          for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
+          while (names.length > i) if (has(O, key = names[i++])) {
+            ~arrayIndexOf(result, key) || result.push(key);
+          }
           return result;
         };
       },
+      /* 196 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var hide = __webpack_require__(31);
         module2.exports = function(target, src, safe) {
           for (var key in src) {
-            if (safe && target[key])
-              target[key] = src[key];
-            else
-              hide(target, key, src[key]);
+            if (safe && target[key]) target[key] = src[key];
+            else hide(target, key, src[key]);
           }
           return target;
         };
       },
+      /* 197 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = __webpack_require__(31);
       },
+      /* 198 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var global = __webpack_require__(11);
@@ -15665,15 +15867,16 @@ ${indent}`);
         var SPECIES = __webpack_require__(13)("species");
         module2.exports = function(KEY) {
           var C = typeof core[KEY] == "function" ? core[KEY] : global[KEY];
-          if (DESCRIPTORS && C && !C[SPECIES])
-            dP.f(C, SPECIES, {
-              configurable: true,
-              get: function() {
-                return this;
-              }
-            });
+          if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
+            configurable: true,
+            get: function() {
+              return this;
+            }
+          });
         };
       },
+      /* 199 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var toInteger = __webpack_require__(73);
         var defined = __webpack_require__(67);
@@ -15683,13 +15886,14 @@ ${indent}`);
             var i = toInteger(pos);
             var l = s.length;
             var a, b;
-            if (i < 0 || i >= l)
-              return TO_STRING ? "" : void 0;
+            if (i < 0 || i >= l) return TO_STRING ? "" : void 0;
             a = s.charCodeAt(i);
             return a < 55296 || a > 56319 || i + 1 === l || (b = s.charCodeAt(i + 1)) < 56320 || b > 57343 ? TO_STRING ? s.charAt(i) : a : TO_STRING ? s.slice(i, i + 2) : (a - 55296 << 10) + (b - 56320) + 65536;
           };
         };
       },
+      /* 200 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var toInteger = __webpack_require__(73);
         var max = Math.max;
@@ -15699,35 +15903,38 @@ ${indent}`);
           return index < 0 ? max(index + length, 0) : min(index, length);
         };
       },
+      /* 201 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var isObject = __webpack_require__(34);
         module2.exports = function(it, S) {
-          if (!isObject(it))
-            return it;
+          if (!isObject(it)) return it;
           var fn, val;
-          if (S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it)))
-            return val;
-          if (typeof (fn = it.valueOf) == "function" && !isObject(val = fn.call(it)))
-            return val;
-          if (!S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it)))
-            return val;
+          if (S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it))) return val;
+          if (typeof (fn = it.valueOf) == "function" && !isObject(val = fn.call(it))) return val;
+          if (!S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it))) return val;
           throw TypeError("Can't convert object to primitive value");
         };
       },
+      /* 202 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var global = __webpack_require__(11);
         var navigator2 = global.navigator;
         module2.exports = navigator2 && navigator2.userAgent || "";
       },
+      /* 203 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var classof = __webpack_require__(100);
         var ITERATOR = __webpack_require__(13)("iterator");
         var Iterators = __webpack_require__(35);
         module2.exports = __webpack_require__(23).getIteratorMethod = function(it) {
-          if (it != void 0)
-            return it[ITERATOR] || it["@@iterator"] || Iterators[classof(it)];
+          if (it != void 0) return it[ITERATOR] || it["@@iterator"] || Iterators[classof(it)];
         };
       },
+      /* 204 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var addToUnscopables = __webpack_require__(180);
@@ -15746,10 +15953,8 @@ ${indent}`);
             this._t = void 0;
             return step(1);
           }
-          if (kind == "keys")
-            return step(0, index);
-          if (kind == "values")
-            return step(0, O[index]);
+          if (kind == "keys") return step(0, index);
+          if (kind == "values") return step(0, O[index]);
           return step(0, [index, O[index]]);
         }, "values");
         Iterators.Arguments = Iterators.Array;
@@ -15757,8 +15962,12 @@ ${indent}`);
         addToUnscopables("values");
         addToUnscopables("entries");
       },
+      /* 205 */
+      /***/
       function(module2, exports2) {
       },
+      /* 206 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var LIBRARY = __webpack_require__(69);
@@ -15803,8 +16012,7 @@ ${indent}`);
           return isObject(it) && typeof (then = it.then) == "function" ? then : false;
         };
         var notify = function(promise, isReject) {
-          if (promise._n)
-            return;
+          if (promise._n) return;
           promise._n = true;
           var chain = promise._c;
           microtask(function() {
@@ -15820,15 +16028,12 @@ ${indent}`);
               try {
                 if (handler2) {
                   if (!ok) {
-                    if (promise._h == 2)
-                      onHandleUnhandled(promise);
+                    if (promise._h == 2) onHandleUnhandled(promise);
                     promise._h = 1;
                   }
-                  if (handler2 === true)
-                    result = value;
+                  if (handler2 === true) result = value;
                   else {
-                    if (domain)
-                      domain.enter();
+                    if (domain) domain.enter();
                     result = handler2(value);
                     if (domain) {
                       domain.exit();
@@ -15839,22 +16044,17 @@ ${indent}`);
                     reject(TypeError2("Promise-chain cycle"));
                   } else if (then = isThenable(result)) {
                     then.call(result, resolve, reject);
-                  } else
-                    resolve(result);
-                } else
-                  reject(value);
+                  } else resolve(result);
+                } else reject(value);
               } catch (e) {
-                if (domain && !exited)
-                  domain.exit();
+                if (domain && !exited) domain.exit();
                 reject(e);
               }
             };
-            while (chain.length > i)
-              run(chain[i++]);
+            while (chain.length > i) run(chain[i++]);
             promise._c = [];
             promise._n = false;
-            if (isReject && !promise._h)
-              onUnhandled(promise);
+            if (isReject && !promise._h) onUnhandled(promise);
           });
         };
         var onUnhandled = function(promise) {
@@ -15875,8 +16075,7 @@ ${indent}`);
               promise._h = isNode || isUnhandled(promise) ? 2 : 1;
             }
             promise._a = void 0;
-            if (unhandled && result.e)
-              throw result.v;
+            if (unhandled && result.e) throw result.v;
           });
         };
         var isUnhandled = function(promise) {
@@ -15894,26 +16093,22 @@ ${indent}`);
         };
         var $reject = function(value) {
           var promise = this;
-          if (promise._d)
-            return;
+          if (promise._d) return;
           promise._d = true;
           promise = promise._w || promise;
           promise._v = value;
           promise._s = 2;
-          if (!promise._a)
-            promise._a = promise._c.slice();
+          if (!promise._a) promise._a = promise._c.slice();
           notify(promise, true);
         };
         var $resolve = function(value) {
           var promise = this;
           var then;
-          if (promise._d)
-            return;
+          if (promise._d) return;
           promise._d = true;
           promise = promise._w || promise;
           try {
-            if (promise === value)
-              throw TypeError2("Promise can't be resolved itself");
+            if (promise === value) throw TypeError2("Promise can't be resolved itself");
             if (then = isThenable(value)) {
               microtask(function() {
                 var wrapper = { _w: promise, _d: false };
@@ -15953,18 +16148,18 @@ ${indent}`);
             this._n = false;
           };
           Internal.prototype = __webpack_require__(196)($Promise.prototype, {
+            // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
             then: function then(onFulfilled, onRejected) {
               var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
               reaction.ok = typeof onFulfilled == "function" ? onFulfilled : true;
               reaction.fail = typeof onRejected == "function" && onRejected;
               reaction.domain = isNode ? process4.domain : void 0;
               this._c.push(reaction);
-              if (this._a)
-                this._a.push(reaction);
-              if (this._s)
-                notify(this, false);
+              if (this._a) this._a.push(reaction);
+              if (this._s) notify(this, false);
               return reaction.promise;
             },
+            // 25.4.5.1 Promise.prototype.catch(onRejected)
             "catch": function(onRejected) {
               return this.then(void 0, onRejected);
             }
@@ -15984,6 +16179,7 @@ ${indent}`);
         __webpack_require__(198)(PROMISE);
         Wrapper = __webpack_require__(23)[PROMISE];
         $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
+          // 25.4.4.5 Promise.reject(r)
           reject: function reject(r) {
             var capability = newPromiseCapability(this);
             var $$reject = capability.reject;
@@ -15992,6 +16188,7 @@ ${indent}`);
           }
         });
         $export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
+          // 25.4.4.6 Promise.resolve(x)
           resolve: function resolve(x) {
             return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);
           }
@@ -15999,6 +16196,7 @@ ${indent}`);
         $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(189)(function(iter) {
           $Promise.all(iter)["catch"](empty);
         })), PROMISE, {
+          // 25.4.4.1 Promise.all(iterable)
           all: function all(iterable) {
             var C = this;
             var capability = newPromiseCapability(C);
@@ -16014,8 +16212,7 @@ ${indent}`);
                 values.push(void 0);
                 remaining++;
                 C.resolve(promise).then(function(value) {
-                  if (alreadyCalled)
-                    return;
+                  if (alreadyCalled) return;
                   alreadyCalled = true;
                   values[$index] = value;
                   --remaining || resolve(values);
@@ -16023,10 +16220,10 @@ ${indent}`);
               });
               --remaining || resolve(values);
             });
-            if (result.e)
-              reject(result.v);
+            if (result.e) reject(result.v);
             return capability.promise;
           },
+          // 25.4.4.4 Promise.race(iterable)
           race: function race(iterable) {
             var C = this;
             var capability = newPromiseCapability(C);
@@ -16036,12 +16233,13 @@ ${indent}`);
                 C.resolve(promise).then(capability.resolve, reject);
               });
             });
-            if (result.e)
-              reject(result.v);
+            if (result.e) reject(result.v);
             return capability.promise;
           }
         });
       },
+      /* 207 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var $at = __webpack_require__(199)(true);
@@ -16052,13 +16250,14 @@ ${indent}`);
           var O = this._t;
           var index = this._i;
           var point;
-          if (index >= O.length)
-            return { value: void 0, done: true };
+          if (index >= O.length) return { value: void 0, done: true };
           point = $at(O, index);
           this._i += point.length;
           return { value: point, done: false };
         });
       },
+      /* 208 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var $export = __webpack_require__(41);
@@ -16083,6 +16282,8 @@ ${indent}`);
           );
         } });
       },
+      /* 209 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var $export = __webpack_require__(41);
@@ -16095,6 +16296,8 @@ ${indent}`);
           return promiseCapability.promise;
         } });
       },
+      /* 210 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         __webpack_require__(204);
         var global = __webpack_require__(11);
@@ -16106,11 +16309,12 @@ ${indent}`);
           var NAME = DOMIterables[i];
           var Collection2 = global[NAME];
           var proto2 = Collection2 && Collection2.prototype;
-          if (proto2 && !proto2[TO_STRING_TAG])
-            hide(proto2, TO_STRING_TAG, NAME);
+          if (proto2 && !proto2[TO_STRING_TAG]) hide(proto2, TO_STRING_TAG, NAME);
           Iterators[NAME] = Iterators.Array;
         }
       },
+      /* 211 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         exports2 = module2.exports = __webpack_require__(112);
         exports2.log = log;
@@ -16204,7 +16408,11 @@ ${indent}`);
           if (typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/(edge|trident)\/(\d+)/)) {
             return false;
           }
-          return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
+          return typeof document !== "undefined" && document.documentElement && document.documentElement.style && document.documentElement.style.WebkitAppearance || // is firebug? http://stackoverflow.com/a/398120/376773
+          typeof window !== "undefined" && window.console && (window.console.firebug || window.console.exception && window.console.table) || // is firefox >= v31?
+          // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+          typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31 || // double check webkit in userAgent just in case we are in a worker
+          typeof navigator !== "undefined" && navigator.userAgent && navigator.userAgent.toLowerCase().match(/applewebkit\/(\d+)/);
         }
         exports2.formatters.j = function(v) {
           try {
@@ -16216,15 +16424,13 @@ ${indent}`);
         function formatArgs(args) {
           var useColors2 = this.useColors;
           args[0] = (useColors2 ? "%c" : "") + this.namespace + (useColors2 ? " %c" : " ") + args[0] + (useColors2 ? "%c " : " ") + "+" + exports2.humanize(this.diff);
-          if (!useColors2)
-            return;
+          if (!useColors2) return;
           var c = "color: " + this.color;
           args.splice(1, 0, c, "color: inherit");
           var index = 0;
           var lastC = 0;
           args[0].replace(/%[a-zA-Z%]/g, function(match) {
-            if ("%%" === match)
-              return;
+            if ("%%" === match) return;
             index++;
             if ("%c" === match) {
               lastC = index;
@@ -16264,6 +16470,8 @@ ${indent}`);
           }
         }
       },
+      /* 212 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         if (typeof process === "undefined" || process.type === "renderer") {
           module2.exports = __webpack_require__(211);
@@ -16271,6 +16479,8 @@ ${indent}`);
           module2.exports = __webpack_require__(213);
         }
       },
+      /* 213 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var tty3 = __webpack_require__(79);
         var util = __webpack_require__(2);
@@ -16373,14 +16583,10 @@ ${indent}`);
             return k.toUpperCase();
           });
           var val = process.env[key];
-          if (/^(yes|on|true|enabled)$/i.test(val))
-            val = true;
-          else if (/^(no|off|false|disabled)$/i.test(val))
-            val = false;
-          else if (val === "null")
-            val = null;
-          else
-            val = Number(val);
+          if (/^(yes|on|true|enabled)$/i.test(val)) val = true;
+          else if (/^(no|off|false|disabled)$/i.test(val)) val = false;
+          else if (val === "null") val = null;
+          else val = Number(val);
           obj[prop] = val;
           return obj;
         }, {});
@@ -16414,7 +16620,7 @@ ${indent}`);
           if (exports2.inspectOpts.hideDate) {
             return "";
           } else {
-            return new Date().toISOString() + " ";
+            return (/* @__PURE__ */ new Date()).toISOString() + " ";
           }
         }
         function log() {
@@ -16442,6 +16648,8 @@ ${indent}`);
       ,
       ,
       ,
+      /* 217 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var pathModule = __webpack_require__(0);
         var isWindows = process.platform === "win32";
@@ -16529,8 +16737,7 @@ ${indent}`);
               var stat = fs.lstatSync(base);
               if (!stat.isSymbolicLink()) {
                 knownHard[base] = true;
-                if (cache)
-                  cache[base] = base;
+                if (cache) cache[base] = base;
                 continue;
               }
               var linkTarget = null;
@@ -16545,16 +16752,13 @@ ${indent}`);
                 linkTarget = fs.readlinkSync(base);
               }
               resolvedLink = pathModule.resolve(previous, linkTarget);
-              if (cache)
-                cache[base] = resolvedLink;
-              if (!isWindows)
-                seenLinks[id] = linkTarget;
+              if (cache) cache[base] = resolvedLink;
+              if (!isWindows) seenLinks[id] = linkTarget;
             }
             p = pathModule.resolve(resolvedLink, p.slice(pos));
             start();
           }
-          if (cache)
-            cache[original] = p;
+          if (cache) cache[original] = p;
           return p;
         };
         exports2.realpath = function realpath(p, cache, cb) {
@@ -16580,8 +16784,7 @@ ${indent}`);
             previous = "";
             if (isWindows && !knownHard[base]) {
               fs.lstat(base, function(err) {
-                if (err)
-                  return cb(err);
+                if (err) return cb(err);
                 knownHard[base] = true;
                 LOOP();
               });
@@ -16591,8 +16794,7 @@ ${indent}`);
           }
           function LOOP() {
             if (pos >= p.length) {
-              if (cache)
-                cache[original] = p;
+              if (cache) cache[original] = p;
               return cb(null, p);
             }
             nextPartRe.lastIndex = pos;
@@ -16610,12 +16812,10 @@ ${indent}`);
             return fs.lstat(base, gotStat);
           }
           function gotStat(err, stat) {
-            if (err)
-              return cb(err);
+            if (err) return cb(err);
             if (!stat.isSymbolicLink()) {
               knownHard[base] = true;
-              if (cache)
-                cache[base] = base;
+              if (cache) cache[base] = base;
               return process.nextTick(LOOP);
             }
             if (!isWindows) {
@@ -16625,21 +16825,17 @@ ${indent}`);
               }
             }
             fs.stat(base, function(err2) {
-              if (err2)
-                return cb(err2);
+              if (err2) return cb(err2);
               fs.readlink(base, function(err3, target) {
-                if (!isWindows)
-                  seenLinks[id] = target;
+                if (!isWindows) seenLinks[id] = target;
                 gotTarget(err3, target);
               });
             });
           }
           function gotTarget(err, target, base2) {
-            if (err)
-              return cb(err);
+            if (err) return cb(err);
             var resolvedLink = pathModule.resolve(previous, target);
-            if (cache)
-              cache[base2] = resolvedLink;
+            if (cache) cache[base2] = resolvedLink;
             gotResolvedLink(resolvedLink);
           }
           function gotResolvedLink(resolvedLink) {
@@ -16648,6 +16844,8 @@ ${indent}`);
           }
         };
       },
+      /* 218 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = globSync;
         globSync.GlobSync = GlobSync;
@@ -16719,6 +16917,7 @@ ${indent}`);
           }
           var prefix;
           switch (n) {
+            // if not, then this is rather simple
             case pattern.length:
               this._processSimple(pattern.join("/"), index);
               return;
@@ -16878,6 +17077,7 @@ ${indent}`);
         GlobSync.prototype._readdirError = function(f, er) {
           switch (er.code) {
             case "ENOTSUP":
+            // https://github.com/isaacs/node-glob/issues/205
             case "ENOTDIR":
               var abs = this._makeAbs(f);
               this.cache[abs] = "FILE";
@@ -16889,6 +17089,7 @@ ${indent}`);
               }
               break;
             case "ENOENT":
+            // not terribly unusual
             case "ELOOP":
             case "ENAMETOOLONG":
             case "UNKNOWN":
@@ -16999,6 +17200,8 @@ ${indent}`);
       },
       ,
       ,
+      /* 221 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         module2.exports = function(flag, argv) {
@@ -17010,6 +17213,8 @@ ${indent}`);
         };
       },
       ,
+      /* 223 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         var wrappy = __webpack_require__(123);
         var reqs = /* @__PURE__ */ Object.create(null);
@@ -17048,11 +17253,12 @@ ${indent}`);
         function slice(args) {
           var length = args.length;
           var array = [];
-          for (var i = 0; i < length; i++)
-            array[i] = args[i];
+          for (var i = 0; i < length; i++) array[i] = args[i];
           return array;
         }
       },
+      /* 224 */
+      /***/
       function(module2, exports2) {
         if (typeof Object.create === "function") {
           module2.exports = function inherits(ctor, superCtor) {
@@ -17079,10 +17285,14 @@ ${indent}`);
       },
       ,
       ,
+      /* 227 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = typeof __webpack_require__ !== "undefined";
       },
       ,
+      /* 229 */
+      /***/
       function(module2, exports2) {
         var s = 1e3;
         var m = s * 60;
@@ -17184,6 +17394,8 @@ ${indent}`);
       ,
       ,
       ,
+      /* 233 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         module2.exports = rimraf;
         rimraf.sync = rimrafSync;
@@ -17267,8 +17479,7 @@ ${indent}`);
                       rimraf_(p2, options, CB);
                     }, timeout++);
                   }
-                  if (er2.code === "ENOENT")
-                    er2 = null;
+                  if (er2.code === "ENOENT") er2 = null;
                 }
                 timeout = 0;
                 next(er2);
@@ -17472,6 +17683,8 @@ ${indent}`);
       ,
       ,
       ,
+      /* 239 */
+      /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
         var hasFlag3 = __webpack_require__(221);
@@ -17533,6 +17746,7 @@ ${indent}`);
         }
         module2.exports = process && support(supportLevel);
       }
+      /******/
     ]);
   }
 });
@@ -17767,20 +17981,24 @@ var require_directives = __commonJS({
       "}": "%7D"
     };
     var escapeTagName = (tn) => tn.replace(/[!,[\]{}]/g, (ch) => escapeChars[ch]);
-    var Directives = class {
+    var Directives = class _Directives {
       constructor(yaml, tags) {
         this.docStart = null;
         this.docEnd = false;
-        this.yaml = Object.assign({}, Directives.defaultYaml, yaml);
-        this.tags = Object.assign({}, Directives.defaultTags, tags);
+        this.yaml = Object.assign({}, _Directives.defaultYaml, yaml);
+        this.tags = Object.assign({}, _Directives.defaultTags, tags);
       }
       clone() {
-        const copy = new Directives(this.yaml, this.tags);
+        const copy = new _Directives(this.yaml, this.tags);
         copy.docStart = this.docStart;
         return copy;
       }
+      /**
+       * During parsing, get a Directives instance for the current document and
+       * update the stream state according to the current version's spec.
+       */
       atDocument() {
-        const res = new Directives(this.yaml, this.tags);
+        const res = new _Directives(this.yaml, this.tags);
         switch (this.yaml.version) {
           case "1.1":
             this.atNextDocument = true;
@@ -17788,18 +18006,22 @@ var require_directives = __commonJS({
           case "1.2":
             this.atNextDocument = false;
             this.yaml = {
-              explicit: Directives.defaultYaml.explicit,
+              explicit: _Directives.defaultYaml.explicit,
               version: "1.2"
             };
-            this.tags = Object.assign({}, Directives.defaultTags);
+            this.tags = Object.assign({}, _Directives.defaultTags);
             break;
         }
         return res;
       }
+      /**
+       * @param onError - May be called even if the action was successful
+       * @returns `true` on success
+       */
       add(line, onError) {
         if (this.atNextDocument) {
-          this.yaml = { explicit: Directives.defaultYaml.explicit, version: "1.1" };
-          this.tags = Object.assign({}, Directives.defaultTags);
+          this.yaml = { explicit: _Directives.defaultYaml.explicit, version: "1.1" };
+          this.tags = Object.assign({}, _Directives.defaultTags);
           this.atNextDocument = false;
         }
         const parts = line.trim().split(/[ \t]+/);
@@ -17836,6 +18058,12 @@ var require_directives = __commonJS({
             return false;
         }
       }
+      /**
+       * Resolves a tag, matching handles to those defined in %TAG directives.
+       *
+       * @returns Resolved tag, which may also be the non-specific tag `'!'` or a
+       *   `'!local'` tag, or `null` if unresolvable.
+       */
       tagName(source, onError) {
         if (source === "!")
           return "!";
@@ -17870,6 +18098,10 @@ var require_directives = __commonJS({
         onError(`Could not resolve tag: ${source}`);
         return null;
       }
+      /**
+       * Given a fully resolved tag, returns its printable string form,
+       * taking into account current tag prefixes and defaults.
+       */
       tagString(tag) {
         for (const [handle, prefix] of Object.entries(this.tags)) {
           if (tag.startsWith(prefix))
@@ -17948,6 +18180,11 @@ var require_anchors = __commonJS({
           prevAnchors.add(anchor);
           return anchor;
         },
+        /**
+         * With circular references, the source node is only resolved after all
+         * of its child nodes are. This is why anchors are set only after all of
+         * the nodes have been created.
+         */
         setAnchors: () => {
           for (const source of aliasObjects) {
             const ref = sourceObjects.get(source);
@@ -18061,12 +18298,14 @@ var require_Node = __commonJS({
       constructor(type) {
         Object.defineProperty(this, identity.NODE_TYPE, { value: type });
       }
+      /** Create a copy of this node.  */
       clone() {
         const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
         if (this.range)
           copy.range = this.range.slice();
         return copy;
       }
+      /** A plain JavaScript representation of this node. */
       toJS(doc, { mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
         if (!identity.isDocument(doc))
           throw new TypeError("A document argument is required");
@@ -18108,6 +18347,10 @@ var require_Alias = __commonJS({
           }
         });
       }
+      /**
+       * Resolve the value of this alias within `doc`, finding the last
+       * instance of the `source` anchor before this node.
+       */
       resolve(doc, ctx) {
         let nodes;
         if (ctx?.aliasResolveCache) {
@@ -18344,6 +18587,11 @@ var require_Collection = __commonJS({
           writable: true
         });
       }
+      /**
+       * Create a copy of this collection.
+       *
+       * @param schema - If defined, overwrites the original's schema
+       */
       clone(schema) {
         const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
         if (schema)
@@ -18353,6 +18601,11 @@ var require_Collection = __commonJS({
           copy.range = this.range.slice();
         return copy;
       }
+      /**
+       * Adds a value to the collection. For `!!map` and `!!omap` the value must
+       * be a Pair instance or a `{ key, value }` object, which may not have a key
+       * that already exists in the map.
+       */
       addIn(path, value) {
         if (isEmptyPath(path))
           this.add(value);
@@ -18367,6 +18620,10 @@ var require_Collection = __commonJS({
             throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
         }
       }
+      /**
+       * Removes a value from the collection.
+       * @returns `true` if the item was found and removed.
+       */
       deleteIn(path) {
         const [key, ...rest] = path;
         if (rest.length === 0)
@@ -18377,6 +18634,11 @@ var require_Collection = __commonJS({
         else
           throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
       }
+      /**
+       * Returns item at `key`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       getIn(path, keepScalar) {
         const [key, ...rest] = path;
         const node = this.get(key, true);
@@ -18393,6 +18655,9 @@ var require_Collection = __commonJS({
           return n == null || allowScalar && identity.isScalar(n) && n.value == null && !n.commentBefore && !n.comment && !n.tag;
         });
       }
+      /**
+       * Checks if the collection includes a value with the key `key`.
+       */
       hasIn(path) {
         const [key, ...rest] = path;
         if (rest.length === 0)
@@ -18400,6 +18665,10 @@ var require_Collection = __commonJS({
         const node = this.get(key, true);
         return identity.isCollection(node) ? node.hasIn(rest) : false;
       }
+      /**
+       * Sets a value in this collection. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       setIn(path, value) {
         const [key, ...rest] = path;
         if (rest.length === 0) {
@@ -19269,7 +19538,7 @@ var require_Pair = __commonJS({
       const v = createNode.createNode(value, void 0, ctx);
       return new Pair(k, v);
     }
-    var Pair = class {
+    var Pair = class _Pair {
       constructor(key, value = null) {
         Object.defineProperty(this, identity.NODE_TYPE, { value: identity.PAIR });
         this.key = key;
@@ -19281,7 +19550,7 @@ var require_Pair = __commonJS({
           key = key.clone(schema);
         if (identity.isNode(value))
           value = value.clone(schema);
-        return new Pair(key, value);
+        return new _Pair(key, value);
       }
       toJSON(_, ctx) {
         const pair = ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
@@ -19470,6 +19739,10 @@ var require_YAMLMap = __commonJS({
         super(identity.MAP, schema);
         this.items = [];
       }
+      /**
+       * A generic collection parsing method that can be extended
+       * to other node classes that inherit from YAMLMap
+       */
       static from(schema, obj, ctx) {
         const { keepUndefined, replacer } = ctx;
         const map = new this(schema);
@@ -19493,6 +19766,12 @@ var require_YAMLMap = __commonJS({
         }
         return map;
       }
+      /**
+       * Adds a value to the collection.
+       *
+       * @param overwrite - If not set `true`, using a key that is already in the
+       *   collection will throw. Otherwise, overwrites the previous value.
+       */
       add(pair, overwrite) {
         let _pair;
         if (identity.isPair(pair))
@@ -19538,6 +19817,11 @@ var require_YAMLMap = __commonJS({
       set(key, value) {
         this.add(new Pair.Pair(key, value), true);
       }
+      /**
+       * @param ctx - Conversion context, originally set in Document#toJS()
+       * @param {Class} Type - If set, forces the returned collection type
+       * @returns Instance of Type, Map, or Object
+       */
       toJSON(_, ctx, Type) {
         const map = Type ? new Type() : ctx?.mapAsMap ? /* @__PURE__ */ new Map() : {};
         if (ctx?.onCreate)
@@ -19612,6 +19896,14 @@ var require_YAMLSeq = __commonJS({
       add(value) {
         this.items.push(value);
       }
+      /**
+       * Removes a value from the collection.
+       *
+       * `key` must contain a representation of an integer for this to succeed.
+       * It may be wrapped in a `Scalar`.
+       *
+       * @returns `true` if the item was found and removed.
+       */
       delete(key) {
         const idx = asItemIndex(key);
         if (typeof idx !== "number")
@@ -19626,10 +19918,23 @@ var require_YAMLSeq = __commonJS({
         const it = this.items[idx];
         return !keepScalar && identity.isScalar(it) ? it.value : it;
       }
+      /**
+       * Checks if the collection includes a value with the key `key`.
+       *
+       * `key` must contain a representation of an integer for this to succeed.
+       * It may be wrapped in a `Scalar`.
+       */
       has(key) {
         const idx = asItemIndex(key);
         return typeof idx === "number" && idx < this.items.length;
       }
+      /**
+       * Sets a value in this collection. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       *
+       * If `key` does not contain a representation of an integer, this will throw.
+       * It may be wrapped in a `Scalar`.
+       */
       set(key, value) {
         const idx = asItemIndex(key);
         if (typeof idx !== "number")
@@ -19991,8 +20296,17 @@ var require_binary = __commonJS({
     var stringifyString = require_stringifyString();
     var binary = {
       identify: (value) => value instanceof Uint8Array,
+      // Buffer inherits from Uint8Array
       default: false,
       tag: "tag:yaml.org,2002:binary",
+      /**
+       * Returns a Buffer in node and an Uint8Array in browsers
+       *
+       * To use the resulting buffer as an image, you'll want to do something like:
+       *
+       *   const blob = new Blob([buffer], { type: 'image/jpeg' })
+       *   document.querySelector('#photo').src = URL.createObjectURL(blob)
+       */
       resolve(src, onError) {
         if (typeof node_buffer.Buffer === "function") {
           return node_buffer.Buffer.from(src, "base64");
@@ -20126,7 +20440,7 @@ var require_omap = __commonJS({
     var YAMLMap = require_YAMLMap();
     var YAMLSeq = require_YAMLSeq();
     var pairs = require_pairs();
-    var YAMLOMap = class extends YAMLSeq.YAMLSeq {
+    var YAMLOMap = class _YAMLOMap extends YAMLSeq.YAMLSeq {
       constructor() {
         super();
         this.add = YAMLMap.YAMLMap.prototype.add.bind(this);
@@ -20134,8 +20448,12 @@ var require_omap = __commonJS({
         this.get = YAMLMap.YAMLMap.prototype.get.bind(this);
         this.has = YAMLMap.YAMLMap.prototype.has.bind(this);
         this.set = YAMLMap.YAMLMap.prototype.set.bind(this);
-        this.tag = YAMLOMap.tag;
+        this.tag = _YAMLOMap.tag;
       }
+      /**
+       * If `ctx` is given, the return type is actually `Map<unknown, unknown>`,
+       * but TypeScript won't allow widening the signature of a child method.
+       */
       toJSON(_, ctx) {
         if (!ctx)
           return super.toJSON(_);
@@ -20358,10 +20676,10 @@ var require_set = __commonJS({
     var identity = require_identity();
     var Pair = require_Pair();
     var YAMLMap = require_YAMLMap();
-    var YAMLSet = class extends YAMLMap.YAMLMap {
+    var YAMLSet = class _YAMLSet extends YAMLMap.YAMLMap {
       constructor(schema) {
         super(schema);
-        this.tag = YAMLSet.tag;
+        this.tag = _YAMLSet.tag;
       }
       add(key) {
         let pair;
@@ -20375,6 +20693,10 @@ var require_set = __commonJS({
         if (!prev)
           this.items.push(pair);
       }
+      /**
+       * If `keepPair` is `true`, returns the Pair matching `key`.
+       * Otherwise, returns the value of that Pair's key.
+       */
       get(key, keepPair) {
         const pair = YAMLMap.findPair(this.items, key);
         return !keepPair && identity.isPair(pair) ? identity.isScalar(pair.key) ? pair.key.value : pair.key : pair;
@@ -20496,6 +20818,9 @@ var require_timestamp = __commonJS({
       identify: (value) => value instanceof Date,
       default: true,
       tag: "tag:yaml.org,2002:timestamp",
+      // If the time zone is omitted, the timestamp is assumed to be specified in UTC. The time part
+      // may be omitted altogether, resulting in a date format. In such a case, the time part is
+      // assumed to be 00:00:00Z (start of day, UTC).
       test: RegExp("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:(?:t|T|[ \\t]+)([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}(\\.[0-9]+)?)(?:[ \\t]*(Z|[-+][012]?[0-9](?::[0-9]{2})?))?)?$"),
       resolve(str) {
         const match = str.match(timestamp.test);
@@ -20669,7 +20994,7 @@ var require_Schema = __commonJS({
     var string = require_string();
     var tags = require_tags();
     var sortMapEntriesByKey = (a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
-    var Schema = class {
+    var Schema = class _Schema {
       constructor({ compat, customTags, merge: merge2, resolveKnownTags, schema, sortMapEntries, toStringDefaults }) {
         this.compat = Array.isArray(compat) ? tags.getTags(compat, "compat") : compat ? tags.getTags(null, compat) : null;
         this.name = typeof schema === "string" && schema || "core";
@@ -20682,7 +21007,7 @@ var require_Schema = __commonJS({
         this.sortMapEntries = typeof sortMapEntries === "function" ? sortMapEntries : sortMapEntries === true ? sortMapEntriesByKey : null;
       }
       clone() {
-        const copy = Object.create(Schema.prototype, Object.getOwnPropertyDescriptors(this));
+        const copy = Object.create(_Schema.prototype, Object.getOwnPropertyDescriptors(this));
         copy.tags = this.tags.slice();
         return copy;
       }
@@ -20786,7 +21111,7 @@ var require_Document = __commonJS({
     var applyReviver = require_applyReviver();
     var createNode = require_createNode();
     var directives = require_directives();
-    var Document = class {
+    var Document = class _Document {
       constructor(value, replacer, options) {
         this.commentBefore = null;
         this.comment = null;
@@ -20821,8 +21146,13 @@ var require_Document = __commonJS({
         this.setSchema(version, options);
         this.contents = value === void 0 ? null : this.createNode(value, _replacer, options);
       }
+      /**
+       * Create a deep copy of this Document and its contents.
+       *
+       * Custom Node values that inherit from `Object` still refer to their original instances.
+       */
       clone() {
-        const copy = Object.create(Document.prototype, {
+        const copy = Object.create(_Document.prototype, {
           [identity.NODE_TYPE]: { value: identity.DOC }
         });
         copy.commentBefore = this.commentBefore;
@@ -20838,18 +21168,30 @@ var require_Document = __commonJS({
           copy.range = this.range.slice();
         return copy;
       }
+      /** Adds a value to the document. */
       add(value) {
         if (assertCollection(this.contents))
           this.contents.add(value);
       }
+      /** Adds a value to the document. */
       addIn(path, value) {
         if (assertCollection(this.contents))
           this.contents.addIn(path, value);
       }
+      /**
+       * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
+       *
+       * If `node` already has an anchor, `name` is ignored.
+       * Otherwise, the `node.anchor` value will be set to `name`,
+       * or if an anchor with that name is already present in the document,
+       * `name` will be used as a prefix for a new unique anchor.
+       * If `name` is undefined, the generated anchor will use 'a' as a prefix.
+       */
       createAlias(node, name) {
         if (!node.anchor) {
           const prev = anchors.anchorNames(this);
-          node.anchor = !name || prev.has(name) ? anchors.findNewAnchor(name || "a", prev) : name;
+          node.anchor = // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          !name || prev.has(name) ? anchors.findNewAnchor(name || "a", prev) : name;
         }
         return new Alias.Alias(node.anchor);
       }
@@ -20871,6 +21213,7 @@ var require_Document = __commonJS({
         const { aliasDuplicateObjects, anchorPrefix, flow, keepUndefined, onTagObj, tag } = options ?? {};
         const { onAnchor, setAnchors, sourceObjects } = anchors.createNodeAnchors(
           this,
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           anchorPrefix || "a"
         );
         const ctx = {
@@ -20888,14 +21231,26 @@ var require_Document = __commonJS({
         setAnchors();
         return node;
       }
+      /**
+       * Convert a key and a value into a `Pair` using the current schema,
+       * recursively wrapping all values as `Scalar` or `Collection` nodes.
+       */
       createPair(key, value, options = {}) {
         const k = this.createNode(key, null, options);
         const v = this.createNode(value, null, options);
         return new Pair.Pair(k, v);
       }
+      /**
+       * Removes a value from the document.
+       * @returns `true` if the item was found and removed.
+       */
       delete(key) {
         return assertCollection(this.contents) ? this.contents.delete(key) : false;
       }
+      /**
+       * Removes a value from the document.
+       * @returns `true` if the item was found and removed.
+       */
       deleteIn(path) {
         if (Collection2.isEmptyPath(path)) {
           if (this.contents == null)
@@ -20905,22 +21260,42 @@ var require_Document = __commonJS({
         }
         return assertCollection(this.contents) ? this.contents.deleteIn(path) : false;
       }
+      /**
+       * Returns item at `key`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       get(key, keepScalar) {
         return identity.isCollection(this.contents) ? this.contents.get(key, keepScalar) : void 0;
       }
+      /**
+       * Returns item at `path`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       getIn(path, keepScalar) {
         if (Collection2.isEmptyPath(path))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
         return identity.isCollection(this.contents) ? this.contents.getIn(path, keepScalar) : void 0;
       }
+      /**
+       * Checks if the document includes a value with the key `key`.
+       */
       has(key) {
         return identity.isCollection(this.contents) ? this.contents.has(key) : false;
       }
+      /**
+       * Checks if the document includes a value at `path`.
+       */
       hasIn(path) {
         if (Collection2.isEmptyPath(path))
           return this.contents !== void 0;
         return identity.isCollection(this.contents) ? this.contents.hasIn(path) : false;
       }
+      /**
+       * Sets a value in this document. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       set(key, value) {
         if (this.contents == null) {
           this.contents = Collection2.collectionFromPath(this.schema, [key], value);
@@ -20928,6 +21303,10 @@ var require_Document = __commonJS({
           this.contents.set(key, value);
         }
       }
+      /**
+       * Sets a value in this document. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       setIn(path, value) {
         if (Collection2.isEmptyPath(path)) {
           this.contents = value;
@@ -20937,6 +21316,13 @@ var require_Document = __commonJS({
           this.contents.setIn(path, value);
         }
       }
+      /**
+       * Change the YAML version and schema used by the document.
+       * A `null` version disables support for directives, explicit tags, anchors, and aliases.
+       * It also requires the `schema` option to be given as a `Schema` instance value.
+       *
+       * Overrides all previously set schema options.
+       */
       setSchema(version, options = {}) {
         if (typeof version === "number")
           version = String(version);
@@ -20974,6 +21360,7 @@ var require_Document = __commonJS({
         else
           throw new Error(`With a null YAML version, the { schema: Schema } option is required`);
       }
+      // json & jsonArg are only used from toJSON()
       toJS({ json, jsonArg, mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
         const ctx = {
           anchors: /* @__PURE__ */ new Map(),
@@ -20989,9 +21376,16 @@ var require_Document = __commonJS({
             onAnchor(res2, count);
         return typeof reviver === "function" ? applyReviver.applyReviver(reviver, { "": res }, "", res) : res;
       }
+      /**
+       * A JSON representation of the document `contents`.
+       *
+       * @param jsonArg Used by `JSON.stringify` to indicate the array index or
+       *   property name.
+       */
       toJSON(jsonArg, onAnchor) {
         return this.toJS({ json: true, jsonArg, mapAsMap: false, onAnchor });
       }
+      /** A YAML representation of the document. */
       toString(options = {}) {
         if (this.errors.length > 0)
           throw new Error("Document with errors cannot be stringified");
@@ -21179,6 +21573,7 @@ var require_resolve_props = __commonJS({
               hasSpace = false;
               break;
             }
+          // else fallthrough
           default:
             onError(token, "UNEXPECTED_TOKEN", `Unexpected ${token.type} token`);
             atNewline = false;
@@ -21543,6 +21938,7 @@ var require_resolve_flow_collection = __commonJS({
           if (!isMap && ctx.options.strict && utilContainsNewline.containsNewline(key))
             onError(
               key,
+              // checked by containsNewline()
               "MULTILINE_IMPLICIT_KEY",
               "Implicit keys of flow sequence pairs need to be on a single line"
             );
@@ -21555,19 +21951,18 @@ var require_resolve_flow_collection = __commonJS({
             onError(props.start, "MISSING_CHAR", `Missing , between ${fcName} items`);
           if (props.comment) {
             let prevItemComment = "";
-            loop:
-              for (const st of start) {
-                switch (st.type) {
-                  case "comma":
-                  case "space":
-                    break;
-                  case "comment":
-                    prevItemComment = st.source.substring(1);
-                    break loop;
-                  default:
-                    break loop;
-                }
+            loop: for (const st of start) {
+              switch (st.type) {
+                case "comma":
+                case "space":
+                  break;
+                case "comment":
+                  prevItemComment = st.source.substring(1);
+                  break loop;
+                default:
+                  break loop;
               }
+            }
             if (prevItemComment) {
               let prev = coll.items[coll.items.length - 1];
               if (identity.isPair(prev))
@@ -21887,6 +22282,7 @@ var require_resolve_block_scalar = __commonJS({
         switch (token.type) {
           case "space":
             hasSpace = true;
+          // fallthrough
           case "newline":
             length += token.source.length;
             break;
@@ -21902,6 +22298,7 @@ var require_resolve_block_scalar = __commonJS({
             onError(token, "UNEXPECTED_TOKEN", token.message);
             length += token.source.length;
             break;
+          /* istanbul ignore next should not happen */
           default: {
             const message = `Unexpected token in block scalar header: ${token.type}`;
             onError(token, "UNEXPECTED_TOKEN", message);
@@ -21951,6 +22348,7 @@ var require_resolve_flow_scalar = __commonJS({
           _type = Scalar.Scalar.QUOTE_DOUBLE;
           value = doubleQuotedValue(source, _onError);
           break;
+        /* istanbul ignore next should not happen */
         default:
           onError(scalar, "UNEXPECTED_TOKEN", `Expected a flow scalar value, but found: ${type}`);
           return {
@@ -21972,6 +22370,7 @@ var require_resolve_flow_scalar = __commonJS({
     function plainValue(source, onError) {
       let badChar = "";
       switch (source[0]) {
+        /* istanbul ignore next should not happen */
         case "	":
           badChar = "a tab character";
           break;
@@ -22098,18 +22497,31 @@ var require_resolve_flow_scalar = __commonJS({
     }
     var escapeCodes = {
       "0": "\0",
+      // null character
       a: "\x07",
+      // bell character
       b: "\b",
+      // backspace
       e: "\x1B",
+      // escape character
       f: "\f",
+      // form feed
       n: "\n",
+      // line feed
       r: "\r",
+      // carriage return
       t: "	",
+      // horizontal tab
       v: "\v",
+      // vertical tab
       N: "\x85",
+      // Unicode next line
       _: "\xA0",
+      // Unicode non-breaking space
       L: "\u2028",
+      // Unicode line separator
       P: "\u2029",
+      // Unicode paragraph separator
       " ": " ",
       '"': '"',
       "/": "/",
@@ -22480,6 +22892,11 @@ ${cb}` : comment;
         this.errors = [];
         this.warnings = [];
       }
+      /**
+       * Current stream status information.
+       *
+       * Mostly useful at the end of input for an empty stream.
+       */
       streamInfo() {
         return {
           comment: parsePrelude(this.prelude).comment,
@@ -22488,11 +22905,18 @@ ${cb}` : comment;
           warnings: this.warnings
         };
       }
+      /**
+       * Compose tokens into documents.
+       *
+       * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+       * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+       */
       *compose(tokens, forceDoc = false, endOffset = -1) {
         for (const token of tokens)
           yield* this.next(token);
         yield* this.end(forceDoc, endOffset);
       }
+      /** Advance the composer by one CST token. */
       *next(token) {
         if (node_process.env.LOG_STREAM)
           console.dir(token, { depth: null });
@@ -22554,6 +22978,12 @@ ${end.comment}` : end.comment;
             this.errors.push(new errors.YAMLParseError(getErrorPos(token), "UNEXPECTED_TOKEN", `Unsupported token ${token.type}`));
         }
       }
+      /**
+       * Call at end of input to yield any remaining document.
+       *
+       * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+       * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+       */
       *end(forceDoc = false, endOffset = -1) {
         if (this.doc) {
           this.decorate(this.doc, true);
@@ -23020,6 +23450,12 @@ var require_lexer = __commonJS({
         this.next = null;
         this.pos = 0;
       }
+      /**
+       * Generate YAML tokens from the `source` string. If `incomplete`,
+       * a part of the last line may be left as a buffer for the next call.
+       *
+       * @returns A generator of lexical tokens
+       */
       *lex(source, incomplete = false) {
         if (source) {
           if (typeof source !== "string")
@@ -23193,6 +23629,7 @@ var require_lexer = __commonJS({
         switch (line[n]) {
           case "#":
             yield* this.pushCount(line.length - n);
+          // fallthrough
           case void 0:
             yield* this.pushNewline();
             return yield* this.parseLineStart();
@@ -23288,6 +23725,7 @@ var require_lexer = __commonJS({
               return "flow";
             }
           }
+          // fallthrough
           default:
             this.flowKey = false;
             return yield* this.parsePlainScalar();
@@ -23349,27 +23787,27 @@ var require_lexer = __commonJS({
         let nl = this.pos - 1;
         let indent = 0;
         let ch;
-        loop:
-          for (let i2 = this.pos; ch = this.buffer[i2]; ++i2) {
-            switch (ch) {
-              case " ":
-                indent += 1;
+        loop: for (let i2 = this.pos; ch = this.buffer[i2]; ++i2) {
+          switch (ch) {
+            case " ":
+              indent += 1;
+              break;
+            case "\n":
+              nl = i2;
+              indent = 0;
+              break;
+            case "\r": {
+              const next = this.buffer[i2 + 1];
+              if (!next && !this.atEnd)
+                return this.setNext("block-scalar");
+              if (next === "\n")
                 break;
-              case "\n":
-                nl = i2;
-                indent = 0;
-                break;
-              case "\r": {
-                const next = this.buffer[i2 + 1];
-                if (!next && !this.atEnd)
-                  return this.setNext("block-scalar");
-                if (next === "\n")
-                  break;
-              }
-              default:
-                break loop;
             }
+            // fallthrough
+            default:
+              break loop;
           }
+        }
         if (!ch && !this.atEnd)
           return this.setNext("block-scalar");
         if (indent >= this.indentNext) {
@@ -23483,7 +23921,9 @@ var require_lexer = __commonJS({
           case "&":
             return (yield* this.pushUntil(isNotAnchorChar)) + (yield* this.pushSpaces(true)) + (yield* this.pushIndicators());
           case "-":
+          // this is an error
           case "?":
+          // this is an error outside flow collections
           case ":": {
             const inFlow = this.flowLevel > 0;
             const ch1 = this.charAt(1);
@@ -23632,6 +24072,7 @@ var require_parser = __commonJS({
         }
         case "block-seq":
           return parent.items[parent.items.length - 1].start;
+        /* istanbul ignore next should not happen */
         default:
           return [];
       }
@@ -23640,17 +24081,16 @@ var require_parser = __commonJS({
       if (prev.length === 0)
         return [];
       let i = prev.length;
-      loop:
-        while (--i >= 0) {
-          switch (prev[i].type) {
-            case "doc-start":
-            case "explicit-key-ind":
-            case "map-value-ind":
-            case "seq-item-ind":
-            case "newline":
-              break loop;
-          }
+      loop: while (--i >= 0) {
+        switch (prev[i].type) {
+          case "doc-start":
+          case "explicit-key-ind":
+          case "map-value-ind":
+          case "seq-item-ind":
+          case "newline":
+            break loop;
         }
+      }
       while (prev[++i]?.type === "space") {
       }
       return prev.splice(i, prev.length);
@@ -23675,6 +24115,10 @@ var require_parser = __commonJS({
       }
     }
     var Parser = class {
+      /**
+       * @param onNewLine - If defined, called separately with the start position of
+       *   each new line (in `parse()`, including the start of input).
+       */
       constructor(onNewLine) {
         this.atNewLine = true;
         this.atScalar = false;
@@ -23687,6 +24131,14 @@ var require_parser = __commonJS({
         this.lexer = new lexer.Lexer();
         this.onNewLine = onNewLine;
       }
+      /**
+       * Parse `source` as a YAML stream.
+       * If `incomplete`, a part of the last line may be left as a buffer for the next call.
+       *
+       * Errors are not thrown, but yielded as `{ type: 'error', message }` tokens.
+       *
+       * @returns A generator of tokens representing each directive, document, and other structure.
+       */
       *parse(source, incomplete = false) {
         if (this.onNewLine && this.offset === 0)
           this.onNewLine(0);
@@ -23695,6 +24147,9 @@ var require_parser = __commonJS({
         if (!incomplete)
           yield* this.end();
       }
+      /**
+       * Advance the parser by the `source` of one lexical token.
+       */
       *next(source) {
         this.source = source;
         if (node_process.env.LOG_TOKENS)
@@ -23743,6 +24198,7 @@ var require_parser = __commonJS({
           this.offset += source.length;
         }
       }
+      /** Call at end of input to push out any remaining constructions */
       *end() {
         while (this.stack.length > 0)
           yield* this.pop();
@@ -23850,6 +24306,7 @@ var require_parser = __commonJS({
                 Object.assign(it, { key: token, sep: [] });
               return;
             }
+            /* istanbul ignore next should not happen */
             default:
               yield* this.pop();
               yield* this.pop(token);
@@ -23971,6 +24428,7 @@ var require_parser = __commonJS({
             }
             yield* this.pop();
             break;
+          /* istanbul ignore next should not happen */
           default:
             yield* this.pop();
             yield* this.step();
@@ -24416,6 +24874,7 @@ var require_parser = __commonJS({
             break;
           case "newline":
             this.onKeyLine = false;
+          // fallthrough
           case "space":
           case "comment":
           default:
@@ -24581,17 +25040,17 @@ var require_dist2 = __commonJS({
   }
 });
 
-// 
+// .github/actions/deploy-docs-site/lib/main.mts
 var import_core3 = __toESM(require_core(), 1);
 var import_github3 = __toESM(require_github(), 1);
 
-// 
+// .github/actions/deploy-docs-site/lib/deploy.mjs
 import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 
-// 
+// .github/actions/deploy-docs-site/lib/credential.mjs
 var import_tmp = __toESM(require_tmp(), 1);
 var import_core = __toESM(require_core(), 1);
 import { writeSync } from "node:fs";
@@ -24609,7 +25068,7 @@ var githubReleaseTrainReadToken = (0, import_core.getInput)("githubReleaseTrainR
   required: true
 });
 
-// 
+// .github/actions/deploy-docs-site/lib/deploy.mjs
 async function deployToFirebase(deployment, configPath, distDirPath) {
   if (deployment.destination == void 0) {
     console.log(`No deployment necessary for docs created from: ${deployment.branch}`);
@@ -24682,6 +25141,7 @@ var wrapAnsi16m = (offset = 0) => (red2, green2, blue2) => `\x1B[${38 + offset};
 var styles = {
   modifier: {
     reset: [0, 0],
+    // 21 isn't widely supported and 22 does the same thing
     bold: [1, 22],
     dim: [2, 22],
     italic: [3, 23],
@@ -24700,9 +25160,12 @@ var styles = {
     magenta: [35, 39],
     cyan: [36, 39],
     white: [37, 39],
+    // Bright color
     blackBright: [90, 39],
     gray: [90, 39],
+    // Alias of `blackBright`
     grey: [90, 39],
+    // Alias of `blackBright`
     redBright: [91, 39],
     greenBright: [92, 39],
     yellowBright: [93, 39],
@@ -24720,9 +25183,12 @@ var styles = {
     bgMagenta: [45, 49],
     bgCyan: [46, 49],
     bgWhite: [47, 49],
+    // Bright color
     bgBlackBright: [100, 49],
     bgGray: [100, 49],
+    // Alias of `bgBlackBright`
     bgGrey: [100, 49],
+    // Alias of `bgBlackBright`
     bgRedBright: [101, 49],
     bgGreenBright: [102, 49],
     bgYellowBright: [103, 49],
@@ -24792,9 +25258,11 @@ function assembleStyles() {
         }
         const integer = Number.parseInt(colorString, 16);
         return [
+          /* eslint-disable no-bitwise */
           integer >> 16 & 255,
           integer >> 8 & 255,
           integer & 255
+          /* eslint-enable no-bitwise */
         ];
       },
       enumerable: false
@@ -25292,6 +25760,12 @@ var supports_color_default2 = supportsColor2;
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
 import assert from "assert";
 var ChildProcess = class {
+  /**
+   * Spawns a given command with the specified arguments inside an interactive shell. All process
+   * stdin, stdout and stderr output is printed to the current console.
+   *
+   * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+   */
   static spawnInteractive(command, args, options = {}) {
     return new Promise((resolve, reject) => {
       const commandText = `${command} ${args.join(" ")}`;
@@ -25300,6 +25774,11 @@ var ChildProcess = class {
       childProcess.on("close", (status) => status === 0 ? resolve() : reject(status));
     });
   }
+  /**
+   * Spawns a given command with the specified arguments inside a shell synchronously.
+   *
+   * @returns The command's stdout and stderr.
+   */
   static spawnSync(command, args, options = {}) {
     const commandText = `${command} ${args.join(" ")}`;
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
@@ -25311,11 +25790,27 @@ var ChildProcess = class {
     }
     throw new Error(stderr);
   }
+  /**
+   * Spawns a given command with the specified arguments inside a shell. All process stdout
+   * output is captured and returned as resolution on completion. Depending on the chosen
+   * output mode, stdout/stderr output is also printed to the console, or only on error.
+   *
+   * @returns a Promise resolving with captured stdout and stderr on success. The promise
+   *   rejects on command failure.
+   */
   static spawn(command, args, options = {}) {
     const commandText = `${command} ${args.join(" ")}`;
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
     return processAsyncCmd(commandText, options, _spawn(command, args, { ...options, env: env3, shell: true, stdio: "pipe" }));
   }
+  /**
+   * Execs a given command with the specified arguments inside a shell. All process stdout
+   * output is captured and returned as resolution on completion. Depending on the chosen
+   * output mode, stdout/stderr output is also printed to the console, or only on error.
+   *
+   * @returns a Promise resolving with captured stdout and stderr on success. The promise
+   *   rejects on command failure.
+   */
   static exec(command, options = {}) {
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
     return processAsyncCmd(command, options, _exec(command, { ...options, env: env3 }));
@@ -25451,6 +25946,7 @@ function appendToLogFile(logLevel, ...text) {
   const logLevelText = `${LogLevel[logLevel]}:`.padEnd(LOG_LEVEL_COLUMNS);
   appendFile(
     logFilePath,
+    // Strip ANSI escape codes from log outputs.
     stripVTControlCharacters(text.join(" ").split("\n").map((l) => `${logLevelText} ${l}
 `).join(""))
   );
@@ -25466,7 +25962,7 @@ function getCachedConfig() {
 }
 
 // 
-var CONFIG_FILE_PATH = ".ng-dev/config.mts";
+var CONFIG_FILE_PATH = ".ng-dev/config.mjs";
 var setConfig = setCachedConfig;
 async function getConfig(baseDirOrAssertions) {
   let cachedConfig2 = getCachedConfig();
@@ -25663,6 +26159,7 @@ var managedLabels = createTypedObject(ManagedLabel)({
     name: "area: performance",
     commitCheck: (c) => c.type === "perf"
   },
+  // angular/angular specific labels.
   DETECTED_HTTP_CHANGE: {
     description: "Issues related to HTTP and HTTP Client",
     name: "area: common/http",
@@ -25858,7 +26355,7 @@ var allLabels = {
 };
 
 // 
-var import_semver2 = __toESM(require_semver2(), 1);
+var import_semver2 = __toESM(require_semver2());
 
 // 
 var ReleaseTrain = class {
@@ -25870,7 +26367,7 @@ var ReleaseTrain = class {
 };
 
 // 
-var import_semver = __toESM(require_semver2(), 1);
+var import_semver = __toESM(require_semver2());
 var versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 var exceptionalMinorPackageIndicator = "__ngDevExceptionalMinor__";
 async function getVersionInfoForBranch(repo, branchName) {
@@ -25928,9 +26425,11 @@ var ActiveReleaseTrains = class {
     this.latest = this.trains.latest;
     this.exceptionalMinor = this.trains.exceptionalMinor;
   }
+  /** Whether the active release trains indicate the repository is in a feature freeze state. */
   isFeatureFreeze() {
     return this.releaseCandidate !== null && this.releaseCandidate.version.prerelease[0] === "next";
   }
+  /** Fetches the active release trains for the configured project. */
   static async fetch(repo) {
     return fetchActiveReleaseTrains(repo);
   }
@@ -26015,7 +26514,7 @@ async function findActiveReleaseTrainsFromVersionBranches(repo, next, branches, 
 }
 
 // 
-var import_semver3 = __toESM(require_semver2(), 1);
+var import_semver3 = __toESM(require_semver2());
 
 // 
 var _npmPackageInfoCache = {};
@@ -26035,7 +26534,7 @@ var majorLongTermSupportDuration = 12;
 var ltsNpmDistTagRegex = /^v(\d+)-lts$/;
 async function fetchLongTermSupportBranchesFromNpm(config) {
   const { "dist-tags": distTags, time } = await fetchProjectNpmPackageInfo(config);
-  const today = new Date();
+  const today = /* @__PURE__ */ new Date();
   const active = [];
   const inactive = [];
   for (const npmDistTag in distTags) {
@@ -26064,7 +26563,7 @@ function computeLtsEndDateOfMajor(majorReleaseDate) {
 }
 
 // 
-var import_typed_graphqlify = __toESM(require_dist(), 1);
+var import_typed_graphqlify = __toESM(require_dist());
 var findOwnedForksOfRepoQuery = (0, import_typed_graphqlify.params)({
   $owner: "String!",
   $name: "String!"
@@ -26237,13 +26736,10 @@ function lowercaseKeys(object) {
   }, {});
 }
 function isPlainObject(value) {
-  if (typeof value !== "object" || value === null)
-    return false;
-  if (Object.prototype.toString.call(value) !== "[object Object]")
-    return false;
+  if (typeof value !== "object" || value === null) return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]") return false;
   const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null)
-    return true;
+  if (proto2 === null) return true;
   const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
@@ -26251,10 +26747,8 @@ function mergeDeep(defaults, options) {
   const result = Object.assign({}, defaults);
   Object.keys(options).forEach((key) => {
     if (isPlainObject(options[key])) {
-      if (!(key in defaults))
-        Object.assign(result, { [key]: options[key] });
-      else
-        result[key] = mergeDeep(defaults[key], options[key]);
+      if (!(key in defaults)) Object.assign(result, { [key]: options[key] });
+      else result[key] = mergeDeep(defaults[key], options[key]);
     } else {
       Object.assign(result, { [key]: options[key] });
     }
@@ -26532,13 +27026,22 @@ function withDefaults(oldDefaults, newDefaults) {
 var endpoint = withDefaults(null, DEFAULTS);
 
 // 
-var import_fast_content_type_parse = __toESM(require_fast_content_type_parse(), 1);
+var import_fast_content_type_parse = __toESM(require_fast_content_type_parse());
 
 // 
 var RequestError = class extends Error {
   name;
+  /**
+   * http status code
+   */
   status;
+  /**
+   * Request options that lead to the error.
+   */
   request;
+  /**
+   * Response object if a response was received
+   */
   response;
   constructor(message, statusCode, options) {
     super(message);
@@ -26565,20 +27068,17 @@ var RequestError = class extends Error {
 };
 
 // 
-var VERSION2 = "0.0.0-development";
+var VERSION2 = "10.0.3";
 var defaults_default = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION2} ${getUserAgent()}`
   }
 };
 function isPlainObject2(value) {
-  if (typeof value !== "object" || value === null)
-    return false;
-  if (Object.prototype.toString.call(value) !== "[object Object]")
-    return false;
+  if (typeof value !== "object" || value === null) return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]") return false;
   const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null)
-    return true;
+  if (proto2 === null) return true;
   const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
@@ -26606,6 +27106,8 @@ async function fetchWrapper(requestOptions) {
       redirect: requestOptions.request?.redirect,
       headers: requestHeaders,
       signal: requestOptions.request?.signal,
+      // duplex must be set if request.body is ReadableStream or Async Iterables.
+      // See https://fetch.spec.whatwg.org/#dom-requestinit-duplex.
       ...requestOptions.body && { duplex: "half" }
     });
   } catch (error) {
@@ -26781,8 +27283,7 @@ function graphql(request2, query2, options) {
       );
     }
     for (const key in options) {
-      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
-        continue;
+      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key)) continue;
       return Promise.reject(
         new Error(
           `[@octokit/graphql] "${key}" cannot be used as variable name`
@@ -26893,15 +27394,31 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // 
-var VERSION4 = "6.1.5";
+var VERSION4 = "7.0.3";
 
 // 
 var noop = () => {
 };
 var consoleWarn = console.warn.bind(console);
 var consoleError = console.error.bind(console);
+function createLogger(logger = {}) {
+  if (typeof logger.debug !== "function") {
+    logger.debug = noop;
+  }
+  if (typeof logger.info !== "function") {
+    logger.info = noop;
+  }
+  if (typeof logger.warn !== "function") {
+    logger.warn = consoleWarn;
+  }
+  if (typeof logger.error !== "function") {
+    logger.error = consoleError;
+  }
+  return logger;
+}
 var userAgentTrail = `octokit-core.js/${VERSION4} ${getUserAgent()}`;
 var Octokit = class {
+  static VERSION = VERSION4;
   static defaults(defaults) {
     const OctokitWithDefaults = class extends this {
       constructor(...args) {
@@ -26924,6 +27441,13 @@ var Octokit = class {
     };
     return OctokitWithDefaults;
   }
+  static plugins = [];
+  /**
+   * Attach a plugin (or many) to your Octokit instance.
+   *
+   * @example
+   * const API = Octokit.plugin(plugin1, plugin2, plugin3, ...)
+   */
   static plugin(...newPlugins) {
     const currentPlugins = this.plugins;
     const NewOctokit = class extends this {
@@ -26939,6 +27463,7 @@ var Octokit = class {
       baseUrl: request.endpoint.DEFAULTS.baseUrl,
       headers: {},
       request: Object.assign({}, options.request, {
+        // @ts-ignore internal usage only, no need to type
         hook: hook2.bind(null, "request")
       }),
       mediaType: {
@@ -26958,15 +27483,7 @@ var Octokit = class {
     }
     this.request = request.defaults(requestDefaults);
     this.graphql = withCustomRequest(this.request).defaults(requestDefaults);
-    this.log = Object.assign(
-      {
-        debug: noop,
-        info: noop,
-        warn: consoleWarn,
-        error: consoleError
-      },
-      options.log
-    );
+    this.log = createLogger(options.log);
     this.hook = hook2;
     if (!options.authStrategy) {
       if (!options.auth) {
@@ -26985,6 +27502,11 @@ var Octokit = class {
           {
             request: this.request,
             log: this.log,
+            // we pass the current octokit instance as well as its constructor options
+            // to allow for authentication strategies that return a new octokit instance
+            // that shares the same internal state as the current one. The original
+            // requirement for this was the "event-octokit" authentication strategy
+            // of https://github.com/probot/octokit-auth-probot.
             octokit: this,
             octokitOptions: otherOptions
           },
@@ -26999,17 +27521,17 @@ var Octokit = class {
       Object.assign(this, classConstructor.plugins[i](this, options));
     }
   }
+  // assigned during constructor
   request;
   graphql;
   log;
   hook;
+  // TODO: type `octokit.auth` based on passed options.authStrategy
   auth;
 };
-__publicField(Octokit, "VERSION", VERSION4);
-__publicField(Octokit, "plugins", []);
 
 // 
-var VERSION5 = "5.3.1";
+var VERSION5 = "6.0.0";
 
 // 
 function requestLog(octokit) {
@@ -27044,15 +27566,16 @@ function normalizePaginatedListResponse(response) {
       data: []
     };
   }
-  const responseNeedsNormalization = "total_count" in response.data && !("url" in response.data);
-  if (!responseNeedsNormalization)
-    return response;
+  const responseNeedsNormalization = ("total_count" in response.data || "total_commits" in response.data) && !("url" in response.data);
+  if (!responseNeedsNormalization) return response;
   const incompleteResults = response.data.incomplete_results;
   const repositorySelection = response.data.repository_selection;
   const totalCount = response.data.total_count;
+  const totalCommits = response.data.total_commits;
   delete response.data.incomplete_results;
   delete response.data.repository_selection;
   delete response.data.total_count;
+  delete response.data.total_commits;
   const namespaceKey = Object.keys(response.data)[0];
   const data = response.data[namespaceKey];
   response.data = data;
@@ -27063,6 +27586,7 @@ function normalizePaginatedListResponse(response) {
     response.data.repository_selection = repositorySelection;
   }
   response.data.total_count = totalCount;
+  response.data.total_commits = totalCommits;
   return response;
 }
 function iterator(octokit, route, parameters) {
@@ -27074,18 +27598,26 @@ function iterator(octokit, route, parameters) {
   return {
     [Symbol.asyncIterator]: () => ({
       async next() {
-        if (!url)
-          return { done: true };
+        if (!url) return { done: true };
         try {
           const response = await requestMethod({ method, url, headers });
           const normalizedResponse = normalizePaginatedListResponse(response);
           url = ((normalizedResponse.headers.link || "").match(
             /<([^<>]+)>;\s*rel="next"/
           ) || [])[1];
+          if (!url && "total_commits" in normalizedResponse.data) {
+            const parsedUrl = new URL(normalizedResponse.url);
+            const params2 = parsedUrl.searchParams;
+            const page = parseInt(params2.get("page") || "1", 10);
+            const per_page = parseInt(params2.get("per_page") || "250", 10);
+            if (page * per_page < normalizedResponse.data.total_commits) {
+              params2.set("page", String(page + 1));
+              url = parsedUrl.toString();
+            }
+          }
           return { value: normalizedResponse };
         } catch (error) {
-          if (error.status !== 409)
-            throw error;
+          if (error.status !== 409) throw error;
           url = "";
           return {
             value: {
@@ -27142,7 +27674,7 @@ function paginateRest(octokit) {
 paginateRest.VERSION = VERSION6;
 
 // 
-var VERSION7 = "13.5.0";
+var VERSION7 = "16.0.0";
 
 // 
 var Endpoints = {
@@ -27616,6 +28148,9 @@ var Endpoints = {
     getGithubBillingUsageReportOrg: [
       "GET /organizations/{org}/settings/billing/usage"
     ],
+    getGithubBillingUsageReportUser: [
+      "GET /users/{username}/settings/billing/usage"
+    ],
     getGithubPackagesBillingOrg: ["GET /orgs/{org}/settings/billing/packages"],
     getGithubPackagesBillingUser: [
       "GET /users/{username}/settings/billing/packages"
@@ -27626,6 +28161,13 @@ var Endpoints = {
     getSharedStorageBillingUser: [
       "GET /users/{username}/settings/billing/shared-storage"
     ]
+  },
+  campaigns: {
+    createCampaign: ["POST /orgs/{org}/campaigns"],
+    deleteCampaign: ["DELETE /orgs/{org}/campaigns/{campaign_number}"],
+    getCampaignSummary: ["GET /orgs/{org}/campaigns/{campaign_number}"],
+    listOrgCampaigns: ["GET /orgs/{org}/campaigns"],
+    updateCampaign: ["PATCH /orgs/{org}/campaigns/{campaign_number}"]
   },
   checks: {
     create: ["POST /repos/{owner}/{repo}/check-runs"],
@@ -27905,10 +28447,9 @@ var Endpoints = {
     getCopilotSeatDetailsForUser: [
       "GET /orgs/{org}/members/{username}/copilot"
     ],
-    listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"],
-    usageMetricsForOrg: ["GET /orgs/{org}/copilot/usage"],
-    usageMetricsForTeam: ["GET /orgs/{org}/team/{team_slug}/copilot/usage"]
+    listCopilotSeats: ["GET /orgs/{org}/copilot/billing/seats"]
   },
+  credentials: { revoke: ["POST /credentials/revoke"] },
   dependabot: {
     addSelectedRepoToOrgSecret: [
       "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
@@ -28445,183 +28986,6 @@ var Endpoints = {
     listOrgPrivateRegistries: ["GET /orgs/{org}/private-registries"],
     updateOrgPrivateRegistry: [
       "PATCH /orgs/{org}/private-registries/{secret_name}"
-    ]
-  },
-  projects: {
-    addCollaborator: [
-      "PUT /projects/{project_id}/collaborators/{username}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.addCollaborator() is deprecated, see https://docs.github.com/rest/projects/collaborators#add-project-collaborator"
-      }
-    ],
-    createCard: [
-      "POST /projects/columns/{column_id}/cards",
-      {},
-      {
-        deprecated: "octokit.rest.projects.createCard() is deprecated, see https://docs.github.com/rest/projects/cards#create-a-project-card"
-      }
-    ],
-    createColumn: [
-      "POST /projects/{project_id}/columns",
-      {},
-      {
-        deprecated: "octokit.rest.projects.createColumn() is deprecated, see https://docs.github.com/rest/projects/columns#create-a-project-column"
-      }
-    ],
-    createForAuthenticatedUser: [
-      "POST /user/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.createForAuthenticatedUser() is deprecated, see https://docs.github.com/rest/projects/projects#create-a-user-project"
-      }
-    ],
-    createForOrg: [
-      "POST /orgs/{org}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.createForOrg() is deprecated, see https://docs.github.com/rest/projects/projects#create-an-organization-project"
-      }
-    ],
-    createForRepo: [
-      "POST /repos/{owner}/{repo}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.createForRepo() is deprecated, see https://docs.github.com/rest/projects/projects#create-a-repository-project"
-      }
-    ],
-    delete: [
-      "DELETE /projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.delete() is deprecated, see https://docs.github.com/rest/projects/projects#delete-a-project"
-      }
-    ],
-    deleteCard: [
-      "DELETE /projects/columns/cards/{card_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.deleteCard() is deprecated, see https://docs.github.com/rest/projects/cards#delete-a-project-card"
-      }
-    ],
-    deleteColumn: [
-      "DELETE /projects/columns/{column_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.deleteColumn() is deprecated, see https://docs.github.com/rest/projects/columns#delete-a-project-column"
-      }
-    ],
-    get: [
-      "GET /projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.get() is deprecated, see https://docs.github.com/rest/projects/projects#get-a-project"
-      }
-    ],
-    getCard: [
-      "GET /projects/columns/cards/{card_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.getCard() is deprecated, see https://docs.github.com/rest/projects/cards#get-a-project-card"
-      }
-    ],
-    getColumn: [
-      "GET /projects/columns/{column_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.getColumn() is deprecated, see https://docs.github.com/rest/projects/columns#get-a-project-column"
-      }
-    ],
-    getPermissionForUser: [
-      "GET /projects/{project_id}/collaborators/{username}/permission",
-      {},
-      {
-        deprecated: "octokit.rest.projects.getPermissionForUser() is deprecated, see https://docs.github.com/rest/projects/collaborators#get-project-permission-for-a-user"
-      }
-    ],
-    listCards: [
-      "GET /projects/columns/{column_id}/cards",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listCards() is deprecated, see https://docs.github.com/rest/projects/cards#list-project-cards"
-      }
-    ],
-    listCollaborators: [
-      "GET /projects/{project_id}/collaborators",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listCollaborators() is deprecated, see https://docs.github.com/rest/projects/collaborators#list-project-collaborators"
-      }
-    ],
-    listColumns: [
-      "GET /projects/{project_id}/columns",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listColumns() is deprecated, see https://docs.github.com/rest/projects/columns#list-project-columns"
-      }
-    ],
-    listForOrg: [
-      "GET /orgs/{org}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listForOrg() is deprecated, see https://docs.github.com/rest/projects/projects#list-organization-projects"
-      }
-    ],
-    listForRepo: [
-      "GET /repos/{owner}/{repo}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listForRepo() is deprecated, see https://docs.github.com/rest/projects/projects#list-repository-projects"
-      }
-    ],
-    listForUser: [
-      "GET /users/{username}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.projects.listForUser() is deprecated, see https://docs.github.com/rest/projects/projects#list-user-projects"
-      }
-    ],
-    moveCard: [
-      "POST /projects/columns/cards/{card_id}/moves",
-      {},
-      {
-        deprecated: "octokit.rest.projects.moveCard() is deprecated, see https://docs.github.com/rest/projects/cards#move-a-project-card"
-      }
-    ],
-    moveColumn: [
-      "POST /projects/columns/{column_id}/moves",
-      {},
-      {
-        deprecated: "octokit.rest.projects.moveColumn() is deprecated, see https://docs.github.com/rest/projects/columns#move-a-project-column"
-      }
-    ],
-    removeCollaborator: [
-      "DELETE /projects/{project_id}/collaborators/{username}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.removeCollaborator() is deprecated, see https://docs.github.com/rest/projects/collaborators#remove-user-as-a-collaborator"
-      }
-    ],
-    update: [
-      "PATCH /projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.update() is deprecated, see https://docs.github.com/rest/projects/projects#update-a-project"
-      }
-    ],
-    updateCard: [
-      "PATCH /projects/columns/cards/{card_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.updateCard() is deprecated, see https://docs.github.com/rest/projects/cards#update-an-existing-project-card"
-      }
-    ],
-    updateColumn: [
-      "PATCH /projects/columns/{column_id}",
-      {},
-      {
-        deprecated: "octokit.rest.projects.updateColumn() is deprecated, see https://docs.github.com/rest/projects/columns#update-an-existing-project-column"
-      }
     ]
   },
   pulls: {
@@ -29234,36 +29598,8 @@ var Endpoints = {
     addOrUpdateMembershipForUserInOrg: [
       "PUT /orgs/{org}/teams/{team_slug}/memberships/{username}"
     ],
-    addOrUpdateProjectPermissionsInOrg: [
-      "PUT /orgs/{org}/teams/{team_slug}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.addOrUpdateProjectPermissionsInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions"
-      }
-    ],
-    addOrUpdateProjectPermissionsLegacy: [
-      "PUT /teams/{team_id}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.addOrUpdateProjectPermissionsLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#add-or-update-team-project-permissions-legacy"
-      }
-    ],
     addOrUpdateRepoPermissionsInOrg: [
       "PUT /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
-    ],
-    checkPermissionsForProjectInOrg: [
-      "GET /orgs/{org}/teams/{team_slug}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.checkPermissionsForProjectInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project"
-      }
-    ],
-    checkPermissionsForProjectLegacy: [
-      "GET /teams/{team_id}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.checkPermissionsForProjectLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#check-team-permissions-for-a-project-legacy"
-      }
     ],
     checkPermissionsForRepoInOrg: [
       "GET /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
@@ -29301,37 +29637,9 @@ var Endpoints = {
     listPendingInvitationsInOrg: [
       "GET /orgs/{org}/teams/{team_slug}/invitations"
     ],
-    listProjectsInOrg: [
-      "GET /orgs/{org}/teams/{team_slug}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.teams.listProjectsInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#list-team-projects"
-      }
-    ],
-    listProjectsLegacy: [
-      "GET /teams/{team_id}/projects",
-      {},
-      {
-        deprecated: "octokit.rest.teams.listProjectsLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#list-team-projects-legacy"
-      }
-    ],
     listReposInOrg: ["GET /orgs/{org}/teams/{team_slug}/repos"],
     removeMembershipForUserInOrg: [
       "DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}"
-    ],
-    removeProjectInOrg: [
-      "DELETE /orgs/{org}/teams/{team_slug}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.removeProjectInOrg() is deprecated, see https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team"
-      }
-    ],
-    removeProjectLegacy: [
-      "DELETE /teams/{team_id}/projects/{project_id}",
-      {},
-      {
-        deprecated: "octokit.rest.teams.removeProjectLegacy() is deprecated, see https://docs.github.com/rest/teams/teams#remove-a-project-from-a-team-legacy"
-      }
     ],
     removeRepoInOrg: [
       "DELETE /orgs/{org}/teams/{team_slug}/repos/{owner}/{repo}"
@@ -29504,6 +29812,7 @@ var handler = {
   getOwnPropertyDescriptor(target, methodName) {
     return {
       value: this.get(target, methodName),
+      // ensures method is in the cache
       configurable: true,
       writable: true,
       enumerable: true
@@ -29613,7 +29922,7 @@ function legacyRestEndpointMethods(octokit) {
 legacyRestEndpointMethods.VERSION = VERSION7;
 
 // 
-var VERSION8 = "21.1.1";
+var VERSION8 = "22.0.0";
 
 // 
 var Octokit2 = Octokit.plugin(requestLog, legacyRestEndpointMethods, paginateRest).defaults(
@@ -29623,7 +29932,7 @@ var Octokit2 = Octokit.plugin(requestLog, legacyRestEndpointMethods, paginateRes
 );
 
 // 
-var import_typed_graphqlify2 = __toESM(require_dist(), 1);
+var import_typed_graphqlify2 = __toESM(require_dist());
 var GithubClient = class {
   constructor(_octokitOptions) {
     this._octokitOptions = _octokitOptions;
@@ -29649,6 +29958,7 @@ var AuthenticatedGithubClient = class extends GithubClient {
       headers: { authorization: `token ${this._token}` }
     });
   }
+  /** Perform a query using Github's Graphql API. */
   async graphql(queryObject, params2 = {}) {
     return await this._graphql((0, import_typed_graphqlify2.query)(queryObject).toString(), params2);
   }
@@ -29677,11 +29987,13 @@ function getRepositoryGitUrl(config, githubToken) {
 
 // 
 var GitCommandError = class extends Error {
+  // Note: Do not expose the unsanitized arguments as a public property. NodeJS
+  // could print the properties of an error instance and leak e.g. a token.
   constructor(client, unsanitizedArgs) {
     super(`Command failed: git ${client.sanitizeConsoleOutput(unsanitizedArgs.join(" "))}`);
   }
 };
-var GitClient = class {
+var GitClient = class _GitClient {
   constructor(config, baseDir = determineRepoBaseDirFromCwd()) {
     this.baseDir = baseDir;
     this.github = new GithubClient();
@@ -29691,6 +30003,7 @@ var GitClient = class {
     this.remoteParams = { owner: config.github.owner, repo: config.github.name };
     this.mainBranchName = config.github.mainBranchName;
   }
+  /** Executes the given git command. Throws if the command fails. */
   run(args, options) {
     const result = this.runGraceful(args, options);
     if (result.status !== 0) {
@@ -29698,6 +30011,11 @@ var GitClient = class {
     }
     return result;
   }
+  /**
+   * Spawns a given Git command process. Does not throw if the command fails. Additionally,
+   * if there is any stderr output, the output will be printed. This makes it easier to
+   * info failed commands.
+   */
   runGraceful(args, options = {}) {
     const gitCommand = args[0];
     if (isDryRun() && gitCommand === "push") {
@@ -29710,6 +30028,8 @@ var GitClient = class {
       cwd: this.baseDir,
       stdio: "pipe",
       ...options,
+      // Encoding is always `utf8` and not overridable. This ensures that this method
+      // always returns `string` as output instead of buffers.
       encoding: "utf8"
     });
     Log.debug(`Status: ${result.status}, Error: ${!!result.error}, Signal: ${result.signal}`);
@@ -29724,15 +30044,19 @@ var GitClient = class {
     }
     return result;
   }
+  /** Git URL that resolves to the configured repository. */
   getRepoGitUrl() {
     return getRepositoryGitUrl(this.remoteConfig);
   }
+  /** Whether the given branch contains the specified SHA. */
   hasCommit(branchName, sha) {
     return this.run(["branch", branchName, "--contains", sha]).stdout !== "";
   }
+  /** Whether the local repository is configured as shallow. */
   isShallowRepo() {
     return this.run(["rev-parse", "--is-shallow-repository"]).stdout.trim() === "true";
   }
+  /** Gets the currently checked out branch or revision. */
   getCurrentBranchOrRevision() {
     const branchName = this.run(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
     if (branchName === "HEAD") {
@@ -29740,10 +30064,16 @@ var GitClient = class {
     }
     return branchName;
   }
+  /** Gets whether the current Git repository has uncommitted changes. */
   hasUncommittedChanges() {
     this.runGraceful(["update-index", "-q", "--refresh"]);
     return this.runGraceful(["diff-index", "--quiet", "HEAD"]).status !== 0;
   }
+  /**
+   * Checks out a requested branch or revision, optionally cleaning the state of the repository
+   * before attempting the checking. Returns a boolean indicating whether the branch or revision
+   * was cleanly checked out.
+   */
   checkout(branchOrRevision, cleanState) {
     if (cleanState) {
       this.runGraceful(["am", "--abort"], { stdio: "ignore" });
@@ -29753,28 +30083,39 @@ var GitClient = class {
     }
     return this.runGraceful(["checkout", branchOrRevision], { stdio: "ignore" }).status === 0;
   }
+  /** Retrieve a list of all files in the repository changed since the provided shaOrRef. */
   allChangesFilesSince(shaOrRef = "HEAD") {
     return Array.from(/* @__PURE__ */ new Set([
       ...gitOutputAsArray(this.runGraceful(["diff", "--name-only", "--diff-filter=d", shaOrRef])),
       ...gitOutputAsArray(this.runGraceful(["ls-files", "--others", "--exclude-standard"]))
     ]));
   }
+  /** Retrieve a list of all files currently staged in the repostitory. */
   allStagedFiles() {
     return gitOutputAsArray(this.runGraceful(["diff", "--name-only", "--diff-filter=ACM", "--staged"]));
   }
+  /** Retrieve a list of all files tracked in the repository. */
   allFiles() {
     return gitOutputAsArray(this.runGraceful(["ls-files"]));
   }
+  /**
+   * Sanitizes the given console message. This method can be overridden by
+   * derived classes. e.g. to sanitize access tokens from Git commands.
+   */
   sanitizeConsoleOutput(value) {
     return value;
   }
+  /**
+   * Static method to get the singleton instance of the `GitClient`,
+   * creating it, if not created yet.
+   */
   static async get() {
-    if (GitClient._unauthenticatedInstance === null) {
-      GitClient._unauthenticatedInstance = (async () => {
-        return new GitClient(await getConfig([assertValidGithubConfig]));
+    if (_GitClient._unauthenticatedInstance === null) {
+      _GitClient._unauthenticatedInstance = (async () => {
+        return new _GitClient(await getConfig([assertValidGithubConfig]));
       })();
     }
-    return GitClient._unauthenticatedInstance;
+    return _GitClient._unauthenticatedInstance;
   }
 };
 GitClient._unauthenticatedInstance = null;
@@ -29783,7 +30124,7 @@ function gitOutputAsArray(gitCommandResult) {
 }
 
 // 
-var AuthenticatedGitClient = class extends GitClient {
+var AuthenticatedGitClient = class _AuthenticatedGitClient extends GitClient {
   constructor(githubToken, userType, config, baseDir) {
     super(config, baseDir);
     this.githubToken = githubToken;
@@ -29793,12 +30134,18 @@ var AuthenticatedGitClient = class extends GitClient {
     this._cachedForkRepositories = null;
     this.github = new AuthenticatedGithubClient(this.githubToken);
   }
+  /** Sanitizes a given message by omitting the provided Github token if present. */
   sanitizeConsoleOutput(value) {
     return value.replace(this._githubTokenRegex, "<TOKEN>");
   }
+  /** Git URL that resolves to the configured repository. */
   getRepoGitUrl() {
     return getRepositoryGitUrl(this.remoteConfig, this.githubToken);
   }
+  /**
+   * Assert the GitClient instance is using a token with permissions for the all of the
+   * provided OAuth scopes.
+   */
   async hasOauthScopes(testFn) {
     if (this.userType === "bot") {
       return true;
@@ -29818,6 +30165,7 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
 `;
     return { error };
   }
+  /** Gets an owned fork for the configured project of the authenticated user. */
   async getForkOfAuthenticatedUser() {
     const forks = await this.getAllForksOfAuthenticatedUser();
     if (forks.length === 0) {
@@ -29825,6 +30173,12 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
     }
     return forks[0];
   }
+  /**
+   * Finds all forks owned by the currently authenticated user in the Git client,
+   *
+   * The determined fork repositories are cached as we assume that the authenticated
+   * user will not change during execution, or that no new forks are created.
+   */
   async getAllForksOfAuthenticatedUser() {
     if (this._cachedForkRepositories !== null) {
       return this._cachedForkRepositories;
@@ -29836,6 +30190,7 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
       name: node.name
     }));
   }
+  /** Fetch the OAuth scopes for the loaded Github token. */
   _fetchAuthScopesForToken() {
     if (this._cachedOauthScopes !== null) {
       return this._cachedOauthScopes;
@@ -29848,34 +30203,39 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
       return scopes.split(",").map((scope) => scope.trim()).filter((scope) => scope !== "");
     });
   }
+  /**
+   * Static method to get the singleton instance of the `AuthenticatedGitClient`,
+   * creating it if it has not yet been created.
+   */
   static async get() {
-    if (AuthenticatedGitClient._token === null) {
+    if (_AuthenticatedGitClient._token === null) {
       throw new Error("No instance of `AuthenticatedGitClient` has been configured.");
     }
-    if (AuthenticatedGitClient._authenticatedInstance === null) {
-      AuthenticatedGitClient._authenticatedInstance = (async (token, userType) => {
-        return new AuthenticatedGitClient(token, userType, await getConfig([assertValidGithubConfig]));
-      })(AuthenticatedGitClient._token, AuthenticatedGitClient._userType);
+    if (_AuthenticatedGitClient._authenticatedInstance === null) {
+      _AuthenticatedGitClient._authenticatedInstance = (async (token, userType) => {
+        return new _AuthenticatedGitClient(token, userType, await getConfig([assertValidGithubConfig]));
+      })(_AuthenticatedGitClient._token, _AuthenticatedGitClient._userType);
     }
-    return AuthenticatedGitClient._authenticatedInstance;
+    return _AuthenticatedGitClient._authenticatedInstance;
   }
+  /** Configures an authenticated git client. */
   static configure(token, userType = "user") {
-    if (AuthenticatedGitClient._token) {
+    if (_AuthenticatedGitClient._token) {
       throw Error("Unable to configure `AuthenticatedGitClient` as it has been configured already.");
     }
-    AuthenticatedGitClient._token = token;
-    AuthenticatedGitClient._userType = userType;
+    _AuthenticatedGitClient._token = token;
+    _AuthenticatedGitClient._userType = userType;
   }
 };
 AuthenticatedGitClient._token = null;
 AuthenticatedGitClient._authenticatedInstance = null;
 
 // 
-var import_which = __toESM(require_lib2(), 1);
-var import_lockfile = __toESM(require_lockfile(), 1);
-var import_yaml = __toESM(require_dist2(), 1);
+var import_which = __toESM(require_lib2());
+var import_lockfile = __toESM(require_lockfile());
+var import_yaml = __toESM(require_dist2());
 
-// 
+// .github/actions/deploy-docs-site/lib/deployments.mjs
 async function getDeployments() {
   const { github } = await AuthenticatedGitClient.get();
   const releaseTrains = await ActiveReleaseTrains.fetch({
@@ -29923,7 +30283,7 @@ async function getDeployments() {
   return docSites;
 }
 
-// 
+// .github/actions/deploy-docs-site/lib/main.mts
 var refMatcher = /refs\/heads\/(.*)/;
 async function deployDocs() {
   setConfig({
@@ -29978,19 +30338,243 @@ if (import_github3.context.repo.owner === "angular") {
     console.error(e);
   });
 } else {
-  console.warn("The action was skipped as this action is only meant to run in repos belonging to the Angular organization.");
+  console.warn(
+    "The action was skipped as this action is only meant to run in repos belonging to the Angular organization."
+  );
 }
-/*!
- * Tmp
- *
- * Copyright (c) 2011-2017 KARASZI Istvan <github@spam.raszi.hu>
- *
- * MIT Licensed
- */
-/**
- * @license
- * Copyright Google LLC
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
+/*! Bundled license information:
+
+tmp/lib/tmp.js:
+  (*!
+   * Tmp
+   *
+   * Copyright (c) 2011-2017 KARASZI Istvan <github@spam.raszi.hu>
+   *
+   * MIT Licensed
+   *)
+
+@angular/ng-dev/utils/child-process.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/repo-directory.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/logging.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/config-cache.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/config.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/commit-message/config.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/format/config.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/pr/config/index.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/config/index.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/release-trains.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/version-branches.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/active-release-trains.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/npm-registry.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/long-term-support.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/versioning/index.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/release/precheck/index.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/git/graphql-queries.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/dry-run.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/git/github.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/git/github-urls.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/git/git-client.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/git/authenticated-git-client.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/nodejs-errors.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/utils/resolve-yarn-bin.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+
+@angular/ng-dev/index.js:
+  (**
+   * @license
+   * Copyright Google LLC
+   *
+   * Use of this source code is governed by an MIT-style license that can be
+   * found in the LICENSE file at https://angular.io/license
+   *)
+*/

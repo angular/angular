@@ -1,41 +1,48 @@
-load("//tools:defaults.bzl", "esbuild", "http_server", "ng_module", "protractor_web_test_suite", "ts_library")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "common_examples",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
     deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/router",
-        "//packages/zone.js/lib",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "common_tests_lib",
     testonly = True,
     srcs = glob(["**/*_spec.ts"]),
-    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    tsconfig = "//packages/examples:tsconfig_e2e",
     deps = [
-        "//packages/examples/test-utils",
-        "//packages/private/testing",
-        "@npm//@types/jasminewd2",
-        "@npm//protractor",
+        "//:node_modules/@types/jasminewd2",
+        "//:node_modules/protractor",
+        "//packages/examples/test-utils:test-utils_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
 esbuild(
     name = "app_bundle",
+    config = {
+        "resolveExtensions": [".js"],
+    },
     entry_point = ":main.ts",
-    deps = [":common_examples"],
+    tsconfig = "//packages/examples:tsconfig_build",
+    deps = [
+        ":common_examples_rjs",
+        "//packages/examples:tsconfig_build",
+    ],
 )
 
 http_server(
@@ -47,11 +54,9 @@ http_server(
 
 protractor_web_test_suite(
     name = "protractor_tests",
-    on_prepare = ":start-server.js",
     server = ":devserver",
     deps = [
-        ":common_tests_lib",
-        "@npm//selenium-webdriver",
+        ":common_tests_lib_rjs",
     ],
 )
 

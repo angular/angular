@@ -1,9 +1,8 @@
-load("//tools:defaults.bzl", "ng_package", "ts_library", "tsec_test")
-load("//tools:defaults2.bzl", "npm_package")
+load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_project(
     name = "compiler",
     srcs = glob(
         [
@@ -15,8 +14,8 @@ ts_library(
 
 tsec_test(
     name = "tsec_test",
-    target = "compiler",
-    tsconfig = "//packages:tsec_config",
+    target = ":compiler_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 ng_package(
@@ -24,6 +23,7 @@ ng_package(
     srcs = [
         "package.json",
     ],
+    package = "@angular/compiler",
     side_effect_entry_points = [
         "@angular/compiler",
     ],
@@ -34,13 +34,16 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//adev:__pkg__",
+        "//devtools/tools/angular-optimization:__subpackages__",
         "//integration:__subpackages__",
         "//modules/ssr-benchmarks:__subpackages__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/core/test/bundling:__subpackages__",
+        "//packages/core/test/playground/zone-signal-input:__pkg__",
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":compiler",
+        ":compiler_rjs",
     ],
 )
 
@@ -48,9 +51,9 @@ ng_package(
 # Long-term, `pkg_npm` will be migrated to `npm_package` in general.
 npm_package(
     name = "pkg",
-    srcs = [":npm_package"],
+    srcs = [":npm_package_nosub"],
     replace_prefixes = {
-        "npm_package/": "",
+        "npm_package_nosub/": "",
     },
 )
 

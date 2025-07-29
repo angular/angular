@@ -198,18 +198,286 @@ Each `HttpEvent` reported in the event stream has a `type` which distinguishes w
 
 ## Handling request failure
 
-There are two ways an HTTP request can fail:
+There are three ways an HTTP request can fail:
 
 * A network or connection error can prevent the request from reaching the backend server.
+* A request didn't respond in time when the timeout option was set.
 * The backend can receive the request but fail to process it, and return an error response.
 
-`HttpClient` captures both kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
+`HttpClient` captures all of the above kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network and timeout errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
 
 The [RxJS library](https://rxjs.dev/) offers several operators which can be useful for error handling.
 
 You can use the `catchError` operator to transform an error response into a value for the UI. This value can tell the UI to display an error page or value, and capture the error's cause if necessary.
 
 Sometimes transient errors such as network interruptions can cause a request to fail unexpectedly, and simply retrying the request will allow it to succeed. RxJS provides several *retry* operators which automatically re-subscribe to a failed `Observable` under certain conditions. For example, the `retry()` operator will automatically attempt to re-subscribe a specified number of times.
+
+### Timeouts
+
+To set a timeout for a request, you can set the `timeout` option to a number of milliseconds along other request options. If the backend request does not complete within the specified time, the request will be aborted and an error will be emitted.
+
+NOTE: The timeout will only apply to the backend HTTP request itself. It is not a timeout for the entire request handling chain. Therefore, this option is not affected by any delay introduced by interceptors.
+
+<docs-code language="ts">
+http.get('/api/config', {
+  timeout: 3000,
+}).subscribe({
+  next: config => {
+    console.log('Config fetched successfully:', config);
+  },
+  error: err => {
+    // If the request times out, an error will have been emitted.
+  }
+});
+</docs-code>
+
+## Advanced fetch options
+
+When using the `withFetch()` provider, Angular's `HttpClient` provides access to advanced fetch API options that can improve performance and user experience. These options are only available when using the fetch backend.
+
+### Fetch options
+
+The following options provide fine-grained control over request behavior when using the fetch backend.
+
+#### Keep-alive connections
+
+The `keepalive` option allows a request to outlive the page that initiated it. This is particularly useful for analytics or logging requests that need to complete even if the user navigates away from the page.
+
+<docs-code language="ts">
+http.post('/api/analytics', analyticsData, {
+  keepalive: true
+}).subscribe();
+</docs-code>
+
+#### HTTP caching control
+
+The `cache` option controls how the request interacts with the browser's HTTP cache, which can significantly improve performance for repeated requests.
+
+<docs-code language="ts">
+//  Use cached response regardless of freshness
+http.get('/api/config', {
+  cache: 'force-cache'
+}).subscribe(config => {
+  // ...
+});
+
+// Always fetch from network, bypass cache
+http.get('/api/live-data', {
+  cache: 'no-cache'
+}).subscribe(data => {
+  // ...
+});
+
+// Use cached response only, fail if not in cache
+http.get('/api/static-data', {
+  cache: 'only-if-cached'
+}).subscribe(data => {
+  // ...
+});
+</docs-code>
+
+#### Request priority for Core Web Vitals
+
+The `priority` option allows you to indicate the relative importance of a request, helping browsers optimize resource loading for better Core Web Vitals scores.
+
+<docs-code language="ts">
+// High priority for critical resources
+http.get('/api/user-profile', {
+  priority: 'high'
+}).subscribe(profile => {
+  // ...
+});
+
+// Low priority for non-critical resources
+http.get('/api/recommendations', {
+  priority: 'low'
+}).subscribe(recommendations => {
+  // ...
+});
+
+// Auto priority (default) lets the browser decide
+http.get('/api/settings', {
+  priority: 'auto'
+}).subscribe(settings => {
+  // ...
+});
+</docs-code>
+
+Available `priority` values:
+- `'high'`: High priority, loaded early (e.g., critical user data, above-the-fold content)
+- `'low'`: Low priority, loaded when resources are available (e.g., analytics, prefetch data)
+- `'auto'`: Browser determines priority based on request context (default)
+
+TIP: Use `priority: 'high'` for requests that affect Largest Contentful Paint (LCP) and `priority: 'low'` for requests that don't impact initial user experience.
+
+#### Request mode
+
+The `mode` option controls how the request handles cross-origin requests and determines the response type.
+
+<docs-code language="ts">
+// Same-origin requests only
+http.get('/api/local-data', {
+  mode: 'same-origin'
+}).subscribe(data => {
+  // ...
+});
+
+// CORS-enabled cross-origin requests
+http.get('https://api.external.com/data', {
+  mode: 'cors'
+}).subscribe(data => {
+  // ...
+});
+
+// No-CORS mode for simple cross-origin requests
+http.get('https://external-api.com/public-data', {
+  mode: 'no-cors'
+}).subscribe(data => {
+  // ...
+});
+</docs-code>
+
+Available `mode` values:
+- `'same-origin'`: Only allow same-origin requests, fail for cross-origin requests
+- `'cors'`: Allow cross-origin requests with CORS (default)
+- `'no-cors'`: Allow simple cross-origin requests without CORS, response is opaque
+
+TIP: Use `mode: 'same-origin'` for sensitive requests that should never go cross-origin.
+
+#### Redirect handling
+
+The `redirect` option specifies how to handle redirect responses from the server.
+
+<docs-code language="ts">
+// Follow redirects automatically (default behavior)
+http.get('/api/resource', {
+  redirect: 'follow'
+}).subscribe(data => {
+  // ...
+});
+
+// Prevent automatic redirects
+http.get('/api/resource', {
+  redirect: 'manual'
+}).subscribe(response => {
+  // Handle redirect manually
+});
+
+// Treat redirects as errors
+http.get('/api/resource', {
+  redirect: 'error'
+}).subscribe({
+  next: data => {
+    // Success response
+  },
+  error: err => {
+    // Redirect responses will trigger this error handler
+  }
+});
+</docs-code>
+
+Available `redirect` values:
+- `'follow'`: Automatically follow redirects (default)
+- `'error'`: Treat redirects as errors
+- `'manual'`: Don't follow redirects automatically, return redirect response
+
+TIP: Use `redirect: 'manual'` when you need to handle redirects with custom logic.
+
+#### Credentials handling
+
+The `credentials` option controls whether cookies, authorization headers, and other credentials are sent with cross-origin requests. This is particularly important for authentication scenarios.
+
+<docs-code language="ts">
+// Include credentials for cross-origin requests
+http.get('https://api.example.com/protected-data', {
+  credentials: 'include'
+}).subscribe(data => {
+  // ...
+});
+
+// Never send credentials (default for cross-origin)
+http.get('https://api.example.com/public-data', {
+  credentials: 'omit'
+}).subscribe(data => {
+  // ...
+});
+
+// Send credentials only for same-origin requests
+http.get('/api/user-data', {
+  credentials: 'same-origin'
+}).subscribe(data => {
+  // ...
+});
+
+// withCredentials overrides credentials setting
+http.get('https://api.example.com/data', {
+  credentials: 'omit',        // This will be ignored
+  withCredentials: true       // This forces credentials: 'include'
+}).subscribe(data => {
+  // Request will include credentials despite credentials: 'omit'
+});
+
+// Legacy approach (still supported)
+http.get('https://api.example.com/data', {
+  withCredentials: true
+}).subscribe(data => {
+  // Equivalent to credentials: 'include'
+});
+</docs-code>
+
+IMPORTANT: The `withCredentials` option takes precedence over the `credentials` option. If both are specified, `withCredentials: true` will always result in `credentials: 'include'`, regardless of the explicit `credentials` value.
+
+Available `credentials` values:
+- `'omit'`: Never send credentials
+- `'same-origin'`: Send credentials only for same-origin requests (default)
+- `'include'`: Always send credentials, even for cross-origin requests
+
+TIP: Use `credentials: 'include'` when you need to send authentication cookies or headers to a different domain that supports CORS. Avoid mixing `credentials` and `withCredentials` options to prevent confusion.
+
+#### Referrer
+
+The `referrer` option allows you to control what referrer information is sent with the request. This is important for privacy and security considerations.
+
+<docs-code language="ts">
+// Send a specific referrer URL
+http.get('/api/data', {
+  referrer: 'https://example.com/page'
+}).subscribe(data => {
+  // ...
+});
+
+// Use the current page as referrer (default behavior)
+http.get('/api/analytics', {
+  referrer: 'about:client'
+}).subscribe(data => {
+  // ...
+});
+</docs-code>
+
+The `referrer` option accepts:
+- A valid URL string: Sets the specific referrer URL to send
+- An empty string `''`: Sends no referrer information
+- `'about:client'`: Uses the default referrer (current page URL)
+
+TIP: Use `referrer: ''` for sensitive requests where you don't want to leak the referring page URL.
+
+#### Integrity
+
+The `integrity` option allows you to verify that the response hasn't been tampered with by providing a cryptographic hash of the expected content. This is particularly useful for loading scripts or other resources from CDNs.
+
+<docs-code language="ts">
+// Verify response integrity with SHA-256 hash
+http.get('/api/script.js', {
+  integrity: 'sha256-ABC123...',
+  responseType: 'text'
+}).subscribe(script => {
+  // Script content is verified against the hash
+});
+</docs-code>
+
+IMPORTANT: The `integrity` option requires an exact match between the response content and the provided hash. If the content doesn't match, the request will fail with a network error.
+
+TIP: Use subresource integrity when loading critical resources from external sources to ensure they haven't been modified. Generate hashes using tools like `openssl`.
 
 ## Http `Observable`s
 
@@ -256,13 +524,15 @@ import { AsyncPipe } from '@angular/common';
   `,
 })
 export class UserProfileComponent {
-  @Input() userId!: string;
+  userId = input.required<string>();
   user$!: Observable<User>;
 
   private userService = inject(UserService);
 
   constructor(): void {
-    this.user$ = this.userService.getUser(this.userId);
+    effect(() => {
+      this.user$ = this.userService.getUser(this.userId());
+    });
   }
 }
 </docs-code>

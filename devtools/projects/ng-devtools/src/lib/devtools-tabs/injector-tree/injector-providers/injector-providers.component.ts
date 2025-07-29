@@ -6,12 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, signal} from '@angular/core';
-import {MatOption} from '@angular/material/core';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {MatInput} from '@angular/material/input';
-import {MatSelect} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltip} from '@angular/material/tooltip';
 import {
@@ -20,21 +16,14 @@ import {
   SerializedInjector,
   SerializedProviderRecord,
 } from '../../../../../../protocol';
+import {ButtonComponent} from '../../../shared/button/button.component';
 
 @Component({
   selector: 'ng-injector-providers',
   templateUrl: './injector-providers.component.html',
   styleUrl: './injector-providers.component.scss',
-  imports: [
-    MatTableModule,
-    MatIcon,
-    MatTooltip,
-    MatInput,
-    MatSelect,
-    MatFormField,
-    MatLabel,
-    MatOption,
-  ],
+  imports: [MatTableModule, MatIcon, MatTooltip, ButtonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectorProvidersComponent {
   readonly injector = input.required<SerializedInjector>();

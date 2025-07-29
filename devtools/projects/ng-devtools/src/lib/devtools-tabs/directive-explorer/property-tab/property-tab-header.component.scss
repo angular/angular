@@ -3,22 +3,68 @@
 :host {
   border-bottom: 1px solid var(--color-separator);
   display: block;
-}
 
-.element-header {
-  @extend %body-bold-01;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-  height: 32px; /* Same as mat-expansion-panel-header height */
+  mat-panel-title {
+    width: 100%;
 
-  .component-name,
-  .element-name {
-    margin-left: 0.625rem;
+    .element-header {
+      @extend %body-bold-01;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+      height: 32px; /* Same as mat-expansion-panel-header height */
+      gap: 0.375rem;
+
+      .component-name,
+      .element-name {
+        margin-left: 0.625rem;
+      }
+
+      .component-name {
+        @extend %body-bold-01;
+        border: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.125rem;
+        flex: 1;
+        min-width: 0;
+
+        span {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          flex: 0 0 16px;
+          height: 14px;
+          font-weight: bold;
+          color: var(--tertiary-contrast);
+          transition: transform 200ms ease;
+          transform-origin: 50% 55%;
+        }
+
+        &.expanded {
+          mat-icon {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .signal-btn {
+        white-space: nowrap;
+      }
+    }
   }
 }
 
+/* FRAGILE */
 ::ng-deep {
   .property-tab-header {
     mat-expansion-panel {

@@ -1,3 +1,4 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
 load("//tools:defaults2.bzl", "ts_project")
 
 package(
@@ -7,7 +8,7 @@ package(
     ],
 )
 
-filegroup(
+copy_to_bin(
     name = "static_files",
     srcs = ["schema.json"],
 )
@@ -15,16 +16,15 @@ filegroup(
 ts_project(
     name = "cleanup-unused-imports",
     srcs = glob(["**/*.ts"]),
-    interop_deps = [
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/core/schematics/utils",
-        "//packages/core/schematics/utils/tsurge",
-        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-    ],
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
+        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli/private:private_rjs",
+        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
+        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit:angular_devkit_rjs",
+        "//packages/core/schematics/utils/tsurge/helpers/ast:ast_rjs",
     ],
 )

@@ -13,22 +13,28 @@
   box-sizing: border-box;
   padding-inline: var(--layout-padding);
 
-  @media only screen and (max-width: 1430px) {
+  @include mq.for-large-desktop-down {
     container: docs-content / inline-size;
   }
 
-  @include mq.for-big-desktop-up {
+  @include mq.for-extra-large-desktop-up {
     max-width: var(--page-width);
   }
 
 
   //applying styles when TOC position got translated to the top right 
-  @media only screen and (min-width: 1431px) {
+  @include mq.for-large-desktop-up {
     // take the available space except a reserved area for TOC
     margin-left: -16rem;
     width: calc(100% - 16rem);
   }
 
+  // restrict the content to be fluid until it reaches that width
+  // $screen-xl is the breakpoint where Main content stop being fluid and made fixed
+
+  >*:not(docs-table-of-contents) {
+    max-width: calc(mq.$screen-xxl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
+  }
 
   pre {
     margin-block: 0;

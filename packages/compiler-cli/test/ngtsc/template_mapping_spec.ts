@@ -110,7 +110,7 @@ runInEachFileSystem((os) => {
           });
           expectMapping(mappings, {
             source: 'id="{{name}}"',
-            generated: 'i0.ɵɵpropertyInterpolate("id", ctx.name)',
+            generated: 'i0.ɵɵinterpolate(ctx.name)',
             sourceUrl: '../test.ts',
           });
         });

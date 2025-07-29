@@ -85,23 +85,27 @@ let loader: HarnessLoader;
 let rootLoader: HarnessLoader;
 
 beforeEach(() => {
-fixture = TestBed.createComponent(MyDialogButton);
-loader = TestbedHarnessEnvironment.loader(fixture);
-rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+  fixture = TestBed.createComponent(MyDialogButton);
+  loader = TestbedHarnessEnvironment.loader(fixture);
+  rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
 });
 
 it('loads harnesses', async () => {
-// Load a harness for the bootstrapped component with `harnessForFixture`
-dialogButtonHarness =
-await TestbedHarnessEnvironment.harnessForFixture(fixture, MyDialogButtonHarness);
-// The button element is inside the fixture's root element, so we use `loader`.
-const buttonHarness = await loader.getHarness(MyButtonHarness);
-// Click the button to open the dialog
-await buttonHarness.click();
-// The dialog is appended to `document.body`, outside of the fixture's root element,
-// so we use `rootLoader` in this case.
-const dialogHarness = await rootLoader.getHarness(MyDialogHarness);
-// ... make some assertions
+  // Load a harness for the bootstrapped component with `harnessForFixture`
+  dialogButtonHarness =
+    await TestbedHarnessEnvironment.harnessForFixture(fixture, MyDialogButtonHarness);
+
+  // The button element is inside the fixture's root element, so we use `loader`.
+  const buttonHarness = await loader.getHarness(MyButtonHarness);
+
+  // Click the button to open the dialog
+  await buttonHarness.click();
+
+  // The dialog is appended to `document.body`, outside of the fixture's root element,
+  // so we use `rootLoader` in this case.
+  const dialogHarness = await rootLoader.getHarness(MyDialogHarness);
+
+  // ... make some assertions
 });
 </docs-code>
 
@@ -159,9 +163,9 @@ As an example, the following is a test for a component that uses the [Angular Ma
 
 <docs-code language="typescript">
 it('should get value of slider thumb', async () => {
-    const slider = await loader.getHarness(MatSliderHarness);
-    const thumb = await slider.getEndThumb();
-    expect(await thumb.getValue()).toBe(50);
+  const slider = await loader.getHarness(MatSliderHarness);
+  const thumb = await slider.getEndThumb();
+  expect(await thumb.getValue()).toBe(50);
 });
 </docs-code>
 

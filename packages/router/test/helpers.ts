@@ -54,3 +54,13 @@ export async function timeout(ms?: number): Promise<void> {
     setTimeout(resolve, ms);
   });
 }
+
+export function useAutoTick() {
+  beforeEach(() => {
+    jasmine.clock().install();
+    jasmine.clock().autoTick();
+  });
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+}

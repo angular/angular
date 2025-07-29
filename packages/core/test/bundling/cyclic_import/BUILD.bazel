@@ -1,28 +1,21 @@
-load("@npm//http-server:index.bzl", "http_server")
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_project(
-    name = "cyclic_import",
+optimize_angular_app(
+    name = "bundles",
     srcs = [
-        "index.ts",
+        "main.ts",
         "trigger.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-    ],
-)
-
-app_bundle(
-    name = "bundle",
-    entry_point = ":index.ts",
     deps = [
-        ":cyclic_import",
-        "//packages/core",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/build",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
     ],
 )
 
@@ -30,32 +23,17 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core/testing",
-        "//packages/private/testing",
-    ],
     deps = [
-        "//:node_modules/@bazel/runfiles",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
     data = [
-        ":bundle.debug.min.js",
-        ":bundle.js",
-        ":bundle.min.js",
-        ":bundle.min.js.br",
-    ],
-    deps = [":test_lib"],
-)
-
-http_server(
-    name = "devserver",
-    data = [
-        "index.html",
-        ":bundle.debug.min.js",
-        ":bundle.min.js",
+        ":bundles",
+        ":test_lib_rjs",
     ],
 )

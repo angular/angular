@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AnimationTriggerNames} from '@angular/compiler';
+import {LegacyAnimationTriggerNames} from '@angular/compiler';
 import {isResolvedModuleWithProviders, ResolvedModuleWithProviders} from '../../ng_module';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic} from '../../../diagnostics';
 import ts from 'typescript';
@@ -25,43 +25,46 @@ import {createValueHasWrongTypeError, getOriginNodeForDiagnostics} from '../../c
 /**
  * Collect the animation names from the static evaluation result.
  * @param value the static evaluation result of the animations
- * @param animationTriggerNames the animation names collected and whether some names could not be
+ * @param legacyAnimationTriggerNames the animation names collected and whether some names could not be
  *     statically evaluated.
  */
-export function collectAnimationNames(
+export function collectLegacyAnimationNames(
   value: ResolvedValue,
-  animationTriggerNames: AnimationTriggerNames,
+  legacyAnimationTriggerNames: LegacyAnimationTriggerNames,
 ) {
   if (value instanceof Map) {
     const name = value.get('name');
     if (typeof name === 'string') {
-      animationTriggerNames.staticTriggerNames.push(name);
+      legacyAnimationTriggerNames.staticTriggerNames.push(name);
     } else {
-      animationTriggerNames.includesDynamicAnimations = true;
+      legacyAnimationTriggerNames.includesDynamicAnimations = true;
     }
   } else if (Array.isArray(value)) {
     for (const resolvedValue of value) {
-      collectAnimationNames(resolvedValue, animationTriggerNames);
+      collectLegacyAnimationNames(resolvedValue, legacyAnimationTriggerNames);
     }
   } else {
-    animationTriggerNames.includesDynamicAnimations = true;
+    legacyAnimationTriggerNames.includesDynamicAnimations = true;
   }
 }
 
-export function isAngularAnimationsReference(reference: Reference, symbolName: string): boolean {
+export function isLegacyAngularAnimationsReference(
+  reference: Reference,
+  symbolName: string,
+): boolean {
   return (
     reference.ownedByModuleGuess === '@angular/animations' && reference.debugName === symbolName
   );
 }
 
-export const animationTriggerResolver: ForeignFunctionResolver = (
+export const legacyAnimationTriggerResolver: ForeignFunctionResolver = (
   fn,
   node,
   resolve,
   unresolvable,
 ) => {
   const animationTriggerMethodName = 'trigger';
-  if (!isAngularAnimationsReference(fn, animationTriggerMethodName)) {
+  if (!isLegacyAngularAnimationsReference(fn, animationTriggerMethodName)) {
     return unresolvable;
   }
   const triggerNameExpression = node.arguments[0];

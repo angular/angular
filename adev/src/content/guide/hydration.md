@@ -177,7 +177,7 @@ Application stability is an important part of the hydration process. Hydration a
 
 ## I18N
 
-HELPFUL: Support for internationalization with hydration is currently in [developer preview](/reference/releases#developer-preview). By default, Angular will skip hydration for components that use i18n blocks, effectively re-rendering those components from scratch.
+HELPFUL: By default, Angular will skip hydration for components that use i18n blocks, effectively re-rendering those components from scratch.
 
 To enable hydration for i18n blocks, you can add [`withI18nSupport`](/api/platform-browser/withI18nSupport) to your `provideClientHydration` call.
 
@@ -203,7 +203,7 @@ There are a number of third party libraries that depend on DOM manipulation to b
 
 ## Third Party Scripts with DOM Manipulation
 
-Many third party scripts, such as ad trackers and analytics, modify the DOM before hydration can occur. These scripts may cause hydration errors because the page no longer matches the structure expected by Angular. Prefer deferring this type of script until after hydration whenever possible. Consider using [`AfterNextRender`](api/core/afterNextRender) to delay the script until post-hydration processes have occured.
+Many third party scripts, such as ad trackers and analytics, modify the DOM before hydration can occur. These scripts may cause hydration errors because the page no longer matches the structure expected by Angular. Prefer deferring this type of script until after hydration whenever possible. Consider using [`AfterNextRender`](api/core/afterNextRender) to delay the script until post-hydration processes have occurred.
 
 ## Incremental Hydration
 

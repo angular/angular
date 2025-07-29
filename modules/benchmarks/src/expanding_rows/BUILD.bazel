@@ -1,50 +1,45 @@
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module", "ts_library")
-load("@npm//@angular/build-tooling/bazel/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//tools:defaults2.bzl", "http_server", "ts_project")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-ng_module(
-    name = "application_lib",
+optimize_angular_app(
+    name = "bundles",
     srcs = glob(
         ["**/*.ts"],
         exclude = ["**/*.perf-spec.ts"],
-    ),
+    ) + ["index.html"],
+    include_zonejs = True,
     deps = [
-        "//packages:types",
-        "//packages/common",
-        "//packages/core",
-        "//packages/localize/init",
-        "//packages/platform-browser",
-        "@npm//rxjs",
-    ],
-)
-
-ts_library(
-    name = "perf_lib",
-    testonly = 1,
-    srcs = ["expanding_rows.perf-spec.ts"],
-    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
-    deps = [
-        "@npm//@angular/build-tooling/bazel/benchmark/driver-utilities",
-        "@npm//protractor",
-    ],
-)
-
-app_bundle(
-    name = "bundle",
-    entry_point = ":index_aot.ts",
-    deps = [
-        ":application_lib",
-        "@npm//rxjs",
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/localize",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
+        "//modules:node_modules/zone.js",
     ],
 )
 
 # The script needs to be called `app_bundle` for easier syncing into g3.
 genrule(
     name = "app_bundle",
-    srcs = [":bundle.debug.min.js"],
+    srcs = [":bundles"],
     outs = ["app_bundle.js"],
-    cmd = "cp $< $@",
+    cmd = "cp $</main.js $@",
+)
+
+ts_project(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = ["expanding_rows.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig_e2e",
+    deps = [
+        "//modules:node_modules/protractor",
+        "//modules/utilities:utilities_rjs",
+    ],
 )
 
 http_server(
@@ -52,7 +47,7 @@ http_server(
     srcs = ["index.html"],
     deps = [
         ":app_bundle",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "//modules:node_modules/zone.js",
     ],
 )
 
@@ -60,6 +55,6 @@ benchmark_test(
     name = "perf",
     server = ":prodserver",
     deps = [
-        ":perf_lib",
+        ":perf_lib_rjs",
     ],
 )

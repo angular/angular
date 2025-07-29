@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-
 export {
   type NavigateEvent as ɵNavigateEvent,
   type Navigation as ɵNavigation,
@@ -60,6 +59,7 @@ export {
   DeferBlockConfig as ɵDeferBlockConfig,
   DeferBlockState as ɵDeferBlockState,
 } from './defer/interfaces';
+export {getDocument as ɵgetDocument} from './render3/interfaces/document';
 export {
   convertToBitFlags as ɵconvertToBitFlags,
   setCurrentInjector as ɵsetCurrentInjector,
@@ -85,14 +85,17 @@ export {
   withDomHydration as ɵwithDomHydration,
   withI18nSupport as ɵwithI18nSupport,
   withIncrementalHydration as ɵwithIncrementalHydration,
+  CLIENT_RENDER_MODE_FLAG as ɵCLIENT_RENDER_MODE_FLAG,
 } from './hydration/api';
 export {withEventReplay as ɵwithEventReplay} from './hydration/event_replay';
 export {JSACTION_EVENT_CONTRACT as ɵJSACTION_EVENT_CONTRACT} from './event_delegation_utils';
 export {
   IS_HYDRATION_DOM_REUSE_ENABLED as ɵIS_HYDRATION_DOM_REUSE_ENABLED,
   IS_INCREMENTAL_HYDRATION_ENABLED as ɵIS_INCREMENTAL_HYDRATION_ENABLED,
+  JSACTION_BLOCK_ELEMENT_MAP as ɵJSACTION_BLOCK_ELEMENT_MAP,
 } from './hydration/tokens';
 export {
+  HydrationStatus as ɵHydrationStatus,
   HydratedNode as ɵHydratedNode,
   HydrationInfo as ɵHydrationInfo,
   readHydrationInfo as ɵreadHydrationInfo,
@@ -152,7 +155,6 @@ export {isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './ut
 export {performanceMarkFeature as ɵperformanceMarkFeature} from './util/performance';
 export {stringify as ɵstringify, truncateMiddle as ɵtruncateMiddle} from './util/stringify';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider_flags';
-
 export {type InputSignalNode as ɵInputSignalNode} from './authoring/input/input_signal_node';
 export {
   startMeasuring as ɵstartMeasuring,
@@ -161,7 +163,17 @@ export {
   enableProfiling as ɵenableProfiling,
   disableProfiling as ɵdisableProfiling,
 } from './profiler';
-
-export {ResourceImpl as ɵResourceImpl} from './resource/resource';
-
+export {
+  ResourceImpl as ɵResourceImpl,
+  encapsulateResourceError as ɵencapsulateResourceError,
+} from './resource/resource';
 export {getClosestComponentName as ɵgetClosestComponentName} from './internal/get_closest_component_name';
+export {getComponentDef as ɵgetComponentDef} from './render3/def_getters';
+export {DEHYDRATED_BLOCK_REGISTRY as ɵDEHYDRATED_BLOCK_REGISTRY} from './defer/registry';
+export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
+export {ɵassertType} from './type_checking';
+export {
+  ElementRegistry as ɵElementRegistry,
+  AnimationRemovalRegistry as ɵAnimationRemovalRegistry,
+  ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED,
+} from './animation';

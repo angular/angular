@@ -5,7 +5,7 @@ $r3$.ɵɵdefineComponent({
   …
   template: function MyApp_Template(rf, ctx) {
     if (rf & 1) {
-      $r3$.ɵɵelement(0, "input", null, 0)(2, "input", null, 1);
+      $r3$.ɵɵdomElement(0, "input", null, 0)(2, "input", null, 1);
       $r3$.ɵɵtext(4);
     }
     if (rf & 2) {

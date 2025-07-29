@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "target": "es2020",
+    "target": "es2022",
     "moduleResolution": "node",
+    "downlevelIteration": true,
     "esModuleInterop": true,
-    "outDir": "build",
-    "inlineSourceMap": true,
     "inlineSources": true,
-    "declaration": false,
+    "declaration": true,
     "noEmitOnError": false,
-    "stripInternal": false,
+    "stripInternal": true,
     "strict": true,
+    "sourceMap": true,
     "noImplicitOverride": true,
     "lib": [
       "es5",
@@ -20,22 +20,5 @@
       "es2015.symbol",
       "es2015.symbol.wellknown"
     ],
-    "typeRoots": ["node_modules/@types"]
   },
-  "exclude": [
-    "node_modules",
-    "bazel-out",
-    "build",
-    "build-esm",
-    "build-esm-2015",
-    "dist",
-    "lib/closure",
-    "lib/node/**",
-    "lib/mix/**",
-    "test/node/**",
-    "test/node_bluebird_entry_point.ts",
-    "test/node_entry_point.ts",
-    "test/node_error_entry_point.ts",
-    "test/node_tests.ts"
-  ]
 }

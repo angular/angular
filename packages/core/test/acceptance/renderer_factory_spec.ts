@@ -101,6 +101,14 @@ describe('renderer factory lifecycle', () => {
   }
 
   beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
     logs = [];
 
     TestBed.configureTestingModule({
@@ -384,6 +392,8 @@ function getRendererFactory2(document: Document): RendererFactory2 {
     document,
     isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
     fakeNgZone,
+    null,
+    null,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {

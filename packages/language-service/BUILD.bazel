@@ -1,47 +1,57 @@
-load("//tools:defaults.bzl", "esbuild", "extract_types", "pkg_npm", "ts_library")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "extract_types", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
     name = "api",
     srcs = [
         "api.ts",
     ],
     deps = [
-        "@npm//typescript",
+        "//:node_modules/typescript",
     ],
 )
 
-ts_library(
+ts_project(
     name = "factory_lib",
     srcs = ["plugin-factory.ts"],
     deps = [
-        ":api",
-        "@npm//@types/node",
-        "@npm//typescript",
+        ":api_rjs",
+        "//:node_modules/typescript",
     ],
 )
 
 esbuild(
     name = "factory_bundle",
     entry_point = ":plugin-factory.ts",
-    external = ["./bundles/language-service.js"],
+    external = ["@angular/language-service/bundles/language-service.js"],
     format = "cjs",
-    deps = [":factory_lib"],
+    deps = [":factory_lib_rjs"],
 )
 
 esbuild(
     name = "api_bundle",
     entry_point = ":api.ts",
     format = "cjs",
-    deps = [":api"],
+    deps = [":api_rjs"],
 )
 
 extract_types(
     name = "types",
     deps = [
-        ":api",
-        ":factory_lib",
+        ":api_rjs",
+        ":factory_lib_rjs",
     ],
 )
 

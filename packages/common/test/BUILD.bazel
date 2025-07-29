@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -7,36 +6,33 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-        "//packages/common/locales",
-    ],
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages/common:common_rjs",
+        "//packages/common/locales:locales_rjs",
         "//packages/common/testing:testing_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
-    deps = [
-        ":test_lib",
+    data = [
+        ":test_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

@@ -1,24 +1,14 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", "generate_api_docs")
 load("//packages/common/locales:index.bzl", "generate_base_locale_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "tsec_test")
-load("//tools:defaults2.bzl", "ng_project", "ts_config")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package", "ts_config", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
 # This generates the `src/i18n/locale_en.ts` file through the `generate-locales` tool. Since
-# the base locale file is checked-in for Google3, we add a `generated_file_test` to ensure
-# the checked-in file is up-to-date. To disambiguate from the test, we use a more precise target
-# name here.
+# the base locale file is checked-in for Google3, it is additionally stored in a golden location.
 generate_base_locale_file(
-    name = "base_locale_file_generated",
-    output_file = "base_locale_file_generated.ts",
-)
-
-generated_file_test(
     name = "base_locale_file",
     src = "src/i18n/locale_en.ts",
-    generated = ":base_locale_file_generated",
 )
 
 ts_config(
@@ -41,15 +31,14 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core/primitives/di",
-        "//packages/core/primitives/dom-navigation",
-        "//packages/core/primitives/event-dispatch",
-        "//packages/zone.js/lib:zone_d_ts",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
         "//packages:goog_types_rjs",
+        "//packages/core/primitives/defer:triggers_rjs",
+        "//packages/core/primitives/di:di_rjs",
+        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
         "//packages/core/primitives/signals:signals_rjs",
         "//packages/core/src/compiler:compiler_rjs",
         "//packages/core/src/di/interface:interface_rjs",
@@ -61,13 +50,12 @@ ng_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "core",
-    tsconfig = "//packages:tsec_config",
+    target = ":core_rjs",
+    tsconfig = "//packages/core:tsconfig_build",
 )
 
 ng_package(
     name = "npm_package",
-    package_name = "@angular/core",
     srcs = [
         "package.json",
         ":event_dispatch_contract_binary",
@@ -75,6 +63,7 @@ ng_package(
     nested_packages = [
         "//packages/core/schematics:npm_package",
     ],
+    package = "@angular/core",
     tags = [
         "release-with-framework",
     ],
@@ -94,13 +83,23 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":core",
-        "//packages/core/primitives/di",
-        "//packages/core/primitives/event-dispatch",
-        "//packages/core/primitives/signals",
-        "//packages/core/rxjs-interop",
-        "//packages/core/testing",
+        ":core_rjs",
+        "//packages/core/primitives/di:di_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/testing:testing_rjs",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(
@@ -109,8 +108,8 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/core",
-    npm_package = "angular/packages/core/npm_package",
+    golden_dir = "goldens/public-api/core",
+    npm_package = "packages/core/npm_package",
     strip_export_pattern = "^ɵ(?!.*ApiGuard)",
 )
 
@@ -118,28 +117,20 @@ api_golden_test(
     name = "ng_global_utils_api",
     data = [
         "//goldens:public-api",
-        "//packages/core",
-        # Additional targets the entry-point indirectly resolves `.d.ts` source files from.
-        # These are transitive to `:core`, but need to be listed explicitly here as only
-        # transitive `JSModule` information is collected (missing the type definitions).
-        "//packages/core/src/compiler",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/interface",
-        "//packages/core/src/reflection",
-        "//packages/core/src/util",
+        "//packages/core:core_rjs",
     ],
-    entry_point = "angular/packages/core/src/render3/global_utils_api.d.ts",
-    golden = "angular/goldens/public-api/core/global_utils.api.md",
+    entry_point = "src/render3/global_utils_api.d.ts",
+    golden = "goldens/public-api/core/global_utils.api.md",
 )
 
 api_golden_test(
     name = "core_errors",
     data = [
         "//goldens:public-api",
-        "//packages/core",
+        "//packages/core:core_rjs",
     ],
-    entry_point = "angular/packages/core/src/errors.d.ts",
-    golden = "angular/goldens/public-api/core/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/core/errors.api.md",
 )
 
 filegroup(
@@ -168,7 +159,7 @@ generate_api_docs(
 
 genrule(
     name = "event_dispatch_contract_binary",
-    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
+    srcs = ["//packages/core/primitives/event-dispatch:contract_bundle_min.js"],
     outs = ["event-dispatch-contract.min.js"],
     cmd = "cp $< $@",
 )

@@ -24,9 +24,10 @@ import {
   UrlTree,
 } from '../src/url_tree';
 import {getLoadedRoutes, getProvidersInjector} from '../src/utils/config';
-import {timeout} from './helpers';
+import {timeout, useAutoTick} from './helpers';
 
 describe('redirects', () => {
+  useAutoTick();
   const serializer = new DefaultUrlSerializer();
 
   it('should return the same url tree when no redirects', () => {

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -9,24 +8,22 @@ ts_project(
     srcs = glob([
         "**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/upgrade/src/common",
-    ],
     deps = [
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/upgrade/src/common:common_rjs",
         "//packages/upgrade/src/common/test/helpers:helpers_rjs",
         "//packages/upgrade/static:static_rjs",
         "//packages/upgrade/static/testing:testing_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
-    static_files = [
+    data = [
         "//:angularjs_scripts",
     ],
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

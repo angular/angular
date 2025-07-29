@@ -7,10 +7,10 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    interop_deps = [
-        ":lib",
-    ],
     visibility = ["//adev/shared-docs:__subpackages__"],
+    deps = [
+        ":lib_rjs",
+    ],
 )
 
 ts_project(
@@ -21,10 +21,8 @@ ts_project(
             "index.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
-        "//:node_modules/@webcontainer/api",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@webcontainer/api",
     ],
 )

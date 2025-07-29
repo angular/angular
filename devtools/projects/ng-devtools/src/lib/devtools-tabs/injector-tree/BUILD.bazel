@@ -1,7 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -22,30 +19,27 @@ ng_project(
         ":injector_tree_styles",
         "injector-tree.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-    ],
     deps = [
         ":injector_tree_fns_rjs",
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection/resolution-path:resolution-path_rjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers:injector-providers_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/responsive-split:responsive-split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split:angular-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button:docs-ref-button_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test",
     deps = [
-        ":injector_tree_fns_test_lib",
+        ":injector_tree_fns_test_lib_rjs",
     ],
 )
 
@@ -56,7 +50,6 @@ ts_test_library(
     ],
     deps = [
         ":injector_tree_fns_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -65,7 +58,7 @@ ts_project(
     name = "injector_tree_fns",
     srcs = ["injector-tree-fns.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/dependency-injection:injector_tree_visualizer_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )

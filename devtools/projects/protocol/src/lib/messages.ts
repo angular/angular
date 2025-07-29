@@ -16,6 +16,40 @@ import {
   ViewEncapsulation as AngularViewEncapsulation,
 } from '@angular/core';
 
+export interface DebugSignalGraphNode {
+  id: string;
+  kind: string;
+  epoch: number;
+  label?: string;
+  preview: Descriptor;
+  debuggable: boolean;
+}
+
+export interface DebugSignalGraphEdge {
+  /**
+   * Index of a signal node in the `nodes` array that is a consumer of the signal produced by the producer node.
+   */
+  consumer: number;
+
+  /**
+   * Index of a signal node in the `nodes` array that is a producer of the signal consumed by the consumer node.
+   */
+  producer: number;
+}
+
+/**
+ * A debug representation of the signal graph.
+ */
+export interface DebugSignalGraph {
+  nodes: DebugSignalGraphNode[];
+  edges: DebugSignalGraphEdge[];
+}
+
+export interface SignalNodePosition {
+  element: ElementPosition;
+  signalId: string;
+}
+
 export interface DirectiveType {
   name: string;
   id: number;
@@ -267,12 +301,15 @@ export interface UpdatedStateData {
 
 export interface Route {
   name?: string;
-  hash?: string | null;
-  specificity?: string | null;
+  hash?: string;
+  specificity?: string;
   handler?: string;
   pathMatch?: 'prefix' | 'full';
-  canActivateGuards?: string[] | null;
-  providers?: string[] | null;
+  canActivateGuards?: string[];
+  canActivateChildGuards?: string[];
+  canMatchGuards?: string[];
+  canDeactivateGuards?: string[];
+  providers?: string[];
   title?: string;
   children?: Array<Route>;
   data?: any;
@@ -298,16 +335,22 @@ export interface AngularDetection {
 
 export type Topic = keyof Events;
 
-export interface InjectorGraphViewQuery {
-  directivePosition: DirectivePosition;
-  paramIndex: number;
-}
-
 export interface SupportedApis {
   profiler: boolean;
   dependencyInjection: boolean;
   routes: boolean;
+  signals: boolean;
+  transferState: boolean;
 }
+
+export type TransferStateValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Record<string, unknown>
+  | unknown[];
 
 export interface Events {
   handshake: () => void;
@@ -324,12 +367,19 @@ export interface Events {
   inspectorStart: () => void;
   inspectorEnd: () => void;
 
+  getSignalGraph: (query: ElementPosition) => void;
+  latestSignalGraph: (graph: DebugSignalGraph) => void;
+
+  getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
+  signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;
+
   getNestedProperties: (position: DirectivePosition, path: string[]) => void;
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
 
   setSelectedComponent: (position: ElementPosition) => void;
   getRoutes: () => void;
   updateRouterTree: (routes: Route[]) => void;
+  navigateRoute: (route: string) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query?: ComponentExplorerViewQuery) => void;
@@ -363,6 +413,9 @@ export interface Events {
   ) => void;
 
   logProvider: (injector: SerializedInjector, providers: SerializedProviderRecord) => void;
+
+  getTransferState: () => void;
+  transferStateData: (data: Record<string, TransferStateValue> | null) => void;
 
   contentScriptConnected: (frameId: number, name: string, url: string) => void;
   contentScriptDisconnected: (frameId: number, name: string, url: string) => void;

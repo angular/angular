@@ -21,20 +21,10 @@ import {
   TokenType,
 } from './tokens';
 
-export class TokenError extends ParseError {
-  constructor(
-    errorMsg: string,
-    public tokenType: TokenType | null,
-    span: ParseSourceSpan,
-  ) {
-    super(span, errorMsg);
-  }
-}
-
 export class TokenizeResult {
   constructor(
     public tokens: Token[],
-    public errors: TokenError[],
+    public errors: ParseError[],
     public nonNormalizedIcuExpressions: Token[],
   ) {}
 }
@@ -154,9 +144,19 @@ enum CharacterReferenceType {
   DEC = 'decimal',
 }
 
-class _ControlFlowError {
-  constructor(public error: TokenError) {}
-}
+const SUPPORTED_BLOCKS = [
+  '@if',
+  '@else', // Covers `@else if` as well
+  '@for',
+  '@switch',
+  '@case',
+  '@default',
+  '@empty',
+  '@defer',
+  '@placeholder',
+  '@loading',
+  '@error',
+];
 
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
@@ -175,7 +175,7 @@ class _Tokenizer {
   private readonly _tokenizeLet: boolean;
   private readonly _selectorlessEnabled: boolean;
   tokens: Token[] = [];
-  errors: TokenError[] = [];
+  errors: ParseError[] = [];
   nonNormalizedIcuExpressions: Token[] = [];
 
   /**
@@ -248,10 +248,10 @@ class _Tokenizer {
           // don't want to advance in case it's not `@let`.
           this._cursor.peek() === chars.$AT &&
           !this._inInterpolation &&
-          this._attemptStr('@let')
+          this._isLetStart()
         ) {
           this._consumeLetDeclaration(start);
-        } else if (this._tokenizeBlocks && this._attemptCharCode(chars.$AT)) {
+        } else if (this._tokenizeBlocks && this._isBlockStart()) {
           this._consumeBlockStart(start);
         } else if (
           this._tokenizeBlocks &&
@@ -298,6 +298,7 @@ class _Tokenizer {
   }
 
   private _consumeBlockStart(start: CharacterCursor) {
+    this._requireCharCode(chars.$AT);
     this._beginToken(TokenType.BLOCK_OPEN_START, start);
     const startToken = this._endToken([this._getBlockName()]);
 
@@ -377,6 +378,7 @@ class _Tokenizer {
   }
 
   private _consumeLetDeclaration(start: CharacterCursor) {
+    this._requireStr('@let');
     this._beginToken(TokenType.LET_START, start);
 
     // Require at least one white space after the `@let`.
@@ -503,17 +505,15 @@ class _Tokenizer {
 
   private _endToken(parts: string[], end?: CharacterCursor): Token {
     if (this._currentTokenStart === null) {
-      throw new TokenError(
-        'Programming error - attempted to end a token when there was no start to the token',
-        this._currentTokenType,
+      throw new ParseError(
         this._cursor.getSpan(end),
+        'Programming error - attempted to end a token when there was no start to the token',
       );
     }
     if (this._currentTokenType === null) {
-      throw new TokenError(
-        'Programming error - attempted to end a token which has no token type',
-        null,
+      throw new ParseError(
         this._cursor.getSpan(this._currentTokenStart),
+        'Programming error - attempted to end a token which has no token type',
       );
     }
     const token = {
@@ -530,22 +530,22 @@ class _Tokenizer {
     return token;
   }
 
-  private _createError(msg: string, span: ParseSourceSpan): _ControlFlowError {
+  private _createError(msg: string, span: ParseSourceSpan): ParseError {
     if (this._isInExpansionForm()) {
       msg += ` (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`;
     }
-    const error = new TokenError(msg, this._currentTokenType, span);
+    const error = new ParseError(span, msg);
     this._currentTokenStart = null;
     this._currentTokenType = null;
-    return new _ControlFlowError(error);
+    return error;
   }
 
   private handleError(e: any) {
     if (e instanceof CursorError) {
       e = this._createError(e.msg, this._cursor.getSpan(e.cursor));
     }
-    if (e instanceof _ControlFlowError) {
-      this.errors.push(e.error);
+    if (e instanceof ParseError) {
+      this.errors.push(e);
     } else {
       throw e;
     }
@@ -642,6 +642,32 @@ class _Tokenizer {
     const char = String.fromCodePoint(this._cursor.peek());
     this._cursor.advance();
     return char;
+  }
+
+  private _peekStr(chars: string): boolean {
+    const len = chars.length;
+    if (this._cursor.charsLeft() < len) {
+      return false;
+    }
+    const cursor = this._cursor.clone();
+    for (let i = 0; i < len; i++) {
+      if (cursor.peek() !== chars.charCodeAt(i)) {
+        return false;
+      }
+      cursor.advance();
+    }
+    return true;
+  }
+
+  private _isBlockStart(): boolean {
+    return (
+      this._cursor.peek() === chars.$AT &&
+      SUPPORTED_BLOCKS.some((blockName) => this._peekStr(blockName))
+    );
+  }
+
+  private _isLetStart(): boolean {
+    return this._cursor.peek() === chars.$AT && this._peekStr('@let');
   }
 
   private _consumeEntity(textTokenType: TokenType): void {
@@ -820,7 +846,7 @@ class _Tokenizer {
         this._consumeTagOpenEnd();
       }
     } catch (e) {
-      if (e instanceof _ControlFlowError) {
+      if (e instanceof ParseError) {
         if (openToken) {
           // We errored before we could close the opening tag, so it is incomplete.
           openToken.type =
@@ -935,6 +961,22 @@ class _Tokenizer {
           }
         }
         return isNameEnd(code);
+      };
+    } else if (attrNameStart === chars.$LBRACKET) {
+      let openBrackets = 0;
+
+      // Be more permissive for which characters are allowed inside square-bracketed attributes,
+      // because they usually end up being bound as attribute values. Some third-party packages
+      // like Tailwind take advantage of this.
+      nameEndPredicate = (code: number) => {
+        if (code === chars.$LBRACKET) {
+          openBrackets++;
+        } else if (code === chars.$RBRACKET) {
+          openBrackets--;
+        }
+        // Only check for name-ending characters if the brackets are balanced or mismatched.
+        // Also interrupt the matching on new lines.
+        return openBrackets <= 0 ? isNameEnd(code) : chars.isNewLine(code);
       };
     } else {
       nameEndPredicate = isNameEnd;
@@ -1277,7 +1319,7 @@ class _Tokenizer {
       this._tokenizeBlocks &&
       !this._inInterpolation &&
       !this._isInExpansion() &&
-      (this._cursor.peek() === chars.$AT || this._cursor.peek() === chars.$RBRACE)
+      (this._isBlockStart() || this._isLetStart() || this._cursor.peek() === chars.$RBRACE)
     ) {
       return true;
     }
@@ -1725,9 +1767,15 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
   }
 }
 
-export class CursorError {
+export class CursorError extends Error {
   constructor(
     public msg: string,
     public cursor: CharacterCursor,
-  ) {}
+  ) {
+    super(msg);
+
+    // Extending `Error` does not always work when code is transpiled. See:
+    // https://stackoverflow.com/questions/41102060/typescript-extending-error-class
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
 }

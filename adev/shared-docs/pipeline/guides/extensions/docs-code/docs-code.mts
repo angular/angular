@@ -22,6 +22,7 @@ const singleFileCodeRule =
   /^\s*<docs-code((?:\s+[\w-]+(?:="[^"]*"|='[^']*'|=[^\s>]*)?)*)\s*(?:\/>|>(.*?)<\/docs-code>)/s;
 
 const pathRule = /path="([^"]*)"/;
+const classRule = /class="([^"]*)"/;
 const headerRule = /header="([^"]*)"/;
 const linenumsRule = /linenums/;
 const highlightRule = /highlight="([^"]*)"/;
@@ -51,6 +52,7 @@ export const docsCodeExtension = {
       const visibleLines = visibleLinesRule.exec(attr);
       const visibleRegion = visibleRegionRule.exec(attr);
       const preview = previewRule.exec(attr) ? true : false;
+      const classes = classRule.exec(attr);
 
       let code = match[2]?.trim() ?? '';
       if (path && path[1]) {
@@ -73,6 +75,7 @@ export const docsCodeExtension = {
         visibleLines: visibleLines?.[1],
         visibleRegion: visibleRegion?.[1],
         preview: preview,
+        classes: classes?.[1]?.split(' '),
       };
       return token;
     }

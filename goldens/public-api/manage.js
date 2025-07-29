@@ -11,7 +11,7 @@ const API_TARGETS_LOCATION = 'packages/...';
 
 // The shell command to query for all Public API guard tests.
 const BAZEL_PUBLIC_API_TARGET_QUERY_CMD =
-  `yarn -s bazel query --output label 'kind(nodejs_test, ${API_TARGETS_LOCATION}) ` +
+  `yarn -s bazel query --output label 'kind(js_test, ${API_TARGETS_LOCATION}) ` +
   `intersect attr("tags", "api_guard", ${API_TARGETS_LOCATION})'`;
 // Bazel targets for testing Public API goldens
 process.stdout.write('Gathering all Public API targets...');

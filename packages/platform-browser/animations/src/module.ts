@@ -18,6 +18,8 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
 /**
  * Object used to configure the behavior of {@link BrowserAnimationsModule}
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export interface BrowserAnimationsModuleConfig {
   /**
@@ -31,6 +33,8 @@ export interface BrowserAnimationsModuleConfig {
  * Exports `BrowserModule` with additional dependency-injection providers
  * for use with animations. See [Animations](guide/animations).
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 @NgModule({
   exports: [BrowserModule],
@@ -86,6 +90,9 @@ export class BrowserAnimationsModule {
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
+ *
  */
 export function provideAnimations(): Provider[] {
   performanceMarkFeature('NgEagerAnimations');
@@ -97,6 +104,8 @@ export function provideAnimations(): Provider[] {
 /**
  * A null player that must be imported to allow disabling of animations.
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 @NgModule({
   exports: [BrowserModule],
@@ -124,6 +133,8 @@ export class NoopAnimationsModule {}
  * ```
  *
  * @publicApi
+ *
+ * @deprecated 20.2 Use `animate.enter` or `animate.leave` instead. Intent to remove in v23
  */
 export function provideNoopAnimations(): Provider[] {
   // Return a copy to prevent changes to the original array in case any in-place

@@ -7,7 +7,8 @@
   position: relative;
 
   .not-supported {
-    margin-top: 16px;
+    padding: 1rem;
+    text-align: center;
   }
 
   .wrapper {
@@ -20,35 +21,20 @@
     }
 
     .options {
-      padding: 0.25rem;
+      padding: 0.75rem;
       display: flex;
       align-items: center;
       gap: 2rem;
       border-bottom: 1px solid var(--color-separator);
 
-      mat-checkbox {
-        $checkbox-size: 14px;
-        --mdc-checkbox-state-layer-size: 2rem;
-        --mat-checkbox-label-text-size: 0.8rem;
-
-        ::ng-deep .mdc-checkbox {
-          width: $checkbox-size;
-          height: $checkbox-size;
-          flex: 0 0 $checkbox-size;
-
-          &__background {
-            width: $checkbox-size;
-            height: $checkbox-size;
-          }
-        }
+      .option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
     }
 
     .trees {
-      as-split-area {
-        overflow-y: auto !important;
-      }
-
       .injector-hierarchy {
         height: 100%;
         overflow: hidden;
@@ -63,23 +49,10 @@
           display: flex;
           align-items: center;
           gap: 0.375rem;
-
-          .hierarchy-ref {
-            color: currentColor;
-            text-decoration: none;
-          }
-
-          mat-icon {
-            font-size: 1rem;
-            width: 1rem;
-            height: 1rem;
-            display: block;
-          }
         }
       }
 
       .injector-graph {
-        overflow: auto;
         background: var(--octonary-contrast);
         height: calc(100% - 50px);
       }

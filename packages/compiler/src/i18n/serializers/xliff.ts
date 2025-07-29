@@ -8,9 +8,9 @@
 
 import * as ml from '../../ml_parser/ast';
 import {XmlParser} from '../../ml_parser/xml_parser';
+import {ParseError} from '../../parse_util';
 import {digest} from '../digest';
 import * as i18n from '../i18n_ast';
-import {I18nError} from '../parse_util';
 
 import {Serializer} from './serializer';
 import * as xml from './xml_helper';
@@ -218,7 +218,7 @@ class _WriteVisitor implements i18n.Visitor {
 class XliffParser implements ml.Visitor {
   // using non-null assertions because they're re(set) by parse()
   private _unitMlString!: string | null;
-  private _errors!: I18nError[];
+  private _errors!: ParseError[];
   private _msgIdToHtml!: {[msgId: string]: string};
   private _locale: string | null = null;
 
@@ -310,14 +310,14 @@ class XliffParser implements ml.Visitor {
   visitDirective(directive: ml.Directive, context: any) {}
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new ParseError(node.sourceSpan, message));
   }
 }
 
 // Convert ml nodes (xliff syntax) to i18n nodes
 class XmlToI18n implements ml.Visitor {
   // using non-null assertion because it's re(set) by convert()
-  private _errors!: I18nError[];
+  private _errors!: ParseError[];
 
   convert(message: string, url: string) {
     const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
@@ -393,7 +393,7 @@ class XmlToI18n implements ml.Visitor {
   }
 
   private _addError(node: ml.Node, message: string): void {
-    this._errors.push(new I18nError(node.sourceSpan, message));
+    this._errors.push(new ParseError(node.sourceSpan, message));
   }
 }
 

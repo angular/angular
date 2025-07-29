@@ -21,16 +21,10 @@ import {BASE_LOCALE} from './base-locale';
  * Generates locale files for each available CLDR locale and writes it to the
  * specified directory.
  */
-async function main(outputDir: string | undefined) {
-  if (outputDir === undefined) {
-    throw Error('No output directory specified.');
-  }
-
+async function main() {
   const cldrData = new CldrData();
   const baseLocaleData = cldrData.getLocaleData(BASE_LOCALE)!;
   const baseCurrencies = generateBaseCurrencies(baseLocaleData);
-  const extraLocaleDir = join(outputDir, 'extra');
-  const globalLocaleDir = join(outputDir, 'global');
 
   // Generate locale files for all locales we have data for.
   await Promise.all(
@@ -41,15 +35,15 @@ async function main(outputDir: string | undefined) {
       const localeGlobalFile = generateLocaleGlobalFile(locale, localeData, baseCurrencies);
 
       return [
-        fs.promises.writeFile(join(outputDir, `${locale}.ts`), localeFile),
-        fs.promises.writeFile(join(extraLocaleDir, `${locale}.ts`), localeExtraFile),
-        fs.promises.writeFile(join(globalLocaleDir, `${locale}.js`), localeGlobalFile),
+        fs.promises.writeFile(`${locale}.ts`, localeFile),
+        fs.promises.writeFile(join('extra', `${locale}.ts`), localeExtraFile),
+        fs.promises.writeFile(join('global', `${locale}.js`), localeGlobalFile),
       ];
     }),
   );
 }
 
-main(process.argv[2]).catch((err) => {
+main().catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });

@@ -7,12 +7,14 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {NgZone} from '@angular/core/src/zone/ng_zone';
+import {NgZone} from '@angular/core';
 import {DomEventsPlugin} from '../../../src/dom/events/dom_events';
 import {EventManager, EventManagerPlugin} from '../../../src/dom/events/event_manager';
 
 import {TestBed} from '@angular/core/testing';
 import {isNode, createMouseEvent, el} from '@angular/private/testing';
+
+import type {} from 'zone.js';
 
 (function () {
   if (isNode) return;
@@ -297,7 +299,7 @@ import {isNode, createMouseEvent, el} from '@angular/private/testing';
 
     // This test is reliant on `zone_event_unpatched_init.js` and verifies
     // that the Zone unpatched event setting applies to the event manager.
-    it('should run unpatchedEvents handler outside of ngZone', () => {
+    it('should run unpatchedEvents handler outside of ngZone', () => () => {
       const element = el('<div><div></div></div>');
       const zone = new NgZone({enableLongStackTrace: true});
       const manager = new EventManager([domEventPlugin], zone);

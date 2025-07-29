@@ -1,6 +1,6 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "utils",
     testonly = True,
     srcs = glob(
@@ -10,6 +10,6 @@ ts_library(
         "//packages/compiler/test:__subpackages__",
     ],
     deps = [
-        "//packages/compiler",
+        "//packages/compiler:compiler_rjs",
     ],
 )

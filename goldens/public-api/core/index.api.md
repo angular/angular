@@ -82,6 +82,15 @@ export interface AfterViewInit {
 export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAnimations">;
 
 // @public
+export type AnimationCallbackEvent = {
+    target: Element;
+    animationComplete: Function;
+};
+
+// @public
+export type AnimationFunction = (event: AnimationCallbackEvent) => void;
+
+// @public
 export const APP_BOOTSTRAP_LISTENER: InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
 
 // @public
@@ -177,6 +186,12 @@ export interface BaseResourceOptions<T, R> {
     equal?: ValueEqualityFn<T>;
     injector?: Injector;
     params?: () => R;
+}
+
+// @public
+export interface Binding {
+    // (undocumented)
+    readonly [BINDING]: unknown;
 }
 
 // @public
@@ -587,6 +602,7 @@ export function destroyPlatform(): void;
 
 // @public
 export abstract class DestroyRef {
+    abstract get destroyed(): boolean;
     abstract onDestroy(callback: () => void): () => void;
 }
 
@@ -679,6 +695,7 @@ export const ENVIRONMENT_INITIALIZER: InjectionToken<readonly (() => void)[]>;
 export abstract class EnvironmentInjector implements Injector {
     // (undocumented)
     abstract destroy(): void;
+    abstract get destroyed(): boolean;
     abstract get<T>(token: ProviderToken<T>, notFoundValue: undefined, options: InjectOptions & {
         optional?: false;
     }): T;
@@ -1601,10 +1618,9 @@ export function resolveForwardRef<T>(type: T): T;
 
 // @public
 export interface Resource<T> {
-    readonly error: Signal<unknown>;
+    readonly error: Signal<Error | undefined>;
     hasValue(): this is Resource<Exclude<T, undefined>>;
     readonly isLoading: Signal<boolean>;
-    reload(): boolean;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -1652,7 +1668,7 @@ export type ResourceStreamingLoader<T, R> = (param: ResourceLoaderParams<R>) => 
 export type ResourceStreamItem<T> = {
     value: T;
 } | {
-    error: unknown;
+    error: Error;
 };
 
 // @public
@@ -1776,9 +1792,9 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 }
 
 // @public
-export abstract class TemplateRef<C> {
-    abstract createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
-    abstract readonly elementRef: ElementRef;
+export class TemplateRef<C> {
+    createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
+    readonly elementRef: ElementRef;
 }
 
 // @public
@@ -2016,6 +2032,7 @@ export interface WritableResource<T> extends Resource<T> {
     asReadonly(): Resource<T>;
     // (undocumented)
     hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;
     // (undocumented)

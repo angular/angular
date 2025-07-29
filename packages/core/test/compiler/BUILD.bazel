@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -9,23 +8,22 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/core/src/compiler",
-        "//packages/core/src/util",
-    ],
-)
-
-jasmine_node_test(
-    name = "compiler",
-    bootstrap = ["//tools/testing:node"],
     deps = [
-        ":compiler_lib",
+        "//packages/core/src/compiler:compiler_rjs",
+        "//packages/core/src/util:util_rjs",
     ],
 )
 
-karma_web_test_suite(
+angular_jasmine_test(
+    name = "compiler",
+    data = [
+        ":compiler_lib_rjs",
+    ],
+)
+
+ng_web_test_suite(
     name = "compiler_web",
     deps = [
-        ":compiler_lib",
+        ":compiler_lib_rjs",
     ],
 )

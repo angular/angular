@@ -1,7 +1,55 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "esbuild", "ts_project")
+
+esbuild(
+    name = "guides",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "true",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
+    format = "esm",
+    output = "guides.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
+
+esbuild(
+    name = "guides_no_mermaid",
+    srcs = [
+        "//adev/shared-docs:tsconfig_build",
+    ],
+    bundle = True,
+    config = "//adev/shared-docs/pipeline:esbuild-config",
+    define = {
+        "HANDLE_MERMAID": "false",
+    },
+    entry_point = ":index.mts",
+    external = [
+        "jsdom",
+    ],
+    output = "guides-no-mermaid.mjs",
+    platform = "node",
+    target = "es2022",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":index_rjs",
+    ],
+)
 
 ts_project(
-    name = "guides",
+    name = "guides_lib",
     srcs = glob(
         [
             "**/*.mts",
@@ -13,17 +61,16 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//:node_modules/@bazel/runfiles",
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/@types/node",
-        "//:node_modules/diff",
-        "//:node_modules/emoji-regex",
-        "//:node_modules/html-entities",
-        "//:node_modules/jsdom",
-        "//:node_modules/marked",
-        "//:node_modules/mermaid",
-        "//:node_modules/playwright-core",
-        "//:node_modules/shiki",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/diff",
+        "//adev:node_modules/emoji-regex",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "//adev:node_modules/shiki",
     ],
 )
 
@@ -36,11 +83,7 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":guides_rjs",
-        "//:node_modules/@types/node",
+        ":guides_lib_rjs",
+        "//adev:node_modules/@types/node",
     ],
 )
-
-exports_files([
-    "index.mts",
-])

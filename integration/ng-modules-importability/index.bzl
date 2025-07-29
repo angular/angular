@@ -1,5 +1,5 @@
 load("@bazel_skylib//rules:write_file.bzl", "write_file")
-load("//tools:defaults.bzl", "nodejs_test")
+load("//tools:defaults2.bzl", "js_test")
 
 def module_test(name, npm_packages, skipped_entry_points = [], additional_deps = [], **kwargs):
     write_file(
@@ -11,14 +11,13 @@ def module_test(name, npm_packages, skipped_entry_points = [], additional_deps =
         })],
     )
 
-    nodejs_test(
+    js_test(
         name = "test",
         data = [
             ":%s_config" % name,
-            "//integration/ng-modules-importability:test_lib",
+            "//integration/ng-modules-importability:test_lib_rjs",
         ] + additional_deps + [pkg[0] for pkg in npm_packages.items()],
-        entry_point = "//integration/ng-modules-importability:index.ts",
-        enable_linker = True,
-        templated_args = ["$(rootpath :%s_config)" % name],
+        entry_point = "//integration/ng-modules-importability:index.mjs",
+        fixed_args = ["$(rootpath :%s_config)" % name],
         **kwargs
     )

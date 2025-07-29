@@ -51,9 +51,9 @@ export class User {
   favoriteFramework = '';
   ...
 
-showFramework() {
-alert(this.favoriteFramework);
-}
+  showFramework() {
+    alert(this.favoriteFramework);
+  }
 }
 </docs-code>
 

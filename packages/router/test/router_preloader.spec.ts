@@ -42,9 +42,10 @@ import {
   getLoadedRoutes,
   getProvidersInjector,
 } from '../src/utils/config';
-import {timeout} from './helpers';
+import {timeout, useAutoTick} from './helpers';
 
 describe('RouterPreloader', () => {
+  useAutoTick();
   @Component({
     template: '',
     standalone: false,
@@ -826,7 +827,7 @@ describe('RouterPreloader', () => {
 
       lazyComponentSpy.and.returnValue(
         of(LoadedComponent).pipe(
-          switchMap((v) => new Promise((r) => setTimeout(r, 10)).then(() => v)),
+          switchMap((v) => new Promise((r) => setTimeout(r, 50)).then(() => v)),
         ),
       );
 
@@ -867,7 +868,7 @@ describe('RouterPreloader', () => {
       expect(getLoadedComponent(baseRoute)).not.toBeDefined();
       expect(getLoadedRoutes(childRoutes![0])).toBeDefined();
 
-      await timeout(10);
+      await timeout(50);
       expect(getLoadedComponent(baseRoute)).toBeDefined();
     });
 

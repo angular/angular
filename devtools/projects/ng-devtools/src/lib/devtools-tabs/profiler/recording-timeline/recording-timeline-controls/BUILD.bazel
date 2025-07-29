@@ -1,0 +1,23 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "recording-timeline-controls_styles",
+    src = "recording-timeline-controls.component.scss",
+)
+
+ng_project(
+    name = "recording-timeline-controls",
+    srcs = [
+        "recording-timeline-controls.component.ts",
+    ],
+    angular_assets = [
+        "recording-timeline-controls.component.html",
+        ":recording-timeline-controls_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
+    ],
+)

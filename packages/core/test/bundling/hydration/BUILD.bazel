@@ -1,27 +1,24 @@
-load("@npm//http-server:index.bzl", "http_server")
-load("//tools:defaults.bzl", "app_bundle", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ng_project", "ts_project")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_project(
-    name = "hydration",
-    srcs = ["index.ts"],
-    interop_deps = [
-        "//packages/core",
-        "//packages/platform-browser",
+optimize_angular_app(
+    name = "bundles",
+    srcs = [
+        "main.ts",
     ],
-)
-
-app_bundle(
-    name = "bundle",
-    entry_point = ":index.ts",
+    env = {
+        "NG_BUILD_MANGLE": "0",
+    },
     deps = [
-        ":hydration",
-        "//packages/core",
-        "//packages/platform-browser",
-        "@npm//rxjs",
+        "//:node_modules/rxjs",
+        "//:node_modules/tslib",
+        "//packages/core/test/bundling:node_modules/@angular/build",
+        "//packages/core/test/bundling:node_modules/@angular/common",
+        "//packages/core/test/bundling:node_modules/@angular/core",
+        "//packages/core/test/bundling:node_modules/@angular/platform-browser",
     ],
 )
 
@@ -29,38 +26,23 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["*_spec.ts"]),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core/testing",
-        "//packages/private/testing",
-    ],
     deps = [
-        "//:node_modules/@bazel/runfiles",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
     data = [
-        ":bundle.debug.min.js",
-        ":bundle.js",
-        ":bundle.min.js",
-        ":bundle.min.js.br",
+        ":bundles",
+        ":test_lib_rjs",
     ],
-    deps = [":test_lib"],
 )
 
 js_expected_symbol_test(
     name = "symbol_test",
-    src = ":bundle.debug.min.js",
+    bundles_dir = ":bundles",
     golden = ":bundle.golden_symbols.json",
-)
-
-http_server(
-    name = "prodserver",
-    data = [
-        "index.html",
-        ":bundle.debug.min.js",
-        ":bundle.min.js",
-    ],
 )

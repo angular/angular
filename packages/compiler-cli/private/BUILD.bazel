@@ -1,22 +1,32 @@
-load("//tools:defaults.bzl", "ts_library")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("//tools:defaults2.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+copy_to_bin(
+    name = "files",
+    srcs = [
+        "localize.ts",
+        "migrations.ts",
+        "tooling.ts",
+    ],
+)
+
+ts_project(
     name = "private",
     srcs = glob(["*.ts"]),
     deps = [
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/imports",
-        "//packages/compiler-cli/src/ngtsc/logging",
-        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/perf",
-        "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/sourcemaps",
-        "//packages/compiler-cli/src/ngtsc/transform/jit",
-        "//packages/compiler-cli/src/ngtsc/translator",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api",
-        "@npm//typescript",
+        "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/annotations:annotations_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator:partial_evaluator_rjs",
+        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
+        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps:sourcemaps_rjs",
+        "//packages/compiler-cli/src/ngtsc/transform/jit:jit_rjs",
+        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
     ],
 )

@@ -115,8 +115,7 @@ export function createEmptyStateSnapshot(rootComponent: Type<any> | null): Route
  * on shallow equality. For example, changing deeply nested properties in resolved `data` will not
  * cause the `ActivatedRoute.data` `Observable` to emit a new value.
  *
- * {@example router/activated-route/module.ts region="activated-route"
- *     header="activated-route.component.ts"}
+ * {@example router/activated-route/module.ts region="activated-route"}
  *
  * @see [Getting route information](guide/routing/common-router-tasks#getting-route-information)
  *

@@ -8,7 +8,7 @@
 
 import {ContainerType, Descriptor, NestedProp, PropType} from '../../../../protocol';
 
-import {isSignal, unwrapSignal} from '../utils';
+import {isSignal, safelyReadSignalValue, unwrapSignal} from '../utils';
 
 import {getDescriptor, getKeys} from './object-utils';
 
@@ -173,10 +173,19 @@ const isGetterOrSetter = (descriptor: any): boolean =>
 
 const getPreview = (propData: TerminalType | CompositeType, isGetterOrSetter: boolean) => {
   if (propData.containerType === 'ReadonlySignal') {
-    return `Readonly Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
+    const {error, value} = safelyReadSignalValue(propData.prop);
+    if (error) {
+      return 'ERROR: Could not read signal value. See console for details.';
+    }
+    return `Readonly Signal(${typeToDescriptorPreview[propData.type](value)})`;
   } else if (propData.containerType === 'WritableSignal') {
-    return `Signal(${typeToDescriptorPreview[propData.type](propData.prop())})`;
+    const {error, value} = safelyReadSignalValue(propData.prop);
+    if (error) {
+      return 'ERROR: Could not read signal value. See console for details.';
+    }
+    return `Signal(${typeToDescriptorPreview[propData.type](value)})`;
   }
+
   return !isGetterOrSetter
     ? typeToDescriptorPreview[propData.type](propData.prop)
     : typeToDescriptorPreview[PropType.Function]({name: ''});

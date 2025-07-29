@@ -6,13 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, computed, inject, input, output, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatTabLink, MatTabNav, MatTabNavPanel} from '@angular/material/tabs';
 import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus, Route, SupportedApis} from '../../../../protocol';
+import {
+  ComponentExplorerView,
+  Events,
+  MessageBus,
+  Route,
+  SerializedInjector,
+  SerializedProviderRecord,
+  SupportedApis,
+} from '../../../../protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
 import {FrameManager} from '../application-services/frame_manager';
@@ -22,9 +38,10 @@ import {DirectiveExplorerComponent} from './directive-explorer/directive-explore
 import {InjectorTreeComponent} from './injector-tree/injector-tree.component';
 import {ProfilerComponent} from './profiler/profiler.component';
 import {RouterTreeComponent} from './router-tree/router-tree.component';
+import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 
-type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
+type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -43,9 +60,11 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree';
     ProfilerComponent,
     RouterTreeComponent,
     InjectorTreeComponent,
+    TransferStateComponent,
     MatSlideToggle,
   ],
   providers: [TabUpdate],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
@@ -58,7 +77,11 @@ export class DevToolsTabsComponent {
   readonly showCommentNodes = signal(false);
   readonly routerGraphEnabled = signal(false);
   readonly timingAPIEnabled = signal(false);
+  readonly signalGraphEnabled = signal(false);
+  readonly transferStateTabEnabled = signal(false);
 
+  readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
+  readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
   readonly frameManager = inject(FrameManager);
 
@@ -76,6 +99,9 @@ export class DevToolsTabsComponent {
     }
     if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
+    }
+    if (supportedApis.transferState && this.transferStateTabEnabled()) {
+      tabs.push('Transfer State');
     }
 
     return tabs;
@@ -95,14 +121,14 @@ export class DevToolsTabsComponent {
     return parseInt(version.toString().split('.')[0], 10);
   });
 
-  readonly extensionVersion = signal('Development Build');
+  readonly extensionVersion = signal('dev-build');
 
   public tabUpdate = inject(TabUpdate);
   public themeService = inject(ThemeService);
   private _messageBus = inject<MessageBus<Events>>(MessageBus);
 
   constructor() {
-    this._messageBus.on('updateRouterTree', (routes) => {
+    this._messageBus.on('updateRouterTree', (routes: any[]) => {
       this.routes.set(routes || []);
     });
 
@@ -112,6 +138,17 @@ export class DevToolsTabsComponent {
         this.changeTab('Components');
       }
     });
+
+    this._messageBus.on('latestComponentExplorerView', (view: ComponentExplorerView) => {
+      this.componentExplorerView.set(view);
+    });
+
+    this._messageBus.on(
+      'latestInjectorProviders',
+      (_: SerializedInjector, providers: SerializedProviderRecord[]) => {
+        this.providers.set(providers);
+      },
+    );
 
     if (typeof chrome !== 'undefined' && chrome.runtime !== undefined) {
       this.extensionVersion.set(chrome.runtime.getManifest().version);
@@ -161,6 +198,17 @@ export class DevToolsTabsComponent {
   protected setRouterGraph(enabled: boolean): void {
     this.routerGraphEnabled.set(enabled);
     if (!enabled) {
+      this.activeTab.set('Components');
+    }
+  }
+
+  protected setSignalGraph(enabled: boolean): void {
+    this.signalGraphEnabled.set(enabled);
+  }
+
+  protected setTransferStateTab(enabled: boolean): void {
+    this.transferStateTabEnabled.set(enabled);
+    if (!enabled && this.activeTab() === 'Transfer State') {
       this.activeTab.set('Components');
     }
   }

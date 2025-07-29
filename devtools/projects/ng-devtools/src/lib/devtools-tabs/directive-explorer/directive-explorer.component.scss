@@ -12,6 +12,15 @@
   }
 }
 
+.forest-breadcrumbs {
+  display: flex;
+  flex-direction: column;
+
+  ng-breadcrumbs {
+    border-top: 1px solid var(--color-separator);
+  }
+}
+
 .prop-split {
   display: flex;
   flex-direction: column;

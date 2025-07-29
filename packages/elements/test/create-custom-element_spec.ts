@@ -17,8 +17,7 @@ import {
   NgModule,
   Output,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
@@ -47,7 +46,7 @@ describe('createCustomElement', () => {
     testContainer = document.createElement('div');
     document.body.appendChild(testContainer);
     destroyPlatform();
-    platformBrowserDynamic()
+    platformBrowser()
       .bootstrapModule(TestModule)
       .then((ref) => {
         injector = ref.injector;

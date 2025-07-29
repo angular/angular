@@ -1,23 +1,18 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults2.bzl", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "experimental",
     srcs = glob(
         [
             "*.ts",
             "src/**/*.ts",
         ],
-        exclude = [
-            # Exclude files that don't build
-            "src/custom-schemas/**",
-            "src/kirjs-idea1/**",
-        ],
     ),
     deps = [
-        "//packages/core",
-        "//packages/forms",
-        "@npm//@standard-schema/spec",
+        "//:node_modules/@standard-schema/spec",
+        "//packages/core:core_rjs",
+        "//packages/forms:forms_rjs",
     ],
 )

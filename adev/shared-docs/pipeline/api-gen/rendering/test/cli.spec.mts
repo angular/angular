@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {runfiles} from '@bazel/runfiles';
+import {resolve} from 'path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
 import {configureMarkedGlobally} from '../marked/configuration.mjs';
@@ -22,7 +22,7 @@ describe('CLI docs to html', () => {
     await initHighlighter();
     await configureMarkedGlobally();
 
-    const entryContent = await readFile(runfiles.resolvePackageRelative('fake-cli-entries.json'), {
+    const entryContent = await readFile(resolve('./fake-cli-entries.json'), {
       encoding: 'utf-8',
     });
 

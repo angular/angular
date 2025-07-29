@@ -1,23 +1,13 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "generated_file_test")
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
 # This generates the `src/i18n/currencies.ts` file through the `generate-locales` tool. Since
-# the base currencies file is checked-in for Google3, we add a `generated_file_test` to ensure
-# the checked-in file is up-to-date. To disambiguate from the test, we use a more precise target
-# name here.
+# the base locale file is checked-in for Google3, it is additionally stored in a golden location.
 generate_base_currencies_file(
-    name = "base_currencies_file_generated",
-    output_file = "base_currencies_generated.ts",
-)
-
-generated_file_test(
     name = "base_currencies_file",
     src = "src/i18n/currencies.ts",
-    generated = ":base_currencies_file_generated",
 )
 
 ng_project(
@@ -28,12 +18,10 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    interop_deps = [
-        "//packages/core",
-        "//packages/core/primitives/dom-navigation",
-    ],
     deps = [
         "//:node_modules/rxjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
     ],
 )
 
@@ -43,6 +31,10 @@ ng_package(
         "package.json",
     ],
     nested_packages = ["//packages/common/locales:package"],
+    package = "@angular/common",
+    replace_prefixes = {
+        "locales/package": "locales/",
+    },
     tags = [
         "release-with-framework",
     ],
@@ -62,12 +54,22 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/common/http/testing",
-        "//packages/common/testing",
-        "//packages/common/upgrade",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/common/upgrade:upgrade_rjs",
     ],
+)
+
+# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
+# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )
 
 api_golden_test_npm_package(
@@ -76,18 +78,18 @@ api_golden_test_npm_package(
         ":npm_package",
         "//goldens:public-api",
     ],
-    golden_dir = "angular/goldens/public-api/common",
-    npm_package = "angular/packages/common/npm_package",
+    golden_dir = "goldens/public-api/common",
+    npm_package = "packages/common/npm_package",
 )
 
 api_golden_test(
     name = "common_errors",
     data = [
         "//goldens:public-api",
-        "//packages/common",
+        "//packages/common:common_rjs",
     ],
-    entry_point = "angular/packages/common/src/errors.d.ts",
-    golden = "angular/goldens/public-api/common/errors.api.md",
+    entry_point = "src/errors.d.ts",
+    golden = "goldens/public-api/common/errors.api.md",
 )
 
 filegroup(
@@ -104,7 +106,6 @@ generate_api_docs(
         ":files_for_docgen",
         "//packages:common_files_and_deps_for_docs",
         "//packages/platform-browser:files_for_docgen",
-        "//packages/platform-browser-dynamic:files_for_docgen",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/common",

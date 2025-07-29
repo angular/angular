@@ -9,7 +9,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {WINDOW} from '@angular/docs';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {Footer} from './footer.component';
 
 describe('Footer', () => {
@@ -23,8 +23,9 @@ describe('Footer', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [Footer, RouterTestingModule],
+      imports: [Footer],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

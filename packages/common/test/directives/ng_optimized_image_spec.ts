@@ -60,8 +60,8 @@ describe('Image directive', () => {
               provide: IMAGE_LOADER,
               useValue: (config: ImageLoaderConfig) =>
                 config.width
-                  ? `https://angular.io/${config.src}?width=${config.width}`
-                  : `https://angular.io/${config.src}`,
+                  ? `https://angular.dev/${config.src}?width=${config.width}`
+                  : `https://angular.dev/${config.src}`,
             },
           ],
         });
@@ -81,7 +81,7 @@ describe('Image directive', () => {
 
         const head = _document.head;
 
-        const rewrittenSrc = `https://angular.io/${src}`;
+        const rewrittenSrc = `https://angular.dev/${src}`;
 
         const preloadLink = head.querySelector(`link[href="${rewrittenSrc}"]`);
 
@@ -108,14 +108,14 @@ describe('Image directive', () => {
 
         const src = `preload2/img.png`;
 
-        const rewrittenSrc = `https://angular.io/${src}`;
+        const rewrittenSrc = `https://angular.dev/${src}`;
 
         setupTestingModule({
           extraProviders: [
             {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
             {
               provide: IMAGE_LOADER,
-              useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
+              useValue: (config: ImageLoaderConfig) => `https://angular.dev/${config.src}`,
             },
           ],
         });
@@ -151,7 +151,7 @@ describe('Image directive', () => {
             {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
             {
               provide: IMAGE_LOADER,
-              useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
+              useValue: (config: ImageLoaderConfig) => `https://angular.dev/${config.src}`,
             },
           ],
         });
@@ -187,7 +187,7 @@ describe('Image directive', () => {
         extraProviders: [
           {
             provide: IMAGE_LOADER,
-            useValue: (config: ImageLoaderConfig) => `https://angular.io/${config.src}`,
+            useValue: (config: ImageLoaderConfig) => `https://angular.dev/${config.src}`,
           },
         ],
       });
@@ -804,6 +804,60 @@ describe('Image directive', () => {
     });
   });
 
+  describe('decoding attribute', () => {
+    it('should throw for invalid loading inputs', () => {
+      setupTestingModule();
+
+      const template =
+        '<img ngSrc="path/img.png" width="150" height="150" decoding="unknown_value">';
+      expect(() => {
+        const fixture = createTestComponent(template);
+        fixture.detectChanges();
+      }).toThrowError(
+        'NG02952: The NgOptimizedImage directive ' +
+          '(activated on an <img> element with the `ngSrc="path/img.png"`) has detected ' +
+          'that the `decoding` attribute has an invalid value (`unknown_value`). ' +
+          'To fix this, provide a valid value ("sync", "async", or "auto").',
+      );
+    });
+
+    it('should set the decoding to "auto" by default', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="150">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('auto');
+    });
+
+    it('should set the decoding to sync for priority images', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="50" priority>';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('sync');
+    });
+
+    it('should override the default decoding behavior', () => {
+      setupTestingModule();
+
+      const template = '<img ngSrc="path/img.png" width="150" height="150" decoding="async">';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const img = nativeElement.querySelector('img')!;
+      expect(img.getAttribute('decoding')).toEqual('async');
+    });
+  });
+
   describe('loading attribute', () => {
     it('should override the default loading behavior for non-priority images', () => {
       setupTestingModule();
@@ -889,7 +943,7 @@ describe('Image directive', () => {
 
     it(
       'should log a warning if the priority attribute is used too often',
-      withHead('<link rel="preconnect" href="https://angular.io/">', async () => {
+      withHead('<link rel="preconnect" href="https://angular.dev/">', async () => {
         // This test is running both on server and in the browser.
         globalThis['ngServerMode'] = !isBrowser;
 
@@ -899,7 +953,7 @@ describe('Image directive', () => {
         const imageLoader = () => {
           // We need something different from the `localhost` (as we don't want to produce
           // a preconnect warning for local environments).
-          return 'https://angular.io/assets/images/logos/path/img.png';
+          return 'https://angular.dev/assets/images/logos/path/img.png';
         };
 
         setupTestingModule({imageLoader});
@@ -1406,7 +1460,7 @@ describe('Image directive', () => {
     const imageLoader = () => {
       // We need something different from the `localhost` (as we don't want to produce
       // a preconnect warning for local environments).
-      return 'https://angular.io/assets/images/logos/angular/angular.svg';
+      return 'https://angular.dev/assets/images/logos/angular/angular.svg';
     };
 
     it(
@@ -1430,7 +1484,7 @@ describe('Image directive', () => {
             'priority images ensures that these images are delivered as soon as ' +
             'possible. To fix this, please add the following element into the <head> ' +
             'of the document:' +
-            '\n  <link rel="preconnect" href="https://angular.io">',
+            '\n  <link rel="preconnect" href="https://angular.dev">',
         );
       }),
     );
@@ -1452,7 +1506,7 @@ describe('Image directive', () => {
 
     it(
       "should log a warning if there is a preconnect, but it doesn't match the priority image",
-      withHead('<link rel="preconnect" href="http://angular.io">', () => {
+      withHead('<link rel="preconnect" href="http://angular.dev">', () => {
         // The warning is only logged on the client
         if (!isBrowser) return;
 
@@ -1470,7 +1524,7 @@ describe('Image directive', () => {
             'present for this image. Preconnecting to the origin(s) that serve priority ' +
             'images ensures that these images are delivered as soon as possible. ' +
             'To fix this, please add the following element into the <head> of the document:' +
-            '\n  <link rel="preconnect" href="https://angular.io">',
+            '\n  <link rel="preconnect" href="https://angular.dev">',
         );
       }),
     );
@@ -1478,7 +1532,7 @@ describe('Image directive', () => {
     it(
       'should log a warning if there is no matching preconnect link for a priority image, but there is a preload tag',
       withHead(
-        '<link rel="preload" href="https://angular.io/assets/images/logos/angular/angular.svg" as="image">',
+        '<link rel="preload" href="https://angular.dev/assets/images/logos/angular/angular.svg" as="image">',
         () => {
           // The warning is only logged on the client
           if (!isBrowser) return;
@@ -1497,7 +1551,7 @@ describe('Image directive', () => {
               'present for this image. Preconnecting to the origin(s) that serve priority ' +
               'images ensures that these images are delivered as soon as possible. ' +
               'To fix this, please add the following element into the <head> of the document:' +
-              '\n  <link rel="preconnect" href="https://angular.io">',
+              '\n  <link rel="preconnect" href="https://angular.dev">',
           );
         },
       ),
@@ -1505,7 +1559,7 @@ describe('Image directive', () => {
 
     it(
       'should not log a warning if there is a matching preconnect link for a priority image (with an extra `/` at the end)',
-      withHead('<link rel="preconnect" href="https://angular.io/">', () => {
+      withHead('<link rel="preconnect" href="https://angular.dev/">', () => {
         setupTestingModule({imageLoader});
 
         const consoleWarnSpy = spyOn(console, 'warn');
@@ -1543,7 +1597,7 @@ describe('Image directive', () => {
       it(
         `should allow passing host names`,
         withHead('', () => {
-          const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.io'}];
+          const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'angular.dev'}];
           setupTestingModule({imageLoader, extraProviders: providers});
 
           const consoleWarnSpy = spyOn(console, 'warn');
@@ -1559,7 +1613,9 @@ describe('Image directive', () => {
       it(
         `should allow passing origins`,
         withHead('', () => {
-          const providers = [{provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.io'}];
+          const providers = [
+            {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: 'https://angular.dev'},
+          ];
           setupTestingModule({imageLoader, extraProviders: providers});
 
           const consoleWarnSpy = spyOn(console, 'warn');
@@ -1576,7 +1632,7 @@ describe('Image directive', () => {
         `should allow passing arrays of host names`,
         withHead('', () => {
           const providers = [
-            {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.io']},
+            {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: ['https://angular.dev']},
           ];
           setupTestingModule({imageLoader, extraProviders: providers});
 
@@ -1594,7 +1650,7 @@ describe('Image directive', () => {
         `should allow passing nested arrays of host names`,
         withHead('', () => {
           const providers = [
-            {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.io']]},
+            {provide: PRECONNECT_CHECK_BLOCKLIST, useValue: [['https://angular.dev']]},
           ];
           setupTestingModule({imageLoader, extraProviders: providers});
 

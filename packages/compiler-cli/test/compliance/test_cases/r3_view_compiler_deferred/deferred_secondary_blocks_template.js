@@ -38,7 +38,7 @@ MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
     if (rf & 1) {
       $r3$.ɵɵelementStart(0, "div");
       $r3$.ɵɵtext(1);
-      $r3$.ɵɵtemplate(2, MyApp_Defer_2_Template, 1, 0)(3, MyApp_DeferLoading_3_Template, 1, 1)(4, MyApp_DeferPlaceholder_4_Template, 1, 0)(5, MyApp_DeferError_5_Template, 3, 0);
+      $r3$.ɵɵdomTemplate(2, MyApp_Defer_2_Template, 1, 0)(3, MyApp_DeferLoading_3_Template, 1, 1)(4, MyApp_DeferPlaceholder_4_Template, 1, 0)(5, MyApp_DeferError_5_Template, 3, 0);
       $r3$.ɵɵdefer(6, 2, null, 3, 4, 5);
       $r3$.ɵɵdeferOnIdle();
       $r3$.ɵɵelementEnd();

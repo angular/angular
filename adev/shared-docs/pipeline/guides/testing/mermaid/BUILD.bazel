@@ -1,5 +1,4 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
-load("//tools:defaults.bzl", "esbuild_jasmine_node_test")
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "unit_test_lib",
@@ -8,51 +7,25 @@ ts_project(
         "*.spec.mts",
     ]),
     deps = [
-        "//:node_modules/@types/jsdom",
-        "//:node_modules/jsdom",
-        "//:node_modules/marked",
-        "//adev/shared-docs/pipeline/guides:guides_rjs",
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
+        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
     ],
 )
 
-ts_project(
-    name = "bootstrap",
-    testonly = True,
-    srcs = [
-        "bootstrap.init.mts",
-    ],
-    deps = [
-        "//:node_modules/@types/node",
-    ],
-)
-
-esbuild_jasmine_node_test(
+zoneless_jasmine_test(
     name = "unit_tests",
-    bootstrap = [
-        ":bootstrap",
-    ],
     data = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:chromium-for-generation",
-        "@npm//jsdom",
-        "@npm//mermaid",
-        "@npm//playwright-core",
+        ":unit_test_lib_rjs",
+        "@rules_browsers//src/browsers/chromium",
     ] + glob([
         "**/*.md",
         "**/*.svg",
         "**/*.mts",
     ]),
     env = {
-        "CHROME_BIN": "$(CHROMIUM)",
+        "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    external = [
-        "playwright-core",
-        "jsdom",
-    ],
-    tags = [
-        "no-remote-exec",
-    ],
-    toolchains = [
-        "@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias",
-    ],
-    deps = [":unit_test_lib"],
+    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
 )

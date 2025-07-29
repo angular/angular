@@ -9,8 +9,8 @@
 import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
-import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
-import {runfiles} from '@bazel/runfiles';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {resolve} from 'node:path';
 import shx from 'shelljs';
 
 describe('inject migration', () => {
@@ -35,8 +35,9 @@ describe('inject migration', () => {
     return runner.runSchematic('inject-migration', options, tree);
   }
 
+  const collectionJsonPath = resolve('../collection.json');
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', runfiles.resolvePackageRelative('../collection.json'));
+    runner = new SchematicTestRunner('test', collectionJsonPath);
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 
@@ -120,7 +121,7 @@ describe('inject migration', () => {
     ]);
   });
 
-  it('should account for string tokens in @Inject()', async () => {
+  it('should account for string literal tokens in @Inject()', async () => {
     writeFile(
       '/dir.ts',
       [
@@ -141,6 +142,35 @@ describe('inject migration', () => {
       `@Directive()`,
       `class MyDir {`,
       `  private foo = inject<number>('not-officially-supported' as any);`,
+      `}`,
+    ]);
+  });
+
+  it('should account for string tokens in @Inject()', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, Inject } from '@angular/core';`,
+        ``,
+        `const token = 'not-officially-supported'`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(@Inject(token) private foo: number) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      ``,
+      `const token = 'not-officially-supported'`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject<number>(token as any);`,
       `}`,
     ]);
   });

@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "copy_to_bin", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -6,24 +6,54 @@ exports_files(glob([
     "**/*",
 ]))
 
-ts_library(
-    name = "zone_d_ts",
+copy_to_bin(
+    name = "files",
     srcs = [
-        ":zone.api.extensions.ts",
-        ":zone.configurations.api.ts",
-        ":zone.ts",
-        ":zone-impl.ts",
-    ],
-    module_name = "zone.js",
-    module_root = "zone.d.ts",
-    deps = [
-        "@npm//@types/node",
+        "browser/rollup-browser-legacy.ts",
+        "browser/rollup-canvas.ts",
+        "browser/rollup-message-port.ts",
+        "browser/rollup-shadydom.ts",
+        "browser/rollup-webapis-media-query.ts",
+        "browser/rollup-webapis-notification.ts",
+        "browser/rollup-webapis-resize-observer.ts",
+        "browser/rollup-webapis-rtc-peer-connection.ts",
+        "browser/rollup-webapis-user-media.ts",
+        "common/rollup-error-rewrite.ts",
+        "common/rollup-fetch.ts",
+        "extra/rollup-bluebird.ts",
+        "extra/rollup-cordova.ts",
+        "extra/rollup-electron.ts",
+        "extra/rollup-jsonp.ts",
+        "extra/rollup-socket-io.ts",
+        "jasmine/rollup-jasmine.ts",
+        "mix/rollup-mix.ts",
+        "mocha/rollup-mocha.ts",
+        "node/rollup-main.ts",
+        "rxjs/rollup-rxjs.ts",
+        "testing/async-testing.ts",
+        "testing/fake-async.ts",
+        "testing/rollup-promise-testing.ts",
+        "testing/rollup-zone-testing.ts",
+        "zone-spec/rollup-long-stack-trace.ts",
+        "zone-spec/rollup-proxy.ts",
+        "zone-spec/rollup-sync-test.ts",
+        "zone-spec/rollup-task-tracking.ts",
+        "zone-spec/rollup-wtf.ts",
     ],
 )
 
-ts_library(
+ts_project(
+    name = "zone_d_ts",
+    srcs = [
+        "zone.api.extensions.ts",
+        "zone.configurations.api.ts",
+        "zone.ts",
+        "zone-impl.ts",
+    ],
+)
+
+ts_project(
     name = "lib",
-    package_name = "zone.js/lib",
     srcs = glob(
         ["**/*.ts"],
         exclude = [
@@ -33,11 +63,10 @@ ts_library(
             "zone.configurations.api.ts",
         ],
     ),
-    module_name = "zone.js/lib",
     deps = [
-        ":zone_d_ts",
-        "@npm//@types/jasmine",
-        "@npm//@types/node",
-        "@npm//rxjs",
+        ":zone_d_ts_rjs",
+        "//:node_modules/@types/jasmine",
+        "//:node_modules/@types/node",
+        "//:node_modules/rxjs",
     ],
 )

@@ -9,6 +9,7 @@
 import {
   ComponentExplorerViewQuery,
   ComponentType,
+  DebugSignalGraphNode,
   DevToolsNode,
   DirectivePosition,
   DirectiveType,
@@ -19,6 +20,8 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
+  SignalNodePosition,
+  TransferStateValue,
 } from '../../../protocol';
 import {debounceTime} from 'rxjs/operators';
 import {
@@ -50,13 +53,19 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {parseRoutes} from './router-tree';
-import {ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
+import {
+  getElementRefByName,
+  getComponentRefByName,
+  parseRoutes,
+  RoutePropertyType,
+} from './router-tree';
+import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
-import {serializeDirectiveState} from './state-serializer/state-serializer';
+import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
 import {runOutsideAngular, unwrapSignal} from './utils';
 import {DirectiveForestHooks} from './hooks/hooks';
 import {getSupportedApis} from './ng-debug-api/supported-apis';
+import {sanitizeObject} from './serialization-utils';
 
 type InspectorRef = {ref: ComponentInspector | null};
 
@@ -84,6 +93,9 @@ export const subscribeToClientEvents = (
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
   messageBus.on('getRoutes', getRoutesCallback(messageBus));
+  messageBus.on('navigateRoute', navigateRouteCallback(messageBus));
+
+  messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -94,9 +106,13 @@ export const subscribeToClientEvents = (
 
   messageBus.on('logProvider', logProvider);
 
+  messageBus.on('getTransferState', getTransferStateCallback(messageBus));
+
   messageBus.on('log', ({message, level}) => {
     console[level](`[Angular DevTools]: ${message}`);
   });
+
+  messageBus.on('getSignalGraph', getSignalGraphCallback(messageBus));
 
   if (appIsAngularInDevMode() && appIsSupportedAngularVersion() && appIsAngularIvy()) {
     inspector.ref = setupInspector(messageBus);
@@ -172,6 +188,34 @@ const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
   checkForAngular(messageBus);
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
+const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
+  const router: any = getRouterInstance();
+  // If the router is not found or the navigateByUrl method is not available, we can't navigate
+  if (router && router.navigateByUrl) {
+    router.navigateByUrl(path);
+  } else {
+    console.warn('Router not found or navigateByUrl method not available');
+  }
+};
+
+/**
+ * Opens the source code of a component or a directive in the editor.
+ * @param name - The name of the component, provider, or directive to view source for.
+ * @param type - The type of the element to view source for  component, provider, or directive.
+ * @returns - The element instance of the component, provider, or directive.
+ */
+export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
+  const router: any = getRouterInstance();
+
+  let element;
+  if (type === 'component') {
+    element = getComponentRefByName(router.config, name);
+  } else {
+    element = getElementRefByName(type, router.config, name);
+  }
+  return element;
+};
+
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
   startProfiling((frame: ProfilerFrame) => {
     messageBus.emit('sendProfilerChunk', [frame]);
@@ -220,6 +264,50 @@ const getNestedPropertiesCallback =
     return;
   };
 
+const getSignalNestedPropertiesCallback =
+  (messageBus: MessageBus<Events>) => (position: SignalNodePosition, propPath: string[]) => {
+    const emitEmpty = () =>
+      messageBus.emit('signalNestedProperties', [position, {props: {}}, propPath]);
+    const node = queryDirectiveForest(
+      position.element,
+      initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    );
+    if (!node) {
+      return emitEmpty();
+    }
+
+    const injector = getInjectorFromElementNode(node.nativeElement!);
+    if (!injector) {
+      return emitEmpty();
+    }
+
+    const ng = ngDebugClient();
+
+    const signalGraph = ng.ɵgetSignalGraph?.(injector);
+    if (!signalGraph) {
+      return emitEmpty();
+    }
+
+    const current = signalGraph.nodes.find((node) => node.id === position.signalId);
+    if (!current) {
+      return emitEmpty();
+    }
+
+    let data = current.value as object;
+    for (const prop of propPath) {
+      data = (data as Record<string, object>)[prop];
+      if (!data) {
+        console.error('Cannot access the properties', propPath, 'of', node);
+      }
+    }
+    messageBus.emit('signalNestedProperties', [
+      position,
+      {props: serializeDirectiveState(data)},
+      propPath,
+    ]);
+    return;
+  };
+
 //
 // Subscribe Helpers
 //
@@ -232,13 +320,15 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   );
   if (forest.length === 0) return;
 
-  const rootInjector = (forest[0].resolutionPath ?? []).find((i) => i.name === 'Root');
+  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
   if (!rootInjector) return;
 
   const route = getRouterConfigFromRoot(rootInjector);
   if (!route) return;
 
-  messageBus.emit('updateRouterTree', [[route]]);
+  const sanitizedRoute = sanitizeRouteData(route);
+
+  messageBus.emit('updateRouterTree', [[sanitizedRoute]]);
 };
 
 const getSerializedProviderRecords = (injector: SerializedInjector) => {
@@ -384,6 +474,29 @@ export interface SerializableComponentTreeNode
   nativeElement?: never;
   // Since the nativeElement is not serializable, we will use this boolean as backup
   hasNativeElement: boolean;
+}
+
+function getRouterInstance() {
+  const forest = prepareForestForSerialization(
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+    ngDebugDependencyInjectionApiIsSupported(),
+  );
+  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
+  if (!rootInjector) {
+    return;
+  }
+
+  const serializedProviderRecords = getSerializedProviderRecords(rootInjector);
+  const routerInstance = serializedProviderRecords?.find(
+    (provider) => provider.token === 'Router', // get the instance of router using token
+  );
+
+  if (!routerInstance) {
+    return;
+  }
+
+  const router = getInjectorInstance(rootInjector, routerInstance);
+  return router;
 }
 
 // Here we drop properties to prepare the tree for serialization.
@@ -551,3 +664,108 @@ const logProvider = (
 
   console.groupEnd();
 };
+
+const getTransferStateCallback = (messageBus: MessageBus<Events>) => () => {
+  const ng = ngDebugClient();
+
+  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  if (forest.length === 0) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const rootNode = forest[0];
+  if (!rootNode || !rootNode.nativeElement) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const injector = getInjectorFromElementNode(rootNode.nativeElement);
+  if (!injector) {
+    messageBus.emit('transferStateData', [null]);
+    return;
+  }
+
+  const transferStateData = (ng.ɵgetTransferState?.(injector) ?? null) as Record<
+    string,
+    TransferStateValue
+  > | null;
+
+  if (
+    transferStateData &&
+    typeof transferStateData === 'object' &&
+    Object.keys(transferStateData).length > 0
+  ) {
+    messageBus.emit('transferStateData', [transferStateData]);
+  } else {
+    messageBus.emit('transferStateData', [null]);
+  }
+};
+
+const getInjectorInstance = (
+  serializedInjector: SerializedInjector,
+  serializedProvider: SerializedProviderRecord,
+) => {
+  if (!idToInjector.has(serializedInjector.id)) {
+    return;
+  }
+
+  const injector = idToInjector.get(serializedInjector.id)!;
+  const providerRecords = getInjectorProviders(injector);
+
+  if (typeof serializedProvider.index === 'number') {
+    const provider = providerRecords[serializedProvider.index];
+    return injector.get(provider.token, null, {optional: true});
+  } else if (Array.isArray(serializedProvider.index)) {
+    const providers = serializedProvider.index.map((index) => providerRecords[index]);
+    return injector.get(providers[0].token, null, {optional: true});
+  }
+  return null;
+};
+
+const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: ElementPosition) => {
+  const ng = ngDebugClient();
+
+  // get injector from position
+  const node = queryDirectiveForest(
+    element,
+    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
+  );
+  if (!node) {
+    return;
+  }
+
+  const injector = getInjectorFromElementNode(node.nativeElement!);
+
+  if (!injector) {
+    return;
+  }
+
+  const graph = ng.ɵgetSignalGraph?.(injector);
+  if (graph) {
+    const nodes = graph.nodes.map<DebugSignalGraphNode>((node) => {
+      return {
+        id: node.id,
+        kind: node.kind,
+        label: node.label,
+        epoch: node.epoch,
+        preview: serializeValue(node.value),
+        debuggable: !!node.debuggableFn,
+      };
+    });
+    messageBus.emit('latestSignalGraph', [{nodes, edges: graph.edges}]);
+  }
+};
+
+// Route data needs to be serializable to be sent over the message bus.
+export function sanitizeRouteData(route: Route): Route {
+  if (route.data) {
+    route.data = sanitizeObject(route.data);
+  }
+
+  if (route.children) {
+    route.children = route.children.map(sanitizeRouteData);
+  }
+
+  return route;
+}

@@ -12,14 +12,12 @@ ts_project(
             "**/*.spec.ts",
         ],
     ),
-    interop_deps = [
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/providers",
-        "//packages/core",
-        "//packages/router",
-    ],
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
-        "//:node_modules/fflate",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/router",
+        "//adev:node_modules/fflate",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/providers:providers_rjs",
     ],
 )

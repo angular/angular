@@ -38,6 +38,7 @@ function trackEvents(obs: Observable<any>): Promise<any[]> {
 
 const TEST_POST = new HttpRequest('POST', '/test', 'some body', {
   responseType: 'text',
+  timeout: 1000,
 });
 
 const TEST_POST_WITH_JSON_BODY = new HttpRequest(
@@ -212,6 +213,15 @@ describe('FetchBackend', async () => {
     expect(res.error.data).toBe('some data');
   });
 
+  it('handles a text error response when a json success response was expected', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(HttpStatusCode.InternalServerError, 'Error', 'simple text error');
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error).toBe('simple text error');
+  });
+
   it('handles a json error response with XSSI prefix', async () => {
     const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
     fetchMock.mockFlush(
@@ -223,6 +233,19 @@ describe('FetchBackend', async () => {
     expect(events.length).toBe(2);
     const res = events[1] as any as HttpErrorResponse;
     expect(res.error.data).toBe('some data');
+  });
+
+  it('handles a text error response with XSSI prefix when a json success response was expected', async () => {
+    const promise = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
+    fetchMock.mockFlush(
+      HttpStatusCode.InternalServerError,
+      'Error',
+      XSSI_PREFIX + 'simple text error',
+    );
+    const events = await promise;
+    expect(events.length).toBe(2);
+    const res = events[1] as any as HttpErrorResponse;
+    expect(res.error).toBe('simple text error');
   });
 
   it('handles a json string response', async () => {
@@ -284,7 +307,8 @@ describe('FetchBackend', async () => {
     backend.handle(TEST_POST).subscribe({
       error: (err: HttpErrorResponse) => {
         expect(err instanceof HttpErrorResponse).toBe(true);
-        expect(err.error instanceof DOMException).toBeTruthy();
+        expect(err.error instanceof DOMException).toBeTrue();
+        expect((err.error as DOMException).name).toBe('AbortError');
         done();
       },
     });
@@ -299,6 +323,115 @@ describe('FetchBackend', async () => {
       '/test',
       jasmine.objectContaining({
         keepalive: true,
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass priority option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {priority: 'high'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        priority: 'high',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass cache option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {cache: 'only-if-cached'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        cache: 'only-if-cached',
+      }),
+    );
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('emits an error when a request times out', (done) => {
+    backend.handle(TEST_POST).subscribe({
+      error: (err: HttpErrorResponse) => {
+        expect(err instanceof HttpErrorResponse).toBe(true);
+        expect(err.error instanceof DOMException).toBeTrue();
+        expect((err.error as DOMException).name).toBe('TimeoutError');
+        done();
+      },
+    });
+    fetchMock.mockTimeoutEvent();
+  });
+
+  it('should pass mode option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {mode: 'cors'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        mode: 'cors',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass redirect option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {redirect: 'follow'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        redirect: 'follow',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass credentials option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {credentials: 'omit'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        credentials: 'omit',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass referrer option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {referrer: 'about:client'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        referrer: 'about:client',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
+  it('should pass integrity option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {integrity: 'sha256-...'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        integrity: 'sha256-...',
       }),
     );
 
@@ -548,10 +681,11 @@ export class MockFetchFactory extends FetchFactory {
   }
 
   mockAbortEvent() {
-    // When `abort()` is called, the fetch() promise rejects with an Error of type DOMException,
-    // with name AbortError. see
-    // https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
     this.reject(new DOMException('', 'AbortError'));
+  }
+
+  mockTimeoutEvent() {
+    this.reject(new DOMException('', 'TimeoutError'));
   }
 
   resetFetchPromise() {

@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _extract_api_to_json(ctx):
     """Implementation of the extract_api_to_json rule"""
 
@@ -47,14 +45,16 @@ def _extract_api_to_json(ctx):
     # Pass the set of (optional) extra entries
     args.add_joined(ctx.files.extra_entries, join_with = ",")
 
-    # Define an action that runs the nodejs_binary executable. This is
-    # the main thing that this rule does.
-    run_node(
-        ctx = ctx,
+    # Define an action that runs the executable.
+    ctx.actions.run(
         inputs = depset(ctx.files.srcs + ctx.files.extra_entries),
-        executable = "_extract_api_to_json",
+        executable = ctx.executable._extract_api_to_json,
         outputs = [json_output],
         arguments = [args],
+        env = {
+            # Note: We don't need to `cd` into the bin-dir as this action deals with execpaths.
+            "BAZEL_BINDIR": ".",
+        },
     )
 
     # The return value describes what the rule is producing. In this case we need to specify

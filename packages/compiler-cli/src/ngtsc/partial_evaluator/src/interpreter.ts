@@ -46,54 +46,56 @@ function referenceBinaryOp(op: (a: any, b: any) => any): BinaryOperatorDef {
   return {op, literal: false};
 }
 
-const BINARY_OPERATORS = new Map<ts.SyntaxKind, BinaryOperatorDef>([
-  [ts.SyntaxKind.PlusToken, literalBinaryOp((a, b) => a + b)],
-  [ts.SyntaxKind.MinusToken, literalBinaryOp((a, b) => a - b)],
-  [ts.SyntaxKind.AsteriskToken, literalBinaryOp((a, b) => a * b)],
-  [ts.SyntaxKind.SlashToken, literalBinaryOp((a, b) => a / b)],
-  [ts.SyntaxKind.PercentToken, literalBinaryOp((a, b) => a % b)],
-  [ts.SyntaxKind.AmpersandToken, literalBinaryOp((a, b) => a & b)],
-  [ts.SyntaxKind.BarToken, literalBinaryOp((a, b) => a | b)],
-  [ts.SyntaxKind.CaretToken, literalBinaryOp((a, b) => a ^ b)],
-  [ts.SyntaxKind.LessThanToken, literalBinaryOp((a, b) => a < b)],
-  [ts.SyntaxKind.LessThanEqualsToken, literalBinaryOp((a, b) => a <= b)],
-  [ts.SyntaxKind.GreaterThanToken, literalBinaryOp((a, b) => a > b)],
-  [ts.SyntaxKind.GreaterThanEqualsToken, literalBinaryOp((a, b) => a >= b)],
-  [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a == b)],
-  [ts.SyntaxKind.EqualsEqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
-  [ts.SyntaxKind.ExclamationEqualsToken, literalBinaryOp((a, b) => a != b)],
-  [ts.SyntaxKind.ExclamationEqualsEqualsToken, literalBinaryOp((a, b) => a !== b)],
-  [ts.SyntaxKind.LessThanLessThanToken, literalBinaryOp((a, b) => a << b)],
-  [ts.SyntaxKind.GreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >> b)],
-  [ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >>> b)],
-  [ts.SyntaxKind.AsteriskAsteriskToken, literalBinaryOp((a, b) => Math.pow(a, b))],
-  [ts.SyntaxKind.AmpersandAmpersandToken, referenceBinaryOp((a, b) => a && b)],
-  [ts.SyntaxKind.BarBarToken, referenceBinaryOp((a, b) => a || b)],
-]);
-
-const UNARY_OPERATORS = new Map<ts.SyntaxKind, (a: any) => any>([
-  [ts.SyntaxKind.TildeToken, (a) => ~a],
-  [ts.SyntaxKind.MinusToken, (a) => -a],
-  [ts.SyntaxKind.PlusToken, (a) => +a],
-  [ts.SyntaxKind.ExclamationToken, (a) => !a],
-]);
-
 interface Context {
   originatingFile: ts.SourceFile;
   /**
-   * The module name (if any) which was used to reach the currently resolving symbols.
+   * The module name (if any) which was used to reach the currently resolving
+   * symbols.
    */
   absoluteModuleName: string | null;
 
   /**
-   * A file name representing the context in which the current `absoluteModuleName`, if any, was
-   * resolved.
+   * A file name representing the context in which the current
+   * `absoluteModuleName`, if any, was resolved.
    */
   resolutionContext: string;
   scope: Scope;
   foreignFunctionResolver?: ForeignFunctionResolver;
 }
+
 export class StaticInterpreter {
+  private readonly BINARY_OPERATORS = new Map<ts.SyntaxKind, BinaryOperatorDef>([
+    [ts.SyntaxKind.PlusToken, literalBinaryOp((a, b) => a + b)],
+    [ts.SyntaxKind.MinusToken, literalBinaryOp((a, b) => a - b)],
+    [ts.SyntaxKind.AsteriskToken, literalBinaryOp((a, b) => a * b)],
+    [ts.SyntaxKind.SlashToken, literalBinaryOp((a, b) => a / b)],
+    [ts.SyntaxKind.PercentToken, literalBinaryOp((a, b) => a % b)],
+    [ts.SyntaxKind.AmpersandToken, literalBinaryOp((a, b) => a & b)],
+    [ts.SyntaxKind.BarToken, literalBinaryOp((a, b) => a | b)],
+    [ts.SyntaxKind.CaretToken, literalBinaryOp((a, b) => a ^ b)],
+    [ts.SyntaxKind.LessThanToken, literalBinaryOp((a, b) => a < b)],
+    [ts.SyntaxKind.LessThanEqualsToken, literalBinaryOp((a, b) => a <= b)],
+    [ts.SyntaxKind.GreaterThanToken, literalBinaryOp((a, b) => a > b)],
+    [ts.SyntaxKind.GreaterThanEqualsToken, literalBinaryOp((a, b) => a >= b)],
+    [ts.SyntaxKind.EqualsEqualsToken, literalBinaryOp((a, b) => a == b)],
+    [ts.SyntaxKind.EqualsEqualsEqualsToken, literalBinaryOp((a, b) => a === b)],
+    [ts.SyntaxKind.ExclamationEqualsToken, literalBinaryOp((a, b) => a != b)],
+    [ts.SyntaxKind.ExclamationEqualsEqualsToken, literalBinaryOp((a, b) => a !== b)],
+    [ts.SyntaxKind.LessThanLessThanToken, literalBinaryOp((a, b) => a << b)],
+    [ts.SyntaxKind.GreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >> b)],
+    [ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken, literalBinaryOp((a, b) => a >>> b)],
+    [ts.SyntaxKind.AsteriskAsteriskToken, literalBinaryOp((a, b) => Math.pow(a, b))],
+    [ts.SyntaxKind.AmpersandAmpersandToken, referenceBinaryOp((a, b) => a && b)],
+    [ts.SyntaxKind.BarBarToken, referenceBinaryOp((a, b) => a || b)],
+  ]);
+
+  private readonly UNARY_OPERATORS = new Map<ts.SyntaxKind, (a: any) => any>([
+    [ts.SyntaxKind.TildeToken, (a) => ~a],
+    [ts.SyntaxKind.MinusToken, (a) => -a],
+    [ts.SyntaxKind.PlusToken, (a) => +a],
+    [ts.SyntaxKind.ExclamationToken, (a) => !a],
+  ]);
+
   constructor(
     private host: ReflectionHost,
     private checker: ts.TypeChecker,
@@ -574,11 +576,11 @@ export class StaticInterpreter {
     context: Context,
   ): ResolvedValue {
     const operatorKind = node.operator;
-    if (!UNARY_OPERATORS.has(operatorKind)) {
+    if (!this.UNARY_OPERATORS.has(operatorKind)) {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const op = UNARY_OPERATORS.get(operatorKind)!;
+    const op = this.UNARY_OPERATORS.get(operatorKind)!;
     const value = this.visitExpression(node.operand, context);
     if (value instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, value);
@@ -589,11 +591,11 @@ export class StaticInterpreter {
 
   private visitBinaryExpression(node: ts.BinaryExpression, context: Context): ResolvedValue {
     const tokenKind = node.operatorToken.kind;
-    if (!BINARY_OPERATORS.has(tokenKind)) {
+    if (!this.BINARY_OPERATORS.has(tokenKind)) {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const opRecord = BINARY_OPERATORS.get(tokenKind)!;
+    const opRecord = this.BINARY_OPERATORS.get(tokenKind)!;
     let lhs: ResolvedValue, rhs: ResolvedValue;
     if (opRecord.literal) {
       lhs = literal(this.visitExpression(node.left, context), (value) =>

@@ -9,8 +9,15 @@
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
 import * as ir from '../../ir';
-import {ViewCompilationUnit, type CompilationJob, type CompilationUnit} from '../compilation';
+import {
+  TemplateCompilationMode,
+  ViewCompilationUnit,
+  type CompilationJob,
+  type CompilationUnit,
+} from '../compilation';
 import * as ng from '../instruction';
+
+const ARIA_PREFIX = 'aria';
 
 /**
  * Map of target resolvers for event listeners.
@@ -19,6 +26,19 @@ const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>([
   ['window', Identifiers.resolveWindow],
   ['document', Identifiers.resolveDocument],
   ['body', Identifiers.resolveBody],
+]);
+
+/**
+ * DOM properties that need to be remapped on the compiler side.
+ * Note: this mapping has to be kept in sync with the equally named mapping in the runtime.
+ */
+const DOM_PROPERTY_REMAPPING = new Map([
+  ['class', 'className'],
+  ['for', 'htmlFor'],
+  ['formaction', 'formAction'],
+  ['innerHtml', 'innerHTML'],
+  ['readonly', 'readOnly'],
+  ['tabindex', 'tabIndex'],
 ]);
 
 /**
@@ -81,54 +101,94 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
       case ir.OpKind.ElementStart:
         ir.OpList.replace(
           op,
-          ng.elementStart(
-            op.handle.slot!,
-            op.tag!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.startSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementStart(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              )
+            : ng.elementStart(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.Element:
         ir.OpList.replace(
           op,
-          ng.element(
-            op.handle.slot!,
-            op.tag!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.wholeSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElement(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              )
+            : ng.element(
+                op.handle.slot!,
+                op.tag!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.ElementEnd:
-        ir.OpList.replace(op, ng.elementEnd(op.sourceSpan));
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementEnd(op.sourceSpan)
+            : ng.elementEnd(op.sourceSpan),
+        );
         break;
       case ir.OpKind.ContainerStart:
         ir.OpList.replace(
           op,
-          ng.elementContainerStart(
-            op.handle.slot!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.startSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainerStart(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              )
+            : ng.elementContainerStart(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.Container:
         ir.OpList.replace(
           op,
-          ng.elementContainer(
-            op.handle.slot!,
-            op.attributes as number | null,
-            op.localRefs as number | null,
-            op.wholeSourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainer(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              )
+            : ng.elementContainer(
+                op.handle.slot!,
+                op.attributes as number | null,
+                op.localRefs as number | null,
+                op.wholeSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.ContainerEnd:
-        ir.OpList.replace(op, ng.elementContainerEnd());
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domElementContainerEnd()
+            : ng.elementContainerEnd(),
+        );
         break;
       case ir.OpKind.I18nStart:
         ir.OpList.replace(
@@ -163,16 +223,29 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         const childView = unit.job.views.get(op.xref)!;
         ir.OpList.replace(
           op,
-          ng.template(
-            op.handle.slot!,
-            o.variable(childView.fnName!),
-            childView.decls!,
-            childView.vars!,
-            op.tag,
-            op.attributes,
-            op.localRefs,
-            op.startSourceSpan,
-          ),
+          // Block templates can't have directives so we can always generate them as DOM-only.
+          op.templateKind === ir.TemplateKind.Block ||
+            unit.job.mode === TemplateCompilationMode.DomOnly
+            ? ng.domTemplate(
+                op.handle.slot!,
+                o.variable(childView.fnName!),
+                childView.decls!,
+                childView.vars!,
+                op.tag,
+                op.attributes,
+                op.localRefs,
+                op.startSourceSpan,
+              )
+            : ng.template(
+                op.handle.slot!,
+                o.variable(childView.fnName!),
+                childView.decls!,
+                childView.vars!,
+                op.tag,
+                op.attributes,
+                op.localRefs,
+                op.startSourceSpan,
+              ),
         );
         break;
       case ir.OpKind.DisableBindings:
@@ -186,6 +259,37 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         break;
       case ir.OpKind.DeclareLet:
         ir.OpList.replace(op, ng.declareLet(op.handle.slot!, op.sourceSpan));
+        break;
+      case ir.OpKind.AnimationString:
+        ir.OpList.replace(
+          op,
+          ng.animationString(op.animationKind, op.expression, op.sanitizer, op.sourceSpan),
+        );
+        break;
+      case ir.OpKind.Animation:
+        const animationCallbackFn = reifyListenerHandler(
+          unit,
+          op.handlerFnName!,
+          op.handlerOps,
+          /* consumesDollarEvent */ false,
+        );
+        ir.OpList.replace(
+          op,
+          ng.animation(op.animationKind, animationCallbackFn, op.sanitizer, op.sourceSpan),
+        );
+        break;
+      case ir.OpKind.AnimationListener:
+        const animationListenerFn = reifyListenerHandler(
+          unit,
+          op.handlerFnName!,
+          op.handlerOps,
+          op.consumesDollarEvent,
+        );
+
+        ir.OpList.replace(
+          op,
+          ng.animationListener(op.animationKind, animationListenerFn, null, op.sourceSpan),
+        );
         break;
       case ir.OpKind.Listener:
         const listenerFn = reifyListenerHandler(
@@ -204,13 +308,17 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         }
         ir.OpList.replace(
           op,
-          ng.listener(
-            op.name,
-            listenerFn,
-            eventTargetResolver,
-            op.hostListener && op.isAnimationListener,
-            op.sourceSpan,
-          ),
+          unit.job.mode === TemplateCompilationMode.DomOnly &&
+            !op.hostListener &&
+            !op.isLegacyAnimationListener
+            ? ng.domListener(op.name, listenerFn, eventTargetResolver, op.sourceSpan)
+            : ng.listener(
+                op.name,
+                listenerFn,
+                eventTargetResolver,
+                op.hostListener && op.isLegacyAnimationListener,
+                op.sourceSpan,
+              ),
         );
         break;
       case ir.OpKind.TwoWayListener:
@@ -268,7 +376,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.DeferOn:
-        let args: number[] = [];
+        let args: (number | null)[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
@@ -284,12 +392,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
             if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
               args = [];
             } else {
-              if (op.trigger.targetSlot?.slot == null || op.trigger.targetSlotViewSteps === null) {
-                throw new Error(
-                  `Slot or view steps not set in trigger reification for trigger kind ${op.trigger.kind}`,
-                );
-              }
-              args = [op.trigger.targetSlot.slot];
+              // The slots not being defined at this point is invalid, however we
+              // catch it during type checking. Pass in null in such cases.
+              args = [op.trigger.targetSlot?.slot ?? null];
               if (op.trigger.targetSlotViewSteps !== 0) {
                 args.push(op.trigger.targetSlotViewSteps);
               }
@@ -478,7 +583,7 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
   }
 }
 
-function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
+function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp>): void {
   for (const op of ops) {
     ir.transformExpressionsInOp(op, reifyIrExpression, ir.VisitorContextFlag.None);
 
@@ -487,20 +592,14 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         ir.OpList.replace(op, ng.advance(op.delta, op.sourceSpan));
         break;
       case ir.OpKind.Property:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.propertyInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan));
-        }
+        ir.OpList.replace(
+          op,
+          unit.job.mode === TemplateCompilationMode.DomOnly &&
+            op.bindingKind !== ir.BindingKind.LegacyAnimation &&
+            op.bindingKind !== ir.BindingKind.Animation
+            ? reifyDomProperty(op)
+            : reifyProperty(op),
+        );
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -509,43 +608,16 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.StyleProp:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.stylePropInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.unit,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleProp(op.name, op.expression, op.unit, op.sourceSpan));
         break;
       case ir.OpKind.ClassProp:
         ir.OpList.replace(op, ng.classProp(op.name, op.expression, op.sourceSpan));
         break;
       case ir.OpKind.StyleMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.styleMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.styleMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.ClassMap:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.classMapInterpolate(op.expression.strings, op.expression.expressions, op.sourceSpan),
-          );
-        } else {
-          ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
-        }
+        ir.OpList.replace(op, ng.classMap(op.expression, op.sourceSpan));
         break;
       case ir.OpKind.I18nExpression:
         ir.OpList.replace(op, ng.i18nExp(op.expression, op.sourceSpan));
@@ -560,32 +632,22 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
         break;
       case ir.OpKind.Attribute:
-        if (op.expression instanceof ir.Interpolation) {
-          ir.OpList.replace(
-            op,
-            ng.attributeInterpolate(
-              op.name,
-              op.expression.strings,
-              op.expression.expressions,
-              op.sanitizer,
-              op.sourceSpan,
-            ),
-          );
-        } else {
-          ir.OpList.replace(op, ng.attribute(op.name, op.expression, op.sanitizer, op.namespace));
-        }
+        ir.OpList.replace(
+          op,
+          ng.attribute(op.name, op.expression, op.sanitizer, op.namespace, op.sourceSpan),
+        );
         break;
       case ir.OpKind.DomProperty:
         if (op.expression instanceof ir.Interpolation) {
           throw new Error('not yet handled');
         } else {
-          if (op.isAnimationTrigger) {
+          if (
+            op.bindingKind === ir.BindingKind.LegacyAnimation ||
+            op.bindingKind === ir.BindingKind.Animation
+          ) {
             ir.OpList.replace(op, ng.syntheticHostProperty(op.name, op.expression, op.sourceSpan));
           } else {
-            ir.OpList.replace(
-              op,
-              ng.domProperty(op.name, op.expression, op.sanitizer, op.sourceSpan),
-            );
+            ir.OpList.replace(op, reifyDomProperty(op));
           }
         }
         break;
@@ -623,6 +685,70 @@ function reifyUpdateOperations(_unit: CompilationUnit, ops: ir.OpList<ir.UpdateO
         );
     }
   }
+}
+
+/**
+ * Converts an ARIA property name to its corresponding attribute name, if necessary.
+ *
+ * For example, converts `ariaLabel` to `aria-label`.
+ *
+ * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
+ *
+ * This must be kept in sync with the the function of the same name in
+ * packages/core/src/render3/instructions/aria_property.ts.
+ *
+ * @param name A property name that starts with `aria`.
+ * @returns The corresponding attribute name.
+ */
+function ariaAttrName(name: string): string {
+  return name.charAt(ARIA_PREFIX.length) !== '-'
+    ? ARIA_PREFIX + '-' + name.slice(ARIA_PREFIX.length).toLowerCase()
+    : name; // Property already has attribute name.
+}
+
+/**
+ * Returns whether `name` is an ARIA property (or attribute) name.
+ *
+ * This is a heuristic based on whether name begins with and is longer than `aria`. For example,
+ * this returns true for both `ariaLabel` and `aria-label`.
+ */
+function isAriaProperty(name: string): boolean {
+  return name.startsWith(ARIA_PREFIX) && name.length > ARIA_PREFIX.length;
+}
+
+/**
+ * Reifies a DOM property binding operation.
+ *
+ * This is an optimized version of {@link reifyProperty} that avoids unnecessarily trying to bind
+ * to directive inputs at runtime for views that don't import any directives.
+ *
+ * @param op A property binding operation.
+ * @returns A statement to update the property at runtime.
+ */
+function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
+  return isAriaProperty(op.name)
+    ? ng.attribute(ariaAttrName(op.name), op.expression, null, null, op.sourceSpan)
+    : ng.domProperty(
+        DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+        op.expression,
+        op.sanitizer,
+        op.sourceSpan,
+      );
+}
+
+/**
+ * Reifies a property binding operation.
+ *
+ * The returned statement attempts to bind to directive inputs before falling back to a DOM
+ * property.
+ *
+ * @param op A property binding operation.
+ * @returns A statement to update the property at runtime.
+ */
+function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
+  return isAriaProperty(op.name)
+    ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
+    : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
 }
 
 function reifyIrExpression(expr: o.Expression): o.Expression {

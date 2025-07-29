@@ -6,8 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, inject, Injectable, InjectionToken, NgZone} from '@angular/core';
+import {
+  DestroyRef,
+  inject,
+  Injectable,
+  InjectionToken,
+  NgZone,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
+import {RuntimeErrorCode} from './errors';
 
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
@@ -73,15 +81,42 @@ export class FetchBackend implements HttpBackend {
   private readonly fetchImpl =
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
-  private readonly appRef = inject(ApplicationRef);
+  private readonly destroyRef = inject(DestroyRef);
+  private destroyed = false;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
+  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
       const aborter = new AbortController();
+
       this.doRequest(request, aborter.signal, observer).then(noop, (error) =>
         observer.error(new HttpErrorResponse({error})),
       );
-      return () => aborter.abort();
+
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      if (request.timeout) {
+        // TODO: Replace with AbortSignal.any([aborter.signal, AbortSignal.timeout(request.timeout)])
+        // when AbortSignal.any support is Baseline widely available (NET nov. 2026)
+        timeoutId = this.ngZone.runOutsideAngular(() =>
+          setTimeout(() => {
+            if (!aborter.signal.aborted) {
+              aborter.abort(new DOMException('signal timed out', 'TimeoutError'));
+            }
+          }, request.timeout),
+        );
+      }
+
+      return () => {
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+        }
+        aborter.abort();
+      };
     });
   }
 
@@ -147,6 +182,8 @@ export class FetchBackend implements HttpBackend {
       // when the zone is nooped.
       const reqZone = typeof Zone !== 'undefined' && Zone.current;
 
+      let canceled = false;
+
       // Perform response processing outside of Angular zone to
       // ensure no excessive change detection runs are executed
       // Here calling the async ReadableStreamDefaultReader.read() is responsible for triggering CD
@@ -156,7 +193,13 @@ export class FetchBackend implements HttpBackend {
           // unnecessary work or triggering side effects after teardown.
           // This may happen if the app was explicitly destroyed before
           // the response returned entirely.
-          if (this.appRef.destroyed) {
+          if (this.destroyed) {
+            // Streams left in a pending state (due to `break` without cancel) may
+            // continue consuming or holding onto data behind the scenes.
+            // Calling `reader.cancel()` allows the browser or the underlying
+            // system to release any network or memory resources associated with the stream.
+            await reader.cancel();
+            canceled = true;
             break;
           }
 
@@ -188,11 +231,20 @@ export class FetchBackend implements HttpBackend {
         }
       });
 
+      // We need to manage the canceled state — because the Streams API does not
+      // expose a direct `.state` property on the reader.
+      // We need to `return` because `parseBody` may not be able to parse chunks
+      // that were only partially read (due to cancellation caused by app destruction).
+      if (canceled) {
+        observer.complete();
+        return;
+      }
+
       // Combine all chunks.
       const chunksAll = this.concatChunks(chunks, receivedLength);
       try {
         const contentType = response.headers.get(CONTENT_TYPE_HEADER) ?? '';
-        body = this.parseBody(request, chunksAll, contentType);
+        body = this.parseBody(request, chunksAll, contentType, status);
       } catch (error) {
         // Body loading or parsing failed
         observer.error(
@@ -219,6 +271,8 @@ export class FetchBackend implements HttpBackend {
     // asked for JSON data and the body cannot be parsed as such.
     const ok = status >= 200 && status < 300;
 
+    const redirected = response.redirected;
+
     if (ok) {
       observer.next(
         new HttpResponse({
@@ -227,6 +281,7 @@ export class FetchBackend implements HttpBackend {
           status,
           statusText,
           url,
+          redirected,
         }),
       );
 
@@ -241,6 +296,7 @@ export class FetchBackend implements HttpBackend {
           status,
           statusText,
           url,
+          redirected,
         }),
       );
     }
@@ -248,14 +304,29 @@ export class FetchBackend implements HttpBackend {
 
   private parseBody(
     request: HttpRequest<any>,
-    binContent: Uint8Array,
+    binContent: Uint8Array<ArrayBuffer>,
     contentType: string,
+    status: number,
   ): string | ArrayBuffer | Blob | object | null {
     switch (request.responseType) {
       case 'json':
         // stripping the XSSI when present
         const text = new TextDecoder().decode(binContent).replace(XSSI_PREFIX, '');
-        return text === '' ? null : (JSON.parse(text) as object);
+        if (text === '') {
+          return null;
+        }
+        try {
+          return JSON.parse(text) as object;
+        } catch (e: unknown) {
+          // Allow handling non-JSON errors (!) as plain text, same as the XHR
+          // backend. Without this special sauce, any non-JSON error would be
+          // completely inaccessible downstream as the `HttpErrorResponse.error`
+          // would be set to the `SyntaxError` from then failing `JSON.parse`.
+          if (status < 200 || status >= 300) {
+            return text;
+          }
+          throw e;
+        }
       case 'text':
         return new TextDecoder().decode(binContent);
       case 'blob':
@@ -269,7 +340,18 @@ export class FetchBackend implements HttpBackend {
     // We could share some of this logic with the XhrBackend
 
     const headers: Record<string, string> = {};
-    const credentials: RequestCredentials | undefined = req.withCredentials ? 'include' : undefined;
+    let credentials: RequestCredentials | undefined;
+
+    // If the request has a credentials property, use it.
+    // Otherwise, if the request has withCredentials set to true, use 'include'.
+    credentials = req.credentials;
+
+    // If withCredentials is true should be set to 'include', for compatibility
+    if (req.withCredentials) {
+      // A warning is logged in development mode if the request has both
+      (typeof ngDevMode === 'undefined' || ngDevMode) && warningOptionsMessage(req);
+      credentials = 'include';
+    }
 
     // Setting all the requested headers.
     req.headers.forEach((name, values) => (headers[name] = values.join(',')));
@@ -294,10 +376,16 @@ export class FetchBackend implements HttpBackend {
       headers,
       credentials,
       keepalive: req.keepalive,
+      cache: req.cache,
+      priority: req.priority,
+      mode: req.mode,
+      redirect: req.redirect,
+      referrer: req.referrer,
+      integrity: req.integrity,
     };
   }
 
-  private concatChunks(chunks: Uint8Array[], totalLength: number): Uint8Array {
+  private concatChunks(chunks: Uint8Array[], totalLength: number): Uint8Array<ArrayBuffer> {
     const chunksAll = new Uint8Array(totalLength);
     let position = 0;
     for (const chunk of chunks) {
@@ -317,6 +405,17 @@ export abstract class FetchFactory {
 }
 
 function noop(): void {}
+
+function warningOptionsMessage(req: HttpRequest<any>) {
+  if (req.credentials && req.withCredentials) {
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.WITH_CREDENTIALS_OVERRIDES_EXPLICIT_CREDENTIALS,
+        `Angular detected that a \`HttpClient\` request has both \`withCredentials: true\` and \`credentials: '${req.credentials}'\` options. The \`withCredentials\` option is overriding the explicit \`credentials\` setting to 'include'. Consider removing \`withCredentials\` and using \`credentials: '${req.credentials}'\` directly for clarity.`,
+      ),
+    );
+  }
+}
 
 /**
  * Zone.js treats a rejected promise that has not yet been awaited

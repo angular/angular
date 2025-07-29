@@ -45,7 +45,7 @@
 @include mq.for-tablet-portrait-up();
 @include mq.for-tablet-landscape-up();
 @include mq.for-desktop-up();
-@include mq.for-big-desktop-up();
+@include mq.for-extra-large-desktop-up();
 @include mq.for-tablet-landscape-down();
 
 // temporary just to show different options of code component UI.
@@ -113,14 +113,14 @@ $theme: mat.m2-define-light-theme(
 }
 
 .shiki {
-  padding-block: 1rem;
-
   &.cli {
     padding-inline-start: 1rem;
+    padding-block: 1rem;
   }
 
   a {
     color: inherit;
+
     &:hover {
       text-decoration: underline;
     }

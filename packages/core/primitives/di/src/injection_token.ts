@@ -66,3 +66,26 @@ export interface ɵɵInjectableDeclaration<T> {
 export interface InjectionToken<T> {
   ɵprov: ɵɵInjectableDeclaration<T>;
 }
+
+export function defineInjectable<T>(opts: {
+  token: unknown;
+  providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
+  factory: () => T;
+}): ɵɵInjectableDeclaration<T> {
+  return {
+    token: opts.token,
+    providedIn: (opts.providedIn as any) || null,
+    factory: opts.factory,
+    value: undefined,
+  } as ɵɵInjectableDeclaration<T>;
+}
+
+export type Constructor<T> = Function & {prototype: T};
+
+export function registerInjectable<T>(
+  ctor: unknown,
+  declaration: ɵɵInjectableDeclaration<T>,
+): InjectionToken<T> {
+  (ctor as unknown as InjectionToken<T>).ɵprov = declaration;
+  return ctor as Constructor<T> & InjectionToken<T>;
+}

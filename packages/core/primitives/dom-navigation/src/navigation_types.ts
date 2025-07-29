@@ -67,6 +67,7 @@ export declare class NavigationTransition {
   readonly navigationType: NavigationTypeString;
   readonly from: NavigationHistoryEntry;
   readonly finished: Promise<void>;
+  readonly committed: Promise<void>;
 }
 
 export interface NavigationHistoryEntryEventMap {

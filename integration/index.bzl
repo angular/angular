@@ -5,26 +5,23 @@
 """Angular integration testing
 """
 
-load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES", "npm_package_archive_label")
-load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
+load("@devinfra//bazel/integration:index.bzl", "integration_test")
 load("//:packages.bzl", "INTEGRATION_PACKAGES")
+load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES")
 
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
     pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
-    use_view_engine_packages = kwargs.pop("use_view_engine_packages", [])
     toolchains = kwargs.pop("toolchains", [])
     environment = kwargs.pop("environment", {})
-    track_payload_size = kwargs.pop("track_payload_size", None)
-    track_payload_paths = kwargs.pop("track_payload_paths", [""])
     data = kwargs.pop("data", [])
 
     if setup_chromium:
-        data.append("@npm//@angular/build-tooling/bazel/browsers/chromium")
-        toolchains.append("@npm//@angular/build-tooling/bazel/browsers/chromium:toolchain_alias")
+        data.append("@rules_browsers//src/browsers/chromium")
+        toolchains.append("@rules_browsers//src/browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
-            "CHROME_BIN": "$(CHROMIUM)",
+            "CHROME_BIN": "$(CHROME-HEADLESS-SHELL)",
         })
 
     # By default run `yarn install` followed by `yarn test` using the tools linked
@@ -34,39 +31,16 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         "yarn test",
     ])
 
-    if track_payload_size:
-        commands += [
-            "yarn build",
-        ]
-        for path in track_payload_paths:
-            commands += [
-                # TODO: Replace the track payload-size script with a RBE and Windows-compatible script.
-                "$(rootpath //:scripts/ci/bazel-payload-size.sh) {bundle}{path} 'dist{path}/*.js' true ${runfiles}/angular/$(rootpath //goldens:size-tracking/integration-payloads.json)".format(bundle = track_payload_size, path = path, runfiles = "${RUNFILES}"),
-            ]
-
-        data += [
-            "//goldens:size-tracking/integration-payloads.json",
-            "//:scripts/ci/bazel-payload-size.sh",
-            "//:scripts/ci/payload-size.sh",
-            "//:scripts/ci/payload-size.js",
-        ]
-
     # Complete list of npm packages to override in the test's package.json file mapped to
     # tgz archive to use for the replacement. This is the full list for all integration
     # tests. Any given integration does not need to use all of these packages.
     npm_packages = {}
     for pkg in NPM_PACKAGE_ARCHIVES:
         if pkg not in pinned_npm_packages:
-            npm_packages["@npm//:" + npm_package_archive_label(pkg)] = pkg
+            npm_packages["//:node_modules/%s/dir" % pkg] = pkg
     for pkg in INTEGRATION_PACKAGES:
-        # If the generated Angular framework package is listed in the `use_view_engine_packages`
-        # list, we will not use the local-built NPM package, but instead map to the
-        # corresponding View Engine v12.x package from the `@npm//` workspace.
-        if pkg in use_view_engine_packages:
-            npm_packages["@npm//:" + npm_package_archive_label("%s-12" % pkg)] = pkg
-        else:
-            last_segment_name = pkg.split("/")[-1]
-            npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
+        last_segment_name = pkg.split("/")[-1]
+        npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
 
     integration_test(
         name = name,

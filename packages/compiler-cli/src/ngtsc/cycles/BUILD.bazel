@@ -7,11 +7,9 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/perf",
-    ],
     module_name = "@angular/compiler-cli/src/ngtsc/cycles",
     deps = [
         "//:node_modules/typescript",
+        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
     ],
 )

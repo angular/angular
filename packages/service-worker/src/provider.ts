@@ -92,9 +92,16 @@ export function ngswAppInitializer(): void {
 
     // Don't return anything to avoid blocking the application until the SW is registered.
     // Catch and log the error if SW registration fails to avoid uncaught rejection warning.
-    readyToRegister.then(() =>
+    readyToRegister.then(() => {
+      // If the registration strategy has resolved after the application has
+      // been explicitly destroyed by the user (e.g., by navigating away to
+      // another application), we simply should not register the worker.
+      if (appRef.destroyed) {
+        return;
+      }
+
       navigator.serviceWorker
-        .register(script, {scope: options.scope})
+        .register(script, {scope: options.scope, updateViaCache: options.updateViaCache})
         .catch((err) =>
           console.error(
             formatRuntimeError(
@@ -103,8 +110,8 @@ export function ngswAppInitializer(): void {
                 'Service worker registration failed with: ' + err,
             ),
           ),
-        ),
-    );
+        );
+    });
   });
 }
 
@@ -144,6 +151,13 @@ export abstract class SwRegistrationOptions {
    * Default: true
    */
   enabled?: boolean;
+
+  /**
+   * The value of the setting used to determine the circumstances in which the browser
+   * will consult the HTTP cache when it tries to update the service worker or any scripts that are imported via importScripts().
+   * [ServiceWorkerRegistration.updateViaCache](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/updateViaCache)
+   */
+  updateViaCache?: ServiceWorkerUpdateViaCache;
 
   /**
    * A URL that defines the ServiceWorker's registration scope; that is, what range of URLs it can

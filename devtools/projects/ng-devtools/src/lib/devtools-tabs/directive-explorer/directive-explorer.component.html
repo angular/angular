@@ -1,7 +1,13 @@
 <as-split unit="percent" [direction]="splitDirection()" [gutterSize]="9">
   <as-split-area #directiveForestSplitArea size="60">
-    <as-split direction="vertical" [gutterSize]="9" unit="pixel" [disabled]="true">
-      <as-split-area size="*">
+    <as-split
+      [ngResponsiveSplit]="responsiveSplitConfig"
+      (directionChange)="onResponsiveSplitDirChange($event)"
+      direction="vertical"
+      [gutterSize]="9"
+      unit="percent"
+    >
+      <as-split-area class="forest-breadcrumbs" [size]="forestSplitSize()">
         <ng-directive-forest
           (selectNode)="handleNodeSelection($event)"
           (selectDomElement)="handleSelectDomElement($event)"
@@ -13,8 +19,6 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
-      </as-split-area>
-      <as-split-area size="22">
         @if (parents()) {
           <ng-breadcrumbs
             (mouseLeaveNode)="unhighlight()"
@@ -24,6 +28,14 @@
           />
         }
       </as-split-area>
+      @if (signalsOpen() && currentSelectedElement(); as currentSelectedElement) {
+        <as-split-area [size]="signalGraphSplitSize()">
+          <ng-signals-tab
+            [currentElement]="currentSelectedElement.position"
+            (close)="signalsOpen.set(false)"
+          />
+        </as-split-area>
+      }
     </as-split>
   </as-split-area>
   <as-split-area size="40" minSize="25" class="prop-split">
@@ -31,6 +43,8 @@
       @if (currentSelectedElement(); as currentSelectedElement) {
         <ng-property-tab
           [currentSelectedElement]="currentSelectedElement"
+          [signalGraphEnabled]="signalGraphEnabled()"
+          (showSignalGraph)="showSignalGraph($event)"
           (inspect)="inspect($event)"
           (viewSource)="viewSource($event)"
         />

@@ -29,6 +29,7 @@ export {
   inject,
   InjectSetupWrapper,
   withModule,
+  TestComponentOptions,
 } from './test_bed';
 export {
   TestComponentRenderer,

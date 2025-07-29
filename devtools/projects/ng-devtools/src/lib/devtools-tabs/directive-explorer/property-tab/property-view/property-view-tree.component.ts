@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
+import {MatIcon} from '@angular/material/icon';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Component, input, output} from '@angular/core';
 
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyDataSource} from '../../property-resolver/property-data-source';
-import {MatIcon} from '@angular/material/icon';
 import {PropertyEditorComponent} from './property-editor.component';
 import {PropertyPreviewComponent} from './property-preview.component';
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
@@ -20,6 +20,7 @@ import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',
   styleUrls: ['./property-view-tree.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatTree,
     MatTreeNode,

@@ -21,6 +21,14 @@ describe('type check blocks', () => {
     expect(tcb('{{hello}} {{world}}')).toContain('"" + (((this).hello)) + (((this).world));');
   });
 
+  it('should generate an animation leave function call', () => {
+    const TEMPLATE = '<p (animate.leave)="animateFn($event)"></p>';
+    const results = tcb(TEMPLATE);
+    expect(results).toContain(
+      '($event: i1.AnimationCallbackEvent): any => { (this).animateFn($event); };',
+    );
+  });
+
   it('should generate literal map expressions', () => {
     const TEMPLATE = '{{ method({foo: a, bar: b}) }}';
     expect(tcb(TEMPLATE)).toContain('(this).method({ "foo": ((this).a), "bar": ((this).b) })');
@@ -39,6 +47,12 @@ describe('type check blocks', () => {
   it('should handle unary - operator', () => {
     const TEMPLATE = `{{-1}}`;
     expect(tcb(TEMPLATE)).toContain('(-1)');
+  });
+
+  it('should assert the type for DOM events bound on void elements', () => {
+    const result = tcb(`<input (input)="handleInput($event.target.value)">`);
+    expect(result).toContain('i1.ɵassertType<typeof _t1>($event.target);');
+    expect(result).toContain('(this).handleInput((((($event).target)).value));');
   });
 
   it('should handle keyed property access', () => {
@@ -73,6 +87,19 @@ describe('type check blocks', () => {
     expect(tcb('{{void a}}')).toContain('void (((this).a))');
     expect(tcb('{{!(void a)}}')).toContain('!((void (((this).a))))');
     expect(tcb('{{!(void a === "object")}}')).toContain('!(((void (((this).a))) === ("object")))');
+  });
+
+  it('should handle assignment expressions', () => {
+    expect(tcb('<b (click)="a = b"></b>')).toContain('(((this).a)) = (((this).b));');
+    expect(tcb('<b (click)="a += b"></b>')).toContain('(((this).a)) += (((this).b));');
+    expect(tcb('<b (click)="a -= b"></b>')).toContain('(((this).a)) -= (((this).b));');
+    expect(tcb('<b (click)="a *= b"></b>')).toContain('(((this).a)) *= (((this).b));');
+    expect(tcb('<b (click)="a /= b"></b>')).toContain('(((this).a)) /= (((this).b));');
+    expect(tcb('<b (click)="a %= b"></b>')).toContain('(((this).a)) %= (((this).b));');
+    expect(tcb('<b (click)="a **= b"></b>')).toContain('(((this).a)) **= (((this).b));');
+    expect(tcb('<b (click)="a &&= b"></b>')).toContain('(((this).a)) &&= (((this).b));');
+    expect(tcb('<b (click)="a ||= b"></b>')).toContain('(((this).a)) ||= (((this).b));');
+    expect(tcb('<b (click)="a ??= b"></b>')).toContain('(((this).a)) ??= (((this).b));');
   });
 
   it('should handle exponentiation expressions', () => {
@@ -358,7 +385,7 @@ describe('type check blocks', () => {
     const block = tcb(TEMPLATE);
     expect(block).not.toContain('"div"');
     expect(block).toContain(
-      'var _t2 = document.createElement("button"); ' + 'var _t1 = _t2; ' + '_t2.addEventListener',
+      'var _t1 = document.createElement("button"); ' + 'var _t2 = _t1; ' + '_t1.addEventListener',
     );
   });
 

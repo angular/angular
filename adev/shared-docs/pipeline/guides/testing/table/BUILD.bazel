@@ -1,0 +1,22 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
+
+ts_project(
+    name = "table",
+    testonly = True,
+    srcs = glob([
+        "**/*.spec.mts",
+    ]),
+    deps = [
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/jsdom",
+        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+    ],
+)
+
+zoneless_jasmine_test(
+    name = "test",
+    data = [
+        "table.md",
+        ":table_rjs",
+    ],
+)

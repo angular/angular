@@ -224,6 +224,10 @@ const REDIRECT_ROUTES: Route[] = [
     redirectTo: '/guide/ssr',
   },
   {
+    path: 'hmr',
+    redirectTo: '/tools/cli/build-system-migration#hot-module-replacement',
+  },
+  {
     path: 'guide',
     children: [
       {
@@ -231,6 +235,10 @@ const REDIRECT_ROUTES: Route[] = [
         redirectTo: '/guide/templates/pipes',
       },
     ],
+  },
+  {
+    path: 'guide/experimental/zoneless',
+    redirectTo: '/guide/zoneless',
   },
 ];
 

@@ -6,7 +6,7 @@
 
 import * as i0 from '@angular/core';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export abstract class AnimationDriver {
     // (undocumented)
     abstract animate(element: any, keyframes: Array<Map<string, string | number>>, duration: number, delay: number, easing?: string | null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
@@ -25,7 +25,7 @@ export abstract class AnimationDriver {
     abstract validateStyleProperty(prop: string): boolean;
 }
 
-// @public
+// @public @deprecated (undocumented)
 export class NoopAnimationDriver implements AnimationDriver {
     // (undocumented)
     animate(element: any, keyframes: Array<Map<string, string | number>>, duration: number, delay: number, easing: string, previousPlayers?: any[], scrubberAccessRequested?: boolean): AnimationPlayer;

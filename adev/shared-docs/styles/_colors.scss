@@ -18,6 +18,9 @@
   --orange-red: oklch(63.32% 0.24 31.68); // #fa2c04
   --super-green: oklch(79.12% 0.257 155.13); // #00c572 // Used for success, merge additions, etc.
 
+  --deprecated-light: oklch(95% 0.02 304.04); // Base color
+  --deprecated-docs-bg: var(--deprecated-light); // Alias specifically for deprecated docs
+
   // subtle-purple is used for inline-code bg, docs-card hover bg & docs-code header bg
   --subtle-purple: color-mix(in srgb, var(--bright-blue) 5%, white 10%);
   --light-blue: color-mix(in srgb, var(--bright-blue), white 50%);
@@ -213,6 +216,9 @@
   --orange-red: color-mix(in srgb, oklch(63.32% 0.24 31.68), var(--full-contrast) 60%);
   --super-green: color-mix(in srgb, oklch(79.12% 0.257 155.13), var(--full-contrast) 70%);
 
+  --deprecated-dark: oklch(30% 0.02 304.04); // Base color
+  --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
+
   --light-pink: color-mix(in srgb, var(--vivid-pink) 5%, var(--page-background) 75%);
 
   --symbolic-purple: color-mix(in srgb, oklch(42.86% 0.29 266.4), var(--full-contrast) 65%);
@@ -286,6 +292,17 @@
     focus-outline-color: var(--french-violet),
   )
 );
+
+:root {
+  @include mat.button-toggle-overrides(
+    (
+      text-color: var(--primary-contrast),
+      background-color: var(--octonary-contrast),
+      selected-state-text-color: var(--secondary-contrast),
+      selected-state-background-color: var(--senary-contrast),
+    )
+  );
+}
 
 // LIGHT MODE (Explicit)
 .docs-light-mode {

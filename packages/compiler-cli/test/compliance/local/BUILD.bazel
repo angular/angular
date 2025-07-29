@@ -1,24 +1,21 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["local_compile_spec.ts"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/test/compliance/test_helpers",
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/test/compliance/test_helpers:test_helpers_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "local",
-    bootstrap = ["//tools/testing:node_no_angular"],
     data = [
+        ":test_lib_rjs",
         "//packages/compiler-cli/test/compliance/test_cases",
         "//packages/core:npm_package",
     ],
     shard_count = 2,
-    deps = [
-        ":test_lib",
-    ],
 )

@@ -1,7 +1,5 @@
-load("@aspect_rules_js//js:defs.bzl", "js_binary")
-load("@npm//@angular/build-tooling/bazel/integration:index.bzl", "integration_test")
-load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary")
-load("//tools:defaults2.bzl", "ts_project")
+load("@devinfra//bazel/integration:index.bzl", "integration_test")
+load("//tools:defaults2.bzl", "jasmine_test", "js_binary", "ts_project")
 
 ts_project(
     name = "test_runners_lib",
@@ -10,26 +8,24 @@ ts_project(
         "batch_runner.ts",
         "golden_test_runner.ts",
     ],
-    interop_deps = [
-        "//packages/core/schematics/utils/tsurge",
-    ],
     deps = [
         "//:node_modules/chalk",
         "//:node_modules/tinyglobby",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
     ],
 )
 
-nodejs_binary(
+js_binary(
     name = "golden_test_runner",
     testonly = True,
-    data = [":test_runners_lib"],
+    data = [":test_runners_lib_rjs"],
     entry_point = ":golden_test_runner.js",
 )
 
 js_binary(
     name = "batch_runner",
     testonly = True,
-    data = [":test_runners_lib"],
+    data = [":test_runners_lib_rjs"],
     entry_point = ":batch_runner.js",
 )
 
@@ -113,15 +109,15 @@ ts_project(
     name = "test_lib",
     testonly = True,
     srcs = ["migration_spec.ts"],
-    interop_deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/core/schematics/migrations/signal-migration/src",
-        "//packages/core/schematics/utils/tsurge",
+    deps = [
+        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages/core/schematics/migrations/signal-migration/src:src_rjs",
+        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test_jasmine",
-    srcs = [":test_lib"],
+    data = [":test_lib_rjs"],
 )

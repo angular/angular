@@ -83,9 +83,6 @@ using the proper flags with your Bazel test runs in Angular.
 The process should automatically connect to the debugger.
 For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.github.io/rules_nodejs/index.html#debugging).
 
-For additional info and testing options, see the
-[nodejs_test documentation](https://bazelbuild.github.io/rules_nodejs/Built-ins.html#nodejs_test).
-
 - Click on "Resume script execution" to let the code run until the first `debugger` statement or a
   previously set breakpoint.
 - If you want to inspect generated template instructions while debugging, find the
@@ -121,7 +118,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 - Run test with `_debug` appended to the target name,
   e.g. `yarn bazel run packages/core/test:test_web_debug`.
-  Every `karma_web_test_suite` target has an additional `_debug` target.
+  Every `ng_web_test_suite` target has an additional `_debug` target.
 - Open any browser at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open the browser's DevTools to debug the tests (after, for example, having focused on specific
   tests via `fit` and/or `fdescribe` or having added `debugger` statements in them)
@@ -137,11 +134,6 @@ open $(yarn -s bazel info output_base)/external
 See subcommands that bazel executes (helpful for debugging):
 ```sh
 yarn bazel build //packages/core:package -s
-```
-
-To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
-```sh
-open $(yarn -s bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
 ```
 
 ## Stamping

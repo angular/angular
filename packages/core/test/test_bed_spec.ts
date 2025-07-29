@@ -40,6 +40,13 @@ import {
   ɵɵsetNgModuleScope as setNgModuleScope,
   ɵɵtext as text,
   DOCUMENT,
+  signal,
+  provideZonelessChangeDetection,
+  inputBinding,
+  Output,
+  EventEmitter,
+  outputBinding,
+  twoWayBinding,
 } from '../src/core';
 import {DeferBlockBehavior} from '../testing';
 import {TestBed, TestBedImpl} from '../testing/src/test_bed';
@@ -50,6 +57,7 @@ import {NgModuleType} from '../src/render3';
 import {depsTracker} from '../src/render3/deps_tracker/deps_tracker';
 import {setClassMetadataAsync} from '../src/render3/metadata';
 import {
+  ComponentFixtureAutoDetect,
   TEARDOWN_TESTING_MODULE_ON_DESTROY_DEFAULT,
   THROW_ON_UNKNOWN_ELEMENTS_DEFAULT,
   THROW_ON_UNKNOWN_PROPERTIES_DEFAULT,
@@ -1212,6 +1220,73 @@ describe('TestBed', () => {
     });
   });
 
+  describe('bindings', () => {
+    it('should be able to bind to inputs', () => {
+      @Component({template: ''})
+      class TestComp {
+        @Input() value = 0;
+      }
+
+      const value = signal(1);
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [inputBinding('value', value)],
+      });
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value).toBe(1);
+
+      value.set(2);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.value).toBe(2);
+    });
+
+    it('should be able to bind to outputs', () => {
+      let count = 0;
+
+      @Component({template: '<button (click)="event.emit()">Click me</button>'})
+      class TestComp {
+        @Output() event = new EventEmitter<void>();
+      }
+
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [outputBinding('event', () => count++)],
+      });
+      fixture.detectChanges();
+      const button = fixture.nativeElement.querySelector('button');
+      expect(count).toBe(0);
+
+      button.click();
+      fixture.detectChanges();
+      expect(count).toBe(1);
+    });
+
+    it('should be able to bind two-way bindings', () => {
+      @Component({template: 'Value: {{value}}'})
+      class TestComp {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter<string>();
+      }
+
+      const value = signal('initial');
+      const fixture = TestBed.createComponent(TestComp, {
+        bindings: [twoWayBinding('value', value)],
+      });
+      fixture.detectChanges();
+      expect(value()).toBe('initial');
+      expect(fixture.nativeElement.textContent).toBe('Value: initial');
+
+      value.set('1');
+      fixture.detectChanges();
+      expect(value()).toBe('1');
+      expect(fixture.nativeElement.textContent).toBe('Value: 1');
+
+      fixture.componentInstance.value = '2';
+      fixture.componentInstance.valueChange.emit('2');
+      fixture.detectChanges();
+      expect(value()).toBe('2');
+      expect(fixture.nativeElement.textContent).toBe('Value: 2');
+    });
+  });
+
   it('should allow overriding a provider defined via ModuleWithProviders (using TestBed.overrideProvider)', () => {
     const serviceOverride = {
       get() {
@@ -2273,6 +2348,110 @@ describe('TestBed', () => {
 
     expect(TestBed.runInInjectionContext(functionThatUsesInject)).toEqual(expectedValue);
   });
+
+  describe('TestBed.tick', () => {
+    @Component({
+      template: '{{state()}}',
+    })
+    class Thing1 {
+      state = signal(1);
+    }
+
+    describe('with zone change detection', () => {
+      it('should update fixtures with autoDetect', () => {
+        TestBed.configureTestingModule({
+          providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+        });
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+
+      it('should update fixtures without autoDetect', () => {
+        const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
+        expect(nativeElement.textContent).toBe(''); // change detection didn't run yet
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
+
+    describe('with zoneless change detection', () => {
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          providers: [provideZonelessChangeDetection()],
+        });
+      });
+
+      it('should update fixtures with zoneless', async () => {
+        const fixture = TestBed.createComponent(Thing1);
+        await fixture.whenStable();
+
+        const {nativeElement, componentInstance} = fixture;
+        expect(nativeElement.textContent).toBe('1');
+
+        componentInstance.state.set(2);
+        TestBed.tick();
+        expect(nativeElement.textContent).toBe('2');
+      });
+    });
+  });
+
+  describe('inferTagName', () => {
+    it('should not infer the tag name of the root component by default', () => {
+      @Component({selector: 'my-test-comp[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+
+    it('should be able to opt into inferring the tag of the root component from the selector', () => {
+      @Component({selector: 'my-test-comp[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
+    it('should fall back to `div` if the test component does not have a tag selector', () => {
+      @Component({selector: '[foo]', template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+
+    it('should fall back to `ng-component` if the test component does not have any selector', () => {
+      @Component({template: ''})
+      class TestComp {}
+
+      const fixture = TestBed.createComponent(TestComp, {inferTagName: true});
+      expect(fixture.nativeElement.tagName).toBe('NG-COMPONENT');
+    });
+
+    it('should be able to opt into inferring the tag name through configureTestingModule', () => {
+      @Component({selector: 'my-test-comp', template: ''})
+      class TestComp {}
+
+      TestBed.configureTestingModule({inferTagName: true});
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('MY-TEST-COMP');
+    });
+
+    it('should give precedence to inferTagName from createComponent over configureTestingModule', () => {
+      @Component({selector: 'my-test-comp', template: ''})
+      class TestComp {}
+
+      TestBed.configureTestingModule({inferTagName: false});
+      const fixture = TestBed.createComponent(TestComp);
+      expect(fixture.nativeElement.tagName).toBe('DIV');
+    });
+  });
 });
 
 describe('TestBed defer block behavior', () => {
@@ -2294,6 +2473,28 @@ describe('TestBed defer block behavior', () => {
     expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Manual);
     TestBed.resetTestingModule();
     expect(TestBedImpl.INSTANCE.getDeferBlockBehavior()).toBe(DeferBlockBehavior.Playthrough);
+  });
+});
+
+describe('TestBed animations behavior', () => {
+  beforeEach(() => {
+    TestBed.resetTestingModule();
+  });
+
+  it('should default animations behavior to disabled', () => {
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(false);
+  });
+
+  it('should be able to configure animations behavior', () => {
+    TestBed.configureTestingModule({animationsEnabled: true});
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(true);
+  });
+
+  it('should reset the animations behavior back to the default when TestBed is reset', () => {
+    TestBed.configureTestingModule({animationsEnabled: true});
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(true);
+    TestBed.resetTestingModule();
+    expect(TestBedImpl.INSTANCE.getAnimationsEnabled()).toBe(false);
   });
 });
 

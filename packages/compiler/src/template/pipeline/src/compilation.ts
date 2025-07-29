@@ -17,6 +17,15 @@ export enum CompilationJobKind {
   Both, // A special value used to indicate that some logic applies to both compilation types
 }
 
+/** Possible modes in which a component's template can be compiled. */
+export enum TemplateCompilationMode {
+  /** Supports the full instruction set, including directives. */
+  Full,
+
+  /** Uses a narrower instruction set that doesn't support directives and allows optimizations. */
+  DomOnly,
+}
+
 /**
  * An entire ongoing compilation, which will result in one or more template functions when complete.
  * Contains one or more corresponding compilation units.
@@ -26,6 +35,7 @@ export abstract class CompilationJob {
     readonly componentName: string,
     readonly pool: ConstantPool,
     readonly compatibility: ir.CompatibilityMode,
+    readonly mode: TemplateCompilationMode,
   ) {}
 
   kind: CompilationJobKind = CompilationJobKind.Both;
@@ -69,6 +79,7 @@ export class ComponentCompilationJob extends CompilationJob {
     componentName: string,
     pool: ConstantPool,
     compatibility: ir.CompatibilityMode,
+    mode: TemplateCompilationMode,
     readonly relativeContextFilePath: string,
     readonly i18nUseExternalIds: boolean,
     readonly deferMeta: R3ComponentDeferMetadata,
@@ -76,7 +87,7 @@ export class ComponentCompilationJob extends CompilationJob {
     readonly relativeTemplatePath: string | null,
     readonly enableDebugLocations: boolean,
   ) {
-    super(componentName, pool, compatibility);
+    super(componentName, pool, compatibility, mode);
     this.root = new ViewCompilationUnit(this, this.allocateXrefId(), null);
     this.views.set(this.root.xref, this.root);
   }
@@ -186,7 +197,12 @@ export abstract class CompilationUnit {
   *ops(): Generator<ir.CreateOp | ir.UpdateOp> {
     for (const op of this.create) {
       yield op;
-      if (op.kind === ir.OpKind.Listener || op.kind === ir.OpKind.TwoWayListener) {
+      if (
+        op.kind === ir.OpKind.Listener ||
+        op.kind === ir.OpKind.Animation ||
+        op.kind === ir.OpKind.AnimationListener ||
+        op.kind === ir.OpKind.TwoWayListener
+      ) {
         for (const listenerOp of op.handlerOps) {
           yield listenerOp;
         }
@@ -237,8 +253,13 @@ export class ViewCompilationUnit extends CompilationUnit {
  * Compilation-in-progress of a host binding, which contains a single unit for that host binding.
  */
 export class HostBindingCompilationJob extends CompilationJob {
-  constructor(componentName: string, pool: ConstantPool, compatibility: ir.CompatibilityMode) {
-    super(componentName, pool, compatibility);
+  constructor(
+    componentName: string,
+    pool: ConstantPool,
+    compatibility: ir.CompatibilityMode,
+    mode: TemplateCompilationMode,
+  ) {
+    super(componentName, pool, compatibility, mode);
     this.root = new HostBindingCompilationUnit(this);
   }
 

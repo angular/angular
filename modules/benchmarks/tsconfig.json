@@ -6,6 +6,7 @@
     "emitDecoratorMetadata": true,
     "module": "commonjs",
     "moduleResolution": "node",
+    "strict": true,
     "outDir": "../../dist/all/",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -13,7 +14,6 @@
       "selenium-webdriver": ["../../node_modules/@types/selenium-webdriver/index.d.ts"],
       "rxjs/*": ["../../node_modules/rxjs/*"],
       "@angular/*": ["../../packages/*"],
-      "zone.js/*": ["../../packages/zone.js/*"]
     },
     "rootDir": ".",
     "inlineSourceMap": true,

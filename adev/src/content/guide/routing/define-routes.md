@@ -120,7 +120,7 @@ const routes: Routes = [
 
 With this new path, users can visit `/user/leeroy/youtube` and `/user/leeroy/bluesky` and see respective social media feeds based on the parameter for the user leeroy.
 
-See [Reading route state](/guide/router/reading-route-state) for details on reading route parameters.
+See [Reading route state](/guide/routing/read-route-state) for details on reading route parameters.
 
 ### Wildcards
 
@@ -216,11 +216,11 @@ export const routes: Routes = [
   // their corresponding routes become active.
   {
     path: 'login',
-    loadComponent: () => import('./components/auth/login-page')
+    loadComponent: () => import('./components/auth/login-page').then(m => m.LoginPage)
   },
   {
-    path: ',
-    loadComponent: () => import('./components/home/home-page')
+    path: '',
+    loadComponent: () => import('./components/home/home-page').then(m => m.HomePage)
   }
 ]
 ```
@@ -262,7 +262,7 @@ If you modify or remove a route, some users may still click on out-of-date links
 
 You can associate a **title** with each route. Angular automatically updates the [page title](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title) when a route activates. Always define appropriate page titles for your application, as these titles are necessary to create an accessible experience.
 
-```angular-ts
+```ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
@@ -279,13 +279,25 @@ const routes: Routes = [
     component: AboutComponent,
     title: 'About Us'
   },
+];
+```
+
+The page `title` property can be set dynamincally to a resolver function using [`ResolveFn`](/api/router/ResolveFn).
+
+```ts
+const titleResolver: ResolveFn<string> = (route) => route.queryParams['id'];
+const routes: Routes = [
+   ...
   {
     path: 'products',
     component: ProductsComponent,
-    title: 'Our Products'
+    title: titleResolver,
   }
 ];
+
 ```
+
+Route titles can also be set via a service extending the [`TitleStrategy`](/api/router/TitleStrategy) abstract class. By default, Angular uses the [`DefaultTitleStrategy`](/api/router/DefaultTitleStrategy).
 
 ## Route-level providers for dependency injection
 
@@ -311,7 +323,7 @@ export const ROUTES: Route[] = [
 ];
 ```
 
-In this code sample, the `admin` path contains a protected data property of `ADMIN_API_KEY` that is only available to children within its section. As a result, no other paths will be able to access the data provided via `ADMIN_AP
+In this code sample, the `admin` path contains a protected data property of `ADMIN_API_KEY` that is only available to children within its section. As a result, no other paths will be able to access the data provided via `ADMIN_API_KEY`.
 
 See the [Dependency injection guide](/guide/di) for more information about providers and injection in Angular.
 
@@ -347,11 +359,11 @@ const routes: Routes = [
 
 In this code sample, the home and about page are configured with specific `analyticsId` which would then be used in their respective components for page tracking analytics.
 
-You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/router/reading-route-state) for details.
+You can read this static data by injecting the `ActivatedRoute`. See [Reading route state](/guide/routing/read-route-state) for details.
 
 ### Dynamic data with data resolvers
 
-When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/router/route-data-resolvers).
+When you need to provide dynamic data to a route, check out the [guide on route data resolvers](/guide/routing/data-resolvers).
 
 ## Nested Routes
 
@@ -363,18 +375,20 @@ You can add child routes to any route definition with the `children` property:
 
 ```angular-ts
 const routes: Routes = [
-  path: 'product/:id',
-  component: 'ProductComponent',
-  children: [
-    {
-      path: 'info',
-      component: ProductInfoComponent
-    },
-    {
-      path: 'reviews',
-      component: ProductReviewsComponent
-    }
-  ]
+  {
+    path: 'product/:id',
+    component: ProductComponent,
+    children: [
+      {
+        path: 'info',
+        component: ProductInfoComponent
+      },
+      {
+        path: 'reviews',
+        component: ProductReviewsComponent
+      }
+    ]
+  }
 ]
 ```
 

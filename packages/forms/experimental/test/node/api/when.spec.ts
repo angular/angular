@@ -8,7 +8,6 @@
 
 import {Injector, Signal, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
 import {
   SchemaOrSchemaFn,
   applyEach,
@@ -17,6 +16,7 @@ import {
   form,
   validate,
 } from '../../../public_api';
+import {ValidationError} from '../../../src/api/validation_errors';
 
 export interface User {
   first: string;

@@ -114,7 +114,7 @@ export interface TestBed {
     // (undocumented)
     configureTestingModule(moduleDef: TestModuleMetadata): TestBed;
     // (undocumented)
-    createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    createComponent<T>(component: Type<T>, options?: TestComponentOptions): ComponentFixture<T>;
     // (undocumented)
     execute(tokens: any[], fn: Function, context?: any): any;
     // @deprecated
@@ -178,9 +178,15 @@ export interface TestBedStatic extends TestBed {
 }
 
 // @public
+export interface TestComponentOptions {
+    bindings?: Binding[];
+    inferTagName?: boolean;
+}
+
+// @public
 export class TestComponentRenderer {
     // (undocumented)
-    insertRootElement(rootElementId: string): void;
+    insertRootElement(rootElementId: string, tagName?: string): void;
     // (undocumented)
     removeAllRootElements?(): void;
 }
@@ -194,6 +200,7 @@ export interface TestEnvironmentOptions {
 
 // @public (undocumented)
 export interface TestModuleMetadata {
+    animationsEnabled?: boolean;
     // (undocumented)
     declarations?: any[];
     deferBlockBehavior?: DeferBlockBehavior;
@@ -201,6 +208,7 @@ export interface TestModuleMetadata {
     errorOnUnknownProperties?: boolean;
     // (undocumented)
     imports?: any[];
+    inferTagName?: boolean;
     // (undocumented)
     providers?: any[];
     rethrowApplicationErrors?: boolean;

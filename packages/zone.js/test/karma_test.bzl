@@ -1,117 +1,77 @@
-load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
-load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("//tools:defaults2.bzl", "esbuild", "ts_project", "web_test")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
-    ts_library(
-        name = name + "_env",
+    ts_project(
+        name = name + "_env_lib",
         testonly = True,
         srcs = env_srcs,
         deps = env_deps,
     )
-    rollup_bundle(
-        name = name + "_env_rollup",
-        testonly = True,
-        sourcemap = "false",
+    esbuild(
+        name = name + "_env",
         entry_point = env_entry_point,
-        silent = True,
+        testonly = True,
+        output = name + "_env.js",
+        config = "//tools/bazel/esbuild/zone-config:umd",
         deps = [
-            ":" + name + "_env",
-            "@npm//@rollup/plugin-commonjs",
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//magic-string",
+            ":" + name + "_env_lib_rjs",
         ],
     )
-    ts_library(
-        name = name + "_test",
+
+    ts_project(
+        name = name + "_env_spec_lib",
         testonly = True,
         srcs = test_srcs,
         deps = test_deps,
     )
-    rollup_bundle(
-        name = name + "_rollup",
-        testonly = True,
-        silent = True,
-        sourcemap = "false",
+
+    esbuild(
+        name = name + "_env_spec",
         entry_point = test_entry_point,
-        config_file = "//packages/zone.js:rollup.config.js",
+        testonly = True,
+        output = name + "_env.spec.js",
+        config = "//tools/bazel/esbuild/zone-config:umd",
         deps = [
-            ":" + name + "_test",
-            "@npm//@rollup/plugin-commonjs",
-            "@npm//@rollup/plugin-node-resolve",
-            "@npm//magic-string",
+            ":" + name + "_env_spec_lib_rjs",
         ],
     )
 
-def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point, bootstraps, ci):
-    first = True
+def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point, bootstraps):
+    karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point)
     for subname in bootstraps:
         bootstrap = bootstraps[subname]
-        firstFlag = first
-        if first:
-            first = False
-            karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point)
-        _karma_test_required_dist_files = [
-            "//packages/zone.js/bundles:task-tracking.umd.js",
-            "//packages/zone.js/bundles:wtf.umd.js",
-            "//packages/zone.js/bundles:webapis-notification.umd.js",
-            "//packages/zone.js/bundles:webapis-media-query.umd.js",
-            "//packages/zone.js/bundles:zone-patch-canvas.umd.js",
-            "//packages/zone.js/bundles:zone-patch-fetch.umd.js",
-            "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
-            "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
-            "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
-            ":" + name + "_rollup.umd",
-        ]
 
-        karma_web_test_suite(
-            name = subname + "_karma_jasmine_test",
-            srcs = [
+        web_test(
+            name = subname,
+            firefox = False,
+            chromium = True,
+            testonly = True,
+            tsconfig = "//packages/zone.js:tsconfig_build",
+            # The test bundle for the karma test
+            deps = [":" + name + "_env_spec"],
+            bootstrap =
+                # The environment setup bundle for the karma test
+                [":" + name + "_env"] +
+                # The specific zone.js bundle files necessary for the specific test set
+                bootstrap +
+                # The zone.js bundle files necessary for all test sets
+                [
+                    "//packages/zone.js/bundles:task-tracking.umd.js",
+                    "//packages/zone.js/bundles:wtf.umd.js",
+                    "//packages/zone.js/bundles:webapis-notification.umd.js",
+                    "//packages/zone.js/bundles:webapis-media-query.umd.js",
+                    "//packages/zone.js/bundles:zone-patch-canvas.umd.js",
+                    "//packages/zone.js/bundles:zone-patch-fetch.umd.js",
+                    "//packages/zone.js/bundles:zone-patch-resize-observer.umd.js",
+                    "//packages/zone.js/bundles:zone-patch-message-port.umd.js",
+                    "//packages/zone.js/bundles:zone-patch-user-media.umd.js",
+                ],
+            # Run time data available during the tests via http.
+            data = [
                 "fake_entry.js",
-            ],
-            bootstrap = [
-                            ":" + name + "_env_rollup.umd",
-                        ] + bootstrap +
-                        _karma_test_required_dist_files,
-            browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
-            static_files = [
                 ":assets/sample.json",
                 ":assets/worker.js",
+                ":assets/empty-worker.js",
                 ":assets/import.html",
             ],
-            tags = ["zone_karma_test"],
-            runtime_deps = [
-                "@npm//karma-sauce-launcher",
-            ],
         )
-
-        if ci and firstFlag:
-            karma_web_test_suite(
-                name = "karma_jasmine_test_ci",
-                srcs = [
-                    "fake_entry.js",
-                ],
-                bootstrap = [
-                    ":saucelabs.js",
-                    ":" + name + "_env_rollup.umd",
-                    "//packages/zone.js/bundles:zone.umd.js",
-                    "//packages/zone.js/bundles:zone-testing.umd.js",
-                ] + _karma_test_required_dist_files,
-                browsers = ["@npm//@angular/build-tooling/bazel/browsers/chromium:chromium"],
-                config_file = "//:karma-js.conf.js",
-                configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-                data = [
-                    "//:browser-providers.conf.js",
-                    "//tools/saucelabs-daemon/launcher:launcher_cjs",
-                ],
-                static_files = [
-                    ":assets/sample.json",
-                    ":assets/worker.js",
-                    ":assets/import.html",
-                ],
-                tags = ["zone_karma_test"],
-                # Visible to //:saucelabs_unit_tests_poc target
-                visibility = ["//:__pkg__"],
-                runtime_deps = [
-                    "@npm//karma-sauce-launcher",
-                ],
-            )

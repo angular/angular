@@ -215,21 +215,28 @@ export function transferCacheInterceptorFn(
     );
   }
 
-  // Request not found in cache. Make the request and cache it if on the server.
-  return next(req).pipe(
-    tap((event: HttpEvent<unknown>) => {
-      if (event instanceof HttpResponse && typeof ngServerMode !== 'undefined' && ngServerMode) {
-        transferState.set<TransferHttpResponse>(storeKey, {
-          [BODY]: event.body,
-          [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
-          [STATUS]: event.status,
-          [STATUS_TEXT]: event.statusText,
-          [REQ_URL]: requestUrl,
-          [RESPONSE_TYPE]: req.responseType,
-        });
-      }
-    }),
-  );
+  const event$ = next(req);
+
+  if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    // Request not found in cache. Make the request and cache it if on the server.
+    return event$.pipe(
+      tap((event: HttpEvent<unknown>) => {
+        // Only cache successful HTTP responses.
+        if (event instanceof HttpResponse) {
+          transferState.set<TransferHttpResponse>(storeKey, {
+            [BODY]: event.body,
+            [HEADERS]: getFilteredHeaders(event.headers, headersToInclude),
+            [STATUS]: event.status,
+            [STATUS_TEXT]: event.statusText,
+            [REQ_URL]: requestUrl,
+            [RESPONSE_TYPE]: req.responseType,
+          });
+        }
+      }),
+    );
+  }
+
+  return event$;
 }
 
 /** @returns true when the requests contains autorization related headers. */

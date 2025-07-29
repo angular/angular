@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {runfiles} from '@bazel/runfiles';
 import path from 'path';
 import shx from 'shelljs';
 
@@ -17,7 +16,7 @@ function checkInSubFolder(subFolder: string, testFn: Function) {
 
 describe('Zone.js npm_package', () => {
   beforeEach(() => {
-    shx.cd(path.dirname(runfiles.resolve('angular/packages/zone.js/npm_package/package.json')));
+    shx.cd(path.dirname(path.resolve('../npm_package/package.json')));
   });
   describe('misc root files', () => {
     describe('README.md', () => {
@@ -119,8 +118,8 @@ describe('Zone.js npm_package', () => {
 
       it('zone-patch-rxjs.js should have rxjs external', () => {
         checkInSubFolder('./fesm2015', () => {
-          expect(shx.cat('zone-patch-rxjs.js')).toContain(` from 'rxjs'`);
-          expect(shx.cat('zone-patch-rxjs.js')).toContain(`Zone.__load_patch('rxjs',`);
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(` from "rxjs"`);
+          expect(shx.cat('zone-patch-rxjs.js')).toContain(`Zone2.__load_patch("rxjs",`);
         });
       });
     });

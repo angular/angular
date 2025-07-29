@@ -1,26 +1,26 @@
-load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools:defaults2.bzl", "ng_web_test_suite", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/common",
-        "//packages/common/testing",
-        "//packages/common/upgrade",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/private/testing",
-        "//packages/router",
-        "//packages/router/testing",
-        "//packages/router/upgrade",
-        "//packages/upgrade/static",
+        "//packages/common:common_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/common/upgrade:upgrade_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
+        "//packages/router/testing:testing_rjs",
+        "//packages/router/upgrade:upgrade_rjs",
+        "//packages/upgrade/static:static_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib",
+        ":test_lib_rjs",
     ],
 )

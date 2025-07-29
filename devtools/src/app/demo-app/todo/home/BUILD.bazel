@@ -1,5 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:ng_project.bzl", "ng_project")
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -25,9 +24,9 @@ ng_project(
         "todo.component.html",
         ":home_styles",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
+    deps = [
+        "//:node_modules/@angular/common",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/router",
     ],
 )

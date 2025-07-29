@@ -8,7 +8,7 @@
 
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 import {ClickOutside} from './click-outside.directive';
 import {By} from '@angular/platform-browser';
 
@@ -18,7 +18,8 @@ describe('ClickOutside', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ExampleComponent, RouterTestingModule],
+      imports: [ExampleComponent],
+      providers: [provideRouter([])],
     });
     fixture = TestBed.createComponent(ExampleComponent);
     component = fixture.componentInstance;

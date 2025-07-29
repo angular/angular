@@ -1,16 +1,26 @@
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
-ts_library(
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    deps = [
+        "//:node_modules/@types/node",
+        "//packages:tsconfig_build",
+    ],
+)
+
+ts_project(
     name = "generate-locales-tool",
     srcs = glob(["*.ts"]),
+    # Disabled to remove doubling of runtime files as we are approaching the 70k limit when
+    # CLDR files are also included in the binary action.
+    enable_runtime_rnjs_interop = False,
     deps = [
-        "@npm//@bazel/runfiles",
-        "@npm//@types/cldrjs",
-        "@npm//@types/node",
-        "@npm//cldr",
-        "@npm//cldrjs",
-        "@npm//tinyglobby",
+        "//:node_modules/@types/cldrjs",
+        "//:node_modules/cldr",
+        "//:node_modules/cldrjs",
+        "//:node_modules/tinyglobby",
     ],
 )

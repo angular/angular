@@ -1091,6 +1091,8 @@ export function transformExpressionsInOp(
     case OpKind.StyleMap:
     case OpKind.ClassProp:
     case OpKind.ClassMap:
+    case OpKind.AnimationString:
+    case OpKind.AnimationBinding:
     case OpKind.Binding:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
@@ -1141,6 +1143,8 @@ export function transformExpressionsInOp(
         op.contextValue = transformExpressionsInExpression(op.contextValue, transform, flags);
       }
       break;
+    case OpKind.Animation:
+    case OpKind.AnimationListener:
     case OpKind.Listener:
     case OpKind.TwoWayListener:
       for (const innerOp of op.handlerOps) {
@@ -1259,13 +1263,6 @@ export function transformExpressionsInExpression(
   } else if (expr instanceof o.ReadKeyExpr) {
     expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
     expr.index = transformExpressionsInExpression(expr.index, transform, flags);
-  } else if (expr instanceof o.WritePropExpr) {
-    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
-    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
-  } else if (expr instanceof o.WriteKeyExpr) {
-    expr.receiver = transformExpressionsInExpression(expr.receiver, transform, flags);
-    expr.index = transformExpressionsInExpression(expr.index, transform, flags);
-    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
   } else if (expr instanceof o.InvokeFunctionExpr) {
     expr.fn = transformExpressionsInExpression(expr.fn, transform, flags);
     for (let i = 0; i < expr.args.length; i++) {
@@ -1293,8 +1290,6 @@ export function transformExpressionsInExpression(
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
   } else if (expr instanceof o.VoidExpr) {
     expr.expr = transformExpressionsInExpression(expr.expr, transform, flags);
-  } else if (expr instanceof o.WriteVarExpr) {
-    expr.value = transformExpressionsInExpression(expr.value, transform, flags);
   } else if (expr instanceof o.LocalizedString) {
     for (let i = 0; i < expr.expressions.length; i++) {
       expr.expressions[i] = transformExpressionsInExpression(expr.expressions[i], transform, flags);

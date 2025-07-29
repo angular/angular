@@ -110,6 +110,10 @@ NOTE: Raw file sizes do not reflect development server per-request transformatio
 
 And now you can visit the path in `Local` (e.g., `http://localhost:4200`) to see your application. Happy coding! 🎉
 
+### Using AI for Development
+
+To get started with building in your preferred AI powered IDE, [check out Angular prompt rules and best practices](/ai/develop-with-ai).
+
 ## Next steps
 
 Now that you've created your Angular project, you can learn more about Angular in our [Essentials guide](/essentials) or choose a topic in our in-depth guides!

@@ -1,0 +1,13 @@
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "ai",
+    srcs = glob([
+        "*.md",
+    ]),
+    data = [
+        "//adev/src/assets/images:what_is_angular.svg",
+        "//adev/src/context",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)

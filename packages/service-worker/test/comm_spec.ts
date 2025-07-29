@@ -13,6 +13,7 @@ import {
   NoNewVersionDetectedEvent,
   VersionDetectedEvent,
   VersionEvent,
+  VersionFailedEvent,
   VersionReadyEvent,
 } from '../src/low_level';
 import {ngswCommChannelFactory, SwRegistrationOptions} from '../src/provider';
@@ -353,6 +354,22 @@ describe('ServiceWorker library', () => {
       });
     });
 
+    describe('notificationCloses', () => {
+      it('receives notification closes messages', () => {
+        const sendMessage = (type: string, action: string) =>
+          mock.sendMessage({type, data: {action}});
+
+        const receivedMessages: string[] = [];
+        push.notificationCloses.subscribe((msg: {action: string}) =>
+          receivedMessages.push(msg.action),
+        );
+
+        sendMessage('NOTIFICATION_CLOSE', 'empty_string');
+
+        expect(receivedMessages).toEqual(['empty_string']);
+      });
+    });
+
     describe('subscription', () => {
       let nextSubEmitResolve: () => void;
       let nextSubEmitPromise: Promise<void>;
@@ -491,6 +508,25 @@ describe('ServiceWorker library', () => {
         version: {
           hash: 'A',
         },
+      });
+    });
+    it('processes version failed events with cache corruption error', (done) => {
+      update.versionUpdates.subscribe((event) => {
+        expect(event.type).toEqual('VERSION_FAILED');
+        expect((event as VersionFailedEvent).version).toEqual({
+          hash: 'B',
+          appData: {name: 'test-app'},
+        });
+        expect((event as VersionFailedEvent).error).toContain('Cache corruption detected');
+        done();
+      });
+      mock.sendMessage({
+        type: 'VERSION_FAILED',
+        version: {
+          hash: 'B',
+          appData: {name: 'test-app'},
+        },
+        error: 'Cache corruption detected during resource fetch',
       });
     });
     it('activates updates when requested', async () => {

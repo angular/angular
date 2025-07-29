@@ -8,6 +8,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { DoCheck } from '@angular/core';
 import { DOCUMENT } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { EnvironmentInjector } from '@angular/core';
 import * as i0 from '@angular/core';
 import { ɵIMAGE_CONFIG as IMAGE_CONFIG } from '@angular/core';
 import { ɵImageConfig as ImageConfig } from '@angular/core';
@@ -495,6 +496,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // (undocumented)
     ngComponentOutletContent?: any[][];
     // (undocumented)
+    ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
+    // (undocumented)
     ngComponentOutletInjector?: Injector;
     // (undocumented)
     ngComponentOutletInputs?: Record<string, unknown>;
@@ -506,7 +509,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletEnvironmentInjector": { "alias": "ngComponentOutletEnvironmentInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
@@ -603,6 +606,7 @@ export abstract class NgLocalization {
 // @public
 export class NgOptimizedImage implements OnInit, OnChanges {
     constructor();
+    decoding?: 'sync' | 'async' | 'auto';
     disableOptimizedSrcset: boolean;
     fill: boolean;
     protected generatePlaceholder(placeholderInput: string | boolean): string | boolean | null;
@@ -636,7 +640,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     sizes?: string;
     width: number | undefined;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "placeholder": { "alias": "placeholder"; "required": false; }; "placeholderConfig": { "alias": "placeholderConfig"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgOptimizedImage, "img[ngSrc]", never, { "ngSrc": { "alias": "ngSrc"; "required": true; }; "ngSrcset": { "alias": "ngSrcset"; "required": false; }; "sizes": { "alias": "sizes"; "required": false; }; "width": { "alias": "width"; "required": false; }; "height": { "alias": "height"; "required": false; }; "decoding": { "alias": "decoding"; "required": false; }; "loading": { "alias": "loading"; "required": false; }; "priority": { "alias": "priority"; "required": false; }; "loaderParams": { "alias": "loaderParams"; "required": false; }; "disableOptimizedSrcset": { "alias": "disableOptimizedSrcset"; "required": false; }; "fill": { "alias": "fill"; "required": false; }; "placeholder": { "alias": "placeholder"; "required": false; }; "placeholderConfig": { "alias": "placeholderConfig"; "required": false; }; "src": { "alias": "src"; "required": false; }; "srcset": { "alias": "srcset"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgOptimizedImage, never>;
 }
@@ -716,9 +720,9 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
     constructor(_viewContainerRef: ViewContainerRef);
     // (undocumented)
     ngOnChanges(changes: SimpleChanges): void;
-    ngTemplateOutlet: TemplateRef<C> | null;
-    ngTemplateOutletContext: C | null;
-    ngTemplateOutletInjector: Injector | null;
+    ngTemplateOutlet: TemplateRef<C> | null | undefined;
+    ngTemplateOutletContext: C | null | undefined;
+    ngTemplateOutletInjector: Injector | null | undefined;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<NgTemplateOutlet<any>, "[ngTemplateOutlet]", never, { "ngTemplateOutletContext": { "alias": "ngTemplateOutletContext"; "required": false; }; "ngTemplateOutlet": { "alias": "ngTemplateOutlet"; "required": false; }; "ngTemplateOutletInjector": { "alias": "ngTemplateOutletInjector"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)

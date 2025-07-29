@@ -210,6 +210,8 @@ export function buildAttributeCompletionTable(
   component: ts.ClassDeclaration,
   element: TmplAstElement | TmplAstTemplate,
   checker: TemplateTypeChecker,
+  ls: ts.LanguageService,
+  includeExternalModule: boolean | undefined,
 ): Map<string, AttributeCompletion> {
   const table = new Map<string, AttributeCompletion>();
 
@@ -288,7 +290,9 @@ export function buildAttributeCompletionTable(
   // Next, explore hypothetical directives and determine if the addition of any single attributes
   // can cause the directive to match the element.
   const directivesInScope = checker
-    .getPotentialTemplateDirectives(component)
+    .getPotentialTemplateDirectives(component, ls, {
+      includeExternalModule: false,
+    })
     .filter((d) => d.isInScope);
   if (directivesInScope !== null) {
     const elementSelector = makeElementSelector(element);

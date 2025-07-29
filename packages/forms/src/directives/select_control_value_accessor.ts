@@ -7,10 +7,15 @@
  */
 
 import {
+  afterNextRender,
+  ApplicationRef,
+  ChangeDetectorRef,
+  DestroyRef,
   Directive,
   ElementRef,
   forwardRef,
   Host,
+  inject,
   Input,
   OnDestroy,
   Optional,
@@ -81,9 +86,9 @@ function _extractId(valueString: string): string {
  *
  * ```html
  * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
- *     <option *ngFor="let country of countries" [ngValue]="country">
- *         {{country.name}}
- *     </option>
+ *    @for(country of countries; track $index) {
+ *        <option[ngValue]="country">{{country.name}}</option>
+ *    }
  * </select>
  *
  * compareFn(c1: Country, c2: Country): boolean {
@@ -136,12 +141,64 @@ export class SelectControlValueAccessor
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
+  // We need this because we might be in the process of destroying the root
+  // injector, which is marked as destroyed before running destroy hooks.
+  // Attempting to use afterNextRender with the node injector would evntually
+  // run into that already destroyed injector.
+  private readonly appRefInjector = inject(ApplicationRef).injector;
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private _queuedWrite = false;
+
+  /**
+   * This is needed to efficiently set the select value when adding/removing options. If
+   * writeValue is instead called for every added/removed option, this results in exponentially
+   * more _compareValue calls than the number of option elements (issue #41330).
+   *
+   * Secondly, calling writeValue when rendering individual option elements instead of after they
+   * are all rendered caused an issue in Safari and IE 11 where the first option element failed
+   * to be deselected when no option matched the select ngModel. This was because Angular would
+   * set the select element's value property before appending the option's child text node to the
+   * DOM (issue #14505).
+   *
+   * Finally, this approach is necessary to avoid an issue with delayed element removal when
+   * using the animations module (in all browsers). Otherwise when a selected option is removed
+   * (so no option matches the ngModel anymore), Angular would change the select element value
+   * before actually removing the option from the DOM. Then when the option is finally removed
+   * from the DOM, the browser would change the select value to that of the first option, even
+   * though it doesn't match the ngModel (issue #18430).
+   *
+   * @internal
+   */
+  _writeValueAfterRender(): void {
+    if (this._queuedWrite || this.appRefInjector.destroyed) {
+      return;
+    }
+
+    this._queuedWrite = true;
+
+    afterNextRender(
+      {
+        write: () => {
+          if (this.destroyRef.destroyed) {
+            return;
+          }
+          this._queuedWrite = false;
+          this.writeValue(this.value);
+        },
+      },
+      {injector: this.appRefInjector},
+    );
+  }
 
   /**
    * Sets the "value" property on the select element.
    * @docs-private
    */
   writeValue(value: any): void {
+    // TODO(atscott): This could likely be optimized more by only marking for check if the value is changed
+    // note that this needs to include both the internal value and the value in the DOM.
+    this.cdr.markForCheck();
     this.value = value;
     const id: string | null = this._getOptionId(value);
     const valueString = _buildValueString(id, value);
@@ -218,7 +275,7 @@ export class NgSelectOption implements OnDestroy {
     if (this._select == null) return;
     this._select._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
-    this._select.writeValue(this._select.value);
+    this._select._writeValueAfterRender();
   }
 
   /**
@@ -229,7 +286,7 @@ export class NgSelectOption implements OnDestroy {
   @Input('value')
   set value(value: any) {
     this._setElementValue(value);
-    if (this._select) this._select.writeValue(this._select.value);
+    if (this._select) this._select._writeValueAfterRender();
   }
 
   /** @internal */
@@ -241,7 +298,7 @@ export class NgSelectOption implements OnDestroy {
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);
-      this._select.writeValue(this._select.value);
+      this._select._writeValueAfterRender();
     }
   }
 }

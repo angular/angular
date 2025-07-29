@@ -14,12 +14,12 @@ To use a pipe in a template include it in an interpolated expression. Check out 
 import {UpperCasePipe} from '@angular/common';
 
 @Component({
-...
-template: `{{ loudMessage | uppercase }}`,
-imports: [UpperCasePipe],
+  ...
+  template: `{{ loudMessage | uppercase }}`,
+  imports: [UpperCasePipe],
 })
 class App {
-loudMessage = 'we think you are doing great!'
+  loudMessage = 'we think you are doing great!'
 }
 </docs-code>
 
@@ -41,8 +41,8 @@ Next, update `@Component()` decorator `imports` to include a reference to `Lower
 
 <docs-code language="ts" highlight="[3]">
 @Component({
-    ...
-    imports: [LowerCasePipe]
+  ...
+  imports: [LowerCasePipe]
 })
 </docs-code>
 

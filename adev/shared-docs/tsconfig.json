@@ -13,7 +13,7 @@
     "jsxFragmentFactory": "Fragment",
     "types": ["node"],
     "paths": {
-      "@angular/*": ["../../packages/*"]
-    }
+      "@angular/*": ["../../packages/*/index"]
+    },
   }
 }

@@ -1,6 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//adev/shared-docs:defaults.bzl", "ng_project", "ts_project")
-load("//tools:defaults.bzl", "karma_web_test_suite")
+load("//adev/shared-docs:defaults.bzl", "ng_project", "sass_binary", "ts_project", "zoneless_web_test_suite")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -13,16 +11,14 @@ ng_project(
         ":navigation-list.component.css",
         "navigation-list.component.html",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/router",
-    ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
     ],
     deps = [
-        "//:node_modules/@angular/material",
+        "//adev:node_modules/@angular/common",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/material",
+        "//adev:node_modules/@angular/router",
         "//adev/shared-docs/components/icon:icon_rjs",
         "//adev/shared-docs/interfaces:interfaces_rjs",
         "//adev/shared-docs/pipes:pipes_rjs",
@@ -44,19 +40,17 @@ ts_project(
     srcs = glob(
         ["*.spec.ts"],
     ),
-    interop_deps = [
-        ":navigation-list",
-        "//adev/shared-docs/interfaces",
-        "//adev/shared-docs/services",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/router",
-        "//packages/router/testing",
+    deps = [
+        ":navigation-list_rjs",
+        "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/services:services_rjs",
     ],
 )
 
-karma_web_test_suite(
+zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib"],
+    deps = [":test_lib_rjs"],
 )

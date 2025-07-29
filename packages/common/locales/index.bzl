@@ -1,5 +1,6 @@
+load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
-load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
+load("//tools:defaults2.bzl", "js_run_binary")
 
 # List of locales the tool can generate files for.
 LOCALES = _ALL_CLDR_LOCALES
@@ -11,41 +12,46 @@ GET_BASE_LOCALE_FILE_BIN = "%s:get-base-locale-file" % GENERATE_LOCALES_TOOL_BIN
 GET_CLOSURE_LOCALE_FILE_BIN = "%s:get-closure-locale-file" % GENERATE_LOCALES_TOOL_BIN
 WRITE_LOCALE_FILES_TO_DIST_BIN = "%s:write-locale-files-to-dist" % GENERATE_LOCALES_TOOL_BIN
 
-def _run_tool_with_single_output(name, output_file, tool, **kwargs):
-    native.genrule(
+def generate_base_currencies_file(name, src):
+    js_run_binary(
+        name = name + "_generated",
+        outs = ["base_currencies_generated.ts"],
+        tool = "//packages/common/locales/generate-locales-tool/bin:get-base-currencies-file",
+        chdir = native.package_name(),
+    )
+    write_source_file(
         name = name,
-        outs = [output_file],
-        srcs = [],
-        exec_tools = [tool],
-        cmd = """$(location %s) > $@""" % tool,
-        **kwargs
+        out_file = src,
+        in_file = name + "_generated",
     )
 
-def generate_base_currencies_file(name, output_file, **kwargs):
-    _run_tool_with_single_output(
+def generate_base_locale_file(name, src):
+    js_run_binary(
+        name = name + "_generated",
+        outs = ["base_locale_file.ts"],
+        tool = "//packages/common/locales/generate-locales-tool/bin:get-base-locale-file",
+        chdir = native.package_name(),
+    )
+    write_source_file(
         name = name,
-        output_file = output_file,
-        tool = GET_BASE_CURRENCIES_FILE_BIN,
-        **kwargs
+        out_file = src,
+        in_file = name + "_generated",
     )
 
-def generate_base_locale_file(name, output_file, **kwargs):
-    _run_tool_with_single_output(
+def generate_closure_locale_file(name, src):
+    js_run_binary(
+        name = name + "_generated",
+        outs = ["closure_locale_generated.ts"],
+        tool = "//packages/common/locales/generate-locales-tool/bin:get-closure-locale-file",
+        chdir = native.package_name(),
+    )
+    write_source_file(
         name = name,
-        output_file = output_file,
-        tool = GET_BASE_LOCALE_FILE_BIN,
-        **kwargs
+        out_file = src,
+        in_file = name + "_generated",
     )
 
-def generate_closure_locale_file(name, output_file, **kwargs):
-    _run_tool_with_single_output(
-        name = name,
-        output_file = output_file,
-        tool = GET_CLOSURE_LOCALE_FILE_BIN,
-        **kwargs
-    )
-
-def generate_all_locale_files(name, **kwargs):
+def generate_all_locale_files(name):
     locale_files = []
 
     for locale in LOCALES:
@@ -55,12 +61,9 @@ def generate_all_locale_files(name, **kwargs):
             "extra/%s.ts" % locale,
         ]
 
-    npm_package_bin(
+    js_run_binary(
         name = name,
         outs = locale_files,
-        tool = WRITE_LOCALE_FILES_TO_DIST_BIN,
-        args = [
-            "$(@D)",
-        ],
-        **kwargs
+        tool = "//packages/common/locales/generate-locales-tool/bin:write-locale-files-to-dist",
+        chdir = native.package_name(),
     )

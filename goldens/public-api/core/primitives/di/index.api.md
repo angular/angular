@@ -5,7 +5,17 @@
 ```ts
 
 // @public (undocumented)
+export function defineInjectable<T>(opts: {
+    token: unknown;
+    providedIn?: Type<any> | 'root' | 'platform' | 'any' | 'environment' | null;
+    factory: () => T;
+}): ɵɵInjectableDeclaration<T>;
+
+// @public (undocumented)
 export function getCurrentInjector(): Injector | undefined | null;
+
+// @public (undocumented)
+export function inject<T>(token: InjectionToken<T> | Constructor<T>): T;
 
 // @public
 export interface InjectionToken<T> {
@@ -34,6 +44,9 @@ export class NotFoundError extends Error {
     // (undocumented)
     readonly name: string;
 }
+
+// @public (undocumented)
+export function registerInjectable<T>(ctor: unknown, declaration: ɵɵInjectableDeclaration<T>): InjectionToken<T>;
 
 // @public (undocumented)
 export function setCurrentInjector(injector: Injector | null | undefined): Injector | undefined | null;

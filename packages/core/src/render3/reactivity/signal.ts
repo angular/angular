@@ -76,13 +76,13 @@ export interface CreateSignalOptions<T> {
  * Create a `Signal` that can be set or updated directly.
  */
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
-  const signalFn = createSignal(initialValue, options?.equal) as SignalGetter<T> &
-    WritableSignal<T>;
+  const [get, set, update] = createSignal(initialValue, options?.equal);
 
+  const signalFn = get as SignalGetter<T> & WritableSignal<T>;
   const node = signalFn[SIGNAL];
 
-  signalFn.set = (newValue: T) => signalSetFn(node, newValue);
-  signalFn.update = (updateFn: (value: T) => T) => signalUpdateFn(node, updateFn);
+  signalFn.set = set;
+  signalFn.update = update;
   signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
 
   if (ngDevMode) {

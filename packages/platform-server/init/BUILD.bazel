@@ -1,9 +1,10 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
-load("//tools:defaults.bzl", "esbuild", "ng_module", "tsec_test")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@npm2//:rollup/package_json.bzl", rollup = "bin")
+load("//tools:defaults2.bzl", "ng_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
-ng_module(
+ng_project(
     name = "init",
     srcs = glob(
         [
@@ -17,12 +18,24 @@ ng_module(
     ],
 )
 
-esbuild(
+rollup.rollup(
     name = "bundled_domino",
-    entry_point = "@npm//:node_modules/domino/lib/index.js",
-    format = "esm",
-    output = "src/bundled-domino.mjs",
-    deps = ["@npm//domino"],
+    srcs = [
+        "//:node_modules/@rollup/plugin-commonjs",
+        "//:node_modules/domino",
+    ],
+    outs = [
+        "src/bundled-domino.mjs",
+    ],
+    args = [
+        "--format=esm",
+        "--plugin=@rollup/plugin-commonjs",
+        "--input=node_modules/domino/lib/index.js",
+        "--sourcemap=false",
+        "--file=packages/platform-server/init/src/bundled-domino.mjs",
+    ],
+    progress_message = "Bundling domino",
+    silent_on_success = True,
 )
 
 js_library(
@@ -35,8 +48,8 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = "init",
-    tsconfig = "//packages:tsec_config",
+    target = ":init_rjs",
+    tsconfig = "//packages:tsconfig_build",
 )
 
 filegroup(

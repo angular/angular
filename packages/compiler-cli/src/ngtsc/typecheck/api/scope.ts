@@ -32,6 +32,29 @@ export enum PotentialImportKind {
   Standalone,
 }
 
+export interface TsCompletionEntryInfo {
+  /**
+   * Sometimes, the location of the tsCompletionEntry symbol does not match the location of the Angular symbol.
+   *
+   * For example, the BarComponent is declared in `bar.ts` and exported from there. The `public_api.ts` also
+   * reexports the BarComponent from `bar.ts`, so the `tsCompletionEntrySymbolFileName` will be `public_api.ts`.
+   */
+  tsCompletionEntrySymbolFileName: string;
+  /**
+   * Sometime the component can be exported with a different name than the class name.
+   * For example, `export {BarComponent as NewBarComponent} from './bar.component';`
+   *
+   * Sometimes, the component is exported by the `NgModule`.
+   */
+  tsCompletionEntrySymbolName: string;
+
+  /**
+   * This data is from the tsLs completion entry, and
+   * will be used in the `ls.getCompletionEntryDetails`.
+   */
+  tsCompletionEntryData?: ts.CompletionEntryData;
+}
+
 /**
  * Metadata on a directive which is available in a template.
  */
@@ -67,6 +90,14 @@ export interface PotentialDirective {
    * Whether or not this directive is in scope.
    */
   isInScope: boolean;
+
+  /**
+   * The directive can be exported by multiple modules,
+   * collecting all the entry information here.
+   *
+   * Filter the appropriate entry information when using it to compute the module specifier.
+   */
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null;
 }
 
 /**
@@ -89,6 +120,14 @@ export interface PotentialPipe {
    * Whether or not this pipe is in scope.
    */
   isInScope: boolean;
+
+  /**
+   * The pipe can be exported by multiple modules,
+   * collecting all the entry information here.
+   *
+   * Filter the appropriate entry information when using it to compute the module specifier.
+   */
+  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null;
 }
 
 /**
@@ -104,4 +143,8 @@ export enum PotentialImportMode {
    * as a part of the migration.
    */
   ForceDirect,
+}
+
+export interface PotentialDirectiveModuleSpecifierResolver {
+  resolve(toImport: Reference<ClassDeclaration>, importOn: ts.Node | null): string | undefined;
 }

@@ -1,5 +1,5 @@
-load("//tools:defaults.bzl", "esbuild", "tsec_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("//tools:defaults2.bzl", "ts_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,8 +18,8 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = "event-dispatch",
-    tsconfig = "//packages:tsec_config",
+    target = ":event-dispatch_rjs",
+    tsconfig = "//packages/core:tsconfig_build",
 )
 
 filegroup(
@@ -33,8 +33,7 @@ filegroup(
 
 esbuild(
     name = "contract_bundle_min",
-    args = {
-        "sourcemap": False,
+    config = {
         "resolveExtensions": [
             ".mjs",
             ".js",
@@ -44,6 +43,6 @@ esbuild(
     entry_point = ":contract_binary.js",
     format = "iife",
     minify = True,
-    sourcemap = "inline",
-    deps = [":event-dispatch"],
+    sourcemap = "external",
+    deps = [":event-dispatch_rjs"],
 )

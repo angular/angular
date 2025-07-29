@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "generate_api_docs")
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "generate_api_docs", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -8,16 +7,14 @@ ng_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    interop_deps = [
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/primitives/dom-navigation/testing",
-        "//packages/localize",
-        "//packages/zone.js/lib:zone_d_ts",
-    ],
     deps = [
         "//:node_modules/@types/jasmine",
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/dom-navigation/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
     ],
 )
 

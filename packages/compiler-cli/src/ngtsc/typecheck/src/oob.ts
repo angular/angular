@@ -10,7 +10,7 @@ import {
   AbsoluteSourceSpan,
   BindingPipe,
   PropertyRead,
-  PropertyWrite,
+  AST,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
   TmplAstComponent,
@@ -65,8 +65,9 @@ export interface OutOfBandDiagnosticRecorder {
    *
    * @param id the type-checking ID of the template which contains the unknown pipe.
    * @param ast the `BindingPipe` invocation of the pipe which could not be found.
+   * @param isStandalone whether the host component is standalone.
    */
-  missingPipe(id: TypeCheckId, ast: BindingPipe): void;
+  missingPipe(id: TypeCheckId, ast: BindingPipe, isStandalone: boolean): void;
 
   /**
    * Reports usage of a pipe imported via `@Component.deferredImports` outside
@@ -172,11 +173,7 @@ export interface OutOfBandDiagnosticRecorder {
   ): void;
 
   /** Reports cases where users are writing to `@let` declarations. */
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void;
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void;
 
   /** Reports cases where users are accessing an `@let` before it is defined.. */
   letUsedBeforeDefinition(id: TypeCheckId, node: PropertyRead, target: TmplAstLetDeclaration): void;
@@ -216,16 +213,56 @@ export interface OutOfBandDiagnosticRecorder {
     directive: TmplAstDirective,
     node: TmplAstBoundAttribute | TmplAstTextAttribute | TmplAstBoundEvent,
   ): void;
+
+  /**
+   * Reports that an implicit deferred trigger is set on a block that does not have a placeholder.
+   */
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void;
+
+  /**
+   * Reports that an implicit deferred trigger is set on a block whose placeholder is not set up
+   * correctly (e.g. more than one root node).
+   */
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
-  private _diagnostics: TemplateDiagnostic[] = [];
+  private readonly _diagnostics: TemplateDiagnostic[] = [];
 
   /**
    * Tracks which `BindingPipe` nodes have already been recorded as invalid, so only one diagnostic
    * is ever produced per node.
    */
-  private recordedPipes = new Set<BindingPipe>();
+  private readonly recordedPipes = new Set<BindingPipe>();
+
+  /** Common pipes that can be suggested to users. */
+  private readonly pipeSuggestions = new Map<string, string>([
+    ['async', 'AsyncPipe'],
+    ['uppercase', 'UpperCasePipe'],
+    ['lowercase', 'LowerCasePipe'],
+    ['json', 'JsonPipe'],
+    ['slice', 'SlicePipe'],
+    ['number', 'DecimalPipe'],
+    ['percent', 'PercentPipe'],
+    ['titlecase', 'TitleCasePipe'],
+    ['currency', 'CurrencyPipe'],
+    ['date', 'DatePipe'],
+    ['i18nPlural', 'I18nPluralPipe'],
+    ['i18nSelect', 'I18nSelectPipe'],
+    ['keyvalue', 'KeyValuePipe'],
+  ]);
 
   constructor(private resolver: TypeCheckSourceResolver) {}
 
@@ -250,13 +287,10 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  missingPipe(id: TypeCheckId, ast: BindingPipe): void {
+  missingPipe(id: TypeCheckId, ast: BindingPipe, isStandalone: boolean): void {
     if (this.recordedPipes.has(ast)) {
       return;
     }
-
-    const mapping = this.resolver.getTemplateSourceMapping(id);
-    const errorMsg = `No pipe found with name '${ast.name}'.`;
 
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, ast.nameSpan);
     if (sourceSpan === null) {
@@ -264,6 +298,25 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`,
       );
     }
+
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    let errorMsg = `No pipe found with name '${ast.name}'.`;
+
+    if (this.pipeSuggestions.has(ast.name)) {
+      const suggestedClassName = this.pipeSuggestions.get(ast.name)!;
+      const suggestedImport = '@angular/common';
+
+      if (isStandalone) {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the component.`;
+      } else {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the module declaring the component.`;
+      }
+    }
+
     this._diagnostics.push(
       makeTemplateDiagnostic(
         id,
@@ -628,11 +681,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  illegalWriteToLetDeclaration(
-    id: TypeCheckId,
-    node: PropertyWrite,
-    target: TmplAstLetDeclaration,
-  ): void {
+  illegalWriteToLetDeclaration(id: TypeCheckId, node: AST, target: TmplAstLetDeclaration): void {
     const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, node.sourceSpan);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property write.`);
@@ -737,6 +786,45 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
         errorMsg,
+      ),
+    );
+  }
+
+  deferImplicitTriggerMissingPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+      ),
+    );
+  }
+
+  deferImplicitTriggerInvalidPlaceholder(
+    id: TypeCheckId,
+    trigger:
+      | TmplAstHoverDeferredTrigger
+      | TmplAstInteractionDeferredTrigger
+      | TmplAstViewportDeferredTrigger,
+  ): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a ' +
+          '@placeholder block with exactly one root element node',
       ),
     );
   }

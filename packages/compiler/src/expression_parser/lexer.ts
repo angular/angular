@@ -133,11 +133,13 @@ export class Token {
   }
 
   isTemplateLiteralPart(): this is StringToken {
-    return this.isString() && this.kind === StringTokenKind.TemplateLiteralPart;
+    // Note: Explicit type is needed for Closure.
+    return this.isString() && (this as StringToken).kind === StringTokenKind.TemplateLiteralPart;
   }
 
   isTemplateLiteralEnd(): this is StringToken {
-    return this.isString() && this.kind === StringTokenKind.TemplateLiteralEnd;
+    // Note: Explicit type is needed for Closure.
+    return this.isString() && (this as StringToken).kind === StringTokenKind.TemplateLiteralEnd;
   }
 
   isTemplateLiteralInterpolationStart(): boolean {
@@ -212,8 +214,7 @@ class _Scanner {
   private readonly length: number;
   private peek = 0;
   private index = -1;
-  private literalInterpolationDepth = 0;
-  private braceDepth = 0;
+  private braceStack: ('interpolation' | 'expression')[] = [];
 
   constructor(private readonly input: string) {
     this.length = input.length;
@@ -295,13 +296,17 @@ class _Scanner {
       case chars.$HASH:
         return this.scanPrivateIdentifier();
       case chars.$PLUS:
+        return this.scanComplexOperator(start, '+', chars.$EQ, '=');
       case chars.$MINUS:
+        return this.scanComplexOperator(start, '-', chars.$EQ, '=');
       case chars.$SLASH:
+        return this.scanComplexOperator(start, '/', chars.$EQ, '=');
       case chars.$PERCENT:
+        return this.scanComplexOperator(start, '%', chars.$EQ, '=');
       case chars.$CARET:
-        return this.scanOperator(start, String.fromCharCode(peek));
+        return this.scanOperator(start, '^');
       case chars.$STAR:
-        return this.scanComplexOperator(start, '*', chars.$STAR, '*');
+        return this.scanStar(start);
       case chars.$QUESTION:
         return this.scanQuestion(start);
       case chars.$LT:
@@ -318,9 +323,9 @@ class _Scanner {
           '=',
         );
       case chars.$AMPERSAND:
-        return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&');
+        return this.scanComplexOperator(start, '&', chars.$AMPERSAND, '&', chars.$EQ, '=');
       case chars.$BAR:
-        return this.scanComplexOperator(start, '|', chars.$BAR, '|');
+        return this.scanComplexOperator(start, '|', chars.$BAR, '|', chars.$EQ, '=');
       case chars.$NBSP:
         while (chars.isWhitespace(this.peek)) this.advance();
         return this.scanToken();
@@ -341,7 +346,7 @@ class _Scanner {
   }
 
   private scanOpenBrace(start: number, code: number): Token {
-    this.braceDepth++;
+    this.braceStack.push('expression');
     this.advance();
     return newCharacterToken(start, this.index, code);
   }
@@ -349,13 +354,12 @@ class _Scanner {
   private scanCloseBrace(start: number, code: number): Token {
     this.advance();
 
-    if (this.braceDepth === 0 && this.literalInterpolationDepth > 0) {
-      this.literalInterpolationDepth--;
+    const currentBrace = this.braceStack.pop();
+    if (currentBrace === 'interpolation') {
       this.tokens.push(newOperatorToken(start, this.index, '}'));
       return this.scanTemplateLiteralPart(this.index);
     }
 
-    this.braceDepth--;
     return newCharacterToken(start, this.index, code);
   }
 
@@ -485,13 +489,23 @@ class _Scanner {
 
   private scanQuestion(start: number): Token {
     this.advance();
-    let str: string = '?';
-    // Either `a ?? b` or 'a?.b'.
-    if (this.peek === chars.$QUESTION || this.peek === chars.$PERIOD) {
-      str += this.peek === chars.$PERIOD ? '.' : '?';
+    let operator = '?';
+    // `a ?? b` or `a ??= b`.
+    if (this.peek === chars.$QUESTION) {
+      operator += '?';
+      this.advance();
+
+      // @ts-expect-error
+      if (this.peek === chars.$EQ) {
+        operator += '=';
+        this.advance();
+      }
+    } else if (this.peek === chars.$PERIOD) {
+      // `a?.b`
+      operator += '.';
       this.advance();
     }
-    return newOperatorToken(start, this.index, str);
+    return newOperatorToken(start, this.index, operator);
   }
 
   private scanTemplateLiteralPart(start: number): Token {
@@ -512,7 +526,7 @@ class _Scanner {
 
         // @ts-expect-error
         if (this.peek === chars.$LBRACE) {
-          this.literalInterpolationDepth++;
+          this.braceStack.push('interpolation');
           this.tokens.push(
             new StringToken(
               start,
@@ -569,6 +583,28 @@ class _Scanner {
     }
     buffer += String.fromCharCode(unescapedCode);
     return buffer;
+  }
+
+  private scanStar(start: number): Token {
+    this.advance();
+    // `*`, `**`, `**=` or `*=`
+    let operator = '*';
+
+    if (this.peek === chars.$STAR) {
+      operator += '*';
+      this.advance();
+
+      // @ts-expect-error
+      if (this.peek === chars.$EQ) {
+        operator += '=';
+        this.advance();
+      }
+    } else if (this.peek === chars.$EQ) {
+      operator += '=';
+      this.advance();
+    }
+
+    return newOperatorToken(start, this.index, operator);
   }
 }
 

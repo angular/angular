@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {By} from '@angular/platform-browser';
 import {LocationStrategy, HashLocationStrategy, Location} from '@angular/common';
 import {
   inject,
@@ -57,6 +57,8 @@ import {
   createRoot,
   advance,
 } from './integration_helpers';
+import {getLoadedComponent} from '../../src/utils/config';
+import {of, delay} from 'rxjs';
 
 export function lazyLoadingIntegrationSuite() {
   describe('lazy loading', () => {
@@ -760,6 +762,12 @@ export function lazyLoadingIntegrationSuite() {
       })
       class LazyLoadedComponent {}
 
+      @Component({
+        selector: 'lazy',
+        template: 'LazyLoadedStandaloneComponent',
+      })
+      class LazyLoadedStandaloneComponent {}
+
       @NgModule({
         declarations: [LazyLoadedComponent],
         imports: [RouterModule.forChild([{path: 'LoadedModule2', component: LazyLoadedComponent}])],
@@ -806,6 +814,33 @@ export function lazyLoadingIntegrationSuite() {
         const secondRoutes = getLoadedRoutes(firstRoutes[0])!;
         expect(secondRoutes).toBeDefined();
         expect(secondRoutes[0].path).toEqual('LoadedModule2');
+      });
+
+      it('should activate preloaded component', async () => {
+        const router = TestBed.inject(Router);
+        const routerPreloader = TestBed.inject(RouterPreloader);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {path: 'blank', component: BlankCmp},
+          {
+            path: 'lazy',
+            loadComponent: () => of(LazyLoadedStandaloneComponent).pipe(delay(10)),
+            canActivate: [() => of(true).pipe(delay(20))],
+          },
+        ]);
+
+        router.navigateByUrl('/blank');
+
+        await advance(fixture);
+
+        routerPreloader.preload();
+
+        router.navigateByUrl('/lazy');
+
+        await advance(fixture, 40);
+
+        expect(fixture.nativeElement).toHaveText('LazyLoadedStandaloneComponent');
       });
 
       it('should not preload when canLoad is present and does not execute guard', async () => {

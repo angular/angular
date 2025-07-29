@@ -1,25 +1,31 @@
-load("//tools:defaults.bzl", "app_bundle", "http_server", "ng_module")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
+load("//tools:defaults2.bzl", "http_server")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
-# Exported since the e2e test needs to read the source file in order to
-# ensure that the source map properly maps back to the source file.
-exports_files(["index.ts"])
-
-ng_module(
-    name = "sourcemap",
-    srcs = glob(["**/*.ts"]),
-    tsconfig = "//modules/playground:tsconfig-build.json",
+optimize_angular_app(
+    name = "bundles",
+    srcs = glob(["**/*.ts"]) + ["index.html"],
+    include_zonejs = True,
+    jq_config_filter = ".projects.boilerplate.architect.build.options.sourceMap.scripts = true",
     deps = [
-        "//packages/core",
-        "//packages/platform-browser",
+        "//modules:node_modules/@angular/build",
+        "//modules:node_modules/@angular/common",
+        "//modules:node_modules/@angular/core",
+        "//modules:node_modules/@angular/platform-browser",
+        "//modules:node_modules/rxjs",
+        "//modules:node_modules/tslib",
+        "//modules:node_modules/zone.js",
     ],
 )
 
-app_bundle(
+# The script needs to be called `app_bundle` for easier syncing into g3.
+genrule(
     name = "app_bundle",
-    entry_point = ":index.ts",
-    deps = [":sourcemap"],
+    srcs = [":bundles"],
+    outs = ["app_bundle.js"],
+    cmd = "cp $</main.js $@",
 )
 
 http_server(
@@ -27,6 +33,14 @@ http_server(
     srcs = ["index.html"],
     deps = [
         ":app_bundle",
-        "//packages/zone.js/bundles:zone.umd.js",
+        "//modules:node_modules/zone.js",
+    ],
+)
+
+copy_to_bin(
+    name = "assets",
+    srcs = [
+        "main.ts",
+        ":bundles",
     ],
 )

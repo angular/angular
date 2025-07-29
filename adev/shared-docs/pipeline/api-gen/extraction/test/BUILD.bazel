@@ -1,6 +1,5 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 load("//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json.bzl", "extract_api_to_json")
-load("//tools:defaults.bzl", "jasmine_node_test")
 
 package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages__"])
 
@@ -51,16 +50,14 @@ ts_project(
         glob(["*.spec.mts"]) + [
             "fake-examples.mts",
         ],
-    interop_deps = [
-        "@angular//packages/compiler-cli",
-    ],
     deps = [
-        "//:node_modules/@types/node",
+        "//adev:node_modules/@angular/compiler-cli",
+        "//adev:node_modules/@types/node",
         "//adev/shared-docs/pipeline/api-gen/extraction:extract_api_to_json_lib_rjs",
     ],
 )
 
-jasmine_node_test(
+zoneless_jasmine_test(
     name = "unit_tests",
-    deps = [":unit_test_lib"],
+    data = [":unit_test_lib_rjs"],
 )

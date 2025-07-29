@@ -8,8 +8,8 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {ValidationError} from '@angular/forms/experimental/src/api/validation_errors';
 import {MIN, form, min} from '../../../../public_api';
+import {ValidationError} from '../../../../src/api/validation_errors';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {

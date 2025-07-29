@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "sourceMap": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "types": ["node"],
+    "paths": {}
+  }
+}

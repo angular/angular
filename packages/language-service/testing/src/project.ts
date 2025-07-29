@@ -176,6 +176,13 @@ export class Project {
     return diagnostics;
   }
 
+  getSuggestionDiagnosticsForFile(projectFileName: string): ts.Diagnostic[] {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    const diagnostics: ts.Diagnostic[] = [];
+    diagnostics.push(...this.ngLS.getSuggestionDiagnostics(fileName));
+    return diagnostics;
+  }
+
   getCodeFixesAtPosition(
     projectFileName: string,
     start: number,
@@ -183,7 +190,16 @@ export class Project {
     errorCodes: readonly number[],
   ): readonly ts.CodeFixAction[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
-    return this.ngLS.getCodeFixesAtPosition(fileName, start, end, errorCodes, {}, {});
+    return this.ngLS.getCodeFixesAtPosition(
+      fileName,
+      start,
+      end,
+      errorCodes,
+      {},
+      {
+        includeCompletionsForModuleExports: true,
+      },
+    );
   }
 
   getRefactoringsAtPosition(

@@ -129,3 +129,17 @@ export declare class CommonModule {
     [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof IndexPipe, typeof NgTemplateOutlet]
   >;
 }
+
+export declare class MatCard {
+  static ɵcmp: ɵɵDirectiveDeclaration<
+    MatCard,
+    'mat-card',
+    ['matCard'],
+    {'appearance': {'alias': 'appearance'; 'required': false}},
+    {},
+    never,
+    never,
+    true,
+    never
+  >;
+}

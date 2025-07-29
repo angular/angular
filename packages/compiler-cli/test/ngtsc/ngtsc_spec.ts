@@ -187,6 +187,258 @@ runInEachFileSystem((os: string) => {
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
     });
 
+    describe('animate.enter', () => {
+      it('should compile animate.enter event bindings with a function call', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p (animate.enter)="animateFn($event)">I should slide in</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(false);
+            animateFn = (event: any) => {
+              event.target.classList.add('slide-in');
+            };
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateEnterListener(function TestComponent_Conditional_1_Template_p_animateenter_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateEnter/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.enter bindings with a class string', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p [animate.enter]="fade()">I should slide in</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(false);
+            fade = signal('fadein');
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateEnter/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.enter bindings with a string array', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p [animate.enter]="classList">I should slide in</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(false);
+            classList = ['fadein', 'stuff'];
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateEnter(function TestComponent_Conditional_1_Template_animateenter_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateEnter/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.enter with a string', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p animate.enter="fade">I should slide in</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(false);
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('i0.ɵɵanimateEnter("fade");');
+        const updateInstances = jsContents.match(/ɵɵanimateEnter\(/g);
+        expect(updateInstances?.length).toBe(1);
+      });
+
+      it('should compile animate.enter with a host binding string', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            host: {'animate.enter': 'fade'},
+            template:
+              '<div><p>I should slide in</p></div>',
+          })
+          class TestComponent {
+            show = signal(false);
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('i0.ɵɵanimateEnter("fade");');
+        const updateInstances = jsContents.match(/ɵɵanimateEnter\(/g);
+        expect(updateInstances?.length).toBe(1);
+      });
+    });
+
+    describe('animate.leave', () => {
+      it('should compile animate.leave event bindings with a function call', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p (animate.leave)="animateFn($event)">I should slide out</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(true);
+            animateFn = (event: any) => {
+              event.target.classList.add('slide-in');
+            };
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateLeaveListener(function TestComponent_Conditional_1_Template_p_animateleave_0_listener($event) { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.animateFn($event)); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateLeave/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.leave bindings with a class string', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p [animate.leave]="fade()">I should slide out</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(true);
+            fade = signal('fadeout');
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.fade()); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateLeave/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.leave bindings with a string array', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p [animate.leave]="classList">I should slide out</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(true);
+            classList = ['fadeout', 'stuff'];
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵanimateLeave(function TestComponent_Conditional_1_Template_animateleave_cb() { i0.ɵɵrestoreView(_r1); const ctx_r1 = i0.ɵɵnextContext(); return i0.ɵɵresetView(ctx_r1.classList); });',
+        );
+        const instances = jsContents.match(/ɵɵanimateLeave/g);
+        expect(instances?.length).toBe(1);
+      });
+
+      it('should compile animate.leave with a string', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component, signal, ViewChild, ElementRef} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template:
+              '<div>@if (show()) {<p animate.leave="fade">I should slide out</p>}</div>',
+          })
+          class TestComponent {
+            show = signal(true);
+          }
+        `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('i0.ɵɵanimateLeave("fade");');
+        const updateInstances = jsContents.match(/ɵɵanimateLeave\(/g);
+        expect(updateInstances?.length).toBe(1);
+      });
+    });
+
     it('should compile Injectables with providedIn and factory with deps without errors', () => {
       env.write(
         'test.ts',
@@ -5285,7 +5537,7 @@ runInEachFileSystem((os: string) => {
 
       env.driveMain();
       expect(env.getContents('test.js')).toContain(
-        `ɵɵlistener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
+        `ɵɵdomListener("click", function TestCmp_Template_div_click_0_listener() { return 123; });`,
       );
     });
 
@@ -9430,7 +9682,7 @@ runInEachFileSystem((os: string) => {
         // Only `sandbox` has an extra validation fn (since it's security-sensitive),
         // the `title` property doesn't have an extra validation fn.
         expect(jsContents).toContain(
-          'ɵɵproperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
+          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
         );
 
         // The `allow` property is also security-sensitive, thus an extra validation fn.
@@ -10022,7 +10274,7 @@ runInEachFileSystem((os: string) => {
           expect(diags.length).toBe(2);
           expect(diags[0].messageText).toEqual(`Type 'string' is not assignable to type 'number'.`);
           expect(diags[1].messageText).toContain(
-            'Parser Error: Bindings cannot contain assignments at column 5 in [ {{x = 2}}]',
+            'Parser Error: Bindings cannot contain assignments at column 5 in [x = 2]',
           );
         });
       });

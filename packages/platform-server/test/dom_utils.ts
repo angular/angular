@@ -7,9 +7,15 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {ApplicationRef, PLATFORM_ID, Provider, Type, ɵsetDocument} from '@angular/core';
-import {CLIENT_RENDER_MODE_FLAG} from '@angular/core/src/hydration/api';
-import {getComponentDef} from '@angular/core/src/render3/def_getters';
+import {
+  ApplicationRef,
+  PLATFORM_ID,
+  Provider,
+  Type,
+  ɵsetDocument,
+  ɵCLIENT_RENDER_MODE_FLAG as CLIENT_RENDER_MODE_FLAG,
+  ɵgetComponentDef as getComponentDef,
+} from '@angular/core';
 import {
   bootstrapApplication,
   HydrationFeature,
@@ -104,10 +110,10 @@ export function hydrate(
   global.document = doc;
 
   const providers = [
-    ...envProviders,
     {provide: PLATFORM_ID, useValue: 'browser'},
     {provide: DOCUMENT, useFactory: () => doc},
     provideClientHydration(...hydrationFeatures()),
+    ...envProviders,
   ];
 
   return bootstrapApplication(component, {providers});

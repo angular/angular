@@ -1,5 +1,3 @@
-load("@build_bazel_rules_nodejs//:providers.bzl", "run_node")
-
 def _generate_block_api_json(ctx):
     """Implementation of the generate_block_api_json rule"""
 
@@ -17,12 +15,10 @@ def _generate_block_api_json(ctx):
     manifest = ctx.actions.declare_file("blocks.json")
     args.add(manifest.path)
 
-    # Define an action that runs the nodejs_binary executable. This is
-    # the main thing that this rule does.
-    run_node(
-        ctx = ctx,
+    # Define an action that runs the executable.
+    ctx.actions.run(
         inputs = depset(ctx.files.srcs),
-        executable = "_generate_block_api_json",
+        executable = ctx.executable._generate_block_api_json,
         outputs = [manifest],
         arguments = [args],
         env = {

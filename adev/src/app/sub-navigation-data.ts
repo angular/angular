@@ -325,6 +325,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Routing',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
@@ -352,9 +353,34 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/read-route-state',
           },
           {
+            label: 'Redirecting routes',
+            path: 'guide/routing/redirecting-routes',
+            contentPath: 'guide/routing/redirecting-routes',
+          },
+          {
+            label: 'Control route access with guards',
+            path: 'guide/routing/route-guards',
+            contentPath: 'guide/routing/route-guards',
+          },
+          {
+            label: 'Route data resolvers',
+            path: 'guide/routing/data-resolvers',
+            contentPath: 'guide/routing/data-resolvers',
+          },
+          {
+            label: 'Lifecycle and events',
+            path: 'guide/routing/lifecycle-and-events',
+            contentPath: 'guide/routing/lifecycle-and-events',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
+          },
+          {
+            label: 'Creating custom route matches',
+            path: 'guide/routing/routing-with-urlmatcher',
+            contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
             label: 'Router reference',
@@ -415,6 +441,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Making requests',
             path: 'guide/http/making-requests',
             contentPath: 'guide/http/making-requests',
+          },
+          {
+            label: 'Reactive data fetching with httpResource',
+            path: 'guide/http/http-resource',
+            contentPath: 'guide/http/http-resource',
           },
           {
             label: 'Intercepting requests and responses',
@@ -500,6 +531,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Testing utility APIs',
             path: 'guide/testing/utility-apis',
             contentPath: 'guide/testing/utility-apis',
+          },
+          {
+            label: 'Experimental unit testing integration',
+            path: 'guide/testing/unit-tests',
+            contentPath: 'guide/testing/experimental-unit-test',
           },
           {
             label: 'Component harnesses overview',
@@ -602,6 +638,27 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Drag and drop',
         path: 'guide/drag-drop',
         contentPath: 'guide/drag-drop',
+      },
+    ],
+  },
+  {
+    label: 'Build with AI',
+    status: 'new',
+    children: [
+      {
+        label: 'Get Started',
+        path: 'ai',
+        contentPath: 'ai/overview',
+      },
+      {
+        label: 'LLM prompts and AI IDE setup',
+        path: 'ai/develop-with-ai',
+        contentPath: 'ai/develop-with-ai',
+      },
+      {
+        label: 'Angular CLI MCP Server setup',
+        path: 'ai/mcp',
+        contentPath: 'ai/mcp-server-setup',
       },
     ],
   },
@@ -715,8 +772,35 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'DevTools',
-        path: 'tools/devtools',
-        contentPath: 'tools/devtools',
+        children: [
+          {
+            label: 'Overview',
+            path: 'tools/devtools',
+            contentPath: 'tools/devtools/overview',
+          },
+          {
+            label: 'Components',
+            path: 'tools/devtools/component',
+            contentPath: 'tools/devtools/component',
+          },
+          {
+            label: 'Profiler',
+            path: 'tools/devtools/profiler',
+            contentPath: 'tools/devtools/profiler',
+          },
+          // TODO: create those guides
+          // The signal debugging docs should also be added to the signal section
+          // {
+          //   label: 'Signals',
+          //   path: 'tools/devtools/signals',
+          //   contentPath: 'tools/devtools/signals',
+          // },
+          // {
+          //   label: 'Router',
+          //   path: 'tools/devtools/router',
+          //   contentPath: 'tools/devtools/router',
+          // }
+        ],
       },
       {
         label: 'Language Service',
@@ -732,6 +816,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Style Guide',
         path: 'style-guide',
         contentPath: 'best-practices/style-guide',
+        status: 'updated',
       },
       {
         label: 'Security',
@@ -742,6 +827,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Accessibility',
         path: 'best-practices/a11y',
         contentPath: 'best-practices/a11y',
+      },
+      {
+        label: 'Unhandled errors in Angular',
+        path: 'best-practices/error-handling',
+        contentPath: 'best-practices/error-handling',
       },
       {
         label: 'Performance',
@@ -765,6 +855,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Skipping component subtrees',
             path: 'best-practices/skipping-subtrees',
             contentPath: 'best-practices/runtime-performance/skipping-subtrees',
+          },
+          {
+            label: 'Profiling with the Chrome DevTools',
+            path: 'best-practices/profiling-with-chrome-devtools',
+            contentPath: 'best-practices/runtime-performance/profiling-with-chrome-devtools',
           },
           {label: 'Zoneless', path: 'guide/zoneless', contentPath: 'guide/zoneless'},
         ],

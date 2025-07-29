@@ -8,6 +8,7 @@
 
 import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
 import {
+  ChangeDetectionStrategy,
   Component,
   ɵFramework as Framework,
   computed,
@@ -24,10 +25,9 @@ import {
 } from '../../property-resolver/directive-property-resolver';
 import {FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewTreeComponent} from './property-view-tree.component';
-import {MatIcon} from '@angular/material/icon';
-import {MatTooltip} from '@angular/material/tooltip';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {DependencyViewerComponent} from './dependency-viewer.component';
+import {DocsRefButtonComponent} from '../../../../shared/docs-ref-button/docs-ref-button.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -36,12 +36,12 @@ import {DependencyViewerComponent} from './dependency-viewer.component';
   imports: [
     MatExpansionModule,
     CdkDropList,
-    MatTooltip,
-    MatIcon,
     forwardRef(() => InjectedServicesComponent),
     CdkDrag,
     PropertyViewTreeComponent,
+    DocsRefButtonComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
   readonly controller = input.required<DirectivePropertyResolver>();
@@ -134,6 +134,7 @@ export class PropertyViewBodyComponent {
     `,
   ],
   imports: [DependencyViewerComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InjectedServicesComponent {
   readonly controller = input.required<DirectivePropertyResolver>();

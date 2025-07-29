@@ -1,7 +1,8 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm2//:defs.bzl", "npm_link_all_packages")
 load("//:yarn.bzl", "YARN_PATH")
-load("//tools:defaults.bzl", "nodejs_binary")
+load("//tools:defaults2.bzl", "js_binary")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,9 +11,6 @@ exports_files([
     "karma-js.conf.js",
     "browser-providers.conf.js",
     YARN_PATH,
-    "scripts/ci/bazel-payload-size.sh",
-    "scripts/ci/payload-size.sh",
-    "scripts/ci/payload-size.js",
     "package.json",
     "angular.json",
 ])
@@ -41,23 +39,19 @@ js_library(
     ],
 )
 
-filegroup(
+copy_to_bin(
     name = "angularjs_scripts",
     srcs = [
         # We also declare the unminified AngularJS files since these can be used for
         # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
-        "@npm//:node_modules/angular-1.5/angular.js",
-        "@npm//:node_modules/angular-1.5/angular.min.js",
-        "@npm//:node_modules/angular-1.6/angular.js",
-        "@npm//:node_modules/angular-1.6/angular.min.js",
-        "@npm//:node_modules/angular-1.7/angular.js",
-        "@npm//:node_modules/angular-1.7/angular.min.js",
-        "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
-        "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
-        "@npm//:node_modules/angular-mocks-1.7/angular-mocks.js",
-        "@npm//:node_modules/angular-mocks-1.8/angular-mocks.js",
-        "@npm//:node_modules/angular-1.8/angular.js",
-        "@npm//:node_modules/angular-1.8/angular.min.js",
+        "//:node_modules/angular-1.5",
+        "//:node_modules/angular-1.6",
+        "//:node_modules/angular-1.7",
+        "//:node_modules/angular-mocks-1.5",
+        "//:node_modules/angular-mocks-1.6",
+        "//:node_modules/angular-mocks-1.7",
+        "//:node_modules/angular-mocks-1.8",
+        "//:node_modules/angular-1.8",
     ],
 )
 
@@ -67,7 +61,7 @@ config_setting(
     values = {"stamp": "true"},
 )
 
-nodejs_binary(
+js_binary(
     name = "yarn_vendored",
     data = [".yarn/releases/yarn-1.22.22.cjs"],
     entry_point = ".yarn/releases/yarn-1.22.22.cjs",
@@ -80,8 +74,8 @@ nodejs_binary(
 alias(
     name = "sauce_connect",
     actual = select({
-        "@npm//@angular/build-tooling/bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
-        "@npm//@angular/build-tooling/bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
-        "@npm//@angular/build-tooling/bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
+        "@devinfra//bazel/constraints:linux_x64": "@sauce_connect_linux_amd64//:bin/sc",
+        "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
+        "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
     }),
 )

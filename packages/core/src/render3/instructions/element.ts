@@ -23,17 +23,18 @@ import {
   markRNodeAsSkippedByHydration,
   setSegmentHead,
 } from '../../hydration/utils';
-import {assertDefined, assertEqual} from '../../util/assert';
+import {assertDefined} from '../../util/assert';
+import {assertTNodeCreationIndex} from '../assert';
 import {clearElementContents, createElementNode} from '../dom_node_manipulation';
-import {hasClassInput, hasStyleInput, TNode, TNodeType} from '../interfaces/node';
+import {hasClassInput, hasStyleInput, TElementNode, TNode, TNodeType} from '../interfaces/node';
 import {RElement} from '../interfaces/renderer_dom';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
-import {HYDRATION, LView, RENDERER, TView} from '../interfaces/view';
+import {HEADER_OFFSET, HYDRATION, LView, RENDERER, TVIEW, TView} from '../interfaces/view';
 import {assertTNodeType} from '../node_assert';
+import {executeContentQueries} from '../queries/query_execution';
 import {
   decreaseElementDepthCount,
   enterSkipHydrationBlock,
-  getBindingIndex,
   getBindingsEnabled,
   getCurrentTNode,
   getLView,
@@ -43,10 +44,21 @@ import {
   lastNodeWasCreated,
   leaveSkipHydrationBlock,
 } from '../state';
+import {
+  directiveHostEndFirstCreatePass,
+  directiveHostFirstCreatePass,
+  domOnlyFirstCreatePass,
+} from '../view/elements';
 
 import {validateElementIsKnown} from './element_validation';
 import {setDirectiveInputsWhichShadowsStyling} from './property';
-import {elementLikeEndShared, elementLikeStartShared} from './shared';
+import {
+  createDirectivesInstances,
+  elementLikeEndShared,
+  elementLikeStartShared,
+  findDirectiveDefMatches,
+  saveResolvedLocalsInData,
+} from './shared';
 
 /**
  * Create DOM element. The instruction must later be followed by `elementEnd()` call.
@@ -70,35 +82,38 @@ export function ɵɵelementStart(
   localRefsIndex?: number,
 ): typeof ɵɵelementStart {
   const lView = getLView();
-  const tView = getTView();
-  const bindingsEnabled = getBindingsEnabled();
-  ngDevMode &&
-    assertEqual(
-      getBindingIndex(),
-      tView.bindingStartIndex,
-      'elements should be created before any bindings',
-    );
-  const tNode = elementLikeStartShared(
-    lView,
-    tView,
-    index,
-    TNodeType.Element,
-    name,
-    _locateOrCreateElementNode,
-    bindingsEnabled,
-    attrsIndex,
-    localRefsIndex,
-  );
 
-  if (ngDevMode && tView.firstCreatePass) {
-    const lView = getLView();
-    validateElementIsKnown(
-      lView[tNode.index],
-      lView,
-      tNode.value,
-      tView.schemas,
-      isDirectiveHost(tNode),
-    );
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? directiveHostFirstCreatePass(
+        adjustedIndex,
+        lView,
+        TNodeType.Element,
+        name,
+        findDirectiveDefMatches,
+        getBindingsEnabled(),
+        attrsIndex,
+        localRefsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementNode);
+
+  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+
+  if (isDirectiveHost(tNode)) {
+    const tView = lView[TVIEW];
+    createDirectivesInstances(tView, lView, tNode);
+    executeContentQueries(tView, tNode, lView);
+  }
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
+  if (ngDevMode && lView[TVIEW].firstCreatePass) {
+    validateElementIsKnown(lView, tNode);
   }
 
   return ɵɵelementStart;
@@ -115,8 +130,12 @@ export function ɵɵelementEnd(): typeof ɵɵelementEnd {
   const initialTNode = getCurrentTNode()!;
   ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
 
-  const currentTNode = elementLikeEndShared(tView, initialTNode);
+  const currentTNode = elementLikeEndShared(initialTNode);
   ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+
+  if (tView.firstCreatePass) {
+    directiveHostEndFirstCreatePass(tView, currentTNode);
+  }
 
   if (isSkipHydrationRootTNode(currentTNode)) {
     leaveSkipHydrationBlock();
@@ -166,6 +185,97 @@ export function ɵɵelement(
   ɵɵelementStart(index, name, attrsIndex, localRefsIndex);
   ɵɵelementEnd();
   return ɵɵelement;
+}
+
+/**
+ * Create DOM element that cannot have any directives.
+ *
+ * @param index Index of the element in the LView array
+ * @param name Name of the DOM Node
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementStart(
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElementStart {
+  const lView = getLView();
+
+  ngDevMode && assertTNodeCreationIndex(lView, index);
+
+  const tView = lView[TVIEW];
+  const adjustedIndex = index + HEADER_OFFSET;
+  const tNode = tView.firstCreatePass
+    ? domOnlyFirstCreatePass(
+        adjustedIndex,
+        tView,
+        TNodeType.Element,
+        name,
+        attrsIndex,
+        localRefsIndex,
+      )
+    : (tView.data[adjustedIndex] as TElementNode);
+
+  elementLikeStartShared(tNode, lView, index, name, _locateOrCreateElementNode);
+
+  if (localRefsIndex != null) {
+    saveResolvedLocalsInData(lView, tNode);
+  }
+
+  if (ngDevMode && lView[TVIEW].firstCreatePass) {
+    validateElementIsKnown(lView, tNode);
+  }
+
+  return ɵɵdomElementStart;
+}
+
+/**
+ * Mark the end of the directiveless element.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElementEnd(): typeof ɵɵdomElementEnd {
+  const initialTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(initialTNode, 'No parent node to close.');
+
+  const currentTNode = elementLikeEndShared(initialTNode);
+  ngDevMode && assertTNodeType(currentTNode, TNodeType.AnyRNode);
+
+  if (isSkipHydrationRootTNode(currentTNode)) {
+    leaveSkipHydrationBlock();
+  }
+
+  decreaseElementDepthCount();
+
+  return ɵɵdomElementEnd;
+}
+
+/**
+ * Creates an empty element using {@link domElementStart} and {@link domElementEnd}
+ *
+ * @param index Index of the element in the data array
+ * @param name Name of the DOM Node
+ * @param attrsIndex Index of the element's attributes in the `consts` array.
+ * @param localRefsIndex Index of the element's local references in the `consts` array.
+ * @returns This function returns itself so that it may be chained.
+ *
+ * @codeGenApi
+ */
+export function ɵɵdomElement(
+  index: number,
+  name: string,
+  attrsIndex?: number | null,
+  localRefsIndex?: number,
+): typeof ɵɵdomElement {
+  ɵɵdomElementStart(index, name, attrsIndex, localRefsIndex);
+  ɵɵdomElementEnd();
+  return ɵɵdomElement;
 }
 
 let _locateOrCreateElementNode: typeof locateOrCreateElementNodeImpl = (

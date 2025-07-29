@@ -2595,6 +2595,28 @@ export const RECOMMENDATIONS: Step[] = [
   {
     possibleIn: 2000,
     necessaryAsOf: 2000,
+    level: ApplicationComplexity.Basic,
+    step: '20.0.0_rename_resource_request_to_param',
+    action: 'Rename the `request` property passed in resources to `params`.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Medium,
+    step: '20.0.0_rename_rxResource_loader_to_stream',
+    action: 'Rename the `loader` property passed in rxResources to `stream`.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Basic,
+    step: '20.0.0_replace_ResourceStatus_by_corresponding_strings',
+    action:
+      '`ResourceStatus` is no longer an enum. Use the corresponding constant string values instead.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
     level: ApplicationComplexity.Advanced,
     step: '20.0.0_rename_provideExperimentalZonelessChangeDetection',
     action:
@@ -2711,5 +2733,13 @@ export const RECOMMENDATIONS: Step[] = [
     step: '20.0.0_review_date_pipe_formatter_Y_usage',
     action:
       'Review `DatePipe` usages. Using the `Y` (week-numbering year) formatter without also including `w` (week number) is now detected as suspicious. Use `y` (year) if that was the intent, or include `w` alongside `Y`.',
+  },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Medium,
+    step: '20.0.0_handle_uncaught_listener_errors_in_tests',
+    action:
+      'In templates parentheses are now always respected. This can lead to runtime breakages when nullish coalescing were nested in parathesis. eg `(foo?.bar).baz` will throw if `foo` is nullish as it would in native JavaScript.',
   },
 ];

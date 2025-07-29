@@ -40,7 +40,7 @@ export class MockBody implements Body {
     throw 'Not implemented';
   }
 
-  async bytes(): Promise<Uint8Array<ArrayBufferLike>> {
+  async bytes(): Promise<Uint8Array<ArrayBuffer>> {
     throw 'Not implemented';
   }
 

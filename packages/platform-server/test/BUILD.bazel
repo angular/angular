@@ -1,21 +1,22 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
 
-ts_library(
+ts_project(
     name = "dom_utils",
+    testonly = True,
     srcs = [
         "dom_utils.ts",
         "hydration_utils.ts",
     ],
     deps = [
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-server",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-server:platform-server_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob(
@@ -27,59 +28,55 @@ ts_library(
         ],
     ),
     deps = [
-        ":dom_utils",
-        "//packages:types",
-        "//packages/animations",
-        "//packages/common",
-        "//packages/common/http",
-        "//packages/common/http/testing",
-        "//packages/common/testing",
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/testing",
-        "//packages/localize",
-        "//packages/localize/init",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
-        "//packages/platform-server",
-        "//packages/private/testing",
-        "//packages/router",
-        "@npm//rxjs",
+        ":dom_utils_rjs",
+        "//:node_modules/rxjs",
+        "//packages:types_rjs",
+        "//packages/animations:animations_rjs",
+        "//packages/common:common_rjs",
+        "//packages/common/http:http_rjs",
+        "//packages/common/http/testing:testing_rjs",
+        "//packages/common/testing:testing_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/localize:localize_rjs",
+        "//packages/localize/init:init_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
+        "//packages/router:router_rjs",
     ],
 )
 
-ts_library(
+ts_project(
     name = "event_replay_test_lib",
     testonly = True,
     srcs = ["event_replay_spec.ts"],
     deps = [
-        ":dom_utils",
-        "//packages/common",
-        "//packages/core",
-        "//packages/core/primitives/event-dispatch",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-server",
-        "//packages/private/testing",
+        ":dom_utils_rjs",
+        "//packages/common:common_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-server:platform-server_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "test",
-    bootstrap = ["//tools/testing:node"],
     data = [
+        ":test_lib_rjs",
         "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
-    deps = [
-        ":test_lib",
-    ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "event_replay_test",
-    bootstrap = ["//tools/testing:node"],
-    data = ["//packages/core/primitives/event-dispatch:contract_bundle_min"],
-    deps = [
-        ":event_replay_test_lib",
+    data = [
+        ":event_replay_test_lib_rjs",
+        "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
 )

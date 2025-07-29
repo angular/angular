@@ -11,6 +11,8 @@ import * as i18n from '../../../../../i18n/i18n_ast';
 import * as o from '../../../../../output/output_ast';
 import {ParseSourceSpan} from '../../../../../parse_util';
 import {
+  AnimationBindingKind,
+  AnimationKind,
   BindingKind,
   DeferOpModifierKind,
   I18nExpressionFor,
@@ -53,6 +55,7 @@ export type UpdateOp =
   | I18nApplyOp
   | RepeaterOp
   | DeferWhenOp
+  | AnimationBindingOp
   | StoreLetOp;
 
 /**
@@ -227,7 +230,7 @@ export interface PropertyOp extends Op<UpdateOp>, ConsumesVarsTrait, DependsOnSl
   /**
    * Whether this property is an animation trigger.
    */
-  isAnimationTrigger: boolean;
+  bindingKind: BindingKind;
 
   /**
    * The security context of the binding.
@@ -260,7 +263,7 @@ export function createPropertyOp(
   target: XrefId,
   name: string,
   expression: o.Expression | Interpolation,
-  isAnimationTrigger: boolean,
+  bindingKind: BindingKind,
   securityContext: SecurityContext | SecurityContext[],
   isStructuralTemplateAttribute: boolean,
   templateKind: TemplateKind | null,
@@ -273,7 +276,7 @@ export function createPropertyOp(
     target,
     name,
     expression,
-    isAnimationTrigger,
+    bindingKind,
     securityContext,
     sanitizer: null,
     isStructuralTemplateAttribute,
@@ -757,6 +760,76 @@ export function createRepeaterOp(
     sourceSpan,
     ...NEW_OP,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+  };
+}
+
+/**
+ * A logical operation representing binding to an animation in the update IR.
+ */
+export interface AnimationBindingOp extends Op<UpdateOp> {
+  kind: OpKind.AnimationBinding;
+
+  /**
+   * The name of the extracted attribute.
+   */
+  name: string;
+
+  /**
+   * Reference to the element on which the property is bound.
+   */
+  target: XrefId;
+
+  /**
+   * Name of the bound property.
+   */
+  animationKind: AnimationKind;
+
+  /**
+   * Expression which is bound to the property.
+   */
+  expression: o.Expression | Interpolation;
+
+  i18nMessage: XrefId | null;
+
+  /**
+   * The security context of the binding.
+   */
+  securityContext: SecurityContext | SecurityContext[];
+
+  /**
+   * The sanitizer for this property.
+   */
+  sanitizer: o.Expression | null;
+
+  sourceSpan: ParseSourceSpan;
+
+  animationBindingKind: AnimationBindingKind;
+}
+
+/**
+ * Create an `AnimationBindingOp`.
+ */
+export function createAnimationBindingOp(
+  name: string,
+  target: XrefId,
+  animationKind: AnimationKind,
+  expression: o.Expression | Interpolation,
+  securityContext: SecurityContext | SecurityContext[],
+  sourceSpan: ParseSourceSpan,
+  animationBindingKind: AnimationBindingKind,
+): AnimationBindingOp {
+  return {
+    kind: OpKind.AnimationBinding,
+    name,
+    target,
+    animationKind,
+    expression,
+    i18nMessage: null,
+    securityContext,
+    sanitizer: null,
+    sourceSpan,
+    animationBindingKind,
+    ...NEW_OP,
   };
 }
 

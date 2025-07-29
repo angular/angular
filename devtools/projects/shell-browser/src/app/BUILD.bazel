@@ -1,8 +1,4 @@
-load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
-load("//devtools/tools:defaults.bzl", "karma_web_test_suite")
-load("//devtools/tools:ng_project.bzl", "ng_project")
-load("//devtools/tools:typescript.bzl", "ts_project", "ts_test_library")
-load("//tools:defaults.bzl", "esbuild")
+load("//devtools/tools:defaults.bzl", "esbuild", "ng_project", "ng_web_test_suite", "sass_binary", "ts_project", "ts_test_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -21,17 +17,14 @@ ng_project(
         "app.component.html",
         ":app_component_styles",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
-    ],
     deps = [
         ":chrome_application_environment_rjs",
         ":chrome_application_operations_rjs",
-        ":zone_aware_chrome_message_bus_rjs",
+        ":chrome_message_bus_rjs",
         "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
         "//:node_modules/@types/chrome",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools:ng-devtools_rjs",
@@ -59,11 +52,12 @@ ts_project(
     srcs = [
         "chrome-window-extensions.ts",
     ],
-    interop_deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-    ],
     deps = [
         "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -73,10 +67,8 @@ ts_project(
     srcs = [
         "chrome-application-environment.ts",
     ],
-    interop_deps = [
-        "//devtools/projects/ng-devtools:ng-devtools",
-    ],
     deps = [
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
         "//devtools/projects/shell-browser/src/environments:environment_rjs",
     ],
 )
@@ -86,14 +78,12 @@ ts_project(
     srcs = [
         "chrome-application-operations.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-        "//devtools/projects/ng-devtools:ng-devtools",
-    ],
     deps = [
         ":chrome_application_environment_rjs",
         "//:node_modules/@angular/cdk",
+        "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
+        "//devtools/projects/ng-devtools:ng-devtools_rjs",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -103,25 +93,8 @@ ts_project(
     srcs = [
         "same-page-message-bus.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
-        "//devtools/projects/protocol:protocol_rjs",
-    ],
-)
-
-ts_project(
-    name = "zone_aware_chrome_message_bus",
-    srcs = [
-        "zone-aware-chrome-message-bus.ts",
-    ],
-    interop_deps = [
-        "//packages/core",
-    ],
-    deps = [
-        ":chrome_message_bus_rjs",
-        "//:node_modules/@types/chrome",
+        "//:node_modules/@angular/core",
         "//devtools/projects/protocol:protocol_rjs",
     ],
 )
@@ -131,10 +104,8 @@ ts_project(
     srcs = [
         "chrome-message-bus.ts",
     ],
-    interop_deps = [
-        "//packages/core",
-    ],
     deps = [
+        "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
         "//devtools/projects/protocol:protocol_rjs",
     ],
@@ -163,10 +134,10 @@ ts_project(
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "tab_manager_test",
     deps = [
-        ":tab_manager_test_lib",
+        ":tab_manager_test_lib_rjs",
     ],
 )
 
@@ -220,7 +191,12 @@ ts_project(
 
 esbuild(
     name = "detect_angular_for_extension_icon_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "detect-angular-for-extension-icon.ts",
     format = "iife",
     minify = True,
@@ -228,13 +204,18 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":detect_angular_for_extension_icon",
+        ":detect_angular_for_extension_icon_rjs",
     ],
 )
 
 esbuild(
     name = "backend_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "backend.ts",
     format = "iife",
     minify = True,
@@ -242,13 +223,18 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":backend",
+        ":backend_rjs",
     ],
 )
 
 esbuild(
     name = "ng_validate_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "ng-validate.ts",
     format = "iife",
     minify = True,
@@ -256,13 +242,18 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":ng_validate",
+        ":ng_validate_rjs",
     ],
 )
 
 esbuild(
     name = "background_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "background.ts",
     format = "iife",
     minify = True,
@@ -270,13 +261,18 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":background",
+        ":background_rjs",
     ],
 )
 
 esbuild(
     name = "content_script_bundle",
-    config = "//devtools/tools/esbuild:esbuild_config_iife",
+    srcs = [
+        "//:node_modules/tslib",
+        "//devtools/tools/esbuild:esbuild_base_rjs",
+        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+    ],
+    config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "content-script.ts",
     format = "iife",
     minify = True,
@@ -284,6 +280,6 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":content_script",
+        ":content_script_rjs",
     ],
 )

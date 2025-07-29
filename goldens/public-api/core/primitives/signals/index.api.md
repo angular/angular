@@ -41,10 +41,7 @@ export function createComputed<T>(computation: () => T, equal?: ValueEqualityFn<
 export function createLinkedSignal<S, D>(sourceFn: () => S, computationFn: ComputationFn<S, D>, equalityFn?: ValueEqualityFn<D>): LinkedSignalGetter<S, D>;
 
 // @public
-export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): SignalGetter<T>;
-
-// @public
-export function createSignalTuple<T>(initialValue: T, equal?: ValueEqualityFn<T>): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>];
+export function createSignal<T>(initialValue: T, equal?: ValueEqualityFn<T>): [SignalGetter<T>, SignalSetter<T>, SignalUpdater<T>];
 
 // @public (undocumented)
 export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, schedule: (watch: Watch) => void, allowSignalWrites: boolean): Watch;
@@ -121,19 +118,19 @@ export interface ReactiveNode {
     // (undocumented)
     consumerMarkedDirty(node: unknown): void;
     consumerOnSignalRead(node: unknown): void;
+    consumers: ReactiveLink | undefined;
+    // (undocumented)
+    consumersTail: ReactiveLink | undefined;
     debugName?: string;
     dirty: boolean;
     kind: string;
     lastCleanEpoch: Version;
-    liveConsumerIndexOfThis: number[] | undefined;
-    liveConsumerNode: ReactiveNode[] | undefined;
-    nextProducerIndex: number;
-    producerIndexOfThis: number[] | undefined;
-    producerLastReadVersion: Version[] | undefined;
     producerMustRecompute(node: unknown): boolean;
-    producerNode: ReactiveNode[] | undefined;
     // (undocumented)
     producerRecomputeValue(node: unknown): void;
+    producers: ReactiveLink | undefined;
+    producersTail: ReactiveLink | undefined;
+    recomputing: boolean;
     version: Version;
 }
 

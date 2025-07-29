@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
+import {addExpressionIdentifier, ExpressionIdentifier, hasExpressionIdentifier} from './comments';
 
 /**
  * A `Set` of `ts.SyntaxKind`s of `ts.Expression` which are safe to wrap in a `ts.AsExpression`
@@ -21,29 +21,33 @@ import {addExpressionIdentifier, ExpressionIdentifier} from './comments';
  * `ts.BinaryExpression`s need to be wrapped in parentheses before casting.
  */
 //
-const SAFE_TO_CAST_WITHOUT_PARENS: Set<ts.SyntaxKind> = new Set([
-  // Expressions which are already parenthesized can be cast without further wrapping.
-  ts.SyntaxKind.ParenthesizedExpression,
-
-  // Expressions which form a single lexical unit leave no room for precedence issues with the cast.
-  ts.SyntaxKind.Identifier,
-  ts.SyntaxKind.CallExpression,
-  ts.SyntaxKind.NonNullExpression,
-  ts.SyntaxKind.ElementAccessExpression,
-  ts.SyntaxKind.PropertyAccessExpression,
-  ts.SyntaxKind.ArrayLiteralExpression,
-  ts.SyntaxKind.ObjectLiteralExpression,
-
-  // The same goes for various literals.
-  ts.SyntaxKind.StringLiteral,
-  ts.SyntaxKind.NumericLiteral,
-  ts.SyntaxKind.TrueKeyword,
-  ts.SyntaxKind.FalseKeyword,
-  ts.SyntaxKind.NullKeyword,
-  ts.SyntaxKind.UndefinedKeyword,
-]);
+let SAFE_TO_CAST_WITHOUT_PARENS: Set<ts.SyntaxKind> | null = null;
 
 export function tsCastToAny(expr: ts.Expression): ts.Expression {
+  if (SAFE_TO_CAST_WITHOUT_PARENS === null) {
+    SAFE_TO_CAST_WITHOUT_PARENS = new Set([
+      // Expressions which are already parenthesized can be cast without further wrapping.
+      ts.SyntaxKind.ParenthesizedExpression,
+
+      // Expressions which form a single lexical unit leave no room for precedence issues with the cast.
+      ts.SyntaxKind.Identifier,
+      ts.SyntaxKind.CallExpression,
+      ts.SyntaxKind.NonNullExpression,
+      ts.SyntaxKind.ElementAccessExpression,
+      ts.SyntaxKind.PropertyAccessExpression,
+      ts.SyntaxKind.ArrayLiteralExpression,
+      ts.SyntaxKind.ObjectLiteralExpression,
+
+      // The same goes for various literals.
+      ts.SyntaxKind.StringLiteral,
+      ts.SyntaxKind.NumericLiteral,
+      ts.SyntaxKind.TrueKeyword,
+      ts.SyntaxKind.FalseKeyword,
+      ts.SyntaxKind.NullKeyword,
+      ts.SyntaxKind.UndefinedKeyword,
+    ]);
+  }
+
   // Wrap `expr` in parentheses if needed (see `SAFE_TO_CAST_WITHOUT_PARENS` above).
   if (!SAFE_TO_CAST_WITHOUT_PARENS.has(expr.kind)) {
     expr = ts.factory.createParenthesizedExpression(expr);
@@ -196,4 +200,19 @@ export function tsNumericExpression(value: number): ts.NumericLiteral | ts.Prefi
   }
 
   return ts.factory.createNumericLiteral(value);
+}
+
+/**
+ * Check if a node represents a directive declaration in a TypeCheck Block.
+ * Directive declarations can be either:
+ * - var _t1: TestDir /*T:D*\/ = null! as TestDir;
+ * - var _t1 /*T:D*\/ = _ctor1({});
+ */
+export function isDirectiveDeclaration(node: ts.Node): node is ts.TypeNode | ts.Identifier {
+  const sourceFile = node.getSourceFile();
+  return (
+    (ts.isTypeNode(node) || ts.isIdentifier(node)) &&
+    ts.isVariableDeclaration(node.parent) &&
+    hasExpressionIdentifier(sourceFile, node, ExpressionIdentifier.DIRECTIVE)
+  );
 }

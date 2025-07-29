@@ -167,49 +167,6 @@
 
 <hr>
 
-
-<h2 id="appUnless">UnlessDirective</h2>
-<!-- #docregion toggle-info -->
-<p>
-  The condition is currently
-  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
-  <button
-    type="button"
-    (click)="condition = !condition"
-    [ngClass] = "{ 'a': condition, 'b': !condition }" >
-    Toggle condition to {{condition ? 'false' : 'true'}}
-  </button>
-</p>
-<!-- #enddocregion toggle-info -->
-
-<!-- #docregion appUnless-->
-<p *appUnless="condition" class="unless a">
-  (A) This paragraph is displayed because the condition is false.
-</p>
-
-<p *appUnless="!condition" class="unless b">
-  (B) Although the condition is true,
-  this paragraph is displayed because appUnless is set to false.
-</p>
-<!-- #enddocregion appUnless-->
-
-
-<h4>UnlessDirective with template</h4>
-
-<!-- #docregion appUnless-1 -->
-<p *appUnless="condition">Show this sentence unless the condition is true.</p>
-<!-- #enddocregion appUnless-1 -->
-
-<p *appUnless="condition" class="code unless">
-  (A) &lt;p *appUnless="condition" class="code unless"&gt;
-</p>
-
-<ng-template [appUnless]="condition">
-  <p class="code unless">
-    (A) &lt;ng-template [appUnless]="condition"&gt;
-  </p>
-</ng-template>
-
 <hr>
 
 <h2 id="appIfLoaded">IfLoadedDirective</h2>

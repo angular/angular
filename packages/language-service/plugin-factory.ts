@@ -21,7 +21,8 @@ export const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule =
 
   return {
     create(info: ts.server.PluginCreateInfo): NgLanguageService {
-      plugin = require(`./bundles/language-service.js`)(tsModule);
+      // Use a module name based import path to allow it to be marked external.
+      plugin = require(`@angular/language-service/bundles/language-service.js`)(tsModule);
       return plugin.create(info);
     },
     getExternalFiles(project: ts.server.Project): string[] {

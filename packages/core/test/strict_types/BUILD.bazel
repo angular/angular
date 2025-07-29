@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_config")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:private"])
 
@@ -7,7 +6,7 @@ ts_config(
     name = "tsconfig",
     src = "tsconfig.json",
     deps = [
-        "//packages:tsconfig-test",
+        "//packages:tsconfig_test",
     ],
 )
 
@@ -24,9 +23,9 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "strict_types",
-    deps = [
-        ":strict_types_lib",
+    data = [
+        ":strict_types_lib_rjs",
     ],
 )

@@ -9,12 +9,12 @@ consts: () => {
 },
 template: function MyComponent_Template(rf, ctx) {
   if (rf & 1) {
-    i0.ɵɵprojectionDef($_c2$);
-    i0.ɵɵelementStart(0, "div");
-    i0.ɵɵi18nStart(1, 0);
-    i0.ɵɵprojection(2);
-    i0.ɵɵprojection(3, 1);
-    i0.ɵɵi18nEnd();
-    i0.ɵɵelementEnd();
+    $r3$.ɵɵprojectionDef($_c2$);
+    $r3$.ɵɵdomElementStart(0, "div");
+    $r3$.ɵɵi18nStart(1, 0);
+    $r3$.ɵɵprojection(2);
+    $r3$.ɵɵprojection(3, 1);
+    $r3$.ɵɵi18nEnd();
+    $r3$.ɵɵdomElementEnd();
   } 
 }

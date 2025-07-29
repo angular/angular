@@ -1,16 +1,18 @@
 load("//integration/ng-modules-importability:index.bzl", "module_test")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults2.bzl", "ts_project")
 
-ts_library(
+ts_project(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["*.ts"]),
+    srcs = glob(["*.mts"]),
     data = [
         "//packages:package_json",
     ],
+    tsconfig = "tsconfig.json",
     deps = [
-        "//packages/compiler-cli",
-        "@npm//typescript",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//integration:node_modules/@angular/compiler-cli",
     ],
 )
 

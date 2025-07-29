@@ -69,6 +69,12 @@ You are free to use any tool you prefer to build apps with Angular. We recommend
 3. [WebStorm](https://www.jetbrains.com/webstorm/)
 </docs-step>
 
+<docs-step title="Optional: set-up your AI powered IDE">
+
+In case you're following this tutorial in your preferred AI powered IDE, [check out Angular prompt rules and best practices](/ai/develop-with-ai).
+
+</docs-step>
+
 </docs-workflow>
 
 For more information about the topics covered in this lesson, visit:

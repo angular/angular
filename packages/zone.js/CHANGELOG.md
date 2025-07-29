@@ -1,3 +1,14 @@
+## [0.15.1](https://github.com/angular/angular/compare/zone.js-0.15.0...zone.js-0.15.1) (2025-05-22)
+
+
+### Bug Fixes
+
+* **zone.js:** classes that extend Error should retain cause property ([#61599](https://github.com/angular/angular/issues/61599)) ([ad8931c](https://github.com/angular/angular/commit/ad8931cb4968b2bd25b05dcd3d856ec32e4d7145))
+* **zone.js:** more robust check for promise-like objects ([#57388](https://github.com/angular/angular/issues/57388)) ([e608e6c](https://github.com/angular/angular/commit/e608e6cfbbc9fba7c74bfef72f102a502e951e6c)), closes [#57385](https://github.com/angular/angular/issues/57385)
+* **zone.js:** remove `abort` listener once fetch is settled ([#57882](https://github.com/angular/angular/issues/57882)) ([6976349](https://github.com/angular/angular/commit/69763491c3ffb576822b179af3363ec666d43bce))
+
+
+
 # [0.15.0](https://github.com/angular/angular/compare/zone.js-0.14.10...zone.js-0.15.0) (2024-08-15)
 
 

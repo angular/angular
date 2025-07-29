@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,8 +14,8 @@ ts_project(
     ),
     tsconfig = "//tools:tsconfig_build",
     deps = [
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/@types/jasmine",
+        "//:node_modules/tinyglobby",
         "//:node_modules/typescript",
     ],
 )
@@ -31,17 +30,15 @@ ts_project(
     tsconfig = "//tools:tsconfig_test",
     deps = [
         ":lib_rjs",
-        "//:node_modules/@bazel/runfiles",
         "//:node_modules/typescript",
     ],
 )
 
-jasmine_node_test(
+jasmine_test(
     name = "test",
-    data = glob(["symbol_extractor_spec/**"]),
-    deps = [
-        ":test_lib",
-        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output",
+    data = glob(["symbol_extractor_spec/**"]) + [
+        ":test_lib_rjs",
+        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output_rjs",
         "//tools/symbol-extractor/symbol_extractor_spec:fixtures",
     ],
 )

@@ -6,20 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationConfig, inject, NgZone} from '@angular/core';
-import {provideAnimations} from '@angular/platform-browser/animations';
+import {ApplicationConfig, provideZonelessChangeDetection} from '@angular/core';
 import {ApplicationEnvironment, ApplicationOperations} from '../../../ng-devtools';
 
 import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
-import {ZoneAwareChromeMessageBus} from './zone-aware-chrome-message-bus';
 import {Events, MessageBus, PriorityAwareMessageBus} from '../../../protocol';
 import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
 import {Platform} from '@angular/cdk/platform';
+import {ChromeMessageBus} from './chrome-message-bus';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideAnimations(),
+    provideZonelessChangeDetection(),
     {provide: FrameManager, useFactory: () => FrameManager.initialize()},
     {
       provide: ApplicationOperations,
@@ -33,12 +32,11 @@ export const appConfig: ApplicationConfig = {
     {
       provide: MessageBus,
       useFactory(): MessageBus<Events> {
-        const ngZone = inject(NgZone);
         const port = chrome.runtime.connect({
           name: '' + chrome.devtools.inspectedWindow.tabId,
         });
 
-        return new PriorityAwareMessageBus(new ZoneAwareChromeMessageBus(port, ngZone));
+        return new PriorityAwareMessageBus(new ChromeMessageBus(port));
       },
     },
   ],

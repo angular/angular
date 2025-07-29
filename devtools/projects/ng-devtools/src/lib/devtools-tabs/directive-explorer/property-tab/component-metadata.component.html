@@ -1,22 +1,15 @@
-<div class="meta-data-container">
+<hr />
+<ul>
   @if (viewEncapsulation()) {
-    <a
-      mat-button
-      color="primary"
-      href="https://angular.dev/api/core/ViewEncapsulation"
-      target="_blank"
-    >
+    <li>
       View Encapsulation: <span class="meta-data">{{ viewEncapsulation() }}</span>
-    </a>
+      <ng-docs-ref-button docs="view-encapsulation" />
+    </li>
   }
   @if (changeDetectionStrategy()) {
-    <a
-      mat-button
-      color="primary"
-      href="https://angular.dev/api/core/ChangeDetectionStrategy"
-      target="_blank"
-    >
+    <li>
       Change Detection Strategy: <span class="meta-data">{{ changeDetectionStrategy() }}</span>
-    </a>
+      <ng-docs-ref-button docs="change-detection" />
+    </li>
   }
-</div>
+</ul>

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "angular_jasmine_test", "ng_web_test_suite", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,27 +16,26 @@ ts_project(
             "matchers.ts",
         ],
     ),
-    interop_deps = [
-        ":matchers",
-        "//packages/animations",
-        "//packages/animations/browser",
-        "//packages/animations/browser/testing",
-        "//packages/common",
-        "//packages/compiler",
-        "//packages/core",
-        "//packages/core/primitives/signals",
-        "//packages/core/rxjs-interop",
-        "//packages/core/src/di/interface",
-        "//packages/core/src/interface",
-        "//packages/core/src/util",
-        "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser/animations",
-        "//packages/platform-browser/testing",
-        "//packages/private/testing",
-    ],
     deps = [
+        ":matchers_rjs",
         "//:node_modules/rxjs",
+        "//:node_modules/zone.js",
+        "//packages/animations:animations_rjs",
+        "//packages/animations/browser:browser_rjs",
+        "//packages/animations/browser/testing:testing_rjs",
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
+        "//packages/core:core_rjs",
+        "//packages/core/primitives/signals:signals_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
+        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core/src/interface:interface_rjs",
+        "//packages/core/src/util:util_rjs",
+        "//packages/core/testing:testing_rjs",
+        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser/animations:animations_rjs",
+        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/private/testing:testing_rjs",
     ],
 )
 
@@ -48,8 +46,8 @@ ts_project(
         "is_shape_of.ts",
         "matchers.ts",
     ],
-    interop_deps = [
-        "//packages/core",
+    deps = [
+        "//packages/core:core_rjs",
     ],
 )
 
@@ -59,12 +57,11 @@ ts_project(
     srcs = [
         "load_domino.ts",
     ],
-    interop_deps = [
-        "//packages/common",
-        "//packages/compiler",
-        "//packages/platform-server",
+    deps = [
+        "//packages/common:common_rjs",
+        "//packages/compiler:compiler_rjs",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/platform-server:platform-server_rjs",
     ],
 )
 
@@ -78,21 +75,16 @@ ts_project(
     ],
 )
 
-jasmine_node_test(
+angular_jasmine_test(
     name = "render3",
-    bootstrap = [
-        ":domino",
-        "//tools/testing:node",
-    ],
-    deps = [
-        ":render3_node_lib",
-        "//packages/zone.js/lib",
+    data = [
+        ":render3_node_lib_rjs",
     ],
 )
 
-karma_web_test_suite(
+ng_web_test_suite(
     name = "render3_web",
     deps = [
-        ":render3_lib",
+        ":render3_lib_rjs",
     ],
 )
