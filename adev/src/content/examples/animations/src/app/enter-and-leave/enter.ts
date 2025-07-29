@@ -2,11 +2,11 @@
 import {Component, signal} from '@angular/core';
 
 @Component({
-  selector: 'app-remove',
-  templateUrl: 'remove.component.html',
-  styleUrls: ['remove.component.css'],
+  selector: 'app-enter',
+  templateUrl: 'enter.html',
+  styleUrls: ['enter.css'],
 })
-export class RemoveComponent {
+export class Enter {
   isShown = signal(false);
 
   toggle() {

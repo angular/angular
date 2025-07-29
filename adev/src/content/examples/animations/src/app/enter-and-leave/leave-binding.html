@@ -1,0 +1,10 @@
+<!-- #docplaster -->
+<h2><code>animate.leave</code> Binding Example</h2>
+
+<button type="button" (click)="toggle()">Toggle Element</button>
+
+@if (isShown()) {
+  <div class="leave-container" [animate.leave]="farewell()">
+    <p>Goodbye</p>
+  </div>
+}
