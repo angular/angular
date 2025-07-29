@@ -1,6 +1,6 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:index.bzl", _npm_package_bin = "npm_package_bin", _pkg_npm = "pkg_npm")
+load("@build_bazel_rules_nodejs//:index.bzl", _pkg_npm = "pkg_npm")
 load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
@@ -88,14 +88,6 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         # should not be built unless it is a dependency of another rule
         tags = ["manual"],
         visibility = visibility,
-    )
-
-def npm_package_bin(args = [], **kwargs):
-    _npm_package_bin(
-        # Disable the linker and rely on patched resolution which works better on Windows
-        # and is less prone to race conditions when targets build concurrently.
-        args = ["--nobazel_run_linker"] + args,
-        **kwargs
     )
 
 def generate_api_docs(**kwargs):
