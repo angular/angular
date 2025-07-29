@@ -9,7 +9,7 @@
 import {untracked} from '@angular/core';
 import {AggregateProperty} from './api/property';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
-import {FieldNode} from './field/node';
+import type {FieldNode} from './field/node';
 import {isArray} from './util/is_array';
 
 /**
