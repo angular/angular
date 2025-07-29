@@ -14,20 +14,28 @@ import {Field, FieldPath} from '../types';
 import {StandardSchemaValidationError, ValidationError, WithField} from '../validation_errors';
 
 /**
- * Utility type that removes `{[key: string]: unknown}` from a given type, recursively.
- * We strip this out of the `TSchema` type in `validateStandardSchema` in order to accomodate Zod's
+ * Utility type that removes a string index key when its value is `unknown`,
+ * i.e. `{[key: string]: unknown}`. It allows specific string keys to pass through, even if their
+ * value is `unknown`, e.g. `{key: unknown}`.
+ */
+export type RemoveStringIndexUnknownKey<K, V> = string extends K
+  ? unknown extends V
+    ? never
+    : K
+  : K;
+
+/**
+ * Utility type that recursively ignores unknown string index properties on the given object.
+ * We use this on the `TSchema` type in `validateStandardSchema` in order to accomodate Zod's
  * `looseObject` which includes `{[key: string]: unknown}` as part of the type.
  */
-export type DeepStripStringIndexUnknown<T> =
+export type IgnoreUnknownProperties<T> =
   T extends Record<PropertyKey, unknown>
     ? {
-        [K in keyof T as string extends K
-          ? unknown extends T[K]
-            ? never
-            : K
-          : K]: DeepStripStringIndexUnknown<T[K]>;
+        [K in keyof T as RemoveStringIndexUnknownKey<K, T[K]>]: IgnoreUnknownProperties<T[K]>;
       }
     : T;
+
 /**
  * Validates a field using a `StandardSchemaV1` compatible validator (e.g. a Zod validator).
  *
@@ -39,10 +47,10 @@ export type DeepStripStringIndexUnknown<T> =
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
  */
-export function validateStandardSchema<
-  TSchema,
-  TValue extends DeepStripStringIndexUnknown<TSchema>,
->(path: FieldPath<TValue>, schema: StandardSchemaV1<TSchema>) {
+export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProperties<TSchema>>(
+  path: FieldPath<TValue>,
+  schema: StandardSchemaV1<TSchema>,
+) {
   // We create both a sync and async validator because the standard schema validator can return
   // either a sync result or a Promise, and we need to handle both cases. The sync validator
   // handles the sync result, and the async validator handles the Promise.
