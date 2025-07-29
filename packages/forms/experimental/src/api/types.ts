@@ -8,7 +8,7 @@
 
 import {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from './property';
-import {ValidationError, WithField} from './validation_errors';
+import type {ValidationError, WithField} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
