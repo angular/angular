@@ -10,6 +10,11 @@ overrides:
   https-proxy-agent: 7.0.6
   saucelabs: 9.0.2
 
+patchedDependencies:
+  dagre-d3-es@7.0.11:
+    hash: dp4f5qlzqey4wb2gylte6hyt4q
+    path: tools/pnpm-patches/dagre-d3-es+7.0.11.patch
+
 importers:
 
   .:
@@ -196,7 +201,7 @@ importers:
         version: 7.9.0
       dagre-d3-es:
         specifier: ^7.0.11
-        version: 7.0.11
+        version: 7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q)
       diff:
         specifier: ^8.0.0
         version: 8.0.2
@@ -9668,12 +9673,13 @@ packages:
       d3-zoom: 3.0.0
     dev: false
 
-  /dagre-d3-es@7.0.11:
+  /dagre-d3-es@7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q):
     resolution: {integrity: sha512-tvlJLyQf834SylNKax8Wkzco/1ias1OPw8DcUMDE7oUIoSEW25riQVuiu/0OWEFqT0cxHT3Pa9/D82Jr47IONw==}
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
     dev: false
+    patched: true
 
   /dashdash@1.14.1:
     resolution: {integrity: sha512-jRFi8UDGo6j+odZiEpjazZaWqEal3w/basFjQHQEwVtZJGDpxbH1MeYluwCS8Xq5wmLJooDlMgvVarmWfGM44g==}
@@ -14124,7 +14130,7 @@ packages:
       cytoscape-fcose: 2.2.0(cytoscape@3.33.0)
       d3: 7.9.0
       d3-sankey: 0.12.3
-      dagre-d3-es: 7.0.11
+      dagre-d3-es: 7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q)
       dayjs: 1.11.13
       dompurify: 3.2.6
       katex: 0.16.22
