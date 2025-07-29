@@ -1,6 +1,6 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "extract_types", "pkg_npm")
-load("//tools:defaults2.bzl", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "extract_types", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -50,8 +50,8 @@ esbuild(
 extract_types(
     name = "types",
     deps = [
-        ":api",
-        ":factory_lib",
+        ":api_rjs",
+        ":factory_lib_rjs",
     ],
 )
 

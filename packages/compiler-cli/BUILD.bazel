@@ -1,18 +1,11 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@npm2//:defs.bzl", "npm_link_all_packages")
-load("//tools:defaults.bzl", "extract_types", "pkg_npm")
-load("//tools:defaults2.bzl", "api_golden_test", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "api_golden_test", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
-    ":compiler-cli",
-    "//packages/compiler-cli/private",
-    "//packages/compiler-cli/linker",
-    "//packages/compiler-cli/linker/babel",
-]
-
-PUBLIC_TARGETS_RJS = [
     ":compiler-cli_rjs",
     "//packages/compiler-cli/private:private_rjs",
     "//packages/compiler-cli/linker:linker_rjs",
@@ -68,7 +61,7 @@ esbuild(
     platform = "node",
     splitting = True,
     target = "node20",
-    deps = PUBLIC_TARGETS_RJS,
+    deps = PUBLIC_TARGETS,
 )
 
 ts_project(
