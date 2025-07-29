@@ -14,7 +14,13 @@
               <mat-icon> keyboard_arrow_down </mat-icon>
             </button>
             @if (signalGraphEnabled()) {
-              <button ng-button type="button" size="compact" (click)="showSignalGraph.emit()">
+              <button
+                ng-button
+                type="button"
+                class="signal-btn"
+                size="compact"
+                (click)="showSignalGraph.emit()"
+              >
                 Show Signal Graph
               </button>
             }
@@ -28,7 +34,13 @@
   <div class="element-header">
     <div class="element-name">{{ currentSelectedElement().element }}</div>
     @if (signalGraphEnabled()) {
-      <button ng-button type="button" size="compact" (click)="showSignalGraph.emit()">
+      <button
+        ng-button
+        type="button"
+        class="signal-btn"
+        size="compact"
+        (click)="showSignalGraph.emit()"
+      >
         Show Signal Graph
       </button>
     }
