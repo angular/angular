@@ -6,7 +6,6 @@ load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
-load("//tools/esm-interop:index.bzl", _nodejs_binary = "nodejs_binary")
 
 http_server = _http_server
 extract_types = _extract_types
@@ -90,31 +89,6 @@ def pkg_npm(name, deps = [], validate = True, **kwargs):
         tags = ["manual"],
         visibility = visibility,
     )
-
-def nodejs_binary(
-        name,
-        templated_args = [],
-        enable_linker = False,
-        **kwargs):
-    npm_workspace = _node_modules_workspace_name()
-
-    if not enable_linker:
-        templated_args = templated_args + [
-            # Disable the linker and rely on patched resolution which works better on Windows
-            # and is less prone to race conditions when targets build concurrently.
-            "--nobazel_run_linker",
-        ]
-
-    _nodejs_binary(
-        name = name,
-        npm_workspace = npm_workspace,
-        linker_enabled = enable_linker,
-        templated_args = templated_args,
-        **kwargs
-    )
-
-def _node_modules_workspace_name():
-    return "npm"
 
 def npm_package_bin(args = [], **kwargs):
     _npm_package_bin(
