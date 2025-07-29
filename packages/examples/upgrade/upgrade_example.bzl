@@ -1,6 +1,5 @@
 load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
-load("//tools:defaults.bzl", "http_server")
-load("//tools:defaults2.bzl", "ng_project", "protractor_web_test_suite", "ts_project")
+load("//tools:defaults2.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the

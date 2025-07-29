@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "generate_api_docs")
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
