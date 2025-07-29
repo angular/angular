@@ -33,17 +33,19 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     // incurred a dependency on the value via `tgt.getChild()` above.
     const value = untracked(tgt.value);
 
-    // TODO: does it make sense to just pass these through to reads of `value[p]` at this point?
     if (isArray(value)) {
-      switch (p) {
-        case 'length':
-          return (tgt.value() as Array<unknown>).length;
-        default:
-          // Other array properties are interpreted as references to array functions, and read off
-          // of the prototype.
-          // TODO: it would be slightly more correct to reference the actual prototype of `value`.
-          return (Array.prototype as any)[p];
+      // Allow access to the length for field arrays, it should be the same as the length of the data.
+      if (p === 'length') {
+        return (tgt.value() as Array<unknown>).length;
       }
+      // Allow access to the iterator. This allows the user to spread the field array into a
+      // standard array in order to call methods like `filter`, `map`, etc.
+      if (p === Symbol.iterator) {
+        return (Array.prototype as any)[p];
+      }
+      // Note: We can consider supporting additional array methods if we want in the future,
+      // but they should be thoroughly tested. Just forwarding the method directly from the
+      // `Array` prototype results in broken behavior for some methods like `map`.
     }
 
     // Otherwise, this property doesn't exist.

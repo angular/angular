@@ -145,10 +145,32 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
   TKey
 >) &
   (TValue extends Array<infer U>
-    ? Array<MaybeField<U, number>>
+    ? ReadonlyArrayLike<MaybeField<U, number>>
     : TValue extends Record<string, any>
-      ? {[K in keyof TValue]: MaybeField<TValue[K], string>}
+      ? Subfields<TValue>
       : unknown);
+
+/**
+ * The sub-fields that a user can navigate to from a `Feild<TValue>`.
+ *
+ * @template TValue The type of the data which the parent field is wrapped around.
+ */
+export type Subfields<TValue> = {
+  readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<
+    TValue[K],
+    string
+  >;
+};
+
+/**
+ * An iterable object with the same shape as a readonly array.
+ *
+ * @template T The array item type.
+ */
+export type ReadonlyArrayLike<T> = Pick<
+  ReadonlyArray<T>,
+  number | 'length' | typeof Symbol.iterator
+>;
 
 /**
  * Helper type for defining `Field`. Given a type `TValue` that may include `undefined`, it extracts

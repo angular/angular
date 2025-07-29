@@ -110,9 +110,7 @@ export interface DisabledReason {
 export function email<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<string, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
 
 // @public
-export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<TValue, TKey>) & (TValue extends Array<infer U> ? Array<MaybeField<U, number>> : TValue extends Record<string, any> ? {
-    [K in keyof TValue]: MaybeField<TValue[K], string>;
-} : unknown);
+export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<TValue, TKey>) & (TValue extends Array<infer U> ? ReadonlyArrayLike<MaybeField<U, number>> : TValue extends Record<string, any> ? Subfields<TValue> : unknown);
 
 // @public
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
@@ -310,6 +308,9 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
+export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | typeof Symbol.iterator>;
+
+// @public
 export const REQUIRED: AggregateProperty<boolean, boolean>;
 
 // @public
@@ -341,6 +342,11 @@ export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (p: F
 
 // @public
 export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = Schema<TValue> | SchemaFn<TValue, TPathKind>;
+
+// @public
+export type Subfields<TValue> = {
+    readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<TValue[K], string>;
+};
 
 // @public
 export function submit<TValue>(form: Field<TValue>, action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>): Promise<void>;
