@@ -352,8 +352,8 @@ importers:
         specifier: 0.2002.0-next.1
         version: 0.2002.0-next.1(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#f8509f6a9dc8664be0f5943afaa6c41ff71675b7
-        version: github.com/angular/dev-infra-private-ng-dev-builds/f8509f6a9dc8664be0f5943afaa6c41ff71675b7
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#d699d012ed61741701a9bc428252abc968185d07
+        version: github.com/angular/dev-infra-private-ng-dev-builds/d699d012ed61741701a9bc428252abc968185d07
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.0)
@@ -19966,10 +19966,10 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==, tarball: https://registry.npmjs.org/zwitch/-/zwitch-2.0.4.tgz}
     dev: false
 
-  github.com/angular/dev-infra-private-ng-dev-builds/f8509f6a9dc8664be0f5943afaa6c41ff71675b7:
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/f8509f6a9dc8664be0f5943afaa6c41ff71675b7}
+  github.com/angular/dev-infra-private-ng-dev-builds/d699d012ed61741701a9bc428252abc968185d07:
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d699d012ed61741701a9bc428252abc968185d07}
     name: '@angular/ng-dev'
-    version: 0.0.0-124003d3ffca1053b011c7072de5f84762a75365
+    version: 0.0.0-39c70c3c8c63165bc2df0efc7dcb3b3287b69685
     hasBin: true
     dependencies:
       '@google-cloud/spanner': 8.0.0(supports-color@10.0.0)
