@@ -15,7 +15,7 @@ import {isArray} from './util/is_array';
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
  */
-export const DYNAMIC = Symbol('DYNAMIC');
+export const DYNAMIC: unique symbol = Symbol('DYNAMIC');
 
 /**
  * Represents a result that should be ignored because its predicate indicates it is not active.

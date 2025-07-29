@@ -117,29 +117,34 @@ export class AggregateProperty<TAcc, TItem> {
 /**
  * An aggregate property representing whether the field is required.
  */
-export const REQUIRED = AggregateProperty.or();
+export const REQUIRED: AggregateProperty<boolean, boolean> = AggregateProperty.or();
 
 /**
  * An aggregate property representing the min value of the field.
  */
-export const MIN = AggregateProperty.max();
+export const MIN: AggregateProperty<number | undefined, number | undefined> =
+  AggregateProperty.max();
 
 /**
  * An aggregate property representing the max value of the field.
  */
-export const MAX = AggregateProperty.min();
+export const MAX: AggregateProperty<number | undefined, number | undefined> =
+  AggregateProperty.min();
 
 /**
  * An aggregate property representing the min length of the field.
  */
-export const MIN_LENGTH = AggregateProperty.max();
+export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined> =
+  AggregateProperty.max();
 
 /**
  * An aggregate property representing the max length of the field.
  */
-export const MAX_LENGTH = AggregateProperty.min();
+export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined> =
+  AggregateProperty.min();
 
 /**
  * An aggregate property representing the patterns the field must match.
  */
-export const PATTERN = AggregateProperty.list<string>();
+export const PATTERN: AggregateProperty<string[], string | undefined> =
+  AggregateProperty.list<string>();
