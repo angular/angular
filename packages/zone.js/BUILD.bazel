@@ -1,7 +1,7 @@
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
 load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
-load("//tools:defaults.bzl", "extract_types", "pkg_npm")
-load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "pkg_npm")
+load("//tools:defaults2.bzl", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -48,7 +48,7 @@ ts_project(
 extract_types(
     name = "zone_d_ts",
     visibility = ["//visibility:private"],
-    deps = [":zone_js"],
+    deps = [":zone_js_rjs"],
 )
 
 generate_rollup_bundle(

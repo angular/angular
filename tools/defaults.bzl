@@ -2,10 +2,7 @@
 
 load("@build_bazel_rules_nodejs//:index.bzl", _pkg_npm = "pkg_npm")
 load("@devinfra//bazel:extract_js_module_output.bzl", "extract_js_module_output")
-load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-
-extract_types = _extract_types
 
 # Packages which are versioned together on npm
 ANGULAR_SCOPED_PACKAGES = ["@angular/%s" % p for p in [
