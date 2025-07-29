@@ -393,6 +393,14 @@ class HttpResourceImpl<T>
     this.client = injector.get(HttpClient);
   }
 
+  override set(value: T): void {
+    super.set(value);
+
+    this._headers.set(undefined);
+    this._progress.set(undefined);
+    this._statusCode.set(undefined);
+  }
+
   // This is a type only override of the method
   declare hasValue: () => this is HttpResourceRef<Exclude<T, undefined>>;
 }
