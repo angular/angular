@@ -61,6 +61,7 @@ function addBody<T>(
     reportProgress: options.reportProgress,
     responseType: options.responseType,
     withCredentials: options.withCredentials,
+    credentials: options.credentials,
     transferCache: options.transferCache,
     timeout: options.timeout,
     keepalive: options.keepalive,
@@ -68,6 +69,8 @@ function addBody<T>(
     cache: options.cache,
     mode: options.mode,
     redirect: options.redirect,
+    integrity: options.integrity,
+    referrer: options.referrer,
   };
 }
 

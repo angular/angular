@@ -148,6 +148,41 @@ describe('HttpClient', () => {
       expect(testReq.request.body).toBe(body);
       testReq.flush('hello world');
     });
+    it('validates all fetch API options are properly handled', (done) => {
+      client
+        .post(
+          '/test',
+          {},
+          {
+            credentials: 'include',
+            cache: 'force-cache',
+            priority: 'high',
+            mode: 'cors',
+            redirect: 'follow',
+            referrer: 'www.example.com',
+            integrity: 'sha256-abc',
+            timeout: 1000,
+            keepalive: true,
+            withCredentials: true,
+          },
+        )
+        .subscribe(() => {
+          done();
+        });
+      const testReq = backend.expectOne('/test');
+      expect(testReq.request.credentials).toBe('include');
+      expect(testReq.request.cache).toBe('force-cache');
+      expect(testReq.request.priority).toBe('high');
+      expect(testReq.request.mode).toBe('cors');
+      expect(testReq.request.redirect).toBe('follow');
+      expect(testReq.request.referrer).toBe('www.example.com');
+      expect(testReq.request.integrity).toBe('sha256-abc');
+      expect(testReq.request.timeout).toBe(1000);
+      expect(testReq.request.keepalive).toBe(true);
+      expect(testReq.request.withCredentials).toBe(true);
+      expect(testReq.request.body).toEqual({});
+      testReq.flush({});
+    });
     it('with a json body of false', (done) => {
       client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe((res) => {
         expect(res.ok).toBeTruthy();
