@@ -107,7 +107,7 @@ def ts_project(
         visibility = None,
         # TODO: Enable this for all `ts_project` targets at end of migration.
         ignore_strict_deps = True,
-        enable_runtime_rnjs_interop = True,
+        enable_runtime_rnjs_interop = False,
         rule_impl = _ts_project,
         **kwargs):
     # Pull in the `rules_nodejs` variants of dependencies we know are "hybrid". This
