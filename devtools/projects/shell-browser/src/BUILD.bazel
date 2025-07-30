@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 sass_binary(
     name = "shell_common_styles",
     src = "styles.scss",
-    include_paths = ["external/npm/node_modules"],
+    include_paths = ["external/angular/node_modules"],
     sourcemap = False,
     deps = ["//devtools/projects/ng-devtools/src/styles:global"],
 )

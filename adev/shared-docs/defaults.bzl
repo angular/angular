@@ -32,27 +32,25 @@ js_run_binary = _js_run_binary
 path_relative_to_label = _path_relative_to_label
 zoneless_jasmine_test = _zoneless_jasmine_test
 
-def ts_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
+def ts_project(name, tsconfig = None, testonly = False, **kwargs):
     if tsconfig == None:
         if native.package_name().startswith("adev/shared-docs"):
             tsconfig = "//adev/shared-docs:tsconfig_test" if testonly else "//adev/shared-docs:tsconfig_build"
 
     _ts_project(
         name = name,
-        enable_runtime_rnjs_interop = enable_runtime_rnjs_interop,
         tsconfig = tsconfig,
         testonly = testonly,
         **kwargs
     )
 
-def ng_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
+def ng_project(name, tsconfig = None, testonly = False, **kwargs):
     if tsconfig == None:
         if native.package_name().startswith("adev/shared-docs"):
             tsconfig = "//adev/shared-docs:tsconfig_test" if testonly else "//adev/shared-docs:tsconfig_build"
 
     _ng_project(
         name = name,
-        enable_runtime_rnjs_interop = enable_runtime_rnjs_interop,
         tsconfig = tsconfig,
         testonly = testonly,
         **kwargs
