@@ -125,7 +125,7 @@
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
     "requirejs": "^2.3.6",
-    "rollup": "4.46.1",
+    "rollup": "4.46.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-preserve-shebang": "^1.0.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
