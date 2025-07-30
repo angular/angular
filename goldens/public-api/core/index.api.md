@@ -266,6 +266,7 @@ export type CompilerOptions = {
 
 // @public
 export interface Component extends Directive {
+    // @deprecated
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
