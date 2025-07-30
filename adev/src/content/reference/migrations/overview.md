@@ -30,4 +30,7 @@ Learn about how you can migrate your existing angular project to the latest feat
   <docs-card title="Self-closing tags" link="Migrate now" href="reference/migrations/self-closing-tags">
     Convert component templates to use self-closing tags where possible.
   </docs-card>
+  <docs-card title="NgClass to Class Bindings" link="Migrate now" href="reference/migrations/ngclass-to-class">
+    Convert component templates to prefer [class.class-name] bindings over [ngClass] object literals.
+  </docs-card>
 </docs-card-container>
