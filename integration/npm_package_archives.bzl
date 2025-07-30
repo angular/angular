@@ -43,7 +43,7 @@ def npm_package_archives():
     name = "{label_name}",
     srcs = ["//{name}:{last_segment_name}__all_files"],
     extension = "tar.gz",
-    strip_prefix = "/external/npm/node_modules/{name}",
+    strip_prefix = "/external/angular/node_modules/{name}",
     # should not be built unless it is a dependency of another rule
     tags = ["manual"],
 )

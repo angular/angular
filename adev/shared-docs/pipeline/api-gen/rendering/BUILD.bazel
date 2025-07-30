@@ -26,7 +26,6 @@ ts_project(
             "entities.mts",
         ],
     ),
-    enable_runtime_rnjs_interop = True,
     deps = [
         ":entities_rjs",
         "//adev:node_modules/@types/node",

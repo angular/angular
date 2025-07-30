@@ -40,10 +40,12 @@ class CachedFolder {
 }
 
 const typescriptFolder = new CachedFolder(() =>
-  loadFolder(resolveFromRunfiles('npm/node_modules/typescript')),
+  loadFolder(resolveFromRunfiles('angular/node_modules/typescript')),
 );
 const angularFolder = new CachedFolder(loadAngularFolder);
-const rxjsFolder = new CachedFolder(() => loadFolder(resolveFromRunfiles('npm/node_modules/rxjs')));
+const rxjsFolder = new CachedFolder(() =>
+  loadFolder(resolveFromRunfiles('angular/node_modules/rxjs')),
+);
 
 export function loadStandardTestFiles({
   fakeCommon = false,
@@ -72,7 +74,7 @@ export function loadStandardTestFiles({
 export function loadTsLib(fs: FileSystem, basePath: string = '/') {
   loadTestDirectory(
     fs,
-    resolveFromRunfiles('npm/node_modules/tslib'),
+    resolveFromRunfiles('angular/node_modules/tslib'),
     fs.resolve(basePath, 'node_modules/tslib'),
   );
 }
