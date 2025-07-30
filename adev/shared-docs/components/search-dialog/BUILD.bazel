@@ -21,13 +21,13 @@ ng_project(
         "//adev:node_modules/@angular/forms",
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/rxjs",
-        "//adev/shared-docs/components/algolia-icon:algolia-icon_rjs",
-        "//adev/shared-docs/components/search-history:search-history_rjs",
-        "//adev/shared-docs/components/text-field:text-field_rjs",
-        "//adev/shared-docs/directives:directives_rjs",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/pipes:pipes_rjs",
-        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/components/algolia-icon",
+        "//adev/shared-docs/components/search-history",
+        "//adev/shared-docs/components/text-field",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipes",
+        "//adev/shared-docs/services",
     ],
 )
 
@@ -43,19 +43,19 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":search-dialog_rjs",
+        ":search-dialog",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/components/algolia-icon:algolia-icon_rjs",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/services:services_rjs",
-        "//adev/shared-docs/testing:testing_rjs",
+        "//adev/shared-docs/components/algolia-icon",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

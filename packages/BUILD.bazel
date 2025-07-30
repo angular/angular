@@ -30,7 +30,7 @@ ts_project(
         exclude = ["goog.d.ts"],
     ),
     deps = [
-        ":goog_types_rjs",
+        ":goog_types",
         "//:node_modules/@types/hammerjs",
         "//:node_modules/tslib",
         "//:node_modules/zone.js",

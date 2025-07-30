@@ -8,6 +8,6 @@ ts_project(
         "**/*.ts",
     ]),
     deps = [
-        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/logging",
     ],
 )

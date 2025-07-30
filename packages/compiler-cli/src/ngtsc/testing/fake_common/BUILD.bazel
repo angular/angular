@@ -7,9 +7,8 @@ ts_project(
     srcs = [
         "index.ts",
     ],
-    module_name = "@angular/common",
     deps = [
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )
 
@@ -20,6 +19,6 @@ ng_package(
     ],
     package = "@angular/common",
     deps = [
-        ":fake_common_rjs",
+        ":fake_common",
     ],
 )

@@ -13,9 +13,9 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/upgrade:upgrade_rjs",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/upgrade",
     ],
 )
 

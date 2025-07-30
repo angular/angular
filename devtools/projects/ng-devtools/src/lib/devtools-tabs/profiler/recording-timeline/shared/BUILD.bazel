@@ -16,13 +16,13 @@ ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
     deps = [
-        ":estimate-frame-rate_rjs",
+        ":estimate-frame-rate",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

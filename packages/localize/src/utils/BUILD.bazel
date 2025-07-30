@@ -11,7 +11,7 @@ ts_project(
         ],
     ),
     deps = [
-        "//packages/compiler:compiler_rjs",
+        "//packages/compiler",
     ],
 )
 

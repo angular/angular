@@ -19,7 +19,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode",
+        "//devtools/projects/protocol",
     ],
 )

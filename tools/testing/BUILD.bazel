@@ -16,13 +16,12 @@ ts_project(
     name = "browser",
     testonly = 1,
     srcs = ["browser_tests.init.mts"],
-    enable_runtime_rnjs_interop = False,
     deps = [
-        ":zone_base_setup_lib_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
+        ":zone_base_setup_lib",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
     ],
 )
 
@@ -30,14 +29,13 @@ ts_project(
     name = "browser_zoneless",
     testonly = 1,
     srcs = ["browser_zoneless_tests.init.mts"],
-    enable_runtime_rnjs_interop = False,
     deps = [
         "//:node_modules/reflect-metadata",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
     ],
 )
 
@@ -45,15 +43,14 @@ ts_project(
     name = "node_zoneless",
     testonly = 1,
     srcs = ["node_zoneless_tests.init.mts"],
-    enable_runtime_rnjs_interop = False,
     deps = [
         "//:node_modules/reflect-metadata",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-server",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/platform-server:platform-server_rjs",
-        "//packages/platform-server/testing:testing_rjs",
+        "//packages/platform-server/testing",
     ],
 )
 
@@ -61,16 +58,15 @@ ts_project(
     name = "node",
     testonly = 1,
     srcs = ["node_tests.init.mts"],
-    enable_runtime_rnjs_interop = False,
     deps = [
-        ":zone_base_setup_lib_rjs",
+        ":zone_base_setup_lib",
         "//:node_modules/reflect-metadata",
         "//:node_modules/zone.js",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
         "//packages/platform-server:bundled_domino_lib",
-        "//packages/platform-server:platform-server_rjs",
-        "//packages/platform-server/testing:testing_rjs",
+        "//packages/platform-server/testing",
     ],
 )
 
@@ -79,6 +75,6 @@ ts_project(
     testonly = 1,
     srcs = ["node_no_angular_tests.init.mts"],
     deps = [
-        "//packages:types_rjs",
+        "//packages:types",
     ],
 )

@@ -15,17 +15,17 @@ ts_project(
     ),
     deps = [
         "//:node_modules/source-map",
-        "//packages/common:common_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler/test/expression_parser/utils:utils_rjs",
-        "//packages/compiler/test/ml_parser/util:util_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/src/compiler:compiler_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
+        "//packages/core",
+        "//packages/core/src/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -36,19 +36,19 @@ ts_project(
         NODE_ONLY,
     ),
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler/test/expression_parser/utils:utils_rjs",
-        "//packages/core:core_rjs",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/core",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
-        ":test_node_only_lib_rjs",
+        ":test_lib",
+        ":test_node_only_lib",
         "//:node_modules/source-map",
     ],
 )
@@ -56,6 +56,6 @@ angular_jasmine_test(
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

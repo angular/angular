@@ -32,7 +32,7 @@ js_binary(
     data = [
         "llms.mjs",
         "llms-list.md",
-        ":llms_lib_rjs",
+        ":llms_lib",
         "//adev/src/content:guide_files",
     ],
     entry_point = ":llms.mjs",

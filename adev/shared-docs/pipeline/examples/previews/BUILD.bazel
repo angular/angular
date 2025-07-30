@@ -42,6 +42,6 @@ esbuild(
     tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
-        "//adev/shared-docs/pipeline/examples/previews:index_rjs",
+        "//adev/shared-docs/pipeline/examples/previews:index",
     ],
 )

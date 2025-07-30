@@ -17,9 +17,9 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/@angular-devkit/schematics",
-        "//packages/core/schematics/ng-generate/output-migration:output-migration_rjs",
-        "//packages/core/schematics/ng-generate/signal-input-migration:signal-input-migration_rjs",
-        "//packages/core/schematics/ng-generate/signal-queries-migration:signal-queries-migration_rjs",
-        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit:angular_devkit_rjs",
+        "//packages/core/schematics/ng-generate/output-migration",
+        "//packages/core/schematics/ng-generate/signal-input-migration",
+        "//packages/core/schematics/ng-generate/signal-queries-migration",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
     ],
 )

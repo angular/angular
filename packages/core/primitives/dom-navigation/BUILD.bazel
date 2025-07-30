@@ -19,7 +19,7 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = ":dom-navigation_rjs",
+    target = ":dom-navigation",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

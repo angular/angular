@@ -7,22 +7,22 @@ ts_project(
         ["**/*_spec.ts"],
     ),
     deps = [
-        "//packages:types_rjs",
+        "//packages:types",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
-        "//packages/localize/tools:tools_rjs",
-        "//packages/localize/tools/test:test_lib_rjs",
-        "//packages/localize/tools/test/helpers:helpers_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/localize/tools",
+        "//packages/localize/tools/test:test_lib",
+        "//packages/localize/tools/test/helpers",
     ],
 )
 
 jasmine_test(
     name = "integration",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//:node_modules/tinyglobby",
         "//:node_modules/yargs",
         "//packages/localize/tools/test/extract/integration/test_files",

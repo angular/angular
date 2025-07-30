@@ -11,9 +11,9 @@ ts_project(
         "//:node_modules/@angular/material",
         "//:node_modules/@types",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -21,15 +21,15 @@ ts_test_library(
     name = "component_data_source_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":component-data-source_rjs",
+        ":component-data-source",
         "//:node_modules/@angular/cdk",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":component_data_source_test_rjs",
+        ":component_data_source_test",
     ],
 )

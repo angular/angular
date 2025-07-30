@@ -48,7 +48,7 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = ":init_rjs",
+    target = ":init",
     tsconfig = "//packages:tsconfig_build",
 )
 

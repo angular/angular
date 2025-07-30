@@ -27,7 +27,7 @@ ts_project(
     name = "factory_lib",
     srcs = ["plugin-factory.ts"],
     deps = [
-        ":api_rjs",
+        ":api",
         "//:node_modules/typescript",
     ],
 )
@@ -37,21 +37,21 @@ esbuild(
     entry_point = ":plugin-factory.ts",
     external = ["@angular/language-service/bundles/language-service.js"],
     format = "cjs",
-    deps = [":factory_lib_rjs"],
+    deps = [":factory_lib"],
 )
 
 esbuild(
     name = "api_bundle",
     entry_point = ":api.ts",
     format = "cjs",
-    deps = [":api_rjs"],
+    deps = [":api"],
 )
 
 extract_types(
     name = "types",
     deps = [
-        ":api_rjs",
-        ":factory_lib_rjs",
+        ":api",
+        ":factory_lib",
     ],
 )
 

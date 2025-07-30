@@ -8,10 +8,10 @@ ng_project(
     name = "testing",
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
-        "//packages/platform-browser-dynamic/testing:testing_rjs",
-        "//packages/platform-server:platform-server_rjs",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-server",
     ],
 )
 

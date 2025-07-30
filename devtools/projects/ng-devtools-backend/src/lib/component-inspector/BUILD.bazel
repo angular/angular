@@ -6,11 +6,11 @@ ts_project(
     name = "component-inspector",
     srcs = ["component-inspector.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -20,18 +20,18 @@ ts_test_library(
         "component-inspector.spec.ts",
     ],
     deps = [
-        ":component-inspector_rjs",
+        ":component-inspector",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks:hooks_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

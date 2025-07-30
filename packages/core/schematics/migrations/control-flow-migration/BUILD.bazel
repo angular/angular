@@ -18,7 +18,7 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core/schematics/utils:utils_rjs",
+        "//packages/compiler",
+        "//packages/core/schematics/utils",
     ],
 )

@@ -10,9 +10,9 @@ ts_project(
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/incremental:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/incremental:api",
+        "//packages/compiler-cli/src/ngtsc/reflection",
     ],
 )
