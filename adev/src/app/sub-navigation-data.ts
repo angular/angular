@@ -621,6 +621,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Animations',
+        status: 'updated',
         children: [
           {
             label: 'Animating your content',
