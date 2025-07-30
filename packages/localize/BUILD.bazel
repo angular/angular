@@ -10,10 +10,9 @@ ts_project(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/localize",
     deps = [
-        "//packages/localize/src/localize:localize_rjs",
-        "//packages/localize/src/utils:utils_rjs",
+        "//packages/localize/src/localize",
+        "//packages/localize/src/utils",
     ],
 )
 
@@ -37,8 +36,8 @@ ng_package(
         "release-with-framework",
     ],
     deps = [
-        ":localize_rjs",
-        "//packages/localize/init:init_rjs",
+        ":localize",
+        "//packages/localize/init",
     ],
 )
 

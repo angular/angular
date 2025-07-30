@@ -142,7 +142,7 @@ jobs:
           yarn bazel build \
           //packages/zone.js/bundles:zone.umd.js \
           //packages/zone.js:npm_package \
-          //packages/zone.js/test/closure:closure_rjs
+          //packages/zone.js/test/closure:closure
 
       - run: |
           rm -Rf packages/zone.js/build

@@ -8,7 +8,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib:lib_rjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
     ],
 )

@@ -6,7 +6,7 @@ ts_project(
     name = "util_lib",
     srcs = ["util.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_build",
-    deps = ["//modules/benchmarks/src:util_lib_rjs"],
+    deps = ["//modules/benchmarks/src:util_lib"],
 )
 
 ts_project(
@@ -16,7 +16,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )
 
@@ -27,6 +27,6 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )

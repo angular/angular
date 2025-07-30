@@ -9,6 +9,6 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )

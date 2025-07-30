@@ -12,9 +12,9 @@ ng_project(
     ),
     deps = [
         "//:node_modules/zone.js",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
-        "//packages/upgrade/src/common:common_rjs",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "//packages/upgrade/src/common",
     ],
 )
 
@@ -34,9 +34,9 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":upgrade_rjs",
-        "//packages/upgrade/static:static_rjs",
-        "//packages/upgrade/static/testing:testing_rjs",
+        ":upgrade",
+        "//packages/upgrade/static",
+        "//packages/upgrade/static/testing",
     ],
 )
 

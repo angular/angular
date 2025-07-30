@@ -5,25 +5,25 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/animations:animations_rjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/animations/browser/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

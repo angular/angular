@@ -12,12 +12,12 @@ ts_project(
         ],
     ),
     deps = [
-        ":identity_tracker_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler:profiler_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":identity_tracker",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/hooks/profiler",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -25,8 +25,8 @@ ts_project(
     name = "identity_tracker",
     srcs = ["identity-tracker.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/protocol",
     ],
 )

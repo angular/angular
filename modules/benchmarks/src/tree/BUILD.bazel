@@ -6,7 +6,7 @@ ts_project(
     name = "util_lib",
     srcs = ["util.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
-    deps = ["//modules/benchmarks/src:util_lib_rjs"],
+    deps = ["//modules/benchmarks/src:util_lib"],
 )
 
 ts_project(
@@ -16,7 +16,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )
 
@@ -26,7 +26,7 @@ ts_project(
     srcs = ["tree.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib_rjs",
+        ":test_utils_lib",
         "//:node_modules/protractor",
     ],
 )
@@ -37,7 +37,7 @@ ts_project(
     srcs = ["tree.e2e-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib_rjs",
+        ":test_utils_lib",
         "//:node_modules/protractor",
     ],
 )
@@ -48,7 +48,7 @@ ts_project(
     srcs = ["tree_detect_changes.perf-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib_rjs",
+        ":test_utils_lib",
         "//:node_modules/protractor",
     ],
 )
@@ -59,7 +59,7 @@ ts_project(
     srcs = ["tree_detect_changes.e2e-spec.ts"],
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
-        ":test_utils_lib_rjs",
+        ":test_utils_lib",
         "//:node_modules/protractor",
     ],
 )

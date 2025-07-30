@@ -9,8 +9,8 @@ ng_project(
         exclude = ["*.spec.ts"],
     ),
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -21,14 +21,14 @@ ts_test_library(
         "state-serializer.spec.ts",
     ],
     deps = [
-        ":state-serializer_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":state-serializer",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

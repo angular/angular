@@ -10,7 +10,7 @@ esbuild(
     platform = "node",
     target = "es2022",
     deps = [
-        ":render_api_to_html_lib_rjs",
+        ":render_api_to_html_lib",
     ],
 )
 
@@ -27,7 +27,7 @@ ts_project(
         ],
     ),
     deps = [
-        ":entities_rjs",
+        ":entities",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/html-entities",
         "//adev:node_modules/marked",

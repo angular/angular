@@ -21,7 +21,7 @@ ng_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )
 
@@ -61,8 +61,8 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":service-worker_rjs",
-        "//packages/service-worker/config:config_rjs",
+        ":service-worker",
+        "//packages/service-worker/config",
     ],
 )
 
@@ -88,7 +88,7 @@ api_golden_test(
     name = "service-worker_errors",
     data = [
         "//goldens:public-api",
-        "//packages/service-worker:service-worker_rjs",
+        "//packages/service-worker",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/service-worker/errors.api.md",

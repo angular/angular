@@ -8,29 +8,29 @@ ts_project(
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
-        "//packages/common:common_rjs",
-        "//packages/common/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/rxjs-interop:rxjs-interop_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
-        "//packages/router:router_rjs",
-        "//packages/router/testing:testing_rjs",
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/core",
+        "//packages/core/rxjs-interop",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "//packages/router",
+        "//packages/router/testing",
     ],
 )
 
 zoneless_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

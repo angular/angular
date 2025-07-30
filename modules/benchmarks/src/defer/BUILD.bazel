@@ -10,8 +10,8 @@ ng_project(
     ],
     tsconfig = "//modules/benchmarks:tsconfig_build",
     deps = [
-        "//modules/benchmarks/src:util_lib_rjs",
-        "//packages/core:core_rjs",
+        "//modules/benchmarks/src:util_lib",
+        "//packages/core",
     ],
 )
 
@@ -22,7 +22,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )
 
@@ -33,6 +33,6 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )

@@ -13,7 +13,7 @@ ng_project(
     testonly = True,
     srcs = ["forward_ref_spec.ts"],
     visibility = ["//packages/examples/core:__pkg__"],
-    deps = ["//packages/core:core_rjs"],
+    deps = ["//packages/core"],
 )
 
 filegroup(

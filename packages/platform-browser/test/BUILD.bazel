@@ -18,20 +18,20 @@ ts_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages:types_rjs",
-        "//packages/animations:animations_rjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/animations/browser/testing:testing_rjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -43,7 +43,7 @@ js_library(
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
@@ -56,6 +56,6 @@ ng_web_test_suite(
         ":static_assets",
     ],
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

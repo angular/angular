@@ -42,9 +42,9 @@ ng_project(
         "//:node_modules/d3",
         "//:node_modules/dagre-d3-es",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//devtools/projects/protocol",
     ],
 )

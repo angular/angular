@@ -8,9 +8,9 @@ ng_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/router:router_rjs",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
     ],
 )
 

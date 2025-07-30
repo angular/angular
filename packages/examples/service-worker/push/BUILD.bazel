@@ -11,9 +11,9 @@ ng_project(
     ),
     deps = [
         "//:node_modules/zone.js",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/service-worker:service-worker_rjs",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/service-worker",
     ],
 )
 
@@ -25,8 +25,8 @@ ts_project(
     deps = [
         "//:node_modules/@types/jasminewd2",
         "//:node_modules/protractor",
-        "//packages/examples/test-utils:test-utils_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
     ],
 )
 
@@ -38,7 +38,7 @@ esbuild(
     entry_point = ":main.ts",
     tsconfig = "//packages/examples:tsconfig_build",
     deps = [
-        ":sw_push_examples_rjs",
+        ":sw_push_examples",
         "//packages/examples:tsconfig_build",
     ],
 )
@@ -57,7 +57,7 @@ protractor_web_test_suite(
     name = "protractor_tests",
     server = ":devserver",
     deps = [
-        ":sw_push_e2e_tests_lib_rjs",
+        ":sw_push_e2e_tests_lib",
     ],
 )
 

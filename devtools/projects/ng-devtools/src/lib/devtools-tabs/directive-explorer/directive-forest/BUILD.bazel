@@ -17,18 +17,18 @@ ng_project(
         ":directive_forest_component_styles",
     ],
     deps = [
-        ":directive_forest_utils_rjs",
+        ":directive_forest_utils",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing:diffing_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:directive-forest-filter-fn-generator_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:filter_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node:tree-node_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update:tab-update_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/filter:directive-forest-filter-fn-generator",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -37,7 +37,7 @@ ts_project(
     srcs = ["directive-forest-utils.ts"],
     deps = [
         "//:node_modules/@angular/cdk",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
     ],
 )
 
@@ -45,14 +45,14 @@ ts_test_library(
     name = "directive_forest_utils_test",
     srcs = ["directive-forest-utils.spec.ts"],
     deps = [
-        ":directive_forest_utils_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
+        ":directive_forest_utils",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":directive_forest_utils_test_rjs",
+        ":directive_forest_utils_test",
     ],
 )

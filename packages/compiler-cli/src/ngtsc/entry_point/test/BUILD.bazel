@@ -10,16 +10,16 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler-cli/src/ngtsc/entry_point:entry_point_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/entry_point",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

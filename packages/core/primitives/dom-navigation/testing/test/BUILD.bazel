@@ -9,21 +9,21 @@ ts_project(
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
-        "//packages/core/primitives/dom-navigation/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/core/primitives/dom-navigation/testing",
+        "//packages/private/testing",
     ],
 )
 
 zoneless_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

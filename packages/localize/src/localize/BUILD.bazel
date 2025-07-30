@@ -11,7 +11,7 @@ ts_project(
     ),
     deps = [
         "//:node_modules/@types/node",
-        "//packages/localize/src/utils:utils_rjs",
+        "//packages/localize/src/utils",
     ],
 )
 

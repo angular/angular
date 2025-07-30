@@ -13,19 +13,11 @@ ts_project(
     ],
 )
 
-filegroup(
-    name = "ssr_docs_lib_types",
-    srcs = [
-        ":ssr_docs_lib_rjs",
-    ],
-    output_group = "types",
-)
-
 ### @angular/ssr package located in the Angular/CLI repository
 generate_api_docs(
     name = "ssr_docs",
     srcs = [
-        ":ssr_docs_lib_rjs",
+        ":ssr_docs_lib",
         ":ssr_docs_lib_types",
         "//:node_modules/@angular/ssr",
         "//packages:common_files_and_deps_for_docs",
@@ -37,7 +29,7 @@ generate_api_docs(
 generate_api_docs(
     name = "ssr_node_docs",
     srcs = [
-        ":ssr_docs_lib_rjs",
+        ":ssr_docs_lib",
         ":ssr_docs_lib_types",
         "//:node_modules/@angular/ssr",
         "//packages:common_files_and_deps_for_docs",

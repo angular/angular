@@ -17,9 +17,9 @@ ng_project(
     deps = [
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/components/icon:icon_rjs",
-        "//adev/shared-docs/directives:directives_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/providers",
     ],
 )
 
@@ -35,13 +35,13 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":top-level-banner_rjs",
+        ":top-level-banner",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/providers",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

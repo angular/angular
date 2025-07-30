@@ -29,7 +29,7 @@ esbuild(
     target = "node20",
     tsconfig = "//packages:tsconfig_build",
     deps = [
-        ":ng-add_rjs",
+        ":ng-add",
         "//packages:tsconfig_build",
     ],
 )
@@ -58,8 +58,8 @@ jasmine_test(
     name = "test",
     data = [
         ":assets",
-        ":ng-add_rjs",
-        ":test_lib_rjs",
+        ":ng-add",
+        ":test_lib",
         "//packages/localize/schematics:collection_json",
     ],
 )

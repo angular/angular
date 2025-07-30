@@ -8,8 +8,8 @@ ts_project(
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/private:private_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system",
     ],
 )

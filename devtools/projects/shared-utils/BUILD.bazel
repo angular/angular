@@ -20,7 +20,7 @@ ts_test_library(
     name = "shared_utils_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":shared-utils_rjs",
+        ":shared-utils",
         "//:node_modules/@angular/core",
     ],
 )
@@ -28,6 +28,6 @@ ts_test_library(
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":shared_utils_test_rjs",
+        ":shared_utils_test",
     ],
 )

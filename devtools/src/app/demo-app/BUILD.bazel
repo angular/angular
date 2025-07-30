@@ -56,8 +56,8 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/elements",
         "//:node_modules/@angular/router",
-        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
-        "//devtools/src:zone-unaware-iframe_message_bus_rjs",
-        "//devtools/src/app/demo-app/todo:todo_rjs",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/src:zone-unaware-iframe_message_bus",
+        "//devtools/src/app/demo-app/todo",
     ],
 )
