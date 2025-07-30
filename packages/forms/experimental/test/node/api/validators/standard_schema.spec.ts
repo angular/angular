@@ -70,7 +70,7 @@ describe('standard schema integration', () => {
         first: z.string().min(2),
         last: z.string().min(3),
       })
-      .refine(async () => true);
+      .refine(() => Promise.resolve());
 
     const nameForm = form(
       signal({first: '', last: ''}),
