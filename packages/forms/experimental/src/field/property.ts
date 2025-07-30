@@ -8,7 +8,7 @@
 
 import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
-import {FieldNode} from './node';
+import type {FieldNode} from './node';
 import {cast} from './util';
 
 /**
