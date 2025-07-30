@@ -12,7 +12,6 @@ ts_project(
             "index.mts",
         ],
     ),
-    enable_runtime_rnjs_interop = True,
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/@types/node",
@@ -28,7 +27,6 @@ ts_project(
     srcs = [
         "index.mts",
     ],
-    enable_runtime_rnjs_interop = True,
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],

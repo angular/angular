@@ -11,7 +11,6 @@ ts_project(
     srcs = [
         "index.mts",
     ],
-    enable_runtime_rnjs_interop = True,
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
