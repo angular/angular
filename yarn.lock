@@ -1318,11 +1318,6 @@
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-8.2.1.tgz#d8fa00e55a1a08744ec62221811c06f3ea1c06d7"
   integrity sha512-eZ/Aq+2r4PcJa6LbPCT6ffgIJfTU/gYilqIzoX2OLM4nNkbQC6tTMPZNn7aHHjhGPxbNLv41zm4Xqt1olCLgXw==
 
-"@bazel/esbuild@5.8.1":
-  version "5.8.1"
-  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.8.1.tgz#74668d33bfb29652cbe8e2852aa8dca5e0839e73"
-  integrity sha512-8k4LL8P3ivCnFeBOcjiFxL8U+M5VtEGuOyIqm2hfEiP8xDWsZLS7YQ7KhshKJy7Elh2dlK9oGgMtl0D/x9kxxg==
-
 "@bazel/ibazel@0.25.0":
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.25.0.tgz#5431a4622ebc5c5bc48ea8b979f82f745a210d25"
