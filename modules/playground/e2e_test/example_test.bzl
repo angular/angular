@@ -25,7 +25,7 @@ def example_test(
         deps = deps + [
             "//:node_modules/protractor",
             "//:node_modules/@types/selenium-webdriver",
-            "//modules/utilities:utilities_rjs",
+            "//modules/utilities:utilities",
         ],
     )
 
@@ -34,7 +34,7 @@ def example_test(
         testonly = True,
         srcs = ["//modules/playground:tsconfig_e2e"],
         deps = [
-            "%s_lib_rjs" % name,
+            "%s_lib" % name,
         ],
         tags = [
             "manual",

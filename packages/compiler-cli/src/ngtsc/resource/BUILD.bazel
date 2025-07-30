@@ -7,13 +7,12 @@ ts_project(
     srcs = ["index.ts"] + glob([
         "src/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/resource",
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler-cli/src/ngtsc/annotations:annotations_rjs",
-        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/util",
     ],
 )

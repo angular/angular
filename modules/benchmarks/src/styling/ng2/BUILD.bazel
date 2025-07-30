@@ -8,7 +8,7 @@ optimize_angular_app(
     name = "bundles",
     srcs = glob(["*.ts"]) + [
         "index.html",
-        "//modules/benchmarks/src:util_lib_rjs",
+        "//modules/benchmarks/src:util_lib",
     ],
     include_zonejs = True,
     deps = [
@@ -42,5 +42,5 @@ http_server(
 benchmark_test(
     name = "perf",
     server = ":prodserver",
-    deps = ["//modules/benchmarks/src/styling:tests_lib_rjs"],
+    deps = ["//modules/benchmarks/src/styling:tests_lib"],
 )

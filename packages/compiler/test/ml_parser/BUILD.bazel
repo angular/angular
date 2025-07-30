@@ -5,9 +5,9 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler/test/ml_parser/util:util_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler/test/ml_parser/util",
     ],
 )
 
@@ -21,6 +21,6 @@ angular_jasmine_test(
 ng_web_test_suite(
     name = "ml_parser_web",
     deps = [
-        ":ml_parser_lib_rjs",
+        ":ml_parser_lib",
     ],
 )

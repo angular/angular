@@ -7,16 +7,16 @@ ts_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler/test/expression_parser/utils:utils_rjs",
-        "//packages/core:core_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/core",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

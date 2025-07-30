@@ -40,15 +40,15 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
-        "//devtools/src/app:app_rjs",
+        "//devtools/src/app",
     ],
 )
 
 esbuild(
     name = "bundle",
     srcs = [
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
     ],
     config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_points = [":main.ts"],
@@ -61,7 +61,7 @@ esbuild(
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
     deps = [
-        ":demo_rjs",
+        ":demo",
         "//:node_modules/@angular/cdk",
     ],
 )
@@ -102,8 +102,8 @@ ng_project(
     name = "demo_application_environment",
     srcs = ["demo-application-environment.ts"],
     deps = [
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/src/environments:environments_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/src/environments",
     ],
 )
 
@@ -111,8 +111,8 @@ ng_project(
     name = "demo_application_operations",
     srcs = ["demo-application-operations.ts"],
     deps = [
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -120,7 +120,7 @@ ng_project(
     name = "iframe_message_bus",
     srcs = ["iframe-message-bus.ts"],
     deps = [
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -128,7 +128,7 @@ ng_project(
     name = "zone-unaware-iframe_message_bus",
     srcs = ["zone-unaware-iframe-message-bus.ts"],
     deps = [
-        ":iframe_message_bus_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":iframe_message_bus",
+        "//devtools/projects/protocol",
     ],
 )

@@ -12,17 +12,17 @@ ng_project(
     ),
     deps = [
         "//:node_modules/@types/hammerjs",
-        "//packages:goog_types_rjs",
-        "//packages:types_rjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/core:core_rjs",
+        "//packages:goog_types",
+        "//packages:types",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":platform-browser_rjs",
+    target = ":platform-browser",
     tsconfig = "//packages:tsconfig_build",
 )
 
@@ -45,10 +45,10 @@ ng_package(
         "//packages/compiler-cli/test:__pkg__",
     ],
     deps = [
-        ":platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/animations/async:async_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
+        ":platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/animations/async",
+        "//packages/platform-browser/testing",
     ],
 )
 
@@ -76,7 +76,7 @@ api_golden_test(
     name = "platform-browser_errors",
     data = [
         "//goldens:public-api",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/platform-browser",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/platform-browser/errors.api.md",

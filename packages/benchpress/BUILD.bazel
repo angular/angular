@@ -21,8 +21,8 @@ ts_project(
     ),
     deps = [
         "//:node_modules/reflect-metadata",
-        "//packages:types_rjs",
-        "//packages/core:core_rjs",
+        "//packages:types",
+        "//packages/core",
     ],
 )
 
@@ -44,7 +44,7 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":benchpress_rjs",
+        ":benchpress",
     ],
 )
 

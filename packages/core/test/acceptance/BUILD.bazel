@@ -17,26 +17,26 @@ ts_project(
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
-        "//packages/animations:animations_rjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/animations/browser/testing:testing_rjs",
-        "//packages/common:common_rjs",
-        "//packages/common/locales:locales_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/src/di/interface:interface_rjs",
-        "//packages/core/src/util:util_rjs",
-        "//packages/core/test/render3:matchers_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/localize:localize_rjs",
-        "//packages/localize/init:init_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/platform-server:platform-server_rjs",
-        "//packages/private/testing:testing_rjs",
-        "//packages/router:router_rjs",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/primitives/signals",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/util",
+        "//packages/core/test/render3:matchers",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/platform-server",
+        "//packages/private/testing",
+        "//packages/router",
     ],
 )
 
@@ -51,23 +51,23 @@ ng_project(
     testonly = True,
     srcs = SPEC_FILES_WITH_FORWARD_REFS,
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "acceptance",
     data = [
-        ":acceptance_lib_rjs",
-        ":forward_ref_test_lib_rjs",
+        ":acceptance_lib",
+        ":forward_ref_test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "acceptance_web",
     deps = [
-        ":acceptance_lib_rjs",
-        ":forward_ref_test_lib_rjs",
+        ":acceptance_lib",
+        ":forward_ref_test_lib",
     ],
 )

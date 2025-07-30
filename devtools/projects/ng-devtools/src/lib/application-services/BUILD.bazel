@@ -18,8 +18,8 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
-        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -30,7 +30,7 @@ ng_project(
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
     ],
 )
 
@@ -38,21 +38,21 @@ ts_test_library(
     name = "test_application_services_lib",
     srcs = glob(["*_spec.ts"]),
     deps = [
-        ":browser_styles_rjs",
-        ":frame_manager_rjs",
-        ":theme_rjs",
+        ":browser_styles",
+        ":frame_manager",
+        ":theme",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test_application_services",
     deps = [
-        ":test_application_services_lib_rjs",
+        ":test_application_services_lib",
     ],
 )

@@ -12,9 +12,9 @@ ng_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -39,9 +39,9 @@ ng_package(
         "//packages/compiler-cli/test/transformers:__pkg__",
     ],
     deps = [
-        ":router_rjs",
-        "//packages/router/testing:testing_rjs",
-        "//packages/router/upgrade:upgrade_rjs",
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
     ],
 )
 
@@ -69,7 +69,7 @@ api_golden_test(
     name = "router_errors",
     data = [
         "//goldens:public-api",
-        "//packages/router:router_rjs",
+        "//packages/router",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/router/errors.api.md",

@@ -18,11 +18,11 @@ ng_project(
         "//:node_modules/@types/node",
         "//:node_modules/rxjs",
         "//:node_modules/xhr2",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -56,7 +56,7 @@ js_library(
 
 tsec_test(
     name = "tsec_test",
-    target = ":platform-server_rjs",
+    target = ":platform-server",
     tsconfig = "//packages:tsconfig_build",
 )
 
@@ -84,9 +84,9 @@ ng_package(
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
-        ":platform-server_rjs",
-        "//packages/platform-server/init:init_rjs",
-        "//packages/platform-server/testing:testing_rjs",
+        ":platform-server",
+        "//packages/platform-server/init",
+        "//packages/platform-server/testing",
     ],
 )
 

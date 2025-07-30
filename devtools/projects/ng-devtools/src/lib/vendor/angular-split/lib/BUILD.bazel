@@ -13,6 +13,6 @@ ng_project(
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split_rjs",
+        "//devtools/projects/ng-devtools/src/lib/vendor/angular-split/lib/component:split",
     ],
 )

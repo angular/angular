@@ -11,11 +11,11 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages:types_rjs",
-        "//packages/common:common_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -41,8 +41,8 @@ ng_package(
         "//packages/compiler-cli/integrationtest:__pkg__",
     ],
     deps = [
-        ":platform-browser-dynamic_rjs",
-        "//packages/platform-browser-dynamic/testing:testing_rjs",
+        ":platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
     ],
 )
 

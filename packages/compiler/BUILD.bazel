@@ -14,7 +14,7 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = ":compiler_rjs",
+    target = ":compiler",
     tsconfig = "//packages:tsconfig_build",
 )
 
@@ -43,7 +43,7 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":compiler_rjs",
+        ":compiler",
     ],
 )
 

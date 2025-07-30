@@ -11,7 +11,6 @@ load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", 
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:js_defs.bzl", _js_binary = "js_binary", _js_run_binary = "js_run_binary", _js_test = "js_test")
-load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
@@ -92,15 +91,12 @@ def ts_project(
         testonly = False,
         tsconfig = None,
         **kwargs):
-    module_name = kwargs.pop("module_name", compute_module_name(testonly))
-
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
     _ts_project(
         name,
         source_map = source_map,
-        module_name = module_name,
         testonly = testonly,
         tsconfig = tsconfig,
         **kwargs
@@ -112,15 +108,12 @@ def ng_project(
         testonly = False,
         tsconfig = None,
         **kwargs):
-    module_name = kwargs.pop("module_name", compute_module_name(testonly))
-
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
     _ts_project(
         name,
         source_map = source_map,
-        module_name = module_name,
         rule_impl = _ng_project,
         testonly = testonly,
         tsconfig = tsconfig,

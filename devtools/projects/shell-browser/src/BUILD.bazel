@@ -51,17 +51,17 @@ ng_project(
     deps = [
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/shell-browser/src/app:app_rjs",
-        "//devtools/projects/shell-browser/src/environments:environment_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/app",
+        "//devtools/projects/shell-browser/src/environments:environment",
     ],
 )
 
 esbuild(
     name = "bundle",
     srcs = [
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_esm_prod_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm_prod",
     ],
     config = "//devtools/tools/esbuild:esbuild-esm-prod.config.mjs",
     entry_points = [":main.ts"],
@@ -75,7 +75,7 @@ esbuild(
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
     deps = [
-        ":src_rjs",
+        ":src",
         "//:node_modules/@angular/cdk",
     ],
 )
@@ -84,8 +84,8 @@ esbuild(
     name = "devtools_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
     ],
     config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_point = "devtools.ts",
@@ -99,7 +99,7 @@ esbuild(
     # Targeting esnext or es2022 will cause the static initializer blocks that attach these static properties on class
     # constructors to reference a class constructor variable that they do not have access to.
     target = "es2020",
-    deps = [":devtools_rjs"],
+    deps = [":devtools"],
 )
 
 exports_files(["index.html"])

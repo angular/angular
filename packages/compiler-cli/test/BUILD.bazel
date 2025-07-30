@@ -16,11 +16,11 @@ ts_project(
     ],
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli:compiler-cli_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/testing",
     ],
 )
 
@@ -32,20 +32,20 @@ ts_project(
         "extract_i18n_spec.ts",
     ],
     deps = [
-        ":test_utils_rjs",
+        ":test_utils",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli",
     ],
 )
 
 angular_jasmine_test(
     name = "extract_i18n",
     data = [
-        ":extract_i18n_lib_rjs",
+        ":extract_i18n_lib",
         "//:node_modules/yargs",
         "//packages/common:npm_package",
-        "//packages/core:core_rjs",
+        "//packages/core",
         "//packages/core:npm_package",
     ],
 )
@@ -58,19 +58,19 @@ ts_project(
         "perform_watch_spec.ts",
     ],
     deps = [
-        ":test_utils_rjs",
+        ":test_utils",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli:compiler-cli_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "perform_watch",
     data = [
-        ":perform_watch_lib_rjs",
-        "//packages/core:core_rjs",
+        ":perform_watch_lib",
+        "//packages/core",
         "//packages/core:npm_package",
     ],
 )
@@ -83,18 +83,18 @@ ts_project(
         "perform_compile_spec.ts",
     ],
     deps = [
-        ":test_utils_rjs",
+        ":test_utils",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli",
     ],
 )
 
 angular_jasmine_test(
     name = "perform_compile",
     data = [
-        ":perform_compile_lib_rjs",
-        "//packages/core:core_rjs",
+        ":perform_compile_lib",
+        "//packages/core",
         "//packages/core:npm_package",
     ],
 )
@@ -106,14 +106,14 @@ ts_project(
         "typescript_support_spec.ts",
     ],
     deps = [
-        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli",
     ],
 )
 
 angular_jasmine_test(
     name = "typescript_support",
     data = [
-        ":typescript_support_lib_rjs",
+        ":typescript_support_lib",
     ],
 )
 
@@ -123,13 +123,13 @@ ts_project(
     testonly = True,
     srcs = ["version_helpers_spec.ts"],
     deps = [
-        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli",
     ],
 )
 
 angular_jasmine_test(
     name = "version_helpers",
     data = [
-        ":version_helpers_lib_rjs",
+        ":version_helpers_lib",
     ],
 )

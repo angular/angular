@@ -9,7 +9,7 @@ ts_project(
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
-        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib",
     ],
 )
 
@@ -22,6 +22,6 @@ zoneless_jasmine_test(
         "messages.fr.xlf.html",
         "new-code.ts",
         "old-code.ts",
-        ":docs-code_rjs",
+        ":docs-code",
     ],
 )

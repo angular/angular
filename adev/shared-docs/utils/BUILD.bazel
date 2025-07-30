@@ -17,7 +17,7 @@ ts_project(
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/fflate",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
     ],
 )

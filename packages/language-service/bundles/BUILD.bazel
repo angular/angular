@@ -8,7 +8,7 @@ rollup.rollup(
         "//:node_modules/@rollup/plugin-commonjs",
         "//:node_modules/@rollup/plugin-node-resolve",
         "//packages/language-service:tsconfig_build",
-        "//packages/language-service/src:src_rjs",
+        "//packages/language-service/src",
         "//packages/language-service/src:ts_plugin.js",
         "//tools/bazel/rollup:path-plugin",
     ],

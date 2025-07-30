@@ -19,7 +19,7 @@ ng_project(
         "//:node_modules/ngx-flamegraph",
         "//:node_modules/rxjs",
         "//:node_modules/webtreemap",
-        "//devtools/projects/ng-devtools/src:src_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src",
+        "//devtools/projects/protocol",
     ],
 )

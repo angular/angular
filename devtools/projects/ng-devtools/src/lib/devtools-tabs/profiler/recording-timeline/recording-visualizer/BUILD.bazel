@@ -6,8 +6,8 @@ ts_project(
     name = "recording-visualizer-types",
     srcs = ["recording-visualizer-types.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter:bargraph-formatter_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter:flamegraph-formatter_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/bargraph-formatter",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter/flamegraph-formatter",
     ],
 )
 
@@ -29,15 +29,15 @@ ng_project(
         ":recording-visualizer_styles",
     ],
     deps = [
-        ":recording-visualizer-types_rjs",
+        ":recording-visualizer-types",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/bargraph-visualizer:bargraph-visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/execution-details:execution-details_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/flamegraph-visualizer:flamegraph-visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/tree-map-visualizer:tree-map-visualizer_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/bargraph-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/execution-details",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/flamegraph-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer/tree-map-visualizer",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:visualization-mode",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/protocol",
     ],
 )
