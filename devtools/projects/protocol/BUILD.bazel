@@ -27,7 +27,7 @@ ts_test_library(
         ["**/*.spec.ts"],
     ),
     deps = [
-        ":protocol_rjs",
+        ":protocol",
         "//:node_modules/@angular/core",
     ],
 )
@@ -35,6 +35,6 @@ ts_test_library(
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":protocol_test_rjs",
+        ":protocol_test",
     ],
 )

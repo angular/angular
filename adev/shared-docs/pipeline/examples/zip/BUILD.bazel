@@ -16,9 +16,9 @@ ts_project(
         "//adev:node_modules/@types/node",
         "//adev:node_modules/fflate",
         "//adev:node_modules/tinyglobby",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
-        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipeline/examples/shared",
+        "//adev/shared-docs/pipeline/guides:guides_lib",
     ],
 )
 
@@ -31,7 +31,7 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":zip_rjs",
+        ":zip",
         "//adev:node_modules/@types/node",
     ],
 )
@@ -47,6 +47,6 @@ esbuild(
     tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
-        ":index_rjs",
+        ":index",
     ],
 )

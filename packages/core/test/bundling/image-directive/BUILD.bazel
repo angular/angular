@@ -19,11 +19,11 @@ ng_project(
         "playground.ts",
     ],
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/router:router_rjs",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
     ],
 )
 
@@ -35,7 +35,7 @@ esbuild(
     entry_point = ":index.ts",
     tsconfig = "//packages/core:tsconfig_build",
     deps = [
-        ":image-directive_rjs",
+        ":image-directive",
         "//packages/core:tsconfig_build",
     ],
 )
@@ -69,7 +69,7 @@ ts_project(
         "//:node_modules/@types/node",
         "//:node_modules/@types/selenium-webdriver",
         "//:node_modules/protractor",
-        "//packages/private/testing:testing_rjs",
+        "//packages/private/testing",
     ],
 )
 
@@ -77,6 +77,6 @@ protractor_web_test_suite(
     name = "protractor_tests",
     server = ":devserver",
     deps = [
-        ":img_dir_e2e_tests_lib_rjs",
+        ":img_dir_e2e_tests_lib",
     ],
 )

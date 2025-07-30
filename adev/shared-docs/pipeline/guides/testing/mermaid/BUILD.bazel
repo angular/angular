@@ -10,14 +10,14 @@ ts_project(
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
         "//adev:node_modules/marked",
-        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib",
     ],
 )
 
 zoneless_jasmine_test(
     name = "unit_tests",
     data = [
-        ":unit_test_lib_rjs",
+        ":unit_test_lib",
         "@rules_browsers//src/browsers/chromium",
     ] + glob([
         "**/*.md",

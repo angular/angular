@@ -6,22 +6,22 @@ ts_project(
     srcs = glob(["*.ts"]),
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
-        "//packages/language-service/src:src_rjs",
-        "//packages/language-service/src/utils:utils_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/language-service/src",
+        "//packages/language-service/src/utils",
     ],
 )
 
 jasmine_test(
     name = "legacy",
     data = [
-        ":legacy_lib_rjs",
+        ":legacy_lib",
         ":project",
-        "//packages/common:common_rjs_types",
-        "//packages/core:core_rjs_types",
-        "//packages/forms:forms_rjs_types",
+        "//packages/common:common_types",
+        "//packages/core:core_types",
+        "//packages/forms:forms_types",
     ],
     shard_count = 4,
 )

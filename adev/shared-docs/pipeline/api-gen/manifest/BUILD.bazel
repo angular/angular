@@ -13,7 +13,7 @@ esbuild(
     platform = "node",
     target = "es2022",
     deps = [
-        ":generate_api_manifest_lib_rjs",
+        ":generate_api_manifest_lib",
         "//adev:node_modules/@angular/compiler-cli",
     ],
 )

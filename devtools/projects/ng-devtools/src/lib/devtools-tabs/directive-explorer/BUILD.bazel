@@ -22,17 +22,17 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest:directive-forest_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs:breadcrumbs_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source:component-data-source_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest:index-forest_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver:property-resolver_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab:property-tab_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/breadcrumbs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/component-data-source",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view:signals-tab",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -40,19 +40,19 @@ ts_test_library(
     name = "directive_explorer_test",
     srcs = ["directive-explorer.spec.ts"],
     deps = [
-        ":directive-explorer_rjs",
+        ":directive-explorer",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/tslib",
-        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":directive_explorer_test_rjs",
+        ":directive_explorer_test",
     ],
 )

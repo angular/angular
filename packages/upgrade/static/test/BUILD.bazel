@@ -7,15 +7,15 @@ ts_project(
         "**/*.ts",
     ]),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser-dynamic:platform-browser-dynamic_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
-        "//packages/upgrade/src/common:common_rjs",
-        "//packages/upgrade/src/common/test/helpers:helpers_rjs",
-        "//packages/upgrade/static:static_rjs",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "//packages/upgrade/src/common",
+        "//packages/upgrade/src/common/test/helpers",
+        "//packages/upgrade/static",
     ],
 )
 
@@ -25,6 +25,6 @@ ng_web_test_suite(
         "//:angularjs_scripts",
     ],
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

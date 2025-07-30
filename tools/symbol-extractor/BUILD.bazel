@@ -29,7 +29,7 @@ ts_project(
     ),
     tsconfig = "//tools:tsconfig_test",
     deps = [
-        ":lib_rjs",
+        ":lib",
         "//:node_modules/typescript",
     ],
 )
@@ -37,8 +37,8 @@ ts_project(
 jasmine_test(
     name = "test",
     data = glob(["symbol_extractor_spec/**"]) + [
-        ":test_lib_rjs",
-        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output_rjs",
+        ":test_lib",
+        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output",
         "//tools/symbol-extractor/symbol_extractor_spec:fixtures",
     ],
 )

@@ -15,14 +15,14 @@ ts_project(
         "//:node_modules/@babel/generator",
         "//:node_modules/@types/babel__core",
         "//:node_modules/@types/babel__generator",
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/linker:linker_rjs",
-        "//packages/compiler-cli/linker/babel:babel_rjs",
-        "//packages/compiler-cli/private:private_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/translator",
     ],
 )
 
@@ -31,6 +31,6 @@ jasmine_test(
     data = [
         # Needed for testing the Babel plugin loaded from `node_modules`.
         ":node_modules/@angular/compiler-cli",
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

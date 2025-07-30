@@ -42,13 +42,13 @@ ts_project(
     name = "zone_js",
     srcs = ["zone.ts"],
     visibility = ["//visibility:private"],
-    deps = ["//packages/zone.js/lib:zone_d_ts_rjs"],
+    deps = ["//packages/zone.js/lib:zone_d_ts"],
 )
 
 extract_types(
     name = "zone_d_ts",
     visibility = ["//visibility:private"],
-    deps = [":zone_js_rjs"],
+    deps = [":zone_js"],
 )
 
 generate_rollup_bundle(

@@ -12,8 +12,8 @@ ng_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -35,7 +35,7 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":forms_rjs",
+        ":forms",
     ],
 )
 
@@ -63,7 +63,7 @@ api_golden_test(
     name = "forms_errors",
     data = [
         "//goldens:public-api",
-        "//packages/forms:forms_rjs",
+        "//packages/forms",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/forms/errors.api.md",

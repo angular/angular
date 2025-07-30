@@ -17,7 +17,7 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = ":interface_rjs",
+    target = ":interface",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

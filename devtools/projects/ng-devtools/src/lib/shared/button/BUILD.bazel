@@ -25,7 +25,7 @@ ts_test_library(
     name = "button_test",
     srcs = ["button.component.spec.ts"],
     deps = [
-        ":button_rjs",
+        ":button",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
     ],
@@ -34,6 +34,6 @@ ts_test_library(
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":button_test_rjs",
+        ":button_test",
     ],
 )

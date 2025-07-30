@@ -9,7 +9,7 @@ ts_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/service-worker/config:config_rjs",
+        "//packages/service-worker/config",
     ],
 )
 
@@ -25,6 +25,6 @@ esbuild(
     platform = "node",
     target = "node20",
     deps = [
-        ":cli_rjs",
+        ":cli",
     ],
 )

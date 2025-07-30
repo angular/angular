@@ -11,21 +11,21 @@ ts_project(
     deps = [
         "//:node_modules/chalk",
         "//:node_modules/tinyglobby",
-        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/core/schematics/utils/tsurge",
     ],
 )
 
 js_binary(
     name = "golden_test_runner",
     testonly = True,
-    data = [":test_runners_lib_rjs"],
+    data = [":test_runners_lib"],
     entry_point = ":golden_test_runner.js",
 )
 
 js_binary(
     name = "batch_runner",
     testonly = True,
-    data = [":test_runners_lib_rjs"],
+    data = [":test_runners_lib"],
     entry_point = ":batch_runner.js",
 )
 
@@ -110,14 +110,14 @@ ts_project(
     testonly = True,
     srcs = ["migration_spec.ts"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/core/schematics/migrations/signal-migration/src:src_rjs",
-        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/core/schematics/migrations/signal-migration/src",
+        "//packages/core/schematics/utils/tsurge",
     ],
 )
 
 jasmine_test(
     name = "test_jasmine",
-    data = [":test_lib_rjs"],
+    data = [":test_lib"],
 )

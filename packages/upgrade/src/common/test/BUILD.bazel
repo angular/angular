@@ -5,10 +5,10 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/upgrade/src/common:common_rjs",
-        "//packages/upgrade/src/common/test/helpers:helpers_rjs",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/upgrade/src/common",
+        "//packages/upgrade/src/common/test/helpers",
     ],
 )
 
@@ -18,6 +18,6 @@ ng_web_test_suite(
         "//:angularjs_scripts",
     ],
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

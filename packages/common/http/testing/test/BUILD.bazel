@@ -10,22 +10,22 @@ ts_project(
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

@@ -6,10 +6,10 @@ load("//tools:defaults2.bzl", "api_golden_test", "extract_types", "npm_package",
 package(default_visibility = ["//visibility:public"])
 
 PUBLIC_TARGETS = [
-    ":compiler-cli_rjs",
-    "//packages/compiler-cli/private:private_rjs",
-    "//packages/compiler-cli/linker:linker_rjs",
-    "//packages/compiler-cli/linker/babel:babel_rjs",
+    ":compiler-cli",
+    "//packages/compiler-cli/private:private",
+    "//packages/compiler-cli/linker:linker",
+    "//packages/compiler-cli/linker/babel:babel",
 ]
 
 npm_link_all_packages()
@@ -80,25 +80,25 @@ ts_project(
         "//:node_modules/chokidar",
         "//:node_modules/reflect-metadata",
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/private:private_rjs",
-        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/core:core_rjs",
-        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
-        "//packages/compiler-cli/src/ngtsc/docs:docs_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/incremental:incremental_rjs",
-        "//packages/compiler-cli/src/ngtsc/indexer:indexer_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
-        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
-        "//packages/compiler-cli/src/ngtsc/program_driver:program_driver_rjs",
-        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
-        "//packages/compiler-cli/src/ngtsc/shims:shims_rjs",
-        "//packages/compiler-cli/src/ngtsc/transform/jit:jit_rjs",
-        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck:typecheck_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck/api:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/core",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/docs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/indexer",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/transform/jit",
+        "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
+        "//packages/compiler-cli/src/ngtsc/util",
     ],
 )
 
@@ -145,7 +145,7 @@ npm_package(
 api_golden_test(
     name = "error_code_api",
     data = [
-        ":compiler-cli_rjs",
+        ":compiler-cli",
         "//goldens:public-api",
     ],
     entry_point = "src/ngtsc/diagnostics/src/error_code.d.ts",
@@ -155,7 +155,7 @@ api_golden_test(
 api_golden_test(
     name = "extended_template_diagnostic_name_api",
     data = [
-        ":compiler-cli_rjs",
+        ":compiler-cli",
         "//goldens:public-api",
     ],
     entry_point = "src/ngtsc/diagnostics/src/extended_template_diagnostic_name.d.ts",
@@ -165,7 +165,7 @@ api_golden_test(
 api_golden_test(
     name = "compiler_options_api",
     data = [
-        ":compiler-cli_rjs",
+        ":compiler-cli",
         "//goldens:public-api",
     ],
     entry_point = "src/ngtsc/core/api/src/public_options.d.ts",

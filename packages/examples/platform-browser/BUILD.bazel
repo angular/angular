@@ -6,9 +6,9 @@ ng_project(
     name = "platform_browser_examples",
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 

@@ -13,13 +13,11 @@ ng_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    # TODO(rules_js migration): testonly targets do not auto-compute a module name right now.
-    module_name = "@angular/private/testing",
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
         "//packages/platform-server:bundled_domino_lib",
     ],
 )

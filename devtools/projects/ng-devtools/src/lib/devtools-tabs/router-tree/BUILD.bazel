@@ -35,12 +35,12 @@ ng_project(
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -55,21 +55,21 @@ ts_test_library(
         "//visibility:private",
     ],
     deps = [
-        ":router-tree_rjs",
+        ":router-tree",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/forms",
         "//:node_modules/@angular/platform-browser",
         "//devtools/projects/ng-devtools",
-        "//devtools/projects/ng-devtools/src/lib/application-operations:application-operations_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":router_tree_test_rjs",
+        ":router_tree_test",
     ],
 )

@@ -10,10 +10,10 @@ ng_project(
     deps = [
         "//:node_modules/@types/jasmine",
         "//:node_modules/rxjs",
-        "//packages/common/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/common/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
     ],
 )
 
