@@ -38,12 +38,14 @@ export declare namespace PathKind {
      */
     [ɵɵTYPE]: 'root' | 'child' | 'item';
   }
+
   /**
    * The `PathKind` for a `FieldPath` that is a child of another `FieldPath`.
    */
   export interface Child extends PathKind.Root {
     [ɵɵTYPE]: 'child' | 'item';
   }
+
   /**
    * The `PathKind` for a `FieldPath` that is an item in a `FieldPath` array.
    */
@@ -204,6 +206,21 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal indicating whether field value has been changed by user.
    */
   readonly dirty: Signal<boolean>;
+
+  /**
+   * A signal indicating whether a field is hidden.
+   *
+   * When a field is hidden it is ignored when determining the valid, touched, and dirty states.
+   * TODO: Looks like touched/dirty is not implemented yet.
+   *
+   * Note: This doesn't hide the field in the template, that must be done manually.
+   *
+   *   @if (!field.hidden()) {
+   *     ...
+   *   }
+   */
+  readonly hidden: Signal<boolean>;
+
   /**
    * A signal indicating whether the field is currently disabled.
    */
@@ -266,11 +283,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * array-valued, for example, this is the index of this field in that array.
    */
   readonly keyInParent: Signal<TKey>;
+
   /**
    * Reads an aggregate property value from the field.
    * @param prop The property to read.
    */
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
+
   /**
    * Reads a property value from the field.
    * @param prop The property key to read.
@@ -281,6 +300,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
+
   /**
    * Sets the dirty status of the field to `true`.
    */
