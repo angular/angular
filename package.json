@@ -63,7 +63,6 @@
     "@babel/cli": "7.28.0",
     "@babel/core": "7.28.0",
     "@babel/generator": "7.28.0",
-    "@bazel/esbuild": "5.8.1",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "@microsoft/api-extractor": "^7.24.2",
     "@rollup/plugin-babel": "^6.0.0",
