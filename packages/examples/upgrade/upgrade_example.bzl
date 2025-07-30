@@ -1,5 +1,4 @@
-load("@devinfra//bazel/esbuild:index.bzl", "esbuild")
-load("//tools:defaults2.bzl", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
+load("//tools:defaults2.bzl", "esbuild", "http_server", "ng_project", "protractor_web_test_suite", "ts_project")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
@@ -41,7 +40,11 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
     esbuild(
         name = "app_bundle",
         entry_point = entry_point,
-        deps = [":%s_sources" % name],
+        deps = [":%s_sources_rjs" % name],
+        config = {
+            "resolveExtensions": [".js"],
+        },
+        tsconfig = "//packages/examples/upgrade:tsconfig_build",
     )
 
     http_server(
