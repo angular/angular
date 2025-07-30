@@ -14,33 +14,14 @@ ts_project(
     ],
 )
 
-filegroup(
-    name = "package_types",
-    srcs = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/forms:forms_rjs",
-    ],
-    output_group = "types",
-)
-
 jasmine_test(
     name = "legacy",
     data = [
-        # Note that we used to depend on the npm_package of common, core, and
-        # forms, but this is no longer the case. We did it for View Engine
-        # because we wanted to load the flat dts, which is only available in the
-        # npm_package. Ivy does not currently produce flat dts, so we might
-        # as well just depend on the outputs of ng_module.
-        "//packages/common:common_rjs",
-        "//packages/forms:forms_rjs",
-        ":package_types",
+        ":legacy_lib_rjs",
         ":project",
-        ":legacy_lib",
-        # TODO(rules_js migration): determine how to get these to be provided from other deps as expected.
-        "//:node_modules/typescript",
-        "//:node_modules/semver",
-        "//:node_modules/magic-string",
+        "//packages/common:common_rjs_types",
+        "//packages/core:core_rjs_types",
+        "//packages/forms:forms_rjs_types",
     ],
     shard_count = 4,
 )

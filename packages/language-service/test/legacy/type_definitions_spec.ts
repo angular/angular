@@ -27,6 +27,8 @@ describe('type definitions', () => {
     'lib.es2015.iterable.d.ts',
     'lib.es2015.symbol.wellknown.d.ts',
     'lib.es2016.array.include.d.ts',
+    'lib.es2019.array.d.ts',
+    'indexable.d.ts',
   ];
 
   beforeEach(() => {
