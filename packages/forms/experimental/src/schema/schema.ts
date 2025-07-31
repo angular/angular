@@ -9,15 +9,41 @@
 import {FieldPath, SchemaFn, SchemaOrSchemaFn} from '../api/types';
 import {FieldPathNode} from './path_node';
 
-let currentRoot: FieldPathNode | undefined = undefined;
+/**
+ * Keeps track of the path node for the schema function that is currently being compiled. This is
+ * used to detect erroneous references to a path node outside of the context of its schema function.
+ * Do not set this directly, it is a context variable managed by `SchemaImpl.compile`.
+ */
+let currentCompilingNode: FieldPathNode | undefined = undefined;
 
-let compiledSchemas = new Map<SchemaImpl, FieldPathNode>();
+/**
+ * A cache of all schemas compiled under the current root compilaiton. This is used to avoid doing
+ * extra work when compiling a schema that reuses references to the same sub-schema. For example:
+ *
+ * ```
+ * const sub = schema(p => ...);
+ * const s = schema(p => {
+ *   apply(p.a, sub);
+ *   apply(p.b, sub);
+ * });
+ * ```
+ *
+ * This also ensures that we don't go into an infinite loop when compiling a schema that referneces
+ * itself.
+ *
+ * Do not directly add or remove entries from this map, it is a context variable managed by
+ * `SchemaImpl.compile` and `SchemaImpl.rootCompile`.
+ */
+const compiledSchemas = new Map<SchemaImpl, FieldPathNode>();
 
+/**
+ * Implements the `Schema` concept.
+ */
 export class SchemaImpl {
   constructor(private schemaFn: SchemaFn<unknown>) {}
 
   /**
-   * Compiles this schema within the current compilation context. If the schema was previoulsy
+   * Compiles this schema within the current root compilation context. If the schema was previoulsy
    * compiled within this context, we reuse the cached FieldPathNode, otherwise we create a new one
    * and cache it in the compilation context.
    */
@@ -27,14 +53,14 @@ export class SchemaImpl {
     }
     const path = FieldPathNode.newRoot();
     compiledSchemas.set(this, path);
-    let prevRoot = currentRoot;
+    let prevCompilingNode = currentCompilingNode;
     try {
-      currentRoot = path;
+      currentCompilingNode = path;
       this.schemaFn(path.fieldPathProxy);
     } finally {
       // Use a try/finally to ensrue we restore the previous root upon completion,
       // even if there are errors while compiling the shcema.
-      currentRoot = prevRoot;
+      currentCompilingNode = prevCompilingNode;
     }
     return path;
   }
@@ -53,7 +79,7 @@ export class SchemaImpl {
    * Compiles the given schema in a fresh compilation context. This clears the cached results of any
    * previous compilations.
    */
-  static rootCompile(schema: SchemaImpl | SchemaOrSchemaFn<any> | undefined) {
+  static rootCompile(schema: SchemaImpl | SchemaOrSchemaFn<any> | undefined): FieldPathNode {
     try {
       compiledSchemas.clear();
       if (schema === undefined) {
@@ -71,28 +97,17 @@ export class SchemaImpl {
   }
 }
 
-export function isSchemaOrSchemaFn(schema: unknown): schema is SchemaOrSchemaFn<unknown> {
-  return schema instanceof SchemaImpl || typeof schema === 'function';
+/** Checks if the given value is a schema or schema function. */
+export function isSchemaOrSchemaFn(value: unknown): value is SchemaOrSchemaFn<unknown> {
+  return value instanceof SchemaImpl || typeof value === 'function';
 }
 
+/** Checks that a path node belongs to the schema function currently being compiled. */
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {
-  if (currentRoot !== FieldPathNode.unwrapFieldPath(path).root) {
-    throw new Error(`🚨👮 Wrong path! 👮🚨
-
-This error happens when using a path from outside of schema:
-
-applyWhen(
-      path,
-      condition,
-      (pathWhenTrue /* <-- Use this, not path  */) => {
-        // ✅ This works
-        applyEach(pathWhenTrue.friends, friendSchema);
-        // 🚨 👮 🚓  You have to use nested path
-        // This produces a this error:
-        applyEach(path /*has to be pathWhenTrue*/.friends, friendSchema);
-      }
+  if (currentCompilingNode !== FieldPathNode.unwrapFieldPath(path).root) {
+    throw new Error(
+      `A FieldPath can only be used directly within the Schema that owns it,` +
+        ` **not** outside of it or within a sub-schema.`,
     );
-
-    `);
   }
 }
