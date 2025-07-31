@@ -7,7 +7,34 @@
 
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
 load("//:packages.bzl", "INTEGRATION_PACKAGES")
-load("//integration:npm_package_archives.bzl", "NPM_PACKAGE_ARCHIVES")
+
+NPM_PACKAGE_ARCHIVES = [
+    "@babel/core",
+    "@rollup/plugin-babel",
+    "@rollup/plugin-node-resolve",
+    "@rollup/plugin-commonjs",
+    "check-side-effects",
+    "jasmine",
+    "http-server",
+    "typescript",
+    "rxjs",
+    "systemjs",
+    "tslib",
+    "patch-package",
+    "protractor",
+    "terser",
+    "rollup",
+    "rollup-plugin-sourcemaps",
+    "@angular/ssr",
+    "@angular/build",
+    "@angular/cli",
+    "@angular-devkit/build-angular",
+    "@bazel/bazelisk",
+    "@types/jasmine",
+    "@types/jasminewd2",
+    "@types/node",
+    "zone.js",
+]
 
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"

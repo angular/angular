@@ -23,21 +23,21 @@ jobs:
         with:
           cache-node-modules: true
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Check code lint
-        run: yarn -s tslint
+        run: pnpm tslint
       - name: Check for circular dependencies
-        run: yarn -s ts-circular-deps:check
+        run: pnpm ts-circular-deps:check
       - name: Validate pull approve configuration
-        run: yarn -s ng-dev pullapprove verify
+        run: pnpm ng-dev pullapprove verify
       - name: Validate angular robot configuration
-        run: yarn -s ng-dev ngbot verify
+        run: pnpm ng-dev ngbot verify
       - name: Confirm code builds with typescript as expected
-        run: yarn -s check-tooling-setup
+        run: pnpm check-tooling-setup
       - name: Check commit message
-        run: yarn ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
+        run: pnpm ng-dev commit-message validate-range ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
       - name: Check code format
-        run: yarn ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
+        run: pnpm ng-dev format changed --check ${{ github.event.pull_request.base.sha }}
       - name: Check Package Licenses
         uses: angular/dev-infra/github-actions/linting/licenses@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
         with:
@@ -55,11 +55,11 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Run unit tests
-        run: yarn devtools:test
+        run: pnpm devtools:test
       - name: Test build
-        run: yarn devtools:build:chrome
+        run: pnpm devtools:build:chrome
 
   test:
     runs-on: ubuntu-latest-8core
@@ -73,12 +73,12 @@ jobs:
       - name: Setup Bazel Remote Caching
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile --network-timeout 100000
+        run: pnpm install --frozen-lockfile
       - name: Run CI tests for framework
-        run: yarn test:ci
+        run: pnpm test:ci
         env:
           # Ensures Aspect lock files are up-to-date.
-          # TODO(devversion): Remove when removing yarn.
+          # TODO(devversion): Remove when removing pnpm.
           ASPECT_RULES_JS_FROZEN_PNPM_LOCK: '1'
       - name: Upload GRPC logs (for debugging of RBE issues)
         if: always()
@@ -99,9 +99,9 @@ jobs:
       - name: Setup Bazel Remote Caching
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile --network-timeout 100000
+        run: pnpm install --frozen-lockfile
       - name: Run integration CI tests for framework
-        run: yarn integration-tests:ci
+        run: pnpm integration-tests:ci
 
   adev:
     runs-on:
@@ -114,11 +114,11 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Run tests
-        run: yarn bazel test //adev/...
+        run: pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
-        run: yarn bazel build //adev:build --config=release
+        run: pnpm bazel build //adev:build --config=release
 
   zone-js:
     runs-on:
@@ -137,9 +137,9 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - run: |
-          yarn bazel build \
+          pnpm bazel build \
           //packages/zone.js/bundles:zone.umd.js \
           //packages/zone.js:npm_package \
           //packages/zone.js/test/closure:closure
@@ -157,15 +157,14 @@ jobs:
           cp dist/bin/packages/zone.js/test/closure/zone.closure.js ./packages/zone.js/build/test/zone.closure.mjs
 
         # Install
-      - run: yarn --cwd packages/zone.js install --frozen-lockfile --non-interactive
+      - run: pnpm -C packages/zone.js install --frozen-lockfile
         # Run zone.js tools tests
-      - run: yarn --cwd packages/zone.js promisefinallytest
-      - run: yarn --cwd packages/zone.js jest:test
-      - run: yarn --cwd packages/zone.js jest:nodetest
-      - run: yarn --cwd packages/zone.js vitest:test
-      - run: yarn --cwd packages/zone.js electrontest
-      - run: yarn --cwd packages/zone.js/test/typings install --frozen-lockfile --non-interactive
-      - run: yarn --cwd packages/zone.js/test/typings test
+      - run: pnpm -C packages/zone.js promisefinallytest
+      - run: pnpm -C packages/zone.js jest:test
+      - run: pnpm -C packages/zone.js jest:nodetest
+      - run: pnpm -C packages/zone.js vitest:test
+      - run: pnpm -C packages/zone.js electrontest
+      - run: pnpm -C packages/zone.js/test/typings test
 
   # saucelabs:
   #   runs-on: ubuntu-latest-4core
@@ -177,5 +176,5 @@ jobs:
   #       with:
   #         cache-node-modules: true
   #     - name: Install node modules
-  #       run: yarn install --frozen-lockfile
+  #       run: pnpm install --frozen-lockfile
   #     - uses: ./.github/actions/saucelabs-legacy

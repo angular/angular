@@ -5,15 +5,14 @@
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
-      "yarn install --frozen-lockfile --non-interactive",
-      "yarn bazel sync --only=repo || true",
-      "yarn bazel run //.github/actions/deploy-docs-site:main.update",
-      "yarn bazel run //packages/common:base_currencies_file.update",
-      "yarn bazel run //packages/common/locales:closure_locale_file.update",
-      "yarn bazel run //packages/core:base_locale_file.update"
+      "pnpm install --frozen-lockfile",
+      "pnpm bazel sync --only=repo || true",
+      "pnpm bazel run //.github/actions/deploy-docs-site:main.update",
+      "pnpm bazel run //packages/common:base_currencies_file.update",
+      "pnpm bazel run //packages/common/locales:closure_locale_file.update",
+      "pnpm bazel run //packages/core:base_locale_file.update"
     ],
     "fileFilters": [
-      ".aspect/rules/external_repository_action_cache/**/*",
       ".github/actions/deploy-docs-site/**/*",
       "packages/**/*",
       "pnpm-lock.yaml"
