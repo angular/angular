@@ -15,8 +15,8 @@ import {
   WritableSignal,
 } from '@angular/core';
 
-import {DYNAMIC} from '../schema/logic_node';
-import {LogicNode} from '../schema/logic_node_2';
+import {DYNAMIC} from '../schema/logic';
+import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';

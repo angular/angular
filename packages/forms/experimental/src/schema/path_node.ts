@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {FieldPath} from '../api/types';
-import {DYNAMIC, Predicate} from './logic_node';
-import {LogicNodeBuilder} from './logic_node_2';
+import {DYNAMIC, Predicate} from './logic';
+import {LogicNodeBuilder} from './logic_node';
 import type {SchemaImpl} from './schema';
 
 /**
