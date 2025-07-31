@@ -182,8 +182,9 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
    * @param node The full field node that this structure belongs to
    * @param pathNode The path corresponding to this node in the schema
    * @param logic The logic to apply to this field
-   * @param fieldManager The field manager for this field
-   * @param value The value signal for this field
+   * @param parent The parent field node for this node
+   * @param identityInParent The identity used to track this field in its parent
+   * @param initialKeyInParent The key of this field in its parent at the time of creation
    * @param createChildNode A factory function to create child nodes for this field.
    */
   constructor(
