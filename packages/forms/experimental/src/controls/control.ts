@@ -15,11 +15,12 @@ import {
   EventEmitter,
   inject,
   Injector,
-  input,
+  Input,
   InputSignal,
   OutputEmitterRef,
   OutputRef,
   OutputRefSubscription,
+  signal,
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
@@ -29,6 +30,7 @@ import {
   illegallyGetComponentInstance,
   illegallyIsModelInput,
   illegallyIsSignalInput,
+  illegallyRunEffect,
   illegallySetComponentInput as illegallySetInputSignal,
 } from '../illegal';
 import {InteropNgControl} from './interop_ng_control';
@@ -45,7 +47,30 @@ import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/proper
 })
 export class Control<T> {
   readonly injector = inject(Injector);
-  readonly field = input.required<Field<T>>({alias: 'control'});
+  readonly field = signal<Field<T>>(undefined as any);
+
+  private initialized = false;
+
+  // If `[control]` is applied to a custom UI control, it wants to synchronize state in the field w/
+  // the inputs of that custom control. This is difficult to do in user-land. We use `effect`, but
+  // effects don't run before the lifecycle hooks of the component. This is usually okay, but has
+  // one significant issue: the UI control's required inputs won't be set in time for those
+  // lifecycle hooks to run.
+  //
+  // Eventually we can build custom functionality for the `Control` directive into the framework,
+  // but for now we work around this limitation with a hack. We use an `@Input` instead of a
+  // signal-based `input()` for the `[control]` to hook the exact moment inputs are being set,
+  // before the important lifecycle hooks of the UI control. We can then initialize all our effects
+  // and force them to run immediately, ensuring all required inputs have values.
+  @Input({required: true, alias: 'control'})
+  set _field(value: Field<T>) {
+    this.field.set(value);
+    if (!this.initialized) {
+      this.initialize();
+    }
+  }
+
+  // readonly field = input.required<Field<T>>({alias: 'control'});
   readonly state = computed(() => this.field()());
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
@@ -60,7 +85,8 @@ export class Control<T> {
     return this.cvaArray?.[0] ?? this._ngControl?.valueAccessor ?? undefined;
   }
 
-  ngOnInit() {
+  private initialize() {
+    this.initialized = true;
     const injector = this.injector;
     const cmp = illegallyGetComponentInstance(injector);
 
@@ -227,13 +253,16 @@ export class Control<T> {
     if (!sink) {
       return undefined;
     }
-    effect(
+    const ref = effect(
       () => {
         const value = source();
         untracked(() => sink(value));
       },
       {injector: this.injector},
     );
+    // Run the effect immediately to ensure sinks which are required inputs are set before they can
+    // be observed. See the note on `_field` for more details.
+    illegallyRunEffect(ref);
   }
 
   private propertySource<T>(key: AggregateProperty<T, any>): () => T | undefined {

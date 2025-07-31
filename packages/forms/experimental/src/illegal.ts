@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, InputSignal, ModelSignal, ɵSIGNAL as SIGNAL} from '@angular/core';
+import {EffectRef, Injector, InputSignal, ModelSignal, ɵSIGNAL as SIGNAL} from '@angular/core';
 
 export function illegallyGetComponentInstance(injector: Injector): unknown {
   assertIsNodeInjector(injector);
@@ -27,6 +27,10 @@ export function illegallyIsSignalInput(value: unknown): value is InputSignal<unk
 
 export function illegallyIsModelInput<T>(value: unknown): value is ModelSignal<T> {
   return isInputSignal(value) && isObject(value) && 'subscribe' in value;
+}
+
+export function illegallyRunEffect(ref: EffectRef): void {
+  (ref as EffectRefImpl)[SIGNAL].run();
 }
 
 function assertIsNodeInjector(injector: Injector): asserts injector is NgNodeInjector {
@@ -69,4 +73,10 @@ interface NgInputSignal {
 
 interface NgInputSignalNode {
   applyValueToInputSignal(node: NgInputSignalNode, value: unknown): void;
+}
+
+interface EffectRefImpl extends EffectRef {
+  readonly [SIGNAL]: {
+    run(): void;
+  };
 }
