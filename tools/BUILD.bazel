@@ -2,11 +2,6 @@ load("//tools:defaults2.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files([
-    "tsconfig.json",
-    "postinstall-patches.js",
-])
-
 ts_config(
     name = "tsconfig_build",
     src = "tsconfig.json",

@@ -17,7 +17,7 @@ jobs:
         with:
           cache-node-modules: true
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Setup Bazel Remote Caching
@@ -25,10 +25,10 @@ jobs:
       - name: Setup Saucelabs Variables
         uses: angular/dev-infra/github-actions/saucelabs@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Set up Sauce Tunnel Daemon
-        run: yarn bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
+        run: pnpm bazel run //tools/saucelabs-daemon/background-service -- $JOBS &
         env:
           SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
       - name: Run all saucelabs bazel tests
         run: |
           TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
-          yarn bazel test --config=saucelabs --jobs=$JOBS ${TESTS}
+          pnpm bazel test --config=saucelabs --jobs=$JOBS ${TESTS}

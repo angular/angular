@@ -27,9 +27,9 @@ jobs:
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: yarn bazel build //adev:build --full_build_adev --config=release
+        run: pnpm bazel build //adev:build --full_build_adev --config=release
       - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
         with:
           workflow-artifact-name: 'adev-preview'

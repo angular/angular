@@ -6,22 +6,17 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
+  "packageManager": "pnpm@10.12.1",
   "engines": {
-    "node": "^20.19.0 || ^22.12.0 || >=24.0.0",
-    "yarn": ">=1.22.4 <2",
-    "npm": "Please use yarn instead of NPM to install dependencies"
+    "npm": "Please use pnpm instead of NPM to install dependencies",
+    "yarn": "Please use pnpm instead of Yarn to install dependencies",
+    "pnpm": "10.12.1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
   "scripts": {
-    "/": "",
-    "// 1": "Many of our checks/scripts/tools have moved to our ng-dev tool",
-    "// 2": "Find the usage you are looking for with:",
-    "// 3": "yarn ng-dev --help",
-    "/ ": "",
-    "postinstall": "node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js && patch-package --patch-dir tools/npm-patches",
     "prepare": "husky",
     "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
@@ -29,25 +24,25 @@
     "test:ci": "bazelisk test -- //... -//integration/... -//adev/... -//devtools/... -//modules/ssr-benchmarks/...",
     "integration-tests:ci": "bazelisk test -- //integration/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
-    "lint": "yarn -s tslint && yarn -s ng-dev format changed --check",
+    "lint": "pnpm --silent tslint && pnpm --silent ng-dev format changed --check",
     "tslint": "tslint -c tslint.json --project tsconfig-tslint.json",
     "public-api:check": "node goldens/public-api/manage.js test",
     "public-api:update": "node goldens/public-api/manage.js accept",
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
-    "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
-    "check-tooling-setup": "yarn tsc --project .ng-dev/tsconfig.json && yarn tsc --project scripts/tsconfig.json",
+    "ts-circular-deps:check": "pnpm -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
+    "check-tooling-setup": "pnpm tsc --project .ng-dev/tsconfig.json && pnpm tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
-    "devtools:test:e2e": "yarn cypress run --project ./devtools/cypress",
-    "devtools:e2e:open": "yarn cypress open --project ./devtools/cypress",
+    "devtools:test:e2e": "pnpm cypress run --project ./devtools/cypress",
+    "devtools:e2e:open": "pnpm cypress open --project ./devtools/cypress",
     "devtools:build:chrome": "bazelisk build --//devtools/projects/shell-browser/src:flag_browser=chrome //devtools/projects/shell-browser/src:prodapp",
     "devtools:build:firefox": "bazelisk build --config snapshot-build-firefox --//devtools/projects/shell-browser/src:flag_browser=firefox //devtools/projects/shell-browser/src:prodapp",
-    "devtools:build:chrome:release": "yarn run -s devtools:build:chrome",
-    "devtools:build:firefox:release": "yarn run -s devtools:build:firefox --jobs 4",
+    "devtools:build:chrome:release": "pnpm run -s devtools:build:chrome",
+    "devtools:build:firefox:release": "pnpm run -s devtools:build:firefox --jobs 4",
     "devtools:test": "bazelisk test --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
     "devtools:test:unit": "bazelisk test -- //devtools/...",
-    "docs": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn ibazel run //adev:build.serve",
-    "docs:build": "[[ -n $CI ]] && echo 'Cannot run this yarn script on CI' && exit 1 || yarn bazel build //adev:build",
+    "docs": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm ibazel run //adev:build.serve",
+    "docs:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm bazel build //adev:build",
     "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts",
     "diff-release-package": "tsx --tsconfig=scripts/tsconfig.json scripts/diff-release-package.mts"
   },
@@ -56,10 +51,22 @@
     "@angular-devkit/build-angular": "20.2.0-next.2",
     "@angular-devkit/core": "20.2.0-next.2",
     "@angular-devkit/schematics": "20.2.0-next.2",
+    "@angular/animations": "workspace:*",
     "@angular/build": "20.2.0-next.2",
     "@angular/cdk": "20.2.0-next.2",
     "@angular/cli": "20.2.0-next.2",
+    "@angular/common": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/elements": "workspace:*",
+    "@angular/forms": "workspace:*",
     "@angular/material": "20.2.0-next.2",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-browser-dynamic": "workspace:*",
+    "@angular/platform-server": "workspace:*",
+    "@angular/router": "workspace:*",
+    "@angular/service-worker": "workspace:*",
     "@angular/ssr": "20.2.0-next.2",
     "@babel/cli": "7.28.0",
     "@babel/core": "7.28.0",
@@ -213,6 +220,15 @@
     "patchedDependencies": {
       "dagre-d3-es@7.0.11": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch"
     },
-    "onlyBuiltDependencies": []
+    "packageExtensions": {
+      "grpc-gcp": {
+        "peerDependencies": {
+          "protobufjs": "*"
+        }
+      }
+    },
+    "onlyBuiltDependencies": [
+      "cypress"
+    ]
   }
 }
