@@ -457,6 +457,18 @@ function createLogic(
   return logic;
 }
 
+/**
+ * Create a bound version of the given predicate to a specific depth in the field tree.
+ * This allows us to unambiguously know which `FieldContext` the predicate function should receive.
+ *
+ * This is of particular concern when a schema is applied recursively to itself. Since the schema is
+ * only compiled once, each nested application adds the same predicate instance. We differntiate
+ * these by recording the depth of the field they're bound to.
+ *
+ * @param predicate The unbound predciate
+ * @param depth The depth of the field the predicate is bound to
+ * @returns A bound predicate
+ */
 function bindLevel(predicate: Predicate, depth: number): BoundPredicate {
   return {...predicate, depth: depth};
 }

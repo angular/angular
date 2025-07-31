@@ -13,18 +13,23 @@ import {ValidationError, WithField} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 
-/**
- * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.
- */
-export const DYNAMIC: unique symbol = Symbol('DYNAMIC');
+/** Special key which is used to represent a dynamic index in a `FieldLogicNode` path. */
+export const DYNAMIC = Symbol();
+
+/** Represents a result that should be ignored because its predicate indicates it is not active. */
+const IGNORED = Symbol();
 
 /**
- * Represents a result that should be ignored because its predicate indicates it is not active.
+ * A predicate that indicates whether an `AbstractLogic` instance is currently active, or should be
+ * ignored.
  */
-const IGNORED = Symbol('IGNORED');
-
 export interface Predicate {
+  /** A boolean logic function that returns true if the logic is considered active. */
   readonly fn: LogicFn<any, boolean>;
+  /**
+   * The path which this predicate was created for. This is used to determine the correct
+   * `FieldContext` to pass to the predicate function.
+   */
   readonly path: FieldPath<any>;
 }
 
@@ -55,24 +60,44 @@ export interface BoundPredicate extends Predicate {
   readonly depth: number;
 }
 
-export interface DataDefinition {
-  readonly factory: LogicFn<unknown, unknown>;
-  readonly initializer?: (value: unknown) => void;
-}
-
+/**
+ * Base class for all logic. It is responsible for combining the results from multiple individual
+ * logic functions registered in the schema, and using them to derive the value for some asocated
+ * piece of field state.
+ */
 export abstract class AbstractLogic<TReturn, TValue = TReturn> {
+  /** The set of logic functions that contribute to the value of the asociated state. */
   protected readonly fns: Array<LogicFn<any, TValue | typeof IGNORED>> = [];
 
-  constructor(private predicates: ReadonlyArray<BoundPredicate>) {}
+  constructor(
+    /**
+     * A list of predicates that conditionally enable or disabled *all* of the logic functions in
+     * this logic instance.
+     */
+    private predicates: ReadonlyArray<BoundPredicate>,
+  ) {}
 
+  /**
+   * Computes the value of the asociated field state based on the logic functions and predicates
+   * registered with this logic instance.
+   */
   abstract compute(arg: FieldContext<any>): TReturn;
 
+  /**
+   * The default value that the associated field state should assume if there are no logic functions
+   * registered by the schema (or if the logic is disabled by a predciate).
+   */
   abstract get defaultValue(): TReturn;
 
+  /** Registers a logic function with this logic instance. */
   push(logicFn: LogicFn<any, TValue>) {
     this.fns.push(wrapWithPredicates(this.predicates, logicFn));
   }
 
+  /**
+   * Merges in the logic from another logic instance, subject to the predicates of both the other
+   * instance and this instance.
+   */
   mergeIn(other: AbstractLogic<TReturn, TValue>) {
     const fns = this.predicates
       ? other.fns.map((fn) => wrapWithPredicates(this.predicates, fn))
@@ -81,6 +106,7 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
   }
 }
 
+/** Logic that combines its individual logic function results with logical OR. */
 export class BooleanOrLogic extends AbstractLogic<boolean> {
   override get defaultValue() {
     return false;
@@ -94,10 +120,15 @@ export class BooleanOrLogic extends AbstractLogic<boolean> {
   }
 }
 
+/**
+ * Logic that combines its individual logic function results by aggregating them in an array.
+ * Depending on its `ignore` function it may ignore certain values, omitting them from the array.
+ */
 export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLogic<
   readonly TElement[],
   TElement | readonly (TElement | TIgnore)[] | TIgnore | undefined
 > {
+  /** Creates an insstance of this class that ignores `null` values. */
   static ignoreNull<TElement>(predicates: ReadonlyArray<BoundPredicate>) {
     return new ArrayMergeIgnoreLogic<TElement, null>(predicates, (e: unknown) => e === null);
   }
@@ -131,12 +162,14 @@ export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLo
   }
 }
 
+/** Logic that combines its individual logic function results by aggregating them in an array. */
 export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, never> {
   constructor(predicates: ReadonlyArray<BoundPredicate>) {
     super(predicates, undefined);
   }
 }
 
+/** Logic that combines an AggregateProperty according to the property's own reduce function. */
 export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
     return this.key.getInitial();
@@ -164,6 +197,14 @@ export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc
   }
 }
 
+/**
+ * Wraps a logic function such that it returns the special `IGNORED` sentinel value if any of the
+ * given predicates evaluates to false.
+ *
+ * @param predicates A list of bound predicates to apply to the logic function
+ * @param logicFn The logic function to wrap
+ * @returns A wrapped version of the logic function that may return `IGNORED`.
+ */
 function wrapWithPredicates<TValue, TReturn>(
   predicates: ReadonlyArray<BoundPredicate>,
   logicFn: LogicFn<TValue, TReturn>,
