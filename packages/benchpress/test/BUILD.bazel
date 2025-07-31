@@ -6,19 +6,19 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/protractor",
-        "//packages:types_rjs",
-        "//packages/benchpress:benchpress_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages:types",
+        "//packages/benchpress",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//:node_modules/protractor",
-        "//packages/benchpress:benchpress_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/benchpress",
+        "//packages/core/testing",
     ],
 )

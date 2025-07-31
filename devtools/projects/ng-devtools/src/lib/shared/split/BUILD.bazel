@@ -29,10 +29,10 @@ ng_project(
     name = "responsive-split",
     srcs = ["responsive-split.directive.ts"],
     deps = [
-        ":split_rjs",
+        ":split",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/utils:utils_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
     ],
 )
 
@@ -40,17 +40,17 @@ ts_test_library(
     name = "responsive-split_test",
     srcs = ["responsive-split.directive.spec.ts"],
     deps = [
-        ":responsive-split_rjs",
-        ":split_rjs",
+        ":responsive-split",
+        ":split",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":responsive-split_test_rjs",
+        ":responsive-split_test",
     ],
 )

@@ -10,20 +10,20 @@ ts_project(
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
-        "//packages:types_rjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages:types",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
     flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
 )
@@ -32,6 +32,6 @@ ng_web_test_suite(
     name = "test_web",
     flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

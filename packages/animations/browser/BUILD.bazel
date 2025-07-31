@@ -13,8 +13,8 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/animations:animations_rjs",
-        "//packages/core:core_rjs",
+        "//packages/animations",
+        "//packages/core",
     ],
 )
 

@@ -7,5 +7,5 @@ In order to publish this package manually, one can run the following command aft
 the `version` in the `package.json` of this package:
 
 ```
-yarn bazel run //packages/benchpress:npm_package.publish
+pnpm bazel run //packages/benchpress:npm_package.publish
 ```

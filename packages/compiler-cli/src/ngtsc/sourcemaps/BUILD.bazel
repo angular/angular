@@ -12,7 +12,7 @@ ts_project(
         "//:node_modules/@types/convert-source-map",
         "//:node_modules/@types/node",
         "//:node_modules/convert-source-map",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
     ],
 )

@@ -10,15 +10,15 @@ ng_project(
     tsconfig = ":tsconfig.json",
     visibility = ["//:__pkg__"],
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "selectorless",
     data = [
-        ":selectorless_test_lib_rjs",
+        ":selectorless_test_lib",
         "//:node_modules/source-map",
     ],
 )
@@ -26,6 +26,6 @@ angular_jasmine_test(
 ng_web_test_suite(
     name = "selectorless_web",
     deps = [
-        ":selectorless_test_lib_rjs",
+        ":selectorless_test_lib",
     ],
 )

@@ -17,7 +17,7 @@ esbuild_checked_in(
     platform = "node",
     target = "node20",
     deps = [
-        ":lib_rjs",
+        ":lib",
     ],
 )
 

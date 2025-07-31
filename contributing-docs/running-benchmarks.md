@@ -7,14 +7,14 @@
 ### Running benchmark
 
 ```
-yarn benchmarks run
+pnpm benchmarks run
 ```
 
 ### Running a comparison with local changes
 
 ```
-yarn benchmarks run-compare main
-yarn benchmarks run-compare <compare-sha> [bazel-target]
+pnpm benchmarks run-compare main
+pnpm benchmarks run-compare <compare-sha> [bazel-target]
 ```
 
 If no benchmark target is specified, a prompt will allow you to select an available benchmark.
@@ -32,4 +32,4 @@ You can start a comparison by adding a comment as follows to any PR:
 ```
 
 **Note**: An explicit benchmark target must be provided. You can use the prompt
-of `yarn benchmarks run` to discover available benchmarks.
+of `pnpm benchmarks run` to discover available benchmarks.

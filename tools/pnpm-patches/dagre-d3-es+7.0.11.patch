@@ -1,7 +1,7 @@
-diff --git a/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js b/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
+diff --git a/src/dagre-js/label/add-html-label.js b/src/dagre-js/label/add-html-label.js
 index 94ee8a3..1983f45 100644
---- a/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
-+++ b/node_modules/dagre-d3-es/src/dagre-js/label/add-html-label.js
+--- a/src/dagre-js/label/add-html-label.js
++++ b/src/dagre-js/label/add-html-label.js
 @@ -28,8 +28,8 @@ function addHtmlLabel(root, node) {
    // Fix for firefox
    div.style('white-space', 'nowrap');

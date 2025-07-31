@@ -17,8 +17,8 @@ ng_project(
     deps = [
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/utils:utils_rjs",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/utils",
     ],
 )
 
@@ -34,14 +34,14 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":cookie-popup_rjs",
+        ":cookie-popup",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/testing:testing_rjs",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/testing",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

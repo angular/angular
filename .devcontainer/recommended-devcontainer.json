@@ -3,7 +3,7 @@
   "name": "Angular dev container",
   "dockerFile": "Dockerfile",
   "appPort": [4000, 4200, 4433, 5000, 8080, 9876],
-  "postCreateCommand": "yarn install",
+  "postCreateCommand": "pnpm install",
   "extensions": [
     "devondcarew.bazel-code",
     "ms-vscode.vscode-typescript-tslint-plugin"

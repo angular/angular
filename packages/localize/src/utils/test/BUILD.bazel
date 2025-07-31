@@ -7,14 +7,14 @@ ts_project(
         ["**/*_spec.ts"],
     ),
     deps = [
-        "//packages:types_rjs",
-        "//packages/localize/src/utils:utils_rjs",
+        "//packages:types",
+        "//packages/localize/src/utils",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

@@ -1,5 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "copy_to_bin", "ts_project")
 
 package(
     default_visibility = [
@@ -19,10 +18,10 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/@angular-devkit/schematics",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/core/schematics/migrations/signal-queries-migration:migration_rjs",
-        "//packages/core/schematics/utils:utils_rjs",
-        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
-        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit:angular_devkit_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/core/schematics/migrations/signal-queries-migration:migration",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
     ],
 )

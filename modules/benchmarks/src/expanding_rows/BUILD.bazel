@@ -38,7 +38,7 @@ ts_project(
     tsconfig = "//modules/benchmarks:tsconfig_e2e",
     deps = [
         "//modules:node_modules/protractor",
-        "//modules/utilities:utilities_rjs",
+        "//modules/utilities",
     ],
 )
 
@@ -55,6 +55,6 @@ benchmark_test(
     name = "perf",
     server = ":prodserver",
     deps = [
-        ":perf_lib_rjs",
+        ":perf_lib",
     ],
 )

@@ -10,12 +10,11 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
-    module_name = "angular-in-memory-web-api",
     deps = [
         "//:node_modules/rxjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/core:core_rjs",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
     ],
 )
 
@@ -24,6 +23,6 @@ ng_package(
     srcs = ["package.json"],
     package = "angular-in-memory-web-api",
     deps = [
-        ":angular-in-memory-web-api_rjs",
+        ":angular-in-memory-web-api",
     ],
 )

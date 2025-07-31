@@ -6,7 +6,7 @@ The content is written primarily in Markdown format located in `src/content`. Fo
 
 ## Local Development
 
-For local development, [yarn](https://yarnpkg.com/) is the preferred package manager. You can set up a local environment with the following commands
+For local development, [pnpm](https://pnpm.io/) is the preferred package manager. You can set up a local environment with the following commands
 :
 
 ```bash
@@ -17,11 +17,11 @@ git clone https://github.com/angular/angular.git
 cd angular
 
 # Install dependencies
-yarn
+pnpm
 
 # Build and run local dev server
 # NOTE: Initial build will take some time
-yarn docs
+pnpm docs
 ```
 
 If you are having issues with the docs building, see the [FAQs](#faqs) section.
@@ -46,8 +46,8 @@ This is most likely due to a bazel dependency / caching issue. To resolve this, 
 
 ```
 # Try this first
-yarn bazel clean
+pnpm bazel clean
 
 # If that doesn't work, try it with the expunge flag
-yarn bazel clean --expunge
+pnpm bazel clean --expunge
 ```

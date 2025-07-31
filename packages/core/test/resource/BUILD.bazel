@@ -9,21 +9,21 @@ ng_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "resource",
     data = [
-        ":resource_lib_rjs",
+        ":resource_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "resource_web",
     deps = [
-        ":resource_lib_rjs",
+        ":resource_lib",
     ],
 )

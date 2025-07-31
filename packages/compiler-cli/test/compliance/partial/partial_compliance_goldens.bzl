@@ -9,7 +9,7 @@ def partial_compliance_golden(filePath):
     path = filePath[:-len("/TEST_CASES.json")]
     generate_partial_name = "partial_%s" % path
     data = [
-        "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib_rjs",
+        "//packages/compiler-cli/test/compliance/partial:generate_golden_partial_lib",
         "//packages/core:npm_package",
         "//packages:package_json",
         filePath,

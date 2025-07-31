@@ -52,7 +52,6 @@ def ng_project(name, srcs = [], angular_assets = [], **kwargs):
 
     _ng_project(
         name = name,
-        enable_runtime_rnjs_interop = False,
         tsconfig = "//devtools:tsconfig_build",
         srcs = srcs,
         assets = angular_assets,
@@ -63,7 +62,6 @@ def ng_project(name, srcs = [], angular_assets = [], **kwargs):
 def ts_project(name, **kwargs):
     _ts_project(
         name = name,
-        enable_runtime_rnjs_interop = False,
         tsconfig = "//devtools:tsconfig_build",
         **kwargs
     )
@@ -72,7 +70,6 @@ def ts_test_library(name, deps = [], **kwargs):
     _ts_project(
         name = name,
         tsconfig = "//devtools:tsconfig_test",
-        enable_runtime_rnjs_interop = False,
         testonly = 1,
         deps = deps + [
             "//:node_modules/@types/jasmine",

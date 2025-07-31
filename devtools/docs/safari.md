@@ -10,7 +10,7 @@ To install Angular DevTools in Safari follow the steps:
 
 * Make sure the flag in `Develop -> Experimental Features -> Web Inspector Extensions` is checked.
 
-* Build Angular DevTools with a chrome configuration with `yarn devtools:build:chrome` this will create an Angular DevTools build in `dist/bin/devtools/projects/shell-browser/src/prodapp`.
+* Build Angular DevTools with a chrome configuration with `pnpm devtools:build:chrome` this will create an Angular DevTools build in `dist/bin/devtools/projects/shell-browser/src/prodapp`.
 
 * Run `xcrun safari-web-extension-converter --macos-only dist/bin/devtools/projects/shell-browser/src/prodapp`. This will convert Angular DevTools into a Safari web extension. This command should open Xcode when it completes.
 

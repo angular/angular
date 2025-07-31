@@ -5,23 +5,23 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler/test/expression_parser/utils:utils_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "expression_parser",
     data = [
-        ":expression_parser_lib_rjs",
+        ":expression_parser_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "expression_parser_web",
     deps = [
-        ":expression_parser_lib_rjs",
+        ":expression_parser_lib",
     ],
 )

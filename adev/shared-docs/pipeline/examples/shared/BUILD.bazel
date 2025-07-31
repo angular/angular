@@ -9,7 +9,6 @@ ts_project(
             "*.mts",
         ],
     ),
-    enable_runtime_rnjs_interop = True,
     deps = [
         "//adev:node_modules/@types/node",
     ],

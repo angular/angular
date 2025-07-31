@@ -33,12 +33,12 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":select_rjs",
+        ":select",
         "//adev:node_modules/@angular/core",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

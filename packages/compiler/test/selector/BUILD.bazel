@@ -5,22 +5,22 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/compiler:compiler_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "selector",
     data = [
-        ":selector_lib_rjs",
+        ":selector_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "selector_web",
     deps = [
-        ":selector_lib_rjs",
+        ":selector_lib",
     ],
 )

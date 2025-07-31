@@ -74,7 +74,7 @@ If you don't have to worry about supporting all browsers, you can also check out
 
 ### Animate entering and leaving a view
 
-You can create animations for when an item enters a view or leaves a view. Let's start by looking at how to animate an element leaving a view.
+You can create animations for when an item enters a view or leaves a view. Let's start by looking at how to animate an element entering a view. We'll do this with `animate.enter`, which will apply animation classes when an element enters the view.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.component.ts">
     <docs-code header="src/app/insert.component.ts" path="adev/src/content/examples/animations/src/app/native-css/insert.component.ts" />
@@ -82,13 +82,15 @@ You can create animations for when an item enters a view or leaves a view. Let's
     <docs-code header="src/app/insert.component.css" path="adev/src/content/examples/animations/src/app/native-css/insert.component.css"  />
 </docs-code-multifile>
 
-Leaving a view is slightly more complex. The element removal needs to be delayed until the exit animation is complete. This requires a bit of extra code in your component class to accomplish.
+Animating an element when it leaves the view is similar to animating when entering a view. Use `animate.leave` to specify which CSS classes to apply when the element leaves the view.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.component.ts">
     <docs-code header="src/app/remove.component.ts" path="adev/src/content/examples/animations/src/app/native-css/remove.component.ts" />
     <docs-code header="src/app/remove.component.html" path="adev/src/content/examples/animations/src/app/native-css/remove.component.html" />
     <docs-code header="src/app/remove.component.css" path="adev/src/content/examples/animations/src/app/native-css/remove.component.css"  />
 </docs-code-multifile>
+
+For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations/enter-and-leave).
 
 ### Animating increment and decrement
 
@@ -165,7 +167,7 @@ In this example, the `rotate` and `fade-in` animations fire at the same time, bu
 
 ### Animating the items of a reordering list
 
-Items in a `@for` loop will be removed and re-added, which will fire off animations using `@starting-styles` for entry animations. Removal animations will require additional code to add the event listener, as seen in the example above.
+Items in a `@for` loop will be removed and re-added, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example above.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/reorder.component.ts">
     <docs-code header="src/app/reorder.component.ts" path="adev/src/content/examples/animations/src/app/native-css/reorder.component.ts" />

@@ -145,7 +145,7 @@ export class ElementRegistry {
    *  the removal function to be fired off when the animation finishes.
    */
   animate(el: Element, removeFn: Function): void {
-    if (!this.outElements.has(el)) return;
+    if (!this.outElements.has(el)) return removeFn();
     const details = this.outElements.get(el)!;
     let timeoutId: ReturnType<typeof setTimeout>;
     let called = false;

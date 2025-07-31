@@ -8,7 +8,7 @@ ts_project(
         "patched.init.ts",
     ],
     deps = [
-        "//packages/zone.js/test:node_entry_point_rjs",
+        "//packages/zone.js/test:node_entry_point",
     ],
 )
 
@@ -19,7 +19,7 @@ ts_project(
         "fake-async-patched-clock.spec.ts",
     ],
     deps = [
-        "//packages/zone.js/lib:zone_d_ts_rjs",
+        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 
@@ -30,7 +30,7 @@ ts_project(
         "unpatched.init.ts",
     ],
     deps = [
-        "//packages/zone.js/test:node_entry_point_rjs",
+        "//packages/zone.js/test:node_entry_point",
     ],
 )
 
@@ -41,14 +41,14 @@ ts_project(
         "fake-async-unpatched-clock.spec.ts",
     ],
     deps = [
-        "//packages/zone.js/lib:zone_d_ts_rjs",
+        "//packages/zone.js/lib:zone_d_ts",
     ],
 )
 
 jasmine_test(
     name = "test_patched",
     data = [
-        ":patched_init_rjs",
+        ":patched_init",
         ":test_patched_lib",
     ],
     fixed_args = [
@@ -59,8 +59,8 @@ jasmine_test(
 jasmine_test(
     name = "test_unpatched",
     data = [
-        ":test_unpatched_lib_rjs",
-        ":unpatched_init_rjs",
+        ":test_unpatched_lib",
+        ":unpatched_init",
     ],
     fixed_args = [
         "--require={root}/packages/zone.js/test/zone-spec/clock-tests/unpatched.init.js",

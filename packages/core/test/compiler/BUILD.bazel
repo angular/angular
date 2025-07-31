@@ -9,21 +9,21 @@ ts_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/core/src/compiler:compiler_rjs",
-        "//packages/core/src/util:util_rjs",
+        "//packages/core/src/compiler",
+        "//packages/core/src/util",
     ],
 )
 
 angular_jasmine_test(
     name = "compiler",
     data = [
-        ":compiler_lib_rjs",
+        ":compiler_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "compiler_web",
     deps = [
-        ":compiler_lib_rjs",
+        ":compiler_lib",
     ],
 )

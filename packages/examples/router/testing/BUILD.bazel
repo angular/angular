@@ -7,25 +7,25 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/router:router_rjs",
-        "//packages/router/testing:testing_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/router",
+        "//packages/router/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 

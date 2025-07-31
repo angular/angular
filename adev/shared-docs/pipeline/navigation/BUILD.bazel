@@ -16,7 +16,7 @@ ts_project(
         "//adev:node_modules/@types/node",
         "//adev:node_modules/@webcontainer/api",
         "//adev:node_modules/tinyglobby",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
+        "//adev/shared-docs/interfaces",
     ],
 )
 
@@ -29,7 +29,7 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":lib_rjs",
+        ":lib",
         "//adev:node_modules/@types/node",
         "//adev/shared-docs/interfaces",
     ],
@@ -46,6 +46,6 @@ esbuild(
     tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
-        ":navigation_rjs",
+        ":navigation",
     ],
 )

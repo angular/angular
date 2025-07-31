@@ -14,12 +14,12 @@ This small benchmark suite is dedicated to mesure & describe how compute time is
 
 ## Build & run
 
-`yarn bazel run //modules/ssr-benchmarks:run`
+`pnpm bazel run //modules/ssr-benchmarks:run`
 
 
 ### Running the benchmark in a browser environment
 
-`yarn bazel run //modules/ssr-benchmarks:run_browser`
+`pnpm bazel run //modules/ssr-benchmarks:run_browser`
 
 This bazel target will build the benchmark, start a http-server with a html that will load the benckmark script. 
 The benchmark script with this target will have DOM Emulation disabled. 
@@ -36,7 +36,7 @@ Then in the performance tab of the devtools, trigger "Record & Reload" to genera
 
 A target is dedicated to generate a v8 log that can be fed to the [Deopt Explorer extension](https://github.com/microsoft/deoptexplorer-vscode).
 
-1. Run `yarn bazel run //modules/ssr-benchmarks:run_deopt`, 
+1. Run `pnpm bazel run //modules/ssr-benchmarks:run_deopt`, 
 2. open the project generated at the path after `Successfully ran all commands in test directory:`,
 3. open the logfile in the extension
 

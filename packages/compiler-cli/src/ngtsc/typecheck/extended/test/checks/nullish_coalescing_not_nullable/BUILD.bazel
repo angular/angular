@@ -6,22 +6,22 @@ ts_project(
     srcs = ["nullish_coalescing_not_nullable_spec.ts"],
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/src/ngtsc/core:api_rjs",
-        "//packages/compiler-cli/src/ngtsc/diagnostics:diagnostics_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended:extended_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable:nullish_coalescing_not_nullable_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/testing",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//packages/core:npm_package",
     ],
 )

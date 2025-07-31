@@ -8,14 +8,14 @@ behavior) just like an Angular application developer would write.
 
 ```
 # Serving individual examples (e.g. common)
-yarn bazel run //packages/examples/common:devserver
+pnpm bazel run //packages/examples/common:devserver
 
 # "core" examples
-yarn bazel run //packages/examples/core:devserver
+pnpm bazel run //packages/examples/core:devserver
 ```
 
 # Running the tests
 
 ```
-yarn bazel test //packages/examples/...
+pnpm bazel test //packages/examples/...
 ```

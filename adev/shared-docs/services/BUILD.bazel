@@ -9,7 +9,7 @@ ts_project(
     ],
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
-        ":lib_rjs",
+        ":lib",
     ],
 )
 
@@ -30,9 +30,9 @@ ng_project(
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/algoliasearch",
         "//adev:node_modules/rxjs",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/utils:utils_rjs",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/utils",
     ],
 )
 
@@ -43,16 +43,16 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":lib_rjs",
+        ":lib",
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/testing:testing_rjs",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/testing",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

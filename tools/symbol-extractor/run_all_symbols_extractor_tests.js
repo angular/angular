@@ -28,8 +28,8 @@ const BAZEL_QUERY =
   `'kind(js_test, ${TEST_TARGETS_LOCATION}) ` +
   `intersect attr("tags", "symbol_extractor", ${TEST_TARGETS_LOCATION})'`;
 const ALL_TEST_TARGETS = spawnSync(
-  'yarn',
-  ['-s', 'bazel', 'query', '--output', 'label', BAZEL_QUERY],
+  'pnpm',
+  ['--silent', 'bazel', 'query', '--output', 'label', BAZEL_QUERY],
   {encoding: 'utf8', shell: true, cwd: path.resolve(__dirname, '../..')},
 )
   .stdout.trim()
@@ -50,7 +50,7 @@ const ALL_ACCEPT_TARGETS = ALL_TEST_TARGETS.map((test) => `${test}.accept`);
 /** Builds all targets in parallel. */
 function buildTargets(targets) {
   process.stdout.write('Building all symbol extractor targets...');
-  const commandResult = spawnSync('yarn', ['-s', 'bazel', 'build', targets.join(' ')], {
+  const commandResult = spawnSync('pnpm', ['--silent', 'bazel', 'build', targets.join(' ')], {
     encoding: 'utf8',
     shell: true,
   });
@@ -66,7 +66,9 @@ function buildTargets(targets) {
 function runBazelCommandOnTargets(command, targets, present) {
   for (const target of targets) {
     process.stdout.write(`${present}: ${target}`);
-    const commandResult = spawnSync('yarn', ['-s', 'bazel', command, target], {encoding: 'utf8'});
+    const commandResult = spawnSync('pnpm', ['--silent', 'bazel', command, target], {
+      encoding: 'utf8',
+    });
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     if (commandResult.status) {

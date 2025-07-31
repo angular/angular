@@ -13,10 +13,10 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/upgrade:upgrade_rjs",
-        "//packages/upgrade/static:static_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/upgrade",
+        "//packages/upgrade/static",
     ],
 )
 

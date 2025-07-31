@@ -6,6 +6,6 @@ ts_project(
     name = "ng-devtools-backend",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src:src_rjs",
+        "//devtools/projects/ng-devtools-backend/src",
     ],
 )

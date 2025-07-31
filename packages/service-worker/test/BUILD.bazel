@@ -8,26 +8,26 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/rxjs",
-        "//packages:types_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/service-worker:service-worker_rjs",
-        "//packages/service-worker/testing:testing_rjs",
-        "//packages/service-worker/worker:worker_rjs",
-        "//packages/service-worker/worker/testing:testing_rjs",
+        "//packages:types",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/service-worker",
+        "//packages/service-worker/testing",
+        "//packages/service-worker/worker",
+        "//packages/service-worker/worker/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

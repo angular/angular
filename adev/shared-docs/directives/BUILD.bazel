@@ -11,8 +11,8 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//adev/shared-docs/directives/click-outside:click-outside_rjs",
-        "//adev/shared-docs/directives/external-link:external-link_rjs",
-        "//adev/shared-docs/directives/search-item:search-item_rjs",
+        "//adev/shared-docs/directives/click-outside",
+        "//adev/shared-docs/directives/external-link",
+        "//adev/shared-docs/directives/search-item",
     ],
 )

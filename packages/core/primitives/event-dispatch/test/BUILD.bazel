@@ -9,12 +9,12 @@ ts_project(
         ],
     ),
     deps = [
-        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/private/testing",
     ],
 )
 
 ng_web_test_suite(
     name = "browser_test",
-    deps = [":browser_test_lib_rjs"],
+    deps = [":browser_test_lib"],
 )

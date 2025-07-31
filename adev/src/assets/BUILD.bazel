@@ -1,4 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//adev/shared-docs:defaults.bzl", "copy_to_directory")
 load("//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest.bzl", "generate_api_manifest")
 
 package(default_visibility = ["//adev:__subpackages__"])

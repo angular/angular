@@ -14,8 +14,8 @@ ng_project(
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/utils:utils_rjs",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/utils",
     ],
 )
 
@@ -26,15 +26,15 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":external-link_rjs",
+        ":external-link",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/providers:providers_rjs",
+        "//adev/shared-docs/providers",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

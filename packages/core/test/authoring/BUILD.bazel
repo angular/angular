@@ -11,7 +11,7 @@ ts_project(
         "unwrap_writable_signal_signature_test.ts",
     ],
     deps = [
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )
 
@@ -28,8 +28,8 @@ filegroup(
     name = "types",
     testonly = True,
     srcs = [
-        ":signal_authoring_signature_test_lib_rjs",
-        ":type_tester_lib_rjs",
+        ":signal_authoring_signature_test_lib",
+        ":type_tester_lib",
     ],
     output_group = "types",
 )
@@ -37,7 +37,7 @@ filegroup(
 js_test(
     name = "type_test",
     data = [
-        ":type_tester_lib_rjs",
+        ":type_tester_lib",
         ":types",
         "//packages:package_json",
     ],
@@ -52,20 +52,20 @@ ts_project(
         "model_input_spec.ts",
     ],
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/core",
+        "//packages/core/primitives/signals",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

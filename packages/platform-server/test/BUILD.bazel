@@ -8,11 +8,11 @@ ts_project(
         "hydration_utils.ts",
     ],
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-server:platform-server_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-server",
     ],
 )
 
@@ -28,24 +28,24 @@ ts_project(
         ],
     ),
     deps = [
-        ":dom_utils_rjs",
+        ":dom_utils",
         "//:node_modules/rxjs",
-        "//packages:types_rjs",
-        "//packages/animations:animations_rjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/common/testing:testing_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/localize:localize_rjs",
-        "//packages/localize/init:init_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-server:platform-server_rjs",
-        "//packages/private/testing:testing_rjs",
-        "//packages/router:router_rjs",
+        "//packages:types",
+        "//packages/animations",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-server",
+        "//packages/private/testing",
+        "//packages/router",
     ],
 )
 
@@ -54,21 +54,21 @@ ts_project(
     testonly = True,
     srcs = ["event_replay_spec.ts"],
     deps = [
-        ":dom_utils_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-server:platform-server_rjs",
-        "//packages/private/testing:testing_rjs",
+        ":dom_utils",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-server",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
 )
@@ -76,7 +76,7 @@ angular_jasmine_test(
 angular_jasmine_test(
     name = "event_replay_test",
     data = [
-        ":event_replay_test_lib_rjs",
+        ":event_replay_test_lib",
         "//packages/core/primitives/event-dispatch:contract_bundle_min",
     ],
 )

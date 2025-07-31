@@ -14,16 +14,15 @@ ts_project(
     srcs = glob(["*.ts"]),
     # Disabled to remove doubling of runtime files as we are approaching the 70k limit when
     # CLDR files are also included in the binary action.
-    enable_runtime_rnjs_interop = False,
     deps = [
-        "//packages/common/locales/generate-locales-tool:generate-locales-tool_rjs",
+        "//packages/common/locales/generate-locales-tool",
     ],
 )
 
 [js_binary(
     name = entrypoint,
     data = [
-        ":bin_rjs",
+        ":bin",
         "@cldr_json_data//:all_json",
         "@cldr_xml_data//:all_xml",
     ],

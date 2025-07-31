@@ -9,8 +9,8 @@ ts_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/core:core_rjs",
-        "//packages/service-worker/worker:worker_rjs",
+        "//packages:types",
+        "//packages/core",
+        "//packages/service-worker/worker",
     ],
 )

@@ -16,16 +16,16 @@ ts_project(
     name = "component-tree",
     srcs = ["component-tree.ts"],
     deps = [
-        ":core-enums_rjs",
-        ":get-roots_rjs",
+        ":core-enums",
+        ":get-roots",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest:directive-forest_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer:state-serializer_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:property_mutation",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/ng-devtools-backend/src/lib/state-serializer",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -33,8 +33,8 @@ ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
     deps = [
-        ":component-tree_rjs",
-        ":get-roots_rjs",
+        ":component-tree",
+        ":get-roots",
         "//:node_modules/@angular/core",
         "//:node_modules/jasmine",
     ],
@@ -42,5 +42,5 @@ ts_test_library(
 
 ng_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

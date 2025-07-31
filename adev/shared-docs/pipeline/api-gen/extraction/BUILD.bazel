@@ -23,7 +23,7 @@ ts_project(
 js_binary(
     name = "extract_api_to_json",
     data = [
-        ":extract_api_to_json_lib_rjs",
+        ":extract_api_to_json_lib",
     ],
     entry_point = ":index.mjs",
     visibility = ["//visibility:public"],

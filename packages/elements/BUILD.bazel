@@ -13,8 +13,8 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
@@ -32,7 +32,7 @@ ng_package(
         "//modules/ssr-benchmarks:__subpackages__",
     ],
     deps = [
-        ":elements_rjs",
+        ":elements",
     ],
 )
 

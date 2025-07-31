@@ -9,8 +9,8 @@ ts_project(
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/@types/shelljs",
         "//:node_modules/tslint",
-        "//packages/core/schematics/utils:utils_rjs",
-        "//packages/core/schematics/utils/tsurge:tsurge_rjs",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
     ],
 )
 
@@ -18,7 +18,7 @@ jasmine_test(
     name = "test",
     timeout = "moderate",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
         "//:node_modules/shelljs",
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:schematics_jsons",

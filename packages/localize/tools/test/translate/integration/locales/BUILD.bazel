@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+load("//tools:defaults2.bzl", "copy_to_bin")
 
 package(default_visibility = ["//packages/localize/tools/test/translate/integration:__pkg__"])
 

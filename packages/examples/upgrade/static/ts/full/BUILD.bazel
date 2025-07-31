@@ -10,7 +10,7 @@ create_upgrade_example_targets(
     ),
     assets = ["styles.css"],
     e2e_srcs = glob(["e2e_test/*_spec.ts"]),
-    entry_point = ":module.ts",
+    entry_point = ":module.js",
 )
 
 filegroup(

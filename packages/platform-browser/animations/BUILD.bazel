@@ -13,17 +13,17 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/animations:animations_rjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":animations_rjs",
+    target = ":animations",
     tsconfig = "//packages:tsconfig_build",
 )
 

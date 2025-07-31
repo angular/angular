@@ -34,23 +34,23 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages:goog_types_rjs",
-        "//packages/core/primitives/defer:triggers_rjs",
-        "//packages/core/primitives/di:di_rjs",
-        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
-        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/src/compiler:compiler_rjs",
-        "//packages/core/src/di/interface:interface_rjs",
-        "//packages/core/src/interface:interface_rjs",
-        "//packages/core/src/reflection:reflection_rjs",
-        "//packages/core/src/util:util_rjs",
+        "//packages:goog_types",
+        "//packages/core/primitives/defer:triggers",
+        "//packages/core/primitives/di",
+        "//packages/core/primitives/dom-navigation",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/primitives/signals",
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":core_rjs",
+    target = ":core",
     tsconfig = "//packages/core:tsconfig_build",
 )
 
@@ -83,12 +83,12 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":core_rjs",
-        "//packages/core/primitives/di:di_rjs",
-        "//packages/core/primitives/event-dispatch:event-dispatch_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/rxjs-interop:rxjs-interop_rjs",
-        "//packages/core/testing:testing_rjs",
+        ":core",
+        "//packages/core/primitives/di",
+        "//packages/core/primitives/event-dispatch",
+        "//packages/core/primitives/signals",
+        "//packages/core/rxjs-interop",
+        "//packages/core/testing",
     ],
 )
 
@@ -117,7 +117,7 @@ api_golden_test(
     name = "ng_global_utils_api",
     data = [
         "//goldens:public-api",
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
     entry_point = "src/render3/global_utils_api.d.ts",
     golden = "goldens/public-api/core/global_utils.api.md",
@@ -127,7 +127,7 @@ api_golden_test(
     name = "core_errors",
     data = [
         "//goldens:public-api",
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/core/errors.api.md",

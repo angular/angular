@@ -11,8 +11,8 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
+        "//packages/common",
+        "//packages/core",
     ],
 )
 
@@ -35,9 +35,9 @@ ng_package(
         "//packages/compiler/test:__pkg__",
     ],
     deps = [
-        ":animations_rjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/animations/browser/testing:testing_rjs",
+        ":animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
     ],
 )
 
@@ -65,7 +65,7 @@ api_golden_test(
     name = "animations_errors",
     data = [
         "//goldens:public-api",
-        "//packages/animations:animations_rjs",
+        "//packages/animations",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/animations/errors.api.md",

@@ -7,10 +7,10 @@ ts_project(
         ["**/*_spec.ts"],
     ),
     deps = [
-        "//packages:types_rjs",
-        "//packages/localize:localize_rjs",
-        "//packages/localize/init:init_rjs",
-        "//packages/localize/src/utils:utils_rjs",
+        "//packages:types",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/localize/src/utils",
     ],
 )
 

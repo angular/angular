@@ -10,6 +10,6 @@ ts_project(
         "//packages/compiler/test:__subpackages__",
     ],
     deps = [
-        "//packages/compiler:compiler_rjs",
+        "//packages/compiler",
     ],
 )

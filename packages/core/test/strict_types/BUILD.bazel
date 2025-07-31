@@ -19,13 +19,13 @@ ts_project(
     extends = "//packages/core:tsconfig_test",
     tsconfig = ":tsconfig",
     deps = [
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )
 
 jasmine_test(
     name = "strict_types",
     data = [
-        ":strict_types_lib_rjs",
+        ":strict_types_lib",
     ],
 )

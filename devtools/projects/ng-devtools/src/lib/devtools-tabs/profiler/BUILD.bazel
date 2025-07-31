@@ -24,9 +24,9 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/profiler-import-dialog:profiler-import-dialog_rjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline:recording-timeline_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/profiler-import-dialog",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
     ],
 )

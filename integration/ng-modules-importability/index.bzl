@@ -15,7 +15,7 @@ def module_test(name, npm_packages, skipped_entry_points = [], additional_deps =
         name = "test",
         data = [
             ":%s_config" % name,
-            "//integration/ng-modules-importability:test_lib_rjs",
+            "//integration/ng-modules-importability:test_lib",
         ] + additional_deps + [pkg[0] for pkg in npm_packages.items()],
         entry_point = "//integration/ng-modules-importability:index.mjs",
         fixed_args = ["$(rootpath :%s_config)" % name],
