@@ -281,7 +281,7 @@ describe('FieldNode', () => {
             disabled(a.name, ({value, fieldOf}) => {
               const el = fieldOf(a);
               expect(el().value().name).toBe(value());
-              expect(fieldOf(p).names.findIndex((e: any) => e === el)).not.toBe(-1);
+              expect([...fieldOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
               return true;
             });
           });

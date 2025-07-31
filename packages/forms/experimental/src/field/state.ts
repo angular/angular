@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {computed, signal, Signal} from '@angular/core';
@@ -12,24 +12,34 @@ import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
 
 /**
- * State associated with a `FieldNode`, such as touched and dirty status, as well as derived logical
- * state.
+ * The non-validation and non-submit state associated with a `FieldNode`, such as touched and dirty
+ * status, as well as derived logical state.
  */
 export class FieldNodeState {
   /**
-   * Field is considered touched when a user stops editing it for the first time (is our case on blur)
+   * Indicates whether this field has been touched directly by the user (as opposed to indirectly by
+   * touching a child field).
+   *
+   * A field is considered directly touched when a user stops editing it for the first time (i.e. on blur)
    */
   readonly selfTouched = signal(false);
+
   /**
-   * Field is considered dirty if a user changed the value of the field at least once.
+   * Indicates whether this field has been dirtied directly by the user (as opposed to indirectly by
+   * dirtying a child field).
+   *
+   * A field is considered directly dirtied if a user changed the value of the field at least once.
    */
   readonly selfDirty = signal(false);
 
   constructor(private readonly node: FieldNode) {}
 
   /**
-   * A field is dirty if the user changed the value of the field, or any of
-   * its children through UI.
+   * Whether this field is considered dirty.
+   *
+   * A field is considered dirty if one of the following is true:
+   *  - It was directly dirtied
+   *  - One of its children is considered dirty
    */
   readonly dirty: Signal<boolean> = computed(() => {
     return reduceChildren(
@@ -43,9 +53,9 @@ export class FieldNodeState {
   /**
    * Whether this field is considered touched.
    *
-   * This field considers itself touched if one of the following are true:
-   *  - it was directly touched
-   *  - one of its children is considered touched
+   * A field is considered touched if one of the following is true:
+   *  - It was directly touched
+   *  - One of its children is considered touched
    */
   readonly touched: Signal<boolean> = computed(() =>
     reduceChildren(
@@ -57,7 +67,10 @@ export class FieldNodeState {
   );
 
   /**
-   * The reasons for this field's disablement.
+   * The reasons for this field's disablement. This includes disabled reasons for any parent field
+   * that may have been disabled, indirectly causing this field to be disabled as well.
+   * The `field` property of the `DisabledReason` can be used to determine which field ultimately
+   * caused the disablement.
    */
   readonly disabledReasons: Signal<readonly DisabledReason[]> = computed(() => [
     ...(this.node.structure.parent?.nodeState.disabledReasons() ?? []),
@@ -67,16 +80,18 @@ export class FieldNodeState {
   /**
    * Whether this field is considered disabled.
    *
-   * This field considers itself disabled if its parent is disabled or its own logic considers it
-   * disabled.
+   * A field is considered disabled if one of the following is true:
+   * - The schema contains logic that directly disabled it
+   * - Its parent field is considered disabled
    */
   readonly disabled: Signal<boolean> = computed(() => !!this.disabledReasons().length);
 
   /**
    * Whether this field is considered readonly.
    *
-   * This field considers itself readonly if its parent is readonly or its own logic considers it
-   * readonly.
+   * A field is considered readonly if one of the following is true:
+   * - The schema contains logic that directly made it readonly
+   * - Its parent field is considered readonly
    */
   readonly readonly: Signal<boolean> = computed(
     () =>
@@ -88,8 +103,9 @@ export class FieldNodeState {
   /**
    * Whether this field is considered hidden.
    *
-   * This field considers itself hidden if its parent is hidden or its own logic considers it
-   * hidden.
+   * A field is considered hidden if one of the following is true:
+   * - The schema contains logic that directly hides it
+   * - Its parent field is considered hidden
    */
   readonly hidden: Signal<boolean> = computed(
     () =>
