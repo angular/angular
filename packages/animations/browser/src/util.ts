@@ -65,17 +65,18 @@ export function resolveTiming(
     : parseTimeExpression(<string | number>timings, errors, allowNegativeValues);
 }
 
+const PARSE_TIME_EXPRESSION_REGEX =
+  /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
 function parseTimeExpression(
   exp: string | number,
   errors: Error[],
   allowNegativeValues?: boolean,
 ): AnimateTimings {
-  const regex = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
   let duration: number;
   let delay: number = 0;
   let easing: string = '';
   if (typeof exp === 'string') {
-    const matches = exp.match(regex);
+    const matches = exp.match(PARSE_TIME_EXPRESSION_REGEX);
     if (matches === null) {
       errors.push(invalidTimingValue(exp));
       return {duration: 0, delay: 0, easing: ''};
