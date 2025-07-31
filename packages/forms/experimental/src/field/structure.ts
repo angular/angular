@@ -177,7 +177,7 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
   }
 
   /**
-   * Creates a the structure for a child field node in a field tree.
+   * Creates the structure for a child field node in a field tree.
    *
    * @param node The full field node that this structure belongs to
    * @param pathNode The path corresponding to this node in the schema
