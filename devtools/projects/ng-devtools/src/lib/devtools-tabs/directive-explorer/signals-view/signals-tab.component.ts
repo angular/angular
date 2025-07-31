@@ -141,7 +141,10 @@ export class SignalsTabComponent implements OnDestroy {
         this.messageBus.emit('getSignalGraph', [currentElement]);
       }
     };
-    effect(refreshSignalGraph);
+    effect(() => {
+      this.signalsVisualizer?.reset();
+      refreshSignalGraph();
+    });
     this.messageBus.on('componentTreeDirty', refreshSignalGraph);
 
     effect(() => {
