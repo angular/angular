@@ -13,7 +13,7 @@ import shelljs from 'shelljs';
 const {exec} = shelljs;
 
 process.stdout.write('Gathering all partial golden update targets');
-const queryCommand = `yarn -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
+const queryCommand = `pnpm -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
 const allUpdateTargets = exec(queryCommand, {silent: true})
   .trim()
   .split('\n')
@@ -33,7 +33,7 @@ process.stdout.cursorTo(0);
 for (const [index, target] of allUpdateTargets.entries()) {
   const progress = `${index + 1} / ${allUpdateTargets.length}`;
   process.stdout.write(`[${progress}] Running: ${target}`);
-  const commandResult = exec(`yarn bazel run ${target}`, {silent: true});
+  const commandResult = exec(`pnpm bazel run ${target}`, {silent: true});
   process.stdout.clearLine();
   process.stdout.cursorTo(0);
   if (commandResult.code) {

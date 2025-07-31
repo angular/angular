@@ -1,7 +1,7 @@
 # Building and Testing Angular
 
 This document describes how to set up your development environment to build and test Angular.
-It also explains the basic mechanics of using `git`, `node`, and `yarn`.
+It also explains the basic mechanics of using `git`, `node`, and `pnpm`.
 
 * [Prerequisite Software](#prerequisite-software)
 * [Getting the Sources](#getting-the-sources)
@@ -35,7 +35,7 @@ following on your development machine:
   `.nvmrc` is read by [nvm](https://github.com/nvm-sh/nvm) commands like `nvm install`
   and `nvm use`.
 
-* [Yarn](https://yarnpkg.com) (version specified in the engines field
+* [pnpm](https://pnpm.io/) (version specified in the engines field
   of [`package.json`](../package.json)) which is used to install dependencies.
 
 * On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
@@ -69,7 +69,7 @@ Next, install the JavaScript modules needed to build and test Angular:
 
 ```shell
 # Install Angular project dependencies (package.json)
-yarn install
+pnpm install
 ```
 
 ## Building
@@ -77,7 +77,7 @@ yarn install
 To build Angular run:
 
 ```shell
-yarn build
+pnpm build
 ```
 
 * Results are put in the `dist/packages-dist` folder.
@@ -90,7 +90,7 @@ To see how to run and debug Angular tests locally please refer to the
 Bazel [Testing Angular](./building-with-bazel.md#testing-angular) section.
 
 Note that you should execute all test suites before submitting a PR to
-GitHub (`yarn test //packages/...`).
+GitHub (`pnpm test //packages/...`).
 
 However, affected tests will be executed on our CI infrastructure. So if you forgot to run some
 affected tests which would fail, GitHub will indicate the error state and present you the failures.
@@ -100,18 +100,6 @@ PRs can only be merged if the code is formatted properly and all tests are passi
 <a name="formatting-your-source-code"></a>
 <a name="clang-format"></a>
 <a name="prettier"></a>
-
-### Testing changes against a local library/project
-
-Often for developers the best way to ensure the changes they have made work as expected is to run
-use changes in another library or project. To do this developers can build Angular locally, and
-using `yarn link` build a local project with the created artifacts.
-
-This can be done by running:
-
-```sh
-yarn ng-dev misc build-and-link <path-to-local-project-root>
-```
 
 ### Building and serving a project
 
@@ -140,17 +128,17 @@ If the source code is not properly formatted, the CI will fail and the PR cannot
 
 You can automatically format your code by running:
 
-- `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided
+- `pnpm ng-dev format changed [shaOrRef]`: format only files changed since the provided
   sha/ref. `shaOrRef` defaults to `main`.
-- `yarn ng-dev format all`: format _all_ source code
-- `yarn ng-dev format files <files..>`: format only provided files
+- `pnpm ng-dev format all`: format _all_ source code
+- `pnpm ng-dev format files <files..>`: format only provided files
 
 ## Linting/verifying your Source Code
 
 You can check that your code is properly formatted and adheres to coding style by running:
 
 ``` shell
-$ yarn lint
+$ pnpm lint
 ```
 
 ## Publishing Snapshot Builds
@@ -167,7 +155,7 @@ snapshots of the Angular packages created based on the code in the Pull Request.
 
 You can also manually publish `*-builds` snapshots just like our CI build does for upstream
 builds. Before being able to publish the packages, you need to build them locally by running the
-`yarn build` command.
+`pnpm build` command.
 
 First time, you need to create the GitHub repositories:
 

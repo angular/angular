@@ -19,7 +19,7 @@ sh.set('-e');
 export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 /** Command that runs Bazel. */
-export const bazelCmd = process.env.BAZEL || `yarn -s bazel`;
+export const bazelCmd = process.env.BAZEL || `pnpm --silent bazel`;
 
 /** Name of the Bazel tag that will be used to find release package targets. */
 const releaseTargetTag = 'release-with-framework';

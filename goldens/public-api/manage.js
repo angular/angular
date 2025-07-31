@@ -11,7 +11,7 @@ const API_TARGETS_LOCATION = 'packages/...';
 
 // The shell command to query for all Public API guard tests.
 const BAZEL_PUBLIC_API_TARGET_QUERY_CMD =
-  `yarn -s bazel query --output label 'kind(js_test, ${API_TARGETS_LOCATION}) ` +
+  `pnpm --silent bazel query --output label 'kind(js_test, ${API_TARGETS_LOCATION}) ` +
   `intersect attr("tags", "api_guard", ${API_TARGETS_LOCATION})'`;
 // Bazel targets for testing Public API goldens
 process.stdout.write('Gathering all Public API targets...');
@@ -28,7 +28,7 @@ const ALL_PUBLIC_API_ACCEPTS = ALL_PUBLIC_API_TESTS.map((test) => `${test}.accep
 /** Builds all targets in parallel. */
 function buildTargets(targets) {
   process.stdout.write('Building all public API targets...');
-  const commandResult = exec(`yarn -s bazel build ${targets.join(' ')}`, {silent: true});
+  const commandResult = exec(`pnpm --silent bazel build ${targets.join(' ')}`, {silent: true});
   if (commandResult.code) {
     console.error(commandResult.stdout || commandResult.stderr);
   } else {
@@ -43,7 +43,7 @@ function buildTargets(targets) {
 function runBazelCommandOnTargets(command, targets, present) {
   for (const target of targets) {
     process.stdout.write(`${present}: ${target}`);
-    const commandResult = exec(`yarn -s bazel ${command} ${target}`, {silent: true});
+    const commandResult = exec(`pnpm --silent bazel ${command} ${target}`, {silent: true});
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
     if (commandResult.code) {
