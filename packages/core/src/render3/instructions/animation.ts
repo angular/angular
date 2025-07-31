@@ -69,8 +69,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // Retrieve the actual class list from the value. This will resolve any resolver functions from
   // bindings.
   const activeClasses = getClassListFromValue(value);
-
-  let longestAnimation: LongestAnimation | undefined;
   const cleanupFns: Function[] = [];
 
   // In the case where multiple animations are happening on the element, we need
@@ -79,8 +77,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
     setupAnimationCancel(event, activeClasses, renderer);
-    longestAnimation = getLongestAnimation(event);
-
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
@@ -89,7 +85,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   // When the longest animation ends, we can remove all the classes
   const handleInAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
-    animationEnd(event, nativeElement, longestAnimation, activeClasses, renderer, cleanupFns);
+    animationEnd(event, nativeElement, activeClasses, renderer, cleanupFns);
   };
 
   // We only need to add these event listeners if there are actual classes to apply
@@ -406,11 +402,11 @@ function isLongestAnimation(
 function animationEnd(
   event: AnimationEvent | TransitionEvent,
   nativeElement: HTMLElement,
-  longestAnimation: LongestAnimation | undefined,
   classList: string[] | null,
   renderer: Renderer,
   cleanupFns: Function[],
 ) {
+  const longestAnimation = getLongestAnimation(event);
   if (isLongestAnimation(event, nativeElement, longestAnimation)) {
     // Now that we've found the longest animation, there's no need
     // to keep bubbling up this event as it's not going to apply to
