@@ -9,7 +9,7 @@
 import {computed, Signal} from '@angular/core';
 import type {ValidationResult} from '../api/types';
 import {stripField, WithField, type ValidationError} from '../api/validation_errors';
-import {isArray} from '../util/is_array';
+import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
 

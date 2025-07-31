@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {isArray} from '../util/is_array';
+import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 
 /**

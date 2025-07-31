@@ -12,3 +12,10 @@
 export function isArray(value: unknown): value is any[] | readonly any[] {
   return Array.isArray(value);
 }
+
+/**
+ * Checks if a value is an object.
+ */
+export function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+  return (typeof value === 'object' || typeof value === 'function') && value != null;
+}

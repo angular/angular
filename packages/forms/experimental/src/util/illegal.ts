@@ -3,10 +3,13 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {Injector, InputSignal, ModelSignal, ɵSIGNAL as SIGNAL} from '@angular/core';
+import {isObject} from './type_guards';
+
+// TODO: These utilities to be replaced with proper integration into framework.
 
 export function illegallyGetComponentInstance(injector: Injector): unknown {
   assertIsNodeInjector(injector);
@@ -41,16 +44,6 @@ function isInputSignal(value: unknown): value is NgInputSignal {
   }
   const node = value[SIGNAL];
   return isObject(node) && 'applyValueToInputSignal' in node;
-}
-
-function assertIsObject(value: unknown): asserts value is Record<PropertyKey, unknown> {
-  if (!isObject(value)) {
-    throw new Error('Expected an object');
-  }
-}
-
-function isObject(value: unknown): value is Record<PropertyKey, unknown> {
-  return (typeof value === 'object' || typeof value === 'function') && value != null;
 }
 
 interface NgNodeInjector extends Injector {

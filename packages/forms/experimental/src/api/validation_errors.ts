@@ -7,7 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {isArray} from '../util/is_array';
+import {isArray} from '../util/type_guards';
 import {Field, Mutable, TreeValidationResult, TreeValidationResultWithField} from './types';
 
 /** Internal symbol used for class branding. */
