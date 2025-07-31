@@ -108,7 +108,7 @@ function main(argv: [string, string, string] | [string, string]): boolean {
   if (!success) {
     console.error(`TEST FAILED!`);
     console.error(`  To update the golden file run: `);
-    console.error(`    yarn bazel run ${process.env['TEST_TARGET']}.accept`);
+    console.error(`    pnpm bazel run ${process.env['TEST_TARGET']}.accept`);
   }
 
   return success;

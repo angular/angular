@@ -23,9 +23,9 @@ jobs:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn -s install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - id: workflows
-        run: echo "workflows=$(yarn -s ng-dev perf workflows --list)" >> "$GITHUB_OUTPUT"
+        run: echo "workflows=$(pnpm ng-dev perf workflows --list)" >> "$GITHUB_OUTPUT"
 
   workflow:
     timeout-minutes: 30
@@ -40,7 +40,7 @@ jobs:
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
       - name: Install node modules
-        run: yarn -s install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       # We utilize the google-github-actions/auth action to allow us to get an active credential using workflow
       # identity federation. This allows us to request short lived credentials on demand, rather than storing
       # credentials in secrets long term. More information can be found at:
@@ -50,4 +50,4 @@ jobs:
           project_id: 'internal-200822'
           workload_identity_provider: 'projects/823469418460/locations/global/workloadIdentityPools/measurables-tracking/providers/angular'
           service_account: 'measures-uploader@internal-200822.iam.gserviceaccount.com'
-      - run: yarn ng-dev perf workflows --name ${{ matrix.workflow }} --commit-sha ${{github.sha}}
+      - run: pnpm ng-dev perf workflows --name ${{ matrix.workflow }} --commit-sha ${{github.sha}}

@@ -34,7 +34,7 @@ runs:
       run: ./tools/saucelabs/sauce-service.sh ready-wait
     - name: Running tests on Saucelabs.
       shell: bash
-      run: KARMA_WEB_TEST_MODE=SL_REQUIRED yarn karma start ./karma-js.conf.js --single-run
+      run: KARMA_WEB_TEST_MODE=SL_REQUIRED pnpm karma start ./karma-js.conf.js --single-run
     - name: Stop Saucelabs tunnel service
       shell: bash
       run: ./tools/saucelabs/sauce-service.sh stop

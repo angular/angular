@@ -22,13 +22,13 @@ if [[ -z "${SAUCE_TUNNEL_IDENTIFIER:-}" ]]; then
 fi
 
 # First build the background-service binary target so the build runs in the foreground
-yarn bazel build //tools/saucelabs-daemon/background-service --build_runfile_links
+pnpm bazel build //tools/saucelabs-daemon/background-service --build_runfile_links
 
 # Query for the test targets to run
 TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "fixme-saucelabs", ...)')
 
 # Build all test targets so the build can fan out to all CPUs
-yarn bazel build ${TESTS}
+pnpm bazel build ${TESTS}
 
 # Start the saucelabs-daemon background service in the background. Run directly from the generated
 # bash script instead of using bazel run so we get the PID of the node process. Otherwise killing
@@ -51,6 +51,6 @@ trap kill_background_service INT TERM
 sleep 2
 
 # Run all of the saucelabs test targets
-yarn bazel test --config=saucelabs --jobs="$NUMBER_OF_PARALLEL_BROWSERS" ${TESTS} "$@"
+pnpm bazel test --config=saucelabs --jobs="$NUMBER_OF_PARALLEL_BROWSERS" ${TESTS} "$@"
 
 kill_background_service
