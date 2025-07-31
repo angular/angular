@@ -354,7 +354,7 @@ export async function submit<TValue>(
 /**
  * Sets a list of server errors to their individual fields.
  *
- * @param submittedField The field that was submitted, resuling in the errors.
+ * @param submittedField The field that was submitted, resulting in the errors.
  * @param errors The errors to set.
  */
 function setServerErrors(
