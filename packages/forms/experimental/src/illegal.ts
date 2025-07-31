@@ -25,7 +25,7 @@ export function illegallyIsSignalInput(value: unknown): value is InputSignal<unk
   return isInputSignal(value);
 }
 
-export function illegallyIsModelInput(value: unknown): value is ModelSignal<unknown> {
+export function illegallyIsModelInput<T>(value: unknown): value is ModelSignal<T> {
   return isInputSignal(value) && isObject(value) && 'subscribe' in value;
 }
 

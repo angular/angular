@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InputSignal, ModelSignal, OutputRef} from '@angular/core';
+import {InputSignal, ModelSignal, OutputRef, Signal} from '@angular/core';
 import {ValidationError} from './validation_errors';
 
-export interface FormUiControl<TValue> {
-  readonly value: ModelSignal<TValue>;
+export interface BaseUiControl {
   readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
-  readonly disabled?: InputSignal<boolean | string | undefined>;
+  readonly disabled?: InputSignal<boolean | undefined>;
   readonly readonly?: InputSignal<boolean | undefined>;
   readonly valid?: InputSignal<boolean | undefined>;
   readonly touched?: InputSignal<boolean | undefined>;
@@ -24,4 +23,14 @@ export interface FormUiControl<TValue> {
   readonly minLength?: InputSignal<number | undefined>;
   readonly max?: InputSignal<number | undefined>;
   readonly maxLength?: InputSignal<number | undefined>;
+}
+
+export interface FormValueControl<TValue> extends BaseUiControl {
+  readonly value: ModelSignal<TValue>;
+  readonly checked?: undefined;
+}
+
+export interface FormCheckboxControl extends BaseUiControl {
+  readonly checked: ModelSignal<boolean>;
+  readonly value?: undefined;
 }

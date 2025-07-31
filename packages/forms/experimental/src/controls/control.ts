@@ -20,12 +20,11 @@ import {
   OutputEmitterRef,
   OutputRef,
   OutputRefSubscription,
-  Signal,
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {FormUiControl} from '../api/control';
-import {Field, FieldState} from '../api/types';
+import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
+import {Field} from '../api/types';
 import {
   illegallyGetComponentInstance,
   illegallyIsModelInput,
@@ -65,7 +64,7 @@ export class Control<T> {
     const injector = this.injector;
     const cmp = illegallyGetComponentInstance(injector);
 
-    if (cmp && isUiControl<T>(cmp)) {
+    if (cmp && isBaseUiControl(cmp)) {
       this.setupCustomUiControl(cmp);
     } else if (
       this.el.nativeElement instanceof HTMLInputElement ||
@@ -84,12 +83,26 @@ export class Control<T> {
     }
   }
 
-  // Bind our field to an <input> or <textarea>
+  /**
+   * Bind our field to an <input> or <textarea>.
+   */
   private setupNativeInput(input: HTMLInputElement | HTMLTextAreaElement): void {
-    const isCheckbox = input instanceof HTMLInputElement && input.type === 'checkbox';
+    const inputType = input instanceof HTMLTextAreaElement ? 'text' : input.type;
 
     input.addEventListener('input', () => {
-      this.state().value.set((!isCheckbox ? input.value : input.checked) as T);
+      switch (inputType) {
+        case 'checkbox':
+          this.state().value.set((input as HTMLInputElement).checked as T);
+          break;
+        case 'radio':
+          // The `input` event only fires when a radio button becomes selected, so write its `value`
+          // into the state.
+          this.state().value.set((input as HTMLInputElement).value as T);
+          break;
+        default:
+          this.state().value.set(input.value as T);
+          break;
+      }
       this.state().markAsDirty();
     });
     input.addEventListener('blur', () => this.state().markAsTouched());
@@ -103,20 +116,37 @@ export class Control<T> {
     this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
     this.maybeSynchronize(this.propertySource(MAX_LENGTH), withAttribute(input, 'maxLength'));
 
-    if (!isCheckbox) {
-      this.maybeSynchronize(
-        () => this.state().value(),
-        (value) => (input.value = value as string),
-      );
-    } else {
-      this.maybeSynchronize(
-        () => this.state().value(),
-        (value) => (input.checked = value as boolean),
-      );
+    switch (inputType) {
+      case 'checkbox':
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => ((input as HTMLInputElement).checked = value as boolean),
+        );
+        break;
+      case 'radio':
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => {
+            // Although HTML behavior is to clear the input already, we do this just in case.
+            // It seems like it might be necessary in certain environments (e.g. Domino).
+            (input as HTMLInputElement).checked = input.value === value;
+          },
+        );
+        break;
+      default:
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => {
+            input.value = value as string;
+          },
+        );
+        break;
     }
   }
 
-  // Binding to a Control Value Accessor
+  /**
+   * Binding to a `ControlValueAccessor` based UI control
+   */
   private setupControlValueAccessor(cva: ControlValueAccessor): void {
     cva.registerOnChange((value: T) => this.state().value.set(value));
     cva.registerOnTouched(() => this.state().markAsTouched());
@@ -134,10 +164,28 @@ export class Control<T> {
     }
   }
 
-  // Binding to a custom UI component.
-  private setupCustomUiControl(cmp: FormUiControl<T>) {
-    // Input bindings:
-    this.maybeSynchronize(() => this.state().value(), withInput(cmp.value));
+  /**
+   * Connect to a UI component that implements the control interface.
+   */
+  private setupCustomUiControl(cmp: BaseUiControl) {
+    // Handle the property side of the model binding. How we do this depends on the shape of the
+    // component. There are 2 options:
+    // * it provides a `value` model (most controls that edit a single value)
+    // * it provides a `checked` model with no `value` signal (custom checkbox)
+
+    let cleanupValue: OutputRefSubscription | undefined;
+    if (isFormValueControl(cmp)) {
+      // <custom-input [(value)]="state().value">
+      this.maybeSynchronize(() => this.state().value(), withInput(cmp.value));
+      cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue as T));
+    } else if (isFormCheckboxControl(cmp)) {
+      // <custom-checkbox [(checked)]="state().value" />
+      this.maybeSynchronize(() => this.state().value() as boolean, withInput(cmp.checked));
+      cleanupValue = cmp.checked.subscribe((newValue) => this.state().value.set(newValue as T));
+    } else {
+      throw new Error(`Unknown custom control subtype`);
+    }
+
     this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
@@ -150,8 +198,6 @@ export class Control<T> {
     this.maybeSynchronize(this.propertySource(MAX), withInput(cmp.max));
     this.maybeSynchronize(this.propertySource(MAX_LENGTH), withInput(cmp.maxLength));
 
-    // Output bindings:
-    const cleanupValue = cmp.value.subscribe((newValue) => this.state().value.set(newValue));
     let cleanupTouch: OutputRefSubscription | undefined;
     let cleanupDefaultTouch: (() => void) | undefined;
     if (cmp.touch !== undefined) {
@@ -171,7 +217,7 @@ export class Control<T> {
 
     // Cleanup for output binding subscriptions:
     this.injector.get(DestroyRef).onDestroy(() => {
-      cleanupValue.unsubscribe();
+      cleanupValue?.unsubscribe();
       cleanupTouch?.unsubscribe();
       cleanupDefaultTouch?.();
     });
@@ -179,9 +225,15 @@ export class Control<T> {
 
   private maybeSynchronize<T>(source: () => T, sink: ((value: T) => void) | undefined): void {
     if (!sink) {
-      return;
+      return undefined;
     }
-    effect(() => sink(source()), {injector: this.injector});
+    effect(
+      () => {
+        const value = source();
+        untracked(() => sink(value));
+      },
+      {injector: this.injector},
+    );
   }
 
   private propertySource<T>(key: AggregateProperty<T, any>): () => T | undefined {
@@ -219,20 +271,31 @@ function withAttribute(
   };
 }
 
-function isUiControl<T>(cmp: unknown): cmp is FormUiControl<T> {
-  const castCmp = cmp as FormUiControl<unknown>;
+function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
+  const castCmp = cmp as BaseUiControl;
   return (
-    illegallyIsModelInput(castCmp.value) &&
-    (!castCmp.readonly || illegallyIsSignalInput(castCmp.readonly)) &&
-    (!castCmp.disabled || illegallyIsSignalInput(castCmp.disabled)) &&
-    (!castCmp.errors || illegallyIsSignalInput(castCmp.errors)) &&
-    (!castCmp.valid || illegallyIsSignalInput(castCmp.valid)) &&
-    (!castCmp.touched || illegallyIsSignalInput(castCmp.touched)) &&
-    (!castCmp.touch || isOutputRef(castCmp.touch)) &&
-    (!castCmp.min || illegallyIsSignalInput(castCmp.min)) &&
-    (!castCmp.minLength || illegallyIsSignalInput(castCmp.minLength)) &&
-    (!castCmp.max || illegallyIsSignalInput(castCmp.max)) &&
-    (!castCmp.maxLength || illegallyIsSignalInput(castCmp.maxLength))
+    (isFormValueControl(castCmp) || isFormCheckboxControl(castCmp)) &&
+    (castCmp.readonly === undefined || illegallyIsSignalInput(castCmp.readonly)) &&
+    (castCmp.disabled === undefined || illegallyIsSignalInput(castCmp.disabled)) &&
+    (castCmp.errors === undefined || illegallyIsSignalInput(castCmp.errors)) &&
+    (castCmp.valid === undefined || illegallyIsSignalInput(castCmp.valid)) &&
+    (castCmp.touched === undefined || illegallyIsSignalInput(castCmp.touched)) &&
+    (castCmp.touch === undefined || isOutputRef(castCmp.touch)) &&
+    (castCmp.min === undefined || illegallyIsSignalInput(castCmp.min)) &&
+    (castCmp.minLength === undefined || illegallyIsSignalInput(castCmp.minLength)) &&
+    (castCmp.max === undefined || illegallyIsSignalInput(castCmp.max)) &&
+    (castCmp.maxLength === undefined || illegallyIsSignalInput(castCmp.maxLength))
+  );
+}
+
+function isFormValueControl(cmp: BaseUiControl): cmp is FormValueControl<unknown> {
+  return illegallyIsModelInput((cmp as FormValueControl<unknown>).value);
+}
+
+function isFormCheckboxControl(cmp: BaseUiControl): cmp is FormCheckboxControl {
+  return (
+    illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
+    (cmp as FormCheckboxControl).value === undefined
   );
 }
 
