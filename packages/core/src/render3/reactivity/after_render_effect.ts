@@ -16,10 +16,8 @@ import {
   SIGNAL_NODE,
   type SignalNode,
 } from '../../../primitives/signals';
-
-import {type Signal} from '../reactivity/api';
 import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
-
+import {type Signal} from '../reactivity/api';
 import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
