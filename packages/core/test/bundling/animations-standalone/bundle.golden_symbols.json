@@ -192,6 +192,7 @@
       "OperatorSubscriber",
       "PARAM_REGEX",
       "PARENT",
+      "PARSE_TIME_EXPRESSION_REGEX",
       "PLATFORM_BROWSER_ID",
       "PLATFORM_DESTROY_LISTENERS",
       "PLATFORM_ID",
