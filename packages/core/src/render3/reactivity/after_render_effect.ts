@@ -15,10 +15,11 @@ import {
   SIGNAL,
   SIGNAL_NODE,
   type SignalNode,
+  type EffectCleanupFn,
+  type EffectCleanupRegisterFn,
 } from '../../../primitives/signals';
 
 import {type Signal} from '../reactivity/api';
-import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
 
 import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
