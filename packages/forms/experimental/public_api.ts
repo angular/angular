@@ -20,3 +20,4 @@ export * from './src/api/types';
 export * from './src/api/validators';
 export * from './src/controls/control';
 export * from './src/controls/interop_ng_control';
+export * from './src/api/validation_errors';
