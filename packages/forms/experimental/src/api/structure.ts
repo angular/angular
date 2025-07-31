@@ -21,7 +21,7 @@ import type {
   SchemaFn,
   SchemaOrSchemaFn,
 } from './types';
-import {ValidationError, WithField} from './validation_errors';
+import {stripField, ValidationError, WithField} from './validation_errors';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {
@@ -345,12 +345,31 @@ export async function submit<TValue>(
   markAllAsTouched(node);
   node.submitState.selfSubmitting.set(true);
   try {
-    const errors = (await action(form)) || [];
-    for (const error of errors) {
-      ((error.field?.() as FieldNode) ?? node).submitState.setServerErrors(error);
-    }
+    setServerErrors(node, (await action(form)) ?? []);
   } finally {
     node.submitState.selfSubmitting.set(false);
+  }
+}
+
+/**
+ * Sets a list of server errors to their individual fields.
+ *
+ * @param submittedField The field that was submitted, resuling in the errors.
+ * @param errors The errors to set.
+ */
+function setServerErrors(
+  submittedField: FieldNode,
+  errors: (ValidationError | WithField<ValidationError>)[],
+) {
+  const errorsByField = new Map<FieldNode, ValidationError[]>();
+  for (const error of errors) {
+    const field = (error.field?.() as FieldNode) ?? submittedField;
+    const fieldErrors = errorsByField.get(field) ?? [];
+    errorsByField.set(field, fieldErrors);
+    fieldErrors.push(stripField(error));
+  }
+  for (const [field, fieldErrors] of errorsByField) {
+    field.submitState.serverErrors.set(fieldErrors);
   }
 }
 
