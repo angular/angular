@@ -711,8 +711,8 @@ importers:
         specifier: 7.8.2
         version: 7.8.2
       shiki:
-        specifier: 3.8.1
-        version: 3.8.1
+        specifier: 3.9.0
+        version: 3.9.0
       style-mod:
         specifier: 4.1.2
         version: 4.1.2
@@ -6023,15 +6023,6 @@ packages:
       - chokidar
     dev: false
 
-  /@shikijs/core@3.8.1:
-    resolution: {integrity: sha512-uTSXzUBQ/IgFcUa6gmGShCHr4tMdR3pxUiiWKDm8pd42UKJdYhkAYsAmHX5mTwybQ5VyGDgTjW4qKSsRvGSang==, tarball: https://registry.npmjs.org/@shikijs/core/-/core-3.8.1.tgz}
-    dependencies:
-      '@shikijs/types': 3.8.1
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
-      hast-util-to-html: 9.0.5
-    dev: false
-
   /@shikijs/core@3.9.0:
     resolution: {integrity: sha512-2IpmZV+M17atvV+2qNV+pSzmusS4l3p8fol32kcGEwHQcTn9VSpNnl/N8jY9zvdGrB39Hz1MCebZrtnXr/LSiw==, tarball: https://registry.npmjs.org/@shikijs/core/-/core-3.9.0.tgz}
     dependencies:
@@ -6039,14 +6030,6 @@ packages:
       '@shikijs/vscode-textmate': 10.0.2
       '@types/hast': 3.0.4
       hast-util-to-html: 9.0.5
-    dev: false
-
-  /@shikijs/engine-javascript@3.8.1:
-    resolution: {integrity: sha512-rZRp3BM1llrHkuBPAdYAzjlF7OqlM0rm/7EWASeCcY7cRYZIrOnGIHE9qsLz5TCjGefxBFnwgIECzBs2vmOyKA==, tarball: https://registry.npmjs.org/@shikijs/engine-javascript/-/engine-javascript-3.8.1.tgz}
-    dependencies:
-      '@shikijs/types': 3.8.1
-      '@shikijs/vscode-textmate': 10.0.2
-      oniguruma-to-es: 4.3.3
     dev: false
 
   /@shikijs/engine-javascript@3.9.0:
@@ -6057,24 +6040,11 @@ packages:
       oniguruma-to-es: 4.3.3
     dev: false
 
-  /@shikijs/engine-oniguruma@3.8.1:
-    resolution: {integrity: sha512-KGQJZHlNY7c656qPFEQpIoqOuC4LrxjyNndRdzk5WKB/Ie87+NJCF1xo9KkOUxwxylk7rT6nhlZyTGTC4fCe1g==, tarball: https://registry.npmjs.org/@shikijs/engine-oniguruma/-/engine-oniguruma-3.8.1.tgz}
-    dependencies:
-      '@shikijs/types': 3.8.1
-      '@shikijs/vscode-textmate': 10.0.2
-    dev: false
-
   /@shikijs/engine-oniguruma@3.9.0:
     resolution: {integrity: sha512-bCX7BZGYgKISP6t3pab11eu0rUBzKvWKvS4KBN9fu9maBJM7PWn+Uhsl+5H3Z5lMq0JaCcY/N1oPQJ36eyQHHg==, tarball: https://registry.npmjs.org/@shikijs/engine-oniguruma/-/engine-oniguruma-3.9.0.tgz}
     dependencies:
       '@shikijs/types': 3.9.0
       '@shikijs/vscode-textmate': 10.0.2
-    dev: false
-
-  /@shikijs/langs@3.8.1:
-    resolution: {integrity: sha512-TjOFg2Wp1w07oKnXjs0AUMb4kJvujML+fJ1C5cmEj45lhjbUXtziT1x2bPQb9Db6kmPhkG5NI2tgYW1/DzhUuQ==, tarball: https://registry.npmjs.org/@shikijs/langs/-/langs-3.8.1.tgz}
-    dependencies:
-      '@shikijs/types': 3.8.1
     dev: false
 
   /@shikijs/langs@3.9.0:
@@ -6083,23 +6053,10 @@ packages:
       '@shikijs/types': 3.9.0
     dev: false
 
-  /@shikijs/themes@3.8.1:
-    resolution: {integrity: sha512-Vu3t3BBLifc0GB0UPg2Pox1naTemrrvyZv2lkiSw3QayVV60me1ujFQwPZGgUTmwXl1yhCPW8Lieesm0CYruLQ==, tarball: https://registry.npmjs.org/@shikijs/themes/-/themes-3.8.1.tgz}
-    dependencies:
-      '@shikijs/types': 3.8.1
-    dev: false
-
   /@shikijs/themes@3.9.0:
     resolution: {integrity: sha512-p6UssgDp9moDhkp32Uog/r5XKCGfCm8NfSvunD0tfweetxmCUs525qj0koXq3ldfUGzlMdHooophlw2CtOifew==, tarball: https://registry.npmjs.org/@shikijs/themes/-/themes-3.9.0.tgz}
     dependencies:
       '@shikijs/types': 3.9.0
-    dev: false
-
-  /@shikijs/types@3.8.1:
-    resolution: {integrity: sha512-5C39Q8/8r1I26suLh+5TPk1DTrbY/kn3IdWA5HdizR0FhlhD05zx5nKCqhzSfDHH3p4S0ZefxWd77DLV+8FhGg==, tarball: https://registry.npmjs.org/@shikijs/types/-/types-3.8.1.tgz}
-    dependencies:
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
     dev: false
 
   /@shikijs/types@3.9.0:
@@ -17216,19 +17173,6 @@ packages:
     dependencies:
       execa: 5.1.1
       fast-glob: 3.3.3
-    dev: false
-
-  /shiki@3.8.1:
-    resolution: {integrity: sha512-+MYIyjwGPCaegbpBeFN9+oOifI8CKiKG3awI/6h3JeT85c//H2wDW/xCJEGuQ5jPqtbboKNqNy+JyX9PYpGwNg==, tarball: https://registry.npmjs.org/shiki/-/shiki-3.8.1.tgz}
-    dependencies:
-      '@shikijs/core': 3.8.1
-      '@shikijs/engine-javascript': 3.8.1
-      '@shikijs/engine-oniguruma': 3.8.1
-      '@shikijs/langs': 3.8.1
-      '@shikijs/themes': 3.8.1
-      '@shikijs/types': 3.8.1
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
     dev: false
 
   /shiki@3.9.0:
