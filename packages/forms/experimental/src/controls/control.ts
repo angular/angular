@@ -20,7 +20,9 @@ import {
   OutputEmitterRef,
   OutputRef,
   OutputRefSubscription,
+  reflectComponentType,
   signal,
+  Type,
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
@@ -92,6 +94,8 @@ export class Control<T> {
 
     if (cmp && isBaseUiControl(cmp)) {
       this.setupCustomUiControl(cmp);
+    } else if (cmp && isShadowedControlComponent(cmp)) {
+      return;
     } else if (
       this.el.nativeElement instanceof HTMLInputElement ||
       this.el.nativeElement instanceof HTMLTextAreaElement
@@ -326,6 +330,14 @@ function isFormCheckboxControl(cmp: BaseUiControl): cmp is FormCheckboxControl {
     illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
     (cmp as FormCheckboxControl).value === undefined
   );
+}
+
+/**
+ * Whether `cmp` has a `control` input of its own.
+ */
+function isShadowedControlComponent(cmp: unknown): boolean {
+  const mirror = reflectComponentType((cmp as {}).constructor as Type<unknown>);
+  return mirror?.inputs.some((input) => input.templateName === 'control') ?? false;
 }
 
 function isOutputRef(value: unknown): value is OutputRef<unknown> {
