@@ -8,7 +8,7 @@
 
 import type {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
-import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
+import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../logic_node_2';
 import {FieldPathNode} from '../path_node';
@@ -63,7 +63,7 @@ export class FieldNode implements FieldState<unknown> {
       options.kind === 'root'
         ? new RootFieldNodeStructure(
             this,
-            options.logicPath,
+            options.pathNode,
             options.logic,
             options.fieldManager,
             options.value,
@@ -71,7 +71,7 @@ export class FieldNode implements FieldState<unknown> {
           )
         : new ChildFieldNodeStructure(
             this,
-            options.logicPath,
+            options.pathNode,
             options.logic,
             options.parent,
             options.identityInParent,
@@ -191,14 +191,14 @@ export class FieldNode implements FieldState<unknown> {
   static newRoot<T>(
     fieldManager: FormFieldManager,
     value: WritableSignal<T>,
-    logicPath: FieldPathNode,
+    pathNode: FieldPathNode,
   ): FieldNode {
     return new FieldNode({
       kind: 'root',
       fieldManager,
       value,
-      logicPath,
-      logic: logicPath.logic.build(),
+      pathNode,
+      logic: pathNode.logic.build(),
     });
   }
 
