@@ -6,10 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, model, provideZonelessChangeDetection, signal} from '@angular/core';
+import {
+  Component,
+  Input,
+  input,
+  model,
+  provideZonelessChangeDetection,
+  signal,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form} from '../../src/api/structure';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
+import {Field} from '../../src/api/types';
 import {Control} from '../../src/controls/control';
 
 describe('control directive', () => {
@@ -196,6 +204,29 @@ describe('control directive', () => {
       input.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe(false);
+  });
+
+  it('does not interfere with a component which accepts a control input directly', () => {
+    @Component({
+      selector: 'my-wrapper',
+      template: `{{ control().value() }}`,
+    })
+    class WrapperCmp {
+      // Note: @Input required due to JIT transforms not running in our tests.
+      @Input('control')
+      readonly control = input.required<Field<string>>();
+    }
+
+    @Component({
+      template: `<my-wrapper [control]="f" />`,
+      imports: [WrapperCmp, Control],
+    })
+    class TestCmp {
+      f = form(signal('test'));
+    }
+
+    const el = act(() => TestBed.createComponent(TestCmp)).nativeElement;
+    expect(el.textContent).toBe('test');
   });
 });
 
