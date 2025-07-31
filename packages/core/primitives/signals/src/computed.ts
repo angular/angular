@@ -169,7 +169,7 @@ const COMPUTED_NODE = /* @__PURE__ */ (() => {
       }
 
       node.value = newValue;
-      node.version++;
+      node.__version++;
     },
   };
 })();

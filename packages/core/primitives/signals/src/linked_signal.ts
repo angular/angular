@@ -173,7 +173,7 @@ export const LINKED_SIGNAL_NODE: object = /* @__PURE__ */ (() => {
       }
 
       node.value = newValue;
-      node.version++;
+      node.__version++;
     },
   };
 })();

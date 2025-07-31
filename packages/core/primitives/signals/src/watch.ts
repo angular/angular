@@ -110,7 +110,7 @@ export function createWatch(
       );
     }
 
-    node.dirty = false;
+    node.__dirty = false;
     if (node.hasRun && !consumerPollProducersForChange(node)) {
       return;
     }

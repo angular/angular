@@ -480,14 +480,14 @@ function detectChangesInView(lView: LView, mode: ChangeDetectionMode) {
   shouldRefreshView ||= !!(flags & LViewFlags.RefreshView);
 
   // Refresh views when they have a dirty reactive consumer, regardless of mode.
-  shouldRefreshView ||= !!(consumer?.dirty && consumerPollProducersForChange(consumer));
+  shouldRefreshView ||= !!(consumer?.__dirty && consumerPollProducersForChange(consumer));
 
   shouldRefreshView ||= !!(ngDevMode && isExhaustiveCheckNoChanges());
 
   // Mark the Flags and `ReactiveNode` as not dirty before refreshing the component, so that they
   // can be re-dirtied during the refresh process.
   if (consumer) {
-    consumer.dirty = false;
+    consumer.__dirty = false;
   }
   lView[FLAGS] &= ~(LViewFlags.HasChildViewsToRefresh | LViewFlags.RefreshView);
 

@@ -119,7 +119,7 @@ export const SIGNAL_NODE: SignalNode<unknown> = /* @__PURE__ */ (() => {
 })();
 
 function signalValueChanged<T>(node: SignalNode<T>): void {
-  node.version++;
+  node.__version++;
   producerIncrementEpoch();
   producerNotifyConsumers(node);
   postSignalSetFn?.(node);

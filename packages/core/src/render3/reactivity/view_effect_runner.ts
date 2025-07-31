@@ -20,7 +20,7 @@ export function runEffectsInView(view: LView): void {
   while (tryFlushEffects) {
     let foundDirtyEffect = false;
     for (const effect of view[EFFECTS]) {
-      if (!effect.dirty) {
+      if (!effect.__dirty) {
         continue;
       }
       foundDirtyEffect = true;

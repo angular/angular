@@ -155,7 +155,7 @@ describe('signals', () => {
       // Forcibly increment the version of the source signal. This will cause a mismatch during
       // polling, and will force the derived signal to recompute if polled (which we should observe
       // in this test).
-      sourceNode.version++;
+      sourceNode.__version++;
 
       // Read the derived signal again. This should not recompute (even with the forced version
       // update) as no signals have been set since the last read.

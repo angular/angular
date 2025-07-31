@@ -62,14 +62,14 @@ export function isReactive(value: unknown): value is Reactive {
 }
 
 export const REACTIVE_NODE: ReactiveNode = {
-  version: 0 as Version,
-  lastCleanEpoch: 0 as Version,
-  dirty: false,
-  producers: undefined,
-  producersTail: undefined,
-  consumers: undefined,
-  consumersTail: undefined,
-  recomputing: false,
+  __version: 0 as Version,
+  __lastCleanEpoch: 0 as Version,
+  __dirty: false,
+  __producers: undefined,
+  __producersTail: undefined,
+  __consumers: undefined,
+  __consumersTail: undefined,
+  __recomputing: false,
   consumerAllowSignalWrites: false,
   consumerIsAlwaysLive: false,
   kind: 'unknown',
@@ -107,7 +107,7 @@ export interface ReactiveNode {
    * This is incremented whenever a new value is produced by this node which is not equal to the
    * previous value (by whatever definition of equality is in use).
    */
-  version: Version;
+  __version: Version;
 
   /**
    * Epoch at which this node is verified to be clean.
@@ -115,7 +115,7 @@ export interface ReactiveNode {
    * This allows skipping of some polling operations in the case where no signals have been set
    * since this node was last read.
    */
-  lastCleanEpoch: Version;
+  __lastCleanEpoch: Version;
 
   /**
    * Whether this node (in its consumer capacity) is dirty.
@@ -123,32 +123,32 @@ export interface ReactiveNode {
    * Only live consumers become dirty, when receiving a change notification from a dependency
    * producer.
    */
-  dirty: boolean;
+  __dirty: boolean;
 
   /**
    * Whether this node is currently rebuilding its producer list.
    */
-  recomputing: boolean;
+  __recomputing: boolean;
 
   /**
    * Producers which are dependencies of this consumer.
    */
-  producers: ReactiveLink | undefined;
+  __producers: ReactiveLink | undefined;
 
   /**
    * Points to the last linked list node in the `producers` linked list.
    *
    * When this node is recomputing, this is used to track the producers that we have accessed so far.
    */
-  producersTail: ReactiveLink | undefined;
+  __producersTail: ReactiveLink | undefined;
 
   /**
    * Linked list of consumers of this producer that are "live" (they require push notifications).
    *
    * The length of this list is effectively our reference count for this node.
    */
-  consumers: ReactiveLink | undefined;
-  consumersTail: ReactiveLink | undefined;
+  __consumers: ReactiveLink | undefined;
+  __consumersTail: ReactiveLink | undefined;
 
   /**
    * Whether writes to signals are allowed when this consumer is the `activeConsumer`.
@@ -186,7 +186,7 @@ export interface ReactiveNode {
    *
    * Used in Angular DevTools to identify the kind of signal.
    */
-  kind: string;
+  readonly kind: string;
 }
 
 /**
@@ -208,7 +208,7 @@ export function producerAccessed(node: ReactiveNode): void {
 
   activeConsumer.consumerOnSignalRead(node);
 
-  const prevProducerLink = activeConsumer.producersTail;
+  const prevProducerLink = activeConsumer.__producersTail;
 
   // If the last producer we accessed is the same as the current one, we can skip adding a new
   // link
@@ -217,7 +217,7 @@ export function producerAccessed(node: ReactiveNode): void {
   }
 
   let nextProducerLink: ReactiveLink | undefined = undefined;
-  const isRecomputing = activeConsumer.recomputing;
+  const isRecomputing = activeConsumer.__recomputing;
   if (isRecomputing) {
     // If we're incrementally rebuilding the producers list, we want to check if the next producer
     // in the list is the same as the one we're trying to add.
@@ -225,17 +225,17 @@ export function producerAccessed(node: ReactiveNode): void {
     // If the previous producer is defined, then the next producer is just the one that follows it.
     // Otherwise, we should check the head of the producers list (the first node that we accessed the last time this consumer was run).
     nextProducerLink =
-      prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.producers;
+      prevProducerLink !== undefined ? prevProducerLink.nextProducer : activeConsumer.__producers;
     if (nextProducerLink !== undefined && nextProducerLink.producer === node) {
       // If the next producer is the same as the one we're trying to add, we can just update the
       // last read version, update the tail of the producers list of this rerun, and return.
-      activeConsumer.producersTail = nextProducerLink;
-      nextProducerLink.lastReadVersion = node.version;
+      activeConsumer.__producersTail = nextProducerLink;
+      nextProducerLink.lastReadVersion = node.__version;
       return;
     }
   }
 
-  const prevConsumerLink = node.consumersTail;
+  const prevConsumerLink = node.__consumersTail;
 
   // If the producer we're accessing already has a link to this consumer, we can skip adding a new
   // link. This can short circuit the creation of a new link in the case where the consumer reads alternating ReeactiveNodes
@@ -258,14 +258,14 @@ export function producerAccessed(node: ReactiveNode): void {
     // the producers list, so that we can destroy all of the old links at once.
     nextProducer: nextProducerLink,
     prevConsumer: prevConsumerLink,
-    lastReadVersion: node.version,
+    lastReadVersion: node.__version,
     nextConsumer: undefined,
   };
-  activeConsumer.producersTail = newLink;
+  activeConsumer.__producersTail = newLink;
   if (prevProducerLink !== undefined) {
     prevProducerLink.nextProducer = newLink;
   } else {
-    activeConsumer.producers = newLink;
+    activeConsumer.__producers = newLink;
   }
 
   if (isLive) {
@@ -286,13 +286,13 @@ export function producerIncrementEpoch(): void {
  * Ensure this producer's `version` is up-to-date.
  */
 export function producerUpdateValueVersion(node: ReactiveNode): void {
-  if (consumerIsLive(node) && !node.dirty) {
+  if (consumerIsLive(node) && !node.__dirty) {
     // A live consumer will be marked dirty by producers, so a clean state means that its version
     // is guaranteed to be up-to-date.
     return;
   }
 
-  if (!node.dirty && node.lastCleanEpoch === epoch) {
+  if (!node.__dirty && node.__lastCleanEpoch === epoch) {
     // Even non-live consumers can skip polling if they previously found themselves to be clean at
     // the current epoch, since their dependencies could not possibly have changed (such a change
     // would've increased the epoch).
@@ -316,7 +316,7 @@ export function producerUpdateValueVersion(node: ReactiveNode): void {
  * Propagate a dirty notification to live consumers of this producer.
  */
 export function producerNotifyConsumers(node: ReactiveNode): void {
-  if (node.consumers === undefined) {
+  if (node.__consumers === undefined) {
     return;
   }
 
@@ -325,12 +325,12 @@ export function producerNotifyConsumers(node: ReactiveNode): void {
   inNotificationPhase = true;
   try {
     for (
-      let link: ReactiveLink | undefined = node.consumers;
+      let link: ReactiveLink | undefined = node.__consumers;
       link !== undefined;
       link = link.nextConsumer
     ) {
       const consumer = link.consumer;
-      if (!consumer.dirty) {
+      if (!consumer.__dirty) {
         consumerMarkDirty(consumer);
       }
     }
@@ -348,14 +348,14 @@ export function producerUpdatesAllowed(): boolean {
 }
 
 export function consumerMarkDirty(node: ReactiveNode): void {
-  node.dirty = true;
+  node.__dirty = true;
   producerNotifyConsumers(node);
   node.consumerMarkedDirty?.(node);
 }
 
 export function producerMarkClean(node: ReactiveNode): void {
-  node.dirty = false;
-  node.lastCleanEpoch = epoch;
+  node.__dirty = false;
+  node.__lastCleanEpoch = epoch;
 }
 
 /**
@@ -366,8 +366,8 @@ export function producerMarkClean(node: ReactiveNode): void {
  */
 export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNode | null {
   if (node) {
-    node.producersTail = undefined;
-    node.recomputing = true;
+    node.__producersTail = undefined;
+    node.__recomputing = true;
   }
   return setActiveConsumer(node);
 }
@@ -388,12 +388,12 @@ export function consumerAfterComputation(
     return;
   }
 
-  node.recomputing = false;
+  node.__recomputing = false;
 
   // We've finished incrementally rebuilding the producers list, now if there are any producers
   // that are after producersTail, they are stale and should be removed.
-  const producersTail = node.producersTail as ReactiveLink | undefined;
-  let toRemove = producersTail !== undefined ? producersTail.nextProducer : node.producers;
+  const producersTail = node.__producersTail as ReactiveLink | undefined;
+  let toRemove = producersTail !== undefined ? producersTail.nextProducer : node.__producers;
   if (toRemove !== undefined) {
     if (consumerIsLive(node)) {
       // For each stale link, we first unlink it from the producers list of consumers
@@ -406,7 +406,7 @@ export function consumerAfterComputation(
     if (producersTail !== undefined) {
       producersTail.nextProducer = undefined;
     } else {
-      node.producers = undefined;
+      node.__producers = undefined;
     }
   }
 }
@@ -417,13 +417,13 @@ export function consumerAfterComputation(
  */
 export function consumerPollProducersForChange(node: ReactiveNode): boolean {
   // Poll producers for change.
-  for (let link = node.producers; link !== undefined; link = link.nextProducer) {
+  for (let link = node.__producers; link !== undefined; link = link.nextProducer) {
     const producer = link.producer;
     const seenVersion = link.lastReadVersion;
 
     // First check the versions. A mismatch means that the producer's value is known to have
     // changed since the last time we read it.
-    if (seenVersion !== producer.version) {
+    if (seenVersion !== producer.__version) {
       return true;
     }
 
@@ -433,7 +433,7 @@ export function consumerPollProducersForChange(node: ReactiveNode): boolean {
 
     // Now when we do this check, `producer.version` is guaranteed to be up to date, so if the
     // versions still match then it has not changed since the last time we read it.
-    if (seenVersion !== producer.version) {
+    if (seenVersion !== producer.__version) {
       return true;
     }
   }
@@ -447,17 +447,17 @@ export function consumerPollProducersForChange(node: ReactiveNode): boolean {
 export function consumerDestroy(node: ReactiveNode): void {
   if (consumerIsLive(node)) {
     // Drop all connections from the graph to this node.
-    let link = node.producers;
+    let link = node.__producers;
     while (link !== undefined) {
       link = producerRemoveLiveConsumerLink(link);
     }
   }
 
   // Truncate all the linked lists to drop all connection from this node to the graph.
-  node.producers = undefined;
-  node.producersTail = undefined;
-  node.consumers = undefined;
-  node.consumersTail = undefined;
+  node.__producers = undefined;
+  node.__producersTail = undefined;
+  node.__consumers = undefined;
+  node.__consumersTail = undefined;
 }
 
 /**
@@ -467,20 +467,20 @@ export function consumerDestroy(node: ReactiveNode): void {
  * a live consumer of all of its current producers.
  */
 function producerAddLiveConsumer(node: ReactiveNode, link: ReactiveLink): void {
-  const consumersTail = node.consumersTail;
+  const consumersTail = node.__consumersTail;
   const wasLive = consumerIsLive(node);
   if (consumersTail !== undefined) {
     link.nextConsumer = consumersTail.nextConsumer;
     consumersTail.nextConsumer = link;
   } else {
     link.nextConsumer = undefined;
-    node.consumers = link;
+    node.__consumers = link;
   }
   link.prevConsumer = consumersTail;
-  node.consumersTail = link;
+  node.__consumersTail = link;
   if (!wasLive) {
     for (
-      let link: ReactiveLink | undefined = node.producers;
+      let link: ReactiveLink | undefined = node.__producers;
       link !== undefined;
       link = link.nextProducer
     ) {
@@ -499,14 +499,14 @@ function producerRemoveLiveConsumerLink(link: ReactiveLink): ReactiveLink | unde
   if (nextConsumer !== undefined) {
     nextConsumer.prevConsumer = prevConsumer;
   } else {
-    producer.consumersTail = prevConsumer;
+    producer.__consumersTail = prevConsumer;
   }
   if (prevConsumer !== undefined) {
     prevConsumer.nextConsumer = nextConsumer;
   } else {
-    producer.consumers = nextConsumer;
+    producer.__consumers = nextConsumer;
     if (!consumerIsLive(producer)) {
-      let producerLink = producer.producers;
+      let producerLink = producer.__producers;
       while (producerLink !== undefined) {
         producerLink = producerRemoveLiveConsumerLink(producerLink);
       }
@@ -516,7 +516,7 @@ function producerRemoveLiveConsumerLink(link: ReactiveLink): ReactiveLink | unde
 }
 
 function consumerIsLive(node: ReactiveNode): boolean {
-  return node.consumerIsAlwaysLive || node.consumers !== undefined;
+  return node.consumerIsAlwaysLive || node.__consumers !== undefined;
 }
 
 export function runPostProducerCreatedFn(node: ReactiveNode): void {
@@ -532,9 +532,9 @@ export function setPostProducerCreatedFn(fn: ReactiveHookFn | null): ReactiveHoo
 // While a ReactiveNode is recomputing, it may not have destroyed previous links
 // This allows us to check if a given link will be destroyed by a reactivenode if it were to finish running immediately without accesing any more producers
 function isValidLink(checkLink: ReactiveLink, consumer: ReactiveNode): boolean {
-  const producersTail = consumer.producersTail;
+  const producersTail = consumer.__producersTail;
   if (producersTail !== undefined) {
-    let link = consumer.producers!;
+    let link = consumer.__producers!;
     do {
       if (link === checkLink) {
         return true;

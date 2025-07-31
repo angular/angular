@@ -661,10 +661,10 @@ export const DOCUMENT: InjectionToken<Document>;
 export function effect(effectFn: (onCleanup: EffectCleanupRegisterFn) => void, options?: CreateEffectOptions): EffectRef;
 
 // @public
-export type EffectCleanupFn = () => void;
+export type EffectCleanupFn = EffectCleanupFn_2;
 
 // @public
-export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
+export type EffectCleanupRegisterFn = EffectCleanupRegisterFn_2;
 
 // @public
 export interface EffectRef {

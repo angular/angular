@@ -16,7 +16,7 @@ export interface SchedulableEffect {
   zone: {
     run<T>(fn: () => T): T;
   } | null;
-  dirty: boolean;
+  __dirty: boolean;
 }
 
 /**
@@ -62,7 +62,7 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
   }
 
   schedule(handle: SchedulableEffect): void {
-    if (!handle.dirty) {
+    if (!handle.__dirty) {
       return;
     }
     this.dirtyEffectCount++;
@@ -76,7 +76,7 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
     }
 
     queue.delete(handle);
-    if (handle.dirty) {
+    if (handle.__dirty) {
       this.dirtyEffectCount--;
     }
   }
@@ -123,7 +123,7 @@ export class ZoneAwareEffectScheduler implements EffectScheduler {
   private flushQueue(queue: Set<SchedulableEffect>): boolean {
     let ranOneEffect = false;
     for (const handle of queue) {
-      if (!handle.dirty) {
+      if (!handle.__dirty) {
         continue;
       }
       this.dirtyEffectCount--;

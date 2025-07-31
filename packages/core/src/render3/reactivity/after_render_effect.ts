@@ -102,11 +102,11 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
   phaseFn(this: AfterRenderPhaseEffectNode, previousValue?: unknown): unknown {
     this.sequence.lastPhase = this.phase;
 
-    if (!this.dirty) {
+    if (!this.__dirty) {
       return this.signal;
     }
 
-    this.dirty = false;
+    this.__dirty = false;
     if (this.value !== NOT_SET && !consumerPollProducersForChange(this)) {
       // None of our producers report a change since the last time they were read, so no
       // recomputation of our value is necessary.
@@ -142,7 +142,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
 
     if (this.value === NOT_SET || !this.equal(this.value, newValue)) {
       this.value = newValue;
-      this.version++;
+      this.__version++;
     }
 
     return this.signal;
@@ -196,7 +196,7 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
       node.sequence = this;
       node.phase = phase;
       node.userFn = effectHook;
-      node.dirty = true;
+      node.__dirty = true;
       node.signal = (() => {
         producerAccessed(node);
         return node.value;

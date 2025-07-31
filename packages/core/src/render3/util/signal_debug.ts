@@ -116,7 +116,7 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
-        epoch: consumer.version,
+        epoch: consumer.__version,
         debuggableFn: consumer.computation,
         id,
       });
@@ -125,21 +125,21 @@ function getNodesAndEdgesFromSignalMap(signalMap: ReadonlyMap<ReactiveNode, Reac
         label: consumer.debugName,
         value: consumer.value,
         kind: consumer.kind,
-        epoch: consumer.version,
+        epoch: consumer.__version,
         id,
       });
     } else if (isTemplateEffectNode(consumer)) {
       debugSignalGraphNodes.push({
         label: consumer.debugName ?? consumer.lView?.[HOST]?.tagName?.toLowerCase?.(),
         kind: consumer.kind,
-        epoch: consumer.version,
+        epoch: consumer.__version,
         id,
       });
     } else {
       debugSignalGraphNodes.push({
         label: consumer.debugName,
         kind: consumer.kind,
-        epoch: consumer.version,
+        epoch: consumer.__version,
         id,
       });
     }
@@ -179,7 +179,7 @@ function extractSignalNodesAndEdgesFromRoots(
     }
 
     const producerNodes = [];
-    for (let link = node.producers; link !== undefined; link = link.nextProducer) {
+    for (let link = node.__producers; link !== undefined; link = link.nextProducer) {
       const producer = link.producer;
       producerNodes.push(producer);
     }

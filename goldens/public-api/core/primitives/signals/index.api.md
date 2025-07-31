@@ -5,6 +5,25 @@
 ```ts
 
 // @public (undocumented)
+export const BASE_EFFECT_NODE: Omit<BaseEffectNode, 'fn' | 'destroy' | 'cleanup'>;
+
+// @public (undocumented)
+export interface BaseEffectNode extends ReactiveNode {
+    // (undocumented)
+    cleanup(): void;
+    // (undocumented)
+    cleanupFn: EffectCleanupRegisterFn;
+    // (undocumented)
+    destroy(): void;
+    // (undocumented)
+    fn: (cleanupFn: EffectCleanupRegisterFn) => void;
+    // (undocumented)
+    hasRun: boolean;
+    // (undocumented)
+    run(): void;
+}
+
+// @public (undocumented)
 export type ComputationFn<S, D> = (source: S, previous?: {
     source: S;
     value: D;
@@ -48,6 +67,12 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
+
+// @public
+export type EffectCleanupFn = () => void;
+
+// @public
+export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
@@ -124,15 +149,18 @@ export interface ReactiveNode {
     debugName?: string;
     dirty: boolean;
     kind: string;
-    lastCleanEpoch: Version;
+    _lastCleanEpoch: Version;
     producerMustRecompute(node: unknown): boolean;
     // (undocumented)
     producerRecomputeValue(node: unknown): void;
     producers: ReactiveLink | undefined;
     producersTail: ReactiveLink | undefined;
     recomputing: boolean;
-    version: Version;
+    _version: Version;
 }
+
+// @public (undocumented)
+export function runEffect(node: BaseEffectNode): void;
 
 // @public (undocumented)
 export function runPostProducerCreatedFn(node: ReactiveNode): void;
