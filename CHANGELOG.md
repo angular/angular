@@ -1,3 +1,21 @@
+<a name="20.1.4"></a>
+# 20.1.4 (2025-07-31)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db3c5826ee](https://github.com/angular/angular/commit/db3c5826ee0b52e5b7886087b82990340a34c1ab) | fix | exclude more safe reads expression from 2way-binding ([#62852](https://github.com/angular/angular/pull/62852)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c633b63e56](https://github.com/angular/angular/commit/c633b63e561d7142dd9a1f8631813cc47a169058) | fix | update symbols for new signals api ([#62284](https://github.com/angular/angular/pull/62284)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ab6033979a](https://github.com/angular/angular/commit/ab6033979a3b409738d55d0c01effb378473c05a) | fix | add missing http options allowed in fetch API ([#62881](https://github.com/angular/angular/pull/62881)) |
+| [15670d8417](https://github.com/angular/angular/commit/15670d8417449c5b5f2990209552a1fc61420acb) | fix | propagate plain errors when parsing fails ([#62765](https://github.com/angular/angular/pull/62765)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.3"></a>
 # 20.1.3 (2025-07-23)
 ### core
