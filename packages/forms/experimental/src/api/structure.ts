@@ -364,9 +364,10 @@ function setServerErrors(
   const errorsByField = new Map<FieldNode, ValidationError[]>();
   for (const error of errors) {
     const field = (error.field?.() as FieldNode) ?? submittedField;
-    const fieldErrors = errorsByField.get(field) ?? [];
-    errorsByField.set(field, fieldErrors);
-    fieldErrors.push(stripField(error));
+    if (!errorsByField.has(field)) {
+      errorsByField.set(field, []);
+    }
+    errorsByField.get(field)!.push(stripField(error));
   }
   for (const [field, fieldErrors] of errorsByField) {
     field.submitState.serverErrors.set(fieldErrors);
