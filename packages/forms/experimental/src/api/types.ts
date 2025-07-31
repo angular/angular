@@ -151,7 +151,7 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
       : unknown);
 
 /**
- * The sub-fields that a user can navigate to from a `Feild<TValue>`.
+ * The sub-fields that a user can navigate to from a `Field<TValue>`.
  *
  * @template TValue The type of the data which the parent field is wrapped around.
  */
