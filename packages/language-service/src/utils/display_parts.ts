@@ -211,6 +211,19 @@ export function getTsSymbolDisplayInfo(
     decl === undefined ||
     (!ts.isPropertyDeclaration(decl) &&
       !ts.isMethodDeclaration(decl) &&
+      /**
+       * Support for displaying information about "get" accessor declarations here
+       *
+       * ```ts
+       *    @Component({})
+       *    class BarComponent {
+       *       @Input()
+       *       get foo() { return 'foo' };
+       *    }
+       *
+       * ```
+       */
+      !ts.isGetAccessorDeclaration(decl) &&
       !isNamedClassDeclaration(decl)) ||
     !ts.isIdentifier(decl.name)
   ) {
