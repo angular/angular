@@ -3,7 +3,10 @@ load("//tools:defaults2.bzl", "ts_project")
 ts_project(
     name = "unparenthesized_nullish_coalescing",
     srcs = ["index.ts"],
-    visibility = ["//packages/compiler-cli/src/ngtsc:__subpackages__"],
+    visibility = [
+        "//packages/compiler-cli:__pkg__",
+        "//packages/compiler-cli/src/ngtsc:__subpackages__",
+    ],
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler",

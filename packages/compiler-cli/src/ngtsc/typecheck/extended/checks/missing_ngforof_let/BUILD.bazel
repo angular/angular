@@ -4,6 +4,7 @@ ts_project(
     name = "missing_ngforof_let",
     srcs = ["index.ts"],
     visibility = [
+        "//packages/compiler-cli:__pkg__",
         "//packages/compiler-cli/src/ngtsc:__subpackages__",
         "//packages/compiler-cli/test/ngtsc:__pkg__",
     ],

@@ -1,6 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "extract_types", "ts_config", "ts_project")
+load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
 
 ts_config(
     name = "tsconfig_build",
@@ -58,17 +57,11 @@ esbuild(
     ],
 )
 
-extract_types(
-    name = "api_type_definitions",
-    deps = [":tools"],
-)
-
-pkg_npm(
-    name = "npm_package",
-    srcs = ["README.md"],
-    visibility = ["//packages/localize:__pkg__"],
-    deps = [
-        ":api_type_definitions",
+npm_package(
+    srcs = [
+        "README.md",
         ":bundles",
+        ":tools_types",
     ],
+    visibility = ["//packages/localize:__pkg__"],
 )

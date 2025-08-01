@@ -4,6 +4,7 @@ ts_project(
     name = "skip_hydration_not_static",
     srcs = ["index.ts"],
     visibility = [
+        "//packages/compiler-cli:__pkg__",
         "//packages/compiler-cli/src/ngtsc:__subpackages__",
         "//packages/compiler-cli/test/ngtsc:__pkg__",
     ],
