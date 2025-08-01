@@ -326,8 +326,8 @@ export class LogicContainer {
    */
   addPropertyFactory(prop: Property<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
     if (this.propertyFactories.has(prop)) {
-      // TODO: name of the key?
-      throw new Error(`Can't define data twice for the same key`);
+      // TODO: name of the property?
+      throw new Error(`Can't define value twice for the same Property`);
     }
     this.propertyFactories.set(prop, factory);
   }
