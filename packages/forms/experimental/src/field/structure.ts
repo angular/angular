@@ -262,6 +262,7 @@ export interface ChildFieldNodeOptions {
   readonly logic: LogicNode;
   readonly initialKeyInParent: string;
   readonly identityInParent: TrackingKey | undefined;
+  readonly value: any;
 }
 
 export type FieldNodeOptions = RootFieldNodeOptions | ChildFieldNodeOptions;
@@ -373,6 +374,7 @@ function makeChildrenMapSignal(
             logic: childLogic,
             initialKeyInParent: key,
             identityInParent: trackingId,
+            value: childValue,
           }),
         );
       }

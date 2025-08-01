@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Signal, WritableSignal} from '@angular/core';
+import {signal, Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState, SubmittedStatus} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
@@ -26,6 +26,7 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {FieldValidationState} from './validation';
+import {ControlToFieldConverter, isAbstractControl} from './compat_node';
 
 /**
  * Internal node in the form tree for a given field.
@@ -213,6 +214,15 @@ export class FieldNode implements FieldState<unknown> {
    * Creates a child field node based on the given options.
    */
   private static newChild(options: ChildFieldNodeOptions): FieldNode {
+    if (isAbstractControl(options.value)) {
+      const node = new ControlToFieldConverter(options);
+      return {
+        fieldProxy: () => node,
+        nodeState: node,
+        structure: {children: signal([])},
+      } as unknown as FieldNode;
+    }
+
     return new FieldNode(options);
   }
 }

@@ -38,12 +38,14 @@ export declare namespace PathKind {
      */
     [ɵɵTYPE]: 'root' | 'child' | 'item';
   }
+
   /**
    * The `PathKind` for a `FieldPath` that is a child of another `FieldPath`.
    */
   export interface Child extends PathKind.Root {
     [ɵɵTYPE]: 'child' | 'item';
   }
+
   /**
    * The `PathKind` for a `FieldPath` that is an item in a `FieldPath` array.
    */
@@ -52,7 +54,6 @@ export declare namespace PathKind {
   }
 }
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
-
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  */
@@ -182,6 +183,18 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal indicating whether field value has been changed by user.
    */
   readonly dirty: Signal<boolean>;
+
+  /**
+   * A signal indicating whether a field is hidden.
+   * Note: It doesn't hide the field in the template.
+   * that would have to be done manually.
+   *
+   *   @if(!field.hidden) {
+   *     ...
+   *   }
+   */
+  readonly hidden: Signal<boolean>;
+
   /**
    * A signal indicating whether the field is currently disabled.
    */
@@ -245,11 +258,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * array-valued, for example, this is the index of this field in that array.
    */
   readonly keyInParent: Signal<TKey>;
+
   /**
    * Reads an aggregate property value from the field.
    * @param prop The property to read.
    */
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
+
   /**
    * Reads a property value from the field.
    * @param prop The property key to read.
@@ -260,6 +275,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Sets the touched status of the field to `true`.
    */
   markAsTouched(): void;
+
   /**
    * Sets the dirty status of the field to `true`.
    */
@@ -293,6 +309,8 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
   : TValue extends Record<PropertyKey, any>
     ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
     : {});
+
+export type CompatFieldPath<TValue> = {[ɵɵTYPE]: TValue};
 
 /**
  * Defines logic for a form.
@@ -385,7 +403,7 @@ export interface RootFieldContext<TValue> {
   /** The current field. */
   readonly field: Field<TValue>;
   /** Gets the value of the field represented by the given path. */
-  readonly valueOf: <P>(p: FieldPath<P>) => P;
+  readonly valueOf: <P>(p: FieldPath<P> | CompatFieldPath<P>) => P | number;
   /** Gets the state of the field represented by the given path. */
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */

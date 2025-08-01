@@ -7,7 +7,7 @@
  */
 
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
-import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
+import {CompatFieldPath, Field, FieldContext, FieldPath, FieldState} from '../api/types';
 import {FieldPathNode} from '../path_node';
 import {isArray} from '../util/is_array';
 import {FieldNode} from './node';
@@ -158,5 +158,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
 
   readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
   readonly stateOf = <P>(p: FieldPath<P>) => this.resolve(p)();
-  readonly valueOf = <P>(p: FieldPath<P>) => this.resolve(p)().value();
+  readonly valueOf = <P>(p: FieldPath<P> | CompatFieldPath<P>): P => {
+    return this.resolve(p as unknown as FieldPath<P>)().value();
+  };
 }

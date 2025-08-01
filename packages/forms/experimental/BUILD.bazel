@@ -13,6 +13,7 @@ ng_project(
     deps = [
         "//:node_modules/@standard-schema/spec",
         "//packages/core:core_rjs",
+        "//packages/core/rxjs-interop:rxjs-interop_rjs",
         "//packages/forms:forms_rjs",
     ],
 )

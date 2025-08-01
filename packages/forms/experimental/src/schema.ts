@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FieldPath, SchemaFn, SchemaOrSchemaFn} from './api/types';
+import {FieldPath, PathKind, SchemaFn, SchemaOrSchemaFn} from './api/types';
 import {FieldPathNode} from './path_node';
 
 let currentRoot: FieldPathNode | undefined = undefined;
@@ -75,7 +75,9 @@ export function isSchemaOrSchemaFn(schema: unknown): schema is SchemaOrSchemaFn<
   return schema instanceof SchemaImpl || typeof schema === 'function';
 }
 
-export function assertPathIsCurrent(path: FieldPath<unknown>): void {
+export function assertPathIsCurrent<TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<unknown, TPathKind>,
+): void {
   if (currentRoot !== FieldPathNode.unwrapFieldPath(path).root) {
     throw new Error(`🚨👮 Wrong path! 👮🚨
 

@@ -8,7 +8,6 @@
 
 import {Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
-import {isArray} from './is_array';
 
 /**
  * Creates a writable signal for a specific property on a source writeable signal.
@@ -38,20 +37,19 @@ export function deepSignal<S, K extends keyof S>(
 
   return read;
 }
-
 /**
  * Gets an updated root value to use when setting a value on a deepSignal with the given path.
- * @param sourceValue The current value of the deepSignal's source.
- * @param newPropValue The value being written to the deepSignal's property
+ * @param parentValue The current value of the deepSignal's source.
+ * @param leafValue The value being written to the deepSignal's property
  * @param prop The deepSignal's property key
  * @returns An updated value for the deepSignal's source
  */
-function valueForWrite(sourceValue: unknown, newPropValue: unknown, prop: PropertyKey): unknown {
-  if (isArray(sourceValue)) {
-    const newValue = [...sourceValue];
-    newValue[prop as number] = newPropValue;
-    return newValue;
-  } else {
-    return {...(sourceValue as object), [prop]: newPropValue};
+function valueForWrite(parentValue: unknown, leafValue: unknown, prop: PropertyKey): unknown {
+  if (parentValue instanceof Array) {
+    parentValue = [...parentValue];
+    (parentValue as any)[prop] = leafValue;
+    return parentValue;
   }
+
+  return {...(parentValue as object), [prop]: leafValue};
 }
