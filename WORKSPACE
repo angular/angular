@@ -219,7 +219,7 @@ http_archive(
 
 git_repository(
     name = "devinfra",
-    commit = "73442df90c353b4b777574ffac1ede88ee89ac4d",
+    commit = "d7a36bc7f6042e3408655c9f6534f9a1613ec8f6",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -237,7 +237,7 @@ browser_repositories()
 
 git_repository(
     name = "rules_angular",
-    commit = "8bf9ae3fa3017ec12877908533001daed9c6ce83",
+    commit = "a1b4985620e2b66b45c590ed5ddda1b346b3f098",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
