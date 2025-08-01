@@ -28,6 +28,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph:signal-graph-manager",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-details",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signals-view/signals-details/signals-value-tree",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
