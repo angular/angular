@@ -5,6 +5,24 @@ The Angular CLI provides an experimental unit test system that can use [Vitest](
 IMPORTANT: This experimental unit testing system requires the use of the `application` build system.
 The `application` build system is the default for all newly created projects.
 
+## Installing dependencies
+
+Some packages are required for the new builder to work. In order to install the new packages, run the following command : 
+
+<docs-code language="bash">
+
+npm install vitest jsdom --save-dev
+
+</docs-code>
+
+If no other projects in your workspace use Karma, run the following command to uninstall the corresponding packages :
+
+<docs-code language="bash">
+
+npm uninstall karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter --save-dev
+
+</docs-code>
+
 ## Set up testing
 
 The Angular CLI includes the test system within a new project but must be configured before it can be used.
