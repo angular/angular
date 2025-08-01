@@ -10,6 +10,14 @@ export type ComputationFn<S, D> = (source: S, previous?: {
     value: D;
 }) => D;
 
+// @public (undocumented)
+export const COMPUTED_NODE: Omit<ComputedNode<unknown>, 'computation'>;
+
+// @public (undocumented)
+export type ComputedGetter<T> = (() => T) & {
+    [SIGNAL]: ComputedNode<T>;
+};
+
 // @public
 export interface ComputedNode<T> extends ReactiveNode {
     computation: () => T;
@@ -18,6 +26,9 @@ export interface ComputedNode<T> extends ReactiveNode {
     error: unknown;
     value: T;
 }
+
+// @public
+export const COMPUTING: any;
 
 // @public
 export function consumerAfterComputation(node: ReactiveNode | null, prevConsumer: ReactiveNode | null): void;
@@ -48,6 +59,9 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
+
+// @public
+export const ERRORED: any;
 
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
@@ -184,11 +198,22 @@ export function signalSetFn<T>(node: SignalNode<T>, newValue: T): void;
 // @public (undocumented)
 export function signalUpdateFn<T>(node: SignalNode<T>, updater: (value: T) => T): void;
 
+// @public (undocumented)
+export function throwInvalidWriteToSignalError<T>(node: SignalNode<T>): void;
+
+// @public
+export const UNSET: any;
+
 // @public
 export function untracked<T>(nonReactiveReadsFn: () => T): T;
 
 // @public
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
+
+// @public (undocumented)
+export type Version = number & {
+    __brand: 'Version';
+};
 
 // @public (undocumented)
 export interface Watch {
