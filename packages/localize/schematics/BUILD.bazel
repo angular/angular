@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "copy_to_bin")
+load("//tools:defaults2.bzl", "copy_to_bin", "npm_package")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,11 +18,9 @@ filegroup(
     visibility = ["//packages/localize:__subpackages__"],
 )
 
-pkg_npm(
-    name = "npm_package",
-    srcs = [":package_assets"],
-    validate = False,
-    deps = [
+npm_package(
+    srcs = [
+        ":package_assets",
         "//packages/localize/schematics/ng-add:assets",
     ],
 )

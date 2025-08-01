@@ -1,7 +1,6 @@
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
 load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
-load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "extract_types", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -45,26 +44,15 @@ ts_project(
     deps = ["//packages/zone.js/lib:zone_d_ts"],
 )
 
-extract_types(
-    name = "zone_d_ts",
-    visibility = ["//visibility:private"],
-    deps = [":zone_js"],
-)
-
 generate_rollup_bundle(
     bundles = BUNDLES_ENTRY_POINTS,
 )
 
-pkg_npm(
-    name = "npm_package",
-    package_name = "zone.js",
+npm_package(
     srcs = [
         "CHANGELOG.md",
         "README.md",
         "package.json",
-    ],
-    visibility = ["//visibility:public"],
-    deps = [
         ":LICENSE.wrapped",
         ":LICENSE_copy",
     ] + [
@@ -79,15 +67,10 @@ pkg_npm(
     ] + [
         "//packages/zone.js/fesm2015:" + b + "-es2015.min.dist"
         for b in BUNDLES_ENTRY_POINTS.keys()
-    ] + [":zone_d_ts"],
-)
-
-# TODO(devversion): Temporary early `npm_package` for making this package usable in `modules/`.
-# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
-npm_package(
-    name = "pkg",
-    srcs = [":npm_package"],
-    replace_prefixes = {
-        "npm_package/": "",
-    },
+    ] + [
+        ":zone_js_types",
+        "//packages/zone.js/lib:zone_d_ts_types",
+    ],
+    package = "zone.js",
+    visibility = ["//visibility:public"],
 )
