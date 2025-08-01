@@ -1,0 +1,81 @@
+.user-profile {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.online {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.online .status-dot {
+  background-color: #4caf50;
+}
+
+.offline {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.offline .status-dot {
+  background-color: #f44336;
+}
+
+.away {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.away .status-dot {
+  background-color: #ff9800;
+}
+
+.status-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-btn {
+  background: #1976d2;
+  color: white;
+  border-color: #1976d2;
+}
+
+.toggle-btn:hover {
+  background: #1565c0;
+}
