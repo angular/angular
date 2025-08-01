@@ -13,7 +13,14 @@ import {ValidationError, WithField} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 
-/** Special key which is used to represent a dynamic index in a `FieldPathNode` path. */
+/**
+ * Special key which is used to represent a dynamic logic property in a `FieldPathNode` path.
+ * This property is used to represent logic that applies to every element of some dynamic form data
+ * (i.e. an array).
+ *
+ * For example, a rule like `applyEach(p.myArray, () => { ... })` will add logic to the `DYNAMIC`
+ * property of `p.myArray`.
+ */
 export const DYNAMIC = Symbol();
 
 /** Represents a result that should be ignored because its predicate indicates it is not active. */
