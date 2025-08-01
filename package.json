@@ -41,8 +41,8 @@
     "devtools:build:firefox:release": "pnpm run -s devtools:build:firefox --jobs 4",
     "devtools:test": "bazelisk test --//devtools/projects/shell-browser/src:flag_browser=chrome -- //devtools/...",
     "devtools:test:unit": "bazelisk test -- //devtools/...",
-    "docs": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm ibazel run //adev:build.serve",
-    "docs:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm bazel build //adev:build",
+    "adev": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm ibazel run //adev:build.serve",
+    "adev:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || pnpm bazel build //adev:build",
     "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts",
     "diff-release-package": "tsx --tsconfig=scripts/tsconfig.json scripts/diff-release-package.mts"
   },
