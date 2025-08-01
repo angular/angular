@@ -67,7 +67,11 @@ The `$event` object has the type `AnimationCallbackEvent`. It includes the eleme
 
 IMPORTANT: You **must** call the `animationComplete()` function when using `animate.leave` for Angular to remove the element.
 
-If you don't call `animationComplete()` when using `animate.leave`, Angular calls the function automatically after a four-second delay.
+If you don't call `animationComplete()` when using `animate.leave`, Angular calls the function automatically after a four-second delay. You can configure the duration of the delay by providing the token `MAX_ANIMATION_TIMEOUT` in milliseconds.
+
+```typescript
+  { provide: MAX_ANIMATION_TIMEOUT, useValue: 6000 }
+```
 
 ## Testing
 
