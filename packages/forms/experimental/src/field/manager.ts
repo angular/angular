@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {effect, Injector, untracked} from '@angular/core';
+import {APP_ID, effect, inject, Injector, untracked} from '@angular/core';
 import type {FieldNodeStructure} from './structure';
 
 /**
@@ -17,7 +17,13 @@ import type {FieldNodeStructure} from './structure';
  * destroyed, which is the job of the `FormFieldManager`.
  */
 export class FormFieldManager {
-  constructor(readonly injector: Injector) {}
+  readonly rootName: string;
+  constructor(
+    readonly injector: Injector,
+    rootName: string | undefined,
+  ) {
+    this.rootName = rootName ?? `${this.injector.get(APP_ID)}.form${nextFormId++}`;
+  }
 
   /**
    * Contains all child field structures that have been created as part of the current form.
@@ -73,3 +79,5 @@ export class FormFieldManager {
     }
   }
 }
+
+let nextFormId = 0;

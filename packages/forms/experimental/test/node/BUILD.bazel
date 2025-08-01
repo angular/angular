@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "angular_jasmine_test", "ts_project")
+load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "test_lib",
@@ -21,7 +21,7 @@ ts_project(
 # To run this:
 # yarn bazel test //packages/forms/experimental/test/node:test
 
-angular_jasmine_test(
+zoneless_jasmine_test(
     name = "test",
     data = [
         ":test_lib_rjs",

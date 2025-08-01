@@ -53,4 +53,8 @@ export class FieldPropertyState {
     }
     return this.properties.get(prop)! as Signal<T>;
   }
+
+  has(prop: Property<unknown> | AggregateProperty<unknown, unknown>): boolean {
+    return this.properties.has(prop);
+  }
 }
