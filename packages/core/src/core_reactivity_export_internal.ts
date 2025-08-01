@@ -11,6 +11,14 @@ export {SIGNAL as ɵSIGNAL} from '../primitives/signals';
 export {isSignal, Signal, ValueEqualityFn} from './render3/reactivity/api';
 export {computed, CreateComputedOptions} from './render3/reactivity/computed';
 export {
+  deepSignal as ɵdeepSignal,
+  DeepSignalOptions as ɵDeepSignalOptions,
+} from './render3/reactivity/deep_signal/deep_signal';
+export {
+  structuralSignal as ɵstructuralSignal,
+  StructuralSignalOptions as ɵStructuralSignalOptions,
+} from './render3/reactivity/deep_signal/structural_signal';
+export {
   CreateSignalOptions,
   signal,
   WritableSignal,
