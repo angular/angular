@@ -10,8 +10,8 @@ import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/
 
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
-import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema';
+import {FieldPathNode} from '../schema/path_node';
+import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
 import type {
   Field,
   FieldPath,

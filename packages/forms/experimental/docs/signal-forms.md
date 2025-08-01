@@ -249,7 +249,7 @@ const passwordSchema = schema<ConfirmedPassword>(path => {
 
 ##### `hidden`
 
-`hidden` adds logic to make the field hidden under certain conditions. The logic is specified as a reactive function of the `FieldContext`. The field will be considered hidden when the logic function returns `true`. When a field is hidden it is ignored for the purposes of determining the valid, touched, and dirty states. It is recommended to use the hidden state of the field to drive the rendering of the asociated control in the UI.
+`hidden` adds logic to make the field hidden under certain conditions. The logic is specified as a reactive function of the `FieldContext`. The field will be considered hidden when the logic function returns `true`. When a field is hidden it is ignored for the purposes of determining the valid, touched, and dirty states. It is recommended to use the hidden state of the field to drive the rendering of the associated control in the UI.
 
 ```ts
 const isLoggedIn = signal(false);

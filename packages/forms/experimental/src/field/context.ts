@@ -8,7 +8,7 @@
 
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
-import {FieldPathNode} from '../path_node';
+import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {boundPathDepth} from './resolution';

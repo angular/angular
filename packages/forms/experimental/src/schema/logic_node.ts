@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateProperty, Property} from './api/property';
+import {AggregateProperty, Property} from '../api/property';
 import {
   AsyncValidationResultWithField,
   DisabledReason,
@@ -14,18 +14,9 @@ import {
   LogicFn,
   TreeValidationResultWithField,
   ValidationResult,
-} from './api/types';
-import {ValidationError, WithField} from './api/validation_errors';
-import {setBoundPathDepthForResolution} from './field/resolution';
-import {
-  AbstractLogic,
-  AggregatePropertyMergeLogic,
-  ArrayMergeIgnoreLogic,
-  ArrayMergeLogic,
-  BooleanOrLogic,
-  BoundPredicate,
-  Predicate,
-} from './logic_node';
+} from '../api/types';
+import {setBoundPathDepthForResolution} from '../field/resolution';
+import {BoundPredicate, LogicContainer, Predicate} from './logic';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -264,117 +255,6 @@ class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
 }
 
 /**
- * Container for all the different types of logic that can be applied to a field
- * (disabled, hidden, errors, etc.)
- */
-export class LogicContainer {
-  /** Logic that determines if the field is hidden. */
-  readonly hidden: BooleanOrLogic;
-  /** Logic that determines reasons for the field being disabled. */
-  readonly disabledReasons: ArrayMergeLogic<DisabledReason>;
-  /** Logic that determines if the field is read-only. */
-  readonly readonly: BooleanOrLogic;
-  /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
-  /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, null>;
-  /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', null>;
-  /** A map of aggregate properties to the `AbstractLogic` instances that compute their values. */
-  private readonly aggregateProperties = new Map<
-    AggregateProperty<unknown, unknown>,
-    AbstractLogic<unknown>
-  >();
-  /** A map of property keys to the factory functions that create their values. */
-  private readonly propertyFactories = new Map<
-    Property<unknown>,
-    (ctx: FieldContext<unknown>) => unknown
-  >();
-
-  /**
-   * Constructs a new `Logic` container.
-   * @param predicates An array of predicates that must all be true for the logic
-   *   functions within this container to be active.
-   */
-  constructor(private predicates: ReadonlyArray<BoundPredicate>) {
-    this.hidden = new BooleanOrLogic(predicates);
-    this.disabledReasons = new ArrayMergeLogic(predicates);
-    this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
-    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError>>(predicates);
-    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError> | 'pending'>(
-      predicates,
-    );
-  }
-
-  /**
-   * Gets an iterable of [aggregate property, logic function] pairs.
-   * @returns An iterable of aggregate property entries.
-   */
-  getAggregatePropertyEntries() {
-    return this.aggregateProperties.entries();
-  }
-
-  /**
-   * Gets an iterable of [property, value factory function] pairs.
-   * @returns An iterable of property factory entries.
-   */
-  getPropertyFactoryEntries() {
-    return this.propertyFactories.entries();
-  }
-
-  /**
-   * Retrieves or creates the `AbstractLogic` for a given aggregate property.
-   * @param prop The `AggregateProperty` for which to get the logic.
-   * @returns The `AbstractLogic` associated with the key.
-   */
-  getAggregateProperty<T>(prop: AggregateProperty<unknown, T>): AbstractLogic<T> {
-    if (!this.aggregateProperties.has(prop as AggregateProperty<unknown, unknown>)) {
-      this.aggregateProperties.set(
-        prop as AggregateProperty<unknown, unknown>,
-        new AggregatePropertyMergeLogic(this.predicates, prop),
-      );
-    }
-    return this.aggregateProperties.get(
-      prop as AggregateProperty<unknown, unknown>,
-    )! as AbstractLogic<T>;
-  }
-
-  /**
-   * Adds a data factory function for a given data key.
-   * @param prop The `Property` to associate the factory with.
-   * @param factory The factory function.
-   * @throws If a factory is already defined for the given key.
-   */
-  addPropertyFactory(prop: Property<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
-    if (this.propertyFactories.has(prop)) {
-      // TODO: name of the key?
-      throw new Error(`Can't define data twice for the same key`);
-    }
-    this.propertyFactories.set(prop, factory);
-  }
-
-  /**
-   * Merges logic from another `Logic` instance into this one.
-   * @param other The `Logic` instance to merge from.
-   */
-  mergeIn(other: LogicContainer) {
-    this.hidden.mergeIn(other.hidden);
-    this.disabledReasons.mergeIn(other.disabledReasons);
-    this.readonly.mergeIn(other.readonly);
-    this.syncErrors.mergeIn(other.syncErrors);
-    this.syncTreeErrors.mergeIn(other.syncTreeErrors);
-    this.asyncErrors.mergeIn(other.asyncErrors);
-    for (const [prop, propertyLogic] of other.getAggregatePropertyEntries()) {
-      this.getAggregateProperty(prop).mergeIn(propertyLogic);
-    }
-    for (const [prop, propertyFactory] of other.getPropertyFactoryEntries()) {
-      this.addPropertyFactory(prop, propertyFactory);
-    }
-  }
-}
-
-/**
  * Represents a node in the logic tree, containing all logic applicable
  * to a specific field or path in the form structure.
  * LogicNodes are 1:1 with nodes in the Field tree.
@@ -577,6 +457,18 @@ function createLogic(
   return logic;
 }
 
+/**
+ * Create a bound version of the given predicate to a specific depth in the field tree.
+ * This allows us to unambiguously know which `FieldContext` the predicate function should receive.
+ *
+ * This is of particular concern when a schema is applied recursively to itself. Since the schema is
+ * only compiled once, each nested application adds the same predicate instance. We differentiate
+ * these by recording the depth of the field they're bound to.
+ *
+ * @param predicate The unbound predicate
+ * @param depth The depth of the field the predicate is bound to
+ * @returns A bound predicate
+ */
 function bindLevel(predicate: Predicate, depth: number): BoundPredicate {
   return {...predicate, depth: depth};
 }
