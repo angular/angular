@@ -69,8 +69,8 @@ export class FieldPathNode {
   }
 
   /**
-   * Merges in logic from another path to this one.
-   * @param other The other path to merge in the logic from
+   * Merges in logic from another schema to this one.
+   * @param other The other schema to merge in the logic from
    * @param predicate A predicate indicating when the merged in logic should be active.
    */
   mergeIn(other: SchemaImpl | undefined, predicate?: Predicate) {
