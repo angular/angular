@@ -54,7 +54,7 @@ git fetch upstream main
 git checkout "${MERGED_RELEASE_COMMIT}"
 
 nvm install
-pnpm --immutable
+pnpm install --frozen-lockfile
 ```
 
 Note that while the steps below can technically be done without merging the release PR
