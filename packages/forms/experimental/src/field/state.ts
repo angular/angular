@@ -113,4 +113,13 @@ export class FieldNodeState {
         this.node.logicNode.logic.hidden.compute(this.node.context)) ??
       false,
   );
+
+  readonly name: Signal<string> = computed(() => {
+    const parent = this.node.structure.parent;
+    if (!parent) {
+      return this.node.structure.fieldManager.rootName;
+    }
+
+    return `${parent.name()}.${this.node.structure.keyInParent()}`;
+  });
 }

@@ -16,6 +16,12 @@ export interface FormUiControl<TValue> {
   readonly readonly?: InputSignal<boolean | undefined>;
   readonly valid?: InputSignal<boolean | undefined>;
   readonly touched?: InputSignal<boolean | undefined>;
+  readonly name?: InputSignal<string>;
 
   readonly touch?: OutputRef<void>;
+
+  readonly min?: InputSignal<number | undefined>;
+  readonly minLength?: InputSignal<number | undefined>;
+  readonly max?: InputSignal<number | undefined>;
+  readonly maxLength?: InputSignal<number | undefined>;
 }
