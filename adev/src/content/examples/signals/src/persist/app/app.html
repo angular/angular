@@ -1,0 +1,15 @@
+<article class="container">
+  <h2>Demo: Persisting Data on Load</h2>
+  <p>Click "Fetch New Data". The display will continue to show the old data for 1.5 seconds while the new data is "loading", preventing a flicker to an empty state.</p>
+
+  <button (click)="fetchData()">Fetch New Data</button>
+
+  <section class="result-box">
+    @if (dataResource.isLoading()) {
+      <p>Status: Loading...</p>
+    } @else {
+      <p>Status: Idle</p>
+    }
+    <p>Displayed Data: <strong>{{ displayData() }}</strong></p>
+  </section>
+</article>
