@@ -67,14 +67,19 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options', async () => {
-        await configTestBed({enabled: true, scope: 'foo', updateViaCache: 'all'});
+        await configTestBed({enabled: true, scope: 'foo', updateViaCache: 'all', type: 'classic'});
 
         expect(TestBed.inject(SwRegistrationOptions)).toEqual({
           enabled: true,
           scope: 'foo',
           updateViaCache: 'all',
+          type: 'classic',
         });
-        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {scope: 'foo', updateViaCache: 'all'});
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: 'foo',
+          updateViaCache: 'all',
+          type: 'classic',
+        });
       });
 
       it('can disable the SW', async () => {
@@ -91,6 +96,7 @@ async function waitForReadyToRegister() {
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: undefined,
           updateViaCache: undefined,
+          type: undefined,
         });
       });
 
@@ -101,6 +107,18 @@ async function waitForReadyToRegister() {
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: undefined,
           updateViaCache: 'imports',
+          type: undefined,
+        });
+      });
+
+      it('can set type', async () => {
+        await configTestBed({enabled: true, type: 'module'});
+
+        expect(TestBed.inject(SwUpdate).isEnabled).toBe(true);
+        expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
+          scope: undefined,
+          updateViaCache: undefined,
+          type: 'module',
         });
       });
 
@@ -111,6 +129,7 @@ async function waitForReadyToRegister() {
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: undefined,
           updateViaCache: undefined,
+          type: undefined,
         });
       });
 
@@ -155,17 +174,24 @@ async function waitForReadyToRegister() {
       };
 
       it('sets the registration options (and overwrites those set via `provideServiceWorker()`', async () => {
-        configTestBed({enabled: true, scope: 'provider', updateViaCache: 'imports'});
+        configTestBed({
+          enabled: true,
+          scope: 'provider',
+          updateViaCache: 'imports',
+          type: 'module',
+        });
         await untilStable();
         expect(TestBed.inject(SwRegistrationOptions)).toEqual({
           enabled: true,
           scope: 'provider',
           updateViaCache: 'imports',
+          type: 'module',
         });
         await waitForReadyToRegister();
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: 'provider',
           updateViaCache: 'imports',
+          type: 'module',
         });
       });
 
@@ -186,6 +212,7 @@ async function waitForReadyToRegister() {
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: undefined,
           updateViaCache: undefined,
+          type: undefined,
         });
       });
 
@@ -198,6 +225,7 @@ async function waitForReadyToRegister() {
         expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
           scope: undefined,
           updateViaCache: undefined,
+          type: undefined,
         });
       });
 
@@ -271,6 +299,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -281,6 +310,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -298,6 +328,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -308,6 +339,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -323,6 +355,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -340,6 +373,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -357,6 +391,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -366,6 +401,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         });
 
@@ -381,6 +417,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -397,6 +434,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -413,6 +451,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
@@ -429,6 +468,7 @@ async function waitForReadyToRegister() {
           expect(swRegisterSpy).toHaveBeenCalledWith('sw.js', {
             scope: undefined,
             updateViaCache: undefined,
+            type: undefined,
           });
         }));
 
