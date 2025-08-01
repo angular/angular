@@ -1175,6 +1175,9 @@ export function makeEnvironmentProviders(providers: (Provider | EnvironmentProvi
 export function makeStateKey<T = void>(key: string): StateKey<T>;
 
 // @public
+export const MAX_ANIMATION_TIMEOUT: InjectionToken<number>;
+
+// @public
 export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig;
 
 // @public
