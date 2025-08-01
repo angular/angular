@@ -40,7 +40,6 @@ ng_project(
 )
 
 ng_package(
-    name = "pkg",
     srcs = [
         "package.json",
         "//adev/shared-docs/icons",

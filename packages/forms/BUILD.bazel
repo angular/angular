@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "npm_package")
+load("//tools:defaults2.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -18,7 +18,6 @@ ng_project(
 )
 
 ng_package(
-    name = "npm_package",
     srcs = ["package.json"],
     package = "@angular/forms",
     tags = [
@@ -37,16 +36,6 @@ ng_package(
     deps = [
         ":forms",
     ],
-)
-
-# TODO(devversion): Temporary early `npm_package` for making this package usable in `core/test/bundling`.
-# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
-npm_package(
-    name = "pkg",
-    srcs = [":npm_package"],
-    replace_prefixes = {
-        "npm_package/": "",
-    },
 )
 
 api_golden_test_npm_package(

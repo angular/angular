@@ -13,7 +13,6 @@ ts_project(
 )
 
 ng_package(
-    name = "npm_package",
     srcs = [
         "package.json",
     ],

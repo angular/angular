@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ng_package", "npm_package", "ts_project", "tsec_test")
+load("//tools:defaults2.bzl", "ng_package", "ts_project", "tsec_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -19,7 +19,6 @@ tsec_test(
 )
 
 ng_package(
-    name = "npm_package",
     srcs = [
         "package.json",
     ],
@@ -30,6 +29,7 @@ ng_package(
     tags = [
         "release-with-framework",
     ],
+    use_no_sub = True,
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
@@ -45,16 +45,6 @@ ng_package(
     deps = [
         ":compiler",
     ],
-)
-
-# TODO(devversion): Temporary early `npm_package` for making compiler usable in `rules_angular`.
-# Long-term, `pkg_npm` will be migrated to `npm_package` in general.
-npm_package(
-    name = "pkg",
-    srcs = [":npm_package_nosub"],
-    replace_prefixes = {
-        "npm_package_nosub/": "",
-    },
 )
 
 filegroup(

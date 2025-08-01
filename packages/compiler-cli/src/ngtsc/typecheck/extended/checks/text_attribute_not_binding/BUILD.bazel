@@ -4,6 +4,7 @@ ts_project(
     name = "text_attribute_not_binding",
     srcs = ["index.ts"],
     visibility = [
+        "//packages/compiler-cli:__pkg__",
         "//packages/compiler-cli/src/ngtsc:__subpackages__",
         "//packages/compiler-cli/test/ngtsc:__pkg__",
     ],

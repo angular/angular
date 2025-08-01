@@ -4,6 +4,7 @@ ts_project(
     name = "uninvoked_function_in_text_interpolation",
     srcs = ["index.ts"],
     visibility = [
+        "//packages/compiler-cli:__pkg__",
         "//packages/compiler-cli/src/ngtsc:__subpackages__",
         "//packages/compiler-cli/test/ngtsc:__pkg__",
     ],

@@ -19,7 +19,6 @@ ng_project(
 )
 
 ng_package(
-    name = "npm_package",
     srcs = ["package.json"],
     package = "angular-in-memory-web-api",
     deps = [
