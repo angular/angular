@@ -792,9 +792,12 @@ function conditionallyAnnotateNodePath(
  */
 function componentUsesShadowDomEncapsulation(lView: LView): boolean {
   const instance = lView[CONTEXT];
-  return instance?.constructor
-    ? getComponentDef(instance.constructor)?.encapsulation === ViewEncapsulation.ShadowDom
-    : false;
+  if (!instance?.constructor) return false;
+  const def = getComponentDef(instance.constructor);
+  return (
+    def?.encapsulation === ViewEncapsulation.ShadowDom ||
+    def?.encapsulation === ViewEncapsulation.IsolatedShadowDom
+  );
 }
 
 /**

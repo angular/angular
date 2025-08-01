@@ -1032,7 +1032,7 @@ export const RECOMMENDATIONS: Step[] = [
     level: ApplicationComplexity.Advanced,
     step: 'viewencapsulation native removed',
     action:
-      'The component view encapsulation option `ViewEncapsulation.Native` has been removed. Use `ViewEncapsulation.ShadowDom` instead. `ng update` will migrate you automatically.',
+      'The component view encapsulation option `ViewEncapsulation.Native` has been removed. Use `ViewEncapsulation.ShadowDom` or `ViewEncapsulation.IsolatedShadowDom` instead. `ng update` will migrate you automatically.',
   },
   {
     possibleIn: 1100,
