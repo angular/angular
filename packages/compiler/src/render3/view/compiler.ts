@@ -100,6 +100,9 @@ function baseDirectiveFields(
   if (meta.isSignal) {
     definitionMap.set('signals', o.literal(true));
   }
+  if (meta.boundListenersMarkForCheck === false) {
+    definitionMap.set('boundListenersMarkForCheck', o.literal(false));
+  }
 
   return definitionMap;
 }
@@ -378,6 +381,9 @@ export function createComponentType(meta: R3ComponentMetadata<R3TemplateDependen
   if (meta.isSignal) {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
   }
+  if (meta.boundListenersMarkForCheck) {
+    typeParams.push(o.expressionType(o.literal(meta.boundListenersMarkForCheck)));
+  }
   return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
@@ -479,6 +485,9 @@ export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   // would then be incompatible with v16.0.x framework users.
   if (meta.isSignal) {
     typeParams.push(o.expressionType(o.literal(meta.isSignal)));
+  }
+  if (meta.boundListenersMarkForCheck) {
+    typeParams.push(o.expressionType(o.literal(meta.boundListenersMarkForCheck)));
   }
   return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }

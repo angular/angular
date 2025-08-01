@@ -268,6 +268,7 @@ export type CompilerOptions = {
 export interface Component extends Directive {
     // @deprecated
     animations?: any[];
+    boundListenersMarkForCheck?: boolean;
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
     imports?: (Type<any> | ReadonlyArray<any>)[];
@@ -609,6 +610,8 @@ export abstract class DestroyRef {
 
 // @public
 export interface Directive {
+    // (undocumented)
+    boundListenersMarkForCheck?: boolean;
     exportAs?: string;
     host?: {
         [key: string]: string;

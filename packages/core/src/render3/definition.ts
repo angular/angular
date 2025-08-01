@@ -216,6 +216,8 @@ interface DirectiveDefinition<T> {
    * Whether this directive/component is signal-based.
    */
   signals?: boolean;
+
+  boundListenersMarkForCheck?: boolean;
 }
 
 interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'> {
@@ -307,6 +309,8 @@ interface ComponentDefinition<T> extends Omit<DirectiveDefinition<T>, 'features'
    */
   changeDetection?: ChangeDetectionStrategy;
 
+  boundListenersMarkForCheck?: boolean;
+
   /**
    * Registry of directives, components, and pipes that may be found in this component's view.
    *
@@ -354,6 +358,7 @@ export function ɵɵdefineComponent<T>(
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+      boundListenersMarkForCheck: componentDefinition.boundListenersMarkForCheck ?? true,
       directiveDefs: null!, // assigned in noSideEffects
       pipeDefs: null!, // assigned in noSideEffects
       dependencies: (baseDef.standalone && componentDefinition.dependencies) || null,
@@ -635,6 +640,7 @@ function getNgDirectiveDef<T>(directiveDefinition: DirectiveDefinition<T>): Dire
     exportAs: directiveDefinition.exportAs || null,
     standalone: directiveDefinition.standalone ?? true,
     signals: directiveDefinition.signals === true,
+    boundListenersMarkForCheck: directiveDefinition.boundListenersMarkForCheck ?? true,
     selectors: directiveDefinition.selectors || EMPTY_ARRAY,
     viewQuery: directiveDefinition.viewQuery || null,
     features: directiveDefinition.features || null,

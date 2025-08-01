@@ -141,6 +141,8 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    */
   isSignal?: boolean;
 
+  boundListenersMarkForCheck?: boolean;
+
   /**
    * Additional directives applied to the directive host.
    */
@@ -221,6 +223,8 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    * Defaults to `ChangeDetectionStrategy.Default`.
    */
   changeDetection?: ChangeDetectionStrategy;
+
+  boundListenersMarkForCheck?: boolean;
 
   /**
    * An encapsulation policy for the component's styling.

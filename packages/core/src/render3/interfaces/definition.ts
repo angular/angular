@@ -219,6 +219,8 @@ export interface DirectiveDef<T> {
    */
   readonly signals: boolean;
 
+  readonly boundListenersMarkForCheck: boolean;
+
   /**
    * Factory function used to create a new directive instance. Will be null initially.
    * Populated when the factory is first requested by directive instantiation logic.
