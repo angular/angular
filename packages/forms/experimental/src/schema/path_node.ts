@@ -73,11 +73,9 @@ export class FieldPathNode {
    * @param other The other schema to merge in the logic from
    * @param predicate A predicate indicating when the merged in logic should be active.
    */
-  mergeIn(other: SchemaImpl | undefined, predicate?: Predicate) {
-    if (other !== undefined) {
-      const path = other.compile();
-      this.logic.mergeIn(path.logic, predicate);
-    }
+  mergeIn(other: SchemaImpl, predicate?: Predicate) {
+    const path = other.compile();
+    this.logic.mergeIn(path.logic, predicate);
   }
 
   /** Extracts the underlying path node from the given path proxy. */
