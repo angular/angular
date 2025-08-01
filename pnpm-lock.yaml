@@ -23,7 +23,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular-devkit/core':
         specifier: 20.2.0-next.2
         version: 20.2.0-next.2(chokidar@4.0.3)
@@ -35,7 +35,7 @@ importers:
         version: link:packages/animations
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/cdk':
         specifier: 20.2.0-next.2
         version: 20.2.0-next.2(rxjs@7.8.2)
@@ -275,7 +275,7 @@ importers:
         version: 4.46.2
       rollup-plugin-dts:
         specifier: ^6.1.1
-        version: 6.2.1(rollup@4.46.2)(typescript@5.9.1-rc)
+        version: 6.2.1(rollup@4.46.2)(typescript@5.9.2)
       rollup-plugin-preserve-shebang:
         specifier: ^1.0.1
         version: 1.0.1
@@ -323,13 +323,13 @@ importers:
         version: 2.8.1
       tslint:
         specifier: 6.1.3
-        version: 6.1.3(typescript@5.9.1-rc)
+        version: 6.1.3(typescript@5.9.2)
       tsx:
         specifier: ^4.7.2
         version: 4.20.3
       typescript:
-        specifier: 5.9.1-rc
-        version: 5.9.1-rc
+        specifier: 5.9.2
+        version: 5.9.2
       webtreemap:
         specifier: ^2.0.1
         version: 2.0.1
@@ -402,7 +402,7 @@ importers:
         version: 0.2.6
       '@typescript/vfs':
         specifier: ^1.5.0
-        version: 1.6.1(typescript@5.9.1-rc)
+        version: 1.6.1(typescript@5.9.2)
       '@yarnpkg/lockfile':
         specifier: ^1.1.0
         version: 1.1.0
@@ -459,7 +459,7 @@ importers:
         version: 2.1.0(jasmine-core@5.9.0)(karma-jasmine@5.1.0(karma@6.4.4))(karma@6.4.4)
       karma-sauce-launcher:
         specifier: ^4.3.6
-        version: 4.3.6(encoding@0.1.13)(typescript@5.9.1-rc)
+        version: 4.3.6(encoding@0.1.13)(typescript@5.9.2)
       live-server:
         specifier: ^1.2.2
         version: 1.2.2
@@ -483,16 +483,16 @@ importers:
         version: 0.2.3
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@18.19.121)(typescript@5.9.1-rc)
+        version: 10.9.2(@types/node@18.19.121)(typescript@5.9.2)
       tsec:
         specifier: 0.2.8
-        version: 0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.1-rc)
+        version: 0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.2)
       tslint-eslint-rules:
         specifier: 5.4.0
-        version: 5.4.0(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc)
+        version: 5.4.0(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2)
       tslint-no-toplevel-property-access:
         specifier: 0.0.2
-        version: 0.0.2(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc)
+        version: 0.0.2(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2)
       typed-graphqlify:
         specifier: ^3.1.1
         version: 3.1.6
@@ -501,7 +501,7 @@ importers:
         version: 7.13.0
       vrsource-tslint-rules:
         specifier: 6.0.0
-        version: 6.0.0(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc)
+        version: 6.0.0(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2)
 
   adev:
     dependencies:
@@ -516,13 +516,13 @@ importers:
         version: 5.35.0
       '@angular-devkit/build-angular':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/cdk':
         specifier: 20.2.0-next.2
         version: 20.2.0-next.2(rxjs@7.8.2)
@@ -639,7 +639,7 @@ importers:
         version: 24.1.0
       '@typescript/vfs':
         specifier: 1.6.1
-        version: 1.6.1(typescript@5.9.1-rc)
+        version: 1.6.1(typescript@5.9.2)
       '@webcontainer/api':
         specifier: 1.6.1
         version: 1.6.1
@@ -728,8 +728,8 @@ importers:
         specifier: 2.8.1
         version: 2.8.1
       typescript:
-        specifier: 5.9.1-rc
-        version: 5.9.1-rc
+        specifier: 5.9.2
+        version: 5.9.2
       w3c-keyname:
         specifier: 2.2.8
         version: 2.2.8
@@ -816,7 +816,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -987,7 +987,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -10109,18 +10109,13 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.8.3:
-    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@5.9.0-beta:
     resolution: {integrity: sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.9.1-rc:
-    resolution: {integrity: sha512-pWar+9HGLkLwxu2PX1ItWnWg80r6nZ8qVEyWVRsnlZyZeFkHeR+eCrZ9PcYeVZjdLvcd5p/WgycViI+lsTh2qg==}
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -11048,13 +11043,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)':
+  '@angular-devkit/build-angular@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-next.2(chokidar@4.0.3)(webpack-dev-server@5.2.2(webpack@5.100.2(esbuild@0.25.8)))(webpack@5.100.2(esbuild@0.25.8))
       '@angular-devkit/core': 20.2.0-next.2(chokidar@4.0.3)
-      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11071,7 +11066,7 @@ snapshots:
       '@babel/preset-env': 7.28.0(@babel/core@7.28.0)
       '@babel/runtime': 7.28.2
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 20.2.0-next.2(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8))
+      '@ngtools/webpack': 20.2.0-next.2(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8))
       ansi-colors: 4.1.3
       autoprefixer: 10.4.21(postcss@8.5.6)
       babel-loader: 10.0.0(@babel/core@7.28.0)(webpack@5.100.2(esbuild@0.25.8))
@@ -11094,7 +11089,7 @@ snapshots:
       picomatch: 4.0.3
       piscina: 5.1.3
       postcss: 8.5.6
-      postcss-loader: 8.1.1(postcss@8.5.6)(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8))
+      postcss-loader: 8.1.1(postcss@8.5.6)(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8))
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
       sass: 1.89.2
@@ -11105,7 +11100,7 @@ snapshots:
       terser: 5.43.1
       tree-kill: 1.2.2
       tslib: 2.8.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       webpack: 5.100.2(esbuild@0.25.8)
       webpack-dev-middleware: 7.4.2(webpack@5.100.2(esbuild@0.25.8))
       webpack-dev-server: 5.2.2(webpack@5.100.2(esbuild@0.25.8))
@@ -11138,13 +11133,13 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-angular@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)':
+  '@angular-devkit/build-angular@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(protractor@7.0.0)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-next.2(chokidar@4.0.3)(webpack-dev-server@5.2.2(webpack@5.100.2(esbuild@0.25.8)))(webpack@5.100.2(esbuild@0.25.8))
       '@angular-devkit/core': 20.2.0-next.2(chokidar@4.0.3)
-      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)
+      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11161,7 +11156,7 @@ snapshots:
       '@babel/preset-env': 7.28.0(@babel/core@7.28.0)
       '@babel/runtime': 7.28.2
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 20.2.0-next.2(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8))
+      '@ngtools/webpack': 20.2.0-next.2(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8))
       ansi-colors: 4.1.3
       autoprefixer: 10.4.21(postcss@8.5.6)
       babel-loader: 10.0.0(@babel/core@7.28.0)(webpack@5.100.2(esbuild@0.25.8))
@@ -11184,7 +11179,7 @@ snapshots:
       picomatch: 4.0.3
       piscina: 5.1.3
       postcss: 8.5.6
-      postcss-loader: 8.1.1(postcss@8.5.6)(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8))
+      postcss-loader: 8.1.1(postcss@8.5.6)(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8))
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
       sass: 1.89.2
@@ -11195,7 +11190,7 @@ snapshots:
       terser: 5.43.1
       tree-kill: 1.2.2
       tslib: 2.8.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       webpack: 5.100.2(esbuild@0.25.8)
       webpack-dev-middleware: 7.4.2(webpack@5.100.2(esbuild@0.25.8))
       webpack-dev-server: 5.2.2(webpack@5.100.2(esbuild@0.25.8))
@@ -11265,7 +11260,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)':
+  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.121)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
@@ -11299,7 +11294,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.14
       tslib: 2.8.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       vite: 7.0.6(@types/node@18.19.121)(jiti@1.21.7)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
       watchpack: 2.4.4
     optionalDependencies:
@@ -11321,7 +11316,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.1-rc)(yaml@2.8.0)':
+  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.3)(typescript@5.9.2)(yaml@2.8.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
@@ -11355,7 +11350,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.14
       tslib: 2.8.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       vite: 7.0.6(@types/node@24.1.0)(jiti@1.21.7)(less@4.4.0)(sass@1.89.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
       watchpack: 2.4.4
     optionalDependencies:
@@ -13238,14 +13233,14 @@ snapshots:
       '@types/babel__core': 7.20.5
       '@types/node': 22.17.0
       tinyglobby: 0.2.12
-      typescript: 5.8.3
+      typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
 
-  '@ngtools/webpack@20.2.0-next.2(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8))':
+  '@ngtools/webpack@20.2.0-next.2(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8))':
     dependencies:
       '@angular/compiler-cli': link:packages/compiler-cli
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       webpack: 5.100.2(esbuild@0.25.8)
 
   '@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3':
@@ -14178,9 +14173,9 @@ snapshots:
       '@types/duplexify': 3.6.4
       '@types/node': 18.19.121
 
-  '@types/puppeteer-core@5.4.0(typescript@5.9.1-rc)':
+  '@types/puppeteer-core@5.4.0(typescript@5.9.2)':
     dependencies:
-      '@types/puppeteer': 7.0.4(typescript@5.9.1-rc)
+      '@types/puppeteer': 7.0.4(typescript@5.9.2)
     transitivePeerDependencies:
       - bare-buffer
       - bufferutil
@@ -14188,9 +14183,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@types/puppeteer@7.0.4(typescript@5.9.1-rc)':
+  '@types/puppeteer@7.0.4(typescript@5.9.2)':
     dependencies:
-      puppeteer: 24.15.0(typescript@5.9.1-rc)
+      puppeteer: 24.15.0(typescript@5.9.2)
     transitivePeerDependencies:
       - bare-buffer
       - bufferutil
@@ -14296,10 +14291,10 @@ snapshots:
       '@types/node': 18.19.121
     optional: true
 
-  '@typescript/vfs@1.6.1(typescript@5.9.1-rc)':
+  '@typescript/vfs@1.6.1(typescript@5.9.2)':
     dependencies:
       debug: 4.4.1(supports-color@8.1.1)
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
 
@@ -15742,14 +15737,14 @@ snapshots:
     dependencies:
       layout-base: 2.0.1
 
-  cosmiconfig@9.0.0(typescript@5.9.1-rc):
+  cosmiconfig@9.0.0(typescript@5.9.2):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.0
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
 
   crc-32@1.2.2: {}
 
@@ -18605,11 +18600,11 @@ snapshots:
       karma: 6.4.4
       requirejs: 2.3.7
 
-  karma-sauce-launcher@4.3.6(encoding@0.1.13)(typescript@5.9.1-rc):
+  karma-sauce-launcher@4.3.6(encoding@0.1.13)(typescript@5.9.2):
     dependencies:
       global-agent: 2.2.0
       saucelabs: 9.0.2
-      webdriverio: 6.12.1(encoding@0.1.13)(typescript@5.9.1-rc)
+      webdriverio: 6.12.1(encoding@0.1.13)(typescript@5.9.2)
     transitivePeerDependencies:
       - bare-buffer
       - bufferutil
@@ -20008,9 +20003,9 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-loader@8.1.1(postcss@8.5.6)(typescript@5.9.1-rc)(webpack@5.100.2(esbuild@0.25.8)):
+  postcss-loader@8.1.1(postcss@8.5.6)(typescript@5.9.2)(webpack@5.100.2(esbuild@0.25.8)):
     dependencies:
-      cosmiconfig: 9.0.0(typescript@5.9.1-rc)
+      cosmiconfig: 9.0.0(typescript@5.9.2)
       jiti: 1.21.7
       postcss: 8.5.6
       semver: 7.7.2
@@ -20226,11 +20221,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@24.15.0(typescript@5.9.1-rc):
+  puppeteer@24.15.0(typescript@5.9.2):
     dependencies:
       '@puppeteer/browsers': 2.10.6
       chromium-bidi: 7.2.0(devtools-protocol@0.0.1464554)
-      cosmiconfig: 9.0.0(typescript@5.9.1-rc)
+      cosmiconfig: 9.0.0(typescript@5.9.2)
       devtools-protocol: 0.0.1464554
       puppeteer-core: 24.15.0
       typed-query-selector: 2.12.0
@@ -20605,11 +20600,11 @@ snapshots:
       '@rolldown/binding-win32-ia32-msvc': 1.0.0-beta.29
       '@rolldown/binding-win32-x64-msvc': 1.0.0-beta.29
 
-  rollup-plugin-dts@6.2.1(rollup@4.46.2)(typescript@5.9.1-rc):
+  rollup-plugin-dts@6.2.1(rollup@4.46.2)(typescript@5.9.2):
     dependencies:
       magic-string: 0.30.17
       rollup: 4.46.2
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
     optionalDependencies:
       '@babel/code-frame': 7.27.1
 
@@ -21726,7 +21721,7 @@ snapshots:
 
   ts-dedent@2.2.0: {}
 
-  ts-node@10.9.2(@types/node@18.19.121)(typescript@5.9.1-rc):
+  ts-node@10.9.2(@types/node@18.19.121)(typescript@5.9.2):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -21740,16 +21735,16 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  tsec@0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.1-rc):
+  tsec@0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.2):
     dependencies:
       '@bazel/bazelisk': 1.26.0
       glob: 7.2.3
       minimatch: 3.1.2
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
 
   tslib@1.14.1: {}
 
@@ -21757,20 +21752,20 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tslint-eslint-rules@5.4.0(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc):
+  tslint-eslint-rules@5.4.0(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2):
     dependencies:
       doctrine: 0.7.2
       tslib: 1.9.0
-      tslint: 6.1.3(typescript@5.9.1-rc)
-      tsutils: 3.21.0(typescript@5.9.1-rc)
-      typescript: 5.9.1-rc
+      tslint: 6.1.3(typescript@5.9.2)
+      tsutils: 3.21.0(typescript@5.9.2)
+      typescript: 5.9.2
 
-  tslint-no-toplevel-property-access@0.0.2(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc):
+  tslint-no-toplevel-property-access@0.0.2(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2):
     dependencies:
-      tslint: 6.1.3(typescript@5.9.1-rc)
-      typescript: 5.9.1-rc
+      tslint: 6.1.3(typescript@5.9.2)
+      typescript: 5.9.2
 
-  tslint@6.1.3(typescript@5.9.1-rc):
+  tslint@6.1.3(typescript@5.9.2):
     dependencies:
       '@babel/code-frame': 7.27.1
       builtin-modules: 1.1.1
@@ -21784,20 +21779,20 @@ snapshots:
       resolve: 1.22.10
       semver: 5.7.2
       tslib: 1.14.1
-      tsutils: 2.29.0(typescript@5.9.1-rc)
-      typescript: 5.9.1-rc
+      tsutils: 2.29.0(typescript@5.9.2)
+      typescript: 5.9.2
 
   tsscmp@1.0.6: {}
 
-  tsutils@2.29.0(typescript@5.9.1-rc):
+  tsutils@2.29.0(typescript@5.9.2):
     dependencies:
       tslib: 1.14.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
 
-  tsutils@3.21.0(typescript@5.9.1-rc):
+  tsutils@3.21.0(typescript@5.9.2):
     dependencies:
       tslib: 1.14.1
-      typescript: 5.9.1-rc
+      typescript: 5.9.2
 
   tsx@4.20.3:
     dependencies:
@@ -21905,11 +21900,9 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  typescript@5.8.3: {}
-
   typescript@5.9.0-beta: {}
 
-  typescript@5.9.1-rc: {}
+  typescript@5.9.2: {}
 
   ua-parser-js@0.7.40: {}
 
@@ -22214,10 +22207,10 @@ snapshots:
 
   void-elements@2.0.1: {}
 
-  vrsource-tslint-rules@6.0.0(tslint@6.1.3(typescript@5.9.1-rc))(typescript@5.9.1-rc):
+  vrsource-tslint-rules@6.0.0(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2):
     dependencies:
-      tslint: 6.1.3(typescript@5.9.1-rc)
-      typescript: 5.9.1-rc
+      tslint: 6.1.3(typescript@5.9.2)
+      typescript: 5.9.2
 
   vscode-jsonrpc@8.2.0: {}
 
@@ -22290,9 +22283,9 @@ snapshots:
       got: 11.8.6
       lodash.merge: 4.6.2
 
-  webdriverio@6.12.1(encoding@0.1.13)(typescript@5.9.1-rc):
+  webdriverio@6.12.1(encoding@0.1.13)(typescript@5.9.2):
     dependencies:
-      '@types/puppeteer-core': 5.4.0(typescript@5.9.1-rc)
+      '@types/puppeteer-core': 5.4.0(typescript@5.9.2)
       '@wdio/config': 6.12.1
       '@wdio/logger': 6.10.10
       '@wdio/repl': 6.11.0
