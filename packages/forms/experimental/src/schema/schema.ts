@@ -17,7 +17,7 @@ import {FieldPathNode} from './path_node';
 let currentCompilingNode: FieldPathNode | undefined = undefined;
 
 /**
- * A cache of all schemas compiled under the current root compilaiton. This is used to avoid doing
+ * A cache of all schemas compiled under the current root compilation. This is used to avoid doing
  * extra work when compiling a schema that reuses references to the same sub-schema. For example:
  *
  * ```
@@ -28,7 +28,7 @@ let currentCompilingNode: FieldPathNode | undefined = undefined;
  * });
  * ```
  *
- * This also ensures that we don't go into an infinite loop when compiling a schema that referneces
+ * This also ensures that we don't go into an infinite loop when compiling a schema that references
  * itself.
  *
  * Do not directly add or remove entries from this map, it is a context variable managed by
@@ -43,7 +43,7 @@ export class SchemaImpl {
   constructor(private schemaFn: SchemaFn<unknown>) {}
 
   /**
-   * Compiles this schema within the current root compilation context. If the schema was previoulsy
+   * Compiles this schema within the current root compilation context. If the schema was previously
    * compiled within this context, we reuse the cached FieldPathNode, otherwise we create a new one
    * and cache it in the compilation context.
    */
@@ -58,8 +58,8 @@ export class SchemaImpl {
       currentCompilingNode = path;
       this.schemaFn(path.fieldPathProxy);
     } finally {
-      // Use a try/finally to ensrue we restore the previous root upon completion,
-      // even if there are errors while compiling the shcema.
+      // Use a try/finally to ensure we restore the previous root upon completion,
+      // even if there are errors while compiling the schema.
       currentCompilingNode = prevCompilingNode;
     }
     return path;
@@ -91,7 +91,7 @@ export class SchemaImpl {
       return new SchemaImpl(schema as SchemaFn<unknown>).compile();
     } finally {
       // Use a try/finally to ensure we properly reset the compilation context upon completion,
-      // even if there are errors while compiling the shcema.
+      // even if there are errors while compiling the schema.
       compiledSchemas.clear();
     }
   }

@@ -48,7 +48,7 @@ export class FieldPathNode {
   }
 
   /**
-   * Gets the special path node containig the per-element logic that applies to *all* children paths.
+   * Gets the special path node containing the per-element logic that applies to *all* children paths.
    */
   get element(): FieldPathNode {
     return this.getChild(DYNAMIC);
@@ -56,7 +56,7 @@ export class FieldPathNode {
 
   /**
    * Gets the path node for the given child property key.
-   * Child paths are created autmomatcially on first access if they do not exist already.
+   * Child paths are created automatically on first access if they do not exist already.
    */
   getChild(key: PropertyKey): FieldPathNode {
     if (!this.children.has(key)) {
@@ -80,7 +80,7 @@ export class FieldPathNode {
     }
   }
 
-  /** Extracts the underlyng path node from the given path proxy. */
+  /** Extracts the underlying path node from the given path proxy. */
   static unwrapFieldPath(formPath: FieldPath<unknown>): FieldPathNode {
     return (formPath as any)[PATH] as FieldPathNode;
   }

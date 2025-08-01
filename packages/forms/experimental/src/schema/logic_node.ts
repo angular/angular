@@ -462,10 +462,10 @@ function createLogic(
  * This allows us to unambiguously know which `FieldContext` the predicate function should receive.
  *
  * This is of particular concern when a schema is applied recursively to itself. Since the schema is
- * only compiled once, each nested application adds the same predicate instance. We differntiate
+ * only compiled once, each nested application adds the same predicate instance. We differentiate
  * these by recording the depth of the field they're bound to.
  *
- * @param predicate The unbound predciate
+ * @param predicate The unbound predicate
  * @param depth The depth of the field the predicate is bound to
  * @returns A bound predicate
  */

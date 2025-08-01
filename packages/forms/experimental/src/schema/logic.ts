@@ -13,7 +13,7 @@ import {ValidationError, WithField} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 
-/** Special key which is used to represent a dynamic index in a `FieldLogicNode` path. */
+/** Special key which is used to represent a dynamic index in a `FieldPathNode` path. */
 export const DYNAMIC = Symbol();
 
 /** Represents a result that should be ignored because its predicate indicates it is not active. */
@@ -62,30 +62,30 @@ export interface BoundPredicate extends Predicate {
 
 /**
  * Base class for all logic. It is responsible for combining the results from multiple individual
- * logic functions registered in the schema, and using them to derive the value for some asocated
+ * logic functions registered in the schema, and using them to derive the value for some associated
  * piece of field state.
  */
 export abstract class AbstractLogic<TReturn, TValue = TReturn> {
-  /** The set of logic functions that contribute to the value of the asociated state. */
+  /** The set of logic functions that contribute to the value of the associated state. */
   protected readonly fns: Array<LogicFn<any, TValue | typeof IGNORED>> = [];
 
   constructor(
     /**
-     * A list of predicates that conditionally enable or disabled *all* of the logic functions in
+     * A list of predicates that conditionally enable or disable *all* of the logic functions in
      * this logic instance.
      */
     private predicates: ReadonlyArray<BoundPredicate>,
   ) {}
 
   /**
-   * Computes the value of the asociated field state based on the logic functions and predicates
+   * Computes the value of the associated field state based on the logic functions and predicates
    * registered with this logic instance.
    */
   abstract compute(arg: FieldContext<any>): TReturn;
 
   /**
    * The default value that the associated field state should assume if there are no logic functions
-   * registered by the schema (or if the logic is disabled by a predciate).
+   * registered by the schema (or if the logic is disabled by a predicate).
    */
   abstract get defaultValue(): TReturn;
 
@@ -128,7 +128,7 @@ export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLo
   readonly TElement[],
   TElement | readonly (TElement | TIgnore)[] | TIgnore | undefined
 > {
-  /** Creates an insstance of this class that ignores `null` values. */
+  /** Creates an instance of this class that ignores `null` values. */
   static ignoreNull<TElement>(predicates: ReadonlyArray<BoundPredicate>) {
     return new ArrayMergeIgnoreLogic<TElement, null>(predicates, (e: unknown) => e === null);
   }
