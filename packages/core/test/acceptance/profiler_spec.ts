@@ -486,6 +486,117 @@ describe('profiler', () => {
       ).toBeTrue();
     });
 
+    it('should capture child component creation events when a template error occurs', () => {
+      @Component({selector: 'my-child', template: '{{ error() }}'})
+      class ChildComponent {
+        constructor() {
+          throw new Error('Simulated error');
+        }
+      }
+      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      class MyComponent {}
+
+      expect(() => TestBed.createComponent(MyComponent)).toThrow();
+
+      expect(p.hasEvents(ProfilerEvent.ComponentStart, ProfilerEvent.ComponentEnd)).toBeTrue();
+    });
+
+    it('should capture child component change detection events when a template error occurs', () => {
+      @Component({selector: 'my-child', template: '{{ error() }}'})
+      class ChildComponent {
+        error() {
+          throw new Error('Simulated error');
+        }
+      }
+      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      class MyComponent {}
+
+      const fixture = TestBed.createComponent(MyComponent);
+
+      p.clearEvents();
+
+      expect(() => fixture.detectChanges(false)).toThrow();
+
+      expect(p.hasEvents(ProfilerEvent.ComponentStart, ProfilerEvent.ComponentEnd)).toBeTrue();
+    });
+
+    it('should capture child component change detection events when a template error occurs', () => {
+      @Component({selector: 'my-child', template: '{{ error() }}'})
+      class ChildComponent {
+        error() {
+          throw new Error('Simulated error');
+        }
+      }
+      @Component({selector: 'my-comp', imports: [ChildComponent], template: '<my-child/>'})
+      class MyComponent {}
+
+      TestBed.createComponent(MyComponent);
+
+      p.clearEvents();
+
+      expect(() => TestBed.tick()).toThrow();
+      expect(p.events).toEqual([
+        ProfilerEvent.ChangeDetectionStart,
+        ProfilerEvent.ChangeDetectionSyncStart,
+        ProfilerEvent.ComponentStart,
+        ProfilerEvent.TemplateUpdateStart,
+        ProfilerEvent.TemplateUpdateEnd,
+        ProfilerEvent.ComponentStart,
+        ProfilerEvent.TemplateUpdateStart,
+        ProfilerEvent.TemplateUpdateEnd,
+        ProfilerEvent.ComponentEnd,
+        ProfilerEvent.ComponentEnd,
+        ProfilerEvent.ChangeDetectionSyncEnd,
+        ProfilerEvent.ChangeDetectionEnd,
+      ]);
+    });
+
+    it('should capture host binding events when an error occurs', () => {
+      @Component({selector: 'my-comp', host: {'[a]': 'error()'}, template: ''})
+      class MyComponent {
+        error() {
+          throw new Error('Simulated error');
+        }
+      }
+
+      const fixture = TestBed.createComponent(MyComponent);
+
+      p.clearEvents();
+
+      expect(() => fixture.detectChanges(false)).toThrow();
+
+      expect(
+        p.hasEvents(ProfilerEvent.HostBindingsUpdateEnd, ProfilerEvent.HostBindingsUpdateEnd),
+      ).toBeTrue();
+    });
+
+    it('should capture symmetric tick events when incorrectly called recursively', () => {
+      @Component({selector: 'my-comp', template: '{{ illegalTick() }}'})
+      class MyComponent {
+        illegalTick() {
+          TestBed.tick();
+        }
+      }
+
+      TestBed.createComponent(MyComponent);
+      p.clearEvents();
+
+      expect(() => TestBed.tick()).toThrow();
+
+      expect(p.events).toEqual([
+        ProfilerEvent.ChangeDetectionStart,
+        ProfilerEvent.ChangeDetectionSyncStart,
+        ProfilerEvent.ComponentStart,
+        ProfilerEvent.TemplateUpdateStart,
+        ProfilerEvent.ChangeDetectionStart,
+        ProfilerEvent.ChangeDetectionEnd,
+        ProfilerEvent.TemplateUpdateEnd,
+        ProfilerEvent.ComponentEnd,
+        ProfilerEvent.ChangeDetectionSyncEnd,
+        ProfilerEvent.ChangeDetectionEnd,
+      ]);
+    });
+
     it('should invoke a profiler when host bindings are evaluated', () => {
       @Component({
         selector: 'my-comp',
@@ -527,7 +638,7 @@ describe('profiler', () => {
         template: `
           @defer (on immediate) {
             nothing to see here...
-          } 
+          }
         `,
       })
       class MyComponent {}

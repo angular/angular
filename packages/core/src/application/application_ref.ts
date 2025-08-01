@@ -617,6 +617,7 @@ export class ApplicationRef {
   private tickImpl = (): void => {
     (typeof ngDevMode === 'undefined' || ngDevMode) && warnIfDestroyed(this._destroyed);
     if (this._runningTick) {
+      profiler(ProfilerEvent.ChangeDetectionEnd);
       throw new RuntimeError(
         RuntimeErrorCode.RECURSIVE_APPLICATION_REF_TICK,
         ngDevMode && 'ApplicationRef.tick is called recursively',
@@ -655,8 +656,11 @@ export class ApplicationRef {
     let runs = 0;
     while (this.dirtyFlags !== ApplicationRefDirtyFlags.None && runs++ < MAXIMUM_REFRESH_RERUNS) {
       profiler(ProfilerEvent.ChangeDetectionSyncStart);
-      this.synchronizeOnce();
-      profiler(ProfilerEvent.ChangeDetectionSyncEnd);
+      try {
+        this.synchronizeOnce();
+      } finally {
+        profiler(ProfilerEvent.ChangeDetectionSyncEnd);
+      }
     }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && runs >= MAXIMUM_REFRESH_RERUNS) {
