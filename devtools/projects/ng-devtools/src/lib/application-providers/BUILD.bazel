@@ -1,11 +1,22 @@
 load("//devtools/tools:defaults.bzl", "ng_project")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//devtools:__subpackages__"])
 
 ng_project(
     name = "window",
     srcs = ["window_provider.ts"],
     deps = [
         "//:node_modules/@angular/core",
+    ],
+)
+
+ng_project(
+    name = "settings",
+    srcs = ["settings_provider.ts"],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings_store",
     ],
 )

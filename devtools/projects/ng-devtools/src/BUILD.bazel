@@ -9,5 +9,6 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:settings",
     ],
 )

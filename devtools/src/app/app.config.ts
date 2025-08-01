@@ -12,7 +12,11 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import {provideRouter} from '@angular/router';
-import {ApplicationEnvironment, ApplicationOperations} from '../../projects/ng-devtools';
+import {
+  ApplicationEnvironment,
+  ApplicationOperations,
+  provideSettings,
+} from '../../projects/ng-devtools';
 
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
@@ -45,5 +49,6 @@ export const appConfig: ApplicationConfig = {
     },
     // We simulate a transfer state created by the server-side rendering.
     provideAppInitializer(async () => serializeTransferState()),
+    provideSettings(),
   ],
 };
