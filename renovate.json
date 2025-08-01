@@ -6,7 +6,6 @@
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs pnpm-lock.yaml .npmrc",
       "pnpm install --frozen-lockfile",
-      "pnpm bazel sync --only=repo || true",
       "pnpm bazel run //.github/actions/deploy-docs-site:main.update",
       "pnpm bazel run //packages/common:base_currencies_file.update",
       "pnpm bazel run //packages/common/locales:closure_locale_file.update",
