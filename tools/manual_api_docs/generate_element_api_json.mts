@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {DocEntry, EntryType} from '@angular/compiler-cli/src/ngtsc/docs';
+import type {DocEntry, EntryCollection, EntryType} from '@angular/compiler-cli/src/ngtsc/docs';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
 
@@ -37,11 +37,12 @@ function main() {
   writeFileSync(
     outputFileExecRootRelativePath,
     JSON.stringify({
+      repo: 'angular/angular',
       moduleName: '@angular/core',
       normalizedModuleName: 'angular_core',
       moduleLabel: 'core',
       entries,
-    }),
+    } satisfies EntryCollection),
     {encoding: 'utf8'},
   );
 }

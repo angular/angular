@@ -10,6 +10,7 @@ import type {
   DocEntry,
   DocEntryWithSourceInfo,
   EntryType,
+  EntryCollection,
 } from '@angular/compiler-cli/src/ngtsc/docs';
 import {readFileSync, writeFileSync} from 'fs';
 import {basename, join} from 'path';
@@ -46,11 +47,12 @@ function main() {
   writeFileSync(
     outputFileExecRootRelativePath,
     JSON.stringify({
+      repo: 'angular/angular',
       moduleName: '@angular/core',
       normalizedModuleName: 'angular_core',
       moduleLabel: 'core',
       entries,
-    }),
+    } satisfies EntryCollection),
     {encoding: 'utf8'},
   );
 }
