@@ -221,7 +221,9 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
         // which avoids a search.
         const parentValue = parent.structure.value();
         if (!isArray(parentValue)) {
-          // The parent is no longer an array?
+          // It should not be possible to encounter this error. It would require the parent to
+          // change from an array field to non-array field. However, in the current implementation
+          // a field's parent can never change.
           throw new Error(
             `RuntimeError: orphan field, expected ${getDebugName(parent)} to be an array`,
           );
