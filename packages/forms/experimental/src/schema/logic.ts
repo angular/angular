@@ -319,7 +319,7 @@ export class LogicContainer {
   }
 
   /**
-   * Adds a data factory function for a given data key.
+   * Adds a factory function for a given property.
    * @param prop The `Property` to associate the factory with.
    * @param factory The factory function.
    * @throws If a factory is already defined for the given key.
