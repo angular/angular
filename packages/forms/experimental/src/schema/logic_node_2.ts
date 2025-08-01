@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateProperty, Property} from './api/property';
+import {AggregateProperty, Property} from '../api/property';
 import {
   AsyncValidationResultWithField,
   DisabledReason,
@@ -14,9 +14,9 @@ import {
   LogicFn,
   TreeValidationResultWithField,
   ValidationResult,
-} from './api/types';
-import {ValidationError, WithField} from './api/validation_errors';
-import {setBoundPathDepthForResolution} from './field/resolution';
+} from '../api/types';
+import {ValidationError, WithField} from '../api/validation_errors';
+import {setBoundPathDepthForResolution} from '../field/resolution';
 import {
   AbstractLogic,
   AggregatePropertyMergeLogic,

@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent} from '../schema';
+import {FieldPathNode} from '../schema/path_node';
+import {assertPathIsCurrent} from '../schema/schema';
 import {AggregateProperty, Property} from './property';
 import type {
   FieldContext,

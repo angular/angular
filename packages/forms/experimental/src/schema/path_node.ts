@@ -3,9 +3,9 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
-import {FieldPath} from './api/types';
+import {FieldPath} from '../api/types';
 import {DYNAMIC, Predicate} from './logic_node';
 import {LogicNodeBuilder} from './logic_node_2';
 import type {SchemaImpl} from './schema';
