@@ -37,7 +37,7 @@ export class ServiceWorkerModule {
 
 // @public
 export class SwPush {
-    constructor(sw: NgswCommChannel);
+    constructor(sw?: NgswCommChannel);
     get isEnabled(): boolean;
     readonly messages: Observable<object>;
     readonly notificationClicks: Observable<{
@@ -62,7 +62,7 @@ export class SwPush {
     readonly subscription: Observable<PushSubscription | null>;
     unsubscribe(): Promise<void>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<SwPush, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SwPush, [{ optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<SwPush>;
 }
@@ -77,14 +77,14 @@ export abstract class SwRegistrationOptions {
 
 // @public
 export class SwUpdate {
-    constructor(sw: NgswCommChannel);
+    constructor(sw?: NgswCommChannel);
     activateUpdate(): Promise<boolean>;
     checkForUpdate(): Promise<boolean>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
     readonly versionUpdates: Observable<VersionEvent>;
     // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SwUpdate, [{ optional: true; }]>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<SwUpdate>;
 }
