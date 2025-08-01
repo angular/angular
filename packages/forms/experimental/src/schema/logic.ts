@@ -78,8 +78,8 @@ export abstract class AbstractLogic<TReturn, TValue = TReturn> {
 
   constructor(
     /**
-     * A list of predicates that conditionally enable or disable *all* of the logic functions in
-     * this logic instance.
+     * A list of predicates that conditionally enable all logic in this logic instance.
+     * The logic is only enabled when *all* of the predicates evaluate to true.
      */
     private predicates: ReadonlyArray<BoundPredicate>,
   ) {}
