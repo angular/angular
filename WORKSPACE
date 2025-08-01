@@ -103,7 +103,7 @@ npm_translate_lock(
     ],
     npmrc = "//:.npmrc",
     pnpm_lock = "//:pnpm-lock.yaml",
-    pnpm_version = "10.12.1",
+    pnpm_version = "9.15.9",
     verify_node_modules_ignored = "//:.bazelignore",
 )
 
