@@ -8,7 +8,7 @@
 
 import {Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
-import {isArray} from './is_array';
+import {isArray} from './type_guards';
 
 /**
  * Creates a writable signal for a specific property on a source writeable signal.

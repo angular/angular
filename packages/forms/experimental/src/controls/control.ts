@@ -3,7 +3,7 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {
@@ -30,7 +30,7 @@ import {
   illegallyIsModelInput,
   illegallyIsSignalInput,
   illegallySetComponentInput as illegallySetInputSignal,
-} from '../illegal';
+} from '../util/illegal';
 import {InteropNgControl} from './interop_ng_control';
 
 @Directive({

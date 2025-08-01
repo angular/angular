@@ -10,7 +10,7 @@ import {untracked} from '@angular/core';
 import {AggregateProperty} from './api/property';
 import {type FieldContext, type FieldPath, type LogicFn} from './api/types';
 import type {FieldNode} from './field/node';
-import {isArray} from './util/is_array';
+import {isArray} from './util/type_guards';
 
 /**
  * Special key which is used to represent a dynamic index in a `FieldLogicNode` path.

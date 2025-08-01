@@ -19,7 +19,7 @@ import {DYNAMIC} from '../logic_node';
 import {LogicNode} from '../logic_node_2';
 import type {FieldPathNode} from '../path_node';
 import {deepSignal} from '../util/deep_signal';
-import {isArray} from '../util/is_array';
+import {isArray, isObject} from '../util/type_guards';
 import type {FormFieldManager} from './manager';
 import type {FieldNode} from './node';
 
@@ -271,11 +271,6 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
 
     this.fieldManager.structures.add(this);
   }
-}
-
-/** Check if a value is an object */
-function isObject(data: unknown): data is Record<PropertyKey, unknown> {
-  return typeof data === 'object';
 }
 
 /** Global id used for tracking keys. */

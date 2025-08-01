@@ -7,7 +7,7 @@
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import {type ValidationError} from '../api/validation_errors';
+import {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 
 /**
