@@ -21,7 +21,7 @@ import {isArray} from '../util/type_guards';
  * For example, a rule like `applyEach(p.myArray, () => { ... })` will add logic to the `DYNAMIC`
  * property of `p.myArray`.
  */
-export const DYNAMIC = Symbol();
+export const DYNAMIC: unique symbol = Symbol();
 
 /** Represents a result that should be ignored because its predicate indicates it is not active. */
 const IGNORED = Symbol();
