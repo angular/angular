@@ -1,0 +1,48 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
+import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {AbstractControl} from '@angular/forms';
+import {FieldNode} from '../node';
+import {getInjectorFromOptions} from '../util';
+import {toSignal} from '@angular/core/rxjs-interop';
+import {map} from 'rxjs/operators';
+import {CompatFieldNodeOptions} from './compat_structure';
+
+export class CompatFieldNode extends FieldNode {
+  readonly control: Signal<AbstractControl>;
+
+  constructor(public readonly options: CompatFieldNodeOptions) {
+    super(options);
+    this.control = this.options.control;
+  }
+}
+
+export const getControlStatusSignal = <T>(
+  options: CompatFieldNodeOptions,
+  getValue: (c: AbstractControl) => T,
+) => {
+  return computed(() => {
+    // We get control outside untracked call, so it's actually tracked.
+    const c = options.control();
+    return untracked(() => {
+      return runInInjectionContext(getInjectorFromOptions(options), () =>
+        toSignal(
+          c.statusChanges.pipe(
+            map(() => {
+              return getValue(c);
+            }),
+          ),
+          {
+            initialValue: getValue(c),
+          },
+        ),
+      );
+    })();
+  });
+};

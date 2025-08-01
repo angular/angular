@@ -96,33 +96,37 @@ export class FieldValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(() => {
-    // Short-circuit running validators if validation doesn't apply to this field.
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
+  private readonly rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(
+    () => {
+      // Short-circuit running validators if validation doesn't apply to this field.
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
 
-    return [
-      // TODO: add field in `validateAsync` and remove this map
-      ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
-      // TODO: does it make sense to filter this to errors in this subtree?
-      ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
-    ];
-  });
+      return [
+        // TODO: add field in `validateAsync` and remove this map
+        ...this.node.logicNode.logic.asyncErrors.compute(this.node.context),
+        // TODO: does it make sense to filter this to errors in this subtree?
+        ...(this.node.structure.parent?.validationState.rawAsyncErrors() ?? []),
+      ];
+    },
+  );
 
   /**
    * The asynchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(() => {
-    if (this.shouldSkipValidation()) {
-      return [];
-    }
-    return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.field! === this.node.fieldProxy,
-    ) as Array<WithField<ValidationError> | 'pending'>;
-  });
+  private readonly asyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(
+    () => {
+      if (this.shouldSkipValidation()) {
+        return [];
+      }
+      return this.rawAsyncErrors().filter(
+        (err) => err === 'pending' || err.field! === this.node.fieldProxy,
+      ) as Array<WithField<ValidationError> | 'pending'>;
+    },
+  );
 
   /**
    * The combined set of all errors that currently apply to this field.

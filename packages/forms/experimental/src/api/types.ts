@@ -54,7 +54,6 @@ export declare namespace PathKind {
   }
 }
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
-
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  */
@@ -340,6 +339,8 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
     ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
     : {});
 
+export type CompatFieldPath<TValue> = {[ɵɵTYPE]: TValue};
+
 /**
  * Defines logic for a form.
  *
@@ -431,7 +432,7 @@ export interface RootFieldContext<TValue> {
   /** The current field. */
   readonly field: Field<TValue>;
   /** Gets the value of the field represented by the given path. */
-  readonly valueOf: <P>(p: FieldPath<P>) => P;
+  readonly valueOf: <P>(p: FieldPath<P> | CompatFieldPath<P>) => P | number;
   /** Gets the state of the field represented by the given path. */
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */
