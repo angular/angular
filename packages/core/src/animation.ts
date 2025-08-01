@@ -11,7 +11,7 @@ import {InjectionToken} from './di/injection_token';
  * A [DI token](api/core/InjectionToken) that enables or disables all enter and leave animations.
  */
 export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
-  ngDevMode ? 'AnimationsDisabled' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationsDisabled' : '',
   {
     providedIn: 'root',
     factory: () => false,
@@ -27,12 +27,22 @@ export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
 export type AnimationCallbackEvent = {target: Element; animationComplete: Function};
 
 /**
- * Animation removal functions have a four second long maximum duration timeout.
- * This value mirrors from Chrome's cross document navigation view transition timeout.
- * It's intended to prevent people from accidentally forgetting to call the removal
- * function in their callback.
+ * A [DI token](api/core/InjectionToken) that configures the maximum animation timeout
+ * before element removal. The default value mirrors from Chrome's cross document
+ * navigation view transition timeout. It's intended to prevent people from accidentally
+ * forgetting to call the removal function in their callback. Also serves as a delay
+ * for when stylesheets are pruned.
+ *
+ * @publicApi 20.2
  */
-const MAX_ANIMATION_TIMEOUT = 4000;
+export const MAX_ANIMATION_TIMEOUT = new InjectionToken<number>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'MaxAnimationTimeout' : '',
+  {
+    providedIn: 'root',
+    factory: () => MAX_ANIMATION_TIMEOUT_DEFAULT,
+  },
+);
+const MAX_ANIMATION_TIMEOUT_DEFAULT = 4000;
 
 /**
  * The function type for `animate.enter` and `animate.leave` when they are used with
@@ -144,7 +154,7 @@ export class ElementRegistry {
    *  using the animateFn stored in the registry. The DOM renderer passes in
    *  the removal function to be fired off when the animation finishes.
    */
-  animate(el: Element, removeFn: Function): void {
+  animate(el: Element, removeFn: Function, maxAnimationTimeout: number): void {
     if (!this.outElements.has(el)) return removeFn();
     const details = this.outElements.get(el)!;
     let timeoutId: ReturnType<typeof setTimeout>;
@@ -161,7 +171,7 @@ export class ElementRegistry {
     // this timeout is used to ensure elements actually get removed in the case
     // that the user forgot to call the remove callback. The timeout is cleared
     // in the DOM renderer during the remove child process.
-    timeoutId = setTimeout(remove, MAX_ANIMATION_TIMEOUT);
+    timeoutId = setTimeout(remove, maxAnimationTimeout);
     details.animateFn(remove);
   }
 }
