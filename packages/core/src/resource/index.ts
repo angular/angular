@@ -7,4 +7,4 @@
  */
 
 export * from './api';
-export {resource} from './resource';
+export {resource, setResourceValueThrowsErrors as ɵsetResourceValueThrowsErrors} from './resource';

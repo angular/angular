@@ -28,10 +28,10 @@ ts_project(
     testonly = True,
     srcs = glob(["*_spec.ts"]),
     deps = [
-        "//packages/compiler:compiler_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -39,7 +39,7 @@ jasmine_test(
     name = "test",
     data = [
         ":bundles",
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 

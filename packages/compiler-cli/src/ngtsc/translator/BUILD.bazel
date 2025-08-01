@@ -7,10 +7,10 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/src/ngtsc/imports:imports_rjs",
-        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
-        "//packages/compiler-cli/src/ngtsc/util:util_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/util",
     ],
 )

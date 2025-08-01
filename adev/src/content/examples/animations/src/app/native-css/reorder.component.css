@@ -13,3 +13,17 @@
     transform: translateX(-10px);
   }
 }
+
+.items .item.fade {
+  animation: fade-out 500ms;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

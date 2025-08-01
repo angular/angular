@@ -20,26 +20,26 @@ ng_project(
         "injector-tree.component.html",
     ],
     deps = [
-        ":injector_tree_fns_rjs",
+        ":injector_tree_fns",
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers:injector-providers_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button:docs-ref-button_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/split:split_rjs",
-        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/injector-tree/injector-providers",
+        "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
+        "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":injector_tree_fns_test_lib_rjs",
+        ":injector_tree_fns_test_lib",
     ],
 )
 
@@ -49,8 +49,8 @@ ts_test_library(
         "injector-tree-fns.spec.ts",
     ],
     deps = [
-        ":injector_tree_fns_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":injector_tree_fns",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -58,7 +58,7 @@ ts_project(
     name = "injector_tree_fns",
     srcs = ["injector-tree-fns.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host:tree-visualizer-host_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/protocol",
     ],
 )

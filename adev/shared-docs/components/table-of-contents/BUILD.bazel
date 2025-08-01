@@ -19,9 +19,9 @@ ng_project(
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/components/icon:icon_rjs",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/services",
     ],
 )
 
@@ -40,16 +40,16 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":table-of-contents_rjs",
+        ":table-of-contents",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

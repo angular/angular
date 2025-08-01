@@ -13,7 +13,7 @@ def js_expected_symbol_test(name, bundles_dir, golden, data = [], **kwargs):
     """This test verifies that a set of top level symbols from a javascript file match a gold file.
     """
     all_data = data + [
-        Label("//tools/symbol-extractor:lib_rjs"),
+        Label("//tools/symbol-extractor:lib"),
         bundles_dir,
         golden,
     ]

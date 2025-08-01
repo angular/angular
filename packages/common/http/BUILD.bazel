@@ -15,8 +15,8 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
+        "//packages/common",
+        "//packages/core",
     ],
 )
 
@@ -32,7 +32,7 @@ api_golden_test(
     name = "http_errors",
     data = [
         "//goldens:public-api",
-        "//packages/common/http:http_rjs",
+        "//packages/common/http",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/common/http/errors.api.md",

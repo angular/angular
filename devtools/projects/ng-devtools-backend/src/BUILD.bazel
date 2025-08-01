@@ -6,9 +6,9 @@ ts_project(
     name = "src",
     srcs = ["public-api.ts"],
     deps = [
-        "//devtools/projects/ng-devtools-backend/src/lib:client_event_subscribers_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:lib_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:router_tree_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib",
+        "//devtools/projects/ng-devtools-backend/src/lib:client_event_subscribers",
+        "//devtools/projects/ng-devtools-backend/src/lib:router_tree",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
     ],
 )

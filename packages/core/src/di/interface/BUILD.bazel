@@ -16,14 +16,14 @@ ts_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core/src/interface:interface_rjs",
-        "//packages/core/src/util:util_rjs",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":interface_rjs",
+    target = ":interface",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

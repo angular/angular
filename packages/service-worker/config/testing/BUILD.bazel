@@ -10,7 +10,7 @@ ts_project(
         "*.ts",
     ]),
     deps = [
-        "//packages/service-worker/cli:cli_rjs",
-        "//packages/service-worker/config:config_rjs",
+        "//packages/service-worker/cli",
+        "//packages/service-worker/config",
     ],
 )

@@ -19,7 +19,7 @@ ng_project(
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/forms",
-        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/components/icon",
     ],
 )
 
@@ -35,12 +35,12 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":text-field_rjs",
+        ":text-field",
         "//adev:node_modules/@angular/core",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

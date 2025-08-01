@@ -20,8 +20,8 @@ ng_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core:core_rjs",
-        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
+        "//packages/core",
+        "//packages/core/primitives/dom-navigation",
     ],
 )
 
@@ -54,11 +54,11 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/common/testing:testing_rjs",
-        "//packages/common/upgrade:upgrade_rjs",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+        "//packages/common/upgrade",
     ],
 )
 
@@ -86,7 +86,7 @@ api_golden_test(
     name = "common_errors",
     data = [
         "//goldens:public-api",
-        "//packages/common:common_rjs",
+        "//packages/common",
     ],
     entry_point = "src/errors.d.ts",
     golden = "goldens/public-api/common/errors.api.md",

@@ -9,7 +9,7 @@ create_upgrade_example_targets(
         exclude = ["**/*_spec.ts"],
     ),
     e2e_srcs = glob(["e2e_test/*_spec.ts"]),
-    entry_point = ":module.ts",
+    entry_point = ":module.js",
 )
 
 filegroup(

@@ -4,7 +4,7 @@ load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
 def angular_jasmine_test(name, data = [], fixed_args = [], **kwargs):
     jasmine_test(
         name = name,
-        data = data + ["//tools/testing:node_rjs"],
+        data = data + ["//tools/testing:node"],
         fixed_args = fixed_args + ["--require={root}/tools/testing/node_tests.init.mjs"],
         **kwargs
     )
@@ -12,7 +12,7 @@ def angular_jasmine_test(name, data = [], fixed_args = [], **kwargs):
 def zoneless_jasmine_test(name, data = [], fixed_args = [], **kwargs):
     jasmine_test(
         name = name,
-        data = data + ["//tools/testing:node_zoneless_rjs"],
+        data = data + ["//tools/testing:node_zoneless"],
         fixed_args = fixed_args + ["--require={root}/tools/testing/node_zoneless_tests.init.mjs"],
         **kwargs
     )

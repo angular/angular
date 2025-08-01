@@ -18,7 +18,7 @@ ts_project(
 
 tsec_test(
     name = "tsec_test",
-    target = ":signals_rjs",
+    target = ":signals",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

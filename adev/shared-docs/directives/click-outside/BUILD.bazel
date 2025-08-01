@@ -23,7 +23,7 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":click-outside_rjs",
+        ":click-outside",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
         "//adev:node_modules/@angular/router",
@@ -32,5 +32,5 @@ ts_project(
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

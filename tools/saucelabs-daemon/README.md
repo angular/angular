@@ -10,7 +10,7 @@ If you are having trouble running Saucelabs tests locally you can contact [Joey 
 2. Once you have your environment variables set up, run the setup task in the root of the repo:
 
 ``` bash
-yarn bazel run //tools/saucelabs-daemon/background-service -- <number_of_browsers>
+pnpm bazel run //tools/saucelabs-daemon/background-service -- <number_of_browsers>
 ```
 
 This will start a daemon process that will connect to Saucelabs and provision browsers
@@ -21,7 +21,7 @@ once you start running your first test target.
 For example, `packages/core/test:test_web` becomes `packages/core/test:test_web_saucelabs`.
 
 ```
-yarn bazel test //packages/core/test:test_web_saucelabs
+pnpm bazel test //packages/core/test:test_web_saucelabs
 ```
 
 ## Additional test features

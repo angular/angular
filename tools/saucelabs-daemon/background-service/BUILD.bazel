@@ -11,14 +11,14 @@ ts_project(
         "//:node_modules/@types/selenium-webdriver4",
         "//:node_modules/chalk",
         "//:node_modules/selenium-webdriver4",
-        "//tools/saucelabs-daemon:saucelabs-daemon_rjs",
+        "//tools/saucelabs-daemon",
     ],
 )
 
 js_binary(
     name = "background-service",
     data = [
-        ":background-service_lib_rjs",
+        ":background-service_lib",
         "//:sauce_connect",
     ],
     entry_point = ":cli.js",

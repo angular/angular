@@ -10,7 +10,7 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/@types/jasmine",
-        "//packages/core/testing:testing_rjs",
-        "//packages/upgrade/src/common:common_rjs",
+        "//packages/core/testing",
+        "//packages/upgrade/src/common",
     ],
 )

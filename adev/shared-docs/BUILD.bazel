@@ -28,14 +28,14 @@ ng_project(
         "index.ts",
     ],
     deps = [
-        "//adev/shared-docs/components:components_rjs",
-        "//adev/shared-docs/directives:directives_rjs",
-        "//adev/shared-docs/interfaces:interfaces_rjs",
-        "//adev/shared-docs/pipes:pipes_rjs",
-        "//adev/shared-docs/providers:providers_rjs",
-        "//adev/shared-docs/services:services_rjs",
-        "//adev/shared-docs/testing:testing_rjs",
-        "//adev/shared-docs/utils:utils_rjs",
+        "//adev/shared-docs/components",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/interfaces",
+        "//adev/shared-docs/pipes",
+        "//adev/shared-docs/providers",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
+        "//adev/shared-docs/utils",
     ],
 )
 
@@ -63,6 +63,6 @@ ng_package(
         "//adev/shared-docs:__pkg__",
     ],
     deps = [
-        ":docs_rjs",
+        ":docs",
     ],
 )

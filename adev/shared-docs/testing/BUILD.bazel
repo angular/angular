@@ -9,7 +9,7 @@ ts_project(
     ],
     visibility = ["//adev/shared-docs:__subpackages__"],
     deps = [
-        ":lib_rjs",
+        ":lib",
     ],
 )
 

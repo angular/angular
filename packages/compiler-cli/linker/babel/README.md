@@ -8,5 +8,5 @@ See the [linker package README](../README.md) for more information.
 The unit tests are built and run using Bazel:
 
 ```bash
-yarn bazel test //packages/compiler-cli/linker/babel/test
+pnpm bazel test //packages/compiler-cli/linker/babel/test
 ```

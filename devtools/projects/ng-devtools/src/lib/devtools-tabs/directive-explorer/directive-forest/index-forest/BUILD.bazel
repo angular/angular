@@ -7,7 +7,7 @@ ts_project(
     srcs = ["index.ts"],
     deps = [
         "//:node_modules/@angular/material",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -15,14 +15,14 @@ ts_test_library(
     name = "index_forest_test",
     srcs = glob(["**/*.spec.ts"]),
     deps = [
-        ":index-forest_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":index-forest",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":index_forest_test_rjs",
+        ":index_forest_test",
     ],
 )

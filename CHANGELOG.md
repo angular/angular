@@ -1,3 +1,59 @@
+<a name="20.2.0-next.3"></a>
+# 20.2.0-next.3 (2025-07-31)
+## Deprecations
+### animations
+- @angular/animations
+### core
+- @angular/animations
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9766116cea](https://github.com/angular/angular/commit/9766116cea69607d80144251a599f1cc1b12e02c) | refactor | deprecate the animations package ([#62795](https://github.com/angular/angular/pull/62795)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b25d93f27](https://github.com/angular/angular/commit/5b25d93f27b259098ed968a8a355e9c16867b37b) | fix | exclude more safe reads expression from 2way-binding ([#62852](https://github.com/angular/angular/pull/62852)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c4917074f1](https://github.com/angular/angular/commit/c4917074f1e278ea24948a8810b3d4f306765174) | fix | display proper function in NG8117 message ([#62842](https://github.com/angular/angular/pull/62842)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [92c2d2a006](https://github.com/angular/angular/commit/92c2d2a0065a1d5a7e87fb54a4cd454f21bd8ab9) | fix | update symbols for new signals api ([#62284](https://github.com/angular/angular/pull/62284)) |
+| [320de4e96d](https://github.com/angular/angular/commit/320de4e96d250cad1ce2c9f8c0fa2022da53b734) | refactor | deprecate animations field on component interface ([#62895](https://github.com/angular/angular/pull/62895)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0984b30388](https://github.com/angular/angular/commit/0984b30388ef51dfad66f1228f665b89b73ef3fb) | feat | Add redirected property to HttpResponse and HttpErrorResponse ([#62675](https://github.com/angular/angular/pull/62675)) |
+| [245494ad29](https://github.com/angular/angular/commit/245494ad292ea0b61ad7e314c8913afdcd8ca837) | fix | add missing http options allowed in fetch API ([#62881](https://github.com/angular/angular/pull/62881)) |
+| [1b73c23597](https://github.com/angular/angular/commit/1b73c235977f37ca7fbc5f4be8b194054632352b) | fix | propagate plain errors when parsing fails ([#62765](https://github.com/angular/angular/pull/62765)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b65c3d5e19](https://github.com/angular/angular/commit/b65c3d5e195267dd90b2826d4615ced1328b1709) | feat | Improves storage full detection in data caching ([#62737](https://github.com/angular/angular/pull/62737)) |
+| [6d011687ec](https://github.com/angular/angular/commit/6d011687ec1fa2b8f0211379bb98adc8e02f4e9a) | feat | notify clients about version failures ([#62718](https://github.com/angular/angular/pull/62718)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.1.4"></a>
+# 20.1.4 (2025-07-31)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [db3c5826ee](https://github.com/angular/angular/commit/db3c5826ee0b52e5b7886087b82990340a34c1ab) | fix | exclude more safe reads expression from 2way-binding ([#62852](https://github.com/angular/angular/pull/62852)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c633b63e56](https://github.com/angular/angular/commit/c633b63e561d7142dd9a1f8631813cc47a169058) | fix | update symbols for new signals api ([#62284](https://github.com/angular/angular/pull/62284)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ab6033979a](https://github.com/angular/angular/commit/ab6033979a3b409738d55d0c01effb378473c05a) | fix | add missing http options allowed in fetch API ([#62881](https://github.com/angular/angular/pull/62881)) |
+| [15670d8417](https://github.com/angular/angular/commit/15670d8417449c5b5f2990209552a1fc61420acb) | fix | propagate plain errors when parsing fails ([#62765](https://github.com/angular/angular/pull/62765)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0-next.2"></a>
 # 20.2.0-next.2 (2025-07-23)
 ### compiler

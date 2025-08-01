@@ -9,22 +9,22 @@ ts_project(
         ["**/*.ts"],
     ),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/src/util:util_rjs",
+        "//packages/core",
+        "//packages/core/primitives/signals",
+        "//packages/core/src/util",
     ],
 )
 
 jasmine_test(
     name = "signals",
     data = [
-        ":signals_lib_rjs",
+        ":signals_lib",
     ],
 )
 
 ng_web_test_suite(
     name = "signals_web",
     deps = [
-        ":signals_lib_rjs",
+        ":signals_lib",
     ],
 )

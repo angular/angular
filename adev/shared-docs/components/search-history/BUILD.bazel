@@ -24,9 +24,9 @@ ng_project(
         "//adev:node_modules/@angular/cdk",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/router",
-        "//adev/shared-docs/directives:directives_rjs",
-        "//adev/shared-docs/pipes:pipes_rjs",
-        "//adev/shared-docs/services:services_rjs",
+        "//adev/shared-docs/directives",
+        "//adev/shared-docs/pipes",
+        "//adev/shared-docs/services",
     ],
 )
 
@@ -35,15 +35,15 @@ ts_project(
     testonly = True,
     srcs = ["search-history.component.spec.ts"],
     deps = [
-        ":search-history_rjs",
+        ":search-history",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
-        "//adev/shared-docs/services:services_rjs",
-        "//adev/shared-docs/testing:testing_rjs",
+        "//adev/shared-docs/services",
+        "//adev/shared-docs/testing",
     ],
 )
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

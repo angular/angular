@@ -25,9 +25,9 @@ ts_project(
         "//:node_modules/@types/node",
         "//:node_modules/@types/yargs",
         "//:node_modules/tinyglobby",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/private:private_rjs",
-        "//packages/localize:localize_rjs",
+        "//packages/compiler",
+        "//packages/compiler-cli/private",
+        "//packages/localize",
     ],
 )
 
@@ -54,13 +54,13 @@ esbuild(
     splitting = True,
     target = "node20",
     deps = [
-        ":tools_rjs",
+        ":tools",
     ],
 )
 
 extract_types(
     name = "api_type_definitions",
-    deps = [":tools_rjs"],
+    deps = [":tools"],
 )
 
 pkg_npm(

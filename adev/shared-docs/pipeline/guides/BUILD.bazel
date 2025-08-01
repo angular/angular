@@ -21,7 +21,7 @@ esbuild(
     target = "es2022",
     visibility = ["//visibility:public"],
     deps = [
-        ":index_rjs",
+        ":index",
     ],
 )
 
@@ -44,7 +44,7 @@ esbuild(
     target = "es2022",
     visibility = ["//visibility:public"],
     deps = [
-        ":index_rjs",
+        ":index",
     ],
 )
 
@@ -83,7 +83,7 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":guides_lib_rjs",
+        ":guides_lib",
         "//adev:node_modules/@types/node",
     ],
 )

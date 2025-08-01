@@ -64,7 +64,7 @@ ts_project(
         ],
     ),
     deps = [
-        ":zone_d_ts_rjs",
+        ":zone_d_ts",
         "//:node_modules/@types/jasmine",
         "//:node_modules/@types/node",
         "//:node_modules/rxjs",

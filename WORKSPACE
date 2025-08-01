@@ -68,31 +68,6 @@ rules_js_register_toolchains(
     node_version = NODE_VERSION,
 )
 
-# Download npm dependencies.
-load("@build_bazel_rules_nodejs//:index.bzl", "yarn_install")
-load("//integration:npm_package_archives.bzl", "npm_package_archives")
-
-yarn_install(
-    name = "npm",
-    # Note that we add the postinstall scripts here so that the dependencies are re-installed
-    # when the postinstall patches are modified.
-    data = [
-        YARN_LABEL,
-        "//:.yarnrc",
-        "//:tools/npm-patches/@angular+ng-dev+0.0.0-a6dcd24107d12114198251ee5d20cda814a1986a.patch",
-        "//:tools/npm-patches/dagre-d3-es+7.0.11.patch",
-        "//tools:postinstall-patches.js",
-    ],
-    # Currently disabled due to:
-    #  1. Missing Windows support currently.
-    #  2. Incompatibilites with the `ts_library` rule.
-    exports_directories_only = False,
-    manual_build_file_contents = npm_package_archives(),
-    package_json = "//:package.json",
-    yarn = YARN_LABEL,
-    yarn_lock = "//:yarn.lock",
-)
-
 load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 
 npm_translate_lock(
@@ -101,6 +76,7 @@ npm_translate_lock(
         "//:.pnpmfile.cjs",
         "//:package.json",
         "//:pnpm-workspace.yaml",
+        "//:tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
         "//adev:package.json",
         "//adev/shared-docs:package.json",
         "//adev/shared-docs/pipeline/api-gen:package.json",
@@ -121,14 +97,14 @@ npm_translate_lock(
         "//packages/platform-browser-dynamic:package.json",
         "//packages/platform-server:package.json",
         "//packages/router:package.json",
+        "//packages/service-worker:package.json",
         "//packages/upgrade:package.json",
         "//tools/bazel/rules_angular_store:package.json",
     ],
     npmrc = "//:.npmrc",
     pnpm_lock = "//:pnpm-lock.yaml",
-    update_pnpm_lock = True,
+    pnpm_version = "10.12.1",
     verify_node_modules_ignored = "//:.bazelignore",
-    yarn_lock = "//:yarn.lock",
 )
 
 load("@npm2//:repositories.bzl", "npm_repositories")
@@ -183,12 +159,6 @@ http_archive(
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 
 web_test_repositories()
-
-load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
-
-esbuild_repositories(
-    npm_repository = "npm",
-)
 
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
@@ -246,21 +216,9 @@ http_archive(
     url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
 )
 
-yarn_install(
-    name = "npm_ts_versions",
-    data = [
-        YARN_LABEL,
-        "//:.yarnrc",
-    ],
-    exports_directories_only = False,
-    package_json = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:package.json",
-    yarn = YARN_LABEL,
-    yarn_lock = "//packages/core/schematics/migrations/signal-migration/test/ts-versions:yarn.lock",
-)
-
 git_repository(
     name = "devinfra",
-    commit = "39c70c3c8c63165bc2df0efc7dcb3b3287b69685",
+    commit = "4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30",
     remote = "https://github.com/angular/dev-infra.git",
 )
 

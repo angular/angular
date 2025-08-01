@@ -9,9 +9,9 @@ ng_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 

@@ -14,6 +14,7 @@ import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/com
 
 import {migrateFile} from './migration';
 import {MigrationOptions} from './analysis';
+import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 
 interface Options extends MigrationOptions {
   path: string;
@@ -21,12 +22,10 @@ interface Options extends MigrationOptions {
 
 export function migrate(options: Options): Rule {
   return async (tree: Tree) => {
+    const {buildPaths, testPaths} = await getProjectTsConfigPaths(tree);
     const basePath = process.cwd();
+    const allPaths = [...buildPaths, ...testPaths];
     const pathToMigrate = normalizePath(join(basePath, options.path));
-    let allPaths = [];
-    if (pathToMigrate.trim() !== '') {
-      allPaths.push(pathToMigrate);
-    }
 
     if (!allPaths.length) {
       throw new SchematicsException(

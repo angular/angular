@@ -8,22 +8,22 @@ ts_project(
     visibility = ["//:__pkg__"],
     deps = [
         "//:node_modules/rxjs",
-        "//packages/animations/browser:browser_rjs",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/forms:forms_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/animations/browser",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )
 
@@ -39,6 +39,6 @@ ng_web_test_suite(
         "fixme-saucelabs",
     ],
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

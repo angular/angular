@@ -37,7 +37,7 @@ import {DestroyRef} from '../linker/destroy_ref';
  *
  * This internal flag is being used to gradually roll out this behavior.
  */
-const RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = true;
+let RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = true;
 
 /**
  * Constructs a `Resource` that projects a reactive request to an asynchronous operation defined by
@@ -81,6 +81,16 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     options.injector ?? inject(Injector),
     RESOURCE_VALUE_THROWS_ERRORS_DEFAULT,
   );
+}
+
+/**
+ * Private helper function to set the default behavior of `Resource.value()` when the resource is
+ * in the error state.
+ *
+ * This function is intented to be temporary to help migrate G3 code to the new throwing behavior.
+ */
+export function setResourceValueThrowsErrors(value: boolean): void {
+  RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = value;
 }
 
 type ResourceInternalStatus = 'idle' | 'loading' | 'resolved' | 'local';

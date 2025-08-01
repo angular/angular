@@ -31,9 +31,6 @@ def _extract_api_to_json(ctx):
     args.add(json_output.path)
 
     # Pass the import path map
-    # TODO: consider module_mappings_aspect to deal with path mappings instead of manually
-    # specifying them
-    # https://github.com/bazelbuild/rules_nodejs/blob/5.x/internal/linker/link_node_modules.bzl#L236
     path_map = {}
     for target, path in ctx.attr.import_map.items():
         files = target.files.to_list()

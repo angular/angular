@@ -411,6 +411,56 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should only migrate the specified file', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    writeFile(
+      '/other-dir.ts',
+      [
+        `import { Directive } from '@angular/core';`,
+        `import { Foo } from 'foo';`,
+        ``,
+        `@Directive()`,
+        `class MyOtherDir {`,
+        `  constructor(private foo: Foo) {}`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration({path: '/dir.ts'});
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, inject } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  private foo = inject(Foo);`,
+      `}`,
+    ]);
+
+    expect(tree.readContent('/other-dir.ts').split('\n')).toEqual([
+      `import { Directive } from '@angular/core';`,
+      `import { Foo } from 'foo';`,
+      ``,
+      `@Directive()`,
+      `class MyOtherDir {`,
+      `  constructor(private foo: Foo) {}`,
+      `}`,
+    ]);
+  });
+
   it('should not migrate classes decorated with a non-Angular decorator', async () => {
     writeFile(
       '/dir.ts',

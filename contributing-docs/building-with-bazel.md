@@ -15,7 +15,7 @@ The binaries for Bazel are provided by
 the [`@bazel/bazelisk`](https://github.com/bazelbuild/bazelisk)
 npm package and its platform-specific dependencies.
 
-You can run Bazel with the `yarn bazel` command.
+You can run Bazel with the `pnpm bazel` command.
 
 ## Configuration
 
@@ -36,8 +36,8 @@ want Bazel to create several symlinks in your project directory
 
 ## Building Angular
 
-- Build a package: `yarn bazel build packages/core`
-- Build all packages: `yarn bazel build packages/...`
+- Build a package: `pnpm bazel build packages/core`
+- Build all packages: `pnpm bazel build packages/...`
 
 You can use [ibazel] to run in a "watch mode" that continuously
 keeps the outputs up-to-date as you save sources.
@@ -46,15 +46,15 @@ keeps the outputs up-to-date as you save sources.
 
 ## Testing Angular
 
-- Test package in node: `yarn test packages/core/test:test`
-- Test package in karma: `yarn test packages/core/test:test_web`
-- Test all packages: `yarn test packages/...`
+- Test package in node: `pnpm test packages/core/test:test`
+- Test package in karma: `pnpm test packages/core/test:test_web`
+- Test all packages: `pnpm test packages/...`
 
 The ellipsis in the examples above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a
 single package, the commands are (exemplary):
-- `yarn test //packages/core/...` for all tests, or
-- `yarn test //packages/core/test:test` for a particular test suite.
+- `pnpm test //packages/core/...` for all tests, or
+- `pnpm test //packages/core/test:test` for a particular test suite.
 
 Bazel very effectively caches build results, so it's common for your first time building a target
 to be much slower than subsequent builds.
@@ -78,7 +78,7 @@ using the proper flags with your Bazel test runs in Angular.
 - Open Chrome at: [chrome://inspect](chrome://inspect)
 - Click on `Open dedicated DevTools for Node` to launch a debugger.
 - Run your test with the debug configuration,
-  e.g. `yarn bazel test packages/core/test:test --config=debug`
+  e.g. `pnpm bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.
 For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.github.io/rules_nodejs/index.html#debugging).
@@ -108,7 +108,7 @@ First time setup:
 **Setting breakpoints directly in your code files may not work in VSCode**. This is because the
 files you're actually debugging are built files that exist in a `./private/...` folder.
 The easiest way to debug a test for now is to add a `debugger` statement in the code
-and launch the bazel corresponding test (`yarn bazel test <target> --config=debug`).
+and launch the bazel corresponding test (`pnpm bazel test <target> --config=debug`).
 
 Bazel will wait on a connection. Go to the debug view (by clicking on the sidebar or
 Apple+Shift+D on Mac) and click on the green play icon next to the configuration name
@@ -117,7 +117,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 ### Debugging a Karma Test
 
 - Run test with `_debug` appended to the target name,
-  e.g. `yarn bazel run packages/core/test:test_web_debug`.
+  e.g. `pnpm bazel run packages/core/test:test_web_debug`.
   Every `ng_web_test_suite` target has an additional `_debug` target.
 - Open any browser at: [http://localhost:9876/debug.html](http://localhost:9876/debug.html)
 - Open the browser's DevTools to debug the tests (after, for example, having focused on specific
@@ -128,12 +128,12 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 Open `external` directory which contains everything that bazel downloaded while executing the
 workspace file:
 ```sh
-open $(yarn -s bazel info output_base)/external
+open $(pnpm -s bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):
 ```sh
-yarn bazel build //packages/core:package -s
+pnpm bazel build //packages/core:package -s
 ```
 
 ## Stamping
@@ -189,7 +189,7 @@ The first step is to generate a profile of the build using the `--profile filena
 flag.
 
 ```sh
-yarn bazel build //packages/compiler --profile filename_name.profile
+pnpm bazel build //packages/compiler --profile filename_name.profile
 ```
 
 This generates a `filename_name.profile` that you can then analyse
@@ -202,20 +202,20 @@ command.
 You can obtain a simple report directly in the console by running:
 
 ```sh
-yarn bazel analyze-profile filename_name.profile
+pnpm bazel analyze-profile filename_name.profile
 ```
 
 This will show the phase summary, individual phase information and critical path.
 
 You can also list all individual tasks and the time they took using `--task_tree`.
 ```sh
-yarn bazel analyze-profile filename_name.profile --task_tree ".*"
+pnpm bazel analyze-profile filename_name.profile --task_tree ".*"
 ```
 
 To show all tasks that take longer than a certain threshold, use the `--task_tree_threshold` flag.
 The default behavior is to use a 50ms threshold.
 ```sh
-yarn bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
+pnpm bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
 ```
 
 `--task_tree` takes a regexp as argument that filters by the text shown after the time taken.
@@ -228,7 +228,7 @@ Compiling TypeScript shows as:
 To filter all tasks by TypeScript compilations that took more than 5 seconds, use:
 
 ```sh
-yarn bazel analyze-profile filename_name.profile --task_tree "Compiling TypeScript" --task_tree_threshold 5000
+pnpm bazel analyze-profile filename_name.profile --task_tree "Compiling TypeScript" --task_tree_threshold 5000
 ```
 
 ### Using the HTML profile report
@@ -236,7 +236,7 @@ yarn bazel analyze-profile filename_name.profile --task_tree "Compiling TypeScri
 A more comprehensive way to visualize the profile information is through the HTML report:
 
 ```sh
-yarn bazel analyze-profile filename_name.profile --html --html_details --html_histograms
+pnpm bazel analyze-profile filename_name.profile --html --html_details --html_histograms
 ```
 
 This generates a `filename_name.profile.html` file that you can open in your browser.
@@ -286,7 +286,7 @@ Require stack:
 
 `bazel run` only works in Bazel Windows with non-test targets. Ensure that you are using `bazel test` instead.
 
-e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test`
+e.g: `pnpm bazel test packages/core/test/bundling/forms:symbol_test`
 
 #### mkdir missing
 If you see the following error::
@@ -303,11 +303,11 @@ The `msys64` library and associated tools (like `mkdir`) are required to build A
 
 Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`.
 
-After that, a `git clean -xfd`, `yarn`, and `yarn build` should resolve this issue.
+After that, a `git clean -xfd`, `pnpm`, and `pnpm build` should resolve this issue.
 
 ### Xcode
 
-If running `yarn bazel build packages/...` returns the following error:
+If running `pnpm bazel build packages/...` returns the following error:
 
 ```
 ERROR: /private/var/tmp/[...]/external/local_config_cc/BUILD:50:5: in apple_cc_toolchain rule @local_config_cc//:cc-compiler-darwin_x86_64: Xcode version must be specified to use an Apple CROSSTOOL
@@ -331,7 +331,7 @@ If VSCode is not the root cause, you might try:
 bazel clean --expunge
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 sudo xcodebuild -license
-yarn bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
+pnpm bazel build //packages/core    # Run a build outside VSCode to pre-build the xcode; then safe to run VSCode
 ```
 
 Source: https://stackoverflow.com/questions/45276830/xcode-version-must-be-specified-to-use-an-apple-crosstool

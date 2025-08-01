@@ -5,14 +5,14 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
+        "//packages/platform-server/init",
         "//packages/platform-server/init:bundled_domino_lib",
-        "//packages/platform-server/init:init_rjs",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

@@ -131,14 +131,14 @@ export function setupBazelTo(tmpDirPath: string) {
   });
 
   // Link typescript
-  const typeScriptSource = resolveFromRunfiles('npm/node_modules/typescript');
+  const typeScriptSource = resolveFromRunfiles('angular/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
   fs.symlinkSync(typeScriptSource, typescriptDest, 'junction');
 
   // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
   // not all compiler-cli tests need "rxjs" set up.
   try {
-    const rxjsSource = resolveFromRunfiles('npm/node_modules/rxjs');
+    const rxjsSource = resolveFromRunfiles('angular/node_modules/rxjs');
     const rxjsDest = path.join(nodeModulesPath, 'rxjs');
     fs.symlinkSync(rxjsSource, rxjsDest, 'junction');
   } catch (e: any) {

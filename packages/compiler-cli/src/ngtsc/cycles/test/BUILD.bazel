@@ -10,18 +10,18 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler-cli/src/ngtsc/cycles:cycles_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
-        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/cycles",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/testing",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

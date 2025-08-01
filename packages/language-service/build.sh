@@ -5,7 +5,7 @@ set -ex
 # so that it can be consumed by the Angular extension for local development.
 # Usage: ./build.sh /path/to/vscode-ng-language-service
 
-readonly bazel_bin=$(yarn run -s bazel info bazel-bin)
+readonly bazel_bin=$(pnpm --silent bazel info bazel-bin)
 readonly extension_repo="$1"
 
 if [[ -z "${extension_repo}" ]]; then
@@ -24,7 +24,7 @@ _sedi () {
   sed "${sedi[@]}" "$@"
 }
 
-yarn bazel build --config=release //packages/language-service:npm_package
+pnpm bazel build --config=release //packages/language-service:npm_package
 pushd "${extension_repo}"
 rm -rf .angular_packages/language-service
 mkdir -p .angular_packages/language-service
@@ -39,5 +39,5 @@ npm_package(
 )
 EOT
 _sedi 's#\# PLACE_HOLDER_FOR_angular/angular_packages/language-service/build.sh#"//.angular_packages/language-service:package.json", \# FOR TESTING ONLY! DO NOT COMMIT THIS LINE!#' WORKSPACE
-yarn add @angular/language-service@file:".angular_packages/language-service"
+pnpm add @angular/language-service@file:".angular_packages/language-service"
 popd

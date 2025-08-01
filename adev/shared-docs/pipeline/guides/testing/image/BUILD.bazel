@@ -9,7 +9,7 @@ ts_project(
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
-        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+        "//adev/shared-docs/pipeline/guides:guides_lib",
     ],
 )
 
@@ -17,6 +17,6 @@ zoneless_jasmine_test(
     name = "test",
     data = [
         "image.md",
-        ":image_rjs",
+        ":image",
     ],
 )

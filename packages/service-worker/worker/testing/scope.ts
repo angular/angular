@@ -236,6 +236,24 @@ export class SwTestHarnessImpl
     return event.ready;
   }
 
+  handleMessageError(clientId: string | null) {
+    if (!this.eventHandlers.has('messageerror')) {
+      throw new Error('No messageerror handler registered');
+    }
+
+    if (clientId && !this.clients.getMock(clientId)) {
+      this.clients.add(clientId, this.scopeUrl);
+    }
+
+    const event = new MockExtendableMessageEvent(
+      null,
+      (clientId && this.clients.getMock(clientId)) || null,
+    );
+    this.eventHandlers.get('messageerror')!.call(this, event);
+
+    return event.ready;
+  }
+
   handlePush(data: Object): Promise<void> {
     if (!this.eventHandlers.has('push')) {
       throw new Error('No push handler registered');

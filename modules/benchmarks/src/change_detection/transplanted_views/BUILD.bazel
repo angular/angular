@@ -12,8 +12,8 @@ optimize_angular_app(
         "init.ts",
         "main.ts",
         "transplanted_views.ts",
-        "//modules/benchmarks/src:util_lib_rjs",
-        "//modules/benchmarks/src/change_detection:util_lib_rjs",
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/change_detection:util_lib",
     ],
     include_zonejs = True,
     deps = [
@@ -47,11 +47,11 @@ http_server(
 benchmark_test(
     name = "perf",
     server = ":prodserver",
-    deps = ["//modules/benchmarks/src/change_detection:perf_tests_lib_rjs"],
+    deps = ["//modules/benchmarks/src/change_detection:perf_tests_lib"],
 )
 
 e2e_test(
     name = "e2e",
     server = ":prodserver",
-    deps = ["//modules/benchmarks/src/change_detection:e2e_tests_lib_rjs"],
+    deps = ["//modules/benchmarks/src/change_detection:e2e_tests_lib"],
 )

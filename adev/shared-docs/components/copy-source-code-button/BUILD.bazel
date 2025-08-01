@@ -16,7 +16,7 @@ ng_project(
         "//adev:node_modules/@angular/cdk",
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
-        "//adev/shared-docs/components/icon:icon_rjs",
+        "//adev/shared-docs/components/icon",
     ],
 )
 
@@ -27,7 +27,7 @@ ts_project(
         ["*.spec.ts"],
     ),
     deps = [
-        ":copy-source-code-button_rjs",
+        ":copy-source-code-button",
         "//adev:node_modules/@angular/cdk",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
@@ -36,5 +36,5 @@ ts_project(
 
 zoneless_web_test_suite(
     name = "test",
-    deps = [":test_lib_rjs"],
+    deps = [":test_lib"],
 )

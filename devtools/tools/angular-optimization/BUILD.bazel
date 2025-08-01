@@ -2,8 +2,6 @@ load("//devtools/tools:defaults.bzl", "copy_to_bin", "js_library")
 
 package(default_visibility = ["//visibility:public"])
 
-# Exposed `js_library` targets need to copy files to `bazel-out`. More details here:
-# https://github.com/bazelbuild/rules_nodejs/pull/3083.
 copy_to_bin(
     name = "js_lib_files",
     srcs = [
@@ -20,6 +18,6 @@ js_library(
         "//:node_modules/@angular/build",
         "//:node_modules/@babel/core",
         "//:node_modules/@babel/plugin-transform-async-generator-functions",
-        "//packages/compiler-cli:compiler-cli_rjs",
+        "//packages/compiler-cli",
     ],
 )

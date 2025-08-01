@@ -16,15 +16,15 @@ ts_project(
     ),
     deps = [
         "//:node_modules/rxjs",
-        "//packages:goog_types_rjs",
-        "//packages/core/primitives/signals:signals_rjs",
-        "//packages/core/src/interface:interface_rjs",
+        "//packages:goog_types",
+        "//packages/core/primitives/signals",
+        "//packages/core/src/interface",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":util_rjs",
+    target = ":util",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

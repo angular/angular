@@ -19,6 +19,6 @@ ng_project(
     name = "config",
     srcs = [":sources"],
     deps = [
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )

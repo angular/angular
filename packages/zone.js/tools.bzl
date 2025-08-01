@@ -32,7 +32,7 @@ def generate_rollup_bundle(bundles):
                 entry_point = entry_point + ".js",
                 external = rollup_config.get("external"),
                 deps = [
-                    "//packages/zone.js/lib:lib_rjs",
+                    "//packages/zone.js/lib:lib",
                 ],
             )
             zone_bundle(
@@ -40,7 +40,7 @@ def generate_rollup_bundle(bundles):
                 entry_point = entry_point + ".js",
                 external = rollup_config.get("external"),
                 deps = [
-                    "//packages/zone.js/lib:lib_rjs",
+                    "//packages/zone.js/lib:lib",
                 ],
             )
         else:
@@ -49,7 +49,7 @@ def generate_rollup_bundle(bundles):
                 entry_point = rollup_config.get("es5") + ".js",
                 external = rollup_config.get("external"),
                 deps = [
-                    "//packages/zone.js/lib:lib_rjs",
+                    "//packages/zone.js/lib:lib",
                 ],
             )
             zone_bundle(
@@ -57,7 +57,7 @@ def generate_rollup_bundle(bundles):
                 entry_point = rollup_config.get("es2015") + ".js",
                 external = rollup_config.get("external"),
                 deps = [
-                    "//packages/zone.js/lib:lib_rjs",
+                    "//packages/zone.js/lib:lib",
                 ],
             )
 

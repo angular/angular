@@ -13,8 +13,8 @@ ng_project(
         ],
     ),
     deps = [
-        "//packages/core/testing:testing_rjs",
-        "//packages/upgrade/static:static_rjs",
+        "//packages/core/testing",
+        "//packages/upgrade/static",
     ],
 )
 

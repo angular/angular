@@ -16,7 +16,7 @@ ts_project(
     name = "esbuild_config_esm",
     srcs = ["esbuild-esm.config.mts"],
     deps = [
-        ":esbuild_base_rjs",
+        ":esbuild_base",
         "//devtools/tools/angular-optimization:js_lib",
     ],
 )
@@ -25,7 +25,7 @@ ts_project(
     name = "esbuild_config_esm_prod",
     srcs = ["esbuild-esm-prod.config.mts"],
     deps = [
-        ":esbuild_base_rjs",
+        ":esbuild_base",
     ],
 )
 
@@ -33,7 +33,7 @@ ts_project(
     name = "esbuild_config_iife",
     srcs = ["esbuild-iife.config.mts"],
     deps = [
-        ":esbuild_base_rjs",
+        ":esbuild_base",
     ],
 )
 
@@ -42,6 +42,6 @@ ts_project(
     testonly = True,
     srcs = ["esbuild-spec.config.mts"],
     deps = [
-        ":esbuild_base_rjs",
+        ":esbuild_base",
     ],
 )

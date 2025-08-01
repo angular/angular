@@ -22,7 +22,7 @@ ng_project(
     ],
     deps = [
         "//:node_modules/@angular/core",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -33,16 +33,16 @@ ts_test_library(
         "//visibility:private",
     ],
     deps = [
-        ":resolution-path_rjs",
+        ":resolution-path",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":resolution_path_test_rjs",
+        ":resolution_path_test",
     ],
 )

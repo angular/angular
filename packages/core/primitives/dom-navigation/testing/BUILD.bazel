@@ -16,13 +16,13 @@ ts_project(
         ],
     ),
     deps = [
-        "//packages/core/primitives/dom-navigation:dom-navigation_rjs",
+        "//packages/core/primitives/dom-navigation",
     ],
 )
 
 tsec_test(
     name = "tsec_test",
-    target = ":testing_rjs",
+    target = ":testing",
     tsconfig = "//packages/core:tsconfig_build",
 )
 

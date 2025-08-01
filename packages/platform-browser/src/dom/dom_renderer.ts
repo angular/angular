@@ -326,7 +326,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeChild(_parent: any, oldChild: any): void {
     const {elements} = this.registry;
-    if (elements && elements.has(oldChild as Element)) {
+    if (elements) {
       elements.animate(oldChild, () => oldChild.remove());
       return;
     }

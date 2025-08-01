@@ -10,14 +10,14 @@ ts_project(
         "fake_async.ts",
     ],
     deps = [
-        "//packages/core/testing:testing_rjs",
+        "//packages/core/testing",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":fake_async_lib_rjs",
+        ":fake_async_lib",
     ],
 )
 
