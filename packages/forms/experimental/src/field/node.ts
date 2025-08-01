@@ -10,7 +10,7 @@ import type {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
-import {LogicNode} from '../schema/logic_2';
+import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
 import type {FormFieldManager} from './manager';
