@@ -345,7 +345,8 @@ export async function submit<TValue>(
   markAllAsTouched(node);
   node.submitState.selfSubmitting.set(true);
   try {
-    setServerErrors(node, (await action(form)) ?? []);
+    const errors = await action(form);
+    errors && setServerErrors(node, errors);
   } finally {
     node.submitState.selfSubmitting.set(false);
   }
