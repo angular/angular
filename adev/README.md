@@ -21,7 +21,7 @@ pnpm
 
 # Build and run local dev server
 # NOTE: Initial build will take some time
-pnpm docs
+pnpm adev
 ```
 
 If you are having issues with the docs building, see the [FAQs](#faqs) section.
