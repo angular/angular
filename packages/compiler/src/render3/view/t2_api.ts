@@ -48,7 +48,7 @@ export type ScopedNode =
 
 /** Possible values that a reference can be resolved to. */
 export type ReferenceTarget<DirectiveT> =
-  | {directive: DirectiveT; node: DirectiveOwner}
+  | {directive: DirectiveT; node: Exclude<DirectiveOwner, HostElement>}
   | Element
   | Template;
 
@@ -56,7 +56,7 @@ export type ReferenceTarget<DirectiveT> =
 export type TemplateEntity = Reference | Variable | LetDeclaration;
 
 /** Nodes that can have directives applied to them. */
-export type DirectiveOwner = Element | Template | Component | Directive;
+export type DirectiveOwner = Element | Template | Component | Directive | HostElement;
 
 /*
  * t2 is the replacement for the `TemplateDefinitionBuilder`. It handles the operations of
@@ -70,9 +70,12 @@ export type DirectiveOwner = Element | Template | Component | Directive;
 /**
  * A logical target for analysis, which could contain a template or other types of bindings.
  */
-export interface Target {
+export interface Target<DirectiveT> {
   template?: Node[];
-  host?: HostElement;
+  host?: {
+    node: HostElement;
+    directives: DirectiveT[];
+  };
 }
 
 /**
@@ -162,7 +165,7 @@ export interface DirectiveMeta {
  * The returned `BoundTarget` has an API for extracting information about the processed target.
  */
 export interface TargetBinder<D extends DirectiveMeta> {
-  bind(target: Target): BoundTarget<D>;
+  bind(target: Target<D>): BoundTarget<D>;
 }
 
 /**
@@ -177,7 +180,7 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
   /**
    * Get the original `Target` that was bound.
    */
-  readonly target: Target;
+  readonly target: Target<DirectiveT>;
 
   /**
    * For a given template node (either an `Element` or a `Template`), get the set of directives
