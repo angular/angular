@@ -68,3 +68,10 @@ export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Ele
     factory: () => new Map<string, Set<Element>>(),
   },
 );
+
+/**
+ * Internal token that indicates whether the initial navigation is blocking in the application.
+ */
+export const IS_ENABLED_BLOCKING_INITIAL_NAVIGATION = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_ENABLED_BLOCKING_INITIAL_NAVIGATION' : '',
+);
