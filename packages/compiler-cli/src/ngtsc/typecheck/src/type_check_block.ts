@@ -55,6 +55,7 @@ import {
   TmplAstComponent,
   TmplAstDirective,
   Binary,
+  DirectiveOwner,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -215,7 +216,7 @@ export function generateTypeCheckBlock(
 
   // Add the host bindings type checking code.
   if (tcb.boundTarget.target.host !== undefined) {
-    const hostScope = Scope.forNodes(tcb, null, tcb.boundTarget.target.host, null, null);
+    const hostScope = Scope.forNodes(tcb, null, tcb.boundTarget.target.host.node, null, null);
     statements.push(renderBlockStatements(env, hostScope, createHostBindingsBlockGuard()));
   }
 
@@ -647,7 +648,7 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
   constructor(
     protected tcb: Context,
     protected scope: Scope,
-    protected node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+    protected node: DirectiveOwner,
     protected dir: TypeCheckableDirectiveMeta,
   ) {
     super();
@@ -666,6 +667,7 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
     const rawType = this.tcb.env.referenceType(this.dir.ref);
 
     let type: ts.TypeNode;
+    let span: ParseSourceSpan;
     if (this.dir.isGeneric === false || dirRef.node.typeParameters === undefined) {
       type = rawType;
     } else {
@@ -680,9 +682,15 @@ abstract class TcbDirectiveTypeOpBase extends TcbOp {
       type = ts.factory.createTypeReferenceNode(rawType.typeName, typeArguments);
     }
 
+    if (this.node instanceof TmplAstHostElement) {
+      span = this.node.sourceSpan;
+    } else {
+      span = this.node.startSourceSpan || this.node.sourceSpan;
+    }
+
     const id = this.tcb.allocateId();
     addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
+    addParseSpanInfo(id, span);
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }
@@ -1518,7 +1526,9 @@ export class TcbDirectiveOutputsOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+    private node: DirectiveOwner,
+    private inputs: TmplAstBoundAttribute[] | null,
+    private outputs: TmplAstBoundEvent[],
     private dir: TypeCheckableDirectiveMeta,
   ) {
     super();
@@ -1532,7 +1542,7 @@ export class TcbDirectiveOutputsOp extends TcbOp {
     let dirId: ts.Expression | null = null;
     const outputs = this.dir.outputs;
 
-    for (const output of this.node.outputs) {
+    for (const output of this.outputs) {
       if (
         output.type === ParsedEventType.LegacyAnimation ||
         !outputs.hasBindingPropertyName(output.name)
@@ -1540,9 +1550,13 @@ export class TcbDirectiveOutputsOp extends TcbOp {
         continue;
       }
 
-      if (this.tcb.env.config.checkTypeOfOutputEvents && output.name.endsWith('Change')) {
+      if (
+        this.tcb.env.config.checkTypeOfOutputEvents &&
+        this.inputs !== null &&
+        output.name.endsWith('Change')
+      ) {
         const inputName = output.name.slice(0, -6);
-        checkSplitTwoWayBinding(inputName, output, this.node.inputs, this.tcb);
+        checkSplitTwoWayBinding(inputName, output, this.inputs, this.tcb);
       }
       // TODO(alxhub): consider supporting multiple fields with the same property name for outputs.
       const field = outputs.getByBindingPropertyName(output.name)![0].classPropertyName;
@@ -2190,10 +2204,7 @@ class Scope {
    * A map of maps which tracks the index of `TcbDirectiveCtorOp`s in the `opQueue` for each
    * directive on a `TmplAstElement` or `TmplAstTemplate` node.
    */
-  private directiveOpMap = new Map<
-    TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
-    Map<TypeCheckableDirectiveMeta, number>
-  >();
+  private directiveOpMap = new Map<DirectiveOwner, Map<TypeCheckableDirectiveMeta, number>>();
 
   /**
    * A map of `TmplAstReference`s to the index of their `TcbReferenceOp` in the `opQueue`
@@ -2496,7 +2507,8 @@ class Scope {
       (ref instanceof TmplAstElement ||
         ref instanceof TmplAstTemplate ||
         ref instanceof TmplAstComponent ||
-        ref instanceof TmplAstDirective) &&
+        ref instanceof TmplAstDirective ||
+        ref instanceof TmplAstHostElement) &&
       directive !== undefined &&
       this.directiveOpMap.has(ref)
     ) {
@@ -2561,14 +2573,14 @@ class Scope {
         this.appendContentProjectionCheckOp(node);
       }
       this.appendDirectivesAndInputsOfElementLikeNode(node);
-      this.appendOutputsOfElementLikeNode(node);
+      this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
       this.appendSelectorlessDirectives(node);
       this.appendChildren(node);
       this.checkAndAppendReferencesOfNode(node);
     } else if (node instanceof TmplAstTemplate) {
       // Template children are rendered in a child scope.
       this.appendDirectivesAndInputsOfElementLikeNode(node);
-      this.appendOutputsOfElementLikeNode(node);
+      this.appendOutputsOfElementLikeNode(node, node.inputs, node.outputs);
       this.appendSelectorlessDirectives(node);
       const ctxIndex = this.opQueue.push(new TcbTemplateContextOp(this.tcb, this)) - 1;
       this.templateCtxOpMap.set(node, ctxIndex);
@@ -2603,13 +2615,7 @@ class Scope {
         this.letDeclOpMap.set(node.name, {opIndex, node});
       }
     } else if (node instanceof TmplAstHostElement) {
-      const opIndex = this.opQueue.push(new TcbHostElementOp(this.tcb, this, node)) - 1;
-      this.hostElementOpMap.set(node, opIndex);
-      this.opQueue.push(
-        new TcbUnclaimedInputsOp(this.tcb, this, node.bindings, node, null),
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.listeners, null, null),
-        new TcbDomSchemaCheckerOp(this.tcb, node, false, null),
-      );
+      this.appendHostElement(node);
     }
   }
 
@@ -2698,7 +2704,11 @@ class Scope {
     }
   }
 
-  private appendOutputsOfElementLikeNode(node: TmplAstElement | TmplAstTemplate): void {
+  private appendOutputsOfElementLikeNode(
+    node: TmplAstElement | TmplAstTemplate | TmplAstHostElement,
+    bindings: TmplAstBoundAttribute[] | null,
+    events: TmplAstBoundEvent[],
+  ): void {
     // Collect all the outputs on the element.
     const claimedOutputs = new Set<string>();
 
@@ -2712,14 +2722,7 @@ class Scope {
       // to add them if needed.
       if (node instanceof TmplAstElement) {
         this.opQueue.push(
-          new TcbUnclaimedOutputsOp(
-            this.tcb,
-            this,
-            node,
-            node.outputs,
-            node.inputs,
-            claimedOutputs,
-          ),
+          new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
         );
       }
       return;
@@ -2727,12 +2730,12 @@ class Scope {
 
     // Queue operations for all directives to check the relevant outputs for a directive.
     for (const dir of directives) {
-      this.opQueue.push(new TcbDirectiveOutputsOp(this.tcb, this, node, dir));
+      this.opQueue.push(new TcbDirectiveOutputsOp(this.tcb, this, node, bindings, events, dir));
     }
 
     // After expanding the directives, we might need to queue an operation to check any unclaimed
     // outputs.
-    if (node instanceof TmplAstElement) {
+    if (node instanceof TmplAstElement || node instanceof TmplAstHostElement) {
       // Go through the directives and register any outputs that it claims in `claimedOutputs`.
       for (const dir of directives) {
         for (const outputProperty of dir.outputs.propertyNames) {
@@ -2741,7 +2744,7 @@ class Scope {
       }
 
       this.opQueue.push(
-        new TcbUnclaimedOutputsOp(this.tcb, this, node, node.outputs, node.inputs, claimedOutputs),
+        new TcbUnclaimedOutputsOp(this.tcb, this, node, events, bindings, claimedOutputs),
       );
     }
   }
@@ -2792,7 +2795,9 @@ class Scope {
 
     if (directives !== null && directives.length > 0) {
       for (const dir of directives) {
-        this.opQueue.push(new TcbDirectiveOutputsOp(this.tcb, this, node, dir));
+        this.opQueue.push(
+          new TcbDirectiveOutputsOp(this.tcb, this, node, node.inputs, node.outputs, dir),
+        );
 
         for (const outputProperty of dir.outputs.propertyNames) {
           claimedOutputs.add(outputProperty);
@@ -3013,6 +3018,29 @@ class Scope {
     if (triggers.viewport !== undefined) {
       this.validateReferenceBasedDeferredTrigger(block, triggers.viewport);
     }
+  }
+
+  private appendHostElement(node: TmplAstHostElement): void {
+    const opIndex = this.opQueue.push(new TcbHostElementOp(this.tcb, this, node)) - 1;
+    const directives = this.tcb.boundTarget.getDirectivesOfNode(node);
+
+    if (directives !== null && directives.length > 0) {
+      const directiveOpMap = new Map<TypeCheckableDirectiveMeta, number>();
+
+      for (const directive of directives) {
+        const directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, directive);
+        directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
+      }
+
+      this.directiveOpMap.set(node, directiveOpMap);
+    }
+
+    this.hostElementOpMap.set(node, opIndex);
+    this.opQueue.push(
+      new TcbUnclaimedInputsOp(this.tcb, this, node.bindings, node, null),
+      new TcbDomSchemaCheckerOp(this.tcb, node, false, null),
+    );
+    this.appendOutputsOfElementLikeNode(node, null, node.listeners);
   }
 
   private validateReferenceBasedDeferredTrigger(

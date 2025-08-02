@@ -17,7 +17,7 @@ import {
 import ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {PipeMeta} from '../../metadata';
+import {DirectiveMeta, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 
 import {SourceMapping, TypeCheckableDirectiveMeta} from './api';
@@ -47,6 +47,9 @@ export interface TemplateContext {
 export interface HostBindingsContext {
   /** AST node representing the host element of the directive. */
   node: TmplAstHostElement;
+
+  /** Directives present on the host element. */
+  directives: DirectiveMeta[];
 
   /** Describes the source of the host bindings. Used for mapping errors back. */
   sourceMapping: SourceMapping;
