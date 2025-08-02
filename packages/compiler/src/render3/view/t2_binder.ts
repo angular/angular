@@ -84,7 +84,7 @@ type BindingsMap<DirectiveT> = Map<
 /** Shorthand for a map between a reference AST node and the entity it's targeting. */
 type ReferenceMap<DirectiveT> = Map<
   Reference,
-  Template | Element | {directive: DirectiveT; node: DirectiveOwner}
+  Template | Element | {directive: DirectiveT; node: Exclude<DirectiveOwner, HostElement>}
 >;
 
 /** Mapping between AST nodes and the directives that have been matched on them. */
@@ -171,7 +171,7 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
    * Perform a binding operation on the given `Target` and return a `BoundTarget` which contains
    * metadata about the types referenced in the template.
    */
-  bind(target: Target): BoundTarget<DirectiveT> {
+  bind(target: Target<DirectiveT>): BoundTarget<DirectiveT> {
     if (!target.template && !target.host) {
       throw new Error('Empty bound targets are not supported');
     }
@@ -229,9 +229,10 @@ export class R3TargetBinder<DirectiveT extends DirectiveMeta> implements TargetB
     // Bind the host element in a separate scope. Note that it only uses the
     // `TemplateBinder` since directives don't apply inside a host context.
     if (target.host) {
+      directives.set(target.host.node, target.host.directives);
       TemplateBinder.applyWithScope(
-        target.host,
-        Scope.apply(target.host),
+        target.host.node,
+        Scope.apply(target.host.node),
         expressions,
         symbols,
         nestingLevel,
@@ -1029,7 +1030,7 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
   private deferredScopes: Map<DeferredBlock, Scope>;
 
   constructor(
-    readonly target: Target,
+    readonly target: Target<DirectiveT>,
     private directives: MatchedDirectives<DirectiveT>,
     private eagerDirectives: DirectiveT[],
     private missingDirectives: Set<string>,
@@ -1217,7 +1218,8 @@ class R3BoundTarget<DirectiveT extends DirectiveMeta> implements BoundTarget<Dir
     if (
       target instanceof Template ||
       target.node instanceof Component ||
-      target.node instanceof Directive
+      target.node instanceof Directive ||
+      target.node instanceof HostElement
     ) {
       return null;
     }

@@ -57,6 +57,11 @@ export interface TypeCheckScope {
    * (contained semantic errors during its production).
    */
   isPoisoned: boolean;
+
+  /**
+   * Directives that have been set on the host of the scope.
+   */
+  directivesOnHost: DirectiveMeta[] | null;
 }
 
 /**
@@ -85,10 +90,12 @@ export class TypeCheckScopeRegistry {
    * contains an error, then 'error' is returned. If the component is not declared in any NgModule,
    * an empty type-check scope is returned.
    */
-  getTypeCheckScope(node: ClassDeclaration): TypeCheckScope {
+  getTypeCheckScope(ref: Reference<ClassDeclaration>): TypeCheckScope {
     const directives: DirectiveMeta[] = [];
     const pipes = new Map<string, PipeMeta>();
-    const scope = this.scopeReader.getScopeForComponent(node);
+    const scope = this.scopeReader.getScopeForComponent(ref.node);
+    const hostMeta = this.getTypeCheckDirectiveMetadata(ref);
+    const directivesOnHost = hostMeta === null ? null : this.combineWithHostDirectives(hostMeta);
 
     if (scope === null) {
       return {
@@ -97,6 +104,7 @@ export class TypeCheckScopeRegistry {
         pipes,
         schemas: [],
         isPoisoned: false,
+        directivesOnHost,
       };
     }
 
@@ -149,11 +157,13 @@ export class TypeCheckScopeRegistry {
       directives,
       pipes,
       schemas: scope.schemas,
+      directivesOnHost,
       isPoisoned:
         scope.kind === ComponentScopeKind.NgModule
           ? scope.compilation.isPoisoned || scope.exported.isPoisoned
           : scope.isPoisoned,
     };
+
     this.scopeCache.set(cacheKey, typeCheckScope);
     return typeCheckScope;
   }
@@ -193,10 +203,10 @@ export class TypeCheckScopeRegistry {
 
         // Carry over the `isExplicitlyDeferred` flag from the dependency info.
         const directiveMeta = this.applyExplicitlyDeferredFlag(extMeta, meta.isExplicitlyDeferred);
-        matcher.addSelectables(CssSelector.parse(meta.selector), [
-          ...this.hostDirectivesResolver.resolve(directiveMeta),
-          directiveMeta,
-        ]);
+        matcher.addSelectables(
+          CssSelector.parse(meta.selector),
+          this.combineWithHostDirectives(directiveMeta),
+        );
       }
     }
 
@@ -210,10 +220,14 @@ export class TypeCheckScopeRegistry {
       const extMeta =
         dep.kind === MetaKind.Directive ? this.getTypeCheckDirectiveMetadata(dep.ref) : null;
       if (extMeta !== null) {
-        registry.set(name, [extMeta, ...this.hostDirectivesResolver.resolve(extMeta)]);
+        registry.set(name, this.combineWithHostDirectives(extMeta));
       }
     }
 
     return new SelectorlessMatcher(registry);
+  }
+
+  private combineWithHostDirectives(meta: DirectiveMeta): DirectiveMeta[] {
+    return [...this.hostDirectivesResolver.resolve(meta), meta];
   }
 }

@@ -259,7 +259,13 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     const boundTarget = binder.bind({
       template: templateContext?.nodes,
-      host: hostBindingContext?.node,
+      host:
+        hostBindingContext === null
+          ? undefined
+          : {
+              node: hostBindingContext.node,
+              directives: hostBindingContext.directives,
+            },
     });
 
     if (this.inlining === InliningMode.InlineOps) {
