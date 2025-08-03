@@ -20,6 +20,12 @@
       "version": "20.0.0",
       "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
       "factory": "./bundles/document-core.cjs#migrate"
+    },
+    "router-current-navigation": {
+      "version": "20.2.0",
+      "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
+      "factory": "./bundles/router-current-navigation.cjs#migrate",
+      "optional": true
     }
   }
 }
