@@ -22,8 +22,8 @@ import {
   ɵwithI18nSupport,
   ɵZONELESS_ENABLED as ZONELESS_ENABLED,
   ɵwithIncrementalHydration,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
 } from '@angular/core';
-
 import {RuntimeErrorCode} from './errors';
 
 /**
@@ -171,6 +171,35 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
 }
 
 /**
+ * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
+ * that verifies whether enabledBlocking initial navigation is used in an application
+ * and logs a warning in a console if it's not compatible with hydration.
+ */
+function provideEnabledBlockingInitialNavigationDetector(): Provider[] {
+  return [
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        const isEnabledBlockingInitialNavigation = inject(IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, {
+          optional: true,
+        });
+
+        if (isEnabledBlockingInitialNavigation) {
+          const console = inject(Console);
+          const message = formatRuntimeError(
+            RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES,
+            'Configuration error: found both hydration and enabledBlocking initial navigation ' +
+              'in the same application, which is a contradiction.',
+          );
+          console.warn(message);
+        }
+      },
+      multi: true,
+    },
+  ];
+}
+
+/**
  * Sets up providers necessary to enable hydration functionality for the application.
  *
  * By default, the function enables the recommended set of features for the optimal
@@ -251,6 +280,9 @@ export function provideClientHydration(
 
   return makeEnvironmentProviders([
     typeof ngDevMode !== 'undefined' && ngDevMode ? provideZoneJsCompatibilityDetector() : [],
+    typeof ngDevMode !== 'undefined' && ngDevMode
+      ? provideEnabledBlockingInitialNavigationDetector()
+      : [],
     withDomHydration(),
     featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
       ? []

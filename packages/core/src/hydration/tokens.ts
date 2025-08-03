@@ -13,7 +13,7 @@ import {InjectionToken} from '../di/injection_token';
  * during hydration is enabled.
  */
 export const IS_HYDRATION_DOM_REUSE_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_HYDRATION_DOM_REUSE_ENABLED' : '',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_HYDRATION_DOM_REUSE_ENABLED' : '',
 );
 
 // By default (in client rendering mode), we remove all the contents
@@ -25,7 +25,7 @@ export const PRESERVE_HOST_CONTENT_DEFAULT = false;
  * retained during the bootstrap.
  */
 export const PRESERVE_HOST_CONTENT = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'PRESERVE_HOST_CONTENT' : '',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'PRESERVE_HOST_CONTENT' : '',
   {
     providedIn: 'root',
     factory: () => PRESERVE_HOST_CONTENT_DEFAULT,
@@ -37,7 +37,7 @@ export const PRESERVE_HOST_CONTENT = new InjectionToken<boolean>(
  * is enabled.
  */
 export const IS_I18N_HYDRATION_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_I18N_HYDRATION_ENABLED' : '',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_I18N_HYDRATION_ENABLED' : '',
 );
 
 /**
@@ -45,7 +45,7 @@ export const IS_I18N_HYDRATION_ENABLED = new InjectionToken<boolean>(
  * is enabled.
  */
 export const IS_EVENT_REPLAY_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_EVENT_REPLAY_ENABLED' : '',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_EVENT_REPLAY_ENABLED' : '',
 );
 
 export const EVENT_REPLAY_ENABLED_DEFAULT = false;
@@ -55,7 +55,7 @@ export const EVENT_REPLAY_ENABLED_DEFAULT = false;
  * is enabled.
  */
 export const IS_INCREMENTAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || !!ngDevMode ? 'IS_INCREMENTAL_HYDRATION_ENABLED' : '',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_INCREMENTAL_HYDRATION_ENABLED' : '',
 );
 
 /**
@@ -67,4 +67,11 @@ export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Ele
     providedIn: 'root',
     factory: () => new Map<string, Set<Element>>(),
   },
+);
+
+/**
+ * Internal token that indicates whether the initial navigation is blocking in the application.
+ */
+export const IS_ENABLED_BLOCKING_INITIAL_NAVIGATION = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'IS_ENABLED_BLOCKING_INITIAL_NAVIGATION' : '',
 );
