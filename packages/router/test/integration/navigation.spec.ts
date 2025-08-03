@@ -738,6 +738,7 @@ export function navigationIntegrationTestSuite() {
       router.getCurrentNavigation()!.abort();
 
       expect(router.getCurrentNavigation()).toBe(null);
+      expect(router.currentNavigation()).toBe(null);
       await expectAsync(navigationPromise).toBeResolvedTo(false);
       expect(replay.value).toBeInstanceOf(NavigationCancel);
     });

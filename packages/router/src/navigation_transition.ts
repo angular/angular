@@ -14,7 +14,9 @@ import {
   Injectable,
   InjectionToken,
   runInInjectionContext,
+  signal,
   Type,
+  untracked,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {
@@ -344,7 +346,7 @@ export const NAVIGATION_ERROR_HANDLER = new InjectionToken<
 
 @Injectable({providedIn: 'root'})
 export class NavigationTransitions {
-  currentNavigation: Navigation | null = null;
+  currentNavigation = signal<Navigation | null>(null);
   currentTransition: NavigationTransition | null = null;
   lastSuccessfulNavigation: Navigation | null = null;
   /**
@@ -460,7 +462,8 @@ export class NavigationTransitions {
             }
             this.currentTransition = overallTransitionState;
             // Store the Navigation object
-            this.currentNavigation = {
+            const lastSuccessfulNavigation = this.lastSuccessfulNavigation;
+            this.currentNavigation.set({
               id: t.id,
               initialUrl: t.rawUrl,
               extractedUrl: t.extractedUrl,
@@ -470,14 +473,11 @@ export class NavigationTransitions {
                   : t.extras.browserUrl,
               trigger: t.source,
               extras: t.extras,
-              previousNavigation: !this.lastSuccessfulNavigation
+              previousNavigation: !lastSuccessfulNavigation
                 ? null
-                : {
-                    ...this.lastSuccessfulNavigation,
-                    previousNavigation: null,
-                  },
+                : {...lastSuccessfulNavigation, previousNavigation: null},
               abort: () => t.abortController.abort(),
-            };
+            });
             const urlTransition =
               !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
 
@@ -534,10 +534,10 @@ export class NavigationTransitions {
                 tap((t) => {
                   overallTransitionState.targetSnapshot = t.targetSnapshot;
                   overallTransitionState.urlAfterRedirects = t.urlAfterRedirects;
-                  this.currentNavigation = {
-                    ...this.currentNavigation!,
+                  this.currentNavigation.update((nav) => ({
+                    ...nav!,
                     finalUrl: t.urlAfterRedirects,
-                  };
+                  }));
 
                   // Fire RoutesRecognized
                   const routesRecognized = new RoutesRecognized(
@@ -572,7 +572,7 @@ export class NavigationTransitions {
                 urlAfterRedirects: extractedUrl,
                 extras: {...extras, skipLocationChange: false, replaceUrl: false},
               };
-              this.currentNavigation!.finalUrl = extractedUrl;
+              this.currentNavigation.update((nav) => ({...nav!, finalUrl: extractedUrl}));
               return of(overallTransitionState);
             } else {
               /* When neither the current or previous URL can be processed, do
@@ -740,7 +740,10 @@ export class NavigationTransitions {
               t.currentRouterState,
             );
             this.currentTransition = overallTransitionState = {...t, targetRouterState};
-            this.currentNavigation!.targetRouterState = targetRouterState;
+            this.currentNavigation.update((nav) => ({
+              ...nav!,
+              targetRouterState: targetRouterState,
+            }));
             return overallTransitionState;
           }),
 
@@ -782,7 +785,7 @@ export class NavigationTransitions {
           tap({
             next: (t: NavigationTransition) => {
               completedOrAborted = true;
-              this.lastSuccessfulNavigation = this.currentNavigation;
+              this.lastSuccessfulNavigation = untracked(this.currentNavigation);
               this.events.next(
                 new NavigationEnd(
                   t.id,
@@ -834,7 +837,7 @@ export class NavigationTransitions {
             // Only clear current navigation if it is still set to the one that
             // finalized.
             if (this.currentTransition?.id === overallTransitionState.id) {
-              this.currentNavigation = null;
+              this.currentNavigation.set(null);
               this.currentTransition = null;
             }
           }),
@@ -977,11 +980,12 @@ export class NavigationTransitions {
     const currentBrowserUrl = this.urlHandlingStrategy.extract(
       this.urlSerializer.parse(this.location.path(true)),
     );
-    const targetBrowserUrl =
-      this.currentNavigation?.targetBrowserUrl ?? this.currentNavigation?.extractedUrl;
+
+    const currentNavigation = untracked(this.currentNavigation);
+    const targetBrowserUrl = currentNavigation?.targetBrowserUrl ?? currentNavigation?.extractedUrl;
     return (
       currentBrowserUrl.toString() !== targetBrowserUrl?.toString() &&
-      !this.currentNavigation?.extras.skipLocationChange
+      !currentNavigation?.extras.skipLocationChange
     );
   }
 }
