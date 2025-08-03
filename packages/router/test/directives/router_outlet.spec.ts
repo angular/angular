@@ -383,6 +383,62 @@ describe('component input binding', () => {
     await harness.navigateByUrl('/root/child?myInput=2');
     expect(harness.routeNativeElement!.innerText).toBe('2');
   });
+
+  it('should support title binding when enabled', async () => {
+    @Component({
+      template: '{{title}}',
+    })
+    class MyComponent {
+      @Input() title?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: MyComponent,
+              title: 'My Page Title',
+            },
+          ],
+          withComponentInputBinding({enableTitleBinding: true}),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/', MyComponent);
+    expect(instance.title).toEqual('My Page Title');
+  });
+
+  it('should not bind title when disabled', async () => {
+    @Component({
+      template: '{{title ?? "no title"}}',
+    })
+    class MyComponent {
+      @Input() title?: string;
+    }
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: '**',
+              component: MyComponent,
+              title: 'My Page Title',
+            },
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    const instance = await harness.navigateByUrl('/', MyComponent);
+    expect(instance.title).toEqual(undefined);
+  });
 });
 
 describe('injectors', () => {

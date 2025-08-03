@@ -435,6 +435,8 @@ class OutletInjector implements Injector {
 
 export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
 
+export const INPUT_TITLE_BINDING_ENABLED = new InjectionToken<boolean>('');
+
 /**
  * Injectable used as a tree-shakable provider for opting in to binding router data to component
  * inputs.
@@ -452,6 +454,7 @@ export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
 @Injectable()
 export class RoutedComponentInputBinder {
   private outletDataSubscriptions = new Map<RouterOutlet, Subscription>();
+  private readonly inputTitleBindingEnabled = inject(INPUT_TITLE_BINDING_ENABLED);
 
   bindActivatedRouteToOutletComponent(outlet: RouterOutlet): void {
     this.unsubscribeFromRouteData(outlet);
@@ -469,10 +472,17 @@ export class RoutedComponentInputBinder {
       activatedRoute.queryParams,
       activatedRoute.params,
       activatedRoute.data,
+      this.inputTitleBindingEnabled ? activatedRoute.title : of(undefined),
     ])
       .pipe(
-        switchMap(([queryParams, params, data], index) => {
+        switchMap(([queryParams, params, data, title], index) => {
           data = {...queryParams, ...params, ...data};
+
+          // If input title binding is enabled, add the title to the data object.
+          if (this.inputTitleBindingEnabled) {
+            data = {...data, title};
+          }
+
           // Get the first result from the data subscription synchronously so it's available to
           // the component as soon as possible (and doesn't require a second change detection).
           if (index === 0) {

@@ -31,7 +31,11 @@ import {
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
-import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
+import {
+  INPUT_BINDER,
+  INPUT_TITLE_BINDING_ENABLED,
+  RoutedComponentInputBinder,
+} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
 import {RedirectCommand, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
@@ -690,6 +694,18 @@ export type ComponentInputBindingFeature =
   RouterFeature<RouterFeatureKind.ComponentInputBindingFeature>;
 
 /**
+ * Configuration options for component input binding feature.
+ *
+ * @publicApi
+ */
+export interface ComponentInputBindingOptions {
+  /**
+   * When `true`, enables automatic binding of the route title to component inputs.
+   */
+  enableTitleBinding?: boolean;
+}
+
+/**
  * A type alias for providers returned by `withViewTransitions` for use with `provideRouter`.
  *
  * @see {@link withViewTransitions}
@@ -717,12 +733,25 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * );
  * ```
  *
- * The router bindings information from any of the following sources:
+ * Enable title binding for component inputs:
+ * ```ts
+ * const appRoutes: Routes = [];
+ * bootstrapApplication(AppComponent,
+ *   {
+ *     providers: [
+ *       provideRouter(appRoutes, withComponentInputBinding({enableTitleBinding: true}))
+ *     ]
+ *   }
+ * );
+ * ```
+ *
+ * The router binds information from any of the following sources in order of precedence (lowest to highest):
  *
  *  - query parameters
  *  - path and matrix parameters
  *  - static route data
  *  - data from resolvers
+ *  - title from the route (when enableTitleBinding is true)
  *
  * Duplicate keys are resolved in the same order from above, from least to greatest,
  * meaning that resolvers have the highest precedence and override any of the other information
@@ -734,12 +763,21 @@ export type ViewTransitionsFeature = RouterFeature<RouterFeatureKind.ViewTransit
  * Default values can be provided with a resolver on the route to ensure the value is always present
  * or an input and use an input transform in the component.
  *
+ * @param options Configuration options for component input binding. When not provided, defaults
+ *   to `{enableTitleBinding: false}`.
+ * @see {@link ComponentInputBindingOptions}
  * @see {@link /guide/components/inputs#input-transforms Input Transforms}
  * @returns A set of providers for use with `provideRouter`.
  */
-export function withComponentInputBinding(): ComponentInputBindingFeature {
+export function withComponentInputBinding(
+  options?: ComponentInputBindingOptions,
+): ComponentInputBindingFeature {
   const providers = [
     RoutedComponentInputBinder,
+    {
+      provide: INPUT_TITLE_BINDING_ENABLED,
+      useValue: options?.enableTitleBinding ?? false,
+    },
     {provide: INPUT_BINDER, useExisting: RoutedComponentInputBinder},
   ];
 
