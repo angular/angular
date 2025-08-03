@@ -9,8 +9,8 @@
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
 import {computed, ResourceRef, Signal} from '@angular/core';
 import {FieldNode} from '../field/node';
-import {FieldPathNode} from '../path_node';
-import {assertPathIsCurrent} from '../schema';
+import {FieldPathNode} from '../schema/path_node';
+import {assertPathIsCurrent} from '../schema/schema';
 import {property} from './logic';
 import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
 import {addDefaultField} from './validation_errors';

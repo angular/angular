@@ -27,7 +27,7 @@ import {
   validateTree,
 } from '../../public_api';
 import {ValidationError, WithField} from '../../src/api/validation_errors';
-import {SchemaImpl} from '../../src/schema';
+import {SchemaImpl} from '../../src/schema/schema';
 
 interface TreeData {
   level: number;
