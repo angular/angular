@@ -1,12 +1,11 @@
 licenses(["notice"])
 
-# Downloaded from: https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0
-# Timestamp: 06/12/2025
-exports_files(["LICENSE"])
-
 filegroup(
     name = "material-symbols-outlined",
     srcs = [
+        # Downloaded from: https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0
+        # Timestamp: 06/12/2025
+        "LICENSE",
         # https://github.com/marella/material-symbols/blob/58064e5e223ccf97fda6846bf98ba88627a0bebe/material-symbols/outlined.css
         "outlined.css",
         # https://fonts.gstatic.com/s/materialsymbolsoutlined/v251/kJF1BvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzByHX9rA6RzaxHMPdY43zj-jCxv3fzvRNU22ZXGJpEpjC_1v-p_4MrImHCIJIZrDCvHOejbd5zrDAt.woff2
