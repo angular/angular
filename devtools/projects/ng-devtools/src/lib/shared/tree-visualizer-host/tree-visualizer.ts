@@ -129,6 +129,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
   override cleanup(): void {
     super.cleanup();
     d3.select(this.graphElement).selectAll('*').remove();
+    this.snappedNode = null;
   }
 
   override dispose(): void {
