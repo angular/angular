@@ -4,9 +4,8 @@
 
 ```ts
 
-import { AfterContentInit } from '@angular/core';
-import { ChangeDetectorRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
+import { DestroyRef } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { EnvironmentInjector } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
@@ -23,7 +22,6 @@ import { OnDestroy } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { Provider } from '@angular/core';
 import { ProviderToken } from '@angular/core';
-import { QueryList } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { Signal } from '@angular/core';
 import { SimpleChanges } from '@angular/core';
@@ -835,20 +833,23 @@ export { RouterLink }
 export { RouterLink as RouterLinkWithHref }
 
 // @public
-export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
-    constructor(router: Router, element: ElementRef, renderer: Renderer2, cdr: ChangeDetectorRef, link?: RouterLink | undefined);
-    ariaCurrentWhenActive?: 'page' | 'step' | 'location' | 'date' | 'time' | true | false;
+export class RouterLinkActive {
+    constructor(router: Router, element: ElementRef, renderer: Renderer2, destroyRef: DestroyRef, link?: RouterLink | undefined);
+    set ariaCurrentWhenActive(value: 'page' | 'step' | 'location' | 'date' | 'time' | true | false);
+    // (undocumented)
+    get ariaCurrentWhenActive(): 'page' | 'step' | 'location' | 'date' | 'time' | true | false | undefined;
     // (undocumented)
     get isActive(): boolean;
     readonly isActiveChange: EventEmitter<boolean>;
     // (undocumented)
-    links: QueryList<RouterLink>;
-    ngAfterContentInit(): void;
-    ngOnChanges(changes: SimpleChanges): void;
-    ngOnDestroy(): void;
+    links: i0.Signal<readonly RouterLink[]>;
     // (undocumented)
     set routerLinkActive(data: string[] | string);
-    routerLinkActiveOptions: {
+    set routerLinkActiveOptions(options: {
+        exact: boolean;
+    } | IsActiveMatchOptions);
+    // (undocumented)
+    get routerLinkActiveOptions(): {
         exact: boolean;
     } | IsActiveMatchOptions;
     // (undocumented)
