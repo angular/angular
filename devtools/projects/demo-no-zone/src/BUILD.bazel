@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project", "pkg_web")
+load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -41,20 +41,11 @@ filegroup(
     ],
 )
 
-pkg_web(
-    name = "devapp",
-    srcs = [
-        ":bundle",
-        ":dev_app_static_files",
-    ],
-)
-
 http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
-    additional_root_paths = ["angular/devtools/projects/demo-no-zone/src/devapp"],
     tags = ["manual"],
     deps = [
-        ":devapp",
+        ":bundle",
     ],
 )
