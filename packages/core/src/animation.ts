@@ -96,7 +96,8 @@ export class ElementRegistry {
 
   /** Used when animate.leave is only applying classes */
   trackClasses(details: AnimationDetails, classes: string | string[]): void {
-    const classList = typeof classes === 'string' ? [classes] : classes;
+    const classList = getClassListFromValue(classes);
+    if (!classList) return;
     for (let klass of classList) {
       details.classes?.add(klass);
     }
@@ -174,4 +175,16 @@ export class ElementRegistry {
     timeoutId = setTimeout(remove, maxAnimationTimeout);
     details.animateFn(remove);
   }
+}
+
+export function getClassListFromValue(value: string | Function | string[]): string[] | null {
+  const classes = typeof value === 'function' ? value() : value;
+  let classList: string[] | null = Array.isArray(classes) ? classes : null;
+  if (typeof classes === 'string') {
+    classList = classes
+      .trim()
+      .split(/\s+/)
+      .filter((k) => k);
+  }
+  return classList;
 }

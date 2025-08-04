@@ -14,6 +14,7 @@ import {
   AnimationFunction,
   AnimationRemoveFunction,
   ANIMATIONS_DISABLED,
+  getClassListFromValue,
   LongestAnimation,
 } from '../../animation';
 import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
@@ -27,7 +28,6 @@ import {NgZone} from '../../zone';
 import {assertDefined} from '../../util/assert';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
-const WS_REGEXP = /\s+/;
 const areAnimationSupported =
   (typeof ngServerMode === 'undefined' || !ngServerMode) &&
   typeof document !== 'undefined' &&
@@ -350,18 +350,6 @@ function getLongestAnimation(
     }
   }
   return currentLongest;
-}
-
-function getClassListFromValue(value: string | Function): string[] | null {
-  const classes = typeof value === 'function' ? value() : value;
-  let classList: string[] | null = classes instanceof Array ? classes : null;
-  if (typeof classes === 'string') {
-    classList = classes
-      .trim()
-      .split(WS_REGEXP)
-      .filter((k) => k);
-  }
-  return classList;
 }
 
 function setupAnimationCancel(event: Event, classList: string[] | null, renderer: Renderer) {
