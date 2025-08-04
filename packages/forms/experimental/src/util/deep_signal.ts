@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, untracked, WritableSignal} from '@angular/core';
+import {computed, Signal, untracked, WritableSignal} from '@angular/core';
 import {SIGNAL} from '@angular/core/primitives/signals';
 import {isArray} from './type_guards';
 
@@ -22,9 +22,8 @@ export function deepSignal<S, K extends keyof S>(
   source: WritableSignal<S>,
   prop: Signal<K>,
 ): WritableSignal<S[K]> {
-  const read: WritableSignal<S[K]> = (() => {
-    return source()[prop()];
-  }) as WritableSignal<S[K]>;
+  // Memoize the property.
+  const read = computed(() => source()[prop()]) as WritableSignal<S[K]>;
 
   read[SIGNAL] = source[SIGNAL];
   read.set = (value: S[K]) => {

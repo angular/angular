@@ -199,6 +199,26 @@ describe('submit', () => {
     await expectAsync(submitPromise).toBeRejectedWith(error);
     expect(f().submitting()).toBe(false);
   });
+
+  it('errors are cleared on edit', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(data, {injector: TestBed.inject(Injector)});
+
+    await submit(f, async (form) => {
+      return [
+        ValidationError.custom({kind: 'submit', field: f.first}),
+        ValidationError.custom({kind: 'submit', field: f.last}),
+      ];
+    });
+
+    expect(f.first().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
+
+    f.first().value.set('Hello');
+
+    expect(f.first().errors()).toEqual([]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
+  });
 });
 
 /**
