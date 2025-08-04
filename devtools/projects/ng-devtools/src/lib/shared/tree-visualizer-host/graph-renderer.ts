@@ -25,6 +25,10 @@ export abstract class GraphRenderer<T, U> {
     this.nodeMouseoutListeners = [];
   }
 
+  dispose(): void {
+    this.cleanup();
+  }
+
   onNodeClick(cb: (pointerEvent: PointerEvent, node: U) => void): void {
     this.nodeClickListeners.push(cb);
   }

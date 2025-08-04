@@ -11,6 +11,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -55,6 +56,9 @@ import {DocsRefButtonComponent} from '../../shared/docs-ref-button/docs-ref-butt
 const ENV_HIERARCHY_VER_SIZE = 35;
 const EL_HIERARCHY_VER_SIZE = 65;
 const HIERARCHY_HOR_SIZE = 50;
+
+const INIT_SNAP_ZOOM_SCALE = 0.7;
+const SNAP_ZOOM_SCALE = 0.8;
 
 @Component({
   selector: 'ng-injector-tree',
@@ -123,6 +127,11 @@ export class InjectorTreeComponent {
         this.rawDirectiveForest = view.forest;
         untracked(() => this.updateInjectorTreeVisualization(view.forest));
       },
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      this.injectorTreeGraph.dispose();
+      this.elementInjectorTreeGraph.dispose();
     });
   }
 
@@ -223,7 +232,7 @@ export class InjectorTreeComponent {
     // wait for CD to run before snapping to root so that svg container can change size.
     setTimeout(() => {
       if (graph.root?.children) {
-        graph.snapToNode(graph.root.children[0], 0.7);
+        graph.snapToNode(graph.root.children[0], INIT_SNAP_ZOOM_SCALE);
       }
     });
   }
@@ -238,9 +247,9 @@ export class InjectorTreeComponent {
       const {type} = node.data.injector;
 
       if (type === 'element') {
-        this.elementInjectorTreeGraph.snapToNode(node);
+        this.elementInjectorTreeGraph.snapToNode(node, SNAP_ZOOM_SCALE);
       } else if (type === 'environment') {
-        this.injectorTreeGraph.snapToNode(node);
+        this.injectorTreeGraph.snapToNode(node, SNAP_ZOOM_SCALE);
       }
     });
   }
