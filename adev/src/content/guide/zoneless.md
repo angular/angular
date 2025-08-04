@@ -99,7 +99,7 @@ taskService.run(async () => {
 });
 ```
 
-For more complicated use-cases, you can manuall add and remove a pending tasks:
+For more complicated use-cases, you can manually add and remove a pending task:
 
 ```typescript
 const taskService = inject(PendingTasks);
@@ -114,7 +114,7 @@ try {
 ```
 
 In addition, the [pendingUntilEvent](/api/core/rxjs-interop/pendingUntilEvent#) helper in `rxjs-interop` ensures
-the application remains unstable until the observable emits, complets, errors, or is unsubscribed.
+the application remains unstable until the observable emits, completes, errors, or is unsubscribed.
 
 ```typescript
 readonly myObservableState = someObservable.pipe(pendingUntilEvent());
