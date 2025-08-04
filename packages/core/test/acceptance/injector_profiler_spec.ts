@@ -456,7 +456,7 @@ describe('getInjectorMetadata', () => {
   });
   afterEach(() => setInjectorProfiler(null));
 
-  it('should be able to determine injector type and name', fakeAsync(() => {
+  it('should be able to determine injector type and name', async () => {
     class MyServiceA {}
     @NgModule({providers: [MyServiceA]})
     class ModuleA {}
@@ -500,8 +500,7 @@ describe('getInjectorMetadata', () => {
     });
 
     const root = TestBed.createComponent(MyStandaloneComponent);
-    TestBed.inject(Router).navigateByUrl('/lazy');
-    tick();
+    await TestBed.inject(Router).navigateByUrl('/lazy');
     root.detectChanges();
 
     function afterLazyComponentRendered(lazyComponent: LazyComponent) {
@@ -537,7 +536,7 @@ describe('getInjectorMetadata', () => {
       expect(injectorMetadata[4]!.type).toBe('environment');
       expect(injectorMetadata[5]!.type).toBe('environment');
     }
-  }));
+  });
 
   it('should return null for injectors it does not recognize', () => {
     class MockInjector extends Injector {
@@ -814,7 +813,7 @@ describe('getInjectorProviders', () => {
     expect(myServiceBProvider!.importPath![2]).toBe(ModuleC);
   });
 
-  it('should be able to determine import paths after module provider flattening in the standalone component case with lazy components', fakeAsync(() => {
+  it('should be able to determine import paths after module provider flattening in the standalone component case with lazy components', async () => {
     class MyService {}
 
     @NgModule({providers: [MyService]})
@@ -850,8 +849,7 @@ describe('getInjectorProviders', () => {
       ],
     });
     const root = TestBed.createComponent(MyStandaloneComponent);
-    TestBed.inject(Router).navigateByUrl('/lazy');
-    tick();
+    await TestBed.inject(Router).navigateByUrl('/lazy');
     root.detectChanges();
 
     const myStandaloneComponentNodeInjector = root.componentRef.injector;
@@ -883,9 +881,9 @@ describe('getInjectorProviders', () => {
     expect(myServiceProviderRecord!.importPath!.length).toBe(2);
     expect(myServiceProviderRecord!.importPath![0]).toBe(MyStandaloneComponentB);
     expect(myServiceProviderRecord!.importPath![1]).toBe(ModuleA);
-  }));
+  });
 
-  it('should be able to determine providers in a lazy route that has providers', fakeAsync(() => {
+  it('should be able to determine providers in a lazy route that has providers', async () => {
     class MyService {}
 
     @Component({selector: 'my-comp-b', template: 'hello world'})
@@ -915,8 +913,7 @@ describe('getInjectorProviders', () => {
       ],
     });
     const root = TestBed.createComponent(MyStandaloneComponent);
-    TestBed.inject(Router).navigateByUrl('/lazy');
-    tick();
+    await TestBed.inject(Router).navigateByUrl('/lazy');
     root.detectChanges();
 
     const myStandalonecomponentB = root.componentRef.instance!.routerOutlet!
@@ -935,7 +932,7 @@ describe('getInjectorProviders', () => {
     expect(myServiceProviderRecord).toBeTruthy();
     expect(myServiceProviderRecord!.provider).toBe(MyService);
     expect(myServiceProviderRecord!.token).toBe(MyService);
-  }));
+  });
 
   it('should be able to determine providers in an injector that was created manually', fakeAsync(() => {
     class MyService {}
@@ -1034,7 +1031,7 @@ describe('getDependenciesFromInjectable', () => {
   });
   afterEach(() => setInjectorProfiler(null));
 
-  it('should be able to determine which injector dependencies come from', fakeAsync(() => {
+  it('should be able to determine which injector dependencies come from', async () => {
     class MyService {}
     class MyServiceB {}
     class MyServiceC {}
@@ -1109,8 +1106,7 @@ describe('getDependenciesFromInjectable', () => {
     });
 
     const root = TestBed.createComponent(MyStandaloneComponent);
-    TestBed.inject(Router).navigateByUrl('/lazy');
-    tick();
+    await TestBed.inject(Router).navigateByUrl('/lazy');
     root.detectChanges();
 
     const myStandalonecomponentB = root.componentRef.instance!.routerOutlet!
@@ -1232,9 +1228,9 @@ describe('getDependenciesFromInjectable', () => {
       // The NodeInjector that provides MyService is not in the host path of this injector.
       expect(deps!.dependencies[0].providedIn).toBeUndefined();
     }
-  }));
+  });
 
-  it('should be able to recursively determine dependencies of dependencies by using the providedIn field', fakeAsync(() => {
+  it('should be able to recursively determine dependencies of dependencies by using the providedIn field', async () => {
     @Injectable()
     class MyService {
       myServiceB = inject(MyServiceB);
@@ -1318,7 +1314,7 @@ describe('getDependenciesFromInjectable', () => {
       host: false,
     });
     expect(routerDependency.providedIn).toBe((standaloneInjector as R3Injector).parent);
-  }));
+  });
 });
 
 describe('getInjectorResolutionPath', () => {
@@ -1328,7 +1324,7 @@ describe('getInjectorResolutionPath', () => {
   });
   afterEach(() => setInjectorProfiler(null));
 
-  it('should be able to inspect injector hierarchy structure', fakeAsync(() => {
+  it('should be able to inspect injector hierarchy structure', async () => {
     class MyServiceA {}
     @NgModule({providers: [MyServiceA]})
     class ModuleA {}
@@ -1368,8 +1364,7 @@ describe('getInjectorResolutionPath', () => {
       ],
     });
     const root = TestBed.createComponent(MyStandaloneComponent);
-    TestBed.inject(Router).navigateByUrl('/lazy');
-    tick();
+    await TestBed.inject(Router).navigateByUrl('/lazy');
     root.detectChanges();
 
     function onLazyComponentCreated() {
@@ -1464,5 +1459,5 @@ describe('getInjectorResolutionPath', () => {
 
       expect(path[6]).toBeInstanceOf(NullInjector);
     }
-  }));
+  });
 });
