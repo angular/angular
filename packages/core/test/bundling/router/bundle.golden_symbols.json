@@ -1,6 +1,7 @@
 {
   "chunks": {
     "main": [
+      "ABSOLUTE_REDIRECT_ERROR_NAME",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS_DISABLED",
       "APP_BASE_HREF",
@@ -177,6 +178,7 @@
       "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR",
       "NOT_YET",
       "NO_CHANGE",
+      "NO_MATCH_ERROR_NAME",
       "NO_PARENT_INJECTOR",
       "NULL_INJECTOR",
       "Navigation",
@@ -232,6 +234,7 @@
       "REACTIVE_LVIEW_CONSUMER_NODE",
       "REACTIVE_NODE",
       "REACTIVE_TEMPLATE_CONSUMER",
+      "RECOGNIZE_IMPL",
       "REFERENCE_NODE_BODY",
       "REFERENCE_NODE_HOST",
       "REF_EXTRACTOR_REGEXP",
@@ -865,7 +868,7 @@
       "iterator",
       "joinWithSlash",
       "last",
-      "last2",
+      "last3",
       "lastNodeWasCreated",
       "lastSelectedElementIdx",
       "leaveDI",
@@ -1114,6 +1117,7 @@
       "take",
       "takeLast",
       "takeUntil",
+      "takeUntilAbort",
       "tap",
       "textBindingInternal",
       "throwError",

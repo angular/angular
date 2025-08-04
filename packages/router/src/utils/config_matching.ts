@@ -40,7 +40,7 @@ export function matchWithChecks(
   segments: UrlSegment[],
   injector: EnvironmentInjector,
   urlSerializer: UrlSerializer,
-  abortSignal: AbortSignal,
+  abortSignal?: AbortSignal,
 ): Observable<MatchResult> {
   const result = match(segmentGroup, route, segments);
   if (!result.matched) {
