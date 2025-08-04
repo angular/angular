@@ -12,6 +12,23 @@ import {form, required, submit} from '../../public_api';
 import {ValidationError} from '../../src/api/validation_errors';
 
 describe('submit', () => {
+  it('fails fast on invalid form', async () => {
+    const data = signal({first: '', last: ''});
+    const f = form(
+      data,
+      (name) => {
+        required(name.first);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    await submit(f, async (form) => {
+      fail('Submit action should run not on invalid form');
+    });
+
+    expect(f.first().errors()).toEqual([ValidationError.required()]);
+  });
+
   it('maps error to a field', async () => {
     const data = signal({first: '', last: ''});
     const f = form(
@@ -186,7 +203,7 @@ describe('submit', () => {
     expect(submitSpy).toHaveBeenCalledWith('meow');
   });
 
-  it('recovers from errors throw by submit action', async () => {
+  it('recovers from errors thrown by submit action', async () => {
     const f = form(signal(0), {injector: TestBed.inject(Injector)});
     expect(f().submitting()).toBe(false);
 

@@ -343,6 +343,12 @@ export async function submit<TValue>(
 ) {
   const node = form() as FieldNode;
   markAllAsTouched(node);
+
+  // Fail fast if the form is already invalid.
+  if (node.invalid()) {
+    return;
+  }
+
   node.submitState.selfSubmitting.set(true);
   try {
     const errors = await action(form);
