@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "ng_project", "pkg_web", "sass_binary", "string_flag", "ts_project")
+load("//devtools/tools:defaults.bzl", "copy_to_directory", "esbuild", "extension_package", "ng_project", "sass_binary", "string_flag", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -144,7 +144,7 @@ genrule(
     cmd = "cp $< $@",
 )
 
-pkg_web(
+extension_package(
     name = "prodapp",
     srcs = [
         ":bundle",
@@ -159,8 +159,5 @@ pkg_web(
         "//devtools/projects/shell-browser/src/app:ng_validate_bundle",
         "//devtools/projects/shell-browser/src/assets",
         "//devtools/projects/shell-browser/src/popups",
-    ],
-    additional_root_paths = [
-        "projects/ng-devtools/src/lib",
     ],
 )

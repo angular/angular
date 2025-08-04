@@ -8,6 +8,5 @@ filegroup(
         "*.css",
     ]) + [
         "//third_party/fonts.google.com/material-symbols-outlined",
-        "//third_party/fonts.google.com/material-symbols-outlined:LICENSE",
     ],
 )

@@ -4,7 +4,6 @@ load(
     "esbuild",
     "http_server",
     "ng_project",
-    "pkg_web",
     "sass_binary",
 )
 
@@ -87,19 +86,11 @@ filegroup(
     ],
 )
 
-pkg_web(
-    name = "devapp",
-    srcs = [":dev_app_static_files"] + [
-        ":bundle",
-    ],
-)
-
 http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
-    additional_root_paths = ["angular/devtools/projects/demo-standalone/src/devapp"],
     tags = ["manual"],
     deps = [
-        ":devapp",
+        ":bundle",
     ],
 )
