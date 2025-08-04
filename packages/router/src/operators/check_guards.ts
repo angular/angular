@@ -245,7 +245,7 @@ export function runCanLoadGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
-  abortSignal: AbortSignal,
+  abortSignal?: AbortSignal,
 ): Observable<boolean> {
   const canLoad = route.canLoad;
   if (canLoad === undefined || canLoad.length === 0) {
@@ -257,7 +257,8 @@ export function runCanLoadGuards(
     const guardVal = isCanLoad(guard)
       ? guard.canLoad(route, segments)
       : runInInjectionContext(injector, () => (guard as CanLoadFn)(route, segments));
-    return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
+    const obs$ = wrapIntoObservable(guardVal);
+    return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
   });
 
   return of(canLoadObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));
@@ -279,7 +280,7 @@ export function runCanMatchGuards(
   route: Route,
   segments: UrlSegment[],
   urlSerializer: UrlSerializer,
-  abortSignal: AbortSignal,
+  abortSignal?: AbortSignal,
 ): Observable<GuardResult> {
   const canMatch = route.canMatch;
   if (!canMatch || canMatch.length === 0) return of(true);
@@ -289,7 +290,8 @@ export function runCanMatchGuards(
     const guardVal = isCanMatch(guard)
       ? guard.canMatch(route, segments)
       : runInInjectionContext(injector, () => (guard as CanMatchFn)(route, segments));
-    return wrapIntoObservable(guardVal).pipe(takeUntilAbort(abortSignal));
+    let obs$ = wrapIntoObservable(guardVal);
+    return abortSignal ? obs$.pipe(takeUntilAbort(abortSignal)) : obs$;
   });
 
   return of(canMatchObservables).pipe(prioritizedGuardValue(), redirectIfUrlTree(urlSerializer));

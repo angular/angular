@@ -1113,6 +1113,7 @@
       "take",
       "takeLast",
       "takeUntil",
+      "takeUntilAbort",
       "tap",
       "textBindingInternal",
       "throwError",
