@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 
 import type {Component} from './directives';
@@ -43,7 +44,7 @@ import type {Component} from './directives';
  * contents of the resolved URL. Browser's `fetch()` method is a good default implementation.
  */
 export function resolveComponentResources(
-  resourceResolver: (url: string) => Promise<string | {text(): Promise<string>}>,
+  resourceResolver: (url: string) => Promise<string | {text(): Promise<string>; status?: number}>,
 ): Promise<void> {
   // Store all promises which are fetching the resources.
   const componentResolved: Promise<void>[] = [];
@@ -54,7 +55,7 @@ export function resolveComponentResources(
     let promise = urlMap.get(url);
     if (!promise) {
       const resp = resourceResolver(url);
-      urlMap.set(url, (promise = resp.then(unwrapResponse)));
+      urlMap.set(url, (promise = resp.then((res) => unwrapResponse(url, res))));
     }
     return promise;
   }
@@ -147,8 +148,22 @@ export function isComponentResourceResolutionQueueEmpty() {
   return componentResourceResolutionQueue.size === 0;
 }
 
-function unwrapResponse(response: string | {text(): Promise<string>}): string | Promise<string> {
-  return typeof response == 'string' ? response : response.text();
+function unwrapResponse(
+  url: string,
+  response: string | {text(): Promise<string>; status?: number},
+): string | Promise<string> {
+  if (typeof response === 'string') {
+    return response;
+  }
+  if (response.status !== undefined && response.status !== 200) {
+    return Promise.reject(
+      new RuntimeError(
+        RuntimeErrorCode.EXTERNAL_RESOURCE_LOADING_FAILED,
+        ngDevMode && `Could not load resource: ${url}. Response status: ${response.status}`,
+      ),
+    );
+  }
+  return response.text();
 }
 
 function componentDefResolved(type: Type<any>): void {
