@@ -13,6 +13,7 @@ packages:
   - packages/core/
   - packages/core/test/bundling
   - packages/forms/
+  - packages/language-service/
   - packages/platform-browser/
   - packages/platform-server/
   - packages/platform-browser-dynamic/
@@ -43,3 +44,7 @@ overrides:
   '@angular/forms': 'workspace:*'
   '@angular/elements': 'workspace:*'
   '@angular/animations': 'workspace:*'
+  '@angular/benchpress': 'workspace: *'
+  '@angular/language-service': 'workspace: *'
+  '@angular/localize': 'workspace: *'
+  '@angular/upgrade': 'workspace: *'

@@ -8,7 +8,7 @@
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
 load("//:packages.bzl", "INTEGRATION_PACKAGES")
 
-NPM_PACKAGE_ARCHIVES = [
+NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
     "@babel/core",
     "@rollup/plugin-babel",
     "@rollup/plugin-node-resolve",
@@ -65,9 +65,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     for pkg in NPM_PACKAGE_ARCHIVES:
         if pkg not in pinned_npm_packages:
             npm_packages["//:node_modules/%s/dir" % pkg] = pkg
-    for pkg in INTEGRATION_PACKAGES:
-        last_segment_name = pkg.split("/")[-1]
-        npm_packages["//packages/%s:npm_package_archive" % last_segment_name] = pkg
 
     integration_test(
         name = name,
@@ -87,6 +84,7 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         environment = environment,
         toolchains = toolchains,
         tool_mappings = {
+            "@pnpm//:pnpm": "pnpm",
             "//:yarn_vendored": "yarn",
             "@nodejs_toolchains//:resolved_toolchain": "node",
         },
