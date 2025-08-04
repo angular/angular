@@ -92,6 +92,7 @@ npm_translate_lock(
         "//packages/core/test/bundling:package.json",
         "//packages/elements:package.json",
         "//packages/forms:package.json",
+        "//packages/language-service:package.json",
         "//packages/localize:package.json",
         "//packages/platform-browser:package.json",
         "//packages/platform-browser-dynamic:package.json",
@@ -218,7 +219,7 @@ http_archive(
 
 git_repository(
     name = "devinfra",
-    commit = "4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30",
+    commit = "73442df90c353b4b777574ffac1ede88ee89ac4d",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
