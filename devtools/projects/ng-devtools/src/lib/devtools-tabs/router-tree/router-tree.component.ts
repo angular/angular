@@ -11,6 +11,7 @@ import {
   afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   effect,
   inject,
   input,
@@ -86,6 +87,10 @@ export class RouterTreeComponent {
       write: () => {
         this.setUpRouterVisualizer();
       },
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      this.routerTreeVisualizer.dispose();
     });
   }
 
