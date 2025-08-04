@@ -28,7 +28,7 @@ describe('Animation', () => {
   describe('animate.leave', () => {
     const styles = `
     .fade {
-      animation: fade-out 1s;
+      animation: fade-out 1ms;
     }
     @keyframes fade-out {
       from {
@@ -70,7 +70,7 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
-    }, 100_000);
+    });
 
     it('should remove right away when animations are disabled', () => {
       @Component({
@@ -96,10 +96,10 @@ describe('Animation', () => {
     it('should support string arrays', () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2s;
+          animation: slide-out 2ms;
         }
         .fade {
-          animation: fade-out 1s;
+          animation: fade-out 1ms;
         }
         @keyframes slide-out {
           from {
@@ -128,6 +128,67 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(true);
         classArray = ['slide-out', 'fade'];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const paragragh = fixture.debugElement.query(By.css('p'));
+
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      paragragh.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      expect(fixture.nativeElement.outerHTML).toContain('class="slide-out fade"');
+      fixture.detectChanges();
+      paragragh.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      paragragh.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-out'}),
+      );
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
+    });
+
+    it('should support multiple classes as a single string with spaces', () => {
+      const multiple = `
+        .slide-out {
+          animation: slide-out 2ms;
+        }
+        .fade {
+          animation: fade-out 1ms;
+        }
+        @keyframes slide-out {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(10px);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template:
+          '<div>@if (show()) {<p animate.leave="slide-out fade" #el>I should slide out</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
 
@@ -224,10 +285,10 @@ describe('Animation', () => {
     it('should compose class list when host binding and regular binding', () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2s;
+          animation: slide-out 2ms;
         }
         .fade {
-          animation: fade-out 1s;
+          animation: fade-out 1ms;
         }
         @keyframes slide-out {
           from {
@@ -301,10 +362,10 @@ describe('Animation', () => {
     it('should compose class list when host binding on a directive and regular binding', () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2s;
+          animation: slide-out 2ms;
         }
         .fade {
-          animation: fade-out 1s;
+          animation: fade-out 1ms;
         }
         @keyframes slide-out {
           from {
@@ -376,10 +437,10 @@ describe('Animation', () => {
     it('should compose class list when host binding a string and regular class strings', () => {
       const multiple = `
         .slide-out {
-          animation: slide-out 2s;
+          animation: slide-out 2ms;
         }
         .fade {
-          animation: fade-out 1s;
+          animation: fade-out 1ms;
         }
         @keyframes slide-out {
           from {
@@ -448,10 +509,10 @@ describe('Animation', () => {
   describe('animate.enter', () => {
     const styles = `
     .slide-in {
-      animation: slide-in 1s;
+      animation: slide-in 1ms;
     }
     .fade-in {
-      animation: fade-in 2s;
+      animation: fade-in 2ms;
     }
     @keyframes slide-in {
       from {
@@ -574,10 +635,10 @@ describe('Animation', () => {
     it('should support string arrays', () => {
       const multiple = `
       .slide-in {
-        animation: slide-in 1s;
+        animation: slide-in 1ms;
       }
       .fade-in {
-        animation: fade-in 2s;
+        animation: fade-in 2ms;
       }
       @keyframes slide-in {
         from {
@@ -606,6 +667,53 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(false);
         classArray = ['slide-in', 'fade-in'];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.show.set(true);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeTruthy();
+      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
+    });
+
+    it('should support multple classes as a single string separated by a space', () => {
+      const multiple = `
+      .slide-in {
+        animation: slide-in 1ms;
+      }
+      .fade-in {
+        animation: fade-in 2ms;
+      }
+      @keyframes slide-in {
+        from {
+          transform: translateX(-10px);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template:
+          '<div>@if (show()) {<p animate.enter="slide-in fade-in" #el>I should slide in</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
       TestBed.configureTestingModule({animationsEnabled: true});
