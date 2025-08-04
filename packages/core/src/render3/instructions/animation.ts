@@ -36,6 +36,10 @@ const areAnimationSupported =
 
 const noOpAnimationComplete = () => {};
 
+// Tracks the list of classes added to a DOM node from `animate.enter` calls to ensure
+// we remove all of the classes in the case of animation composition via host bindings.
+const enterClassMap = new WeakMap<HTMLElement, string[]>();
+
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
  *
@@ -76,7 +80,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    setupAnimationCancel(event, activeClasses, renderer);
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
@@ -85,7 +88,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   // When the longest animation ends, we can remove all the classes
   const handleInAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
-    animationEnd(event, nativeElement, activeClasses, renderer, cleanupFns);
+    animationEnd(event, nativeElement, renderer, cleanupFns);
   };
 
   // We only need to add these event listeners if there are actual classes to apply
@@ -95,12 +98,31 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
+    trackEnterClasses(nativeElement, activeClasses);
+
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement as HTMLElement, klass);
     }
   }
 
   return ɵɵanimateEnter; // For chaining
+}
+
+/**
+ * trackEnterClasses is necessary in the case of composition where animate.enter
+ * is used on the same element in multiple places, like on the element and in a
+ * host binding. When removing classes, we need the entire list of animation classes
+ * added to properly remove them when the longest animation fires.
+ */
+function trackEnterClasses(el: HTMLElement, classes: string[]) {
+  const classlist = enterClassMap.get(el);
+  if (classlist) {
+    for (const klass of classes) {
+      classlist.push(klass);
+    }
+  } else {
+    enterClassMap.set(el, classes);
+  }
 }
 
 /**
@@ -390,10 +412,12 @@ function isLongestAnimation(
 function animationEnd(
   event: AnimationEvent | TransitionEvent,
   nativeElement: HTMLElement,
-  classList: string[] | null,
   renderer: Renderer,
   cleanupFns: Function[],
 ) {
+  const classList = enterClassMap.get(nativeElement);
+  if (!classList) return;
+  setupAnimationCancel(event, classList, renderer);
   const longestAnimation = getLongestAnimation(event);
   if (isLongestAnimation(event, nativeElement, longestAnimation)) {
     // Now that we've found the longest animation, there's no need
@@ -401,11 +425,10 @@ function animationEnd(
     // other elements further up. We don't want it to inadvertently
     // affect any other animations on the page.
     event.stopImmediatePropagation();
-    if (classList !== null) {
-      for (const klass of classList) {
-        renderer.removeClass(nativeElement, klass);
-      }
+    for (const klass of classList) {
+      renderer.removeClass(nativeElement, klass);
     }
+    enterClassMap.delete(nativeElement);
     for (const fn of cleanupFns) {
       fn();
     }

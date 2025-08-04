@@ -629,7 +629,13 @@ describe('Animation', () => {
       cmp.show.set(true);
       fixture.detectChanges();
       expect(cmp.show()).toBeTruthy();
+      const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     });
 
     it('should support string arrays', () => {
@@ -674,10 +680,71 @@ describe('Animation', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
       cmp.show.set(true);
       fixture.detectChanges();
+      const paragraph = fixture.debugElement.query(By.css('p'));
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
+    });
+
+    it('should support multple classes as a single string separated by a space', () => {
+      const multiple = `
+      .slide-in {
+        animation: slide-in 1ms;
+      }
+      .fade-in {
+        animation: fade-in 2ms;
+      }
+      @keyframes slide-in {
+        from {
+          transform: translateX(-10px);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template:
+          '<div>@if (show()) {<p animate.enter="slide-in fade-in" #el>I should slide in</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.show.set(true);
+      fixture.detectChanges();
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      expect(cmp.show()).toBeTruthy();
+      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
+      fixture.detectChanges();
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     });
 
     it('should support multple classes as a single string separated by a space', () => {
@@ -762,6 +829,12 @@ describe('Animation', () => {
       const fixture = TestBed.createComponent(TestComponent);
       fixture.detectChanges();
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
     });
 
     it('should compose class list when host binding and regular binding', () => {
@@ -781,6 +854,7 @@ describe('Animation', () => {
         styles: styles,
         imports: [ChildComponent],
         template: '<child-cmp [animate.enter]="fadeExp" />',
+        encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
         fadeExp = 'fade-in';
@@ -793,6 +867,15 @@ describe('Animation', () => {
 
       expect(childCmp.nativeElement.className).toContain('slide-in');
       expect(childCmp.nativeElement.className).toContain('fade-in');
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      expect(childCmp.nativeElement.className).not.toContain('slide-in');
+      expect(childCmp.nativeElement.className).not.toContain('fade-in');
     });
 
     it('should compose class list when host binding a string and regular class strings', () => {
@@ -810,6 +893,7 @@ describe('Animation', () => {
         styles: styles,
         imports: [ChildComponent],
         template: '<child-cmp animate.enter="fade-in" />',
+        encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {}
       TestBed.configureTestingModule({animationsEnabled: true});
@@ -819,6 +903,15 @@ describe('Animation', () => {
       const childCmp = fixture.debugElement.query(By.css('child-cmp'));
 
       expect(childCmp.nativeElement.className).toContain('slide-in fade-in');
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      fixture.detectChanges();
+      expect(childCmp.nativeElement.className).not.toContain('slide-in fade-in');
     });
   });
 });
