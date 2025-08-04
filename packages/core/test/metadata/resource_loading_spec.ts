@@ -198,5 +198,22 @@ Did you run and wait for 'resolveComponentResources()'?`.trim(),
       expect(MyComponent.ɵcmp).toBeDefined();
       expect(metadata.template).toBe('response for test://content');
     });
+
+    it('should fail when fetch is resolving to a 404', async () => {
+      const MyComponent: ComponentType<any> = class MyComponent {} as any;
+      const metadata: Component = {templateUrl: 'test://content'};
+      compileComponent(MyComponent, metadata);
+
+      await expectAsync(
+        resolveComponentResources(async () => {
+          return {
+            async text() {
+              return 'File not found';
+            },
+            status: 404,
+          };
+        }),
+      ).toBeRejectedWithError(/Could not load resource.*404/);
+    });
   });
 });
