@@ -27,7 +27,7 @@ import {
   SerializedProviderRecord,
 } from '../../../../../protocol';
 
-import {TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
+import {TreeD3Node, TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
 import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
 import {InjectorProvidersComponent} from './injector-providers/injector-providers.component';
 import {
@@ -39,6 +39,7 @@ import {
   getInjectorIdsToRootFromNode,
   grabInjectorPathsFromDirectiveForest,
   InjectorTreeD3Node,
+  InjectorTreeNode,
   InjectorTreeVisualizer,
   splitInjectorPathsIntoElementAndEnvironmentPaths,
   transformInjectorResolutionPathsIntoTree,
@@ -245,35 +246,28 @@ export class InjectorTreeComponent {
     });
   }
 
-  checkIfSelectedNodeStillExists(): void {
+  reselectSelectedNode(): void {
     const selectedNode = this.selectedNode();
-    if (selectedNode === null) {
-      this.snapToRoot(this.injectorTreeGraph);
-      this.snapToRoot(this.elementInjectorTreeGraph);
+    if (!selectedNode) {
       return;
     }
 
     const injector = selectedNode.data.injector;
+    let newNode: TreeD3Node<InjectorTreeNode> | null = null;
 
     if (injector.type === 'element') {
-      const node = this.elementInjectorTreeGraph.getNodeById(injector.id);
-      if (node) {
-        this.selectedNode.set(node);
-        return;
-      }
+      newNode = this.elementInjectorTreeGraph.getNodeById(injector.id);
+    } else if (injector.type === 'environment') {
+      newNode = this.injectorTreeGraph.getNodeById(injector.id);
     }
 
-    if (injector.type === 'environment') {
-      const node = this.injectorTreeGraph.getNodeById(injector.id);
-      if (node) {
-        this.selectedNode.set(node);
-        return;
-      }
+    if (newNode) {
+      this.selectedNode.set(newNode);
+    } else {
+      this.selectedNode.set(null);
+      this.snapToRoot(this.injectorTreeGraph);
+      this.snapToRoot(this.elementInjectorTreeGraph);
     }
-
-    this.selectedNode.set(null);
-    this.snapToRoot(this.injectorTreeGraph);
-    this.snapToRoot(this.elementInjectorTreeGraph);
   }
 
   getNodeByComponentId(graph: InjectorTreeVisualizer, id: number): InjectorTreeD3Node | null {
@@ -339,7 +333,7 @@ export class InjectorTreeComponent {
     this.unhighlightAllEdges(envGroup);
     this.unhighlightAllNodes(envGroup);
 
-    this.checkIfSelectedNodeStillExists();
+    this.reselectSelectedNode();
 
     if (this.selectedNode() === null) {
       return;
