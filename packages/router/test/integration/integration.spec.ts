@@ -735,13 +735,16 @@ for (const browserAPI of ['navigation', 'history'] as const) {
 
       router.navigateByUrl('/user/victor');
       expect(router.getCurrentNavigation()).not.toBe(null);
+      expect(router.currentNavigation()).not.toBe(null);
       router.navigateByUrl('/user/fedor');
       // Due to https://github.com/angular/angular/issues/29389, this would be `false`
       // when running a second navigation.
       expect(router.getCurrentNavigation()).not.toBe(null);
+      expect(router.currentNavigation()).not.toBe(null);
       await advance(fixture);
 
       expect(router.getCurrentNavigation()).toBe(null);
+      expect(router.currentNavigation()).toBe(null);
       expect(fixture.nativeElement).toHaveText('user fedor');
     });
 

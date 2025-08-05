@@ -709,8 +709,10 @@ export class Router {
     // (undocumented)
     config: Routes;
     createUrlTree(commands: readonly any[], navigationExtras?: UrlCreationOptions): UrlTree;
+    readonly currentNavigation: i0.Signal<Navigation | null>;
     dispose(): void;
     get events(): Observable<Event_2>;
+    // @deprecated
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     // @deprecated
