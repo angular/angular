@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project", "pkg_web")
+load("//devtools/tools:defaults.bzl", "esbuild", "http_server", "ng_project")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -10,22 +10,22 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
-        "//devtools/projects/demo-no-zone/src/app:app_rjs",
+        "//devtools/projects/demo-no-zone/src/app",
     ],
 )
 
 esbuild(
     name = "bundle",
     srcs = [
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_esm_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_esm",
     ],
     config = "//devtools/tools/esbuild:esbuild-esm.config.mjs",
     entry_points = [":main.ts"],
     platform = "browser",
     splitting = False,
     target = "es2016",
-    deps = [":src_rjs"],
+    deps = [":src"],
 )
 
 exports_files([
@@ -41,20 +41,11 @@ filegroup(
     ],
 )
 
-pkg_web(
-    name = "devapp",
-    srcs = [
-        ":bundle",
-        ":dev_app_static_files",
-    ],
-)
-
 http_server(
     name = "devserver",
     srcs = [":dev_app_static_files"],
-    additional_root_paths = ["angular/devtools/projects/demo-no-zone/src/devapp"],
     tags = ["manual"],
     deps = [
-        ":devapp",
+        ":bundle",
     ],
 )

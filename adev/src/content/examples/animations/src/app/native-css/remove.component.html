@@ -7,7 +7,7 @@
 
 
 @if (isShown()) {
-  <div class="insert-container" [class.deleting]="deleting()">
+  <div class="insert-container" animate.leave="deleting">
     <p>The box is inserted</p>
   </div>
 }

@@ -30,7 +30,7 @@ def ng_web_test_suite(deps = [], bootstrap = [], **kwargs):
     web_test(
         deps = deps,
         bootstrap = [
-            "//tools/testing:browser_rjs",
+            "//tools/testing:browser",
         ] + bootstrap,
         **kwargs
     )
@@ -39,7 +39,7 @@ def zoneless_web_test_suite(deps = [], bootstrap = [], **kwargs):
     web_test(
         deps = deps,
         bootstrap = [
-            "//tools/testing:browser_zoneless_rjs",
+            "//tools/testing:browser_zoneless",
         ] + bootstrap,
         **kwargs
     )

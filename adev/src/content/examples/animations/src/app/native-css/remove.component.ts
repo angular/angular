@@ -1,5 +1,5 @@
 // #docplaster
-import {Component, ElementRef, inject, signal} from '@angular/core';
+import {Component, signal} from '@angular/core';
 
 @Component({
   selector: 'app-remove',
@@ -8,21 +8,8 @@ import {Component, ElementRef, inject, signal} from '@angular/core';
 })
 export class RemoveComponent {
   isShown = signal(false);
-  deleting = signal(false);
-  private el = inject(ElementRef);
 
   toggle() {
-    if (this.isShown()) {
-      const target = this.el.nativeElement.querySelector('.insert-container');
-      target.addEventListener('transitionend', () => this.hide());
-      this.deleting.set(true);
-    } else {
-      this.isShown.update((isShown) => !isShown);
-    }
-  }
-
-  hide() {
-    this.isShown.set(false);
-    this.deleting.set(false);
+    this.isShown.update((isShown) => !isShown);
   }
 }

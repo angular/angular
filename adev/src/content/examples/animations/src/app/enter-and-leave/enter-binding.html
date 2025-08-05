@@ -1,0 +1,10 @@
+<!-- #docplaster -->
+<h2><code>animate.enter</code> Binding Example</h2>
+
+<button type="button" (click)="toggle()">Toggle Element</button>
+
+@if (isShown()) {
+  <div class="enter-container" [animate.enter]="enterClass()">
+    <p>The box is entering.</p>
+  </div>
+}

@@ -12,14 +12,13 @@ ts_project(
             "index.mts",
         ],
     ),
-    enable_runtime_rnjs_interop = True,
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/jsdom",
         "//adev:node_modules/tinyglobby",
-        "//adev/shared-docs/pipeline/examples/shared:shared_rjs",
-        "//adev/shared-docs/pipeline/guides:guides_lib_rjs",
+        "//adev/shared-docs/pipeline/examples/shared",
+        "//adev/shared-docs/pipeline/guides:guides_lib",
     ],
 )
 
@@ -28,12 +27,11 @@ ts_project(
     srcs = [
         "index.mts",
     ],
-    enable_runtime_rnjs_interop = True,
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        ":stackblitz_rjs",
+        ":stackblitz",
         "//adev:node_modules/@types/node",
     ],
 )
@@ -51,6 +49,6 @@ esbuild(
     tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
-        ":index_rjs",
+        ":index",
     ],
 )

@@ -18,7 +18,7 @@ To change to the experimental unit test system, update the `test` target as foll
   "options": {
     "tsConfig": "tsconfig.spec.json",
     "runner": "vitest",
-    "buildTarget": "::development",
+    "buildTarget": "::development"
   }
 }
 </docs-code>

@@ -10,22 +10,22 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/typescript",
-        "//packages:types_rjs",
-        "//packages/compiler:compiler_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/incremental:incremental_rjs",
-        "//packages/compiler-cli/src/ngtsc/perf:perf_rjs",
-        "//packages/compiler-cli/src/ngtsc/reflection:reflection_rjs",
-        "//packages/compiler-cli/src/ngtsc/testing:testing_rjs",
-        "//packages/compiler-cli/src/ngtsc/transform:transform_rjs",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api:api_rjs",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/incremental",
+        "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/transform",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
     ],
 )
 
 jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

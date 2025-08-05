@@ -44,6 +44,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,
     // (undocumented)
+    EXTERNAL_RESOURCE_LOADING_FAILED = 918,
+    // (undocumented)
     HOST_DIRECTIVE_COMPONENT = 310,
     // (undocumented)
     HOST_DIRECTIVE_CONFLICTING_ALIAS = 312,

@@ -1,6 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
-load("@aspect_rules_js//js:defs.bzl", "js_binary", "js_run_binary")
-load("//tools:defaults2.bzl", "ts_config", "ts_project")
+load("//adev/shared-docs:defaults.bzl", "copy_to_directory", "js_binary", "js_run_binary", "ts_config", "ts_project")
 
 package(default_visibility = ["//adev:__subpackages__"])
 
@@ -34,7 +32,7 @@ js_binary(
     data = [
         "llms.mjs",
         "llms-list.md",
-        ":llms_lib_rjs",
+        ":llms_lib",
         "//adev/src/content:guide_files",
     ],
     entry_point = ":llms.mjs",

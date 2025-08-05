@@ -12,7 +12,7 @@ ts_project(
         "src/**/*.ts",
     ]),
     deps = [
-        "//packages/core:core_rjs",
+        "//packages/core",
     ],
 )
 

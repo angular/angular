@@ -54,7 +54,7 @@ describe('Terminal', () => {
 });
 
 async function until<T>(fn: () => T): Promise<T> {
-  const timeout = 100;
+  const timeout = 1000;
   const start = performance.now();
   while (true) {
     const result = fn();

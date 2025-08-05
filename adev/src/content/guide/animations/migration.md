@@ -1,6 +1,6 @@
 # Migrating away from Angular's Animations package
 
-Almost all the features supported by `@angular/animations` have simpler alternatives with native CSS. Consider removing the Angular Animations package from your application, as the package can contribute around 60 kilobytes to your JavaScript bundle. Native CSS animations offer superior performance, as they can benefit from hardware acceleration. Animations defined in the animations package lack that ability. This guide walks through the process of refactoring your code from `@angular/animations` to native CSS animations.
+The `@angular/animations` package is deprecated as of v20.2, which also introduced the new `animate.enter` and `animate.leave` feature to add animations to your application. Using these new features, you can replace all animations based on `@angular/animations`  with plain CSS or JS animation libraries. Removing `@angular/animations` from your application can significantly reduce the size of your JavaScript bundle. Native CSS animations generally offer superior performance, as they can benefit from hardware acceleration. This guide walks through the process of refactoring your code from `@angular/animations` to native CSS animations.
 
 ## How to write animations in native CSS
 
@@ -117,7 +117,7 @@ The animations package offered the previously mentioned pattern matching for ent
     <docs-code header="src/app/insert-remove.component.css" path="adev/src/content/examples/animations/src/app/animations-package/insert-remove.component.css" />
 </docs-code-multifile>
 
-Here's how the same thing can be accomplished without the animations package.
+Here's how the same thing can be accomplished without the animations package using `animate.enter`.
 
 #### With Native CSS
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/insert.component.ts">
@@ -126,7 +126,7 @@ Here's how the same thing can be accomplished without the animations package.
     <docs-code header="src/app/insert.component.css" path="adev/src/content/examples/animations/src/app/native-css/insert.component.css"  />
 </docs-code-multifile>
 
-Leaving a view is slightly more complex. The element removal needs to be delayed until the exit animation is complete. This requires a bit of extra code in your component class to accomplish.
+Use `animate.leave` to animate elements as they leave the view, which will apply the specified CSS classes to the element as it leaves the view.
 
 #### With Native CSS
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/remove.component.ts">
@@ -134,6 +134,8 @@ Leaving a view is slightly more complex. The element removal needs to be delayed
     <docs-code header="src/app/remove.component.html" path="adev/src/content/examples/animations/src/app/native-css/remove.component.html" />
     <docs-code header="src/app/remove.component.css" path="adev/src/content/examples/animations/src/app/native-css/remove.component.css"  />
 </docs-code-multifile>
+
+For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations/enter-and-leave).
 
 ### Animating increment and decrement
 
@@ -236,7 +238,7 @@ In this example, the `rotate` and `fade-in` animations fire at the same time.
 
 ### Animating the items of a reordering list
 
-Items reordering in a list works out of the box using the previously described techniques. No additional special work is required. Items in a `@for` loop will be removed and re-added properly, which will fire off animations using `@starting-styles` for entry animations. Removal animations will require additional code to add the event listener, as seen in the example above.
+Items reordering in a list works out of the box using the previously described techniques. No additional special work is required. Items in a `@for` loop will be removed and re-added properly, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example above.
 
 #### With Animations Package<
 <docs-code-multifile>

@@ -38,7 +38,7 @@ test --nolegacy_external_runfiles
 # in Bazel 0.21.0 but turned off again in 0.22.0. Follow
 # https://github.com/bazelbuild/bazel/issues/7026 for more details.
 # This flag is needed to so that the bazel cache is not invalidated
-# when running bazel via `yarn bazel`.
+# when running bazel via `pnpm bazel`.
 # See https://github.com/angular/angular/issues/27514.
 build --incompatible_strict_action_env
 run --incompatible_strict_action_env
@@ -60,11 +60,11 @@ build --enable_runfiles
 # Releases should always be stamped with version control info
 # This command assumes node on the path and is a workaround for
 # https://github.com/bazelbuild/bazel/issues/4802
-build:release --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=release"
+build:release --workspace_status_command="pnpm --silent ng-dev release build-env-stamp --mode=release"
 build:release --stamp
 
 # Snapshots should also be stamped with version control information.
-build:snapshot-build --workspace_status_command="yarn -s ng-dev release build-env-stamp --mode=snapshot"
+build:snapshot-build --workspace_status_command="pnpm --silent ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
 
 # Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.

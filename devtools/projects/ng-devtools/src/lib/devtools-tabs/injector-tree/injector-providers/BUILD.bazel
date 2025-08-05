@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 sass_binary(
     name = "injector_providers_component_styles",
     src = "injector-providers.component.scss",
-    include_paths = ["external/npm/node_modules"],
+    include_paths = ["external/angular/node_modules"],
     deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
 )
 
@@ -23,7 +23,7 @@ ng_project(
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
-        "//devtools/projects/ng-devtools/src/lib/shared/button:button_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
     ],
 )

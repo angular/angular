@@ -28,14 +28,14 @@ ts_project(
     ],
     deps = [
         "//adev:node_modules/@angular/compiler-cli",
-        "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib_rjs",
+        "//adev/shared-docs/pipeline/api-gen/manifest:generate_api_manifest_lib",
     ],
 )
 
 zoneless_jasmine_test(
     name = "unit_tests",
     data = [
-        ":unit_test_lib_rjs",
-        "//packages/compiler-cli:compiler-cli_rjs",
+        ":unit_test_lib",
+        "//packages/compiler-cli",
     ],
 )

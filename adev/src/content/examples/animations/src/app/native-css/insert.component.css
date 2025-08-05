@@ -9,11 +9,20 @@
   color: #000000;
   font-weight: bold;
   font-size: 20px;
-  opacity: 1;
-  transition: opacity 1s ease-out, transform 1s ease-out;
+}
 
-  @starting-style {
+.enter-animation {
+  animation: slide-fade 1s;
+}
+
+@keyframes slide-fade {
+  from {
     opacity: 0;
     transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

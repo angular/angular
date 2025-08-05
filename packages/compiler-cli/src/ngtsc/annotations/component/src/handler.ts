@@ -1116,7 +1116,8 @@ export class ComponentDecoratorHandler
     if (!ts.isClassDeclaration(node) || (meta.isPoisoned && !this.usePoisonedData)) {
       return;
     }
-    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(node);
+    const ref = new Reference(node);
+    const scope = this.typeCheckScopeRegistry.getTypeCheckScope(ref);
     if (scope.isPoisoned && !this.usePoisonedData) {
       // Don't type-check components that had errors in their scopes, unless requested.
       return;
@@ -1143,15 +1144,16 @@ export class ComponentDecoratorHandler
         )
       : null;
     const hostBindingsContext: HostBindingsContext | null =
-      hostElement === null
+      hostElement === null || scope.directivesOnHost === null
         ? null
         : {
             node: hostElement,
+            directives: scope.directivesOnHost,
             sourceMapping: {type: 'direct', node},
           };
 
     ctx.addDirective(
-      new Reference(node),
+      ref,
       binder,
       scope.schemas,
       templateContext,

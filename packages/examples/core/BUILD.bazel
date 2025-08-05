@@ -15,12 +15,12 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages/animations:animations_rjs",
-        "//packages/core:core_rjs",
-        "//packages/forms:forms_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/animations:animations_rjs",
-        "//packages/router:router_rjs",
+        "//packages/animations",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/router",
     ],
 )
 
@@ -32,8 +32,8 @@ ts_project(
         exclude = ["**/e2e_test/*"],
     ),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
@@ -45,7 +45,7 @@ ts_project(
     deps = [
         "//:node_modules/@types/jasminewd2",
         "//:node_modules/protractor",
-        "//packages/examples/test-utils:test-utils_rjs",
+        "//packages/examples/test-utils",
     ],
 )
 
@@ -57,7 +57,7 @@ esbuild(
     entry_point = ":main.ts",
     tsconfig = "//packages/examples:tsconfig_build",
     deps = [
-        ":core_examples_rjs",
+        ":core_examples",
         "//packages/examples:tsconfig_build",
     ],
 )
@@ -73,15 +73,15 @@ protractor_web_test_suite(
     name = "protractor_tests",
     server = ":devserver",
     deps = [
-        ":core_e2e_tests_lib_rjs",
+        ":core_e2e_tests_lib",
     ],
 )
 
 angular_jasmine_test(
     name = "test",
     data = [
-        ":core_tests_lib_rjs",
-        "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib_rjs",
+        ":core_tests_lib",
+        "//packages/examples/core/di/ts/forward_ref:forward_ref_tests_lib",
     ],
 )
 

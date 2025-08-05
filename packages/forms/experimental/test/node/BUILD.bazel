@@ -6,15 +6,15 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/zod",
-        "//packages/common/http:http_rjs",
-        "//packages/common/http/testing:testing_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/forms:forms_rjs",
-        "//packages/forms/experimental:experimental_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/platform-browser/testing:testing_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/forms/experimental",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -24,6 +24,6 @@ ts_project(
 angular_jasmine_test(
     name = "test",
     data = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

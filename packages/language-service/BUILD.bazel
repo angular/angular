@@ -1,6 +1,6 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "extract_types", "ts_config", "ts_project")
+load("//tools:defaults2.bzl", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -27,7 +27,7 @@ ts_project(
     name = "factory_lib",
     srcs = ["plugin-factory.ts"],
     deps = [
-        ":api_rjs",
+        ":api",
         "//:node_modules/typescript",
     ],
 )
@@ -37,21 +37,21 @@ esbuild(
     entry_point = ":plugin-factory.ts",
     external = ["@angular/language-service/bundles/language-service.js"],
     format = "cjs",
-    deps = [":factory_lib_rjs"],
+    deps = [":factory_lib"],
 )
 
 esbuild(
     name = "api_bundle",
     entry_point = ":api.ts",
     format = "cjs",
-    deps = [":api_rjs"],
+    deps = [":api"],
 )
 
 extract_types(
     name = "types",
     deps = [
-        ":api_rjs",
-        ":factory_lib_rjs",
+        ":api",
+        ":factory_lib",
     ],
 )
 
@@ -78,4 +78,12 @@ pkg_npm(
         ":types",
         "//packages/language-service/bundles:language-service.js",
     ],
+)
+
+npm_package(
+    name = "pkg",
+    srcs = [":npm_package"],
+    replace_prefixes = {
+        "npm_package/": "",
+    },
 )

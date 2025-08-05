@@ -10,6 +10,6 @@ ts_project(
     deps = [
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
-        "//packages:types_rjs",
+        "//packages:types",
     ],
 )

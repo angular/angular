@@ -28,6 +28,7 @@ import {
   runInInjectionContext,
   Type,
   ɵperformanceMarkFeature as performanceMarkFeature,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -347,6 +348,7 @@ export type InitialNavigationFeature =
  */
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature {
   const providers = [
+    {provide: IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, useValue: true},
     {provide: INITIAL_NAVIGATION, useValue: InitialNavigation.EnabledBlocking},
     provideAppInitializer(() => {
       const injector = inject(Injector);

@@ -21,9 +21,9 @@ ng_project(
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/router",
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
-        "//devtools/src:iframe_message_bus_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/protocol",
+        "//devtools/src:iframe_message_bus",
     ],
 )

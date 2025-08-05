@@ -54,7 +54,7 @@ git fetch upstream main
 git checkout "${MERGED_RELEASE_COMMIT}"
 
 nvm install
-yarn --immutable
+pnpm install --frozen-lockfile
 ```
 
 Note that while the steps below can technically be done without merging the release PR
@@ -71,7 +71,7 @@ Next, build and package the extension:
 
 ```shell
 # Build the Chrome version.
-yarn devtools:build:chrome:release
+pnpm devtools:build:chrome:release
 
 # Package the extension.
 (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r ~/devtools-chrome.zip *)
@@ -92,7 +92,7 @@ To publish Angular DevTools as a Firefox Add-on, first build and package the ext
 
 ```shell
 # Build the Firefox version.
-yarn devtools:build:firefox:release
+pnpm devtools:build:firefox:release
 
 # Package the extension.
 (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r ~/devtools-firefox.zip *)

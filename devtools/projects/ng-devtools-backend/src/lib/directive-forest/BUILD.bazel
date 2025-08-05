@@ -11,12 +11,12 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/semver-dsl",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:version_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api:ng-debug-api_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
+        "//devtools/projects/ng-devtools-backend/src/lib:version",
+        "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -26,16 +26,16 @@ ts_test_library(
         "render-tree.spec.ts",
     ],
     deps = [
-        ":directive-forest_rjs",
+        ":directive-forest",
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools-backend/src/lib:interfaces_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:utils_rjs",
+        "//devtools/projects/ng-devtools-backend/src/lib:interfaces",
+        "//devtools/projects/ng-devtools-backend/src/lib:utils",
     ],
 )
 
 ng_web_test_suite(
     name = "test",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

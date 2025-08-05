@@ -11,7 +11,6 @@ ts_project(
     srcs = [
         "index.mts",
     ],
-    enable_runtime_rnjs_interop = True,
     visibility = [
         "//adev/shared-docs:__subpackages__",
     ],
@@ -43,6 +42,6 @@ esbuild(
     tsconfig = "//adev/shared-docs:tsconfig_build",
     visibility = ["//visibility:public"],
     deps = [
-        "//adev/shared-docs/pipeline/examples/previews:index_rjs",
+        "//adev/shared-docs/pipeline/examples/previews:index",
     ],
 )

@@ -1,5 +1,4 @@
-load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "copy_to_bin", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -20,9 +19,9 @@ ts_project(
         "//:node_modules/semver",
         "//:node_modules/typescript",
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/file_system:file_system_rjs",
-        "//packages/compiler-cli/src/ngtsc/logging:logging_rjs",
-        "//packages/compiler-cli/src/ngtsc/sourcemaps:sourcemaps_rjs",
-        "//packages/compiler-cli/src/ngtsc/translator:translator_rjs",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/translator",
     ],
 )

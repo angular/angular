@@ -1,25 +1,23 @@
-function readPackage(pkg, context) {
-  // TODO(devversion): This exists temporarily during migration as we can't have `workspace:*` deps
-  // in the `package.json` also processed by Yarn
-  if (pkg.name === 'angular-srcs') {
-    pkg.dependencies = {
-      ...pkg.dependencies,
-      // These dependencies are added to the workspace root so that peer dependencies
-      // are resolved via these locally-built versions. e.g. compiler-cli's peer deps.
-      '@angular/compiler': 'workspace:*',
-      '@angular/compiler-cli': 'workspace:*',
-      '@angular/core': 'workspace:*',
-      '@angular/common': 'workspace:*',
-      '@angular/router': 'workspace:*',
-      '@angular/platform-browser': 'workspace:*',
-      '@angular/platform-browser-dynamic': 'workspace:*',
-      '@angular/platform-server': 'workspace:*',
-      '@angular/forms': 'workspace:*',
-      '@angular/elements': 'workspace:*',
-      '@angular/animations': 'workspace:*',
-    };
-  }
+// TODO: Define these packages in a single common location.
+const localAngularPackages = [
+  '@angular/animations',
+  '@angular/common',
+  '@angular/compiler',
+  '@angular/compiler-cli',
+  '@angular/core',
+  '@angular/elements',
+  '@angular/forms',
+  '@angular/language-service',
+  '@angular/localize',
+  '@angular/platform-browser',
+  '@angular/platform-browser-dynamic',
+  '@angular/platform-server',
+  '@angular/router',
+  '@angular/service-worker',
+  '@angular/upgrade',
+];
 
+function readPackage(pkg, context) {
   // TODO(devversion): This allows us to make compiler/TS a production dependency of compiler-cli
   // because `rules_js` doesn't otherwise include the dependency in the `npm_package_store`.
   // See: https://github.com/aspect-build/rules_js/issues/2226
@@ -42,12 +40,14 @@ function readPackage(pkg, context) {
     }
 
     // Change all locally generated packages to directly depend on the other local packages, instead
-    // of expecting them as peerDependencies automatically as we do not auto install peer deps.
-    if (version === '0.0.0-PLACEHOLDER') {
+    // of expecting them as peerDependencies automatically as we do not auto install peer deps. The
+    // package is also removed from peerDependencies as it was moved over and will just cause errors.
+    if (localAngularPackages.includes(key)) {
       pkg.dependencies = {
         ...pkg.dependencies,
         [key]: 'workspace: *',
       };
+      delete pkg.peerDependencies[key];
     }
   });
 

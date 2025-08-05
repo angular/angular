@@ -5,7 +5,6 @@ load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@bazel_skylib//rules:common_settings.bzl", _string_flag = "string_flag")
-load("@build_bazel_rules_nodejs//:index.bzl", _pkg_web = "pkg_web")
 load(
     "//tools:defaults2.bzl",
     _http_server = "http_server",
@@ -27,7 +26,6 @@ esbuild = _esbuild
 copy_to_bin = _copy_to_bin
 copy_to_directory = _copy_to_directory
 string_flag = _string_flag
-pkg_web = _pkg_web
 ts_config = _ts_config
 
 def ng_web_test_suite(deps = [], **kwargs):
@@ -52,7 +50,6 @@ def ng_project(name, srcs = [], angular_assets = [], **kwargs):
 
     _ng_project(
         name = name,
-        enable_runtime_rnjs_interop = False,
         tsconfig = "//devtools:tsconfig_build",
         srcs = srcs,
         assets = angular_assets,
@@ -63,7 +60,6 @@ def ng_project(name, srcs = [], angular_assets = [], **kwargs):
 def ts_project(name, **kwargs):
     _ts_project(
         name = name,
-        enable_runtime_rnjs_interop = False,
         tsconfig = "//devtools:tsconfig_build",
         **kwargs
     )
@@ -72,10 +68,20 @@ def ts_test_library(name, deps = [], **kwargs):
     _ts_project(
         name = name,
         tsconfig = "//devtools:tsconfig_test",
-        enable_runtime_rnjs_interop = False,
         testonly = 1,
         deps = deps + [
             "//:node_modules/@types/jasmine",
         ],
+        **kwargs
+    )
+
+def extension_package(
+        # Actually copy the files into the destination location so they can be copied
+        # out during use when publishing."
+        hardlink = "off",
+        **kwargs):
+    # Use the copy_to_directory rule for creating extension packages.
+    copy_to_directory(
+        hardlink = hardlink,
         **kwargs
     )

@@ -15,8 +15,11 @@ class MockMessageBus extends MessageBus<Events> {
   override emit(_: Topic, __: any): boolean {
     return true;
   }
-  override on(topic: Topic, cb: any): void {
+  override on(topic: Topic, cb: any): () => void {
     this.cbs[topic] = cb;
+    return () => {
+      delete this.cbs[topic];
+    };
   }
   override once(topic: Topic, cb: any): void {
     this.cbs[topic] = cb;

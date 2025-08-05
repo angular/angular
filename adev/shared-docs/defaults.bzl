@@ -1,11 +1,13 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_to_directory")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
-load("@aspect_rules_js//js:defs.bzl", _js_binary = "js_binary", _js_library = "js_library", _js_run_binary = "js_run_binary")
 load("@devinfra//bazel/private:path_relative_to_label.bzl", _path_relative_to_label = "path_relative_to_label")
 load(
     "//tools:defaults2.bzl",
     _jasmine_test = "jasmine_test",
+    _js_binary = "js_binary",
+    _js_library = "js_library",
+    _js_run_binary = "js_run_binary",
     _ng_package = "ng_package",
     _ng_project = "ng_project",
     _sass_binary = "sass_binary",
@@ -30,27 +32,25 @@ js_run_binary = _js_run_binary
 path_relative_to_label = _path_relative_to_label
 zoneless_jasmine_test = _zoneless_jasmine_test
 
-def ts_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
+def ts_project(name, tsconfig = None, testonly = False, **kwargs):
     if tsconfig == None:
         if native.package_name().startswith("adev/shared-docs"):
             tsconfig = "//adev/shared-docs:tsconfig_test" if testonly else "//adev/shared-docs:tsconfig_build"
 
     _ts_project(
         name = name,
-        enable_runtime_rnjs_interop = enable_runtime_rnjs_interop,
         tsconfig = tsconfig,
         testonly = testonly,
         **kwargs
     )
 
-def ng_project(name, tsconfig = None, testonly = False, enable_runtime_rnjs_interop = False, **kwargs):
+def ng_project(name, tsconfig = None, testonly = False, **kwargs):
     if tsconfig == None:
         if native.package_name().startswith("adev/shared-docs"):
             tsconfig = "//adev/shared-docs:tsconfig_test" if testonly else "//adev/shared-docs:tsconfig_build"
 
     _ng_project(
         name = name,
-        enable_runtime_rnjs_interop = enable_runtime_rnjs_interop,
         tsconfig = tsconfig,
         testonly = testonly,
         **kwargs

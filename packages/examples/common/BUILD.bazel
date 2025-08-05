@@ -12,10 +12,10 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
-        "//packages/common:common_rjs",
-        "//packages/core:core_rjs",
-        "//packages/platform-browser:platform-browser_rjs",
-        "//packages/router:router_rjs",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/router",
     ],
 )
 
@@ -27,8 +27,8 @@ ts_project(
     deps = [
         "//:node_modules/@types/jasminewd2",
         "//:node_modules/protractor",
-        "//packages/examples/test-utils:test-utils_rjs",
-        "//packages/private/testing:testing_rjs",
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
     ],
 )
 
@@ -40,7 +40,7 @@ esbuild(
     entry_point = ":main.ts",
     tsconfig = "//packages/examples:tsconfig_build",
     deps = [
-        ":common_examples_rjs",
+        ":common_examples",
         "//packages/examples:tsconfig_build",
     ],
 )
@@ -56,7 +56,7 @@ protractor_web_test_suite(
     name = "protractor_tests",
     server = ":devserver",
     deps = [
-        ":common_tests_lib_rjs",
+        ":common_tests_lib",
     ],
 )
 

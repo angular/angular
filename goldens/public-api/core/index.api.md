@@ -266,6 +266,7 @@ export type CompilerOptions = {
 
 // @public
 export interface Component extends Directive {
+    // @deprecated
     animations?: any[];
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
@@ -1172,6 +1173,9 @@ export function makeEnvironmentProviders(providers: (Provider | EnvironmentProvi
 
 // @public
 export function makeStateKey<T = void>(key: string): StateKey<T>;
+
+// @public
+export const MAX_ANIMATION_TIMEOUT: InjectionToken<number>;
 
 // @public
 export function mergeApplicationConfig(...configs: ApplicationConfig[]): ApplicationConfig;

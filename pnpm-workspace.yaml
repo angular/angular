@@ -13,6 +13,7 @@ packages:
   - packages/core/
   - packages/core/test/bundling
   - packages/forms/
+  - packages/language-service/
   - packages/platform-browser/
   - packages/platform-server/
   - packages/platform-browser-dynamic/
@@ -20,5 +21,30 @@ packages:
   - packages/localize/
   - packages/elements/
   - packages/benchpress/
+  - packages/service-worker/
   - packages/upgrade/
   - tools/bazel/rules_angular_store/
+
+allowedDeprecatedVersions:
+  angular: '*'
+  tslint: '*'
+  gulp-conventional-changelog: '5'
+  protractor: '7'
+  '@babel/plugin-proposal-async-generator-functions': '7'
+
+overrides:
+  '@angular/compiler': 'workspace:*'
+  '@angular/compiler-cli': 'workspace:*'
+  '@angular/core': 'workspace:*'
+  '@angular/common': 'workspace:*'
+  '@angular/router': 'workspace:*'
+  '@angular/platform-browser': 'workspace:*'
+  '@angular/platform-browser-dynamic': 'workspace:*'
+  '@angular/platform-server': 'workspace:*'
+  '@angular/forms': 'workspace:*'
+  '@angular/elements': 'workspace:*'
+  '@angular/animations': 'workspace:*'
+  '@angular/benchpress': 'workspace: *'
+  '@angular/language-service': 'workspace: *'
+  '@angular/localize': 'workspace: *'
+  '@angular/upgrade': 'workspace: *'

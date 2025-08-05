@@ -7,14 +7,14 @@ ts_project(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/core:core_rjs",
-        "//packages/core/src/di/interface:interface_rjs",
+        "//packages/core",
+        "//packages/core/src/di/interface",
     ],
 )
 
 angular_jasmine_test(
     name = "ivy",
     data = [
-        ":ivy_lib_rjs",
+        ":ivy_lib",
     ],
 )

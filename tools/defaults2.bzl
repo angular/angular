@@ -1,4 +1,5 @@
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
+load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@devinfra//bazel:extract_types_rjs.bzl", _extract_types = "extract_types")
@@ -10,7 +11,6 @@ load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", 
 load("//tools/bazel:esbuild.bzl", _esbuild = "esbuild", _esbuild_checked_in = "esbuild_checked_in")
 load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_test", _jasmine_test = "jasmine_test", _zone_compatible_jasmine_test = "zone_compatible_jasmine_test", _zoneless_jasmine_test = "zoneless_jasmine_test")
 load("//tools/bazel:js_defs.bzl", _js_binary = "js_binary", _js_run_binary = "js_run_binary", _js_test = "js_test")
-load("//tools/bazel:module_name.bzl", "compute_module_name")
 load("//tools/bazel:ng_package.bzl", _ng_package = "ng_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
@@ -44,6 +44,7 @@ api_golden_test = _api_golden_test
 api_golden_test_npm_package = _api_golden_test_npm_package
 copy_to_bin = _copy_to_bin
 tsec_test = _tsec_test
+js_library = _js_library
 
 def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/compiler-cli"):
@@ -90,15 +91,12 @@ def ts_project(
         testonly = False,
         tsconfig = None,
         **kwargs):
-    module_name = kwargs.pop("module_name", compute_module_name(testonly))
-
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
     _ts_project(
         name,
         source_map = source_map,
-        module_name = module_name,
         testonly = testonly,
         tsconfig = tsconfig,
         **kwargs
@@ -110,15 +108,12 @@ def ng_project(
         testonly = False,
         tsconfig = None,
         **kwargs):
-    module_name = kwargs.pop("module_name", compute_module_name(testonly))
-
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
     _ts_project(
         name,
         source_map = source_map,
-        module_name = module_name,
         rule_impl = _ng_project,
         testonly = testonly,
         tsconfig = tsconfig,

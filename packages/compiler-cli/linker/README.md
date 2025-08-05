@@ -14,5 +14,5 @@ Generally this tooling will be wrapped in a transpiler specific plugin, such as 
 The unit tests are built and run using Bazel:
 
 ```bash
-yarn bazel test //packages/compiler-cli/linker/test
+pnpm bazel test //packages/compiler-cli/linker/test
 ```

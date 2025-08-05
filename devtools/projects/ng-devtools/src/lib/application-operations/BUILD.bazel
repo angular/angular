@@ -6,7 +6,7 @@ ts_project(
     name = "application-operations",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/application-environment:application-environment_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/protocol",
     ],
 )

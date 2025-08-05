@@ -20,14 +20,14 @@ ts_project(
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
-        "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib_rjs",
+        "//adev/shared-docs/pipeline/api-gen/rendering:render_api_to_html_lib",
     ],
 )
 
 zoneless_jasmine_test(
     name = "unit_tests",
     data = [
-        ":unit_test_lib_rjs",
+        ":unit_test_lib",
         "//adev:node_modules/jsdom",
     ] + glob([
         "**/*.json",

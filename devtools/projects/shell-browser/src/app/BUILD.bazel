@@ -18,22 +18,22 @@ ng_project(
         ":app_component_styles",
     ],
     deps = [
-        ":chrome_application_environment_rjs",
-        ":chrome_application_operations_rjs",
-        ":chrome_message_bus_rjs",
+        ":chrome_application_environment",
+        ":chrome_application_operations",
+        ":chrome_message_bus",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/@types/chrome",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
-        "//devtools/projects/shell-browser/src/app:backend_rjs",
-        "//devtools/projects/shell-browser/src/app:background_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
+        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shell-browser/src/app:backend",
+        "//devtools/projects/shell-browser/src/app:background",
     ],
 )
 
@@ -53,12 +53,10 @@ ts_project(
         "chrome-window-extensions.ts",
     ],
     deps = [
-        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
+        "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree:component-tree_rjs",
         "//devtools/projects/ng-devtools-backend/src/lib/ng-debug-api",
         "//devtools/projects/protocol",
-        "//devtools/projects/protocol:protocol_rjs",
     ],
 )
 
@@ -68,8 +66,8 @@ ts_project(
         "chrome-application-environment.ts",
     ],
     deps = [
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/shell-browser/src/environments:environment_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/shell-browser/src/environments:environment",
     ],
 )
 
@@ -79,12 +77,12 @@ ts_project(
         "chrome-application-operations.ts",
     ],
     deps = [
-        ":chrome_application_environment_rjs",
+        ":chrome_application_environment",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
-        "//devtools/projects/ng-devtools:ng-devtools_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/ng-devtools",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -95,7 +93,7 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@angular/core",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -107,7 +105,7 @@ ts_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -117,9 +115,9 @@ ts_project(
         "background.ts",
     ],
     deps = [
-        ":detect_angular_for_extension_icon_rjs",
-        ":tab_manager_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":detect_angular_for_extension_icon",
+        ":tab_manager",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -130,14 +128,14 @@ ts_project(
     ],
     deps = [
         "//:node_modules/@types/chrome",
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
 
 ng_web_test_suite(
     name = "tab_manager_test",
     deps = [
-        ":tab_manager_test_lib_rjs",
+        ":tab_manager_test_lib",
     ],
 )
 
@@ -147,7 +145,7 @@ ts_test_library(
         "tab_manager_spec.ts",
     ],
     deps = [
-        ":tab_manager_rjs",
+        ":tab_manager",
         "//:node_modules/@types/chrome",
     ],
 )
@@ -158,10 +156,10 @@ ts_project(
         "backend.ts",
     ],
     deps = [
-        ":chrome_window_extensions_rjs",
-        ":same_page_message_bus_rjs",
-        "//devtools/projects/ng-devtools-backend:ng-devtools-backend_rjs",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter_rjs",
+        ":chrome_window_extensions",
+        ":same_page_message_bus",
+        "//devtools/projects/ng-devtools-backend",
+        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
     ],
 )
 
@@ -171,9 +169,9 @@ ts_project(
         "content-script.ts",
     ],
     deps = [
-        ":chrome_message_bus_rjs",
-        ":same_page_message_bus_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
+        ":chrome_message_bus",
+        ":same_page_message_bus",
+        "//devtools/projects/protocol",
     ],
 )
 
@@ -183,9 +181,9 @@ ts_project(
         "detect-angular-for-extension-icon.ts",
     ],
     deps = [
-        ":same_page_message_bus_rjs",
-        "//devtools/projects/protocol:protocol_rjs",
-        "//devtools/projects/shared-utils:shared-utils_rjs",
+        ":same_page_message_bus",
+        "//devtools/projects/protocol",
+        "//devtools/projects/shared-utils",
     ],
 )
 
@@ -193,8 +191,8 @@ esbuild(
     name = "detect_angular_for_extension_icon_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "detect-angular-for-extension-icon.ts",
@@ -204,7 +202,7 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":detect_angular_for_extension_icon_rjs",
+        ":detect_angular_for_extension_icon",
     ],
 )
 
@@ -212,8 +210,8 @@ esbuild(
     name = "backend_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "backend.ts",
@@ -223,7 +221,7 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":backend_rjs",
+        ":backend",
     ],
 )
 
@@ -231,8 +229,8 @@ esbuild(
     name = "ng_validate_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "ng-validate.ts",
@@ -242,7 +240,7 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":ng_validate_rjs",
+        ":ng_validate",
     ],
 )
 
@@ -250,8 +248,8 @@ esbuild(
     name = "background_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "background.ts",
@@ -261,7 +259,7 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":background_rjs",
+        ":background",
     ],
 )
 
@@ -269,8 +267,8 @@ esbuild(
     name = "content_script_bundle",
     srcs = [
         "//:node_modules/tslib",
-        "//devtools/tools/esbuild:esbuild_base_rjs",
-        "//devtools/tools/esbuild:esbuild_config_iife_rjs",
+        "//devtools/tools/esbuild:esbuild_base",
+        "//devtools/tools/esbuild:esbuild_config_iife",
     ],
     config = "//devtools/tools/esbuild:esbuild-iife.config.mjs",
     entry_point = "content-script.ts",
@@ -280,6 +278,6 @@ esbuild(
     splitting = False,
     target = "esnext",
     deps = [
-        ":content_script_rjs",
+        ":content_script",
     ],
 )

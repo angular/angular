@@ -9,17 +9,17 @@ ts_project(
     deps = [
         "//:node_modules/jasmine-core",
         "//:node_modules/rxjs",
-        "//packages/common:common_rjs",
-        "//packages/common/http:http_rjs",
-        "//packages/core:core_rjs",
-        "//packages/core/testing:testing_rjs",
-        "//packages/misc/angular-in-memory-web-api:angular-in-memory-web-api_rjs",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/misc/angular-in-memory-web-api",
     ],
 )
 
 ng_web_test_suite(
     name = "test_web",
     deps = [
-        ":test_lib_rjs",
+        ":test_lib",
     ],
 )

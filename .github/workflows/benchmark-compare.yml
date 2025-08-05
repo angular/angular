@@ -36,9 +36,9 @@ jobs:
           # that the action was triggered by a team member.
           ref: ${{steps.comment-branch.outputs.head_ref}}
 
-      - uses: ./.github/actions/yarn-install
+      - run: pnpm install --frozen-lockfile
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@39c70c3c8c63165bc2df0efc7dcb3b3287b69685
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@4d2f875ec29ee71e0fe1a349a99c5ab2ccb71e30
         with:
           bazelrc: ./.bazelrc.user
 
@@ -47,9 +47,9 @@ jobs:
         env:
           # Untrusted input used in an executable code, must be wrapped as an env var to prevent injections
           COMMENT_BODY: ${{ github.event.comment.body }}
-        run: yarn benchmarks prepare-for-github-action "$COMMENT_BODY"
+        run: pnpm benchmarks prepare-for-github-action "$COMMENT_BODY"
 
-      - run: yarn benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
+      - run: pnpm benchmarks run-compare ${{steps.info.outputs.compareSha}} ${{steps.info.outputs.benchmarkTarget}}
         id: benchmark
         name: Running benchmark
 

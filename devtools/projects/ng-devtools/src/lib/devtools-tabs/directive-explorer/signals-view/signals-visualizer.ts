@@ -87,6 +87,15 @@ export class SignalsGraphVisualizer {
       .classed('animating', false);
   }
 
+  reset() {
+    for (const node of this.graph.nodes()) {
+      this.graph.removeNode(node);
+    }
+    this.animationMap.clear();
+    this.cleanup();
+    this.timeouts.clear();
+  }
+
   render(injectorGraph: DebugSignalGraph): void {
     const updatedNodes: string[] = [];
     let matchedNodeId = false;
@@ -132,6 +141,7 @@ export class SignalsGraphVisualizer {
           shape: 'rect',
           padding: 0,
           style: 'fill: none;',
+          epoch: n.epoch,
           rx: 8,
           ry: 8,
         });

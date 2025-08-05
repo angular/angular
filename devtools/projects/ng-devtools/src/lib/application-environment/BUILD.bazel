@@ -6,6 +6,6 @@ ts_project(
     name = "application-environment",
     srcs = ["index.ts"],
     deps = [
-        "//devtools/projects/protocol:protocol_rjs",
+        "//devtools/projects/protocol",
     ],
 )
