@@ -11,7 +11,14 @@ import {getRoots} from '../component-tree/get-roots';
 import {Framework} from '../component-tree/core-enums';
 
 /** Returns a handle to window.ng APIs (global angular debugging). */
-export const ngDebugClient = () => (window as any).ng as Partial<GlobalUtils>;
+export const ngDebugClient = () => {
+  if (typeof (window as any).ng === 'undefined') {
+    throw new Error(
+      'Angular DevTools: Angular debugging APIs are not available. Ensure that your Angular app is in development mode and does not invoke `enableProdMode()`.',
+    );
+  }
+  return (window as any).ng as Partial<GlobalUtils>;
+};
 
 /** Type guard that checks whether a given debug API is supported within window.ng */
 export function ngDebugApiIsSupported<T extends Partial<GlobalUtils>, K extends keyof T>(
