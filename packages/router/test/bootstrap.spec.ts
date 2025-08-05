@@ -150,7 +150,6 @@ describe('bootstrap', () => {
         const router = res.injector.get(Router);
         expect(router.navigated).toEqual(false);
         expect(router.getCurrentNavigation()).toBeNull();
-        expect(router.currentNavigation()).toBeNull();
         expect(log).toContain('TestModule');
         expect(log).toContain('NavigationError');
       });
