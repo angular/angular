@@ -219,7 +219,7 @@ function wrapWithPredicates<TValue, TReturn>(
   if (predicates.length === 0) {
     return logicFn;
   }
-  return (arg: FieldContext<any>): TReturn | typeof IGNORED => {
+  return (arg): TReturn | typeof IGNORED => {
     for (const predicate of predicates) {
       let predicateField = arg.stateOf(predicate.path) as FieldNode;
       // Check the depth of the current field vs the depth this predicate is supposed to be

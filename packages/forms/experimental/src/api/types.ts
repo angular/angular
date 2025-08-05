@@ -158,7 +158,7 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
  * @template TValue The type of the data which the parent field is wrapped around.
  */
 export type Subfields<TValue> = {
-  readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<
+  readonly [K in keyof TValue as TValue[K] extends Function ? never : K]-?: MaybeField<
     TValue[K],
     string
   >;
@@ -327,7 +327,7 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
 } & (TValue extends any[]
   ? {}
   : TValue extends Record<PropertyKey, any>
-    ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
+    ? {[K in keyof TValue]-?: FieldPath<TValue[K], PathKind.Child>}
     : {});
 
 /**

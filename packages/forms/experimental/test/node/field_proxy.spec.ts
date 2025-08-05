@@ -8,13 +8,25 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form} from '../../public_api';
+import {Field, form} from '../../public_api';
 
 describe('Field proxy', () => {
   it('should not forward methods through the proxy', () => {
     const f = form(signal(new Date()), {injector: TestBed.inject(Injector)});
     // @ts-expect-error
     expect(f.getDate).toBe(undefined as any);
+  });
+
+  it('should forward optional typing on value, not field', () => {
+    interface Model {
+      field?: string;
+    }
+
+    const data = signal<Model>({});
+    const f = form(data, {injector: TestBed.inject(Injector)});
+
+    // The `?` is forwarded to the field's value, and not the field itself.
+    f.field satisfies Field<string | undefined>;
   });
 
   it('should allow spreading field arrays', () => {
