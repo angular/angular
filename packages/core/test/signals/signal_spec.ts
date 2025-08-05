@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal} from '../../src/core';
+import {
+  computed,
+  signal,
+  ɵupgradeSignalToWritable as upgradeSignalToWritable,
+} from '../../src/core';
 import {
   ReactiveHookFn,
   ReactiveNode,
@@ -223,5 +227,22 @@ describe('signals', () => {
 
     expect(producerKindsCreated).toEqual(['signal']);
     setPostProducerCreatedFn(prev);
+  });
+
+  describe('upgradeSignalToWritable', () => {
+    it('should upgrade a signal to a writable signal', () => {
+      const celsius = signal(-40);
+      const fahrenheit = computed(() => celsius() * (9 / 5) + 32);
+      upgradeSignalToWritable(fahrenheit, (valueF) => celsius.set((valueF - 32) * (5 / 9)));
+
+      expect(celsius()).toBe(-40);
+      expect(fahrenheit()).toBe(-40);
+
+      fahrenheit.set(212);
+      expect(celsius()).toBe(0);
+
+      celsius.set(0);
+      expect(fahrenheit()).toBe(32);
+    });
   });
 });
