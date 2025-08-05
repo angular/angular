@@ -792,6 +792,16 @@ describe('Animation', () => {
       fixture.detectChanges();
       expect(cmp.show()).toBeTruthy();
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      expect(fixture.debugElement.nativeElement.className).not.toContain('fade-in');
+      expect(fixture.debugElement.nativeElement.className).not.toContain('slide-in');
     });
 
     it('should remove right away when animations are disabled', fakeAsync(() => {
