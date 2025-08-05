@@ -242,6 +242,10 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly errors: Signal<ValidationError[]>;
   /**
+   * A signal containing the {@link errors} of the field and its descendants.
+   */
+  readonly errorSummary: Signal<ValidationError[]>;
+  /**
    * A signal indicating whether the field's value is currently valid.
    *
    * Note: `valid()` is not the same as `!invalid()`.

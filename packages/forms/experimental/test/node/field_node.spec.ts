@@ -796,6 +796,75 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('errorSummary', () => {
+    it('should be empty', () => {
+      const data = signal({});
+      const f = form(data, {injector: TestBed.inject(Injector)});
+
+      expect(f().errorSummary()).toEqual([]);
+    });
+
+    it('should contain errors from current field', () => {
+      const data = signal('');
+      const f = form(
+        data,
+        (p) => {
+          required(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errorSummary()).toEqual([ValidationError.required({field: f})]);
+    });
+
+    it('should contain errors from child fields', () => {
+      const name = signal({first: '', last: ''});
+      const f = form(
+        name,
+        (p) => {
+          required(p.first);
+          required(p.last);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errorSummary()).toEqual([
+        ValidationError.required({field: f.first}),
+        ValidationError.required({field: f.last}),
+      ]);
+    });
+
+    it('should accumulate errors of all descendants', () => {
+      const data = signal({
+        child: {
+          child: {},
+        },
+      });
+      const f = form(
+        data,
+        (p) => {
+          validate(p, () => ValidationError.custom({kind: 'root'}));
+          validate(p.child, () => ValidationError.custom({kind: 'child'}));
+          validate(p.child.child, () => ValidationError.custom({kind: 'grandchild'}));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.child.child().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+      ]);
+      expect(f.child().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'child', field: f.child}),
+        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+      ]);
+      expect(f().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'root', field: f}),
+        ValidationError.custom({kind: 'child', field: f.child}),
+        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+      ]);
+    });
+  });
+
   describe('composition', () => {
     it('should apply schema to field', () => {
       interface Address {
