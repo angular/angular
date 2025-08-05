@@ -282,7 +282,9 @@ import { map } from 'rxjs';
 })
 export class App {
   private router = inject(Router);
-  isNavigating = computed(() => !!this.router.currentNavigation());
+  isNavigating = toSignal(this.router.events.pipe(
+    map(() => !!this.router.getCurrentNavigation())
+  ));
 }
 ```
 
