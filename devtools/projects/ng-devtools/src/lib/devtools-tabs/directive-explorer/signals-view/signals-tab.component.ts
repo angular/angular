@@ -17,14 +17,12 @@ import {
   linkedSignal,
   OnDestroy,
   output,
-  signal,
   viewChild,
 } from '@angular/core';
 import {SignalsGraphVisualizer} from './signals-visualizer';
 import {
   DebugSignalGraph,
   DebugSignalGraphNode,
-  ElementPosition,
   Events,
   MessageBus,
   PropType,
@@ -42,6 +40,7 @@ import {ApplicationOperations} from '../../../application-operations/index';
 import {FrameManager} from '../../../application-services/frame_manager';
 import {SignalsDetailsComponent} from './signals-details/signals-details.component';
 import {ButtonComponent} from '../../../shared/button/button.component';
+import {SignalGraphManager} from '../signal-graph/signal-graph-manager';
 
 @Component({
   templateUrl: './signals-tab.component.html',
@@ -50,18 +49,20 @@ import {ButtonComponent} from '../../../shared/button/button.component';
   imports: [SignalsDetailsComponent, MatIcon, ButtonComponent],
 })
 export class SignalsTabComponent implements OnDestroy {
+  private readonly signalGraph = inject(SignalGraphManager);
   private svgComponent = viewChild.required<ElementRef>('component');
 
-  public currentElement = input<ElementPosition>();
+  signalsVisualizer?: SignalsGraphVisualizer;
 
-  signalsVisualizer!: SignalsGraphVisualizer;
+  protected readonly preselectedNodeId = input<string | null>(null);
 
-  private signalGraph = signal<DebugSignalGraph | null>(null);
+  // selected is automatically reset to null whenever `graph` changes
+  private selected = linkedSignal<DebugSignalGraph | null, string | null>({
+    source: this.signalGraph.graph,
+    computation: () => this.preselectedNodeId(),
+  });
 
-  // selected is automatically reset to null whenever currentElement changes
-  private selected = linkedSignal<string | null>(() => (this.currentElement(), null));
-
-  private onResize = () => this.signalsVisualizer.resize();
+  private onResize = () => this.signalsVisualizer?.resize();
   private observer = new ResizeObserver(this.onResize);
 
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
@@ -71,7 +72,7 @@ export class SignalsTabComponent implements OnDestroy {
   readonly close = output<void>();
 
   protected selectedNode = computed(() => {
-    const signalGraph = this.signalGraph();
+    const signalGraph = this.signalGraph.graph();
     if (!signalGraph) {
       return undefined;
     }
@@ -107,7 +108,7 @@ export class SignalsTabComponent implements OnDestroy {
         },
       ),
       this.treeControl(),
-      {element: this.currentElement()!, signalId: selectedNode.id},
+      {element: this.signalGraph.element()!, signalId: selectedNode.id},
       this.messageBus,
     );
   });
@@ -119,38 +120,38 @@ export class SignalsTabComponent implements OnDestroy {
     );
   });
 
-  protected empty = computed(() => !(this.signalGraph()?.nodes.length! > 0));
+  protected empty = computed(() => !(this.signalGraph.graph()?.nodes.length! > 0));
 
   constructor() {
+    const renderGraph = () => {
+      const graph = this.signalGraph.graph();
+      if (graph) {
+        this.signalsVisualizer?.render(graph);
+      }
+    };
+    const setSelected = () => {
+      const selected = this.selected();
+      if (selected) {
+        this.signalsVisualizer?.setSelected(selected);
+      }
+    };
+
     afterNextRender({
       write: () => {
         this.setUpSignalsVisualizer();
-
+        renderGraph();
+        setSelected();
         this.observer.observe(this.svgComponent().nativeElement);
       },
     });
 
-    this.messageBus.on('latestSignalGraph', (e) => {
-      this.signalGraph.set(e);
-      this.signalsVisualizer.render(e);
-    });
+    effect(renderGraph);
+    effect(setSelected);
 
-    const refreshSignalGraph = () => {
-      const currentElement = this.currentElement();
-      if (currentElement) {
-        this.messageBus.emit('getSignalGraph', [currentElement]);
-      }
-    };
     effect(() => {
+      // Reset the visualizer when the element changes.
+      this.signalGraph.element();
       this.signalsVisualizer?.reset();
-      refreshSignalGraph();
-    });
-    this.messageBus.on('componentTreeDirty', refreshSignalGraph);
-
-    effect(() => {
-      const selected = this.selected();
-      // this will do nothing on the first run
-      this.signalsVisualizer?.setSelected(selected);
     });
   }
 
@@ -163,14 +164,14 @@ export class SignalsTabComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.observer.disconnect();
-    this.signalsVisualizer.cleanup();
+    this.signalsVisualizer?.cleanup();
   }
 
   gotoSource(node: DebugSignalGraphNode) {
     const frame = this.frameManager.selectedFrame();
     this.appOperations.inspectSignal(
       {
-        element: this.currentElement()!,
+        element: this.signalGraph.element()!,
         signalId: node.id,
       },
       frame!,
