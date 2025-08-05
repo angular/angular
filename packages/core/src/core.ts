@@ -121,7 +121,11 @@ export {booleanAttribute, numberAttribute} from './util/coercion';
 export {REQUEST, REQUEST_CONTEXT, RESPONSE_INIT} from './application/platform_tokens';
 export {DOCUMENT} from './document';
 export {provideNgReflectAttributes} from './ng_reflect';
-export {AnimationCallbackEvent, AnimationFunction, MAX_ANIMATION_TIMEOUT} from './animation';
+export {
+  AnimationCallbackEvent,
+  AnimationFunction,
+  MAX_ANIMATION_TIMEOUT,
+} from './animation/interfaces';
 
 import {global} from './util/global';
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

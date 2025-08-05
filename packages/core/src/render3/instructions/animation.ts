@@ -14,9 +14,8 @@ import {
   AnimationFunction,
   AnimationRemoveFunction,
   ANIMATIONS_DISABLED,
-  getClassListFromValue,
-  LongestAnimation,
-} from '../../animation';
+} from '../../animation/interfaces';
+import {getClassListFromValue} from '../../animation/element_removal_registry';
 import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
 import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags} from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -26,6 +25,7 @@ import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {NgZone} from '../../zone';
 import {assertDefined} from '../../util/assert';
+import {determineLongestAnimation, LongestAnimation} from '../../animation/longest_animation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 const areAnimationSupported =
@@ -38,7 +38,8 @@ const noOpAnimationComplete = () => {};
 
 // Tracks the list of classes added to a DOM node from `animate.enter` calls to ensure
 // we remove all of the classes in the case of animation composition via host bindings.
-const enterClassMap = new WeakMap<HTMLElement, string[]>();
+const enterClassMap = new WeakMap<HTMLElement, {classList: string[]; cleanupFns: Function[]}>();
+const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -80,6 +81,8 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
+    determineLongestAnimation(event, nativeElement, longestAnimations, areAnimationSupported);
+    setupAnimationCancel(event, renderer);
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
@@ -98,7 +101,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
-    trackEnterClasses(nativeElement, activeClasses);
+    trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement as HTMLElement, klass);
@@ -114,14 +117,17 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
  * host binding. When removing classes, we need the entire list of animation classes
  * added to properly remove them when the longest animation fires.
  */
-function trackEnterClasses(el: HTMLElement, classes: string[]) {
-  const classlist = enterClassMap.get(el);
-  if (classlist) {
-    for (const klass of classes) {
-      classlist.push(klass);
+function trackEnterClasses(el: HTMLElement, classList: string[], cleanupFns: Function[]) {
+  const elementData = enterClassMap.get(el);
+  if (elementData) {
+    for (const klass of classList) {
+      elementData.classList.push(klass);
+    }
+    for (const fn of cleanupFns) {
+      elementData.cleanupFns.push(fn);
     }
   } else {
-    enterClassMap.set(el, classes);
+    enterClassMap.set(el, {classList, cleanupFns});
   }
 }
 
@@ -321,72 +327,44 @@ function getClassList(value: Set<string> | null, resolvers: Function[] | undefin
   return classList;
 }
 
-function cancelAnimationsIfRunning(element: HTMLElement): void {
-  if (areAnimationSupported) {
+function cancelAnimationsIfRunning(element: HTMLElement, renderer: Renderer): void {
+  if (!areAnimationSupported) return;
+  const elementData = enterClassMap.get(element);
+  if (element.getAnimations().length > 0) {
     for (const animation of element.getAnimations()) {
       if (animation.playState === 'running') {
         animation.cancel();
       }
     }
-  }
-}
-
-/**
- * Multiple animations can be set on an element. This grabs an element and
- * determines which of those will be the longest duration. If we didn't do
- * this, elements would be removed whenever the first animation completes.
- * This ensures we get the longest running animation and only remove when
- * that animation completes.
- */
-function getLongestAnimation(
-  event: AnimationEvent | TransitionEvent,
-): LongestAnimation | undefined {
-  if (!areAnimationSupported || !(event.target instanceof Element)) return;
-  const nativeElement = event.target;
-  const animations = nativeElement.getAnimations();
-  if (animations.length === 0) return;
-
-  let currentLongest: LongestAnimation = {
-    animationName: undefined,
-    propertyName: undefined,
-    duration: 0,
-  };
-  for (const animation of animations) {
-    const timing = animation.effect?.getTiming();
-    // duration can be a string 'auto' or a number.
-    const animDuration = typeof timing?.duration === 'number' ? timing.duration : 0;
-    let duration = (timing?.delay ?? 0) + animDuration;
-
-    let propertyName: string | undefined;
-    let animationName: string | undefined;
-
-    if ((animation as CSSAnimation).animationName) {
-      animationName = (animation as CSSAnimation).animationName;
-    } else {
-      // Check for CSSTransition specific property
-      propertyName = (animation as CSSTransition).transitionProperty;
-    }
-
-    if (duration >= currentLongest.duration) {
-      currentLongest = {animationName, propertyName, duration};
+  } else {
+    if (elementData) {
+      for (const klass of elementData.classList) {
+        renderer.removeClass(element as unknown as RElement, klass);
+      }
     }
   }
-  return currentLongest;
+  // We need to prevent any enter animation listeners from firing if they exist.
+  if (elementData) {
+    for (const fn of elementData.cleanupFns) {
+      fn();
+    }
+  }
+  longestAnimations.delete(element);
+  enterClassMap.delete(element);
 }
 
-function setupAnimationCancel(event: Event, classList: string[] | null, renderer: Renderer) {
+function setupAnimationCancel(event: Event, renderer: Renderer) {
   if (!(event.target instanceof Element)) return;
   const nativeElement = event.target;
   if (areAnimationSupported) {
+    const elementData = enterClassMap.get(nativeElement as HTMLElement);
     const animations = nativeElement.getAnimations();
     if (animations.length === 0) return;
     for (let animation of animations) {
       animation.addEventListener('cancel', (event: Event) => {
-        if (nativeElement === event.target) {
-          if (classList !== null) {
-            for (const klass of classList) {
-              renderer.removeClass(nativeElement as unknown as RElement, klass);
-            }
+        if (nativeElement === event.target && elementData?.classList) {
+          for (const klass of elementData.classList) {
+            renderer.removeClass(nativeElement as unknown as RElement, klass);
           }
         }
       });
@@ -396,9 +374,9 @@ function setupAnimationCancel(event: Event, classList: string[] | null, renderer
 
 function isLongestAnimation(
   event: AnimationEvent | TransitionEvent,
-  nativeElement: Element,
-  longestAnimation: LongestAnimation | undefined,
+  nativeElement: HTMLElement,
 ): boolean {
+  const longestAnimation = longestAnimations.get(nativeElement);
   return (
     nativeElement === event.target &&
     longestAnimation !== undefined &&
@@ -415,20 +393,19 @@ function animationEnd(
   renderer: Renderer,
   cleanupFns: Function[],
 ) {
-  const classList = enterClassMap.get(nativeElement);
-  if (!classList) return;
-  setupAnimationCancel(event, classList, renderer);
-  const longestAnimation = getLongestAnimation(event);
-  if (isLongestAnimation(event, nativeElement, longestAnimation)) {
+  const elementData = enterClassMap.get(nativeElement);
+  if (!elementData) return;
+  if (isLongestAnimation(event, nativeElement)) {
     // Now that we've found the longest animation, there's no need
     // to keep bubbling up this event as it's not going to apply to
     // other elements further up. We don't want it to inadvertently
     // affect any other animations on the page.
     event.stopImmediatePropagation();
-    for (const klass of classList) {
+    for (const klass of elementData.classList) {
       renderer.removeClass(nativeElement, klass);
     }
     enterClassMap.delete(nativeElement);
+    longestAnimations.delete(nativeElement);
     for (const fn of cleanupFns) {
       fn();
     }
@@ -457,23 +434,24 @@ function animateLeaveClassRunner(
   ngZone: NgZone,
 ) {
   if (animationsDisabled) {
+    longestAnimations.delete(el);
     finalRemoveFn();
   }
 
-  cancelAnimationsIfRunning(el);
+  cancelAnimationsIfRunning(el, renderer);
 
-  let longestAnimation: LongestAnimation | undefined;
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    longestAnimation = getLongestAnimation(event);
+    determineLongestAnimation(event, el, longestAnimations, areAnimationSupported);
   };
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
-    if (isLongestAnimation(event, el, longestAnimation)) {
+    if (isLongestAnimation(event, el)) {
       // Now that we've found the longest animation, there's no need
       // to keep bubbling up this event as it's not going to apply to
       // other elements further up. We don't want it to inadvertently
       // affect any other animations on the page.
       event.stopImmediatePropagation();
+      longestAnimations.delete(el);
       finalRemoveFn();
     }
   };

@@ -176,5 +176,5 @@ export {ɵassertType} from './type_checking';
 export {
   ElementRegistry as ɵElementRegistry,
   AnimationRemovalRegistry as ɵAnimationRemovalRegistry,
-  ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED,
-} from './animation';
+} from './animation/element_removal_registry';
+export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
