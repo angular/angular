@@ -25,7 +25,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - id: workflows
-        run: echo "workflows=$(pnpm ng-dev perf workflows --list)" >> "$GITHUB_OUTPUT"
+        run: echo "workflows=$(pnpm --silent ng-dev perf workflows --list)" >> "$GITHUB_OUTPUT"
 
   workflow:
     timeout-minutes: 30
