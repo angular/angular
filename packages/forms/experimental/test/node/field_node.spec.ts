@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Injector, signal} from '@angular/core';
+import {computed, inject, InjectionToken, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   apply,
@@ -779,6 +779,72 @@ describe('FieldNode', () => {
         expect(f.name().errors()).toEqual([ValidationError.custom({kind: 'long_name'})]);
         expect(f.age().errors()).toEqual([]);
       });
+    });
+  });
+
+  describe('errorSummary', () => {
+    it('should be empty', () => {
+      const data = signal({});
+      const f = form(data, {injector: TestBed.inject(Injector)});
+
+      expect(f().errorSummary()).toEqual([]);
+    });
+
+    it('should contain errors from current field', () => {
+      const data = signal('');
+      const f = form(
+        data,
+        (p) => {
+          required(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errorSummary()).toEqual([ValidationError.required()]);
+    });
+
+    it('should contain errors from child fields', () => {
+      const name = signal({first: '', last: ''});
+      const f = form(
+        name,
+        (p) => {
+          required(p.first);
+          required(p.last);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errorSummary()).toEqual([ValidationError.required(), ValidationError.required()]);
+    });
+
+    it('should accumulate errors of all descendants', () => {
+      const data = signal({
+        child: {
+          child: {},
+        },
+      });
+      const f = form(
+        data,
+        (p) => {
+          validate(p, () => ValidationError.custom({kind: 'root'}));
+          validate(p.child, () => ValidationError.custom({kind: 'child'}));
+          validate(p.child.child, () => ValidationError.custom({kind: 'grandchild'}));
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.child.child().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'grandchild'}),
+      ]);
+      expect(f.child().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'child'}),
+        ValidationError.custom({kind: 'grandchild'}),
+      ]);
+      expect(f().errorSummary()).toEqual([
+        ValidationError.custom({kind: 'root'}),
+        ValidationError.custom({kind: 'child'}),
+        ValidationError.custom({kind: 'grandchild'}),
+      ]);
     });
   });
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Signal, WritableSignal} from '@angular/core';
+import {computed, type Signal, type WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
@@ -26,6 +26,7 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {FieldValidationState} from './validation';
+import {reduceChildren} from './util';
 
 /**
  * Internal node in the form tree for a given field.
@@ -107,6 +108,12 @@ export class FieldNode implements FieldState<unknown> {
 
   get errors(): Signal<ValidationError[]> {
     return this.validationState.errors;
+  }
+
+  get errorSummary(): Signal<ValidationError[]> {
+    return computed(() =>
+      reduceChildren(this, this.errors(), (child, result) => [...result, ...child.errorSummary()]),
+    );
   }
 
   get pending(): Signal<boolean> {
