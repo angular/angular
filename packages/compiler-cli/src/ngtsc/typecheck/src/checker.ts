@@ -1605,12 +1605,12 @@ function getClassDeclFromSymbol(
   }
 
   if (ts.isExportAssignment(decl)) {
-    const symbol = checker.getTypeAtLocation(decl.expression).symbol;
+    const symbol = checker.getTypeAtLocation(decl.expression).getSymbol();
     return getClassDeclFromSymbol(symbol, checker);
   }
 
   if (ts.isExportSpecifier(decl)) {
-    const symbol = checker.getTypeAtLocation(decl).symbol;
+    const symbol = checker.getTypeAtLocation(decl).getSymbol();
     return getClassDeclFromSymbol(symbol, checker);
   }
 
@@ -1697,7 +1697,7 @@ function getTheElementTagDeprecatedSuggestionDiagnostics(
   for (const tsDiag of diags) {
     const diagNode = getTokenAtPosition(sourceFile, tsDiag.start);
     const nodeType = typeChecker.getTypeAtLocation(diagNode);
-    const nodeSymbolDeclarations = nodeType.symbol.declarations;
+    const nodeSymbolDeclarations = nodeType.getSymbol()?.declarations;
     const decl =
       nodeSymbolDeclarations !== undefined && nodeSymbolDeclarations.length > 0
         ? nodeSymbolDeclarations[0]
@@ -1726,7 +1726,7 @@ function getTheElementTagDeprecatedSuggestionDiagnostics(
   const templateDiagnostics: TemplateDiagnostic[] = [];
   for (const directive of directiveNodesInTcb) {
     const directiveType = typeChecker.getTypeAtLocation(directive);
-    const directiveSymbolDeclarations = directiveType.symbol.declarations;
+    const directiveSymbolDeclarations = directiveType.getSymbol()?.declarations;
 
     const decl =
       directiveSymbolDeclarations !== undefined && directiveSymbolDeclarations.length > 0

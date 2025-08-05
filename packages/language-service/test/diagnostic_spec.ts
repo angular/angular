@@ -599,6 +599,36 @@ describe('getSuggestedDiagnostics', () => {
     env = LanguageServiceTestEnv.setup();
   });
 
+  it('should report deprecated for primitive type variable', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '<div>{{name}}</div>',
+        standalone: false,
+      })
+      export class AppComponent {
+        /**
+         * @deprecated
+         * 
+         * Used to test to get the symbol of the type "string", using the
+         * "type.getSymbol()" to check if the symbol is "undefined".
+         */
+        name = 'test';
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const {category, file, messageText} = diags[0];
+    expect(category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(file?.fileName).toBe('/test/app.ts');
+    expect(messageText).toBe(`'name' is deprecated.`);
+  });
+
   it('should report deprecated for component variable', () => {
     const files = {
       'app.ts': `
