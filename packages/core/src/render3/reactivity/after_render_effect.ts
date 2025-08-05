@@ -9,6 +9,7 @@
 import {
   consumerAfterComputation,
   consumerBeforeComputation,
+  consumerDestroy,
   consumerPollProducersForChange,
   producerAccessed,
   SIGNAL,
@@ -153,7 +154,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
 /**
  * An `AfterRenderSequence` that manages an `afterRenderEffect`'s phase effects.
  */
-class AfterRenderEffectSequence extends AfterRenderSequence {
+export class AfterRenderEffectSequence extends AfterRenderSequence {
   /**
    * While this sequence is executing, this tracks the last phase which was called by the
    * `afterRender` machinery.
@@ -235,8 +236,14 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
 
     // Run the cleanup functions for each node.
     for (const node of this.nodes) {
-      for (const fn of node?.cleanup ?? EMPTY_CLEANUP_SET) {
-        fn();
+      if (node) {
+        try {
+          for (const fn of node.cleanup ?? EMPTY_CLEANUP_SET) {
+            fn();
+          }
+        } finally {
+          consumerDestroy(node);
+        }
       }
     }
   }
