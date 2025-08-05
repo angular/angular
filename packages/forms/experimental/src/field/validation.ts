@@ -64,6 +64,11 @@ export interface ValidationState {
   errors: Signal<ValidationError[]>;
 
   /**
+   * The combined set of all errors that currently apply to this field and its descendants.
+   */
+  errorSummary: Signal<ValidationError[]>;
+
+  /**
    * Whether this field has any asynchronous validators still pending.
    */
   pending: Signal<boolean>;
@@ -235,6 +240,13 @@ export class FieldValidationState implements ValidationState {
     ...this.syncErrors(),
     ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
+
+  readonly errorSummary = computed(() =>
+    reduceChildren(this.node, this.errors(), (child, result) => [
+      ...result,
+      ...child.errorSummary(),
+    ]),
+  );
 
   /**
    * Whether this field has any asynchronous validators still pending.

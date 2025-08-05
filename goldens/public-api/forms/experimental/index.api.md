@@ -170,6 +170,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly disabled: Signal<boolean>;
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
     readonly errors: Signal<ValidationError[]>;
+    readonly errorSummary: Signal<ValidationError[]>;
     hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
