@@ -1,3 +1,24 @@
+<a name="20.1.5"></a>
+# 20.1.5 (2025-08-06)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b2e8efcac](https://github.com/angular/angular/commit/3b2e8efcacc5b413b03e4281fc8af297e5c81a9f) | fix | correctly type check host listeners to own outputs ([#62965](https://github.com/angular/angular/pull/62965)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c9f3976eba](https://github.com/angular/angular/commit/c9f3976eba66d113f4a1919ee91b8833d679733a) | fix | properly recognize failed `fetch` responses when loading external resources in JIT ([#62992](https://github.com/angular/angular/pull/62992)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ae443f8eb0](https://github.com/angular/angular/commit/ae443f8eb00c047bb88527f2311e86df3bc6be35) | fix | Reset headers, progress, and statusCode when using `set()` in `HttpResource` ([#62873](https://github.com/angular/angular/pull/62873)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a5851e4b0](https://github.com/angular/angular/commit/7a5851e4b0a17da35db7fb276a3dca4909f9137b) | fix | incorrect filtering in inject migration ([#62913](https://github.com/angular/angular/pull/62913)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0-next.3"></a>
 # 20.2.0-next.3 (2025-07-31)
 ## Deprecations
