@@ -65,7 +65,8 @@ export function resolveTiming(
     : parseTimeExpression(<string | number>timings, errors, allowNegativeValues);
 }
 
-const PARSE_TIME_EXPRESSION_REGEX = /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
+const PARSE_TIME_EXPRESSION_REGEX =
+  /^(-?[\.\d]+)(m?s)(?:\s+(-?[\.\d]+)(m?s))?(?:\s+([-a-z]+(?:\(.+?\))?))?$/i;
 function parseTimeExpression(
   exp: string | number,
   errors: Error[],
