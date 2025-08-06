@@ -92,6 +92,7 @@ $code-font-size: 0.875rem;
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
     background: var(--octonary-contrast);
+    overflow: hidden;
     transition:
       background 0.3s ease,
       border-color 0.3s ease;
@@ -124,8 +125,6 @@ $code-font-size: 0.875rem;
 
   // shell doesn't have a header, for commands only
   .shell {
-    border: 1px solid var(--quinary-contrast);
-
     pre {
       white-space: nowrap;
     }
@@ -139,31 +138,6 @@ $code-font-size: 0.875rem;
 
       &.hidden {
         display: none;
-      }
-    }
-
-    button[docs-copy-source-code] {
-      background-color: var(--quaternary-contrast);
-      border: 1px solid var(--quinary-contrast);
-
-      @container codeblock (min-width: 400px) {
-        border: 1px solid transparent;
-      }
-
-      .docs-copy {
-        path {
-          fill: var(--quinary-contrast);
-        }
-      }
-      .docs-check {
-        color: var(--page-background);
-      }
-      &:hover {
-        .docs-copy {
-          path {
-            fill: var(--octonary-contrast);
-          }
-        }
       }
     }
   }
@@ -182,10 +156,6 @@ $code-font-size: 0.875rem;
     transition:
       background-color 0.3s ease,
       border-color 0.3s ease;
-
-    @container codeblock (min-width: 400px) {
-      border: 1px solid transparent;
-    }
 
     .docs-icon {
       transition: opacity 0.3s ease-out;
