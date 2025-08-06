@@ -26,6 +26,11 @@
       "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
       "factory": "./bundles/router-current-navigation.cjs#migrate",
       "optional": true
+    },
+    "bootstrap-options-migration": {
+      "version": "21.0.0",
+      "description": "Migrates deprecated bootstrap options to providers.",
+      "factory": "./bundles/bootstrap-options-migration.cjs#migrate"
     }
   }
 }
