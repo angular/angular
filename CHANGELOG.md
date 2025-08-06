@@ -1,3 +1,19 @@
+<a name="20.2.0-next.5"></a>
+# 20.2.0-next.5 (2025-08-06)
+## Deprecations
+### router
+- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d24d5742db](https://github.com/angular/angular/commit/d24d5742db694604b09d57a3503e8c32751c4836) | feat | Add IsolatedShadowDom encapsulation method ([#62723](https://github.com/angular/angular/pull/62723)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [687c374826](https://github.com/angular/angular/commit/687c374826c5e9ea91839c20f0df815ce085c583) | feat | add a currentNavigation signal to the Router service. ([#63011](https://github.com/angular/angular/pull/63011)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.6"></a>
 # 20.1.6 (2025-08-06)
 
