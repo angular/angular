@@ -23,6 +23,7 @@ jasmine_test(
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:schematics_jsons",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",

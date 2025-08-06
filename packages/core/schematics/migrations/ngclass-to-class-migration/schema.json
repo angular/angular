@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "AngularNgclassToClassMigration",
+  "title": "Angular ngClass to class Migration Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Path to the directory where all templates should be migrated.",
+      "x-prompt": "Which directory do you want to migrate?",
+      "default": "./"
+    },
+    "migrateSpaceSeparatedKey": {
+      "type": "boolean",
+      "description": "Enables to migrate keys separated with space",
+      "x-prompt": "Should the migration reformat your keys?",
+      "default": "true"
+    }
+  }
+}
