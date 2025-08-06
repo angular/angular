@@ -33,7 +33,7 @@ npm install -g pnpm
 Third, install NPM dependencies:
 
 ```shell
-pnpm --frozen-lockfile
+pnpm install --frozen-lockfile
 ```
 
 Now you should be ready to build the DevTools extension.
