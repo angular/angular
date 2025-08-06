@@ -16,6 +16,11 @@
       "version": "21.0.0",
       "description": "Ensures that the Router.lastSuccessfulNavigation signal is now invoked",
       "factory": "./bundles/router-last-successful-navigation.cjs#migrate"
+    },
+    "bootstrap-options-migration": {
+      "version": "21.0.0",
+      "description": "Migrates deprecated bootstrap options to providers.",
+      "factory": "./bundles/bootstrap-options-migration.cjs#migrate"
     }
   }
 }
