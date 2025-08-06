@@ -8,11 +8,11 @@
 
 import {AbstractControl} from '@angular/forms';
 import {ChildFieldNodeOptions, FieldNodeOptions, FieldNodeStructure} from '../structure';
-import {computed, WritableSignal} from '@angular/core';
+import {computed, Signal, WritableSignal} from '@angular/core';
 import {CompatFieldNode} from './compat_field_node';
 import {FieldNode} from '../node';
 import {CompatValidationState} from './compat_validation_state';
-import {FieldValidationState} from '../validation';
+import {ValidationState} from '../validation';
 import {CompatChildFieldNodeOptions, CompatStructure} from './compat_structure';
 import {CompatNodeState} from './compat_node_state';
 import {FieldNodeState} from '../state';
@@ -66,15 +66,17 @@ export class CompatFieldAdapter implements FieldAdapter {
   createValidationState(
     node: CompatFieldNode,
     options: CompatChildFieldNodeOptions,
-  ): FieldValidationState {
+  ): ValidationState {
     if (!options.control) {
       return this.regularAdapter.createValidationState(node);
     }
-    return new CompatValidationState(options) as unknown as FieldValidationState;
+    return new CompatValidationState(options) as unknown as ValidationState;
   }
 
   createChildNode(options: ChildFieldNodeOptions): FieldNode {
-    if (isAbstractControl(options.value)) {
+    const value = options.parent.value()[options.initialKeyInParent];
+
+    if (isAbstractControl(value)) {
       return createCompatNode(options);
     }
 
@@ -89,11 +91,10 @@ export function createCompatNode(options: FieldNodeOptions) {
       : computed(() => {
           return options.parent.value()[options.initialKeyInParent];
         })
-  ) as WritableSignal<AbstractControl>;
+  ) as Signal<AbstractControl>;
 
   return new CompatFieldNode({
     ...options,
-    value: options.value.value,
     control,
   });
 }

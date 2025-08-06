@@ -311,7 +311,7 @@ export interface ChildFieldNodeOptions {
   readonly initialKeyInParent: string;
   /** The identity used to track this field in its parent. */
   readonly identityInParent: TrackingKey | undefined;
-  readonly value: any;
+  /** This is currently use for compat. */
   readonly fieldAdapter: FieldAdapter;
 }
 
@@ -443,7 +443,6 @@ function makeChildrenMapSignal(
             logic: childLogic,
             initialKeyInParent: key,
             identityInParent: trackingId,
-            value: childValue,
             fieldAdapter: adapter,
           }),
         );

@@ -25,7 +25,7 @@ import {
   RootFieldNodeStructure,
 } from './structure';
 import {FieldSubmitState} from './submit';
-import {FieldValidationState} from './validation';
+import {ValidationState} from './validation';
 
 import {FieldAdapter} from './field_adapter';
 
@@ -44,7 +44,7 @@ import {FieldAdapter} from './field_adapter';
  */
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
-  readonly validationState: FieldValidationState;
+  readonly validationState: ValidationState;
   readonly propertyState: FieldPropertyState;
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;

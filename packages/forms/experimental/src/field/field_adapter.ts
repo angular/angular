@@ -12,13 +12,13 @@ import {FormFieldManager} from './manager';
 import {FieldNode} from './node';
 import {FieldNodeState} from './state';
 import {ChildFieldNodeOptions, FieldNodeOptions, FieldNodeStructure} from './structure';
-import {FieldValidationState} from './validation';
+import {ValidationState, FieldValidationState} from './validation';
 import {WritableSignal} from '@angular/core';
 
 export interface FieldAdapter {
   createStructure(node: FieldNode, options: FieldNodeOptions): FieldNodeStructure;
 
-  createValidationState(param: FieldNode, options: FieldNodeOptions): FieldValidationState;
+  createValidationState(param: FieldNode, options: FieldNodeOptions): ValidationState;
 
   createNodeState(param: FieldNode, options: FieldNodeOptions): FieldNodeState;
 
@@ -57,7 +57,7 @@ export class BasicFieldAdapter implements FieldAdapter {
     return new FieldNodeState(node);
   }
 
-  createValidationState(node: FieldNode): FieldValidationState {
+  createValidationState(node: FieldNode): ValidationState {
     return new FieldValidationState(node);
   }
 

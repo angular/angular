@@ -6,17 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
+import {computed, signal, Signal} from '@angular/core';
 import {CustomValidationError} from '../../api/validation_errors';
 import {AbstractControl} from '@angular/forms';
 import {reactiveErrorsToSignalErrors} from './compat_error_converter';
 import {getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
+import {ValidationState} from '../validation';
 
 /**
  * State of a `FieldNode` that's associated with form validation.
  */
-export class CompatValidationState {
+export class CompatValidationState implements ValidationState {
   readonly syncValid: Signal<boolean>;
   /**
    * All validation errors for this field.
@@ -25,8 +26,6 @@ export class CompatValidationState {
   readonly pending: Signal<boolean>;
   readonly invalid: Signal<boolean>;
   readonly valid: Signal<boolean>;
-
-  // readonly shouldSkipValidation = signal(true).asReadonly();
 
   constructor(options: CompatFieldNodeOptions) {
     this.syncValid = getControlStatusSignal(options, (c: AbstractControl) => c.status === 'VALID');
@@ -41,6 +40,12 @@ export class CompatValidationState {
       return c.invalid;
     });
   }
+
+  // Those are irrelevant for compat mode
+  rawSyncTreeErrors = signal([]);
+  syncErrors = signal([]);
+  rawAsyncErrors = signal([]);
+  shouldSkipValidation = signal(true);
 
   /**
    * The validation status of the field.

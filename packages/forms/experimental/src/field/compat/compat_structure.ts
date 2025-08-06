@@ -45,7 +45,7 @@ function getParentFromOptions(options: FieldNodeOptions) {
   return options.parent;
 }
 
-function getFieldManager(options: FieldNodeOptions) {
+function getFieldManagerFromOptions(options: FieldNodeOptions) {
   if (options.kind === 'root') {
     return options.fieldManager;
   }
@@ -55,14 +55,14 @@ function getFieldManager(options: FieldNodeOptions) {
 
 export class CompatStructure extends FieldNodeStructure {
   override value: WritableSignal<unknown>;
-  override keyInParent: Signal<string>;
+  // TODO: Figure out why this works.
+  override keyInParent: Signal<string> = signal('');
   override root: FieldNode;
   override pathKeys: Signal<readonly PropertyKey[]>;
   override readonly children = signal([]);
   override readonly childrenMap = signal(undefined);
   override readonly parent: ParentFieldNode | undefined;
-
-  fieldManager: FormFieldManager;
+  override readonly fieldManager: FormFieldManager;
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic);
@@ -83,12 +83,11 @@ export class CompatStructure extends FieldNodeStructure {
     };
 
     this.parent = getParentFromOptions(options);
-    this.root = this.parent?.structure.root || node;
-    this.fieldManager = getFieldManager(options);
+    this.root = this.parent?.structure.root ?? node;
+    this.fieldManager = getFieldManagerFromOptions(options);
     this.pathKeys = computed(() =>
       this.parent ? [...this.parent.structure.pathKeys(), this.keyInParent()] : [],
     );
-    this.keyInParent = signal('');
   }
 
   override getChild(): FieldNode | undefined {

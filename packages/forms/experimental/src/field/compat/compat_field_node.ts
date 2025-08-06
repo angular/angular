@@ -29,6 +29,7 @@ export const getControlStatusSignal = <T>(
 ) => {
   return computed(() => {
     // We get control outside untracked call, so it's actually tracked.
+    // TODO: Investigate whether we need to handle destruction in a special way.
     const c = options.control();
     return untracked(() => {
       return runInInjectionContext(getInjectorFromOptions(options), () =>
