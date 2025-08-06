@@ -123,6 +123,10 @@ bundle_entrypoints = [
         "add-bootstrap-context-to-server-main",
         "packages/core/schematics/migrations/add-bootstrap-context-to-server-main/index.js",
     ],
+    [
+        "bootstrap-options-migration",
+        "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -136,6 +140,7 @@ rollup.rollup(
         "//packages/core/schematics:tsconfig_build",
         "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
         "//packages/core/schematics/migrations/application-config-core",
+        "//packages/core/schematics/migrations/bootstrap-options-migration",
         "//packages/core/schematics/migrations/control-flow-migration",
         "//packages/core/schematics/migrations/ngclass-to-class-migration",
         "//packages/core/schematics/migrations/ngstyle-to-style-migration",

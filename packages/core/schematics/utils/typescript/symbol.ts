@@ -25,12 +25,15 @@ export function getValueSymbolOfDeclaration(
 export function isReferenceToImport(
   typeChecker: ts.TypeChecker,
   node: ts.Node,
-  importSpecifier: ts.ImportSpecifier,
+  importSpecifier: ts.ImportSpecifier | null,
 ): boolean {
   // If this function is called on an identifier (should be most cases), we can quickly rule out
   // non-matches by comparing the identifier's string and the local name of the import specifier
   // which saves us some calls to the type checker.
-  if (ts.isIdentifier(node) && node.text !== importSpecifier.name.text) {
+  if (
+    importSpecifier === null ||
+    (ts.isIdentifier(node) && node.text !== importSpecifier.name.text)
+  ) {
     return false;
   }
 
