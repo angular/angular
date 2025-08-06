@@ -1,4 +1,4 @@
-load("@devinfra//bazel/spec-bundling:index_rjs.bzl", _spec_bundle = "spec_bundle")
+load("@devinfra//bazel/spec-bundling:index.bzl", _spec_bundle = "spec_bundle")
 load("@rules_browsers//src/protractor_test:index.bzl", _protractor_test = "protractor_test")
 
 def protractor_web_test_suite(name, deps, **kwargs):

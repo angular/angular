@@ -1,5 +1,5 @@
 load("@aspect_rules_jasmine//jasmine:defs.bzl", _jasmine_test = "jasmine_test")
-load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
+load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
 
 def angular_jasmine_test(name, data = [], fixed_args = [], **kwargs):
     jasmine_test(

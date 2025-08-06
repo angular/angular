@@ -4,17 +4,6 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load("//:yarn.bzl", "YARN_LABEL")
-
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    sha256 = "5dd1e5dea1322174c57d3ca7b899da381d516220793d0adef3ba03b9d23baa8e",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.8.3/rules_nodejs-5.8.3.tar.gz"],
-)
-
-load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
-
-build_bazel_rules_nodejs_dependencies()
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
 # rule in `@bazel_tools` is not Windows compatible and outdated.
@@ -40,32 +29,19 @@ load("@aspect_rules_js//js:repositories.bzl", "rules_js_dependencies")
 
 rules_js_dependencies()
 
-# Setup the Node.js toolchain.
-load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
-
-NODE_VERSION = "20.19.0"
-
-NODE_20_REPO = {
-    "20.19.0-darwin_arm64": ("node-v20.19.0-darwin-arm64.tar.gz", "node-v20.19.0-darwin-arm64", "c016cd1975a264a29dc1b07c6fbe60d5df0a0c2beb4113c0450e3d998d1a0d9c"),
-    "20.19.0-darwin_amd64": ("node-v20.19.0-darwin-x64.tar.gz", "node-v20.19.0-darwin-x64", "a8554af97d6491fdbdabe63d3a1cfb9571228d25a3ad9aed2df856facb131b20"),
-    "20.19.0-linux_arm64": ("node-v20.19.0-linux-arm64.tar.xz", "node-v20.19.0-linux-arm64", "dbe339e55eb393955a213e6b872066880bb9feceaa494f4d44c7aac205ec2ab9"),
-    "20.19.0-linux_ppc64le": ("node-v20.19.0-linux-ppc64le.tar.xz", "node-v20.19.0-linux-ppc64le", "84937108f005679e60b486ed8e801cebfe923f02b76d8e710463d32f82181f65"),
-    "20.19.0-linux_s390x": ("node-v20.19.0-linux-s390x.tar.xz", "node-v20.19.0-linux-s390x", "11f8ee99d792a83bba7b29911e0229dd6cd5e88987d7416346067db1cc76d89a"),
-    "20.19.0-linux_amd64": ("node-v20.19.0-linux-x64.tar.xz", "node-v20.19.0-linux-x64", "b4e336584d62abefad31baecff7af167268be9bb7dd11f1297112e6eed3ca0d5"),
-    "20.19.0-windows_amd64": ("node-v20.19.0-win-x64.zip", "node-v20.19.0-win-x64", "be72284c7bc62de07d5a9fd0ae196879842c085f11f7f2b60bf8864c0c9d6a4f"),
-}
-
-nodejs_register_toolchains(
-    name = "nodejs",
-    node_repositories = NODE_20_REPO,
-    node_version = NODE_VERSION,
-)
-
 load("@aspect_rules_js//js:toolchains.bzl", "rules_js_register_toolchains")
 
 rules_js_register_toolchains(
-    node_repositories = NODE_20_REPO,
-    node_version = NODE_VERSION,
+    node_repositories = {
+        "20.19.0-darwin_arm64": ("node-v20.19.0-darwin-arm64.tar.gz", "node-v20.19.0-darwin-arm64", "c016cd1975a264a29dc1b07c6fbe60d5df0a0c2beb4113c0450e3d998d1a0d9c"),
+        "20.19.0-darwin_amd64": ("node-v20.19.0-darwin-x64.tar.gz", "node-v20.19.0-darwin-x64", "a8554af97d6491fdbdabe63d3a1cfb9571228d25a3ad9aed2df856facb131b20"),
+        "20.19.0-linux_arm64": ("node-v20.19.0-linux-arm64.tar.xz", "node-v20.19.0-linux-arm64", "dbe339e55eb393955a213e6b872066880bb9feceaa494f4d44c7aac205ec2ab9"),
+        "20.19.0-linux_ppc64le": ("node-v20.19.0-linux-ppc64le.tar.xz", "node-v20.19.0-linux-ppc64le", "84937108f005679e60b486ed8e801cebfe923f02b76d8e710463d32f82181f65"),
+        "20.19.0-linux_s390x": ("node-v20.19.0-linux-s390x.tar.xz", "node-v20.19.0-linux-s390x", "11f8ee99d792a83bba7b29911e0229dd6cd5e88987d7416346067db1cc76d89a"),
+        "20.19.0-linux_amd64": ("node-v20.19.0-linux-x64.tar.xz", "node-v20.19.0-linux-x64", "b4e336584d62abefad31baecff7af167268be9bb7dd11f1297112e6eed3ca0d5"),
+        "20.19.0-windows_amd64": ("node-v20.19.0-win-x64.zip", "node-v20.19.0-win-x64", "be72284c7bc62de07d5a9fd0ae196879842c085f11f7f2b60bf8864c0c9d6a4f"),
+    },
+    node_version = "20.19.0",
 )
 
 load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
@@ -149,18 +125,6 @@ load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
 
-# TODO: Remove when karma webtest is no longer used
-http_archive(
-    name = "io_bazel_rules_webtesting",
-    sha256 = "e9abb7658b6a129740c0b3ef6f5a2370864e102a5ba5ffca2cea565829ed825a",
-    urls = ["https://github.com/bazelbuild/rules_webtesting/releases/download/0.3.5/rules_webtesting.tar.gz"],
-)
-
-# Setup the rules_webtesting toolchain
-load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
-
-web_test_repositories()
-
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
@@ -183,23 +147,6 @@ cldr_xml_data_repository(
     },
 )
 
-# sass rules
-http_archive(
-    name = "io_bazel_rules_sass",
-    sha256 = "bff856619317a388292970a7d4bfea8c9e627a1886fe7132075d378d4067c09e",
-    strip_prefix = "rules_sass-cbe5261f925751a465a1a54bf2147e5f696ec567",
-    urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/cbe5261f925751a465a1a54bf2147e5f696ec567.zip",
-    ],
-)
-
-# Setup the rules_sass toolchain
-load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
-
-sass_repositories(
-    yarn_script = YARN_LABEL,
-)
-
 # Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
 http_archive(
     name = "sauce_connect_linux_amd64",
@@ -219,7 +166,7 @@ http_archive(
 
 git_repository(
     name = "devinfra",
-    commit = "d7a36bc7f6042e3408655c9f6534f9a1613ec8f6",
+    commit = "17282887a46c27e9f297a3292f1fde5b35dfafc1",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
@@ -230,10 +177,6 @@ setup_dependencies_1()
 load("@devinfra//bazel:setup_dependencies_2.bzl", "setup_dependencies_2")
 
 setup_dependencies_2()
-
-load("@devinfra//bazel/browsers:browser_repositories.bzl", "browser_repositories")
-
-browser_repositories()
 
 git_repository(
     name = "rules_angular",
