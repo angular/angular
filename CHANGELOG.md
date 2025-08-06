@@ -1,3 +1,10 @@
+<a name="20.1.6"></a>
+# 20.1.6 (2025-08-06)
+
+* [build: explicitly include types for locales in @angular/common/locales](https://github.com/angular/angular/commit/ecc86e298689bb20e292d2fe720a36c7139c4ff4)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.5"></a>
 # 20.1.5 (2025-08-06)
 ### compiler-cli
