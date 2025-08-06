@@ -1,4 +1,4 @@
-load("@devinfra//bazel/spec-bundling:index_rjs.bzl", "spec_bundle")
+load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@rules_browsers//src/protractor_test:index.bzl", "protractor_test")
 load("//tools:defaults2.bzl", "ts_project")
 
