@@ -33,5 +33,8 @@ ts_project(
 npm_package(
     # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
     # removed in the past (when CLDR has been updated). These can be removed in a major.
-    srcs = ["global/%s.js" % l for l in LOCALES] + [":locales"] + glob(["global/*.js"]),
+    srcs = ["global/%s.js" % l for l in LOCALES] + [
+        ":locales",
+        ":locales_types",
+    ] + glob(["global/*.js"]),
 )
