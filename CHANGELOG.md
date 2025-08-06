@@ -1,3 +1,49 @@
+<a name="20.2.0-next.4"></a>
+# 20.2.0-next.4 (2025-08-06)
+## Deprecations
+### router
+- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [fb1fc823c4](https://github.com/angular/angular/commit/fb1fc823c47ef34347ba758dd73cc997c7f0c009) | fix | correctly type check host listeners to own outputs ([#62965](https://github.com/angular/angular/pull/62965)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [141bb75ff2](https://github.com/angular/angular/commit/141bb75ff241425a93ce5b60b56a4247e67d7648) | feat | Promote zoneless to stable ([#62699](https://github.com/angular/angular/pull/62699)) |
+| [de3a0c5cf3](https://github.com/angular/angular/commit/de3a0c5cf3f87782fa63d30edf6ac05eb6be9fac) | fix | Fix `animate.enter` class removal when composing classes ([#62981](https://github.com/angular/angular/pull/62981)) |
+| [6597ac0af7](https://github.com/angular/angular/commit/6597ac0af78ac2224ec2f9a37283b53aee11abe1) | fix | fix support for space separated strings in leave animations ([#62979](https://github.com/angular/angular/pull/62979)) |
+| [ebd622b344](https://github.com/angular/angular/commit/ebd622b3449789b72efc8295244ca924a299e7c1) | fix | fixes empty animations when recalculating styles ([#63007](https://github.com/angular/angular/pull/63007)) |
+| [455b147488](https://github.com/angular/angular/commit/455b147488dc0a064c0ca13a96a4df3c3ed01152) | fix | fixes timing issues with enter animations ([#62925](https://github.com/angular/angular/pull/62925)) |
+| [648bbb097e](https://github.com/angular/angular/commit/648bbb097e858fd1276b6ee88c82b674341e6163) | fix | properly recognize failed `fetch` responses when loading external resources in JIT ([#62992](https://github.com/angular/angular/pull/62992)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c353497a01](https://github.com/angular/angular/commit/c353497a01776cd702af6c5136fdae5fc6ce94d5) | feat | add support for pushing an array of controls to formarray ([#57102](https://github.com/angular/angular/pull/57102)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e5d6fb5825](https://github.com/angular/angular/commit/e5d6fb5825d5e1b76d73d5c1c64c9986cfb02874) | fix | Reset headers, progress, and statusCode when using `set()` in `HttpResource` ([#62873](https://github.com/angular/angular/pull/62873)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b1514d512e](https://github.com/angular/angular/commit/b1514d512e041674d1ebbac88eb2d9f6a0f2cf5e) | fix | incorrect filtering in inject migration ([#62913](https://github.com/angular/angular/pull/62913)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [52b8e07d6e](https://github.com/angular/angular/commit/52b8e07d6e568a527fae18a8a867dacdf8053e20) | feat | Warns on conflicting hydration and blocking navigation ([#62963](https://github.com/angular/angular/pull/62963)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d00b3fed58](https://github.com/angular/angular/commit/d00b3fed58496369d9f3a1ac0d74416a586be78b) | feat | add a `currentNavigation` signal to the `Router` service. ([#62971](https://github.com/angular/angular/pull/62971)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8255e0cf15](https://github.com/angular/angular/commit/8255e0cf15353e9eee339ae01851e32c0e5e174d) | feat | add messageerror event handling and logging ([#62834](https://github.com/angular/angular/pull/62834)) |
+| [5220b51e75](https://github.com/angular/angular/commit/5220b51e75e672ff41c90f4798289961973df8e0) | feat | Adds for type in provideServiceWorker ([#62831](https://github.com/angular/angular/pull/62831)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.5"></a>
 # 20.1.5 (2025-08-06)
 ### compiler-cli
