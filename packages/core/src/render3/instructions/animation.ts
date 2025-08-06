@@ -81,8 +81,10 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    determineLongestAnimation(event, nativeElement, longestAnimations, areAnimationSupported);
-    setupAnimationCancel(event, renderer);
+    requestAnimationFrame(() => {
+      determineLongestAnimation(event, nativeElement, longestAnimations, areAnimationSupported);
+      setupAnimationCancel(event, renderer);
+    });
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
@@ -438,10 +440,12 @@ function animateLeaveClassRunner(
     finalRemoveFn();
   }
 
-  cancelAnimationsIfRunning(el, renderer);
+  requestAnimationFrame(() => cancelAnimationsIfRunning(el, renderer));
 
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    determineLongestAnimation(event, el, longestAnimations, areAnimationSupported);
+    requestAnimationFrame(() =>
+      determineLongestAnimation(event, el, longestAnimations, areAnimationSupported),
+    );
   };
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
