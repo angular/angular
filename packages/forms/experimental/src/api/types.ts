@@ -13,7 +13,8 @@ import type {ValidationError, WithField} from './validation_errors';
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
-declare const ɵɵTYPE: unique symbol;
+// TOOD find a better way to share?
+export const ɵɵTYPE = Symbol('Type');
 
 /**
  * Creates a type based on the given type T, but with all readonly properties made writable.
@@ -331,15 +332,17 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  * @template TValue The type of the data which the form is wrapped around.
  * @template TPathKind The kind of path (root field, child field, or item of an array)
  */
-export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
-  [ɵɵTYPE]: [TValue, TPathKind];
+export type FieldPath<
+  TValue,
+  TPathKind extends PathKind = PathKind.Root,
+  TUnwrappedValue = TValue,
+> = {
+  [ɵɵTYPE]: [TValue, TPathKind, TUnwrappedValue];
 } & (TValue extends any[]
   ? {}
   : TValue extends Record<PropertyKey, any>
     ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
     : {});
-
-export type CompatFieldPath<TValue> = {[ɵɵTYPE]: TValue};
 
 /**
  * Defines logic for a form.
@@ -432,7 +435,7 @@ export interface RootFieldContext<TValue> {
   /** The current field. */
   readonly field: Field<TValue>;
   /** Gets the value of the field represented by the given path. */
-  readonly valueOf: <P>(p: FieldPath<P> | CompatFieldPath<P>) => P | number;
+  readonly valueOf: <P>(p: FieldPath<P>) => P;
   /** Gets the state of the field represented by the given path. */
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */
