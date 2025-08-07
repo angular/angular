@@ -767,6 +767,45 @@ describe('getSuggestedDiagnostics', () => {
     const diags = project.getSuggestionDiagnosticsForFile('app.ts');
     expect(diags.length).toBe(0);
   });
+
+  it('should not report deprecated for directive context guard', () => {
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: \`
+        <div *my-directive>
+          <span>Test</span>
+          <span>Test</span>
+          <span>Test</span>
+        </div>
+        \`,
+        standalone: false,
+      })
+      export class AppComponent {}
+    `,
+      'bar.ts': `
+      import {Directive, input} from '@angular/core';
+      /**
+       * @deprecated deprecated
+       */
+      @Directive({
+        selector: '[my-directive]',
+        standalone: false,
+      })
+      export class MyDirective {
+        static ngTemplateContextGuard(dir: MyDirective, ctx: any): true {
+          return true;
+        }
+      }
+    `,
+    };
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const diags = project.getSuggestionDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(0);
+  });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {

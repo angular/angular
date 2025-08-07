@@ -598,6 +598,7 @@ class TcbTemplateBodyOp extends TcbOp {
         if (this.tcb.env.config.applyTemplateContextGuards) {
           const ctx = this.scope.resolve(hostNode);
           const guardInvoke = tsCallMethod(dirId, 'ngTemplateContextGuard', [dirInstId, ctx]);
+          markIgnoreDiagnostics(guardInvoke);
           addParseSpanInfo(guardInvoke, hostNode.sourceSpan);
           guards.push(guardInvoke);
         } else if (
