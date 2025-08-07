@@ -12,12 +12,12 @@ import {PATTERN, form, pattern} from '../../../../public_api';
 import {ValidationError} from '../../../../src/api/validation_errors';
 
 describe('pattern validator', () => {
-  it('validates whether a value matches the string pattern', () => {
+  it('validates whether a value matches the pattern', () => {
     const cat = signal({name: 'pelmeni-the-cat'});
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, 'pir.*jok');
+        pattern(p.name, /pir.*jok/);
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -30,7 +30,7 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, 'pir.*jok', {error: ValidationError.custom()});
+        pattern(p.name, /pir.*jok/, {error: ValidationError.custom()});
       },
       {injector: TestBed.inject(Injector)},
     );
@@ -44,7 +44,7 @@ describe('pattern validator', () => {
       const f = form(
         cat,
         (p) => {
-          pattern(p.name, 'pir.*jok');
+          pattern(p.name, /pir.*jok/);
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -57,8 +57,8 @@ describe('pattern validator', () => {
       const f = form(
         cat,
         (p) => {
-          pattern(p.name, 'pir.*jok');
-          pattern(p.name, 'pelmeni');
+          pattern(p.name, /pir.*jok/);
+          pattern(p.name, /pelmeni/);
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -80,22 +80,22 @@ describe('pattern validator', () => {
   });
 
   describe('dynamic values', () => {
-    it('updates validation result as the string pattern changes', () => {
-      const patternSignal = signal<string | undefined>('pir.*jok');
+    it('updates validation result as the pattern changes', () => {
+      const patternSignal = signal<RegExp | undefined>(/pir.*jok/);
       const cat = signal({name: 'pelmeni-the-cat'});
       const f = form(
         cat,
         (p) => {
-          pattern(p.name, patternSignal);
+          pattern(p.name, () => patternSignal());
         },
         {injector: TestBed.inject(Injector)},
       );
 
       expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
 
-      patternSignal.set('p.*');
+      patternSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
-      patternSignal.set('meow');
+      patternSignal.set(/meow/);
       expect(f.name().errors()).toEqual([ValidationError.pattern('meow')]);
 
       patternSignal.set(undefined);
