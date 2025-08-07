@@ -146,5 +146,5 @@ export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefine
 /**
  * An aggregate property representing the patterns the field must match.
  */
-export const PATTERN: AggregateProperty<string[], string | undefined> =
-  AggregateProperty.list<string>();
+export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> =
+  AggregateProperty.list<RegExp>();

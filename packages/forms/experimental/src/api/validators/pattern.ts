@@ -27,7 +27,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   const PATTERN_MEMO = property(path, (ctx) =>
     computed(() => (pattern instanceof RegExp ? pattern : pattern(ctx))),
   );
-  aggregateProperty(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!()?.source);
+  aggregateProperty(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     const pattern = ctx.state.property(PATTERN_MEMO)!();
 
@@ -40,7 +40,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return typeof config.error === 'function' ? config.error(ctx) : config.error;
       } else {
-        return ValidationError.pattern(pattern.source);
+        return ValidationError.pattern(pattern);
       }
     }
     return undefined;

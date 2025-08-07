@@ -22,7 +22,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
+    expect(f.name().errors()).toEqual([ValidationError.pattern(/pir.*jok/)]);
   });
 
   it('supports custom error', () => {
@@ -49,7 +49,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().property(PATTERN)()).toEqual(['pir.*jok']);
+      expect(f.name().property(PATTERN)()).toEqual([/pir.*jok/]);
     });
 
     it('merges the PATTERN property in an array', () => {
@@ -63,7 +63,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().property(PATTERN)()).toEqual(['pir.*jok', 'pelmeni']);
+      expect(f.name().property(PATTERN)()).toEqual([/pir.*jok/, /pelmeni/]);
     });
 
     it('PATTERN property defaults to empty list', () => {
@@ -91,12 +91,12 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().errors()).toEqual([ValidationError.pattern('pir.*jok')]);
+      expect(f.name().errors()).toEqual([ValidationError.pattern(/pir.*jok/)]);
 
       patternSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
       patternSignal.set(/meow/);
-      expect(f.name().errors()).toEqual([ValidationError.pattern('meow')]);
+      expect(f.name().errors()).toEqual([ValidationError.pattern(/meow/)]);
 
       patternSignal.set(undefined);
 
