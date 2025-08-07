@@ -19,6 +19,7 @@ sass_library(
         ":material_sass_deps",
         ":overrides",
         ":tables",
+        ":theme",
         ":typography",
     ],
 )

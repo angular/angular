@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken} from '@angular/core';
+// Represents the settings item
+export type ThemePreference = 'dark' | 'light' | 'system';
 
-export const WINDOW = new InjectionToken<Window>('WINDOW', {
-  factory: () => window,
-  providedIn: 'root',
-});
+// Represents the types of UI
+export type ThemeUi = 'dark' | 'light';

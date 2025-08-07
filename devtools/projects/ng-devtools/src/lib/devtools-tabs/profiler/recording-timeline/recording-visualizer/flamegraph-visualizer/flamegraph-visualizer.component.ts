@@ -43,7 +43,7 @@ export class FlamegraphVisualizerComponent {
   private readonly _formatter = new FlamegraphFormatter();
   readonly colors = computed<FlamegraphColor>(() => {
     // Represent `dynamic-blue-02` and `dynamic-green-01`
-    return this.themeService.currentTheme() === 'dark-theme'
+    return this.themeService.currentTheme() === 'dark'
       ? {
           hue: [211, 123],
           saturation: [100, 31],

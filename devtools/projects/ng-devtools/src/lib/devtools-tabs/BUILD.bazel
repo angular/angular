@@ -52,6 +52,7 @@ ts_test_library(
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_types_lib",
         "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:settings_mock",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",

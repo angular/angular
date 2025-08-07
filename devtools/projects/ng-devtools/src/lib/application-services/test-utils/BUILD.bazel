@@ -11,6 +11,7 @@ ts_project(
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings_store",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_types_lib",
     ],
 )
 

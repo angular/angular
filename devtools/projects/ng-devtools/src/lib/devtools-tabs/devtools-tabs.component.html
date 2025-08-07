@@ -112,8 +112,8 @@
     <label mat-menu-item disableRipple>
       @let currentTheme = themeService.currentTheme();
       <mat-slide-toggle
-        [checked]="currentTheme === 'dark-theme'"
-        (click)="themeService.toggleDarkMode(currentTheme === 'light-theme')"
+        [checked]="currentTheme === 'dark'"
+        (click)="themeService.toggleDarkMode(currentTheme === 'light')"
       />
       <span class="ng-mat-menu-label-text">Dark Mode</span>
     </label>
