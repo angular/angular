@@ -1,3 +1,13 @@
+<a name="20.2.0-next.6"></a>
+# 20.2.0-next.6 (2025-08-07)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [812463c563](https://github.com/angular/angular/commit/812463c5636effe5bd5ba5c7c7fc65c3cc08d047) | fix | Ignore diagnostics on ngTemplateContextGuard lines in TCB ([#63054](https://github.com/angular/angular/pull/63054)) |
+| [45b030b5ce](https://github.com/angular/angular/commit/45b030b5ce1e116a88fe1c2fe133f654fb1f66c5) | fix | prevent dom event assertion in TCB generation on older angular versions ([#63053](https://github.com/angular/angular/pull/63053)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0-next.5"></a>
 # 20.2.0-next.5 (2025-08-06)
 ## Deprecations
