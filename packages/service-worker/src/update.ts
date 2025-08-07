@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {Inject, Injectable, Optional, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {NEVER, Observable} from 'rxjs';
 
 import {RuntimeErrorCode} from './errors';
@@ -55,8 +55,17 @@ export class SwUpdate {
 
   private ongoingCheckForUpdate: Promise<boolean> | null = null;
 
-  constructor(private sw: NgswCommChannel) {
-    if (!sw.isEnabled) {
+  constructor(
+    // Since `SwUpdate` is provided in the root to be tree-shakable,
+    // it might be available for injection on the server.
+    // However, `provideServiceWorker` might not be present in the server's
+    // provider configuration. In that case, we fall back to an object with
+    // a single property: `isEnabled: false`.
+    @Optional()
+    @Inject(NgswCommChannel)
+    private sw: NgswCommChannel = <NgswCommChannel>{isEnabled: false},
+  ) {
+    if (!this.sw.isEnabled) {
       this.versionUpdates = NEVER;
       this.unrecoverable = NEVER;
       return;
