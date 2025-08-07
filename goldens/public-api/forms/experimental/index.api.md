@@ -353,18 +353,18 @@ export namespace PathKind {
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 
 // @public
-export const PATTERN: AggregateProperty<string[], string | undefined>;
+export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined>;
 
-// @public (undocumented)
-export function pattern<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<string, TPathKind>, pattern: string | LogicFn<string | undefined, string | undefined, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
+// @public
+export function pattern<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<string, TPathKind>, pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>, config?: BaseValidatorConfig<string, TPathKind>): void;
 
 // @public
 export class PatternValidationError extends _NgValidationError {
-    constructor(pattern: string, message?: string);
+    constructor(pattern: RegExp, message?: string);
     // (undocumented)
     readonly kind = "pattern";
     // (undocumented)
-    readonly pattern: string;
+    readonly pattern: RegExp;
 }
 
 // @public
@@ -488,8 +488,8 @@ export abstract class ValidationError {
     static min(min: number, message: string | undefined, field: Field<unknown>): WithField<MinValidationError>;
     static minLength(minLength: number, message?: string): MinLengthValidationError;
     static minLength(minLength: number, message: string | undefined, field: Field<unknown>): WithField<MinLengthValidationError>;
-    static pattern(pattern: string, message?: string): PatternValidationError;
-    static pattern(pattern: string, message: string | undefined, field: Field<unknown>): WithField<PatternValidationError>;
+    static pattern(pattern: RegExp, message?: string): PatternValidationError;
+    static pattern(pattern: RegExp, message: string | undefined, field: Field<unknown>): WithField<PatternValidationError>;
     static required(message?: string): RequiredValidationError;
     static required(message: string | undefined, field: Field<unknown>): WithField<RequiredValidationError>;
     static standardSchema(issue: StandardSchemaV1.Issue, message?: string): StandardSchemaValidationError;
