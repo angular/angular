@@ -620,11 +620,11 @@ function parseConditionalBlockParameters(
           `Unrecognized conditional parameter "${param.expression}"`,
         ),
       );
-    } else if (block.name !== 'if') {
+    } else if (block.name !== 'if' && !ELSE_IF_PATTERN.test(block.name)) {
       errors.push(
         new ParseError(
           param.sourceSpan,
-          '"as" expression is only allowed on the primary @if block',
+          '"as" expression is only allowed on `@if` and `@else if` blocks',
         ),
       );
     } else if (expressionAlias !== null) {

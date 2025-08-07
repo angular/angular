@@ -708,6 +708,66 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support `as` expression on `@else if` block",
+      "inputFiles": ["else_if_with_alias.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "else_if_with_alias_template.js",
+              "generated": "else_if_with_alias.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support `@else if` with same alias as `@if`",
+      "inputFiles": ["else_if_with_same_alias.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "else_if_with_same_alias_template.js",
+              "generated": "else_if_with_same_alias.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support `as` on multiple conditional branches",
+      "inputFiles": ["else_if_multiple_with_alias.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "else_if_multiple_with_alias_template.js",
+              "generated": "else_if_multiple_with_alias.js"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should support nested `@else if` with aliases",
+      "inputFiles": ["else_if_nested_with_alias.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect generated output.",
+          "files": [
+            {
+              "expected": "else_if_nested_with_alias_template.js",
+              "generated": "else_if_nested_with_alias.js"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

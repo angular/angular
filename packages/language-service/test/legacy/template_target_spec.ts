@@ -1113,6 +1113,23 @@ describe('blocks', () => {
     expect(node).toBeInstanceOf(ForLoopBlock);
   });
 
+  it('should visit alias declaration of else if block', () => {
+    const {nodes, position} = parse(`@if (false) {} @else if (title; as fo¦o) { }`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(node).toBeInstanceOf(Variable);
+    expect((node as Variable).name).toBe('foo');
+  });
+
+  it('should visit alias usage of else if block', () => {
+    const {nodes, position} = parse(`@if (false) {} @else if (title; as foo) { {{ fo¦o }} }`);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(PropertyRead);
+    expect((node as PropertyRead).name).toBe('foo');
+  });
+
   it('should visit LHS of expression in for blocks', () => {
     const {nodes, position} = parse(`@for (fo¦o of bar; track foo) {  }`);
     const {context} = getTargetAtPosition(nodes, position)!;

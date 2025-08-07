@@ -1859,6 +1859,33 @@ describe('type check blocks', () => {
       );
     });
 
+    it('should generate an else if block with an `as` expression', () => {
+      const TEMPLATE = `@if (expr === 1) {
+        {{expr}}
+      } @else if (expr === 2; as alias) {
+        {{alias}}
+      }`;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'var _t1 = ((((this).expr)) === (2)); if ((((this).expr)) === (1)) { "" + (((this).expr)); } ' +
+          'else if (((((this).expr)) === (2)) && _t1) { "" + (_t1); }',
+      );
+    });
+
+    it('should generate block where `@if` and `@else if` have the same alias name', () => {
+      const TEMPLATE = `@if (expr === 1; as alias) {
+        {{alias}}
+      } @else if (expr === 2; as alias) {
+        {{alias}}
+      }`;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'var _t1 = ((((this).expr)) === (1)); var _t2 = ((((this).expr)) === (2)); ' +
+          'if (((((this).expr)) === (1)) && _t1) { "" + (_t1); } ' +
+          'else if (((((this).expr)) === (2)) && _t2) { "" + (_t2); }',
+      );
+    });
+
     it('should not generate the body of if blocks when `checkControlFlowBodies` is disabled', () => {
       const TEMPLATE = `
           @if (expr === 0) {
