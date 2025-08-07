@@ -10,6 +10,7 @@ import type {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
+import type {Control} from '../controls/control';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
@@ -143,6 +144,10 @@ export class FieldNode implements FieldState<unknown> {
 
   get readonly(): Signal<boolean> {
     return this.nodeState.readonly;
+  }
+
+  get controls(): Signal<readonly Control<unknown>[]> {
+    return this.nodeState.controls;
   }
 
   get submitting(): Signal<boolean> {

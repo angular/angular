@@ -8,6 +8,7 @@
 
 import {computed, signal, Signal} from '@angular/core';
 import type {DisabledReason} from '../api/types';
+import type {Control} from '../controls/control';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
 
@@ -31,6 +32,9 @@ export class FieldNodeState {
    * A field is considered directly dirtied if a user changed the value of the field at least once.
    */
   readonly selfDirty = signal(false);
+
+  /** The UI controls the field is currently bound to. */
+  readonly controls = signal<readonly Control<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 
