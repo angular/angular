@@ -316,6 +316,30 @@ describe('control flow - if', () => {
     expect(fixture.nativeElement.textContent.trim()).toBe('no 42');
   });
 
+  it('should expose expression value through alias on @else if', () => {
+    @Component({
+      template: `
+        @if (value === 0; as alias) {
+          Zero evaluates to {{alias}}
+        } @else if (value | multiply: 2; as alias) {
+          {{value}} aliased to {{alias}}
+        }
+      `,
+      imports: [MultiplyPipe],
+    })
+    class TestComponent {
+      value = 0;
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('Zero evaluates to true');
+
+    fixture.componentInstance.value = 4;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('4 aliased to 8');
+  });
+
   describe('content projection', () => {
     it('should project an @if with a single root node into the root node slot', () => {
       @Component({

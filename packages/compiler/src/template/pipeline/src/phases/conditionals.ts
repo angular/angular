@@ -34,6 +34,7 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
 
       // Switch expressions assign their main test to a temporary, to avoid re-executing it.
       let tmp = op.test == null ? null : new ir.AssignTemporaryExpr(op.test, job.allocateXrefId());
+      let caseExpressionTemporaryXref: ir.XrefId | null = null;
 
       // For each remaining condition, test whether the temporary satifies the check. (If no temp is
       // present, just check each expression directly.)
@@ -50,7 +51,9 @@ export function generateConditionalExpressions(job: ComponentCompilationJob): vo
             conditionalCase.expr,
           );
         } else if (conditionalCase.alias !== null) {
-          const caseExpressionTemporaryXref = job.allocateXrefId();
+          // Since we can only pass one variable into the conditional instruction,
+          // reuse the same variable to store the result of the expressions.
+          caseExpressionTemporaryXref ??= job.allocateXrefId();
           conditionalCase.expr = new ir.AssignTemporaryExpr(
             conditionalCase.expr,
             caseExpressionTemporaryXref,

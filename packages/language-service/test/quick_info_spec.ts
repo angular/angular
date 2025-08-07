@@ -867,11 +867,19 @@ describe('quick info', () => {
         });
       });
 
-      it('if block alias variable', () => {
+      it('if block alias function call variable', () => {
         expectQuickInfo({
           templateOverride: `@if (someObject.some¦Signal(); as aliasName) {}`,
           expectedSpanText: 'someSignal',
           expectedDisplayString: '(property) someSignal: WritableSignal\n() => number',
+        });
+      });
+
+      it('else if block alias variable', () => {
+        expectQuickInfo({
+          templateOverride: `@if (false) {} @else if (constNames; as al¦iasName) {}`,
+          expectedSpanText: 'aliasName',
+          expectedDisplayString: '(variable) aliasName: [{ readonly name: "name"; }]',
         });
       });
     });
