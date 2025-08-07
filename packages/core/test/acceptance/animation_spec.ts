@@ -923,5 +923,60 @@ describe('Animation', () => {
       fixture.detectChanges();
       expect(childCmp.nativeElement.className).not.toContain('slide-in fade-in');
     });
+
+    it('should reset leave animation and not duplicate node when toggled quickly', () => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template:
+          '<div>@if (show()) {<p animate.enter="slide-in" animate.leave="fade" #el>I should slide in</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.show.set(true);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeTruthy();
+      cmp.show.set(false);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      cmp.show.set(true);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeTruthy();
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      expect(paragraphs.length).toBe(1);
+    });
   });
 });
