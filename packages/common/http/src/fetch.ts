@@ -273,6 +273,8 @@ export class FetchBackend implements HttpBackend {
 
     const redirected = response.redirected;
 
+    const responseType = response.type;
+
     if (ok) {
       observer.next(
         new HttpResponse({
@@ -282,6 +284,7 @@ export class FetchBackend implements HttpBackend {
           statusText,
           url,
           redirected,
+          responseType,
         }),
       );
 
@@ -297,6 +300,7 @@ export class FetchBackend implements HttpBackend {
           statusText,
           url,
           redirected,
+          responseType,
         }),
       );
     }
