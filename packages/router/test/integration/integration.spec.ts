@@ -748,6 +748,22 @@ for (const browserAPI of ['navigation', 'history'] as const) {
       expect(fixture.nativeElement).toHaveText('user fedor');
     });
 
+    it('should set LastSuccessfulNavigation', async () => {
+      const router: Router = TestBed.inject(Router);
+      const fixture = TestBed.createComponent(RootCmp);
+      router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+
+      expect(router.lastSuccessfulNavigation()).toBe(null);
+
+      router.navigateByUrl('/user/init');
+      const navigation = router.getCurrentNavigation();
+      expect(router.lastSuccessfulNavigation()).toBe(null);
+      await advance(fixture);
+
+      expect(router.currentNavigation()).toBe(null);
+      expect(router.lastSuccessfulNavigation()).toEqual(navigation);
+    });
+
     it('should replace state when path is equal to current path', async () => {
       const router: Router = TestBed.inject(Router);
       const location: Location = TestBed.inject(Location);

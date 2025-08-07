@@ -14,6 +14,7 @@ import {
   Injectable,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Signal,
   Type,
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
@@ -357,7 +358,7 @@ export class Router {
    * The `Navigation` object of the most recent navigation to succeed and `null` if there
    *     has not been a successful navigation yet.
    */
-  get lastSuccessfulNavigation(): Navigation | null {
+  get lastSuccessfulNavigation(): Signal<Navigation | null> {
     return this.navigationTransitions.lastSuccessfulNavigation;
   }
 
