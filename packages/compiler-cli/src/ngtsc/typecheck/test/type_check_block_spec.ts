@@ -1077,6 +1077,7 @@ describe('type check blocks', () => {
       unusedStandaloneImports: 'warning',
       allowSignalsInTwoWayBindings: true,
       checkTwoWayBoundEvents: true,
+      allowDomEventAssertion: true,
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1453,6 +1454,14 @@ describe('type check blocks', () => {
         const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
         expect(block).toContain('var _t1 = null! as i0.Dir; ' + '_t1.fieldA = (((this).foo)); ');
       });
+    });
+
+    it('should _not_ assert the type for DOM events bound on void elements when disabled', () => {
+      const result = tcb(`<input (input)="handleInput($event.target.value)">`, undefined, {
+        ...BASE_CONFIG,
+        allowDomEventAssertion: false,
+      });
+      expect(result).not.toContain('ɵassertType');
     });
 
     describe('config.allowSignalsInTwoWayBindings', () => {

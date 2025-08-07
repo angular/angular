@@ -1057,6 +1057,9 @@ export class NgCompiler {
     const allowSignalsInTwoWayBindings =
       this.angularCoreVersion === null ||
       coreVersionSupportsFeature(this.angularCoreVersion, '>= 17.2.0-0');
+    const allowDomEventAssertion =
+      this.angularCoreVersion === null ||
+      coreVersionSupportsFeature(this.angularCoreVersion, '>= 20.2.0');
 
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
@@ -1101,6 +1104,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
+        allowDomEventAssertion,
       };
     } else {
       typeCheckingConfig = {
@@ -1136,6 +1140,7 @@ export class NgCompiler {
           this.options.extendedDiagnostics?.defaultCategory || DiagnosticCategoryLabel.Warning,
         allowSignalsInTwoWayBindings,
         checkTwoWayBoundEvents,
+        allowDomEventAssertion,
       };
     }
 
