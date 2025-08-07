@@ -15,7 +15,13 @@ describe('App E2E Tests', () => {
     await verifyNoBrowserErrors();
   });
 
-  it('should reply click event', async () => {
+  // TODO: renable this test once the @angular/ssr has been update
+  // Context: https://github.com/angular/angular/pull/63057
+  // SSR relies on lastSuccessfulNavigation which went through a breaking change.
+  // 1. FW needs to be released with the breaking change.
+  // 2. @angular/ssr needs to be updated to use the new API & released
+  // 3. We need to update the @angular/ssr to the said release.
+  xit('should reply click event', async () => {
     const divElement = element(by.css('#divElement'));
     expect(await divElement.getText()).toContain('click not triggered');
 

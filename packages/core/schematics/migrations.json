@@ -26,6 +26,11 @@
       "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
       "factory": "./bundles/router-current-navigation.cjs#migrate",
       "optional": true
+    },
+    "router-last-successful-navigation": {
+      "version": "21.0.0",
+      "description": "Ensures that the Router.lastSuccessfulNavigation signal is now invoked",
+      "factory": "./bundles/router-last-successful-navigation.cjs#migrate"
     }
   }
 }
