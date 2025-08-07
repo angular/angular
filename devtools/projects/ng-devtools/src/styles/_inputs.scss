@@ -1,6 +1,6 @@
 /* Global input styles */
 @use './typography';
-@use './theme' as theme;
+@use './theme' as th;
 
 .ng-input,
 .ng-select,
@@ -51,8 +51,7 @@
   }
 }
 
-/* We can't use the theme mixins on top-level styles due to `:host-context` */
-:root.#{theme.$dark-theme-class} {
+@include th.dark-theme(true) {
   .ng-select {
     background-image: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="white"><path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/></svg>');
   }

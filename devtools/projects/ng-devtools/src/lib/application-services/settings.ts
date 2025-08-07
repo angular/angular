@@ -8,6 +8,7 @@
 
 import {inject} from '@angular/core';
 import {SettingsStore} from './settings_store';
+import {ThemePreference} from './theme_types';
 
 // Note: Any changes to the settings items should be accompanied by a migration.
 // Check settings_provider.ts
@@ -42,5 +43,11 @@ export class Settings {
     key: 'transfer_state_enabled',
     category: 'general',
     initialValue: false,
+  });
+
+  readonly theme = this.settingsStore.create<ThemePreference>({
+    key: 'theme',
+    category: 'general',
+    initialValue: 'system',
   });
 }

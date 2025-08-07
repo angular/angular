@@ -24,7 +24,6 @@ import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
-import {WINDOW_PROVIDER} from './application-providers/window_provider';
 import {MatIconRegistry} from '@angular/material/icon';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
@@ -54,7 +53,6 @@ const LAST_SUPPORTED_VERSION = 9;
   templateUrl: './devtools.component.html',
   styleUrls: ['./devtools.component.scss'],
   imports: [DevToolsTabsComponent, MatTooltip, MatProgressSpinnerModule, MatTooltipModule],
-  providers: [WINDOW_PROVIDER, ThemeService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {

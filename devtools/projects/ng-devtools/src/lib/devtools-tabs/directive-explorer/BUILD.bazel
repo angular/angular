@@ -45,7 +45,6 @@ ts_test_library(
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/tslib",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
-        "//devtools/projects/ng-devtools/src/lib/application-providers:window",
         "//devtools/projects/protocol",
     ],
 )

@@ -13,7 +13,7 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/rxjs",
-        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
+        "//devtools/projects/ng-devtools/src/lib/application-services:theme_types_lib",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter",
         "//devtools/projects/protocol",
     ],

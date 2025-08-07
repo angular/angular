@@ -5,6 +5,7 @@
 @use './colors' as clr;
 @use './typography' as tg;
 @use './overrides' as ovr;
+@use './theme' as th;
 @use './inputs';
 @use './tables';
 
@@ -72,13 +73,12 @@ $dark-theme: map.deep-merge(
   )
 );
 
-/* Keep class name in sync with ThemeService */
-.light-theme {
+@include th.light-theme(true) {
+  color-scheme: light;
   @include mat.all-component-themes($light-theme);
 }
 
-/* Keep class name in sync with ThemeService */
-.dark-theme {
+@include th.dark-theme(true) {
   color-scheme: dark;
   @include mat.all-component-themes($dark-theme);
 }
