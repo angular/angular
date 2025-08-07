@@ -1680,7 +1680,8 @@ class TcbUnclaimedOutputsOp extends TcbOp {
         if (
           this.target instanceof TmplAstElement &&
           this.target.isVoid &&
-          ts.isIdentifier(target)
+          ts.isIdentifier(target) &&
+          this.tcb.env.config.allowDomEventAssertion
         ) {
           domEventAssertion = ts.factory.createCallExpression(
             this.tcb.env.referenceExternalSymbol('@angular/core', 'ɵassertType'),

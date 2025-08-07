@@ -354,6 +354,11 @@ export interface TypeCheckingConfig {
   allowSignalsInTwoWayBindings: boolean;
 
   /**
+   * Whether the type of DOM events should be asserted with '@angular/core' 'ɵassertType' (see TCB implementation).
+   */
+  allowDomEventAssertion: boolean;
+
+  /**
    * Whether to descend into the bodies of control flow blocks (`@if`, `@switch` and `@for`).
    */
   checkControlFlowBodies: boolean;
