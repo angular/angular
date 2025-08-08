@@ -111,7 +111,7 @@ function main() {
         ...getEntriesFromMembers(entry).map((member) => [member, moduleName]),
       ]),
     ],
-  } as EntryCollection);
+  } satisfies EntryCollection);
 
   writeFileSync(outputFilenameExecRootRelativePath, output, {encoding: 'utf8'});
 }
