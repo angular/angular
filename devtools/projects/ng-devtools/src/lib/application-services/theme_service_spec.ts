@@ -42,9 +42,10 @@ function mockSystemTheme(initialTheme: 'light' | 'dark' = 'light') {
     matchMedia: (mediaString: string): MediaQueryList =>
       ({
         matches: mediaString === currMediaString,
-        addEventListener: (e: string, cb: () => {}) => {
+        addEventListener: (e: string, cb: () => void) => {
           matchMediaListener = cb;
         },
+        removeEventListener: (e: string, cb: () => void) => {},
       }) as MediaQueryList,
   };
 }
