@@ -14,6 +14,7 @@ import {
   ComponentFactory,
   ComponentFactoryResolver,
   ComponentRef,
+  EmbeddedViewRef,
   EventEmitter,
   Injector,
   NgZone,
@@ -143,11 +144,48 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
       // Schedule the component to be destroyed after a small timeout in case it is being
       // moved elsewhere in the DOM
       this.scheduledDestroyFn = scheduler.schedule(() => {
+        this.scheduledDestroyFn = null;
         if (this.componentRef !== null) {
+          // Save old position of the element node, to maintain it attached even
+          // after the this.componentRef.destroy, that detach it from parent
+          const attachInfo = this.getElementAttachPoint();
+          // Prepare back properties from componentRef to `initialInputValues`
+          this.resetProperties();
           this.componentRef.destroy();
           this.componentRef = null;
+          // Reattach the destroyed empty html element to the parent
+          if (attachInfo) {
+            const {parent, viewNode, beforeOf} = attachInfo;
+            parent.insertBefore(viewNode, beforeOf);
+          }
         }
       }, DESTROY_DELAY);
+    });
+  }
+
+  /**
+   * Get the current attach point of the custom element and his position
+   */
+  private getElementAttachPoint():
+    | {parent: HTMLElement; viewNode: HTMLElement; beforeOf: ChildNode}
+    | undefined {
+    const hostView = this.componentRef!.hostView as EmbeddedViewRef<unknown>;
+    const viewNode = hostView?.rootNodes?.[0] as HTMLElement;
+    const parent = viewNode?.parentElement!;
+    if (!parent) {
+      return;
+    }
+    const index = parent && Array.from(parent.childNodes).indexOf(viewNode);
+    const beforeOf = parent && parent.childNodes.item(index + 1);
+    return {parent, viewNode, beforeOf};
+  }
+
+  /**
+   * Copy back live properties from the componentRef (about to be destroyed) to initialInputValues for future reattach
+   */
+  private resetProperties() {
+    this.componentFactory.inputs.forEach((input) => {
+      this.initialInputValues.set(input.propName, this.componentRef!.instance[input.propName]);
     });
   }
 
