@@ -903,6 +903,7 @@
       "matchWithChecks",
       "materializeViewResults",
       "matrixParamsMatch",
+      "maybeResolveResources",
       "maybeReturnReactiveLViewConsumer",
       "maybeSchedule",
       "maybeUnwrapDefaultExport",
