@@ -30,6 +30,7 @@ export interface FormOptions {
    * current [injection context](guide/di/dependency-injection-context), will be used.
    */
   injector?: Injector;
+  name?: string;
 }
 
 /** Extracts the model, schema, and options from the arguments passed to `form()`. */
@@ -172,7 +173,7 @@ export function form<TValue>(...args: any[]): Field<TValue> {
   const [model, schema, options] = normalizeFormArgs<TValue>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
-  const fieldManager = new FormFieldManager(injector);
+  const fieldManager = new FormFieldManager(injector, options?.name);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 

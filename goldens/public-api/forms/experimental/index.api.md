@@ -71,6 +71,32 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 }
 
+// @public (undocumented)
+export interface BaseUiControl {
+    // (undocumented)
+    readonly disabled?: InputSignal<boolean | undefined>;
+    // (undocumented)
+    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
+    // (undocumented)
+    readonly max?: InputSignal<number | undefined>;
+    // (undocumented)
+    readonly maxLength?: InputSignal<number | undefined>;
+    // (undocumented)
+    readonly min?: InputSignal<number | undefined>;
+    // (undocumented)
+    readonly minLength?: InputSignal<number | undefined>;
+    // (undocumented)
+    readonly name?: InputSignal<string>;
+    // (undocumented)
+    readonly readonly?: InputSignal<boolean | undefined>;
+    // (undocumented)
+    readonly touch?: OutputRef<void>;
+    // (undocumented)
+    readonly touched?: InputSignal<boolean | undefined>;
+    // (undocumented)
+    readonly valid?: InputSignal<boolean | undefined>;
+}
+
 // @public
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
@@ -85,17 +111,17 @@ export class Control<T> {
     // (undocumented)
     readonly el: ElementRef<HTMLElement>;
     // (undocumented)
-    readonly field: InputSignal<Field<T>>;
+    readonly field: i0.WritableSignal<Field<T>>;
+    // (undocumented)
+    set _field(value: Field<T>);
     // (undocumented)
     readonly injector: Injector;
     // (undocumented)
     get ngControl(): NgControl;
     // (undocumented)
-    ngOnInit(): void;
-    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "field": { "alias": "control"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "_field": { "alias": "control"; "required": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Control<any>, never>;
 }
@@ -151,11 +177,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly disabled: Signal<boolean>;
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
     readonly errors: Signal<ValidationError[]>;
+    hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
     markAsDirty(): void;
     markAsTouched(): void;
+    readonly name: Signal<string>;
     readonly pending: Signal<boolean>;
     property<M>(prop: AggregateProperty<M, any>): Signal<M>;
     property<M>(prop: Property<M>): M | undefined;
@@ -178,25 +206,25 @@ export function form<TValue>(model: WritableSignal<TValue>, schemaOrOptions: Sch
 // @public
 export function form<TValue>(model: WritableSignal<TValue>, schema: SchemaOrSchemaFn<TValue>, options: FormOptions): Field<TValue>;
 
+// @public (undocumented)
+export interface FormCheckboxControl extends BaseUiControl {
+    // (undocumented)
+    readonly checked: ModelSignal<boolean>;
+    // (undocumented)
+    readonly value?: undefined;
+}
+
 // @public
 export interface FormOptions {
     injector?: Injector;
+    // (undocumented)
+    name?: string;
 }
 
 // @public (undocumented)
-export interface FormUiControl<TValue> {
+export interface FormValueControl<TValue> extends BaseUiControl {
     // (undocumented)
-    readonly disabled?: InputSignal<boolean | string | undefined>;
-    // (undocumented)
-    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
-    // (undocumented)
-    readonly readonly?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly touch?: OutputRef<void>;
-    // (undocumented)
-    readonly touched?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly valid?: InputSignal<boolean | undefined>;
+    readonly checked?: undefined;
     // (undocumented)
     readonly value: ModelSignal<TValue>;
 }

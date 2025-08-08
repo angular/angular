@@ -279,6 +279,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly submitting: Signal<boolean>;
   /**
+   * A signal of a unique name for the field, by default based on the name of its parent field.
+   */
+  readonly name: Signal<string>;
+
+  /**
    * The property key in the parent field under which this field is stored. If the parent field is
    * array-valued, for example, this is the index of this field in that array.
    */
@@ -295,6 +300,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param prop The property key to read.
    */
   property<M>(prop: Property<M>): M | undefined;
+
+  /**
+   * Checks whether the given metadata key has been defined for this field.
+   */
+  hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
 
   /**
    * Sets the touched status of the field to `true`.
