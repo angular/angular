@@ -9,7 +9,7 @@
 import {FieldNodeState} from '../state';
 import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
-import {CompatFieldNode, getControlStatusSignal} from './compat_field_node';
+import {CompatFieldNode, getControlEventsSignal, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
 
 /**
@@ -27,8 +27,8 @@ export class CompatNodeState extends FieldNodeState {
   ) {
     super(compatNode);
     this.control = options.control;
-    this.touched = getControlStatusSignal(options, (c) => c.touched);
-    this.dirty = getControlStatusSignal(options, (c) => c.dirty);
+    this.touched = getControlEventsSignal(options, (c) => c.touched);
+    this.dirty = getControlEventsSignal(options, (c) => c.dirty);
     const controlDisabled = getControlStatusSignal(options, (c) => c.disabled);
 
     this.disabled = computed(() => {
@@ -37,26 +37,18 @@ export class CompatNodeState extends FieldNodeState {
   }
 
   override markAsDirty() {
-    const control = this.control();
-    control.markAsDirty();
-    control.updateValueAndValidity();
+    this.control().markAsDirty();
   }
 
   override markAsTouched() {
-    const control = this.control();
-    control.markAsTouched();
-    control.updateValueAndValidity();
+    this.control().markAsTouched();
   }
 
   override markAsPristine() {
-    const control = this.control();
-    control.markAsPristine();
-    control.updateValueAndValidity();
+    this.control().markAsPristine();
   }
 
   override markAsUntouched() {
-    const control = this.control();
-    control.markAsUntouched();
-    control.updateValueAndValidity();
+    this.control().markAsUntouched();
   }
 }

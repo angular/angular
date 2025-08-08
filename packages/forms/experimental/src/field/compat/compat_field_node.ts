@@ -24,7 +24,6 @@ export class CompatFieldNode extends FieldNode {
 
 /**
  * This is a helper function, simplifying getting control properties after status changes.
- * TODO: consider using events$ for touched and dirty.
  * @param options
  * @param getValue
  */
@@ -40,6 +39,36 @@ export const getControlStatusSignal = <T>(
       return runInInjectionContext(getInjectorFromOptions(options), () =>
         toSignal(
           c.statusChanges.pipe(
+            map(() => {
+              return getValue(c);
+            }),
+          ),
+          {
+            initialValue: getValue(c),
+          },
+        ),
+      );
+    })();
+  });
+};
+
+/**
+ *
+ *
+ * @param options
+ * @param getValue A function which takes control and returns required value.
+ */
+export const getControlEventsSignal = <T>(
+  options: CompatFieldNodeOptions,
+  getValue: (c: AbstractControl) => T,
+) => {
+  return computed(() => {
+    // We get control outside untracked call, so it's actually tracked.
+    const c = options.control();
+    return untracked(() => {
+      return runInInjectionContext(getInjectorFromOptions(options), () =>
+        toSignal(
+          c.events.pipe(
             map(() => {
               return getValue(c);
             }),

@@ -256,13 +256,11 @@ describe('Forms compat', () => {
       expect(f().touched()).withContext('form is initially not touched').toBeFalse();
 
       control.markAsTouched();
-      control.updateValueAndValidity();
 
       expect(f.age().touched()).withContext('age is touched, when control is touched').toBeTrue();
       expect(f().touched()).withContext('form is touched when a child is touched').toBeTrue();
 
       control.markAsUntouched();
-      control.updateValueAndValidity();
 
       expect(f.age().touched()).withContext('name is not touched when untouched').toBeFalse();
       expect(f().touched()).withContext('name is not touched when child is untouched').toBeFalse();
@@ -328,13 +326,11 @@ describe('Forms compat', () => {
       expect(f().dirty()).withContext('form is initially not dirty').toBeFalse();
 
       control.markAsDirty();
-      control.updateValueAndValidity();
 
       expect(f.age().dirty()).withContext('age is dirty, when control is dirty').toBeTrue();
       expect(f().dirty()).withContext('form is dirty which child is dirty').toBeTrue();
 
       control.markAsPristine();
-      control.updateValueAndValidity();
 
       expect(f.age().dirty()).withContext('age is not dirty when marked as pristine').toBeFalse();
       expect(f().dirty())
@@ -360,7 +356,6 @@ describe('Forms compat', () => {
 
       control.markAsDirty();
       control.markAsTouched();
-      control.updateValueAndValidity();
 
       expect(f.age().dirty()).toBeTrue();
       expect(f.age().touched()).toBeTrue();
