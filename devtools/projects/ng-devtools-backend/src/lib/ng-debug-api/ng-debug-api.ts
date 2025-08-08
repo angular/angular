@@ -7,7 +7,7 @@
  */
 
 import type {ɵFrameworkAgnosticGlobalUtils as GlobalUtils} from '@angular/core';
-import {getRoots} from '../component-tree/get-roots';
+import {getAppRoots} from '../component-tree/get-roots';
 import {Framework} from '../component-tree/core-enums';
 
 /** Returns a handle to window.ng APIs (global angular debugging). */
@@ -57,7 +57,7 @@ export function ngDebugProfilerApiIsSupported(): boolean {
   // Temporary solution. Convert to an eligible API when available.
   // https://github.com/angular/angular/pull/60585#discussion_r2017047132
   // If there is a Wiz application, make Profiler API unavailable.
-  const roots = getRoots();
+  const roots = getAppRoots();
   return (
     !!roots.length &&
     !roots.some((el) => {
@@ -73,7 +73,7 @@ export function ngDebugRoutesApiIsSupported(): boolean {
 
   // Temporary solution. Convert to `ɵgetLoadedRoutes` when available.
   // If there is a Wiz application, make Routes API unavailable.
-  const roots = getRoots();
+  const roots = getAppRoots();
   return (
     !!roots.length &&
     !roots.some((el) => {
