@@ -541,7 +541,7 @@ describe('validation status', () => {
       expect(e1 instanceof NgValidationError).toBe(true);
       const e2 = ValidationError.custom({kind: 'min', min: 'two'});
       expect(e2 instanceof NgValidationError).toBe(false);
-      const e3 = ValidationError.pattern('.*@.*\\.com');
+      const e3 = ValidationError.pattern(/.*@.*\\.com/);
       expect(e3 instanceof NgValidationError).toBe(true);
     });
 
