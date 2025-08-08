@@ -1,0 +1,29 @@
+<article class="container">
+  <h2>Demo: Fetching User Data</h2>
+  <p>Click the buttons to change the user ID signal. <code>httpResource</code> reactively generates a new request.</p>
+
+  <section class="button-group">
+    <button (click)="selectUser(1)">User 1</button>
+    <button (click)="selectUser(2)">User 2</button>
+    <button (click)="selectUser(99)" class="error-btn">User 99 (Error)</button>
+  </section>
+
+  <section class="result-box">
+    @switch (user.status()) {
+      @case ('loading') {
+        <p>Status: <span class="status-loading">Loading...</span></p>
+      }
+      @case ('resolved') {
+        <p>Status: <span class="status-resolved">Resolved</span></p>
+        @if (user.value(); as userData) {
+          <p>Name: <strong>{{ userData.name }}</strong></p>
+          <p>Email: <strong>{{ userData.email }}</strong></p>
+        }
+      }
+      @case ('error') {
+        <p>Status: <span class="status-error">Error</span></p>
+        <p>User not found (status 404)</p>
+      }
+    }
+  </section>
+</article>

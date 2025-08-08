@@ -1,0 +1,41 @@
+.summary-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 1.2em;
+}
+
+.summary-item.total {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.label {
+  color: #d0d0d0;
+}
+
+.value {
+  color: #fff;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #444;
+  margin: 12px 0;
+}
+
+.item-list {
+  padding-left: 0;
+  margin: 0;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #b0b0b0;
+}
