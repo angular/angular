@@ -89,7 +89,11 @@ export interface BaseUiControl {
     // (undocumented)
     readonly name?: InputSignal<string>;
     // (undocumented)
+    readonly pattern?: InputSignal<RegExp[]>;
+    // (undocumented)
     readonly readonly?: InputSignal<boolean | undefined>;
+    // (undocumented)
+    readonly required?: InputSignal<boolean>;
     // (undocumented)
     readonly touch?: OutputRef<void>;
     // (undocumented)

@@ -27,7 +27,15 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
-import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
+import {
+  AggregateProperty,
+  MAX,
+  MAX_LENGTH,
+  MIN,
+  MIN_LENGTH,
+  PATTERN,
+  REQUIRED,
+} from '../api/property';
 import {Field} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {
@@ -245,10 +253,12 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
     this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
 
+    this.maybeSynchronize(this.propertySource(REQUIRED), withInput(cmp.required));
     this.maybeSynchronize(this.propertySource(MIN), withInput(cmp.min));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withInput(cmp.minLength));
     this.maybeSynchronize(this.propertySource(MAX), withInput(cmp.max));
     this.maybeSynchronize(this.propertySource(MAX_LENGTH), withInput(cmp.maxLength));
+    this.maybeSynchronize(this.propertySource(PATTERN), withInput(cmp.pattern));
 
     let cleanupTouch: OutputRefSubscription | undefined;
     let cleanupDefaultTouch: (() => void) | undefined;
@@ -291,9 +301,9 @@ export class Control<T> {
     illegallyRunEffect(ref);
   }
 
-  private propertySource<T>(key: AggregateProperty<T, any>): () => T | undefined {
+  private propertySource<T>(key: AggregateProperty<T, any>): () => T {
     const metaSource = computed(() =>
-      this.state().hasProperty(key) ? this.state().property(key) : undefined,
+      this.state().hasProperty(key) ? this.state().property(key) : key.getInitial,
     );
     return () => metaSource()?.();
   }
