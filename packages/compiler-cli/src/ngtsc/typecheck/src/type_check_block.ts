@@ -856,7 +856,7 @@ class TcbDirectiveCtorOp extends TcbOp {
   constructor(
     private tcb: Context,
     private scope: Scope,
-    private node: TmplAstTemplate | TmplAstElement | TmplAstComponent | TmplAstDirective,
+    private node: DirectiveOwner,
     private dir: TypeCheckableDirectiveMeta,
   ) {
     super();
@@ -869,12 +869,22 @@ class TcbDirectiveCtorOp extends TcbOp {
   }
 
   override execute(): ts.Identifier {
-    const id = this.tcb.allocateId();
-    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
-    addParseSpanInfo(id, this.node.startSourceSpan || this.node.sourceSpan);
-
     const genericInputs = new Map<string, TcbDirectiveInput>();
-    const boundAttrs = getBoundAttributes(this.dir, this.node);
+    const id = this.tcb.allocateId();
+    let boundAttrs: TcbBoundAttribute[];
+    let span: ParseSourceSpan;
+
+    if (this.node instanceof TmplAstHostElement) {
+      // Host elements can't bind to their own inputs so we don't resolve any.
+      boundAttrs = [];
+      span = this.node.sourceSpan;
+    } else {
+      boundAttrs = getBoundAttributes(this.dir, this.node);
+      span = this.node.startSourceSpan || this.node.sourceSpan;
+    }
+
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, span);
 
     for (const attr of boundAttrs) {
       // Skip text attributes if configured to do so.
@@ -2824,32 +2834,32 @@ class Scope {
     node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     dirMap: Map<TypeCheckableDirectiveMeta, number>,
   ): void {
-    let directiveOp: TcbOp;
-    const host = this.tcb.env.reflector;
+    const directiveOp = this.getDirectiveOp(dir, node);
+    const dirIndex = this.opQueue.push(directiveOp) - 1;
+    dirMap.set(dir, dirIndex);
+    this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir));
+  }
+
+  private getDirectiveOp(dir: TypeCheckableDirectiveMeta, node: DirectiveOwner): TcbOp {
     const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
 
     if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
-      directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
+      return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
     } else if (
-      !requiresInlineTypeCtor(dirRef.node, host, this.tcb.env) ||
+      !requiresInlineTypeCtor(dirRef.node, this.tcb.env.reflector, this.tcb.env) ||
       this.tcb.env.config.useInlineTypeConstructors
     ) {
       // For generic directives, we use a type constructor to infer types. If a directive requires
       // an inline type constructor, then inlining must be available to use the
       // `TcbDirectiveCtorOp`. If not we, we fallback to using `any` – see below.
-      directiveOp = new TcbDirectiveCtorOp(this.tcb, this, node, dir);
-    } else {
-      // If inlining is not available, then we give up on inferring the generic params, and use
-      // `any` type for the directive's generic parameters.
-      directiveOp = new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir);
+      return new TcbDirectiveCtorOp(this.tcb, this, node, dir);
     }
 
-    const dirIndex = this.opQueue.push(directiveOp) - 1;
-    dirMap.set(dir, dirIndex);
-
-    this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir));
+    // If inlining is not available, then we give up on inferring the generic params, and use
+    // `any` type for the directive's generic parameters.
+    return new TcbGenericDirectiveTypeWithAnyParamsOp(this.tcb, this, node, dir);
   }
 
   private appendSelectorlessDirectives(
@@ -3028,7 +3038,7 @@ class Scope {
       const directiveOpMap = new Map<TypeCheckableDirectiveMeta, number>();
 
       for (const directive of directives) {
-        const directiveOp = new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, directive);
+        const directiveOp = this.getDirectiveOp(directive, node);
         directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
       }
 
