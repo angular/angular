@@ -68,6 +68,23 @@ function getFieldManagerFromOptions(options: FieldNodeOptions) {
   return options.parent.structure.root.structure.fieldManager;
 }
 
+function getControlValueSignal(options: CompatFieldNodeOptions) {
+  const value = computed(() => {
+    const c = options.control();
+    return untracked(() => {
+      return runInInjectionContext(getInjectorFromOptions(options), () => {
+        return toSignal(c.valueChanges, {initialValue: c.value});
+      });
+    })();
+  }) as WritableSignal<unknown>;
+
+  value.set = (value: unknown) => {
+    options.control().setValue(value);
+  };
+
+  return value;
+}
+
 /**
  * Compat version of FieldNodeStructure,
  * - It has no children
@@ -86,23 +103,7 @@ export class CompatStructure extends FieldNodeStructure {
 
   constructor(node: FieldNode, options: CompatFieldNodeOptions) {
     super(options.logic);
-
-    const control = options.control;
-
-    // TODO(kirjs): Consider extracting this.
-    this.value = computed(() => {
-      const c = control();
-      return untracked(() => {
-        return runInInjectionContext(getInjectorFromOptions(options), () => {
-          return toSignal(c.valueChanges, {initialValue: c.value});
-        });
-      })();
-    }) as WritableSignal<unknown>;
-
-    this.value.set = (value: unknown) => {
-      control().setValue(value);
-    };
-
+    this.value = getControlValueSignal(options);
     this.parent = getParentFromOptions(options);
     this.root = this.parent?.structure.root ?? node;
     this.fieldManager = getFieldManagerFromOptions(options);
