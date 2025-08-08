@@ -256,7 +256,7 @@ Users can opt-in to use the `application` builder by setting the `builderMode` o
 This option is currently in developer preview.
 If you notice any issues, please report them [here](https://github.com/angular/angular-cli/issues).
 
-### Build-time value replacement (define)
+### Build-time value replacement with `define`
 
 The `define` option allows identifiers present in the code to be replaced with another value at build time.
 This is similar to the behavior of Webpack's `DefinePlugin` which was previously used with some custom Webpack configurations that used third-party builders.
