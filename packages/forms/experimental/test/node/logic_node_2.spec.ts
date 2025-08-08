@@ -20,6 +20,7 @@ const fakeFieldContext: FieldContext<unknown> = {
       structure: {pathKeys: () => [], parent: undefined},
     }) as unknown as FieldState<P>,
   valueOf: () => undefined!,
+  controlValueOf: () => undefined!,
   field: undefined!,
   state: undefined!,
   value: undefined!,

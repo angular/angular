@@ -56,6 +56,12 @@ export class FieldNode implements FieldState<unknown> {
     return (this._context ??= new FieldNodeContext(this));
   }
 
+  control: never = (() => {
+    throw new Error('This should never happen TODO');
+  }) as never;
+  controlValue: never = (() => {
+    throw new Error('This should never happen TODO');
+  }) as never;
   /**
    * Proxy to this node which allows navigation of the form graph below it.
    */

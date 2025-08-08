@@ -40,13 +40,13 @@ describe('Forms compat', () => {
       age: new FormControl<number>(5, {nonNullable: true}),
     });
 
-    const f = interopForm(cat, {
+    const f = form(cat, {
       injector: TestBed.inject(Injector),
       adapter: new CompatFieldAdapter(),
     });
 
     const age = f.age();
-    expect(age.value()).toBe(5);
+    expect(age.controlValue()).toBe(5);
     expect(f.age().valid()).toBe(true);
   });
 
@@ -56,28 +56,28 @@ describe('Forms compat', () => {
       name: 'pirojok-the-cat',
       age: control,
     });
-    const f = interopForm(cat, {
+    const f = form(cat, {
       injector: TestBed.inject(Injector),
       adapter: new CompatFieldAdapter(),
     });
 
-    expect(f.age().value()).toBe(5);
+    expect(f.age().controlValue()).toBe(5);
     expect(f.age().valid()).toBe(true);
     control.setValue(2);
-    expect(f.age().value()).toBe(2);
+    expect(f.age().controlValue()).toBe(2);
     expect(f.age().valid()).toBe(false);
-    f.age().value.set(100);
+    f.age().controlValue.set(100);
   });
 
   it('can be in root', () => {
     const catControl = new FormControl('meow', Validators.minLength(3));
     const cat = signal(catControl);
-    const f = interopForm(cat, {
+    const f = form(cat, {
       injector: TestBed.inject(Injector),
       adapter: new CompatFieldAdapter(),
     });
 
-    expect(f().value()).toBe('meow');
+    expect(f().controlValue()).toBe('meow');
     expect(f().valid()).toBe(true);
   });
 
@@ -88,21 +88,21 @@ describe('Forms compat', () => {
       age: control,
     });
 
-    const f = interopForm(cat, {
+    const f = form(cat, {
       injector: TestBed.inject(Injector),
       adapter: new CompatFieldAdapter(),
     });
 
-    expect(f.age().value()).toBe(5);
+    expect(f.age().controlValue()).toBe(5);
     f().value.set({age: new FormControl(10), name: 'lol'});
-    expect(f.age().value()).toBe(10);
+    expect(f.age().controlValue()).toBe(10);
 
     const fc = new FormControl(25);
     cat.set({
       name: 'meow-the-cat',
       age: fc,
     });
-    expect(f.age().value()).toBe(25);
+    expect(f.age().controlValue()).toBe(25);
     expect(f().value()).toEqual({
       name: 'meow-the-cat',
       age: fc,
@@ -117,7 +117,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -133,7 +133,7 @@ describe('Forms compat', () => {
     it('allows to manually set errors', () => {
       const catControl = new FormControl('meow', Validators.minLength(3));
       const cat = signal(catControl);
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -158,7 +158,7 @@ describe('Forms compat', () => {
         mistake: control,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -180,7 +180,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(
+      const f = form(
         cat,
         (p) => {
           disabled(p, ({value}) => {
@@ -213,7 +213,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(
+      const f = form(
         cat,
         (p) => {
           hidden(p, ({value}) => {
@@ -242,7 +242,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -275,11 +275,11 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(
+      const f = form(
         cat,
         (cat) => {
           // first cat required if last cat specified
-          required(cat.name, {when: ({valueOf}) => valueOf(cat.age) !== 0});
+          required(cat.name, {when: ({valueOf}) => valueOf(cat.age).value !== 0});
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -314,7 +314,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -348,7 +348,7 @@ describe('Forms compat', () => {
         age: control,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -378,7 +378,7 @@ describe('Forms compat', () => {
           house: control,
         },
       });
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -394,7 +394,7 @@ describe('Forms compat', () => {
           house: control,
         },
       });
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -410,13 +410,15 @@ describe('Forms compat', () => {
       name: 'pirojok-the-cat',
       age: control,
     });
-    const f = interopForm(
+    const f = form(
       cat,
       (path) => {
         required(path.name);
 
-        validate(path.name, ({valueOf}) => {
-          return valueOf(path.age) < 8 ? ValidationError.custom({kind: 'too small'}) : undefined;
+        validate(path.name, ({controlValueOf}) => {
+          return (controlValueOf(path.age) as unknown as number) < 8
+            ? ValidationError.custom({kind: 'too small'})
+            : undefined;
         });
       },
       {
@@ -430,7 +432,7 @@ describe('Forms compat', () => {
 
     control.setValue(10);
     expect(f.name().valid()).toBe(true);
-    f.age().value.set(4);
+    f.age().controlValue.set(4);
     expect(f.name().valid()).toBe(false);
   });
 
@@ -450,7 +452,7 @@ describe('Forms compat', () => {
         age: formControl,
       });
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
@@ -492,13 +494,13 @@ describe('Forms compat', () => {
         cats: [validCat, invalidCat],
       });
 
-      const f = interopForm(cats, {
+      const f = form(cats, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
 
-      expect(f.cats[0]().value()).toBe('valid cat');
-      expect(f.cats[1]().value()).toBe('invalid cat');
+      expect(f.cats[0]().controlValue()).toBe('valid cat');
+      expect(f.cats[1]().controlValue()).toBe('invalid cat');
 
       expect(f.cats[0]().valid()).withContext('first cat is valid').toBe(true);
       expect(f.cats[1]().valid()).withContext('second cat is not valid').toBe(false);
@@ -517,7 +519,7 @@ describe('Forms compat', () => {
         .withContext('form is valid because only valid control was brought back')
         .toBe(true);
 
-      expect(f.cats[0]().value()).toBe('valid cat');
+      expect(f.cats[0]().controlValue()).toBe('valid cat');
       expect(f.cats[1]).toBe(undefined);
 
       cats.set({cats: [invalidCat]});
@@ -525,7 +527,7 @@ describe('Forms compat', () => {
         .withContext('form is invalid again, because invalid child is back')
         .toBe(false);
 
-      expect(f.cats[0]().value()).toBe('invalid cat');
+      expect(f.cats[0]().controlValue()).toBe('invalid cat');
       expect(f.cats[1]).toBe(undefined);
     });
   });
@@ -539,12 +541,12 @@ describe('Forms compat', () => {
         }),
       );
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });
 
-      expect(f().value()).toEqual({
+      expect(f().controlValue()).toEqual({
         name: 'pirojok-the-cat',
         age: 10,
       });
@@ -560,7 +562,7 @@ describe('Forms compat', () => {
         }),
       );
 
-      const f = interopForm(cat, {
+      const f = form(cat, {
         injector: TestBed.inject(Injector),
         adapter: new CompatFieldAdapter(),
       });

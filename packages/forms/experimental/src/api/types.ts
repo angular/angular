@@ -9,6 +9,7 @@
 import {Signal, WritableSignal} from '@angular/core';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithField} from './validation_errors';
+import {AbstractControl} from '@angular/forms';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -237,6 +238,10 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal containing the current errors for the field.
    */
   readonly errors: Signal<ValidationError[]>;
+
+  readonly control: ControlOrNoControl<TValue>;
+  readonly controlValue: ControlValueOrNoControlValue<TValue>;
+
   /**
    * A signal containing the current errors for the field.
    */
@@ -424,6 +429,10 @@ export type FieldContext<
     ? ChildFieldContext<TValue>
     : RootFieldContext<TValue>;
 
+type ControlOrNoControl<T> = T extends AbstractControl<unknown> ? Signal<T> : never;
+type ControlValueOrNoControlValue<T> =
+  T extends AbstractControl<infer V> ? WritableSignal<V> : never;
+
 /**
  * The base field context that is available for all fields.
  */
@@ -434,6 +443,8 @@ export interface RootFieldContext<TValue> {
   readonly state: FieldState<TValue>;
   /** The current field. */
   readonly field: Field<TValue>;
+  /** Gets the value of the field represented by the given path. */
+  readonly controlValueOf: <P>(p: FieldPath<P>) => P;
   /** Gets the value of the field represented by the given path. */
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   /** Gets the state of the field represented by the given path. */
