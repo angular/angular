@@ -71,14 +71,14 @@ function measureEnd(
   entryName: string,
   color: DevToolsColor,
 ) {
-  const top = eventsStack.pop();
+  let top: stackEntry | undefined;
 
-  assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
-  assertEqual(
-    top[0],
-    startEvent,
-    `Profiling error: expected to see ${startEvent} event but got ${top[0]}`,
-  );
+  // The stack may be asymmetric when an end event for a prior start event is missing (e.g. when an exception
+  // has occurred), unroll the stack until a matching item has been found in that case.
+  do {
+    top = eventsStack.pop();
+    assertDefined(top, 'Profiling error: could not find start event entry ' + startEvent);
+  } while (top[0] !== startEvent);
 
   console.timeStamp(
     entryName,
