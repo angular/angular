@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {apply, applyEach, applyWhen, form, validate} from '../../public_api';
+import {apply, applyEach, applyWhen, FieldPath, form, schema, validate} from '../../public_api';
 import {ValidationError} from '../../src/api/validation_errors';
 
 describe('path', () => {
@@ -90,6 +90,17 @@ describe('path', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
+    });
+  });
+
+  it('should forward optional typing on value, not path', () => {
+    interface Model {
+      field?: string;
+    }
+
+    schema<Model>((p) => {
+      // The `?` is forwarded to the path's value, and not the path itself.
+      p.field satisfies FieldPath<string | undefined>;
     });
   });
 });

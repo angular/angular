@@ -68,7 +68,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addReadonlyRule(logic);
+  pathNode.logic.addReadonlyRule(logic as LogicFn<any, boolean>);
 }
 
 /**
@@ -95,7 +95,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addHiddenRule(logic);
+  pathNode.logic.addHiddenRule(logic as LogicFn<any, boolean>);
 }
 
 /**
@@ -113,7 +113,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncErrorRule(logic as Validator<TValue>);
+  pathNode.logic.addSyncErrorRule(logic as Validator<any>);
 }
 
 /**
@@ -135,9 +135,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) =>
     addDefaultField(logic(ctx), ctx.field);
 
-  pathNode.logic.addSyncTreeErrorRule(
-    wrappedLogic as LogicFn<TValue, TreeValidationResultWithField>,
-  );
+  pathNode.logic.addSyncTreeErrorRule(wrappedLogic as LogicFn<any, TreeValidationResultWithField>);
 }
 
 /**
@@ -158,7 +156,7 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addAggregatePropertyRule(prop, logic);
+  pathNode.logic.addAggregatePropertyRule(prop, logic as LogicFn<any, TPropItem>);
 }
 
 /**

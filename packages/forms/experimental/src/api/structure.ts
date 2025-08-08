@@ -171,7 +171,9 @@ export function form<TValue>(
 export function form<TValue>(...args: any[]): Field<TValue> {
   const [model, schema, options] = normalizeFormArgs<TValue>(args);
   const injector = options?.injector ?? inject(Injector);
-  const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
+  const pathNode = runInInjectionContext(injector, () =>
+    SchemaImpl.rootCompile(schema as Schema<unknown>),
+  );
   const fieldManager = new FormFieldManager(injector);
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
@@ -246,7 +248,7 @@ export function apply<TValue>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.mergeIn(SchemaImpl.create(schema));
+  pathNode.mergeIn(SchemaImpl.create(schema as Schema<unknown>));
 }
 
 /**
@@ -265,7 +267,10 @@ export function applyWhen<TValue>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.mergeIn(SchemaImpl.create(schema), {fn: logic, path});
+  pathNode.mergeIn(SchemaImpl.create(schema as Schema<unknown>), {
+    fn: logic as LogicFn<any, boolean>,
+    path,
+  });
 }
 
 /**
@@ -388,7 +393,7 @@ function setServerErrors(
  * @template TValue The value type of a `Field` that this schema binds to.
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
-  return SchemaImpl.create(fn) as unknown as Schema<TValue>;
+  return SchemaImpl.create(fn as SchemaFn<unknown>) as unknown as Schema<TValue>;
 }
 
 /** Marks a {@link node} and its descendants as touched. */

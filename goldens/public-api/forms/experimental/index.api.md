@@ -142,7 +142,7 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
     [ɵɵTYPE]: [TValue, TPathKind];
 } & (TValue extends any[] ? {} : TValue extends Record<PropertyKey, any> ? {
-    [K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>;
+    [K in keyof TValue]-?: FieldPath<TValue[K], PathKind.Child>;
 } : {});
 
 // @public
@@ -438,7 +438,7 @@ export function stripField<E extends ValidationError>(e: WithField<E> | E): E;
 
 // @public
 export type Subfields<TValue> = {
-    readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<TValue[K], string>;
+    readonly [K in keyof TValue as TValue[K] extends Function ? never : K]-?: MaybeField<TValue[K], string>;
 };
 
 // @public
