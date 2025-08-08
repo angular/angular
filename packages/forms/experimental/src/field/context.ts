@@ -12,6 +12,7 @@ import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {boundPathDepth} from './resolution';
+import {AbstractControl} from '@angular/forms';
 
 /**
  * `FieldContext` implementation, backed by a `FieldNode`.
@@ -113,7 +114,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return this.resolve(p as unknown as FieldPath<P>)().value();
   };
 
-  readonly controlValueOf = <P>(p: FieldPath<P>): P => {
-    return this.resolve(p as unknown as FieldPath<P>)().controlValue() as any;
+  readonly controlValueOf = <T>(p: FieldPath<AbstractControl<T>>): T => {
+    return this.resolve(p)().controlValue();
   };
 }

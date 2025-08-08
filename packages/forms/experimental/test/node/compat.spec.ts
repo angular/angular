@@ -7,19 +7,12 @@
  */
 
 import {ApplicationRef, Injector, Signal, signal, WritableSignal} from '@angular/core';
-import {disabled, FieldPath, form, hidden, required, submit, validate} from '../../public_api';
+import {disabled, form, hidden, required, submit, validate} from '../../public_api';
 import {TestBed} from '@angular/core/testing';
-import {
-  AbstractControl,
-  FormControl,
-  FormControlState,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import {FormControl, FormControlState, FormGroup, Validators} from '@angular/forms';
 
 import {ValidationError} from '@angular/forms/experimental';
 import {CompatFieldAdapter} from '../../src/field/compat/compat_field_adapter';
-import {interopForm} from '../../src/field/compat/compat_form';
 
 type UnwrapFormControlState<T> = T extends FormControlState<infer V> ? V : T;
 
@@ -48,6 +41,20 @@ describe('Forms compat', () => {
     const age = f.age();
     expect(age.controlValue()).toBe(5);
     expect(f.age().valid()).toBe(true);
+  });
+
+  it('does not work without injector', () => {
+    const cat = signal({
+      name: 'pirojok-the-cat',
+      age: new FormControl<number>(5, {nonNullable: true}),
+    });
+
+    const f = form(cat, {
+      injector: TestBed.inject(Injector),
+    });
+
+    const age = f.age();
+    expect(() => age.controlValue()).toThrowError();
   });
 
   it('should handle and propagate errors', () => {
@@ -417,6 +424,62 @@ describe('Forms compat', () => {
 
         validate(path.name, ({controlValueOf}) => {
           return (controlValueOf(path.age) as unknown as number) < 8
+            ? ValidationError.custom({kind: 'too small'})
+            : undefined;
+        });
+      },
+      {
+        injector: TestBed.inject(Injector),
+        adapter: new CompatFieldAdapter(),
+      },
+    );
+
+    expect(f.name().valid()).toBe(false);
+    expect(f.name().errors()).toEqual([ValidationError.custom({kind: 'too small'})]);
+
+    control.setValue(10);
+    expect(f.name().valid()).toBe(true);
+    f.age().controlValue.set(4);
+    expect(f.name().valid()).toBe(false);
+  });
+
+  it('disallows passing a path with a FormControl on the type level', () => {
+    const control = new FormControl(5, {nonNullable: true, validators: [Validators.min(3)]});
+    const cat = signal({
+      name: 'pirojok-the-cat',
+      age: control,
+    });
+    const f = form(
+      cat,
+      (path) => {
+        // TODO: Finish the rest of the rules.
+        // @ts-expect-error
+        required(path.age);
+        // TODO: Expect error
+        validate(path.age, () => {
+          return undefined;
+        });
+      },
+      {
+        injector: TestBed.inject(Injector),
+        adapter: new CompatFieldAdapter(),
+      },
+    );
+  });
+
+  it('allows to use form control values for validation', () => {
+    const control = new FormControl(5, {nonNullable: true, validators: [Validators.min(3)]});
+    const cat = signal({
+      name: 'pirojok-the-cat',
+      age: control,
+    });
+    const f = form(
+      cat,
+      (path) => {
+        required(path.name);
+
+        validate(path.name, ({controlValueOf}) => {
+          return controlValueOf(path.age) < 8
             ? ValidationError.custom({kind: 'too small'})
             : undefined;
         });

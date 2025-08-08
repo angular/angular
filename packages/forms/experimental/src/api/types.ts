@@ -238,9 +238,15 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal containing the current errors for the field.
    */
   readonly errors: Signal<ValidationError[]>;
-
-  readonly control: ControlOrNoControl<TValue>;
-  readonly controlValue: ControlValueOrNoControlValue<TValue>;
+  /**
+   * A signal only present for fields of AbstractControl<any>, returns the control.
+   */
+  readonly control: ControlWhenPresent<TValue>;
+  /**
+   * A signal only present for fields of AbstractControl<any>.
+   * Returns reactive control value.
+   */
+  readonly controlValue: ControlValueWhenPresent<TValue>;
 
   /**
    * A signal containing the current errors for the field.
@@ -429,9 +435,8 @@ export type FieldContext<
     ? ChildFieldContext<TValue>
     : RootFieldContext<TValue>;
 
-type ControlOrNoControl<T> = T extends AbstractControl<unknown> ? Signal<T> : never;
-type ControlValueOrNoControlValue<T> =
-  T extends AbstractControl<infer V> ? WritableSignal<V> : never;
+type ControlWhenPresent<T> = T extends AbstractControl<unknown> ? Signal<T> : never;
+type ControlValueWhenPresent<T> = T extends AbstractControl<infer V> ? WritableSignal<V> : never;
 
 /**
  * The base field context that is available for all fields.
@@ -443,8 +448,8 @@ export interface RootFieldContext<TValue> {
   readonly state: FieldState<TValue>;
   /** The current field. */
   readonly field: Field<TValue>;
-  /** Gets the value of the field represented by the given path. */
-  readonly controlValueOf: <P>(p: FieldPath<P>) => P;
+  /** Gets the value of FormControl for compat forms. */
+  readonly controlValueOf: <P extends AbstractControl<unknown>>(p: FieldPath<P>) => P['value'];
   /** Gets the value of the field represented by the given path. */
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   /** Gets the state of the field represented by the given path. */
@@ -468,3 +473,9 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   /** The index of the current field in its parent field. */
   readonly index: Signal<number>;
 }
+
+type NotAbstractControl<T> = T extends AbstractControl<unknown> ? never : T;
+export type RulePath<TValue, TPathKind extends PathKind = PathKind.Root> = FieldPath<
+  NotAbstractControl<TValue>,
+  TPathKind
+>;
