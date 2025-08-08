@@ -243,7 +243,7 @@ describe('control directive', () => {
     expect(el.textContent).toBe('test');
   });
 
-  it('should update bound controls on the field when it is bound ad unbound', async () => {
+  it('should update bound controls on the field when it is bound and unbound', async () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
     expect(f().controls()).toEqual([]);
 
