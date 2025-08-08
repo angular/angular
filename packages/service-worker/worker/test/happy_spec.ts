@@ -1208,6 +1208,21 @@ import {envIsSupported} from '../testing/utils';
       });
     });
 
+    describe('unhandledrejection events', () => {
+      it('logs unhandled promise rejection errors', async () => {
+        await driver.initialized;
+
+        const debuggerLogSpy = spyOn(driver.debugger, 'log');
+
+        scope.handleUnhandledRejection('Test rejection reason');
+
+        expect(debuggerLogSpy).toHaveBeenCalledWith(
+          'Unhandled promise rejection occurred',
+          'Driver.onUnhandledRejection(reason: Test rejection reason)',
+        );
+      });
+    });
+
     describe('notification close events', () => {
       it('broadcasts notification close events', async () => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
