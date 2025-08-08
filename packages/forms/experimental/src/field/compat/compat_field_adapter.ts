@@ -24,10 +24,11 @@ export function isAbstractControl(value: unknown): value is AbstractControl {
   return value instanceof AbstractControl;
 }
 
+/**
+ * This is a tree-shakable Field adapter that proxies FormControl state to a field.
+ */
 export class CompatFieldAdapter implements FieldAdapter {
   readonly regularAdapter = new BasicFieldAdapter();
-
-  constructor() {}
 
   newRoot<TValue>(
     fieldManager: FormFieldManager,
@@ -73,7 +74,7 @@ export class CompatFieldAdapter implements FieldAdapter {
     return new CompatValidationState(options) as unknown as ValidationState;
   }
 
-  createChildNode(options: ChildFieldNodeOptions): FieldNode {
+  newChild(options: ChildFieldNodeOptions): FieldNode {
     const value = options.parent.value()[options.initialKeyInParent];
 
     if (isAbstractControl(value)) {

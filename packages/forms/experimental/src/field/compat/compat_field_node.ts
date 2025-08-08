@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {computed, runInInjectionContext, untracked} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {FieldNode} from '../node';
 import {getInjectorFromOptions} from '../util';
@@ -22,6 +22,12 @@ export class CompatFieldNode extends FieldNode {
   }
 }
 
+/**
+ * This is a helper function, simplifying getting control properties after status changes.
+ * TODO: consider using events$ for touched and dirty.
+ * @param options
+ * @param getValue
+ */
 export const getControlStatusSignal = <T>(
   options: CompatFieldNodeOptions,
   getValue: (c: AbstractControl) => T,

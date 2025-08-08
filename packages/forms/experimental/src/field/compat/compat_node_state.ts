@@ -12,6 +12,9 @@ import {AbstractControl} from '@angular/forms';
 import {CompatFieldNode, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
 
+/**
+ * A FieldNodeState class wrapping a FormControl and proxying it's state.
+ */
 export class CompatNodeState extends FieldNodeState {
   override readonly touched;
   override readonly dirty;

@@ -59,6 +59,7 @@ export class FieldNode implements FieldState<unknown> {
   control: never = (() => {
     throw new Error('This field does not have a control');
   }) as never;
+
   controlValue: never = (() => {
     throw new Error('This field does not have a control');
   }) as never;
@@ -197,7 +198,7 @@ export class FieldNode implements FieldState<unknown> {
    * Creates a child field node based on the given options.
    */
   private static newChild(options: ChildFieldNodeOptions): FieldNode {
-    return options.fieldAdapter.createChildNode(options);
+    return options.fieldAdapter.newChild(options);
   }
 
   createStructure(options: FieldNodeOptions) {
@@ -224,6 +225,10 @@ export class FieldNode implements FieldState<unknown> {
   }
 }
 
+/**
+ * Field node of a field that has children.
+ * This simplifies and makes certain types cleaner.
+ */
 export interface ParentFieldNode extends FieldNode {
   readonly value: WritableSignal<Record<string, unknown>>;
   readonly structure: FieldNodeStructure & {value: WritableSignal<Record<string, unknown>>};

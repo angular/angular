@@ -27,16 +27,28 @@ import {toSignal} from '@angular/core/rxjs-interop';
 import {getInjectorFromOptions} from '../util';
 import {AbstractControl} from '@angular/forms';
 
+/**
+ * Child Field Node options also exposing control property.
+ */
 export interface CompatChildFieldNodeOptions extends ChildFieldNodeOptions {
   control: Signal<AbstractControl>;
 }
 
+/**
+ * Root Field Node options also exposing control property.
+ */
 export interface CompatRootFieldNodeOptions extends RootFieldNodeOptions {
   control: Signal<AbstractControl>;
 }
 
+/**
+ * Field Node options also exposing control property.
+ */
 export type CompatFieldNodeOptions = CompatRootFieldNodeOptions | CompatChildFieldNodeOptions;
 
+/**
+ * A helper function allowing to get parent if it exists.
+ */
 function getParentFromOptions(options: FieldNodeOptions) {
   if (options.kind === 'root') {
     return undefined;
@@ -45,6 +57,9 @@ function getParentFromOptions(options: FieldNodeOptions) {
   return options.parent;
 }
 
+/**
+ * A helper function allowing to get fieldManager regardless of the option type.
+ */
 function getFieldManagerFromOptions(options: FieldNodeOptions) {
   if (options.kind === 'root') {
     return options.fieldManager;
@@ -53,6 +68,11 @@ function getFieldManagerFromOptions(options: FieldNodeOptions) {
   return options.parent.structure.root.structure.fieldManager;
 }
 
+/**
+ * Compat version of FieldNodeStructure,
+ * - It has no children
+ * - It wraps FormControl and proxies it's value.
+ */
 export class CompatStructure extends FieldNodeStructure {
   override value: WritableSignal<unknown>;
   // TODO: Figure out why this works.
@@ -69,6 +89,7 @@ export class CompatStructure extends FieldNodeStructure {
 
     const control = options.control;
 
+    // TODO(kirjs): Consider extracting this.
     this.value = computed(() => {
       const c = control();
       return untracked(() => {

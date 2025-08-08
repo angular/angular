@@ -14,6 +14,7 @@ export function reactiveErrorsToSignalErrors(errors: ValidationErrors | null) {
     return [];
   }
 
+  // TODO: Map to existing built-in error types.
   return Object.entries(errors).map(([kind, context]) => {
     return ValidationError.custom({kind, context});
   });

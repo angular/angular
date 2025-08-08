@@ -15,15 +15,44 @@ import {ChildFieldNodeOptions, FieldNodeOptions, FieldNodeStructure} from './str
 import {ValidationState, FieldValidationState} from './validation';
 import {WritableSignal} from '@angular/core';
 
+/**
+ * Adapter allowing custom handling of a field and it's state.
+ */
 export interface FieldAdapter {
+  /**
+   * Creates a node structure.
+   * @param node
+   * @param options
+   */
   createStructure(node: FieldNode, options: FieldNodeOptions): FieldNodeStructure;
 
+  /**
+   * Creates node validation state
+   * @param param
+   * @param options
+   */
   createValidationState(param: FieldNode, options: FieldNodeOptions): ValidationState;
 
+  /**
+   * Creates node state.
+   * @param param
+   * @param options
+   */
   createNodeState(param: FieldNode, options: FieldNodeOptions): FieldNodeState;
 
-  createChildNode(options: ChildFieldNodeOptions): FieldNode;
+  /**
+   * Creates a custom child node.
+   * @param options
+   */
+  newChild(options: ChildFieldNodeOptions): FieldNode;
 
+  /**
+   * Creates a custom root node.
+   * @param fieldManager
+   * @param model
+   * @param pathNode
+   * @param adapter
+   */
   newRoot<TValue>(
     fieldManager: FormFieldManager,
     model: WritableSignal<TValue>,
@@ -32,7 +61,17 @@ export interface FieldAdapter {
   ): FieldNode;
 }
 
+/**
+ * Basic adapter supporting standard form behavior.
+ */
 export class BasicFieldAdapter implements FieldAdapter {
+  /**
+   * Creates a new Root field node.
+   * @param fieldManager
+   * @param value
+   * @param pathNode
+   * @param adapter
+   */
   newRoot<TValue>(
     fieldManager: FormFieldManager,
     value: WritableSignal<TValue>,
@@ -49,18 +88,35 @@ export class BasicFieldAdapter implements FieldAdapter {
     });
   }
 
-  createChildNode(options: ChildFieldNodeOptions): FieldNode {
+  /**
+   * Creates a new child field node.
+   * @param options
+   */
+  newChild(options: ChildFieldNodeOptions): FieldNode {
     return new FieldNode(options);
   }
 
+  /**
+   * Creates a node state.
+   * @param node
+   */
   createNodeState(node: FieldNode): FieldNodeState {
     return new FieldNodeState(node);
   }
 
+  /**
+   * Creates a validation state.
+   * @param node
+   */
   createValidationState(node: FieldNode): ValidationState {
     return new FieldValidationState(node);
   }
 
+  /**
+   * Creates a node structure.
+   * @param node
+   * @param options
+   */
   createStructure(node: FieldNode, options: FieldNodeOptions): FieldNodeStructure {
     return node.createStructure(options);
   }

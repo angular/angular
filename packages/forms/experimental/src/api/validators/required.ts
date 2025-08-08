@@ -26,7 +26,7 @@ import {AbstractControl} from '@angular/forms';
  *  - `emptyPredicate`: A function that receives the value, and returns `true` if it is considered empty.
  *    By default `false`, `''`, `null`, and `undefined` are considered empty
  *  - `condition`: A function that receives the `FieldContext` and returns true if the field is required
- * @param _rest Not an actual param, but a hack to disallow form controls
+ * @param _rest Not an actual param, but a hack to disallow form controls. TODO: Find a better way.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */

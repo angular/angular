@@ -293,7 +293,7 @@ export interface RootFieldNodeOptions {
   readonly value: WritableSignal<unknown>;
   /** The field manager for this field. */
   readonly fieldManager: FormFieldManager;
-
+  /** This allows for more granular field and state management, and is currently used for compat. */
   readonly fieldAdapter: FieldAdapter;
 }
 
@@ -311,7 +311,7 @@ export interface ChildFieldNodeOptions {
   readonly initialKeyInParent: string;
   /** The identity used to track this field in its parent. */
   readonly identityInParent: TrackingKey | undefined;
-  /** This is currently use for compat. */
+  /** This allows for more granular field and state management, and is currently used for compat. */
   readonly fieldAdapter: FieldAdapter;
 }
 

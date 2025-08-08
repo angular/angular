@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ApplicationRef, Injector, Signal, signal, WritableSignal} from '@angular/core';
+import {ApplicationRef, Injector, signal} from '@angular/core';
 import {disabled, form, hidden, required, submit, validate} from '../../public_api';
 import {TestBed} from '@angular/core/testing';
-import {FormControl, FormControlState, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {ValidationError} from '@angular/forms/experimental';
 import {CompatFieldAdapter} from '../../src/field/compat/compat_field_adapter';
-
-type UnwrapFormControlState<T> = T extends FormControlState<infer V> ? V : T;
 
 describe('Forms compat', () => {
   /**
@@ -449,13 +447,12 @@ describe('Forms compat', () => {
       name: 'pirojok-the-cat',
       age: control,
     });
-    const f = form(
+    form(
       cat,
       (path) => {
-        // TODO: Finish the rest of the rules.
         // @ts-expect-error
         required(path.age);
-        // TODO: Expect error
+        // TODO: Finish the rest of the rules.
         validate(path.age, () => {
           return undefined;
         });

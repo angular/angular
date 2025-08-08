@@ -14,8 +14,7 @@ import {AbstractControl} from '@angular/forms';
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
-// TOOD find a better way to share?
-export const ɵɵTYPE = Symbol('Type');
+const ɵɵTYPE = Symbol('Type');
 
 /**
  * Creates a type based on the given type T, but with all readonly properties made writable.
@@ -473,9 +472,3 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   /** The index of the current field in its parent field. */
   readonly index: Signal<number>;
 }
-
-type NotAbstractControl<T> = T extends AbstractControl<unknown> ? never : T;
-export type RulePath<TValue, TPathKind extends PathKind = PathKind.Root> = FieldPath<
-  NotAbstractControl<TValue>,
-  TPathKind
->;

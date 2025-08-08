@@ -14,15 +14,89 @@ import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
 
 export interface ValidationState {
+  /**
+   * The full set of synchronous tree errors visible to this field. This includes ones that are
+   * targeted at a descendant field rather than at this field.
+   */
   rawSyncTreeErrors: Signal<WithField<ValidationError>[]>;
+
+  /**
+   * The full set of synchronous errors for this field, including synchronous tree errors and server
+   * errors. Server errors are considered "synchronous" because they are imperatively added. From
+   * the perspective of the field state they are either there or not, they are never in a pending
+   * state.
+   */
   syncErrors: Signal<ValidationError[]>;
+
+  /**
+   * Whether the field is considered valid according solely to its synchronous validators.
+   * Errors resulting from a previous submit attempt are also considered for this state.
+   */
   syncValid: Signal<boolean>;
+
+  /**
+   * The full set of asynchronous tree errors visible to this field. This includes ones that are
+   * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
+   * indicating that the validator is still running and an error could still occur.
+   */
   rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]>;
+
+  /**
+   * The combined set of all errors that currently apply to this field.
+   */
   errors: Signal<ValidationError[]>;
+
+  /**
+   * Whether this field has any asynchronous validators still pending.
+   */
   pending: Signal<boolean>;
+
+  /**
+   * The validation status of the field.
+   * - The status is 'valid' if neither the field nor any of its children has any errors or pending
+   *   validators.
+   * - The status is 'invalid' if the field or any of its children has an error
+   *   (regardless of pending validators)
+   * - The status is 'unknown' if neither the field nor any of its children has any errors,
+   *   but the field or any of its children does have a pending validator.
+   *
+   * A field is considered valid if *all* of the following are true:
+   *  - It has no errors or pending validators
+   *  - All of its children are considered valid
+   * A field is considered invalid if *any* of the following are true:
+   *  - It has an error
+   *  - Any of its children is considered invalid
+   * A field is considered to have unknown validity status if it is not valid or invalid.
+   */
   status: Signal<'valid' | 'invalid' | 'unknown'>;
+  /**
+   * Whether the field is considered valid.
+   *
+   * A field is considered valid if *all* of the following are true:
+   *  - It has no errors or pending validators
+   *  - All of its children are considered valid
+   *
+   * Note: `!valid()` is *not* the same as `invalid()`. Both `valid()` and `invalid()` can be false
+   * if there are currently no errors, but validators are still pending.
+   */
   valid: Signal<boolean>;
+
+  /**
+   * Whether the field is considered invalid.
+   *
+   * A field is considered invalid if *any* of the following are true:
+   *  - It has an error
+   *  - Any of its children is considered invalid
+   *
+   * Note: `!invalid()` is *not* the same as `valid()`. Both `valid()` and `invalid()` can be false
+   * if there are currently no errors, but validators are still pending.
+   */
   invalid: Signal<boolean>;
+
+  /**
+   * Indicates whether validation should be skipped for this field because it is hidden, disabled,
+   * or readonly.
+   */
   shouldSkipValidation: Signal<boolean>;
 }
 

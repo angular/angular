@@ -47,6 +47,10 @@ export function shortCircuitTrue(value: boolean): boolean {
 /** Recasts the given value as a new type. */
 export function cast<T>(value: unknown): asserts value is T {}
 
+/**
+ * A helper method allowing to get injector regardless of the options type.
+ * @param options
+ */
 export function getInjectorFromOptions(options: FieldNodeOptions) {
   if (options.kind === 'root') {
     return options.fieldManager.injector;
