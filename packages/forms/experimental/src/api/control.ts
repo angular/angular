@@ -19,10 +19,12 @@ export interface BaseUiControl {
 
   readonly touch?: OutputRef<void>;
 
+  readonly required?: InputSignal<boolean>;
   readonly min?: InputSignal<number | undefined>;
   readonly minLength?: InputSignal<number | undefined>;
   readonly max?: InputSignal<number | undefined>;
   readonly maxLength?: InputSignal<number | undefined>;
+  readonly pattern?: InputSignal<RegExp[]>;
 }
 
 export interface FormValueControl<TValue> extends BaseUiControl {
