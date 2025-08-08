@@ -27,6 +27,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
+import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
 import {Field} from '../api/types';
 import {
   illegallyGetComponentInstance,
@@ -36,7 +37,6 @@ import {
   illegallySetComponentInput as illegallySetInputSignal,
 } from '../util/illegal';
 import {InteropNgControl} from './interop_ng_control';
-import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
 
 @Directive({
   selector: '[control]',
@@ -72,7 +72,6 @@ export class Control<T> {
     }
   }
 
-  // readonly field = input.required<Field<T>>({alias: 'control'});
   readonly state = computed(() => this.field()());
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});

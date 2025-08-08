@@ -399,9 +399,3 @@ function markAllAsTouched(node: FieldNode) {
     markAllAsTouched(child);
   }
 }
-
-let nextFormId = 0;
-function nextFormName(): string {
-  // TODO: include APP_ID?
-  return `form${nextFormId++}`;
-}
