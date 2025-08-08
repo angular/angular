@@ -204,7 +204,8 @@ export class Driver implements Debuggable, UpdateSource {
     });
 
     // Handle the fetch, message, push, notificationclick,
-    // notificationclose, pushsubscriptionchange, and messageerror events.
+    // notificationclose, pushsubscriptionchange, messageerror, rejectionhandled,
+    // and unhandledrejection events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
@@ -216,6 +217,7 @@ export class Driver implements Debuggable, UpdateSource {
       this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
     );
     this.scope.addEventListener('messageerror', (event) => this.onMessageError(event));
+    this.scope.addEventListener('unhandledrejection', (event) => this.onUnhandledRejection(event));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -359,6 +361,15 @@ export class Driver implements Debuggable, UpdateSource {
     this.debugger.log(
       `Message error occurred - data could not be deserialized`,
       `Driver.onMessageError(origin: ${event.origin})`,
+    );
+  }
+
+  private onUnhandledRejection(event: PromiseRejectionEvent): void {
+    // Handle unhandled promise rejections in the service worker.
+    // This is for debugging and preventing silent failures.
+    this.debugger.log(
+      `Unhandled promise rejection occurred`,
+      `Driver.onUnhandledRejection(reason: ${event.reason})`,
     );
   }
 

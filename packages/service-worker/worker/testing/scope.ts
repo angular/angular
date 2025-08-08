@@ -281,6 +281,17 @@ export class SwTestHarnessImpl
     return event.ready;
   }
 
+  handleUnhandledRejection(reason: any): void {
+    if (!this.eventHandlers.has('unhandledrejection')) {
+      throw new Error('No unhandledrejection handler registered');
+    }
+    const event = {
+      reason,
+      promise: Promise.reject(reason),
+    } as PromiseRejectionEvent;
+    this.eventHandlers.get('unhandledrejection')!.call(this, event);
+  }
+
   override timeout(ms: number): Promise<void> {
     const promise = new Promise<void>((resolve) => {
       this.timers.push({
