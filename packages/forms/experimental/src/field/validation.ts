@@ -13,6 +13,23 @@ import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
 
+/**
+ * Helper function taking validation state, and returning own state of the node.
+ * @param state
+ */
+export function calculateValidationSelfStatus(
+  state: ValidationState,
+): 'invalid' | 'unknown' | 'valid' {
+  if (state.errors().length > 0) {
+    return 'invalid';
+  }
+  if (state.pending()) {
+    return 'unknown';
+  }
+
+  return 'valid';
+}
+
 export interface ValidationState {
   /**
    * The full set of synchronous tree errors visible to this field. This includes ones that are
@@ -248,12 +265,7 @@ export class FieldValidationState implements ValidationState {
     if (this.shouldSkipValidation()) {
       return 'valid';
     }
-    let ownStatus: 'valid' | 'invalid' | 'unknown' = 'valid';
-    if (this.errors().length > 0) {
-      ownStatus = 'invalid';
-    } else if (this.pending()) {
-      ownStatus = 'unknown';
-    }
+    let ownStatus = calculateValidationSelfStatus(this);
 
     return reduceChildren<'valid' | 'invalid' | 'unknown'>(
       this.node,

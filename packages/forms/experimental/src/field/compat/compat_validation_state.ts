@@ -12,7 +12,7 @@ import {AbstractControl} from '@angular/forms';
 import {reactiveErrorsToSignalErrors} from './compat_error_converter';
 import {getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
-import {ValidationState} from '../validation';
+import {calculateValidationSelfStatus, ValidationState} from '../validation';
 
 /**
  * Compat version of a validation state that wraps a FormControl, and proxies it's validation state.
@@ -59,15 +59,8 @@ export class CompatValidationState implements ValidationState {
    * This field considers itself valid if *all* of the following are true:
    *  - it has no errors
    *  - all of its children consider themselves valid
-   *  TODO: Consider making this reusable.
    */
   readonly status: Signal<'valid' | 'invalid' | 'unknown'> = computed(() => {
-    if (this.errors().length > 0) {
-      return 'invalid';
-    } else if (this.pending()) {
-      return 'unknown';
-    }
-
-    return 'valid';
+    return calculateValidationSelfStatus(this);
   });
 }
