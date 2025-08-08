@@ -26,7 +26,7 @@ import {
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
+import {FormCheckboxControl, FormUiControl, FormValueControl} from '../api/control';
 import {
   AggregateProperty,
   MAX,
@@ -107,7 +107,7 @@ export class Control<T> {
       return;
     }
 
-    if (cmp && isBaseUiControl(cmp)) {
+    if (cmp && isFormUiControl(cmp)) {
       // If we're binding to a component that follows the standard form ui control contract,
       // set up state synchronization based on the contract.
       this.setupCustomUiControl(cmp);
@@ -174,6 +174,7 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
     this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
 
+    this.maybeSynchronize(this.propertySource(REQUIRED), withAttribute(input, 'required'));
     this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
     this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
@@ -230,7 +231,7 @@ export class Control<T> {
   /**
    * Connect to a UI component that implements the control interface.
    */
-  private setupCustomUiControl(cmp: BaseUiControl) {
+  private setupCustomUiControl(cmp: FormUiControl) {
     // Handle the property side of the model binding. How we do this depends on the shape of the
     // component. There are 2 options:
     // * it provides a `value` model (most controls that edit a single value)
@@ -252,8 +253,10 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
+    this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.hidden));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
     this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
+    this.maybeSynchronize(() => this.state().dirty(), withInput(cmp.dirty));
     this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
 
     this.maybeSynchronize(this.propertySource(REQUIRED), withInput(cmp.required));
@@ -339,8 +342,8 @@ function withAttribute(
   };
 }
 
-function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
-  const castCmp = cmp as BaseUiControl;
+function isFormUiControl(cmp: unknown): cmp is FormUiControl {
+  const castCmp = cmp as FormUiControl;
   return (
     (isFormValueControl(castCmp) || isFormCheckboxControl(castCmp)) &&
     (castCmp.readonly === undefined || illegallyIsSignalInput(castCmp.readonly)) &&
@@ -348,6 +351,7 @@ function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
     (castCmp.errors === undefined || illegallyIsSignalInput(castCmp.errors)) &&
     (castCmp.valid === undefined || illegallyIsSignalInput(castCmp.valid)) &&
     (castCmp.touched === undefined || illegallyIsSignalInput(castCmp.touched)) &&
+    (castCmp.dirty === undefined || illegallyIsSignalInput(castCmp.dirty)) &&
     (castCmp.touch === undefined || isOutputRef(castCmp.touch)) &&
     (castCmp.min === undefined || illegallyIsSignalInput(castCmp.min)) &&
     (castCmp.minLength === undefined || illegallyIsSignalInput(castCmp.minLength)) &&
@@ -356,11 +360,11 @@ function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
   );
 }
 
-function isFormValueControl(cmp: BaseUiControl): cmp is FormValueControl<unknown> {
+function isFormValueControl(cmp: FormUiControl): cmp is FormValueControl<unknown> {
   return illegallyIsModelInput((cmp as FormValueControl<unknown>).value);
 }
 
-function isFormCheckboxControl(cmp: BaseUiControl): cmp is FormCheckboxControl {
+function isFormCheckboxControl(cmp: FormUiControl): cmp is FormCheckboxControl {
   return (
     illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
     (cmp as FormCheckboxControl).value === undefined

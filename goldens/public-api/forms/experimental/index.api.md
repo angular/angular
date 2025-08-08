@@ -72,36 +72,6 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 }
 
-// @public (undocumented)
-export interface BaseUiControl {
-    // (undocumented)
-    readonly disabled?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
-    // (undocumented)
-    readonly max?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly maxLength?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly min?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly minLength?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly name?: InputSignal<string>;
-    // (undocumented)
-    readonly pattern?: InputSignal<RegExp[]>;
-    // (undocumented)
-    readonly readonly?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly required?: InputSignal<boolean>;
-    // (undocumented)
-    readonly touch?: OutputRef<void>;
-    // (undocumented)
-    readonly touched?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly valid?: InputSignal<boolean | undefined>;
-}
-
 // @public
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
@@ -208,11 +178,9 @@ export function form<TValue>(model: WritableSignal<TValue>, schemaOrOptions: Sch
 // @public
 export function form<TValue>(model: WritableSignal<TValue>, schema: SchemaOrSchemaFn<TValue>, options: FormOptions): Field<TValue>;
 
-// @public (undocumented)
-export interface FormCheckboxControl extends BaseUiControl {
-    // (undocumented)
+// @public
+export interface FormCheckboxControl extends FormUiControl {
     readonly checked: ModelSignal<boolean>;
-    // (undocumented)
     readonly value?: undefined;
 }
 
@@ -224,11 +192,26 @@ export interface FormOptions {
     name?: string;
 }
 
-// @public (undocumented)
-export interface FormValueControl<TValue> extends BaseUiControl {
-    // (undocumented)
+// @public
+export interface FormUiControl {
+    readonly disabled?: InputSignal<boolean | undefined>;
+    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
+    readonly max?: InputSignal<number | undefined>;
+    readonly maxLength?: InputSignal<number | undefined>;
+    readonly min?: InputSignal<number | undefined>;
+    readonly minLength?: InputSignal<number | undefined>;
+    readonly name?: InputSignal<string | undefined>;
+    readonly pattern?: InputSignal<readonly RegExp[] | undefined>;
+    readonly readonly?: InputSignal<boolean | undefined>;
+    readonly required?: InputSignal<boolean | undefined>;
+    readonly touch?: OutputRef<void>;
+    readonly touched?: InputSignal<boolean | undefined>;
+    readonly valid?: InputSignal<boolean | undefined>;
+}
+
+// @public
+export interface FormValueControl<TValue> extends FormUiControl {
     readonly checked?: undefined;
-    // (undocumented)
     readonly value: ModelSignal<TValue>;
 }
 
