@@ -94,6 +94,10 @@ export class Control<T> {
     if (cmp && isBaseUiControl(cmp)) {
       this.setupCustomUiControl(cmp);
     } else if (cmp && isShadowedControlComponent(cmp)) {
+      // TODO: Reconsider where this case should go. Currently if we see an input named `control`
+      // on a native input, we return here and do not synchronize its value and other state.
+      // However in the case of a custom input control with a `control` input, we *do* synchronize
+      // its value and other state (in the previous if case). This doesn't feel consistent.
       return;
     } else if (
       this.el.nativeElement instanceof HTMLInputElement ||
@@ -101,6 +105,10 @@ export class Control<T> {
     ) {
       this.setupNativeInput(this.el.nativeElement);
     } else if (this.cva !== undefined) {
+      // TODO: Reconsider where this case should go. Currently for a native input with a CVA,
+      // we directly synchronize state with the native input rather than going through the CVA.
+      // This feels likely to break directives designed to be placed on a native input and manage
+      // its updates through a CVA.
       this.setupControlValueAccessor(this.cva);
     } else {
       throw new Error(`Unhandled control?`);

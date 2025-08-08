@@ -27,6 +27,9 @@ export interface BaseUiControl {
 
 export interface FormValueControl<TValue> extends BaseUiControl {
   readonly value: ModelSignal<TValue>;
+  // TODO: Do we actually need to require the lack of a `checked` input?
+  // The implementation currently doesn't enforce this. It *does* enforce the lack of a `value`
+  // input for the `FormCheckboxControl` which should be sufficient to tell them apart.
   readonly checked?: undefined;
 }
 
