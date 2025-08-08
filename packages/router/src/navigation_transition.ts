@@ -86,7 +86,7 @@ import {
 } from './router_state';
 import type {Params} from './shared';
 import {UrlHandlingStrategy} from './url_handling_strategy';
-import {isUrlTree, UrlSerializer, UrlTree} from './url_tree';
+import {UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
 import {getClosestRouteInjector} from './utils/config';
@@ -350,7 +350,7 @@ export class NavigationTransitions {
   currentNavigation = signal<Navigation | null>(null, {equal: () => false});
 
   currentTransition: NavigationTransition | null = null;
-  lastSuccessfulNavigation: Navigation | null = null;
+  lastSuccessfulNavigation = signal<Navigation | null>(null);
   /**
    * These events are used to communicate back to the Router about the state of the transition. The
    * Router wants to respond to these events in various ways. Because the `NavigationTransition`
@@ -469,6 +469,7 @@ export class NavigationTransitions {
               return EMPTY;
             }
             this.currentTransition = overallTransitionState;
+            const lastSuccessfulNavigation = this.lastSuccessfulNavigation();
             // Store the Navigation object
             this.currentNavigation.set({
               id: t.id,
@@ -480,10 +481,10 @@ export class NavigationTransitions {
                   : t.extras.browserUrl,
               trigger: t.source,
               extras: t.extras,
-              previousNavigation: !this.lastSuccessfulNavigation
+              previousNavigation: !lastSuccessfulNavigation
                 ? null
                 : {
-                    ...this.lastSuccessfulNavigation,
+                    ...lastSuccessfulNavigation,
                     previousNavigation: null,
                   },
               abort: () => t.abortController.abort(),
@@ -798,7 +799,7 @@ export class NavigationTransitions {
           tap({
             next: (t: NavigationTransition) => {
               completedOrAborted = true;
-              this.lastSuccessfulNavigation = untracked(this.currentNavigation);
+              this.lastSuccessfulNavigation.set(untracked(this.currentNavigation));
               this.events.next(
                 new NavigationEnd(
                   t.id,
