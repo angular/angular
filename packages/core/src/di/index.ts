@@ -13,7 +13,11 @@
  */
 
 export * from './metadata';
-export {assertInInjectionContext, runInInjectionContext} from './contextual';
+export {
+  isInInjectionContext as ɵisInInjectionContext,
+  assertInInjectionContext,
+  runInInjectionContext,
+} from './contextual';
 export {
   ɵɵdefineInjectable,
   defineInjectable,
