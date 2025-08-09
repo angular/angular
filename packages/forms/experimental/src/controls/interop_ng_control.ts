@@ -10,6 +10,7 @@ import {
   ControlValueAccessor,
   Validators,
   type AbstractControl,
+  type FormControlStatus,
   type NgControl,
   type ValidationErrors,
   type ValidatorFn,
@@ -17,6 +18,17 @@ import {
 import {REQUIRED} from '../api/property';
 import type {FieldState} from '../api/types';
 
+// TODO: Also consider supporting (if possible):
+// - hasError
+// - getError
+// - reset
+// - name
+// - path
+// - markAs[Touched,Dirty,etc.]
+// - updateValueAndValidity
+/**
+ * Properties of both NgControl & AbstractControl that are supported by the InteropNgControl.
+ */
 export type InteropSharedKeys =
   | 'value'
   | 'valid'
@@ -27,8 +39,16 @@ export type InteropSharedKeys =
   | 'enabled'
   | 'errors'
   | 'pristine'
-  | 'dirty';
+  | 'dirty'
+  | 'status';
 
+/**
+ * A fake version of `NgControl` provided by the `Control` directive. This allows interoperability
+ * with a wider range of components designed to work with reactive forms, in particular ones that
+ * inject the `NgControl`. The interop control does not implement *all* properties and methods of
+ * the real `NgControl`, but does implement some of the most commonly used ones that have a clear
+ * equivalent in signal forms.
+ */
 export class InteropNgControl
   implements
     Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>,
@@ -47,11 +67,11 @@ export class InteropNgControl
   }
 
   get invalid(): boolean {
-    return !this.field().valid();
+    return this.field().invalid();
   }
 
   get pending(): boolean | null {
-    return false;
+    return this.field().pending();
   }
 
   get disabled(): boolean {
@@ -75,11 +95,11 @@ export class InteropNgControl
   }
 
   get pristine(): boolean {
-    return true;
+    return !this.field().dirty();
   }
 
   get dirty(): boolean {
-    return false;
+    return this.field().dirty();
   }
 
   get touched(): boolean {
@@ -90,9 +110,27 @@ export class InteropNgControl
     return !this.field().touched();
   }
 
+  get status(): FormControlStatus {
+    if (this.field().disabled()) {
+      return 'DISABLED';
+    }
+    if (this.field().valid()) {
+      return 'VALID';
+    }
+    if (this.field().invalid()) {
+      return 'INVALID';
+    }
+    if (this.field().pending()) {
+      return 'PENDING';
+    }
+    throw Error('AssertionError: unknown form control status');
+  }
+
   valueAccessor: ControlValueAccessor | null = null;
 
   hasValidator(validator: ValidatorFn): boolean {
+    // This addresses a common case where users look for the presence of `Validators.required` to
+    // determine whether or not to show a required "*" indicator in the UI.
     if (validator === Validators.required) {
       return this.field().property(REQUIRED)();
     }
