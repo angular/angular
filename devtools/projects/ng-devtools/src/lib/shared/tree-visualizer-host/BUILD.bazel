@@ -22,5 +22,6 @@ ng_project(
         "//:node_modules/@angular/core",
         "//:node_modules/@types/d3",
         "//:node_modules/d3",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
     ],
 )

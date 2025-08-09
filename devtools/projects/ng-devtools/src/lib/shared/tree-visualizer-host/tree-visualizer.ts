@@ -8,11 +8,13 @@
 
 import * as d3 from 'd3';
 import {GraphRenderer} from './graph-renderer';
+import {Debouncer} from '../utils/debouncer';
 
 let arrowDefId = 0;
 let instanceIdx = 0;
 
 const MAX_NODE_LABEL_LENGTH = 25;
+const RESIZE_OBSERVER_DEBOUNCE = 250;
 
 export interface TreeNode {
   label: string;
@@ -57,6 +59,8 @@ function wrapEvent<E, V>(fn: (e: E, node: V) => void): (e: E, node: V) => void {
 
 export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer<T, TreeD3Node<T>> {
   private zoomController: d3.ZoomBehavior<HTMLElement, unknown> | null = null;
+  private snappedNode: {node: TreeD3Node<T>; scale: number} | null = null;
+  private snappedNodeListenersDisposeFn?: () => void;
   private readonly config: TreeVisualizerConfig<T>;
   private readonly defaultConfig: TreeVisualizerConfig<T> = {
     orientation: 'horizontal',
@@ -79,6 +83,8 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       ...this.defaultConfig,
       ...config,
     };
+
+    this.manageSnappedNode();
   }
 
   override root: TreeD3Node<T> | null = null;
@@ -106,6 +112,8 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .scale(scale)
       .translate(-x, -y);
     svg.transition().duration(500).call(this.zoomController!.transform, t);
+
+    this.snappedNode = {node, scale};
   }
 
   override getNodeById(id: string): TreeD3Node<T> | null {
@@ -121,6 +129,12 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
   override cleanup(): void {
     super.cleanup();
     d3.select(this.graphElement).selectAll('*').remove();
+    this.snappedNode = null;
+  }
+
+  override dispose(): void {
+    super.dispose();
+    this.snappedNodeListenersDisposeFn?.();
   }
 
   override render(graph: T): void {
@@ -286,5 +300,45 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       };
     }
     return {x, y};
+  }
+
+  private manageSnappedNode() {
+    this.keepSnappedNodeOnFocus();
+    this.cleanSnappedNodeOnInteraction();
+  }
+
+  private keepSnappedNodeOnFocus() {
+    let initCall = true;
+    const debouncer = new Debouncer();
+    const resizeObserver = new ResizeObserver(
+      debouncer.debounce(([entry]) => {
+        if (!entry || !this.snappedNode) {
+          return;
+        }
+        // Avoid executing the code on observer init.
+        // The node is already being snapped.
+        if (initCall) {
+          initCall = false;
+          return;
+        }
+
+        const {node, scale} = this.snappedNode;
+        this.snapToNode(node, scale);
+      }, RESIZE_OBSERVER_DEBOUNCE),
+    );
+
+    resizeObserver.observe(this.containerElement);
+
+    this.snappedNodeListenersDisposeFn = () => {
+      resizeObserver.disconnect();
+      debouncer.cancel();
+    };
+  }
+
+  private cleanSnappedNodeOnInteraction() {
+    const svg = d3.select(this.containerElement);
+    svg.on('mousedown wheel', () => {
+      this.snappedNode = null;
+    });
   }
 }
