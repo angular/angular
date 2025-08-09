@@ -23,7 +23,7 @@ export class FieldNodeState {
    *
    * A field is considered directly touched when a user stops editing it for the first time (i.e. on blur)
    */
-  readonly selfTouched = signal(false);
+  private readonly selfTouched = signal(false);
 
   /**
    * Indicates whether this field has been dirtied directly by the user (as opposed to indirectly by
@@ -31,7 +31,37 @@ export class FieldNodeState {
    *
    * A field is considered directly dirtied if a user changed the value of the field at least once.
    */
-  readonly selfDirty = signal(false);
+  private readonly selfDirty = signal(false);
+
+  /**
+   * Marks this specific field as touched.
+   */
+  markAsTouched(): void {
+    // TODO: should this be noop for fields that are hidden/disabled/readonly
+    this.selfTouched.set(true);
+  }
+
+  /**
+   * Marks this specific field as dirty.
+   */
+  markAsDirty(): void {
+    // TODO: should this be noop for fields that are hidden/disabled/readonly
+    this.selfDirty.set(true);
+  }
+
+  /**
+   * Marks this specific field as not dirty.
+   */
+  markAsPristine(): void {
+    this.selfDirty.set(false);
+  }
+
+  /**
+   * Marks this specific field as not touched.
+   */
+  markAsUntouched(): void {
+    this.selfTouched.set(false);
+  }
 
   /** The UI controls the field is currently bound to. */
   readonly controls = signal<readonly Control<unknown>[]>([]);

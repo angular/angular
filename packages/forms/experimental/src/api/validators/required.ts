@@ -12,6 +12,7 @@ import {REQUIRED} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
 import {BaseValidatorConfig} from './util';
+import {AbstractControl} from '@angular/forms';
 
 /**
  * Binds a validator to the given path that requires the value to be non-empty.
@@ -25,6 +26,7 @@ import {BaseValidatorConfig} from './util';
  *  - `emptyPredicate`: A function that receives the value, and returns `true` if it is considered empty.
  *    By default `false`, `''`, `null`, and `undefined` are considered empty
  *  - `condition`: A function that receives the `FieldContext` and returns true if the field is required
+ * @param _rest Not an actual param, but a hack to disallow form controls. TODO: Find a better way.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */
@@ -34,6 +36,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     emptyPredicate?: (value: TValue) => boolean;
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
+  ..._rest: TValue extends AbstractControl<any> ? [never] : []
 ): void {
   const emptyPredicate =
     config?.emptyPredicate ?? ((value) => value === false || value == null || value === '');
