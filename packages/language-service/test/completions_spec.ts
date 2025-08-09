@@ -13,7 +13,7 @@ import {
   DisplayInfoKind,
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from '../src/utils/display_parts';
-import {LanguageServiceTestEnv, OpenBuffer, TestableOptions} from '../testing';
+import {LanguageServiceTestEnv, OpenBuffer, ProjectFiles, TestableOptions} from '../testing';
 
 const DIR_WITH_INPUT = {
   'Dir': `
@@ -831,8 +831,7 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
-    // TODO: check why this test is now broken
-    xit('should return component completions not imported', () => {
+    it('should return component completions not imported', () => {
       const {templateFile} = setup(
         `<other-cmp>`,
         '',
@@ -1659,6 +1658,78 @@ describe('completions', () => {
         expectReplacementText(completions, templateFile.contents, 'ali');
       });
     });
+
+    describe('element attribute out of scope', () => {
+      it('should return completions for an element attribute out of scope', () => {
+        const {templateFile} = setup(
+          `<div app />`,
+          '',
+          undefined,
+          undefined,
+          undefined,
+          {
+            '/component/share/highlight.ts': `
+            import {Directive,input} from '@angular/core';
+
+            @Directive({
+              selector: '[appHighlight]',
+            })
+            export class HighlightDirective {
+              appHighlight = input('');
+            }
+          `,
+          },
+          {
+            paths: {'@app/*': ['./component/share/*.ts']},
+          },
+        );
+        templateFile.moveCursorToText('app¦');
+
+        const completions = templateFile.getCompletionsAtPosition({
+          includeCompletionsForModuleExports: true,
+        });
+
+        const completionEntry = completions?.entries.find((entry) => {
+          return entry.name === '[appHighlight]';
+        });
+
+        expect(completionEntry).toBeDefined();
+
+        const detail = templateFile.getCompletionEntryDetails(
+          completionEntry?.name!,
+          undefined,
+          {includeCompletionsForModuleExports: true},
+          completionEntry?.data,
+        );
+
+        expect(detail?.codeActions).toContain(
+          jasmine.objectContaining({
+            'description': "Import HighlightDirective from '@app/highlight' on AppCmp",
+            'changes': [
+              {
+                'fileName': '/test/test.ts',
+                'textChanges': [
+                  {
+                    'span': {
+                      'start': 303,
+                      'length': 0,
+                    },
+                    'newText': '\nimport { HighlightDirective } from "@app/highlight";',
+                  },
+                  {
+                    'span': {
+                      'start': 407,
+                      'length': 0,
+                    },
+                    'newText': ',\n           imports: [HighlightDirective]',
+                  },
+                ],
+              },
+            ],
+          }),
+        );
+      });
+    });
   });
 
   describe('pipe scope', () => {
@@ -2236,6 +2307,8 @@ function setup(
   otherDeclarations: {[name: string]: string} = {},
   functionDeclarations: string = '',
   componentMetadata: string = '',
+  standaloneFiles: ProjectFiles = {},
+  tsCompilerOptions = {},
 ): {
   templateFile: OpenBuffer;
 } {
@@ -2244,8 +2317,10 @@ function setup(
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
   const env = LanguageServiceTestEnv.setup();
-  const project = env.addProject('test', {
-    'test.ts': `
+  const project = env.addProject(
+    'test',
+    {
+      'test.ts': `
          import {Component,
           input,
           output,
@@ -2276,8 +2351,12 @@ function setup(
          })
          export class AppModule {}
          `,
-    'test.html': template,
-  });
+      'test.html': template,
+      ...standaloneFiles,
+    },
+    undefined,
+    tsCompilerOptions,
+  );
   return {templateFile: project.openFile('test.html')};
 }
 
