@@ -22,6 +22,6 @@ describe('RouterLinkActive', () => {
     fixture.autoDetectChanges();
     await TestBed.inject(Router).navigateByUrl('/');
     await fixture.whenStable();
-    expect(Array.from(fixture.nativeElement.querySelector('a').classList)).toEqual([]);
+    expect(fixture.nativeElement.querySelector('a').classList.value).toEqual('');
   });
 });
