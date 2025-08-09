@@ -47,6 +47,8 @@ copy_to_directory(
         "//adev/src/content/tutorials/deferrable-views:deferrable-views-guides",
         "//adev/src/content/tutorials/first-app:first-app-guides",
         "//adev/src/content/tutorials/learn-angular:learn-angular-guides",
+        "//adev/src/content/tutorials/signals",
+        "//adev/src/content/tutorials/signals:signals-guides",
         "//packages/animations:animations_docs",
         "//packages/animations/browser:animations_browser_docs",
         "//packages/animations/browser/testing:animations_browser_testing_docs",
@@ -100,6 +102,7 @@ copy_to_directory(
         "//adev/src/content/tutorials/homepage",
         "//adev/src/content/tutorials/learn-angular",
         "//adev/src/content/tutorials/playground",
+        "//adev/src/content/tutorials/signals",
     ],
     replace_prefixes = {
         "adev/**/tutorials/*/": "",
