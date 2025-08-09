@@ -47,6 +47,22 @@ import {
 } from '../util/illegal';
 import {InteropNgControl} from './interop_ng_control';
 
+/**
+ * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
+ * 1. A native HTML input or textarea
+ * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
+ * 3. A component that provides a ControlValueAccessor. This is supported to allow controls designed
+ *    to work with reactive forms work with signal forms as well. It is not the preferred way for a
+ *    custom UI control to integrate with this directive.
+ *
+ * This directive has several responsibilities:
+ * 1. Two-way binds the field's value with the UI control's value
+ * 2. Binds additional forms related state on the field to the UI control (disabled, required, etc.)
+ * 3. Relays relevant events on the control to the field (e.g. marks field touched on blur)
+ * 4. Provides a fake `NgControl` that implements a subset of the features available on the reactive
+ *    forms `NgControl`. This is provided to improve interoperability with controls designed to work
+ *    with reactive forms. It should not be used by controls written for signal forms.
+ */
 @Directive({
   selector: '[control]',
   providers: [
@@ -57,10 +73,14 @@ import {InteropNgControl} from './interop_ng_control';
   ],
 })
 export class Control<T> {
-  readonly injector = inject(Injector);
-  readonly field = signal<Field<T>>(undefined as any);
+  /** The injector for this component. */
+  private readonly injector = inject(Injector);
 
+  /** Whether state synchronization with the field has been setup yet. */
   private initialized = false;
+
+  /** The field that is bound to this control. */
+  readonly field = signal<Field<T>>(undefined as any);
 
   // If `[control]` is applied to a custom UI control, it wants to synchronize state in the field w/
   // the inputs of that custom control. This is difficult to do in user-land. We use `effect`, but
@@ -81,20 +101,29 @@ export class Control<T> {
     }
   }
 
+  /** The field state of the bound field. */
   readonly state = computed(() => this.field()());
+
+  /** The HTMLElement this directive is attached to. */
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
+
+  /** The NG_VALUE_ACCESSOR array for the host component. */
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 
+  /** The Cached value for the lazily created interop NgControl. */
   private _ngControl: InteropNgControl | undefined;
 
+  /** A fake NgControl provided for better interop with reactive forms. */
   get ngControl(): NgControl {
     return (this._ngControl ??= new InteropNgControl(() => this.state())) as unknown as NgControl;
   }
 
+  /** The ControlValueAccessor for the host component. */
   get cva(): ControlValueAccessor | undefined {
     return this.cvaArray?.[0] ?? this._ngControl?.valueAccessor ?? undefined;
   }
 
+  /** Initializes state synchronization between the field and the host UI control. */
   private initialize() {
     this.initialized = true;
     const injector = this.injector;
@@ -126,11 +155,6 @@ export class Control<T> {
       throw new Error(`Unhandled control?`);
     }
 
-    if (this.cva) {
-      this.cva.writeValue(this.state().value());
-      this.cva.setDisabledState?.(this.state().disabled());
-    }
-
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
     // (as opposed to just passing the field through to its `control` input).
@@ -146,9 +170,7 @@ export class Control<T> {
     );
   }
 
-  /**
-   * Bind our field to an <input> or <textarea>.
-   */
+  /** Set up state synchronization between the field and a native <input> or <textarea>. */
   private setupNativeInput(input: HTMLInputElement | HTMLTextAreaElement): void {
     const inputType = input instanceof HTMLTextAreaElement ? 'text' : input.type;
 
@@ -171,6 +193,7 @@ export class Control<T> {
     input.addEventListener('blur', () => this.state().markAsTouched());
 
     this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
+    // TODO: consider making a global configuration option for using aria-disabled instead.
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
     this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
 
@@ -208,9 +231,7 @@ export class Control<T> {
     }
   }
 
-  /**
-   * Binding to a `ControlValueAccessor` based UI control
-   */
+  /** Set up state synchronization between the field and a ControlValueAccessor. */
   private setupControlValueAccessor(cva: ControlValueAccessor): void {
     cva.registerOnChange((value: T) => this.state().value.set(value));
     cva.registerOnTouched(() => this.state().markAsTouched());
@@ -226,11 +247,12 @@ export class Control<T> {
         (value) => cva.setDisabledState!(value),
       );
     }
+
+    cva.writeValue(this.state().value());
+    cva.setDisabledState?.(this.state().disabled());
   }
 
-  /**
-   * Connect to a UI component that implements the control interface.
-   */
+  /** Set up state synchronization between the field and a FormUiControl. */
   private setupCustomUiControl(cmp: FormUiControl) {
     // Handle the property side of the model binding. How we do this depends on the shape of the
     // component. There are 2 options:
@@ -291,6 +313,7 @@ export class Control<T> {
     });
   }
 
+  /** Synchronize a value from a reactive source to a given sink. */
   private maybeSynchronize<T>(source: () => T, sink: ((value: T) => void) | undefined): void {
     if (!sink) {
       return undefined;
@@ -307,6 +330,7 @@ export class Control<T> {
     illegallyRunEffect(ref);
   }
 
+  /** Creates a reactive value source by reading the given AggregateProperty from the field. */
   private propertySource<T>(key: AggregateProperty<T, any>): () => T {
     const metaSource = computed(() =>
       this.state().hasProperty(key) ? this.state().property(key) : key.getInitial,
@@ -315,10 +339,12 @@ export class Control<T> {
   }
 }
 
+/** Creates a value sync from an input signal. */
 function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) | undefined {
   return input ? (value: T) => illegallySetInputSignal(input, value) : undefined;
 }
 
+/** Creates a boolean value sync that writes the given attribute of the given element. */
 function withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
   return (value) => {
     if (value) {
@@ -329,6 +355,7 @@ function withBooleanAttribute(element: HTMLElement, attribute: string): (value: 
   };
 }
 
+/** Creates a (non-boolean) value sync that writes the given attribute of the given element. */
 function withAttribute(
   element: HTMLElement,
   attribute: string,
@@ -342,6 +369,10 @@ function withAttribute(
   };
 }
 
+/**
+ * Checks whether the given component matches the contract for either FormValueControl or
+ * FormCheckboxControl.
+ */
 function isFormUiControl(cmp: unknown): cmp is FormUiControl {
   const castCmp = cmp as FormUiControl;
   return (
@@ -360,10 +391,12 @@ function isFormUiControl(cmp: unknown): cmp is FormUiControl {
   );
 }
 
+/** Checks whether the given FormUiControl is a FormValueControl. */
 function isFormValueControl(cmp: FormUiControl): cmp is FormValueControl<unknown> {
   return illegallyIsModelInput((cmp as FormValueControl<unknown>).value);
 }
 
+/** Checks whether the given FormUiControl is a FormCheckboxControl. */
 function isFormCheckboxControl(cmp: FormUiControl): cmp is FormCheckboxControl {
   return (
     illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
@@ -371,14 +404,13 @@ function isFormCheckboxControl(cmp: FormUiControl): cmp is FormCheckboxControl {
   );
 }
 
-/**
- * Whether `cmp` has a `control` input of its own.
- */
+/** Checks whether the given component has an input called `control`. */
 function isShadowedControlComponent(cmp: unknown): boolean {
   const mirror = reflectComponentType((cmp as {}).constructor as Type<unknown>);
   return mirror?.inputs.some((input) => input.templateName === 'control') ?? false;
 }
 
+/** Checks whether the given object is an output ref. */
 function isOutputRef(value: unknown): value is OutputRef<unknown> {
   return value instanceof OutputEmitterRef || value instanceof EventEmitter;
 }

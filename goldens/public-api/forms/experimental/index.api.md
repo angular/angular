@@ -8,6 +8,7 @@ import { AbstractControl } from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -77,23 +78,15 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
 }
 
-// @public (undocumented)
+// @public
 export class Control<T> {
-    // (undocumented)
     get cva(): ControlValueAccessor | undefined;
-    // (undocumented)
     readonly cvaArray: ControlValueAccessor[] | null;
-    // (undocumented)
     readonly el: ElementRef<HTMLElement>;
-    // (undocumented)
     readonly field: i0.WritableSignal<Field<T>>;
     // (undocumented)
     set _field(value: Field<T>);
-    // (undocumented)
-    readonly injector: Injector;
-    // (undocumented)
     get ngControl(): NgControl;
-    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "_field": { "alias": "control"; "required": true; }; }, {}, never, never, true, never>;
@@ -194,8 +187,10 @@ export interface FormOptions {
 
 // @public
 export interface FormUiControl {
+    readonly dirty?: InputSignal<boolean | undefined>;
     readonly disabled?: InputSignal<boolean | undefined>;
     readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
+    readonly hidden?: InputSignal<boolean | undefined>;
     readonly max?: InputSignal<number | undefined>;
     readonly maxLength?: InputSignal<number | undefined>;
     readonly min?: InputSignal<number | undefined>;
@@ -225,7 +220,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 }
 
-// @public (undocumented)
+// @public
 export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>, Pick<AbstractControl<unknown>, InteropSharedKeys | 'hasValidator'> {
     constructor(field: () => FieldState<unknown>);
     // (undocumented)
@@ -249,6 +244,8 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     // (undocumented)
     get pristine(): boolean;
     // (undocumented)
+    get status(): FormControlStatus;
+    // (undocumented)
     get touched(): boolean;
     // (undocumented)
     get untouched(): boolean;
@@ -260,8 +257,8 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     valueAccessor: ControlValueAccessor | null;
 }
 
-// @public (undocumented)
-export type InteropSharedKeys = 'value' | 'valid' | 'invalid' | 'touched' | 'untouched' | 'disabled' | 'enabled' | 'errors' | 'pristine' | 'dirty';
+// @public
+export type InteropSharedKeys = 'value' | 'valid' | 'invalid' | 'touched' | 'untouched' | 'disabled' | 'enabled' | 'errors' | 'pristine' | 'dirty' | 'status';
 
 // @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
