@@ -124,6 +124,14 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
 const REDIRECT_ROUTES: Route[] = [
   {
+    path: 'guide/di/dependency-injection',
+    redirectTo: 'guide/di',
+  },
+  {
+    path: 'guide/di/creating-injectable-service',
+    redirectTo: 'guide/di/creating-and-using-services',
+  },
+  {
     path: 'guide/defer',
     redirectTo: '/guide/templates/defer',
   },
