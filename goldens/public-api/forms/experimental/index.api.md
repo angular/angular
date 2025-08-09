@@ -173,6 +173,7 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
 
 // @public
 export interface FieldState<TValue, TKey extends string | number = string | number> {
+    readonly controls: Signal<readonly Control<unknown>[]>;
     readonly dirty: Signal<boolean>;
     readonly disabled: Signal<boolean>;
     readonly disabledReasons: Signal<readonly DisabledReason[]>;

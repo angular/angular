@@ -29,6 +29,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms
 import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
 import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
 import {Field} from '../api/types';
+import type {FieldNode} from '../field/node';
 import {
   illegallyGetComponentInstance,
   illegallyIsModelInput,
@@ -118,6 +119,20 @@ export class Control<T> {
       this.cva.writeValue(this.state().value());
       this.cva.setDisabledState?.(this.state().disabled());
     }
+
+    // Register this control on the field it is currently bound to. We do this at the end of
+    // initialization so that it only runs if we are actually syncing with this control
+    // (as opposed to just passing the field through to its `control` input).
+    effect(
+      (onCleanup) => {
+        const fieldNode = this.state() as unknown as FieldNode;
+        fieldNode.nodeState.controls.update((controls) => [...controls, this as Control<unknown>]);
+        onCleanup(() => {
+          fieldNode.nodeState.controls.update((controls) => controls.filter((c) => c !== this));
+        });
+      },
+      {injector: this.injector},
+    );
   }
 
   /**

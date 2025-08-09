@@ -8,17 +8,31 @@
 
 import {
   Component,
+  Injector,
   Input,
   input,
   model,
   provideZonelessChangeDetection,
   signal,
+  ViewChildren,
+  type QueryList,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
 import {form} from '../../src/api/structure';
 import {Field} from '../../src/api/types';
 import {Control} from '../../src/controls/control';
+
+@Component({
+  selector: 'string-control',
+  template: `<input [control]="control()"/>`,
+  imports: [Control],
+})
+class TestStringControl {
+  // Note: @Input, @ViewChildren required due to JIT transforms not running in our tests.
+  @Input('control') readonly control = input.required<Field<string>>();
+  @ViewChildren(Control) readonly controlDirective!: QueryList<Control<unknown>>;
+}
 
 describe('control directive', () => {
   beforeEach(() => {
@@ -227,6 +241,57 @@ describe('control directive', () => {
 
     const el = act(() => TestBed.createComponent(TestCmp)).nativeElement;
     expect(el.textContent).toBe('test');
+  });
+
+  it('should update bound controls on the field when it is bound and unbound', async () => {
+    const f = form(signal(''), {injector: TestBed.inject(Injector)});
+    expect(f().controls()).toEqual([]);
+
+    const fixture = act(() => {
+      const fixture = TestBed.createComponent(TestStringControl);
+      fixture.componentRef.setInput('control', signal(f));
+      return fixture;
+    });
+    expect(f().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+
+    act(() => fixture.destroy());
+    expect(f().controls()).toEqual([]);
+  });
+
+  it('should track multiple bound controls per field', async () => {
+    const f = form(signal(''), {injector: TestBed.inject(Injector)});
+    const fixture1 = act(() => {
+      const fixture = TestBed.createComponent(TestStringControl);
+      fixture.componentRef.setInput('control', signal(f));
+      return fixture;
+    });
+    const fixture2 = act(() => {
+      const fixture = TestBed.createComponent(TestStringControl);
+      fixture.componentRef.setInput('control', signal(f));
+      return fixture;
+    });
+
+    expect(f().controls()).toEqual([
+      fixture1.componentInstance.controlDirective.get(0)!,
+      fixture2.componentInstance.controlDirective.get(0)!,
+    ]);
+  });
+
+  it('should update bound controls on both fields when field binding changes', async () => {
+    const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
+    const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
+    const field = signal<Field<string>>(f1);
+    const fixture = act(() => {
+      const fixture = TestBed.createComponent(TestStringControl);
+      fixture.componentRef.setInput('control', field);
+      return fixture;
+    });
+    expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    expect(f2().controls()).toEqual([]);
+
+    act(() => field.set(f2));
+    expect(f1().controls()).toEqual([]);
+    expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
   });
 });
 

@@ -7,6 +7,7 @@
  */
 
 import {Signal, WritableSignal} from '@angular/core';
+import type {Control} from '../controls/control';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithField} from './validation_errors';
 
@@ -288,6 +289,10 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * array-valued, for example, this is the index of this field in that array.
    */
   readonly keyInParent: Signal<TKey>;
+  /**
+   * A signal containing the `Control` directives this field is currently bound to.
+   */
+  readonly controls: Signal<readonly Control<unknown>[]>;
 
   /**
    * Reads an aggregate property value from the field.
