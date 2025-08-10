@@ -9,7 +9,7 @@ This guide assumes you are familiar with the following tools and libraries:
 - **[Jasmine](https://jasmine.github.io/)** - JavaScript testing framework that provides the testing syntax (`describe`, `it`, `expect`)
 - **[Karma](https://karma-runner.github.io/)** - Test runner that executes tests in browsers
 - **[Angular Testing Utilities](guide/testing)** - Angular's built-in testing tools ([`TestBed`](api/core/testing/TestBed), [`ComponentFixture`](api/core/testing/ComponentFixture))
-- **[RouterTestingHarness](api/router/testing/RouterTestingHarness)** - Test harness for testing routed components with built-in navigation and component testing capabilities
+- **[`RouterTestingHarness`](api/router/testing/RouterTestingHarness)** - Test harness for testing routed components with built-in navigation and component testing capabilities
 
 ## Testing scenarios
 

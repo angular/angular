@@ -588,23 +588,6 @@ The component has to *subscribe* to the `ActivatedRoute.paramMap` observable and
 
 Tests can explore how the `HeroDetailComponent` responds to different `id` parameter values by navigating to different routes.
 
-### Testing with the `RouterTestingHarness`
-
-Here's a test demonstrating the component's behavior when the observed `id` refers to an existing hero:
-
-<docs-code header="app/hero/hero-detail.component.spec.ts (existing id)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="route-good-id"/>
-
-HELPFUL: In the following section, the `createComponent()` method and `page` object are discussed.
-Rely on your intuition for now.
-
-When the `id` cannot be found, the component should re-route to the `HeroListComponent`.
-
-The test suite setup provided the same router harness [described above](#routing-component).
-
-This test expects the component to try to navigate to the `HeroListComponent`.
-
-<docs-code header="app/hero/hero-detail.component.spec.ts (bad id)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="route-bad-id"/>
-
 ## Nested component tests
 
 Component templates often have nested components, whose templates might contain more components.
