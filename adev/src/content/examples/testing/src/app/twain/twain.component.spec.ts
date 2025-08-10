@@ -26,7 +26,6 @@ describe('TwainComponent', () => {
   // #docregion setup
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TwainComponent],
       providers: [TwainService],
     });
     testQuote = 'Test Quote';
