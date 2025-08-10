@@ -531,9 +531,8 @@ The setup for the `test-host` tests is similar to the setup for the stand-alone 
 
 <docs-code header="app/dashboard/dashboard-hero.component.spec.ts (test host setup)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="test-host-setup"/>
 
-This testing module configuration shows three important differences:
+This testing module configuration shows two important differences:
 
-* It *imports* both the `DashboardHeroComponent` and the `TestHostComponent`
 * It *creates* the `TestHostComponent` instead of the `DashboardHeroComponent`
 * The `TestHostComponent` sets the `DashboardHeroComponent.hero` with a binding
 
@@ -620,17 +619,15 @@ In the first technique, you create and declare stub versions of the components a
 The stub selectors match the selectors for the corresponding real components.
 But their templates and classes are empty.
 
-Then declare them in the `TestBed` configuration next to the components, directives, and pipes that need to be real.
+Then declare them by overriding the `imports` of your component using `TestBed.overrideComponent`. 
 
 <docs-code header="app/app.component.spec.ts (TestBed stubs)" path="adev/src/content/examples/testing/src/app/app.component.spec.ts" visibleRegion="testbed-stubs"/>
 
-The `AppComponent` is the test subject, so of course you declare the real version.
-
-The rest are stubs.
+HELPFUL: The `set` key in this example replaces all the exisiting imports on your component, make sure to imports all dependencies, not only the stubs. Alternatively you can use the `remove`/`add` keys to selectively remove and add imports.
 
 ### `NO_ERRORS_SCHEMA`
 
-In the second approach, add `NO_ERRORS_SCHEMA` to the `TestBed.schemas` metadata.
+In the second approach, add `NO_ERRORS_SCHEMA` to the metadata overrides of your component.
 
 <docs-code header="app/app.component.spec.ts (NO_ERRORS_SCHEMA)" path="adev/src/content/examples/testing/src/app/app.component.spec.ts" visibleRegion="no-errors-schema"/>
 
@@ -714,155 +711,6 @@ A `createComponent` method creates a `page` object and fills in the blanks once 
 Here are a few more `HeroDetailComponent` tests to reinforce the point.
 
 <docs-code header="app/hero/hero-detail.component.spec.ts (selected tests)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="selected-tests"/>
-
-## Calling `compileComponents()`
-
-HELPFUL: Ignore this section if you *only* run tests with the CLI `ng test` command because the CLI compiles the application before running the tests.
-
-If you run tests in a **non-CLI environment**, the tests might fail with a message like this one:
-
-<docs-code hideCopy language="shell">
-
-Error: This test module uses the component BannerComponent
-which is using a "templateUrl" or "styleUrls", but they were never compiled.
-Please call "TestBed.compileComponents" before your test.
-
-</docs-code>
-
-The root of the problem is at least one of the components involved in the test specifies an external template or CSS file as the following version of the `BannerComponent` does.
-
-<docs-code header="app/banner/banner-external.component.ts (external template & css)" path="adev/src/content/examples/testing/src/app/banner/banner-external.component.ts"/>
-
-The test fails when the `TestBed` tries to create the component.
-
-<docs-code avoid header="app/banner/banner-external.component.spec.ts (setup that fails)" path="adev/src/content/examples/testing/src/app/banner/banner-external.component.spec.ts" visibleRegion="setup-may-fail"/>
-
-Recall that the application hasn't been compiled.
-So when you call `createComponent()`, the `TestBed` compiles implicitly.
-
-That's not a problem when the source code is in memory.
-But the `BannerComponent` requires external files that the compiler must read from the file system, an inherently *asynchronous* operation.
-
-If the `TestBed` were allowed to continue, the tests would run and fail mysteriously before the compiler could finish.
-
-The preemptive error message tells you to compile explicitly with `compileComponents()`.
-
-### `compileComponents()` is async
-
-You must call `compileComponents()` within an asynchronous test function.
-
-CRITICAL: If you neglect to make the test function async (for example, forget to use `waitForAsync()` as described), you'll see this error message
-
-<docs-code hideCopy language="shell">
-
-Error: ViewDestroyedError: Attempt to use a destroyed view
-
-</docs-code>
-
-A typical approach is to divide the setup logic into two separate `beforeEach()` functions:
-
-| Functions                   | Details                      |
-| :-------------------------- | :--------------------------- |
-| Asynchronous `beforeEach()` | Compiles the components      |
-| Synchronous `beforeEach()`  | Performs the remaining setup |
-
-### The async `beforeEach`
-
-Write the first async `beforeEach` like this.
-
-<docs-code header="app/banner/banner-external.component.spec.ts (async beforeEach)" path="adev/src/content/examples/testing/src/app/banner/banner-external.component.spec.ts" visibleRegion="async-before-each"/>
-
-The `TestBed.configureTestingModule()` method returns the `TestBed` class so you can chain calls to other `TestBed` static methods such as `compileComponents()`.
-
-In this example, the `BannerComponent` is the only component to compile.
-Other examples configure the testing module with multiple components and might import application modules that hold yet more components.
-Any of them could require external files.
-
-The `TestBed.compileComponents` method asynchronously compiles all components configured in the testing module.
-
-IMPORTANT: Do not re-configure the `TestBed` after calling `compileComponents()`.
-
-Calling `compileComponents()` closes the current `TestBed` instance to further configuration.
-You cannot call any more `TestBed` configuration methods, not `configureTestingModule()` nor any of the `override...` methods.
-The `TestBed` throws an error if you try.
-
-Make `compileComponents()` the last step before calling `TestBed.createComponent()`.
-
-### The synchronous `beforeEach`
-
-The second, synchronous `beforeEach()` contains the remaining setup steps, which include creating the component and querying for elements to inspect.
-
-<docs-code header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)" path="adev/src/content/examples/testing/src/app/banner/banner-external.component.spec.ts" visibleRegion="sync-before-each"/>
-
-Count on the test runner to wait for the first asynchronous `beforeEach` to finish before calling the second.
-
-### Consolidated setup
-
-You can consolidate the two `beforeEach()` functions into a single, async `beforeEach()`.
-
-The `compileComponents()` method returns a promise so you can perform the synchronous setup tasks *after* compilation by moving the synchronous code after the `await` keyword, where the promise has been resolved.
-
-<docs-code header="app/banner/banner-external.component.spec.ts (one beforeEach)" path="adev/src/content/examples/testing/src/app/banner/banner-external.component.spec.ts" visibleRegion="one-before-each"/>
-
-### `compileComponents()` is harmless
-
-There's no harm in calling `compileComponents()` when it's not required.
-
-The component test file generated by the CLI calls `compileComponents()` even though it is never required when running `ng test`.
-
-The tests in this guide only call `compileComponents` when necessary.
-
-## Setup with module imports
-
-Earlier component tests configured the testing module with a few `declarations` like this:
-
-<docs-code header="app/dashboard/dashboard-hero.component.spec.ts (configure TestBed)" path="adev/src/content/examples/testing/src/app/dashboard/dashboard-hero.component.spec.ts" visibleRegion="config-testbed"/>
-
-The `DashboardComponent` is simple.
-It needs no help.
-But more complex components often depend on other components, directives, pipes, and providers and these must be added to the testing module too.
-
-Fortunately, the `TestBed.configureTestingModule` parameter parallels the metadata passed to the `@NgModule` decorator which means you can also specify `providers` and `imports`.
-
-The `HeroDetailComponent` requires a lot of help despite its small size and simple construction.
-In addition to the support it receives from the default testing module `CommonModule`, it needs:
-
-* `NgModel` and friends in the `FormsModule` to enable two-way data binding
-* The `TitleCasePipe` from the `shared` folder
-* The Router services
-* The Hero data access services
-
-One approach is to configure the testing module from the individual pieces as in this example:
-
-<docs-code header="app/hero/hero-detail.component.spec.ts (FormsModule setup)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="setup-forms-module"/>
-
-HELPFUL: Notice that the `beforeEach()` is asynchronous and calls `TestBed.compileComponents` because the `HeroDetailComponent` has an external template and css file.
-
-As explained in [Calling `compileComponents()`](#calling-compilecomponents), these tests could be run in a non-CLI environment where Angular would have to compile them in the browser.
-
-### Import a shared module
-
-Because many application components need the `FormsModule` and the `TitleCasePipe`, the developer created a `SharedModule` to combine these and other frequently requested parts.
-
-The test configuration can use the `SharedModule` too as seen in this alternative setup:
-
-<docs-code header="app/hero/hero-detail.component.spec.ts (SharedModule setup)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="setup-shared-module"/>
-
-It's a bit tighter and smaller, with fewer import statements, which are not shown in this example.
-
-### Import a feature module
-
-The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/ngmodules/feature-modules) that aggregates more of the interdependent pieces including the `SharedModule`.
-Try a test configuration that imports the `HeroModule` like this one:
-
-<docs-code header="app/hero/hero-detail.component.spec.ts (HeroModule setup)" path="adev/src/content/examples/testing/src/app/hero/hero-detail.component.spec.ts" visibleRegion="setup-hero-module"/>
-
-Only the *test doubles* in the `providers` remain.
-Even the `HeroDetailComponent` declaration is gone.
-
-In fact, if you try to declare it, Angular will throw an error because `HeroDetailComponent` is declared in both the `HeroModule` and the `DynamicTestModule` created by the `TestBed`.
-
-HELPFUL: Importing the component's feature module can be the best way to configure tests when there are many mutual dependencies within the module and the module is small, as feature modules tend to be.
 
 ## Override component providers
 
