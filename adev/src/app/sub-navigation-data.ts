@@ -534,6 +534,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/pipes',
           },
           {
+            label: 'Testing routing and navigation',
+            path: 'guide/routing/testing',
+            contentPath: 'guide/routing/testing',
+            status: 'new',
+          },
+          {
             label: 'Debugging tests',
             path: 'guide/testing/debugging',
             contentPath: 'guide/testing/debugging',
