@@ -11,9 +11,9 @@ import {TestBed} from '@angular/core/testing';
 import {disabled, validate} from '../../src/api/logic';
 import {MIN} from '../../src/api/property';
 import {apply, applyEach, applyWhen, form, schema} from '../../src/api/structure';
-import type {Schema} from '../../src/api/types';
+import type {Field, Schema} from '../../src/api/types';
 import {ValidationError} from '../../src/api/validation_errors';
-import {min} from '../../src/api/validators';
+import {min, required} from '../../src/api/validators';
 
 interface TreeData {
   level: number;
@@ -126,5 +126,57 @@ describe('reccursive schema logic', () => {
 
     data.set({tag: 'table', children: [{tag: 'tr', children: [{tag: 'td', children: []}]}]});
     expect(f().valid()).toBe(true);
+  });
+
+  // TODO: debug issue demonstrated below. Seems to be some issue with recursive logic & potentially undefined fields.
+  // These two tests represent the same logic, but one has a potentially undefined field (which throws an error),
+  // and the other has a potentially null field (which is fine)
+
+  fit('should support recursive logic with applyWhen (undefined)', () => {
+    interface TreeNode {
+      data: string;
+      child: TreeNode | undefined;
+    }
+
+    const name = signal<TreeNode>({
+      data: '',
+      child: {
+        data: '',
+        child: undefined,
+      },
+    });
+
+    const s = schema<TreeNode>((p) => {
+      required(p.data);
+      applyWhen(p.child, ({value}) => value() !== undefined, s as Schema<TreeNode | undefined>);
+    });
+
+    const f = form(name, s, {injector: TestBed.inject(Injector)});
+    expect(f.data().errors()).toEqual([ValidationError.required()]);
+    expect(f.child?.data().errors()).toEqual([ValidationError.required()]);
+  });
+
+  fit('should support recursive logic with applyWhen (null)', () => {
+    interface TreeNode {
+      data: string;
+      child: TreeNode | null;
+    }
+
+    const name = signal<TreeNode>({
+      data: '',
+      child: {
+        data: '',
+        child: null,
+      },
+    });
+
+    const s = schema<TreeNode>((p) => {
+      required(p.data);
+      applyWhen(p.child, ({value}) => value() !== null, s as Schema<TreeNode | null>);
+    });
+
+    const f = form(name, s, {injector: TestBed.inject(Injector)});
+    expect(f.data().errors()).toEqual([ValidationError.required()]);
+    expect((f.child as Field<TreeNode>).data().errors()).toEqual([ValidationError.required()]);
   });
 });
