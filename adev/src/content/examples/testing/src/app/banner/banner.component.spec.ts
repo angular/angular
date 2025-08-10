@@ -11,9 +11,6 @@ describe('BannerComponent (inline template)', () => {
   let h1: HTMLElement;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [BannerComponent],
-    });
     fixture = TestBed.createComponent(BannerComponent);
     component = fixture.componentInstance; // BannerComponent test instance
     h1 = fixture.nativeElement.querySelector('h1');

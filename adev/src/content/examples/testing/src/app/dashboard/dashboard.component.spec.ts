@@ -69,7 +69,6 @@ function compileAndCreate() {
     // #docregion router-harness
     TestBed.configureTestingModule(
       Object.assign({}, appConfig, {
-        imports: [DashboardComponent],
         providers: [
           provideRouter([{path: '**', component: DashboardComponent}]),
           provideHttpClient(),
