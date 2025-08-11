@@ -83,16 +83,6 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
   );
 }
 
-/**
- * Private helper function to set the default behavior of `Resource.value()` when the resource is
- * in the error state.
- *
- * This function is intented to be temporary to help migrate G3 code to the new throwing behavior.
- */
-export function setResourceValueThrowsErrors(value: boolean): void {
-  RESOURCE_VALUE_THROWS_ERRORS_DEFAULT = value;
-}
-
 type ResourceInternalStatus = 'idle' | 'loading' | 'resolved' | 'local';
 
 /**
