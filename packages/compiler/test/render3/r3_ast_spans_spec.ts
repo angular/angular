@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ASTWithSource} from '../../src/expression_parser/ast';
 import {ParseSourceSpan} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
 
@@ -408,6 +409,24 @@ describe('R3 AST source spans', () => {
         ['Element', '<div @animation></div>', '<div @animation>', '</div>'],
         ['BoundAttribute', '@animation', 'animation', '<empty>'],
       ]);
+    });
+
+    it('should not throw off span of value in bound attribute when leading spaces are present', () => {
+      const assertValueSpan = (template: string, start: number, end: number) => {
+        const result = parse(template);
+        const boundAttribute = (result.nodes[0] as t.Element).inputs[0];
+        const span = (boundAttribute.value as ASTWithSource).ast.sourceSpan;
+
+        expect(span.start).toBe(start);
+        expect(span.end).toBe(end);
+      };
+
+      assertValueSpan('<a [b]="helloWorld"></a>', 8, 18);
+      assertValueSpan('<a [b]=" helloWorld"></a>', 9, 19);
+      assertValueSpan('<a [b]="  helloWorld"></a>', 10, 20);
+      assertValueSpan('<a [b]="   helloWorld"></a>', 11, 21);
+      assertValueSpan('<a [b]="    helloWorld"></a>', 12, 22);
+      assertValueSpan('<a [b]="                                          helloWorld"></a>', 50, 60);
     });
   });
 
