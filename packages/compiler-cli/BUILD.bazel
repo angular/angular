@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//tools:defaults2.bzl", "api_golden_test", "extract_types", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
