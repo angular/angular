@@ -30,7 +30,7 @@ describe('mock host', () => {
     expect(project).toBeInstanceOf(ts.server.ConfiguredProject);
     const configPath = (project as ts.server.ConfiguredProject).getConfigFilePath();
     expect(configPath.substring(TEST_SRCDIR.length)).toBe(
-      '/angular/packages/language-service/test/legacy/project/tsconfig.json',
+      '/_main/packages/language-service/test/legacy/project/tsconfig.json',
     );
     const program = tsLS.getProgram();
     expect(program).toBeDefined();
@@ -44,13 +44,13 @@ describe('mock host', () => {
     expect(sourceFiles).toEqual(
       jasmine.arrayContaining([
         // This shows that module resolution works
-        '/angular/packages/common/src/common.d.ts',
-        '/angular/packages/core/src/core.d.ts',
-        '/angular/packages/forms/src/forms.d.ts',
+        '/_main/packages/common/src/common.d.ts',
+        '/_main/packages/core/src/core.d.ts',
+        '/_main/packages/forms/src/forms.d.ts',
         // This shows that project files are present
-        '/angular/packages/language-service/test/legacy/project/app/app.component.ts',
-        '/angular/packages/language-service/test/legacy/project/app/main.ts',
-        '/angular/packages/language-service/test/legacy/project/app/parsing-cases.ts',
+        '/_main/packages/language-service/test/legacy/project/app/app.component.ts',
+        '/_main/packages/language-service/test/legacy/project/app/main.ts',
+        '/_main/packages/language-service/test/legacy/project/app/parsing-cases.ts',
       ]),
     );
   });

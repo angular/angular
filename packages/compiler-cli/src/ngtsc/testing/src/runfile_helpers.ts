@@ -22,7 +22,7 @@ export function getAngularPackagesFromRunfiles() {
   const runfilesManifestPath = process.env['RUNFILES_MANIFEST_FILE'];
 
   if (!runfilesManifestPath) {
-    const packageRunfilesDir = path.join(process.env['RUNFILES']!, 'angular/packages');
+    const packageRunfilesDir = path.join(process.env['RUNFILES']!, '_main/packages');
 
     return fs
       .readdirSync(packageRunfilesDir)
@@ -34,9 +34,9 @@ export function getAngularPackagesFromRunfiles() {
     .readFileSync(runfilesManifestPath, 'utf8')
     .split('\n')
     .map((mapping) => mapping.split(' '))
-    .filter(([runfilePath]) => runfilePath.match(/^angular\/packages\/[\w-]+\/npm_package$/))
+    .filter(([runfilePath]) => runfilePath.match(/^_main\/packages\/[\w-]+\/npm_package$/))
     .map(([runfilePath, realPath]) => ({
-      name: path.relative('angular/packages', runfilePath).split(path.sep)[0],
+      name: path.relative('_main/packages', runfilePath).split(path.sep)[0],
       pkgPath: realPath,
     }));
 }

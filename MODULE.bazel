@@ -1,0 +1,5 @@
+# TODO: Investigate bzlmod and use it where possible.
+
+module(
+    name = "angular",
+)

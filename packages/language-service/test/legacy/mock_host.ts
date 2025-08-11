@@ -33,7 +33,7 @@ const logger: ts.server.Logger = {
 export const TEST_SRCDIR = process.env['TEST_SRCDIR']!;
 export const PROJECT_DIR: string = join(
   TEST_SRCDIR,
-  'angular',
+  '_main',
   'packages',
   'language-service',
   'test',
