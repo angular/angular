@@ -5,6 +5,7 @@
     "@angular/build": "20.1.4",
     "@angular/common": "workspace:*",
     "@angular/compiler": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
     "@angular/core": "workspace:*",
     "@angular/forms": "workspace:*",
     "@angular/localize": "workspace:*",

@@ -6,15 +6,14 @@
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
       "pnpm install --frozen-lockfile",
-      "pnpm bazel run //.github/actions/deploy-docs-site:main.update",
-      "pnpm bazel run //packages/common:base_currencies_file.update",
-      "pnpm bazel run //packages/common/locales:closure_locale_file.update",
-      "pnpm bazel run //packages/core:base_locale_file.update"
+      "pnpm bazel run //.github/actions/deploy-docs-site:main",
+      "pnpm bazel run //packages/common:base_currencies_file",
+      "pnpm bazel run //packages/common/locales:closure_locale_file",
+      "pnpm bazel run //packages/core:base_locale_file"
     ],
     "fileFilters": [
       ".github/actions/deploy-docs-site/**/*",
-      "packages/**/*",
-      "pnpm-lock.yaml"
+      "packages/**/*"
     ],
     "executionMode": "branch"
   },
@@ -45,6 +44,7 @@
     {
       "matchFileNames": [
         "integration/**",
+        "modules/ssr-benchmarks",
         "packages/core/schematics/migrations/signal-migration/test/**",
         "packages/zone.js/test/typings/package.json"
       ],

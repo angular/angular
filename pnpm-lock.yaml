@@ -832,6 +832,9 @@ importers:
       '@angular/compiler':
         specifier: workspace:*
         version: link:../packages/compiler
+      '@angular/compiler-cli':
+        specifier: workspace:*
+        version: link:../packages/compiler-cli
       '@angular/core':
         specifier: workspace:*
         version: link:../packages/core
