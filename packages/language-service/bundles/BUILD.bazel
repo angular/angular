@@ -1,4 +1,4 @@
-load("@npm2//:rollup/package_json.bzl", rollup = "bin")
+load("@npm//:rollup/package_json.bzl", rollup = "bin")
 
 rollup.rollup(
     name = "language-service",
