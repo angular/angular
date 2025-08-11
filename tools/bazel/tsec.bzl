@@ -3,7 +3,7 @@
 load("@aspect_rules_js//js:providers.bzl", "JsInfo")
 load("@aspect_rules_ts//ts:defs.bzl", "TsConfigInfo")
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
-load("@npm2//:tsec/package_json.bzl", tsec = "bin")
+load("@npm//:tsec/package_json.bzl", tsec = "bin")
 
 TsecTargetInfo = provider(
     "Attributes required for tsec_test to generate tsconfig.json",
