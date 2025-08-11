@@ -25,8 +25,8 @@
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
-    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular-devkit/build-angular": "18.1.0",
+    "@angular/cli": "18.1.0",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
@@ -34,7 +34,7 @@
     "@types/node": "file:../../node_modules/@types/node",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
-    "karma": "4.4.0",
+    "karma": "6.3.4",
     "karma-chrome-launcher": "3.1.0",
     "karma-coverage-istanbul-reporter": "2.1.0",
     "karma-jasmine": "2.0.1",
