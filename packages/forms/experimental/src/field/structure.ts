@@ -21,7 +21,7 @@ import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';
 import type {FormFieldManager} from './manager';
-import {FieldNode, ParentFieldNode} from './node';
+import type {FieldNode, ParentFieldNode} from './node';
 import type {FieldAdapter} from './field_adapter';
 
 /**
