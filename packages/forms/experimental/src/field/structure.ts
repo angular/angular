@@ -21,7 +21,8 @@ import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';
 import type {FormFieldManager} from './manager';
-import type {FieldNode} from './node';
+import {FieldNode, ParentFieldNode} from './node';
+import type {FieldAdapter} from './field_adapter';
 
 /**
  * Key by which a parent `FieldNode` tracks its children.
@@ -75,8 +76,6 @@ export abstract class FieldNodeStructure {
   }
 
   constructor(
-    /** The path that corresponds to this field in the schema. */
-    readonly pathNode: FieldPathNode,
     /** The logic to apply to this field. */
     readonly logic: LogicNode,
   ) {}
@@ -140,6 +139,7 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
    * @param logic The logic to apply to this field
    * @param fieldManager The field manager for this field
    * @param value The value signal for this field
+   * @param adapter Adapter that knows how to create new fields and appropriate state.
    * @param createChildNode A factory function to create child nodes for this field.
    */
   constructor(
@@ -149,15 +149,17 @@ export class RootFieldNodeStructure extends FieldNodeStructure {
     logic: LogicNode,
     override readonly fieldManager: FormFieldManager,
     override readonly value: WritableSignal<unknown>,
+    adapter: FieldAdapter,
     createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
   ) {
-    super(pathNode, logic);
+    super(logic);
     this.childrenMap = makeChildrenMapSignal(
-      node,
+      node as ParentFieldNode,
       value,
       this.identitySymbol,
-      this.pathNode,
-      this.logic,
+      pathNode,
+      logic,
+      adapter,
       createChildNode,
     );
   }
@@ -185,18 +187,20 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
    * @param parent The parent field node for this node
    * @param identityInParent The identity used to track this field in its parent
    * @param initialKeyInParent The key of this field in its parent at the time of creation
+   * @param adapter Adapter that knows how to create new fields and appropriate state.
    * @param createChildNode A factory function to create child nodes for this field.
    */
   constructor(
     node: FieldNode,
     pathNode: FieldPathNode,
     logic: LogicNode,
-    override readonly parent: FieldNode,
+    override readonly parent: ParentFieldNode,
     identityInParent: TrackingKey | undefined,
     initialKeyInParent: string,
+    adapter: FieldAdapter,
     createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
   ) {
-    super(pathNode, logic);
+    super(logic);
 
     this.root = this.parent.structure.root;
 
@@ -259,13 +263,14 @@ export class ChildFieldNodeStructure extends FieldNodeStructure {
       });
     }
 
-    this.value = deepSignal(this.parent.structure.value, this.keyInParent as Signal<never>);
+    this.value = deepSignal(this.parent.structure.value, this.keyInParent);
     this.childrenMap = makeChildrenMapSignal(
-      node,
+      node as ParentFieldNode,
       this.value,
       this.identitySymbol,
-      this.pathNode,
-      this.logic,
+      pathNode,
+      logic,
+      adapter,
       createChildNode,
     );
 
@@ -288,6 +293,8 @@ export interface RootFieldNodeOptions {
   readonly value: WritableSignal<unknown>;
   /** The field manager for this field. */
   readonly fieldManager: FormFieldManager;
+  /** This allows for more granular field and state management, and is currently used for compat. */
+  readonly fieldAdapter: FieldAdapter;
 }
 
 /** Options passed when constructing a child field node. */
@@ -295,7 +302,7 @@ export interface ChildFieldNodeOptions {
   /** Kind of node, used to differentiate root node options from child node options. */
   readonly kind: 'child';
   /** The parent field node of this field. */
-  readonly parent: FieldNode;
+  readonly parent: ParentFieldNode;
   /** The path node corresponding to this field in the schema. */
   readonly pathNode: FieldPathNode;
   /** The logic to apply to this field. */
@@ -304,6 +311,8 @@ export interface ChildFieldNodeOptions {
   readonly initialKeyInParent: string;
   /** The identity used to track this field in its parent. */
   readonly identityInParent: TrackingKey | undefined;
+  /** This allows for more granular field and state management, and is currently used for compat. */
+  readonly fieldAdapter: FieldAdapter;
 }
 
 /** Options passed when constructing a field node. */
@@ -328,6 +337,7 @@ const ROOT_KEY_IN_PARENT = computed(() => {
  * @param identitySymbol The key used to access the tracking id of a field.
  * @param pathNode The path node corresponding to the field in the schema.
  * @param logic The logic to apply to the field.
+ * @param adapter Adapter that knows how to create new fields and appropriate state.
  * @param createChildNode A factory function to create child nodes for this field.
  * @returns
  */
@@ -337,6 +347,7 @@ function makeChildrenMapSignal(
   identitySymbol: symbol,
   pathNode: FieldPathNode,
   logic: LogicNode,
+  adapter: FieldAdapter,
   createChildNode: (options: ChildFieldNodeOptions) => FieldNode,
 ): Signal<Map<TrackingKey, FieldNode> | undefined> {
   // We use a `linkedSignal` to preserve the instances of `FieldNode` for each child field even if
@@ -345,10 +356,9 @@ function makeChildrenMapSignal(
   return linkedSignal<unknown, Map<TrackingKey, FieldNode> | undefined>({
     source: valueSignal,
     computation: (value, previous): Map<TrackingKey, FieldNode> | undefined => {
-      const prevMap = previous?.value;
       // We may or may not have a previous map. If there isn't one, then `childrenMap` will be lazily
       // initialized to a new map instance if needed.
-      let childrenMap = prevMap;
+      let childrenMap = previous?.value;
 
       if (!isObject(value)) {
         // Non-object values have no children.
@@ -428,11 +438,12 @@ function makeChildrenMapSignal(
           identity,
           createChildNode({
             kind: 'child',
-            parent: node,
+            parent: node as ParentFieldNode,
             pathNode: childPath,
             logic: childLogic,
             initialKeyInParent: key,
             identityInParent: trackingId,
+            fieldAdapter: adapter,
           }),
         );
       }
