@@ -1,3 +1,26 @@
+<a name="20.2.0-rc.0"></a>
+# 20.2.0-rc.0 (2025-08-11)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c77e51930d](https://github.com/angular/angular/commit/c77e51930d1e438b2363cb2f020c12ed53b32314) | fix | error when type checking host bindings of generic directive ([#63061](https://github.com/angular/angular/pull/63061)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a409534d6c](https://github.com/angular/angular/commit/a409534d6c3d7cb4472afffd6b17df8c25e34106) | feat | support `as` aliases on `else if` blocks ([#63047](https://github.com/angular/angular/pull/63047)) |
+| [85d51a3215](https://github.com/angular/angular/commit/85d51a32150c9ed280a615d9140795d02c8c3fd0) | fix | destroying the effect on `afterRenderEffect` ([#63001](https://github.com/angular/angular/pull/63001)) |
+| [6a1184600c](https://github.com/angular/angular/commit/6a1184600ce0fc7a3f338d6766612e9510ef5518) | fix | prevents duplicate nodes when `@if` toggles with leave animations ([#63048](https://github.com/angular/angular/pull/63048)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [660444fbf2](https://github.com/angular/angular/commit/660444fbf296ce45f0a33d443e804237fa9bb8cc) | fix | attempt to resolve component resources in JIT mode ([#63062](https://github.com/angular/angular/pull/63062)) |
+### service-worker
+| Commit | Type | Description |
+| -- | -- | -- |
+| [3b214d2040](https://github.com/angular/angular/commit/3b214d20403160ab73e65dca0352545efd577c31) | feat | Logs unhandled promise rejections in service worker ([#63059](https://github.com/angular/angular/pull/63059)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0-next.6"></a>
 # 20.2.0-next.6 (2025-08-07)
 ### compiler-cli
