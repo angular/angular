@@ -170,7 +170,7 @@ export function angularCoreDtsFiles(): TestFile[] {
     return _angularCoreDts;
   }
 
-  const directory = resolveFromRunfiles('angular/packages/core/npm_package');
+  const directory = resolveFromRunfiles('_main/packages/core/npm_package');
   const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
 
   return (_angularCoreDts = dtsFiles.map((fileName) => ({

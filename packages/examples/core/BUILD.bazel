@@ -65,7 +65,7 @@ esbuild(
 http_server(
     name = "devserver",
     srcs = ["//packages/examples:index.html"],
-    additional_root_paths = ["angular/packages/examples"],
+    additional_root_paths = ["_main/packages/examples"],
     deps = [":app_bundle"],
 )
 

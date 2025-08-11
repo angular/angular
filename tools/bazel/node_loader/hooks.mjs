@@ -26,7 +26,7 @@ const nonModuleImportRe = /^[.\/]/;
 
 const runfilesRoot = process.env.JS_BINARY__RUNFILES;
 
-const tsconfigPath = path.join(runfilesRoot, 'angular/packages/tsconfig-build.json');
+const tsconfigPath = path.join(runfilesRoot, '_main/packages/tsconfig-build.json');
 const tsconfig = parseTsconfig(tsconfigPath);
 const pathMappingMatcher = createPathsMatcher({config: tsconfig, path: tsconfigPath});
 
