@@ -24,6 +24,8 @@ describe('RouteDetailsRowComponent', () => {
     component = fixture.componentInstance;
 
     fixture.componentRef.setInput('label', 'Route Title');
+    fixture.componentRef.setInput('data', {value: 'Route Data'});
+    fixture.componentRef.setInput('dataKey', 'value');
     fixture.detectChanges();
   });
 
@@ -32,8 +34,8 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and text data', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
-    fixture.componentRef.setInput('data', 'Route Data');
+    fixture.componentRef.setInput('data', {value: 'Route Data'});
+    fixture.componentRef.setInput('dataKey', 'value');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -45,9 +47,9 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and flag data true', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('type', 'flag');
-    fixture.componentRef.setInput('data', 'true');
+    fixture.componentRef.setInput('data', {isActive: true});
+    fixture.componentRef.setInput('dataKey', 'isActive');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -59,9 +61,9 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and flag data false', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('type', 'flag');
-    fixture.componentRef.setInput('data', false);
+    fixture.componentRef.setInput('data', {isLazy: false, isRedirect: false});
+    fixture.componentRef.setInput('dataKey', 'isLazy');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -73,9 +75,9 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and chip data', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('type', 'chip');
-    fixture.componentRef.setInput('data', 'Component Name');
+    fixture.componentRef.setInput('data', {name: 'Component Name'});
+    fixture.componentRef.setInput('dataKey', 'name');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -87,9 +89,9 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and chip data disabled', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('type', 'chip');
-    fixture.componentRef.setInput('data', 'Lazy Component Name');
+    fixture.componentRef.setInput('data', {name: 'Lazy Component Name'});
+    fixture.componentRef.setInput('dataKey', 'name');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -102,9 +104,9 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and list data', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
     fixture.componentRef.setInput('type', 'list');
-    fixture.componentRef.setInput('data', ['Guard 1', 'Guard 2']);
+    fixture.componentRef.setInput('data', {providers: ['Guard 1', 'Guard 2']});
+    fixture.componentRef.setInput('dataKey', 'providers');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));

@@ -29,12 +29,13 @@ import {
   Type,
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
+  ɵpublishExternalGlobalUtil,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
 import {INPUT_BINDER, RoutedComponentInputBinder} from './directives/router_outlet';
 import {Event, NavigationError, stringifyEvent} from './events';
-import {RedirectCommand, Routes} from './models';
+import {RedirectCommand, Route, Routes} from './models';
 import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
 import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
@@ -50,6 +51,7 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
+import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -88,6 +90,13 @@ import {
  * @returns A set of providers to setup a Router.
  */
 export function provideRouter(routes: Routes, ...features: RouterFeatures[]): EnvironmentProviders {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    // Publish this util when the router is provided so that the devtools can use it.
+    ɵpublishExternalGlobalUtil('ɵgetLoadedRoutes', getLoadedRoutes);
+    ɵpublishExternalGlobalUtil('ɵgetRouterInstance', getRouterInstance);
+    ɵpublishExternalGlobalUtil('ɵnavigateByUrl', navigateByUrl);
+  }
+
   return makeEnvironmentProviders([
     {provide: ROUTES, multi: true, useValue: routes},
     typeof ngDevMode === 'undefined' || ngDevMode
