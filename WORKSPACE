@@ -47,7 +47,7 @@ rules_js_register_toolchains(
 load("@aspect_rules_js//npm:repositories.bzl", "npm_translate_lock")
 
 npm_translate_lock(
-    name = "npm2",
+    name = "npm",
     data = [
         "//:.pnpmfile.cjs",
         "//:package.json",
@@ -84,7 +84,7 @@ npm_translate_lock(
     verify_node_modules_ignored = "//:.bazelignore",
 )
 
-load("@npm2//:repositories.bzl", "npm_repositories")
+load("@npm//:repositories.bzl", "npm_repositories")
 
 npm_repositories()
 
@@ -166,7 +166,7 @@ http_archive(
 
 git_repository(
     name = "devinfra",
-    commit = "17282887a46c27e9f297a3292f1fde5b35dfafc1",
+    commit = "5bd41ae2d8be51c3f98010714f8eaaab6d82fb62",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
