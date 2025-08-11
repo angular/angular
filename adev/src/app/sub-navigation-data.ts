@@ -389,6 +389,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
+            label: 'Rendering strategies',
+            path: 'guide/routing/rendering-strategies',
+            contentPath: 'guide/routing/rendering-strategies',
+            status: 'new',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
