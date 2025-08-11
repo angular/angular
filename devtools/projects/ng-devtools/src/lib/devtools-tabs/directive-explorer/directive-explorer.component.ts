@@ -19,6 +19,7 @@ import {
   ChangeDetectionStrategy,
   computed,
   linkedSignal,
+  DestroyRef,
 } from '@angular/core';
 import {
   ComponentExplorerView,
@@ -180,6 +181,10 @@ export class DirectiveExplorerComponent {
     this.subscribeToBackendEvents();
     this.refresh();
     this.signalGraph.listen(this.currentElementPos);
+
+    inject(DestroyRef).onDestroy(() => {
+      this.signalGraph.destroy();
+    });
   }
 
   private isNonTopLevelFirefoxFrame() {

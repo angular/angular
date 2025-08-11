@@ -18,6 +18,7 @@ export class SignalGraphManager {
   private readonly messageBus = inject(MessageBus);
   private readonly signalGraph = signal<DebugSignalGraph | null>(null);
   private unlistenFn?: () => void;
+  private lastesSignalGraphMessageUnlistenFn?: () => void;
 
   /** Target element. */
   element: Signal<ElementPosition | undefined> = signal(undefined);
@@ -26,9 +27,12 @@ export class SignalGraphManager {
   readonly graph = this.signalGraph.asReadonly();
 
   constructor() {
-    this.messageBus.on('latestSignalGraph', (graph: DebugSignalGraph) => {
-      this.signalGraph.set(graph);
-    });
+    this.lastesSignalGraphMessageUnlistenFn = this.messageBus.on(
+      'latestSignalGraph',
+      (graph: DebugSignalGraph) => {
+        this.signalGraph.set(graph);
+      },
+    );
   }
 
   /**
@@ -37,9 +41,7 @@ export class SignalGraphManager {
    * @param element
    */
   listen(element: Signal<ElementPosition | undefined>) {
-    if (this.unlistenFn) {
-      this.unlistenFn();
-    }
+    this.unlisten();
 
     this.element = element;
     const refreshSignalGraph = () => {
@@ -54,6 +56,19 @@ export class SignalGraphManager {
     this.unlistenFn = () => {
       effectRef.destroy();
       unlistenBusEvent();
+      this.element = signal(undefined);
     };
+  }
+
+  /**
+   * Unlisten the currently listened element.
+   */
+  unlisten() {
+    this.unlistenFn?.();
+  }
+
+  destroy() {
+    this.unlisten();
+    this.lastesSignalGraphMessageUnlistenFn?.();
   }
 }

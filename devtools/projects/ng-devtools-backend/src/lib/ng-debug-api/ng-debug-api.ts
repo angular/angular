@@ -98,7 +98,7 @@ export function ngDebugTransferStateApiIsSupported(): boolean {
   return ngDebugApiIsSupported(ng, 'ɵgetTransferState');
 }
 
-/** Checks whether Router API is supported within window.ng */
+/** Checks whether signal properties inspection API is supported within window.ng */
 export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
   const ng = ngDebugClient();
 

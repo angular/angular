@@ -30,8 +30,9 @@ export const SUPPORTED_APIS = new InjectionToken<SupportedApisSignal>('SUPPORTED
       transferState: false,
       signalPropertiesInspection: false,
     });
+    const apisReadonlySignal = apis.asReadonly();
 
-    const readonlyApis = () => apis.asReadonly()();
+    const readonlyApis = () => apisReadonlySignal();
     readonlyApis.init = (supportedApis: SupportedApis) => {
       if (isSet) {
         throw new Error('Supported APIs signal is already set.');

@@ -21,11 +21,6 @@ import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
 import {SignalGraphManager} from '../../signal-graph/signal-graph-manager';
 import {DebugSignalGraphNode} from '../../../../../../../protocol';
 
-interface PropertyFlatNode extends FlatNode {
-  isSignal: boolean;
-  signalGraphNode?: DebugSignalGraphNode;
-}
-
 @Component({
   selector: 'ng-property-view-tree',
   templateUrl: './property-view-tree.component.html',

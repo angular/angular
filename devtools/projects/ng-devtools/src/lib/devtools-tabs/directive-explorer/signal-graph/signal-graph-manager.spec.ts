@@ -21,11 +21,13 @@ const dummyGraph: DebugSignalGraph = {
 };
 
 class SgmMockMessageBus extends MessageBus<Events> {
-  private readonly cbs: PartialRecord<keyof Events, (...args: unknown[]) => void> = {};
+  public readonly cbs: PartialRecord<keyof Events, (...args: unknown[]) => void> = {};
 
   override on<E extends keyof Events>(topic: E, cb: (...args: unknown[]) => void): () => void {
     this.cbs[topic] = cb;
-    return () => {};
+    return () => {
+      delete this.cbs[topic];
+    };
   }
 
   override emit<E extends keyof Events>(topic: E): boolean {
@@ -62,5 +64,28 @@ describe('SignalGraphManager', () => {
     TestBed.tick();
 
     expect(sgm.graph()).toEqual(dummyGraph);
+  });
+
+  it('should unlisten the current element', () => {
+    const dummyEl: ElementPosition = [0];
+    sgm.listen(signal(dummyEl));
+
+    expect('componentTreeDirty' in messageBus.cbs).toBeTrue();
+    expect(sgm.element()).toEqual(dummyEl);
+
+    sgm.unlisten();
+
+    expect('componentTreeDirty' in messageBus.cbs).toBeFalse();
+    expect(sgm.element()).toBeUndefined();
+  });
+
+  it('should clean up after the manager is marked for destruction', () => {
+    expect('latestSignalGraph' in messageBus.cbs).toBeTrue();
+    spyOn(sgm, 'unlisten').and.callThrough();
+
+    sgm.destroy();
+
+    expect('latestSignalGraph' in messageBus.cbs).toBeFalse();
+    expect(sgm.unlisten).toHaveBeenCalled();
   });
 });
