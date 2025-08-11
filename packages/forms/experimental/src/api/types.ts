@@ -55,7 +55,6 @@ export declare namespace PathKind {
   }
 }
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
-
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  */
@@ -238,6 +237,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal containing the current errors for the field.
    */
   readonly errors: Signal<ValidationError[]>;
+
   /**
    * A signal containing the current errors for the field.
    */

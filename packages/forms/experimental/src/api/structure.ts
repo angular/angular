@@ -22,6 +22,7 @@ import type {
   SchemaOrSchemaFn,
 } from './types';
 import {stripField, ValidationError, WithField} from './validation_errors';
+import {FieldAdapter, BasicFieldAdapter} from '../field/field_adapter';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {
@@ -31,6 +32,12 @@ export interface FormOptions {
    */
   injector?: Injector;
   name?: string;
+
+  /**
+   * Adapter allows managing fields in a more flexible way.
+   * Currently this is used to support interop with reactive forms.
+   */
+  adapter?: FieldAdapter;
 }
 
 /** Extracts the model, schema, and options from the arguments passed to `form()`. */
@@ -174,7 +181,8 @@ export function form<TValue>(...args: any[]): Field<TValue> {
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
   const fieldManager = new FormFieldManager(injector, options?.name);
-  const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode);
+  const adapter = options?.adapter ?? new BasicFieldAdapter();
+  const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
   return fieldRoot.fieldProxy as Field<TValue>;
