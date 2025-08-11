@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JsonPipe} from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -46,7 +45,6 @@ const SEARCH_DEBOUNCE = 250;
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
   imports: [
-    JsonPipe,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
@@ -66,15 +64,19 @@ export class RouterTreeComponent {
   private readonly frameManager = inject(FrameManager);
 
   protected selectedRoute = signal<RouterTreeD3Node | null>(null);
+  protected routeData = computed<RouterTreeNode | undefined>(() => {
+    return this.selectedRoute()?.data;
+  });
 
+  routerDebugApiSupport = input<boolean>(false);
   routes = input<Route[]>([]);
   snapToRoot = input(false);
 
   private readonly showFullPath = signal(false);
   private readonly visualizerReady = signal<boolean>(false);
-  private readonly d3RootNode = computed(() =>
-    transformRoutesIntoVisTree(this.routes()[0], this.showFullPath()),
-  );
+  private readonly d3RootNode = computed(() => {
+    return transformRoutesIntoVisTree(this.routes()[0], this.showFullPath());
+  });
 
   private searchMatches: Set<RouterTreeNode> = new Set();
 
@@ -100,13 +102,15 @@ export class RouterTreeComponent {
 
     afterNextRender({
       write: () => {
-        this.setUpRouterVisualizer();
+        if (this.routerDebugApiSupport()) {
+          this.setUpRouterVisualizer();
+        }
       },
     });
 
     inject(DestroyRef).onDestroy(() => {
-      this.routerTreeVisualizer.dispose();
-      this.searchDebouncer.cancel();
+      this.routerTreeVisualizer?.dispose?.();
+      this.searchDebouncer?.cancel?.();
     });
   }
 
@@ -117,10 +121,28 @@ export class RouterTreeComponent {
   }
 
   viewSourceFromRouter(className: string, type: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
   viewComponentSource(component: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(
       component,
       'component',

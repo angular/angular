@@ -59,8 +59,10 @@ export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
 // Typing for externally published global util functions
 // Ideally we should be able to use `NgGlobalPublishUtils` using declaration merging but that doesn't work with API extractor yet.
 // Have included the typings to have type safety when working with editors that support it (VSCode).
-interface NgGlobalPublishUtils {
+export interface ExternalGlobalUtils {
   ɵgetLoadedRoutes(route: any): any;
+  ɵnavigateByUrl(router: any, url: string): any;
+  ɵgetRouterInstance(injector: any): any;
 }
 
 const globalUtilsFunctions = {
@@ -93,7 +95,6 @@ const globalUtilsFunctions = {
   'enableProfiling': enableProfiling,
 };
 type CoreGlobalUtilsFunctions = keyof typeof globalUtilsFunctions;
-type ExternalGlobalUtilsFunctions = keyof NgGlobalPublishUtils;
 
 let _published = false;
 /**
@@ -148,15 +149,15 @@ export type FrameworkAgnosticGlobalUtils = Omit<
   'getDirectiveMetadata'
 > & {
   getDirectiveMetadata(directiveOrComponentInstance: any): DirectiveDebugMetadata | null;
-};
+} & ExternalGlobalUtils;
 
 /**
  * Publishes the given function to `window.ng` from package other than @angular/core
  * So that it can be used from the browser console when an application is not in production.
  */
-export function publishExternalGlobalUtil<K extends ExternalGlobalUtilsFunctions>(
+export function publishExternalGlobalUtil<K extends keyof ExternalGlobalUtils>(
   name: K,
-  fn: NgGlobalPublishUtils[K],
+  fn: ExternalGlobalUtils[K],
 ): void {
   publishUtil(name, fn);
 }

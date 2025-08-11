@@ -191,8 +191,8 @@ const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(me
 const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
   const router: any = getRouterInstance();
   // If the router is not found or the navigateByUrl method is not available, we can't navigate
-  if (router && router.navigateByUrl) {
-    router.navigateByUrl(path);
+  if (router) {
+    ngDebugClient().ɵnavigateByUrl?.(router, path);
   } else {
     console.warn('Router not found or navigateByUrl method not available');
   }
@@ -206,6 +206,10 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
  */
 export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
   const router: any = getRouterInstance();
+
+  if (router == null) {
+    return;
+  }
 
   let element;
   if (type === 'component') {
@@ -477,26 +481,20 @@ export interface SerializableComponentTreeNode
 }
 
 function getRouterInstance() {
-  const forest = prepareForestForSerialization(
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
-    ngDebugDependencyInjectionApiIsSupported(),
-  );
-  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
-  if (!rootInjector) {
-    return;
+  const forest = initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest();
+  const rootNode = forest[0];
+
+  if (!rootNode || !rootNode.nativeElement) {
+    return null;
   }
 
-  const serializedProviderRecords = getSerializedProviderRecords(rootInjector);
-  const routerInstance = serializedProviderRecords?.find(
-    (provider) => provider.token === 'Router', // get the instance of router using token
-  );
-
-  if (!routerInstance) {
-    return;
+  const injector = getInjectorFromElementNode(rootNode.nativeElement);
+  if (!injector) {
+    return null;
   }
 
-  const router = getInjectorInstance(rootInjector, routerInstance);
-  return router;
+  const ng = ngDebugClient();
+  return (ng as any).ɵgetRouterInstance?.(injector);
 }
 
 // Here we drop properties to prepare the tree for serialization.
