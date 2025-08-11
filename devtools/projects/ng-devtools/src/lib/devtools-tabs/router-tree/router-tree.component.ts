@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JsonPipe} from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -42,7 +41,6 @@ const DEFAULT_FILTER = /.^/;
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
   imports: [
-    JsonPipe,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
@@ -126,10 +124,28 @@ export class RouterTreeComponent {
   }
 
   viewSourceFromRouter(className: string, type: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
   viewComponentSource(component: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(
       component,
       'component',

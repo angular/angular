@@ -2,18 +2,13 @@
 <td>
   @switch (type()) {
     @case ('chip') {
-      <button
-        ng-button
-        size="compact"
-        (click)="btnClick.emit('')"
-        [disabled]="isRouteWithoutComponent()"
-      >
-        {{ data() }}
+      <button ng-button size="compact" (click)="btnClick.emit('')">
+        {{ rowValue() }}
       </button>
     }
     @case ('flag') {
-      <span [class]="data() ? 'tag-active' : 'tag-inactive'">
-        {{ data() }}
+      <span [class]="rowValue() ? 'tag-active' : 'tag-inactive'">
+        {{ rowValue() }}
       </span>
     }
     @case ('list') {
@@ -26,7 +21,13 @@
       </div>
     }
     @default {
-      <span class="row-data">{{ data() }}</span>
+      <span class="row-data">
+        @if (renderValueAsJson()) {
+          {{ rowValue() | json }}
+        } @else {
+          {{ rowValue() }}
+        }
+      </span>
     }
   }
 </td>
