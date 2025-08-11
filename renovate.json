@@ -5,7 +5,7 @@
   ],
   "baseBranches": [
     "main",
-    "20.1.x"
+    "20.2.x"
   ],
   "postUpgradeTasks": {
     "commands": [
@@ -52,7 +52,7 @@
         "!main"
       ],
       "addLabels": [
-        "target: patch"
+        "target: rc"
       ]
     },
     {
