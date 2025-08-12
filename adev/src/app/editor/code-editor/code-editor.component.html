@@ -9,7 +9,7 @@
       matTooltip="Toggle source code pane"
       matTooltipPosition="above"
     >
-      <docs-icon class="active" [ngClass]="{'active': isExplorerExpanded()}"> folder </docs-icon>
+      <docs-icon [class.active]="isExplorerExpanded()"> folder </docs-icon>
     </button>
 
     <button
@@ -78,7 +78,7 @@
             <mat-tree #tree [childrenAccessor]="childrenAccessor" [dataSource]="fileTree()">
               <mat-tree-node
                 class="explorer-item-wrapper"
-                [ngClass]="{'explorer-selected-item': activeFile() === file.name && !isCreatingFile()}"
+                [class.explorer-selected-item]="activeFile() === file.name && !isCreatingFile()"
                 #treeNode
                 (click)="onSetActiveFile(file.name)"
                 *matTreeNodeDef="let file; let index = $index"

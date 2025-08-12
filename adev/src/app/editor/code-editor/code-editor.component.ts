@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, Location} from '@angular/common';
+import {Location} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -56,7 +56,6 @@ const ANGULAR_DEV = 'https://angular.dev';
   imports: [
     MatTreeModule,
     AngularSplitModule,
-    CommonModule,
     MatTooltip,
     IconComponent,
     ClickOutside,
