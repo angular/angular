@@ -193,6 +193,14 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     });
   }
 
+  applyMethod(methodName: keyof any, args: any[]): any {
+    if (!this.componentRef) {
+      throw new Error('Component is detached from DOM');
+    }
+
+    return this.componentRef.instance[methodName].apply(this.componentRef.instance, args);
+  }
+
   /**
    * Creates a new component through the component factory with the provided element host and
    * sets up its initial inputs, listens for outputs changes, and runs an initial change detection.

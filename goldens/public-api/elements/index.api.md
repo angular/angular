@@ -11,7 +11,7 @@ import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export function createCustomElement<P>(component: Type<any>, config: NgElementConfig): NgElementConstructor<P>;
+export function createCustomElement<P, T = any, ExposedMethods extends ExtractPublicMethods<T> = never>(component: Type<T>, config: NgElementConfig<ExposedMethods>): NgElementConstructor<P & Pick<T, ExposedMethods>>;
 
 // @public
 export abstract class NgElement extends HTMLElement {
@@ -23,10 +23,11 @@ export abstract class NgElement extends HTMLElement {
 }
 
 // @public
-export interface NgElementConfig {
+export type NgElementConfig<ExposedMethods extends keyof any = keyof any> = {
     injector: Injector;
     strategyFactory?: NgElementStrategyFactory;
-}
+    exposedMethods?: ExposedMethods[];
+};
 
 // @public
 export interface NgElementConstructor<P> {
@@ -36,6 +37,8 @@ export interface NgElementConstructor<P> {
 
 // @public
 export interface NgElementStrategy {
+    // (undocumented)
+    applyMethod?(methodName: keyof any, args: any[]): any;
     // (undocumented)
     connect(element: HTMLElement): void;
     // (undocumented)

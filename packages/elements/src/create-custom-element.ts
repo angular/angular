@@ -88,6 +88,10 @@ export type WithProperties<P> = {
   [property in keyof P]: P[property];
 };
 
+type ExtractPublicMethods<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
+}[keyof T];
+
 /**
  * A configuration that initializes an NgElementConstructor with the
  * dependencies and strategy it needs to transform a component into
@@ -95,7 +99,7 @@ export type WithProperties<P> = {
  *
  * @publicApi
  */
-export interface NgElementConfig {
+export type NgElementConfig<ExposedMethods extends keyof any = keyof any> = {
   /**
    * The injector to use for retrieving the component's factory.
    */
@@ -105,7 +109,11 @@ export interface NgElementConfig {
    * The strategy controls how the transformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
-}
+  /**
+   * An optional list of methods to expose on the custom element.
+   */
+  exposedMethods?: ExposedMethods[];
+};
 
 /**
  *  @description Creates a custom element class based on an Angular component.
@@ -129,10 +137,14 @@ export interface NgElementConfig {
  *
  * @publicApi
  */
-export function createCustomElement<P>(
-  component: Type<any>,
-  config: NgElementConfig,
-): NgElementConstructor<P> {
+export function createCustomElement<
+  P,
+  T = any,
+  ExposedMethods extends ExtractPublicMethods<T> = never,
+>(
+  component: Type<T>,
+  config: NgElementConfig<ExposedMethods>,
+): NgElementConstructor<P & Pick<T, ExposedMethods>> {
   const inputs = getComponentInputs(component, config.injector);
 
   const strategyFactory =
@@ -236,6 +248,24 @@ export function createCustomElement<P>(
     }
   }
 
+  for (const exposedMethod of new Set(config.exposedMethods)) {
+    if (typeof component.prototype[exposedMethod] !== 'function') {
+      throw new Error(
+        `Cannot expose method "${String(exposedMethod)}" because it is not a function of the component.`,
+      );
+    }
+
+    Object.defineProperty(NgElementImpl.prototype, exposedMethod, {
+      value: function (this: NgElementImpl, ...args: any[]) {
+        if (!this.ngElementStrategy.applyMethod) {
+          throw new Error('Method not supported by the current strategy.');
+        }
+
+        return this.ngElementStrategy.applyMethod(exposedMethod, args);
+      },
+    });
+  }
+
   // Add getters and setters to the prototype for each property input.
   inputs.forEach(({propName, transform}) => {
     Object.defineProperty(NgElementImpl.prototype, propName, {
@@ -250,5 +280,5 @@ export function createCustomElement<P>(
     });
   });
 
-  return NgElementImpl as any as NgElementConstructor<P>;
+  return NgElementImpl as any as NgElementConstructor<P & Pick<T, ExposedMethods>>;
 }

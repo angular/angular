@@ -69,6 +69,34 @@ Component properties and logic maps directly into HTML attributes and the browse
 
 For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
 
+## Exposing component methods
+
+In addition to mapping component inputs and outputs to HTML attributes and DOM events, you can also expose specific component methods to be callable directly on the custom element instance via the `exposedMethods` option of `createCustomElement()`.
+
+When you provide an array of method names in `exposedMethods`, each method will be proxied to the underlying Angular component instance once it is initialized. This allows host applications (including non-Angular ones) to interact with your component’s imperative API.
+
+```typescript
+const MyElement = createCustomElement(MyComponent, {
+  injector,
+  exposedMethods: ['open', 'close', 'toggle']
+});
+
+customElements.define('my-element', MyElement);
+```
+
+Now, when you add `<my-element>` to the DOM, you can call these methods directly:
+
+const el = document.querySelector('my-element');
+el.open();    // Calls MyComponent.open()
+el.toggle();  // Calls MyComponent.toggle()
+
+### Important notes
+
+- Methods listed in `exposedMethods` must exist on the component class
+- Calls can only be made on elements that are already attached to the DOM
+- The methods keep their original `this` context, so they can safely access other component properties and services.
+- This feature is intended for public API methods only; avoid exposing internal/private logic.
+
 ## Example: A Popup Service
 
 Previously, when you wanted to add a component to an application at runtime, you had to define a _dynamic component_, and then you would have to load it, attach it to an element in the DOM, and wire up all of the dependencies, change detection, and event handling.
