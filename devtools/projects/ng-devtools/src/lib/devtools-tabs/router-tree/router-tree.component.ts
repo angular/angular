@@ -80,9 +80,8 @@ export class RouterTreeComponent {
 
   private readonly searchDebouncer = new Debouncer();
 
-  protected readonly searchRoutes = this.searchDebouncer.debounce((event: Event) => {
-    const searchString = (event.target as HTMLInputElement)?.value?.toLowerCase();
-    this.searchMatches = findNodesByLabel(this.d3RootNode(), searchString);
+  protected readonly searchRoutes = this.searchDebouncer.debounce((inputValue: string) => {
+    this.searchMatches = findNodesByLabel(this.d3RootNode(), inputValue.toLowerCase());
     this.renderGraph(this.d3RootNode());
   }, SEARCH_DEBOUNCE);
 

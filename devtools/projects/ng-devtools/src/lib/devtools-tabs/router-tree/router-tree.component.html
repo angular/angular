@@ -1,7 +1,7 @@
 <div class="filter">
   <input
     #searchInput
-    (input)="searchRoutes($event)"
+    (input)="searchRoutes($event.target.value)"
     placeholder="Search routes"
     class="ng-input filter-input"
   />
