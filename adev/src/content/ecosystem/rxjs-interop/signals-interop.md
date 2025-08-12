@@ -69,7 +69,7 @@ Use the `toObservable` utility to create an `Observable` which tracks the value 
 import { Component, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 
-@Component(...)
+@Component(/* ... */)
 export class SearchResults {
   query: Signal<string> = inject(QueryService).query;
   query$ = toObservable(this.query);
@@ -102,3 +102,34 @@ mySignal.set(3);
 ```
 
 Here, only the last value (3) will be logged.
+
+## Using `rxResource` for async data
+
+IMPORTANT: `rxResource` is [experimental](reference/releases#experimental). It's ready for you to try, but it might change before it is stable.
+
+Angular's [`resource` function](/guide/signals/resource) gives you a way to incorporate async data into your application's signal-based code. Building on top of this pattern, `rxResource` lets you define a resource where the source of your data is defined in terms of an RxJS `Observable`. Instead of accepting a `loader` function, `rxResource` accepts a `stream` function that accepts an RxJS `Observable`.
+
+```typescript
+import {Component, inject} from '@angular/core';
+import {rxResource} from '@angular/core/rxjs-interop';
+
+@Component(/* ... */)
+export class UserProfile {
+  // This component relies on a service that exposes data through an RxJS Observable.
+  private userData = inject(MyUserDataClient);
+
+  protected userId = input<string>();
+
+  private userResource = rxResource({
+    params: () => this.userId(),
+
+    // The `stream` property expects a factory function that returns
+    // a data stream as an RxJS Observable.
+    stream: ({userId}) => this.userData.load(userId),
+  });
+}
+```
+
+The `stream` property accepts a factory function for an RxJS `Observable`. This factory function is passed the resource's `params` value and returns an `Observable`. The resource calls this factory function every time the `params` computation produces a new value. See [Resource loaders](/guide/signals/resource#resource-loaders) for more details on the parameters passed to the factory function.
+
+In all other ways, `rxResource` behaves like and provides the same APIs as `resource` for specifying parameters, reading values, checking loading state, and examining errors.
