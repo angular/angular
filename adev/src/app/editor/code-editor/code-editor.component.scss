@@ -65,17 +65,109 @@
   position: relative;
 }
 
-.docs-code-editor-tabs {
-  display: flex;
+.activity-bar-container {
+  height: 100%;
   background: var(--octonary-contrast);
-  border-block-end: 1px solid var(--senary-contrast);
-  transition: background 0.3s ease, border 0.3s ease;
+  display: flex;
+}
+.activity-bar{
+  padding-top: .5rem;
+  width: 48px;
+  height: 100%;
+  border-inline-end: 1px solid var(--senary-contrast);
+
+  button{
+    width: 3rem;
+    height: 3rem;
+    
+    docs-icon {
+      color: var(--gray-400);
+      transition: color 0.3s ease;
+      font-size: 1.5rem;
+    }
+
+    &.active {
+      border-left: 2px solid var(--gray-50);
+
+      docs-icon {
+        color: var(--gray-50)
+      }
+    }
+
+    &:hover{
+      docs-icon {
+        color: var(--gray-50)
+      }
+    }
+  }
+}
+.explorer{
+  width: 100%;
+  display: flex;
+  padding-top: .5rem;
+  display: flex;
+  flex-direction: column;
+}
+.explorer-header{
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  border-bottom: 1px solid var(--senary-contrast);
+}
+.explorer-body{
+  padding-inline: 2px;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+
+  form {
+    display: flex;
+  }
 }
 
-.adev-tabs-and-plus {
+.explorer-item-wrapper{
+  min-height: 10px;
   display: flex;
-  width: calc(100% - 2.875rem * 2);
-  min-height: 48px;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  border: 1px solid transparent;
+  
+  .file-icon{
+    font-size: 1rem;
+    font-weight: 100;
+    color: var(--gray-400)
+  }
+
+  &:not(.selected-node):hover {
+    background-color: var(--gray-800);
+  }
+}
+
+.explorer-item,
+.adev-new-file-input,
+.adev-rename-file-input {
+  width: 100%;
+  height: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: .2rem;
+  font-size: .8rem;
+  color: var(--gray-300);
+  font-family: var(--code-font);
+}
+
+.explorer-selected-item,
+.adev-new-file-input,
+.adev-rename-file-input {
+  border: 1px solid var(--bright-blue);
+  background-color: var(--gray-700);
+  color: white;
+}
+
+.explorer-item-actions{
+  display: flex;
+  gap: .2rem;
 }
 
 .adev-add-file,
@@ -105,23 +197,15 @@
 
 .adev-new-file-input,
 .adev-rename-file-input {
-  color: var(--primary-contrast);
-  border: none;
-  border-radius: 0;
-  border-block-end: 1px solid var(--senary-contrast);
-  background: transparent;
   outline: none;
-  transition: color 0.3s ease;
-  &:focus {
-    background: transparent;
-    border-block-end: 1px solid var(--primary-contrast);
-  }
+  font-size: 1rem;
 }
 
 .adev-code-editor-wrapper {
   // adjust height for terminal tabs
   // so that scroll bar & content do not render under tabs
-  height: calc(100% - 49px);
+  height: 100%;
+  width: 100%;
   transition: height 0.3s ease;
 
   &-hidden {
@@ -189,7 +273,7 @@
   docs-icon {
     color: var(--gray-400);
     transition: color 0.3s ease;
-    font-size: 1.3rem;
+    font-size: 2rem;
   }
 
   &:hover {

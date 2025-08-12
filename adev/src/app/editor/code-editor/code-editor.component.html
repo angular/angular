@@ -1,118 +1,146 @@
-<!-- Code Editor Tabs -->
-<div class="docs-code-editor-tabs">
-  <div class="adev-tabs-and-plus">
-    <mat-tab-group animationDuration="0ms" mat-stretch-tabs="false">
-      <!--
-        Hint: we would like to keep only one instance of #codeEditorWrapper,
-        that's why we're not placing this element as content of mat-tab, just to
-        not call another time init method from CodeMirrorEditor service.
-      -->
-      @for (file of files(); track file) {
-        <mat-tab #tab>
-          <ng-template mat-tab-label>
-            @if (tab.isActive && isRenamingFile()) {
-              <form
-                (submit)="renameFile($event, file.filename)"
-                (docsClickOutside)="closeRenameFile()"
+<!-- Sidebar -->
+<div class="activity-bar-container">
+  <div class="activity-bar">
+    <button
+      (click)="onToggleExplorer()"
+      [ngClass]="{'active': isExplorerExpanded()}"
+      type="button"
+      aria-label="Toggle source code pane"
+      matTooltip="Toggle source code pane"
+      matTooltipPosition="above"
+    >
+      <docs-icon class="active" [ngClass]="{'active': isExplorerExpanded()}"> folder </docs-icon>
+    </button>
+
+    <button
+      type="button"
+      aria-label="Open current code in editor in an online editor"
+      [cdkMenuTriggerFor]="launcherMenu"
+    >
+      <docs-icon>launch</docs-icon>
+    </button>
+
+    <!-- launcher dropdown window -->
+    <ng-template #launcherMenu>
+      <div class="adev-editor-splitview-button" cdkMenu>
+        <button cdkMenuItem (click)="openCurrentSolutionInFirebaseStudio()">
+          <span>Open in Firebase Studio </span>
+          <img
+            class="icon"
+            src="assets/images/tutorials/common/firebase-studio_logo.svg"
+            height="32"
+          />
+        </button>
+        <button cdkMenuItem (click)="openCurrentCodeInStackBlitz()">Open in StackBlitz</button>
+      </div>
+    </ng-template>
+    <button
+      type="button"
+      (click)="downloadCurrentCodeEditorState()"
+      aria-label="Download current source code"
+      matTooltip="Download current source code"
+      matTooltipPosition="above"
+    >
+      <docs-icon>download</docs-icon>
+    </button>
+  </div>
+
+  <as-split direction="horizontal" restrictMove="true" gutterSize="5">
+    @if (isExplorerExpanded()) {
+      <as-split-area class="adev-left-side" size="30">
+        <div class="explorer">
+          <div class="explorer-header">
+            @if (canCreateFile()) {
+              <button
+                class="adev-add-file"
+                (click)="onAddButtonClick()"
+                aria-label="Add a new file"
+                matTooltip="Add a new file"
+                matTooltipPosition="above"
               >
+                <docs-icon>add</docs-icon>
+              </button>
+            }
+          </div>
+          <div class="explorer-body">
+            @if (isCreatingFile()) {
+              <form (submit)="createFile($event)" class="explorer-item-wrapper">
+                <docs-icon class="file-icon">draft</docs-icon>
                 <input
-                  name="rename-file"
-                  class="adev-rename-file-input"
-                  #renameFileInput
+                  name="new-file"
+                  class="adev-new-file-input"
+                  #createFileInput
+                  (blur)="onDiscardFile()"
                   (keydown)="$event.stopPropagation()"
                 />
               </form>
-            } @else if (restrictedMode()) {
-              {{ file.filename.replace('src/app/', '') }}
-            } @else {
-              {{ file.filename.replace('src/', '') }}
             }
-
-            @if (tab.isActive && canRenameFile(file.filename)) {
-              <button
-                class="docs-rename-file"
-                aria-label="rename file"
-                matTooltip="Rename file"
-                matTooltipPosition="above"
-                (click)="onRenameButtonClick()"
+            <mat-tree #tree [childrenAccessor]="childrenAccessor" [dataSource]="fileTree()">
+              <mat-tree-node
+                class="explorer-item-wrapper"
+                [ngClass]="{'explorer-selected-item': activeFile() === file.name && !isCreatingFile()}"
+                #treeNode
+                (click)="onSetActiveFile(file.name)"
+                *matTreeNodeDef="let file; let index = $index"
+                matTreeNodeMinHeight="10"
               >
-                <docs-icon>edit</docs-icon>
-              </button>
-            }
-            @if (tab.isActive && canDeleteFile(file.filename)) {
-              <button
-                class="docs-delete-file"
-                aria-label="Delete file"
-                matTooltip="Delete file"
-                matTooltipPosition="above"
-                (click)="deleteFile(file.filename)"
-              >
-                <docs-icon>delete</docs-icon>
-              </button>
-            }
-          </ng-template>
-        </mat-tab>
-      }
-      @if (isCreatingFile()) {
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <form (submit)="createFile($event)">
-              <input
-                name="new-file"
-                class="adev-new-file-input"
-                #createFileInput
-                (keydown)="$event.stopPropagation()"
-              />
-            </form>
-          </ng-template>
-        </mat-tab>
-      }
-    </mat-tab-group>
+                <docs-icon class="file-icon">draft</docs-icon>
 
-    @if (canCreateFile()) {
-      <button
-        class="adev-add-file"
-        (click)="onAddButtonClick()"
-        aria-label="Add a new file"
-        matTooltip="Add a new file"
-        matTooltipPosition="above"
-      >
-        <docs-icon>add</docs-icon>
-      </button>
+                <div class="explorer-item">
+                  @if (activeFile() === file.name && isRenamingFile()) {
+                    <form
+                      (submit)="renameFile($event, file.name)"
+                      (docsClickOutside)="closeRenameFile()"
+                    >
+                      <input
+                        name="rename-file"
+                        class="adev-rename-file-input"
+                        #renameFileInput
+                        (keydown)="$event.stopPropagation()"
+                      />
+                    </form>
+                  } @else if (restrictedMode()) {
+                    {{ file.name.replace('src/app/', '') }}
+                  } @else {
+                    {{ file.name.replace('src/', '') }}
+                  }
+                  <div class="explorer-item-actions">
+                    @if (activeFile() === file.name && canRenameFile(file.name)) {
+                      <button
+                        class="docs-rename-file"
+                        aria-label="rename file"
+                        matTooltip="Rename file"
+                        matTooltipPosition="above"
+                        (click)="onRenameButtonClick()"
+                      >
+                        <docs-icon>edit</docs-icon>
+                      </button>
+                    }
+                    @if (activeFile() === file.name && canDeleteFile(file.name)) {
+                      <button
+                        class="docs-delete-file"
+                        aria-label="Delete file"
+                        matTooltip="Delete file"
+                        matTooltipPosition="above"
+                        (click)="deleteFile(file.name)"
+                      >
+                        <docs-icon>delete</docs-icon>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </mat-tree-node>
+            </mat-tree>
+          </div>
+        </div>
+      </as-split-area>
     }
-  </div>
-
-  <button
-    class="adev-editor-download-button"
-    type="button"
-    aria-label="Open current code in editor in an online editor"
-    [cdkMenuTriggerFor]="launcherMenu"
-  >
-    <docs-icon>launch</docs-icon>
-  </button>
-  <!-- launcher dropdown window -->
-  <ng-template #launcherMenu>
-    <div class="adev-editor-dropdown" cdkMenu>
-      <button cdkMenuItem (click)="openCurrentSolutionInFirebaseStudio()">
-        <span>Open in Firebase Studio </span>
-        <img class="icon" src="assets/images/tutorials/common/firebase-studio_logo.svg" height="32" />
-      </button>
-      <button cdkMenuItem (click)="openCurrentCodeInStackBlitz()">Open in StackBlitz</button>
-    </div>
-  </ng-template>
-  <button
-    class="adev-editor-download-button"
-    type="button"
-    (click)="downloadCurrentCodeEditorState()"
-    aria-label="Download current source code"
-    matTooltip="Download current source code"
-    matTooltipPosition="above"
-  >
-    <docs-icon>download</docs-icon>
-  </button>
+    <as-split-area class="adev-right-side" [size]="70">
+      <!-- Code Editor -->
+      <div #codeEditorWrapper class="adev-code-editor-wrapper"></div>
+    </as-split-area>
+  </as-split>
 </div>
-<!-- Code Editor -->
-<div #codeEditorWrapper class="adev-code-editor-wrapper"></div>
 
 @if (displayErrorsBox()) {
   <div class="adev-inline-errors-box">

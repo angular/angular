@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Location} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,6 +14,7 @@ import {
   ElementRef,
   EnvironmentInjector,
   afterRenderEffect,
+  computed,
   effect,
   inject,
   input,
@@ -22,7 +23,7 @@ import {
   viewChild,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTreeModule} from '@angular/material/tree';
 import {Title} from '@angular/platform-browser';
 import {debounceTime, from, map, switchMap} from 'rxjs';
 
@@ -37,6 +38,7 @@ import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
 import {injectEmbeddedTutorialManager} from '../inject-embedded-tutorial-manager';
+import {AngularSplitModule} from 'angular-split';
 
 export const REQUIRED_FILES = new Set([
   'src/main.ts',
@@ -52,7 +54,9 @@ const ANGULAR_DEV = 'https://angular.dev';
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    MatTabsModule,
+    MatTreeModule,
+    AngularSplitModule,
+    CommonModule,
     MatTooltip,
     IconComponent,
     ClickOutside,
@@ -65,7 +69,6 @@ export class CodeEditor {
   readonly restrictedMode = input(false);
   readonly codeEditorWrapperRef =
     viewChild.required<ElementRef<HTMLDivElement>>('codeEditorWrapper');
-  readonly matTabGroup = viewChild.required(MatTabGroup);
 
   readonly createFileInputRef = viewChild<ElementRef<HTMLInputElement>>('createFileInput');
 
@@ -102,8 +105,13 @@ export class CodeEditor {
   readonly displayErrorsBox = signal<boolean>(false);
   readonly errors = signal<DiagnosticWithLocation[]>([]);
   readonly files = this.codeMirrorEditor.openFiles;
+  readonly fileTree = computed(() => this.files().map( editorFile => ({name: editorFile.filename}))
+  )
+  readonly activeFile = signal<string>('');
   readonly isCreatingFile = signal<boolean>(false);
   readonly isRenamingFile = signal<boolean>(false);
+  readonly isExplorerExpanded = signal<boolean>(true);
+  childrenAccessor = (node: {name:string}) => ([]);
 
   constructor() {
     afterRenderEffect(() => {
@@ -123,8 +131,7 @@ export class CodeEditor {
         this.codeMirrorEditor.init(parent);
         this.listenToDiagnosticsChange();
 
-        this.listenToTabChange();
-        this.setSelectedTabOnTutorialChange();
+        this.setSelectedFileOnTutorialChange();
       });
 
       cleanupFn(() => this.codeMirrorEditor.disable());
@@ -168,16 +175,27 @@ export class CodeEditor {
 
   async deleteFile(filename: string) {
     await this.codeMirrorEditor.deleteFile(filename);
-    this.matTabGroup().selectedIndex = 0;
   }
 
   onAddButtonClick() {
     this.isCreatingFile.set(true);
-    this.matTabGroup().selectedIndex = this.files().length;
   }
 
   onRenameButtonClick() {
     this.isRenamingFile.set(true);
+  }
+
+  onToggleExplorer() {
+    this.isExplorerExpanded.update((oldState:boolean) => !oldState)
+  }
+
+  onDiscardFile() {
+    const fileInput = this.createFileInputRef();
+    if (!fileInput) return;
+
+    if (!fileInput.nativeElement.value){ 
+      this.isCreatingFile.set(false);
+    }
   }
 
   async renameFile(event: SubmitEvent, oldPath: string) {
@@ -233,6 +251,7 @@ export class CodeEditor {
       await this.codeMirrorEditor.createFile(newFile);
     }
 
+    this.activeFile.set('src/' + newFileInputValue)
     this.isCreatingFile.set(false);
   }
 
@@ -243,7 +262,7 @@ export class CodeEditor {
     });
   }
 
-  private setSelectedTabOnTutorialChange() {
+  private setSelectedFileOnTutorialChange() {
     // Using `from` to prevent injecting the embedded tutorial manager once the
     // injector is destroyed (this may happen in unit tests when the test ends
     // before `injectAsync` runs, causing an error).
@@ -254,19 +273,15 @@ export class CodeEditor {
       )
       .subscribe(() => {
         // selected file on project change is always the first
-        this.matTabGroup().selectedIndex = 0;
+        this.activeFile.set(this.files()[0].filename);
       });
   }
 
-  private listenToTabChange() {
-    this.matTabGroup()
-      .selectedIndexChange.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((index) => {
-        const selectedFile = this.files()[index];
-
-        if (selectedFile) {
-          this.codeMirrorEditor.changeCurrentFile(selectedFile.filename);
-        }
-      });
+  onSetActiveFile(filename: string){
+    const selectedFile = this.files().find(file => file.filename === filename);
+    if (selectedFile) {
+      this.codeMirrorEditor.changeCurrentFile(selectedFile.filename);
+      this.activeFile.set(selectedFile.filename);
+    }
   }
 }
