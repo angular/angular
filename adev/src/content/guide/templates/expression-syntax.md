@@ -8,21 +8,21 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 
 ### Supported value literals
 
-| Literal type           | Example values                  |
-| ---------------------- | ------------------------------- |
-| String                 | `'Hello'`, `"World"`            |
-| Boolean                | `true`, `false`                 |
-| Number                 | `123`, `3.14`                   |
-| Object                 | `{name: 'Alice'}`               |
-| Array                  | `['Onion', 'Cheese', 'Garlic']` |
-| null                   | `null`                          |
-| Template string        | `` `Hello ${name}` ``           |
+| Literal type    | Example values                  |
+| --------------- | ------------------------------- |
+| String          | `'Hello'`, `"World"`            |
+| Boolean         | `true`, `false`                 |
+| Number          | `123`, `3.14`                   |
+| Object          | `{name: 'Alice'}`               |
+| Array           | `['Onion', 'Cheese', 'Garlic']` |
+| null            | `null`                          |
+| Template string | `` `Hello ${name}` ``           |
 
 ### Unsupported literals
 
-| Literal type           | Example value            |
-| ---------------------- | ------------------------ |
-| RegExp                 | `/\d+/`                  |
+| Literal type | Example value |
+| ------------ | ------------- |
+| RegExp       | `/\d+/`       |
 
 ## Globals
 
@@ -45,40 +45,40 @@ For example, `@for` blocks make several local variables corresponding to informa
 
 Angular supports the following operators from standard JavaScript.
 
-| Operator                        | Example(s)                               |
-| ------------------------------- | ---------------------------------------- |
-| Add / Concatenate               | `1 + 2`                                  |
-| Subtract                        | `52 - 3`                                 |
-| Multiply                        | `41 * 6`                                 |
-| Divide                          | `20 / 4`                                 |
-| Remainder (Modulo)              | `17 % 5`                                 |
-| Exponentiation                  | `10 ** 3`                                |
-| Parenthesis                     | `9 * (8 + 4)`                            |
-| Conditional (Ternary)           | `a > b ? true : false`                   |
-| And (Logical)                   | `&&`                                     |
-| Or (Logical)                    | `\|\|`                                   |
-| Not (Logical)                   | `!`                                      |
-| Nullish Coalescing              | `possiblyNullValue ?? 'default'`         |
-| Comparison Operators            | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==` |
-| Unary Negation                  | `-x`                                     |
-| Unary Plus                      | `+y`                                     |
-| Property Accessor               | `person['name']`                         |
-| Assignment                      | `a = b`                                  |
-| Addition Assignment             | `a += b`                                 |
-| Subtraction Assignment          | `a -= b`                                 |
-| Multiplication Assignment       | `a *= b`                                 |
-| Division Assignment             | `a /= b`                                 |
-| Remainder Assignment            | `a %= b`                                 |
-| Exponentiation Assignment       | `a **= b`                                |
-| Logical AND Assignment          | `a &&= b`                                |
-| Logical OR Assignment           | `a \|\|= b`                              |
-| Nullish Coalescing Assignment   | `a ??= b`                                |
+| Operator                      | Example(s)                                     |
+| ----------------------------- | ---------------------------------------------- |
+| Add / Concatenate             | `1 + 2`                                        |
+| Subtract                      | `52 - 3`                                       |
+| Multiply                      | `41 * 6`                                       |
+| Divide                        | `20 / 4`                                       |
+| Remainder (Modulo)            | `17 % 5`                                       |
+| Exponentiation                | `10 ** 3`                                      |
+| Parenthesis                   | `9 * (8 + 4)`                                  |
+| Conditional (Ternary)         | `a > b ? true : false`                         |
+| And (Logical)                 | `&&`                                           |
+| Or (Logical)                  | `\|\|`                                         |
+| Not (Logical)                 | `!`                                            |
+| Nullish Coalescing            | `possiblyNullValue ?? 'default'`               |
+| Comparison Operators          | `<`, `<=`, `>`, `>=`, `==`, `===`, `!==`, `!=` |
+| Unary Negation                | `-x`                                           |
+| Unary Plus                    | `+y`                                           |
+| Property Accessor             | `person['name']`                               |
+| Assignment                    | `a = b`                                        |
+| Addition Assignment           | `a += b`                                       |
+| Subtraction Assignment        | `a -= b`                                       |
+| Multiplication Assignment     | `a *= b`                                       |
+| Division Assignment           | `a /= b`                                       |
+| Remainder Assignment          | `a %= b`                                       |
+| Exponentiation Assignment     | `a **= b`                                      |
+| Logical AND Assignment        | `a &&= b`                                      |
+| Logical OR Assignment         | `a \|\|= b`                                    |
+| Nullish Coalescing Assignment | `a ??= b`                                      |
 
 Angular expressions additionally also support the following non-standard operators:
 
 | Operator                        | Example(s)                     |
 | ------------------------------- | ------------------------------ |
-| [Pipe](/guide/templates/pipes) | `{{ total \| currency }}`      |
+| [Pipe](/guide/templates/pipes)  | `{{ total \| currency }}`      |
 | Optional chaining\*             | `someObj.someProp?.nestedProp` |
 | Non-null assertion (TypeScript) | `someObj!.someProp`            |
 
