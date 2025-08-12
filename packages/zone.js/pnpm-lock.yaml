@@ -45,8 +45,8 @@ importers:
         specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
         version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b'
       zone.js:
-        specifier: file:../../../../dist/bin/packages/zone.js/npm_package
-        version: file:../../dist/bin/packages/zone.js/npm_package
+        specifier: link:../../../../dist/bin/packages/zone.js/npm_package
+        version: link:../../../../dist/bin/packages/zone.js/npm_package
     devDependencies:
       typescript:
         specifier: 5.9.2
@@ -2065,9 +2065,6 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  zone.js@file:../../dist/bin/packages/zone.js/npm_package:
-    resolution: {directory: ../../dist/bin/packages/zone.js/npm_package, type: directory}
 
 snapshots:
 
@@ -4260,5 +4257,3 @@ snapshots:
       yargs-parser: 21.1.1
 
   yocto-queue@0.1.0: {}
-
-  zone.js@file:../../dist/bin/packages/zone.js/npm_package: {}
