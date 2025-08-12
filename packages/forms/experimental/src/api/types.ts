@@ -329,11 +329,25 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  */
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
   [ɵɵTYPE]: [TValue, TPathKind];
-} & (TValue extends any[]
-  ? {}
-  : TValue extends Record<PropertyKey, any>
-    ? {[K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>}
-    : {});
+} & (TValue extends Array<unknown>
+  ? unknown
+  : TValue extends Record<string, any>
+    ? {[K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child>}
+    : unknown);
+
+/**
+ * Helper type for defining `FieldPath`. Given a type `TValue` that may include `undefined`, it
+ * extracts the `undefined` outside the `FieldPath` type.
+ *
+ * For example `MaybeFieldPath<{a: number} | undefined, PathKind.Child>` would be equivalent to
+ * `undefined | Field<{a: number}, PathKind.child>`.
+ *
+ * @template TValue The type of the data which the field is wrapped around.
+ * @template TPathKind The kind of path (root field, child field, or item of an array)
+ */
+export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
+  | (TValue & undefined)
+  | FieldPath<Exclude<TValue, undefined>, TPathKind>;
 
 /**
  * Defines logic for a form.
