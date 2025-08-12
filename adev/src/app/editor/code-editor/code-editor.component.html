@@ -3,7 +3,7 @@
   <div class="activity-bar">
     <button
       (click)="onToggleExplorer()"
-      [ngClass]="{'active': isExplorerExpanded()}"
+      [class.active]="isExplorerExpanded()"
       type="button"
       aria-label="Toggle source code pane"
       matTooltip="Toggle source code pane"
