@@ -8,6 +8,7 @@
 
 import {Route} from '../../../../../protocol';
 import {
+  findNodesByLabel,
   getRouteLabel,
   mapRoute,
   RouterTreeNode,
@@ -95,6 +96,42 @@ describe('router-tree-fns', () => {
           },
         ],
       } as RouterTreeNode);
+    });
+  });
+
+  describe('findNodesByLabel', () => {
+    const home = {
+      label: '/home',
+    };
+    const contacts = {
+      label: '/contacts',
+    };
+    const about = {
+      label: '/about',
+      children: [contacts],
+    };
+    const aboutProduct = {
+      label: '/about-product',
+    };
+    const root = {
+      label: '/',
+      children: [home, about, aboutProduct],
+    } as RouterTreeNode;
+
+    it('should return no results if an empty search string is provided', () => {
+      const result = findNodesByLabel(root, '');
+      expect(result).toEqual(new Set([]));
+    });
+
+    it('should find nodes by label', () => {
+      const result1 = findNodesByLabel(root, 'cont');
+      expect(result1).toEqual(new Set([contacts]));
+
+      const result2 = findNodesByLabel(root, 'about');
+      expect(result2).toEqual(new Set([about, aboutProduct]));
+
+      const result3 = findNodesByLabel(root, 'products');
+      expect(result3).toEqual(new Set([]));
     });
   });
 });

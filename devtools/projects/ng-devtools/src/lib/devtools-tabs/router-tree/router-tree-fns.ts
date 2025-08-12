@@ -65,3 +65,26 @@ export function transformRoutesIntoVisTree(root: Route, showFullPath: boolean): 
 
   return rootNode!;
 }
+
+export function findNodesByLabel(root: RouterTreeNode, searchString: string): Set<RouterTreeNode> {
+  let matches: Set<RouterTreeNode> = new Set();
+
+  if (!searchString) {
+    return matches;
+  }
+
+  const traverse = (node: RouterTreeNode) => {
+    if (node.label.toLowerCase().includes(searchString)) {
+      matches.add(node);
+    }
+
+    if (node.children) {
+      for (const child of node.children) {
+        traverse(child);
+      }
+    }
+  };
+  traverse(root);
+
+  return matches;
+}

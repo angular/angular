@@ -1,5 +1,10 @@
 <div class="filter">
-  <input (input)="searchRoutes($event)" placeholder="Search routes" class="ng-input filter-input" />
+  <input
+    #searchInput
+    (input)="searchRoutes($event)"
+    placeholder="Search routes"
+    class="ng-input filter-input"
+  />
   <div class="show-full-path">
     <input id="show-full-path" type="checkbox" (change)="togglePathSettings()" />
     <label for="show-full-path">Show full path</label>

@@ -40,6 +40,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
         "//devtools/projects/protocol",
     ],
 )
