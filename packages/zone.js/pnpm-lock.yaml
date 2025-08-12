@@ -42,15 +42,15 @@ importers:
   test/typings:
     dependencies:
       domino:
-        specifier: file:../../../../node_modules/domino
-        version: '@angular/domino@file:../../node_modules/domino'
+        specifier: file:../../node_modules/domino
+        version: '@angular/domino@file:node_modules/domino'
       zone.js:
         specifier: file:../../../../dist/bin/packages/zone.js/npm_package
         version: file:../../dist/bin/packages/zone.js/npm_package
     devDependencies:
       typescript:
-        specifier: file:../../../../node_modules/typescript
-        version: file:../../node_modules/typescript
+        specifier: 5.9.2
+        version: 5.9.2
 
 packages:
 
@@ -58,8 +58,8 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@angular/domino@file:../../node_modules/domino':
-    resolution: {directory: ../../node_modules/domino, type: directory}
+  '@angular/domino@file:node_modules/domino':
+    resolution: {directory: node_modules/domino, type: directory}
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b':
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
@@ -1885,8 +1885,8 @@ packages:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
     engines: {node: '>=10'}
 
-  typescript@file:../../node_modules/typescript:
-    resolution: {directory: ../../node_modules/typescript, type: directory}
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -2079,7 +2079,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@angular/domino@file:../../node_modules/domino': {}
+  '@angular/domino@file:node_modules/domino': {}
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
@@ -4071,7 +4071,7 @@ snapshots:
 
   type-fest@0.21.3: {}
 
-  typescript@file:../../node_modules/typescript: {}
+  typescript@5.9.2: {}
 
   unrs-resolver@1.11.1:
     dependencies:

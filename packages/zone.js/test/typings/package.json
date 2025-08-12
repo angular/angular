@@ -9,10 +9,10 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "domino": "file:../../../../node_modules/domino",
+    "domino": "file:../../node_modules/domino",
     "zone.js": "file:../../../../dist/bin/packages/zone.js/npm_package"
   },
   "devDependencies": {
-    "typescript": "file:../../../../node_modules/typescript"
+    "typescript": "5.9.2"
   }
 }
