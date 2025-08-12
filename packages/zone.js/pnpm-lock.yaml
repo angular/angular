@@ -42,8 +42,8 @@ importers:
   test/typings:
     dependencies:
       domino:
-        specifier: file:../../node_modules/domino
-        version: '@angular/domino@file:node_modules/domino'
+        specifier: https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b
+        version: '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b'
       zone.js:
         specifier: file:../../../../dist/bin/packages/zone.js/npm_package
         version: file:../../dist/bin/packages/zone.js/npm_package
@@ -57,9 +57,6 @@ packages:
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
-
-  '@angular/domino@file:node_modules/domino':
-    resolution: {directory: node_modules/domino, type: directory}
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b':
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
@@ -2078,8 +2075,6 @@ snapshots:
     dependencies:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
-
-  '@angular/domino@file:node_modules/domino': {}
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
