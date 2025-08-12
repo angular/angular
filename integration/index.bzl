@@ -77,8 +77,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
             # Integration tests do not work inside of a sandbox as they may run host applications such
             # as chrome (which is run by ng) that require access to files outside of the sandbox.
             "no-sandbox",
-            # Remote doesn't work as it needs network access right now
-            "no-remote-exec",
         ],
         data = data,
         environment = environment,
