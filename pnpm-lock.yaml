@@ -1009,6 +1009,12 @@ importers:
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
+      '@angular/compiler':
+        specifier: workspace:*
+        version: link:../../../compiler
+      '@angular/compiler-cli':
+        specifier: workspace:*
+        version: link:../../../compiler-cli
       '@angular/core':
         specifier: workspace:*
         version: link:../..
