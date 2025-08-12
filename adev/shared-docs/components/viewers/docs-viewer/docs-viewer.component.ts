@@ -42,7 +42,7 @@ import {ExampleViewer} from '../example-viewer/example-viewer.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
-export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
+export const DOCS_VIEWER_SELECTOR = 'docs-viewer, main[docsViewer]';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 // TODO: Update the branch/sha
