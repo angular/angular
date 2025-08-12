@@ -21,10 +21,10 @@ import {
 
 /** Maps a query function to its decorator. */
 const queryFunctionToDecorator: Record<QueryFunctionName, string> = {
-  viewChild: 'ViewChild',
-  viewChildren: 'ViewChildren',
-  contentChild: 'ContentChild',
-  contentChildren: 'ContentChildren',
+  'viewChild': 'ViewChild',
+  'viewChildren': 'ViewChildren',
+  'contentChild': 'ContentChild',
+  'contentChildren': 'ContentChildren',
 };
 
 /**
