@@ -8,13 +8,13 @@ overrides:
   https-proxy-agent: 7.0.6
   saucelabs: 9.0.2
 
-packageExtensionsChecksum: d67b1f07b351844d00c57cbace376860
+packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
-pnpmfileChecksum: vld6thchsqj664odlna7qhh4w4
+pnpmfileChecksum: sha256-+7KlkWdGv7+7wb/qym+KoHN4eBGq9TNblo2Ln6HTxz0=
 
 patchedDependencies:
   dagre-d3-es@7.0.11:
-    hash: dp4f5qlzqey4wb2gylte6hyt4q
+    hash: 08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd
     path: tools/pnpm-patches/dagre-d3-es+7.0.11.patch
 
 importers:
@@ -218,7 +218,7 @@ importers:
         version: 7.9.0
       dagre-d3-es:
         specifier: ^7.0.11
-        version: 7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q)
+        version: 7.0.11(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd)
       diff:
         specifier: ^8.0.0
         version: 8.0.2
@@ -16069,7 +16069,7 @@ snapshots:
       d3-transition: 3.0.1(d3-selection@3.0.0)
       d3-zoom: 3.0.0
 
-  dagre-d3-es@7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q):
+  dagre-d3-es@7.0.11(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd):
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
@@ -19127,7 +19127,7 @@ snapshots:
       cytoscape-fcose: 2.2.0(cytoscape@3.33.0)
       d3: 7.9.0
       d3-sankey: 0.12.3
-      dagre-d3-es: 7.0.11(patch_hash=dp4f5qlzqey4wb2gylte6hyt4q)
+      dagre-d3-es: 7.0.11(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd)
       dayjs: 1.11.13
       dompurify: 3.2.6
       katex: 0.16.22
