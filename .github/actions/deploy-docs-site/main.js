@@ -7156,33 +7156,31 @@ var require_tmp = __commonJS({
     }
     function tmpName(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
-      try {
-        _assertAndSanitizeOptions(opts);
-      } catch (err) {
-        return cb(err);
-      }
-      let tries = opts.tries;
-      (function _getUniqueName() {
-        try {
-          const name = _generateTmpName(opts);
-          fs.stat(name, function(err) {
-            if (!err) {
-              if (tries-- > 0) return _getUniqueName();
-              return cb(new Error("Could not get a unique tmp filename, max tries reached " + name));
-            }
-            cb(null, name);
-          });
-        } catch (err) {
-          cb(err);
-        }
-      })();
+      _assertAndSanitizeOptions(opts, function(err, sanitizedOptions) {
+        if (err) return cb(err);
+        let tries = sanitizedOptions.tries;
+        (function _getUniqueName() {
+          try {
+            const name = _generateTmpName(sanitizedOptions);
+            fs.stat(name, function(err2) {
+              if (!err2) {
+                if (tries-- > 0) return _getUniqueName();
+                return cb(new Error("Could not get a unique tmp filename, max tries reached " + name));
+              }
+              cb(null, name);
+            });
+          } catch (err2) {
+            cb(err2);
+          }
+        })();
+      });
     }
     function tmpNameSync(options) {
       const args = _parseArguments(options), opts = args[0];
-      _assertAndSanitizeOptions(opts);
-      let tries = opts.tries;
+      const sanitizedOptions = _assertAndSanitizeOptionsSync(opts);
+      let tries = sanitizedOptions.tries;
       do {
-        const name = _generateTmpName(opts);
+        const name = _generateTmpName(sanitizedOptions);
         try {
           fs.statSync(name);
         } catch (e) {
@@ -7212,7 +7210,7 @@ var require_tmp = __commonJS({
       const args = _parseArguments(options), opts = args[0];
       const discardOrDetachDescriptor = opts.discardDescriptor || opts.detachDescriptor;
       const name = tmpNameSync(opts);
-      var fd = fs.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
+      let fd = fs.openSync(name, CREATE_FLAGS, opts.mode || FILE_MODE);
       if (opts.discardDescriptor) {
         fs.closeSync(fd);
         fd = void 0;
@@ -7319,13 +7317,10 @@ var require_tmp = __commonJS({
       } catch (e) {
         rnd = crypto.pseudoRandomBytes(howMany);
       }
-      for (var i = 0; i < howMany; i++) {
+      for (let i = 0; i < howMany; i++) {
         value.push(RANDOM_CHARS[rnd[i] % RANDOM_CHARS.length]);
       }
       return value.join("");
-    }
-    function _isBlank(s) {
-      return s === null || _isUndefined(s) || !s.trim();
     }
     function _isUndefined(obj) {
       return typeof obj === "undefined";
@@ -7343,12 +7338,37 @@ var require_tmp = __commonJS({
       }
       return [actualOptions, callback];
     }
+    function _resolvePath(name, tmpDir, cb) {
+      const pathToResolve = path.isAbsolute(name) ? name : path.join(tmpDir, name);
+      fs.stat(pathToResolve, function(err) {
+        if (err) {
+          fs.realpath(path.dirname(pathToResolve), function(err2, parentDir) {
+            if (err2) return cb(err2);
+            cb(null, path.join(parentDir, path.basename(pathToResolve)));
+          });
+        } else {
+          fs.realpath(pathToResolve, cb);
+        }
+      });
+    }
+    function _resolvePathSync(name, tmpDir) {
+      const pathToResolve = path.isAbsolute(name) ? name : path.join(tmpDir, name);
+      try {
+        fs.statSync(pathToResolve);
+        return fs.realpathSync(pathToResolve);
+      } catch (_err) {
+        const parentDir = fs.realpathSync(path.dirname(pathToResolve));
+        return path.join(parentDir, path.basename(pathToResolve));
+      }
+    }
     function _generateTmpName(opts) {
       const tmpDir = opts.tmpdir;
-      if (!_isUndefined(opts.name))
+      if (!_isUndefined(opts.name)) {
         return path.join(tmpDir, opts.dir, opts.name);
-      if (!_isUndefined(opts.template))
+      }
+      if (!_isUndefined(opts.template)) {
         return path.join(tmpDir, opts.dir, opts.template).replace(TEMPLATE_PATTERN, _randomChars(6));
+      }
       const name = [
         opts.prefix ? opts.prefix : "tmp",
         "-",
@@ -7359,54 +7379,75 @@ var require_tmp = __commonJS({
       ].join("");
       return path.join(tmpDir, opts.dir, name);
     }
-    function _assertAndSanitizeOptions(options) {
-      options.tmpdir = _getTmpDir(options);
-      const tmpDir = options.tmpdir;
-      if (!_isUndefined(options.name))
-        _assertIsRelative(options.name, "name", tmpDir);
-      if (!_isUndefined(options.dir))
-        _assertIsRelative(options.dir, "dir", tmpDir);
-      if (!_isUndefined(options.template)) {
-        _assertIsRelative(options.template, "template", tmpDir);
-        if (!options.template.match(TEMPLATE_PATTERN))
-          throw new Error(`Invalid template, found "${options.template}".`);
+    function _assertOptionsBase(options) {
+      if (!_isUndefined(options.name)) {
+        const name = options.name;
+        if (path.isAbsolute(name)) throw new Error(`name option must not contain an absolute path, found "${name}".`);
+        const basename = path.basename(name);
+        if (basename === ".." || basename === "." || basename !== name)
+          throw new Error(`name option must not contain a path, found "${name}".`);
       }
-      if (!_isUndefined(options.tries) && isNaN(options.tries) || options.tries < 0)
+      if (!_isUndefined(options.template) && !options.template.match(TEMPLATE_PATTERN)) {
+        throw new Error(`Invalid template, found "${options.template}".`);
+      }
+      if (!_isUndefined(options.tries) && isNaN(options.tries) || options.tries < 0) {
         throw new Error(`Invalid tries, found "${options.tries}".`);
+      }
       options.tries = _isUndefined(options.name) ? options.tries || DEFAULT_TRIES : 1;
       options.keep = !!options.keep;
       options.detachDescriptor = !!options.detachDescriptor;
       options.discardDescriptor = !!options.discardDescriptor;
       options.unsafeCleanup = !!options.unsafeCleanup;
-      options.dir = _isUndefined(options.dir) ? "" : path.relative(tmpDir, _resolvePath(options.dir, tmpDir));
-      options.template = _isUndefined(options.template) ? void 0 : path.relative(tmpDir, _resolvePath(options.template, tmpDir));
-      options.template = _isBlank(options.template) ? void 0 : path.relative(options.dir, options.template);
-      options.name = _isUndefined(options.name) ? void 0 : options.name;
       options.prefix = _isUndefined(options.prefix) ? "" : options.prefix;
       options.postfix = _isUndefined(options.postfix) ? "" : options.postfix;
     }
-    function _resolvePath(name, tmpDir) {
-      if (name.startsWith(tmpDir)) {
-        return path.resolve(name);
-      } else {
-        return path.resolve(path.join(tmpDir, name));
-      }
-    }
-    function _assertIsRelative(name, option, tmpDir) {
-      if (option === "name") {
-        if (path.isAbsolute(name))
-          throw new Error(`${option} option must not contain an absolute path, found "${name}".`);
-        let basename = path.basename(name);
-        if (basename === ".." || basename === "." || basename !== name)
-          throw new Error(`${option} option must not contain a path, found "${name}".`);
-      } else {
-        if (path.isAbsolute(name) && !name.startsWith(tmpDir)) {
-          throw new Error(`${option} option must be relative to "${tmpDir}", found "${name}".`);
+    function _getRelativePath(option, name, tmpDir, cb) {
+      if (_isUndefined(name)) return cb(null);
+      _resolvePath(name, tmpDir, function(err, resolvedPath) {
+        if (err) return cb(err);
+        const relativePath = path.relative(tmpDir, resolvedPath);
+        if (!resolvedPath.startsWith(tmpDir)) {
+          return cb(new Error(`${option} option must be relative to "${tmpDir}", found "${relativePath}".`));
         }
-        let resolvedPath = _resolvePath(name, tmpDir);
-        if (!resolvedPath.startsWith(tmpDir))
-          throw new Error(`${option} option must be relative to "${tmpDir}", found "${resolvedPath}".`);
+        cb(null, relativePath);
+      });
+    }
+    function _getRelativePathSync(option, name, tmpDir) {
+      if (_isUndefined(name)) return;
+      const resolvedPath = _resolvePathSync(name, tmpDir);
+      const relativePath = path.relative(tmpDir, resolvedPath);
+      if (!resolvedPath.startsWith(tmpDir)) {
+        throw new Error(`${option} option must be relative to "${tmpDir}", found "${relativePath}".`);
       }
+      return relativePath;
+    }
+    function _assertAndSanitizeOptions(options, cb) {
+      _getTmpDir(options, function(err, tmpDir) {
+        if (err) return cb(err);
+        options.tmpdir = tmpDir;
+        try {
+          _assertOptionsBase(options, tmpDir);
+        } catch (err2) {
+          return cb(err2);
+        }
+        _getRelativePath("dir", options.dir, tmpDir, function(err2, dir2) {
+          if (err2) return cb(err2);
+          options.dir = _isUndefined(dir2) ? "" : dir2;
+          _getRelativePath("template", options.template, tmpDir, function(err3, template) {
+            if (err3) return cb(err3);
+            options.template = template;
+            cb(null, options);
+          });
+        });
+      });
+    }
+    function _assertAndSanitizeOptionsSync(options) {
+      const tmpDir = options.tmpdir = _getTmpDirSync(options);
+      _assertOptionsBase(options, tmpDir);
+      const dir2 = _getRelativePathSync("dir", options.dir, tmpDir);
+      options.dir = _isUndefined(dir2) ? "" : dir2;
+      options.template = _getRelativePathSync("template", options.template, tmpDir);
+      return options;
     }
     function _isEBADF(error) {
       return _isExpectedError(error, -EBADF, "EBADF");
@@ -7420,15 +7461,18 @@ var require_tmp = __commonJS({
     function setGracefulCleanup() {
       _gracefulCleanup = true;
     }
-    function _getTmpDir(options) {
-      return path.resolve(options && options.tmpdir || os3.tmpdir());
+    function _getTmpDir(options, cb) {
+      return fs.realpath(options && options.tmpdir || os3.tmpdir(), cb);
+    }
+    function _getTmpDirSync(options) {
+      return fs.realpathSync(options && options.tmpdir || os3.tmpdir());
     }
     process.addListener(EXIT, _garbageCollector);
     Object.defineProperty(module.exports, "tmpdir", {
       enumerable: true,
       configurable: false,
       get: function() {
-        return _getTmpDir();
+        return _getTmpDirSync();
       }
     });
     module.exports.dir = dir;
@@ -25408,6 +25452,9 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return 3;
   }
   if (env.TERM === "xterm-kitty") {
+    return 3;
+  }
+  if (env.TERM === "xterm-ghostty") {
     return 3;
   }
   if ("TERM_PROGRAM" in env) {
