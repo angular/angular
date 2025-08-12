@@ -939,6 +939,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'ecosystem/rxjs-interop/output-interop',
             contentPath: 'ecosystem/rxjs-interop/output-interop',
           },
+          {
+            label: 'Unsubscribing with takeUntilDestroyed',
+            path: 'ecosystem/rxjs-interop/take-until-destroyed',
+            contentPath: 'ecosystem/rxjs-interop/take-until-destroyed',
+          },
         ],
       },
       {
