@@ -271,6 +271,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
 
     const d3Node = d3NodeG
       .append('foreignObject')
+      .attr('class', 'node-wrapper')
       .attr('width', labelWidth)
       .attr('height', labelHeight)
       .attr('x', -halfLabelWidth)
