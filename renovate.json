@@ -1,12 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>angular/dev-infra//renovate-presets/default.json5"
-  ],
-  "baseBranches": [
-    "main",
-    "20.2.x"
-  ],
+  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
+  "baseBranchPatterns": ["main", "20.2.x"],
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
@@ -16,10 +11,7 @@
       "pnpm bazel run //packages/common/locales:closure_locale_file",
       "pnpm bazel run //packages/core:base_locale_file"
     ],
-    "fileFilters": [
-      ".github/actions/deploy-docs-site/**/*",
-      "packages/**/*"
-    ],
+    "fileFilters": [".github/actions/deploy-docs-site/**/*", "packages/**/*"],
     "executionMode": "branch"
   },
   "ignoreDeps": [
@@ -39,20 +31,12 @@
   ],
   "packageRules": [
     {
-      "matchBaseBranches": [
-        "main"
-      ],
-      "addLabels": [
-        "target: minor"
-      ]
+      "matchBaseBranches": ["main"],
+      "addLabels": ["target: minor"]
     },
     {
-      "matchBaseBranches": [
-        "!main"
-      ],
-      "addLabels": [
-        "target: rc"
-      ]
+      "matchBaseBranches": ["!main"],
+      "addLabels": ["target: rc"]
     },
     {
       "matchFileNames": [
