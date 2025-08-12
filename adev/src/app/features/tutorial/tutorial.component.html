@@ -7,10 +7,9 @@
 
       <!-- Tutorial Content -->
       @if (documentContent(); as documentContent) {
-        <docs-viewer
+        <main docsViewer
           [docContent]="documentContent"
-          class="docs-viewer docs-viewer-scroll-margin-large"
-        />
+          class="docs-viewer docs-viewer-scroll-margin-large"></main>
       }
     </div>
   }
