@@ -3,11 +3,11 @@
  * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
+ * found in the LICENSE file at https://angular.dev/license
  */
 
 import {WritableSignal} from '@angular/core';
-import {form, schema, SchemaFn} from '../../public_api';
+import {form, required, schema, SchemaFn} from '../../public_api';
 
 interface Order {
   id: string;
@@ -71,6 +71,16 @@ function typeVerificationOnlyDoNotRunMe() {
       const phoneOrderSchema = schema<PhoneOrder>(null!);
       // @ts-expect-error
       form(pizzaOrder, phoneOrderSchema);
+    });
+
+    it('should now allow binding logic to a potentially undefined field', () => {
+      schema<{a: number; b: number | undefined; c?: number}>((p) => {
+        required(p.a);
+        // @ts-expect-error
+        required(p.b);
+        // @ts-expect-error
+        required(p.c);
+      });
     });
   });
 }
