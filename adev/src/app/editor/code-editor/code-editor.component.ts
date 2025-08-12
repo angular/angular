@@ -105,7 +105,7 @@ export class CodeEditor {
   readonly errors = signal<DiagnosticWithLocation[]>([]);
   readonly files = this.codeMirrorEditor.openFiles;
   readonly fileTree = computed(() => this.files().map( editorFile => ({name: editorFile.filename}))
-  )
+  );
   readonly activeFile = signal<string>('');
   readonly isCreatingFile = signal<boolean>(false);
   readonly isRenamingFile = signal<boolean>(false);
@@ -185,7 +185,7 @@ export class CodeEditor {
   }
 
   onToggleExplorer() {
-    this.isExplorerExpanded.update((oldState:boolean) => !oldState)
+    this.isExplorerExpanded.update((oldState:boolean) => !oldState);
   }
 
   onDiscardFile() {
@@ -250,7 +250,7 @@ export class CodeEditor {
       await this.codeMirrorEditor.createFile(newFile);
     }
 
-    this.activeFile.set('src/' + newFileInputValue)
+    this.activeFile.set('src/' + newFileInputValue);
     this.isCreatingFile.set(false);
   }
 
