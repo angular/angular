@@ -13,6 +13,9 @@ packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 pnpmfileChecksum: sha256-+7KlkWdGv7+7wb/qym+KoHN4eBGq9TNblo2Ln6HTxz0=
 
 patchedDependencies:
+  '@angular/build':
+    hash: b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e
+    path: tools/pnpm-patches/@angular__build.patch
   dagre-d3-es@7.0.11:
     hash: 08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd
     path: tools/pnpm-patches/dagre-d3-es+7.0.11.patch
@@ -38,7 +41,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 20.2.0-next.2
         version: 20.2.0-next.2(rxjs@7.8.2)
@@ -537,7 +540,7 @@ importers:
         version: link:../packages/animations
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 20.2.0-next.2
         version: 20.2.0-next.2(rxjs@7.8.2)
@@ -831,7 +834,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1005,7 +1008,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 20.2.0-next.2
-        version: 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -8818,7 +8821,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -11106,7 +11108,7 @@ snapshots:
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-next.2(chokidar@4.0.3)(webpack-dev-server@5.2.2(webpack@5.100.2(esbuild@0.25.8)))(webpack@5.100.2(esbuild@0.25.8))
       '@angular-devkit/core': 20.2.0-next.2(chokidar@4.0.3)
-      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11196,7 +11198,7 @@ snapshots:
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-next.2(chokidar@4.0.3)(webpack-dev-server@5.2.2(webpack@5.100.2(esbuild@0.25.8)))(webpack@5.100.2(esbuild@0.25.8))
       '@angular-devkit/core': 20.2.0-next.2(chokidar@4.0.3)
-      '@angular/build': 20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11317,7 +11319,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
@@ -11373,7 +11375,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@20.2.0-next.2(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@20.2.0-next.2(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-next.2)(@types/node@24.1.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4)(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-next.2(chokidar@4.0.3)
