@@ -83,11 +83,11 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   /**
-   * The current `NonMergableLogicNodeBuilder` being used to add rules directly to this
+   * The current `NonMergeableLogicNodeBuilder` being used to add rules directly to this
    * `LogicNodeBuilder`. Do not use this directly, call `getCurrent()` which will create a current
    * builder if there is none.
    */
-  private current: NonMergableLogicNodeBuilder | undefined;
+  private current: NonMergeableLogicNodeBuilder | undefined;
   /**
    * Stores all builders that contribute to this node, along with any predicates
    * that gate their application.
@@ -167,15 +167,15 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   /**
-   * Gets the current `NonMergableLogicNodeBuilder` for adding rules directly to this
+   * Gets the current `NonMergeableLogicNodeBuilder` for adding rules directly to this
    * `LogicNodeBuilder`. If no current builder exists, a new one is created.
    * The current builder is cleared whenever `mergeIn` is called to preserve the order
    * of rules when merging separate builder trees.
-   * @returns The current `NonMergableLogicNodeBuilder`.
+   * @returns The current `NonMergeableLogicNodeBuilder`.
    */
-  private getCurrent(): NonMergableLogicNodeBuilder {
+  private getCurrent(): NonMergeableLogicNodeBuilder {
     if (this.current === undefined) {
-      this.current = new NonMergableLogicNodeBuilder(this.depth);
+      this.current = new NonMergeableLogicNodeBuilder(this.depth);
       this.all.push({builder: this.current});
     }
     return this.current;
@@ -194,7 +194,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
  * A type of `AbstractLogicNodeBuilder` used internally by the `LogicNodeBuilder` to record "pure"
  * chunks of logic that do not require merging in other builders.
  */
-class NonMergableLogicNodeBuilder extends AbstractLogicNodeBuilder {
+class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
   /** The collection of logic rules directly added to this builder. */
   readonly logic = new LogicContainer([]);
   /**
@@ -409,7 +409,7 @@ function getAllChildBuilders(
       }
       return children;
     });
-  } else if (builder instanceof NonMergableLogicNodeBuilder) {
+  } else if (builder instanceof NonMergeableLogicNodeBuilder) {
     if (builder.children.has(key)) {
       return [{builder: builder.children.get(key)!, predicates: []}];
     }
@@ -421,7 +421,7 @@ function getAllChildBuilders(
 
 /**
  * Creates the full `Logic` for a given builder.
- * This function handles different types of builders (`LogicNodeBuilder`, `NonMergableLogicNodeBuilder`)
+ * This function handles different types of builders (`LogicNodeBuilder`, `NonMergeableLogicNodeBuilder`)
  * and applies the provided predicates.
  * @param builder The `AbstractLogicNodeBuilder` to process.
  * @param predicates Predicates to apply to the logic derived from the builder.
@@ -449,7 +449,7 @@ function createLogic(
     for (const node of builtNodes) {
       logic.mergeIn(node.logic);
     }
-  } else if (builder instanceof NonMergableLogicNodeBuilder) {
+  } else if (builder instanceof NonMergeableLogicNodeBuilder) {
     logic.mergeIn(builder.logic);
   } else {
     throw new Error('Unknown LogicNodeBuilder type');
