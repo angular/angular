@@ -133,6 +133,7 @@
       "InjectionToken",
       "Injector",
       "InputFlags",
+      "IsolatedStyleScopeService",
       "ItemComponent",
       "KeyEventsPlugin",
       "LOCALE_ID",

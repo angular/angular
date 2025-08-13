@@ -134,6 +134,7 @@
       "InjectionToken",
       "Injector",
       "InputFlags",
+      "IsolatedStyleScopeService",
       "IterableChangeRecord_",
       "IterableDiffers",
       "KeyEventsPlugin",
