@@ -19030,7 +19030,7 @@ ${indent}`) + "'";
     }
     function blockString({ comment, type, value }, ctx, onComment, onChompKeep) {
       const { blockQuote, commentString, lineWidth } = ctx.options;
-      if (!blockQuote || /\n[\t ]+$/.test(value) || /^\s*$/.test(value)) {
+      if (!blockQuote || /\n[\t ]+$/.test(value)) {
         return quotedString(value, ctx);
       }
       const indent = ctx.indent || (ctx.forceBlockIndent || containsDocumentMarker(value) ? "  " : "");
@@ -25768,6 +25768,9 @@ function _supportsColor2(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
   if (env2.TERM === "xterm-kitty") {
     return 3;
   }
+  if (env2.TERM === "xterm-ghostty") {
+    return 3;
+  }
   if ("TERM_PROGRAM" in env2) {
     const version = Number.parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
     switch (env2.TERM_PROGRAM) {
@@ -25807,12 +25810,6 @@ var supports_color_default2 = supportsColor2;
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
 import assert from "assert";
 var ChildProcess = class {
-  /**
-   * Spawns a given command with the specified arguments inside an interactive shell. All process
-   * stdin, stdout and stderr output is printed to the current console.
-   *
-   * @returns a Promise resolving on success, and rejecting on command failure with the status code.
-   */
   static spawnInteractive(command, args, options = {}) {
     return new Promise((resolve, reject) => {
       const commandText = `${command} ${args.join(" ")}`;
@@ -25821,11 +25818,6 @@ var ChildProcess = class {
       childProcess.on("close", (status) => status === 0 ? resolve() : reject(status));
     });
   }
-  /**
-   * Spawns a given command with the specified arguments inside a shell synchronously.
-   *
-   * @returns The command's stdout and stderr.
-   */
   static spawnSync(command, args, options = {}) {
     const commandText = `${command} ${args.join(" ")}`;
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
@@ -25837,27 +25829,11 @@ var ChildProcess = class {
     }
     throw new Error(stderr);
   }
-  /**
-   * Spawns a given command with the specified arguments inside a shell. All process stdout
-   * output is captured and returned as resolution on completion. Depending on the chosen
-   * output mode, stdout/stderr output is also printed to the console, or only on error.
-   *
-   * @returns a Promise resolving with captured stdout and stderr on success. The promise
-   *   rejects on command failure.
-   */
   static spawn(command, args, options = {}) {
     const commandText = `${command} ${args.join(" ")}`;
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
     return processAsyncCmd(commandText, options, _spawn(command, args, { ...options, env: env3, shell: true, stdio: "pipe" }));
   }
-  /**
-   * Execs a given command with the specified arguments inside a shell. All process stdout
-   * output is captured and returned as resolution on completion. Depending on the chosen
-   * output mode, stdout/stderr output is also printed to the console, or only on error.
-   *
-   * @returns a Promise resolving with captured stdout and stderr on success. The promise
-   *   rejects on command failure.
-   */
   static exec(command, options = {}) {
     const env3 = getEnvironmentForNonInteractiveCommand(options.env);
     return processAsyncCmd(command, options, _exec(command, { ...options, env: env3 }));
@@ -25952,11 +25928,7 @@ Log.log = buildLogLevelFunction(() => console.log, LogLevel.LOG, null);
 Log.warn = buildLogLevelFunction(() => console.warn, LogLevel.WARN, source_default.yellow);
 function buildLogLevelFunction(loadCommand, level, defaultColor) {
   const loggingFunction = (...values) => {
-    runConsoleCommand(
-      loadCommand,
-      level,
-      ...values.map((v) => typeof v === "string" && defaultColor ? defaultColor(v) : v)
-    );
+    runConsoleCommand(loadCommand, level, ...values.map((v) => typeof v === "string" && defaultColor ? defaultColor(v) : v));
   };
   loggingFunction.group = (label, collapsed = false) => {
     const command = collapsed ? console.groupCollapsed : console.group;
@@ -25991,12 +25963,8 @@ function appendToLogFile(logLevel, ...text) {
     return;
   }
   const logLevelText = `${LogLevel[logLevel]}:`.padEnd(LOG_LEVEL_COLUMNS);
-  appendFile(
-    logFilePath,
-    // Strip ANSI escape codes from log outputs.
-    stripVTControlCharacters(text.join(" ").split("\n").map((l) => `${logLevelText} ${l}
-`).join(""))
-  );
+  appendFile(logFilePath, stripVTControlCharacters(text.join(" ").split("\n").map((l) => `${logLevelText} ${l}
+`).join("")));
 }
 
 // 
@@ -26206,7 +26174,6 @@ var managedLabels = createTypedObject(ManagedLabel)({
     name: "area: performance",
     commitCheck: (c) => c.type === "perf"
   },
-  // angular/angular specific labels.
   DETECTED_HTTP_CHANGE: {
     description: "Issues related to HTTP and HTTP Client",
     name: "area: common/http",
@@ -26472,11 +26439,9 @@ var ActiveReleaseTrains = class {
     this.latest = this.trains.latest;
     this.exceptionalMinor = this.trains.exceptionalMinor;
   }
-  /** Whether the active release trains indicate the repository is in a feature freeze state. */
   isFeatureFreeze() {
     return this.releaseCandidate !== null && this.releaseCandidate.version.prerelease[0] === "next";
   }
-  /** Fetches the active release trains for the configured project. */
   static async fetch(repo) {
     return fetchActiveReleaseTrains(repo);
   }
@@ -30005,7 +29970,6 @@ var AuthenticatedGithubClient = class extends GithubClient {
       headers: { authorization: `token ${this._token}` }
     });
   }
-  /** Perform a query using Github's Graphql API. */
   async graphql(queryObject, params2 = {}) {
     return await this._graphql((0, import_typed_graphqlify2.query)(queryObject).toString(), params2);
   }
@@ -30034,8 +29998,6 @@ function getRepositoryGitUrl(config, githubToken) {
 
 // 
 var GitCommandError = class extends Error {
-  // Note: Do not expose the unsanitized arguments as a public property. NodeJS
-  // could print the properties of an error instance and leak e.g. a token.
   constructor(client, unsanitizedArgs) {
     super(`Command failed: git ${client.sanitizeConsoleOutput(unsanitizedArgs.join(" "))}`);
   }
@@ -30050,7 +30012,6 @@ var GitClient = class _GitClient {
     this.remoteParams = { owner: config.github.owner, repo: config.github.name };
     this.mainBranchName = config.github.mainBranchName;
   }
-  /** Executes the given git command. Throws if the command fails. */
   run(args, options) {
     const result = this.runGraceful(args, options);
     if (result.status !== 0) {
@@ -30058,11 +30019,6 @@ var GitClient = class _GitClient {
     }
     return result;
   }
-  /**
-   * Spawns a given Git command process. Does not throw if the command fails. Additionally,
-   * if there is any stderr output, the output will be printed. This makes it easier to
-   * info failed commands.
-   */
   runGraceful(args, options = {}) {
     const gitCommand = args[0];
     if (isDryRun() && gitCommand === "push") {
@@ -30075,8 +30031,6 @@ var GitClient = class _GitClient {
       cwd: this.baseDir,
       stdio: "pipe",
       ...options,
-      // Encoding is always `utf8` and not overridable. This ensures that this method
-      // always returns `string` as output instead of buffers.
       encoding: "utf8"
     });
     Log.debug(`Status: ${result.status}, Error: ${!!result.error}, Signal: ${result.signal}`);
@@ -30091,19 +30045,15 @@ var GitClient = class _GitClient {
     }
     return result;
   }
-  /** Git URL that resolves to the configured repository. */
   getRepoGitUrl() {
     return getRepositoryGitUrl(this.remoteConfig);
   }
-  /** Whether the given branch contains the specified SHA. */
   hasCommit(branchName, sha) {
     return this.run(["branch", branchName, "--contains", sha]).stdout !== "";
   }
-  /** Whether the local repository is configured as shallow. */
   isShallowRepo() {
     return this.run(["rev-parse", "--is-shallow-repository"]).stdout.trim() === "true";
   }
-  /** Gets the currently checked out branch or revision. */
   getCurrentBranchOrRevision() {
     const branchName = this.run(["rev-parse", "--abbrev-ref", "HEAD"]).stdout.trim();
     if (branchName === "HEAD") {
@@ -30111,16 +30061,10 @@ var GitClient = class _GitClient {
     }
     return branchName;
   }
-  /** Gets whether the current Git repository has uncommitted changes. */
   hasUncommittedChanges() {
     this.runGraceful(["update-index", "-q", "--refresh"]);
     return this.runGraceful(["diff-index", "--quiet", "HEAD"]).status !== 0;
   }
-  /**
-   * Checks out a requested branch or revision, optionally cleaning the state of the repository
-   * before attempting the checking. Returns a boolean indicating whether the branch or revision
-   * was cleanly checked out.
-   */
   checkout(branchOrRevision, cleanState) {
     if (cleanState) {
       this.runGraceful(["am", "--abort"], { stdio: "ignore" });
@@ -30130,32 +30074,21 @@ var GitClient = class _GitClient {
     }
     return this.runGraceful(["checkout", branchOrRevision], { stdio: "ignore" }).status === 0;
   }
-  /** Retrieve a list of all files in the repository changed since the provided shaOrRef. */
   allChangesFilesSince(shaOrRef = "HEAD") {
     return Array.from(/* @__PURE__ */ new Set([
       ...gitOutputAsArray(this.runGraceful(["diff", "--name-only", "--diff-filter=d", shaOrRef])),
       ...gitOutputAsArray(this.runGraceful(["ls-files", "--others", "--exclude-standard"]))
     ]));
   }
-  /** Retrieve a list of all files currently staged in the repostitory. */
   allStagedFiles() {
     return gitOutputAsArray(this.runGraceful(["diff", "--name-only", "--diff-filter=ACM", "--staged"]));
   }
-  /** Retrieve a list of all files tracked in the repository. */
   allFiles() {
     return gitOutputAsArray(this.runGraceful(["ls-files"]));
   }
-  /**
-   * Sanitizes the given console message. This method can be overridden by
-   * derived classes. e.g. to sanitize access tokens from Git commands.
-   */
   sanitizeConsoleOutput(value) {
     return value;
   }
-  /**
-   * Static method to get the singleton instance of the `GitClient`,
-   * creating it, if not created yet.
-   */
   static async get() {
     if (_GitClient._unauthenticatedInstance === null) {
       _GitClient._unauthenticatedInstance = (async () => {
@@ -30181,18 +30114,12 @@ var AuthenticatedGitClient = class _AuthenticatedGitClient extends GitClient {
     this._cachedForkRepositories = null;
     this.github = new AuthenticatedGithubClient(this.githubToken);
   }
-  /** Sanitizes a given message by omitting the provided Github token if present. */
   sanitizeConsoleOutput(value) {
     return value.replace(this._githubTokenRegex, "<TOKEN>");
   }
-  /** Git URL that resolves to the configured repository. */
   getRepoGitUrl() {
     return getRepositoryGitUrl(this.remoteConfig, this.githubToken);
   }
-  /**
-   * Assert the GitClient instance is using a token with permissions for the all of the
-   * provided OAuth scopes.
-   */
   async hasOauthScopes(testFn) {
     if (this.userType === "bot") {
       return true;
@@ -30212,7 +30139,6 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
 `;
     return { error };
   }
-  /** Gets an owned fork for the configured project of the authenticated user. */
   async getForkOfAuthenticatedUser() {
     const forks = await this.getAllForksOfAuthenticatedUser();
     if (forks.length === 0) {
@@ -30220,12 +30146,6 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
     }
     return forks[0];
   }
-  /**
-   * Finds all forks owned by the currently authenticated user in the Git client,
-   *
-   * The determined fork repositories are cached as we assume that the authenticated
-   * user will not change during execution, or that no new forks are created.
-   */
   async getAllForksOfAuthenticatedUser() {
     if (this._cachedForkRepositories !== null) {
       return this._cachedForkRepositories;
@@ -30237,7 +30157,6 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
       name: node.name
     }));
   }
-  /** Fetch the OAuth scopes for the loaded Github token. */
   _fetchAuthScopesForToken() {
     if (this._cachedOauthScopes !== null) {
       return this._cachedOauthScopes;
@@ -30250,10 +30169,6 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
       return scopes.split(",").map((scope) => scope.trim()).filter((scope) => scope !== "");
     });
   }
-  /**
-   * Static method to get the singleton instance of the `AuthenticatedGitClient`,
-   * creating it if it has not yet been created.
-   */
   static async get() {
     if (_AuthenticatedGitClient._token === null) {
       throw new Error("No instance of `AuthenticatedGitClient` has been configured.");
@@ -30265,7 +30180,6 @@ Alternatively, a new token can be created at: ${GITHUB_TOKEN_GENERATE_URL}
     }
     return _AuthenticatedGitClient._authenticatedInstance;
   }
-  /** Configures an authenticated git client. */
   static configure(token, userType = "user") {
     if (_AuthenticatedGitClient._token) {
       throw Error("Unable to configure `AuthenticatedGitClient` as it has been configured already.");
@@ -30398,230 +30312,5 @@ tmp/lib/tmp.js:
    * Copyright (c) 2011-2017 KARASZI Istvan <github@spam.raszi.hu>
    *
    * MIT Licensed
-   *)
-
-@angular/ng-dev/utils/child-process.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/repo-directory.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/logging.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/config-cache.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/config.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/commit-message/config.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/format/config.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/pr/config/index.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/config/index.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/release-trains.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/version-branches.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/active-release-trains.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/npm-registry.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/long-term-support.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/versioning/index.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/release/precheck/index.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/git/graphql-queries.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/dry-run.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/git/github.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/git/github-urls.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/git/git-client.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/git/authenticated-git-client.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/nodejs-errors.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/utils/resolve-yarn-bin.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
-   *)
-
-@angular/ng-dev/index.js:
-  (**
-   * @license
-   * Copyright Google LLC
-   *
-   * Use of this source code is governed by an MIT-style license that can be
-   * found in the LICENSE file at https://angular.io/license
    *)
 */
