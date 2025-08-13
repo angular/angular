@@ -1,4 +1,5 @@
 # Angular CLI MCP Server setup
+
 The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) enabling AI assistants in your development environment to interact with the Angular CLI. We've included support for CLI powered code generation, adding packages, and more.
 
 To get started, run the following command in your terminal:
@@ -7,14 +8,45 @@ To get started, run the following command in your terminal:
 ng mcp
 ```
 
-Use this command to create the base JSON configuration for your environment. Note that the file structure differs depending on your IDE. The following sections provide the configurations for several popular editors.
+When run from an interactive terminal, this command displays instructions on how to configure a host environment to use the MCP server. The following sections provide example configurations for several popular editors and tools.
 
-### VS Code
-In your project's root, create a file named `.vscode/mcp.json` and add the following configuration. Note the use of the `servers` property.
+### Cursor
+
+Create a file named `.cursor/mcp.json` in your project's root and add the following configuration. You can also configure it globally in `~/.cursor/mcp.json`.
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["@angular/cli", "mcp"]
+    }
+  }
+}
+```
+
+### Firebase Studio
+
+Create a file named `.idx/mcp.json` in your project's root and add the following configuration:
+
+```json
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["@angular/cli", "mcp"]
+    }
+  }
+}
+```
+
+### Gemini CLI
+
+Create a file named `.gemini/settings.json` in your project's root and add the following configuration:
+
+```json
+{
+  "mcpServers": {
     "angular-cli": {
       "command": "npx",
       "args": ["@angular/cli", "mcp"]
@@ -24,6 +56,7 @@ In your project's root, create a file named `.vscode/mcp.json` and add the follo
 ```
 
 ### JetBrains IDEs
+
 In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrains AI Assistant plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server and select `As JSON`. Paste the following configuration, which does not use a top-level property for the server list.
 
 ```json
@@ -37,11 +70,13 @@ In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrai
 }
 ```
 
-### Firebase Studio
-Create a file named `.idx/mcp.json` in your project's root and add the following configuration:
+### VS Code
+
+In your project's root, create a file named `.vscode/mcp.json` and add the following configuration. Note the use of the `servers` property.
+
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "angular-cli": {
       "command": "npx",
       "args": ["@angular/cli", "mcp"]
@@ -51,9 +86,8 @@ Create a file named `.idx/mcp.json` in your project's root and add the following
 ```
 
 ### Other IDEs
-For these IDEs, create a configuration file and add the following snippet. Note the use of the `mcpServers` property.
-*   **Cursor:** Create a file named `.cursor/mcp.json` in your project's root. You can also configure it globally in `~/.cursor/mcp.json`.
-*   **Other IDEs:** Check your IDE's documentation for the proper location of the MCP configuration file (often `mcp.json`).
+
+For other IDEs, check your IDE's documentation for the proper location of the MCP configuration file (often `mcp.json`). The configuration should contain the following snippet.
 
 ```json
 {
@@ -66,27 +100,38 @@ For these IDEs, create a configuration file and add the following snippet. Note 
 }
 ```
 
+## Command Options
+
+The `mcp` command can be configured with the following options passed as arguments in your IDE's MCP configuration:
+
+| Option         | Type      | Description                                                                                                | Default |
+| :------------- | :-------- | :--------------------------------------------------------------------------------------------------------- | :------ |
+| `--read-only`  | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits. | `false` |
+| `--local-only` | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network. | `false` |
+
+
+For example, to run the server in read-only mode in VS Code, you would update your `mcp.json` like this:
+
+```json
+{
+  "servers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["@angular/cli", "mcp", "--read-only"]
+    }
+  }
+}
+```
+
 ## Available Tools
 
-The Angular CLI MCP server provides several tools to assist you in your development workflow. Here's an overview of the available tools:
+The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
 
-### Get Angular Coding Best Practices Guide (`get_best_practices`)
-
-This tool provides a guide on modern Angular coding best practices. Before you start writing or modifying code, you can use this tool to ensure your work aligns with current standards, such as using standalone components, typed forms, and the latest control flow syntax.
-
-*   **Outputs:** The content of the best practices guide.
-
-### Search Angular Documentation (`search_documentation`)
-
-This tool allows you to search the official Angular documentation at [angular.dev](https://angular.dev). It's the recommended way to find up-to-date information on Angular APIs, tutorials, and guides.
-
-*   **Outputs:** A list of search results, including title, breadcrumbs, and URL. May also include the content of the top-ranked page.
-
-### List Angular Projects (`list_projects`)
-
-This tool lists all the applications and libraries in your current Angular workspace. It reads the `angular.json` file to identify and provide details about each project.
-
-*   **Outputs:** A list of project objects, with details for each project like its name, type (`application` or `library`), root directory, and component selector prefix.
+| Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
+| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
+| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
 
 ## Feedback and New Ideas
 
