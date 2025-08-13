@@ -191,7 +191,6 @@
     {
       "name": "zoneless",
       "type": "boolean",
-      "default": false,
       "description": "Create an initial application that does not utilize `zone.js`."
     }
   ]
