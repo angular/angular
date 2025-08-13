@@ -26,7 +26,7 @@ describe('submit', () => {
       fail('Submit action should run not on invalid form');
     });
 
-    expect(f.first().errors()).toEqual([ValidationError.required()]);
+    expect(f.first().errors()).toEqual([ValidationError.required({field: f.first})]);
   });
 
   it('maps error to a field', async () => {
@@ -41,15 +41,15 @@ describe('submit', () => {
     );
 
     await submit(f, (form) => {
-      return Promise.resolve([
+      return Promise.resolve(
         ValidationError.custom({
           kind: 'lastName',
           field: form.last,
         }),
-      ]);
+      );
     });
 
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'lastName'})]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'lastName', field: f.last})]);
   });
 
   it('maps errors to multiple fields', async () => {
@@ -73,10 +73,12 @@ describe('submit', () => {
       ]);
     });
 
-    expect(f.first().errors()).toEqual([ValidationError.custom({kind: 'firstName'})]);
+    expect(f.first().errors()).toEqual([
+      ValidationError.custom({kind: 'firstName', field: f.first}),
+    ]);
     expect(f.last().errors()).toEqual([
-      ValidationError.custom({kind: 'lastName'}),
-      ValidationError.custom({kind: 'lastName2'}),
+      ValidationError.custom({kind: 'lastName', field: f.last}),
+      ValidationError.custom({kind: 'lastName2', field: f.last}),
     ]);
   });
 
@@ -114,10 +116,10 @@ describe('submit', () => {
     );
 
     await submit(f, () => {
-      return Promise.resolve([ValidationError.custom()]);
+      return Promise.resolve(ValidationError.custom());
     });
 
-    expect(f().errors()).toEqual([ValidationError.custom()]);
+    expect(f().errors()).toEqual([ValidationError.custom({field: f})]);
   });
 
   it('marks the form as submitting', async () => {
@@ -197,7 +199,7 @@ describe('submit', () => {
 
     await submit(f.first, (form) => {
       submitSpy(form().value());
-      return Promise.resolve([ValidationError.custom({kind: 'lastName'})]);
+      return Promise.resolve(ValidationError.custom({kind: 'lastName'}));
     });
 
     expect(submitSpy).toHaveBeenCalledWith('meow');
@@ -228,13 +230,13 @@ describe('submit', () => {
       ];
     });
 
-    expect(f.first().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
+    expect(f.first().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.first})]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.last})]);
 
     f.first().value.set('Hello');
 
     expect(f.first().errors()).toEqual([]);
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit'})]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.last})]);
   });
 });
 

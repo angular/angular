@@ -11,7 +11,11 @@ import type {StandardSchemaV1} from '@standard-schema/spec';
 import {validateAsync} from '../async';
 import {property, validateTree} from '../logic';
 import {Field, FieldPath} from '../types';
-import {StandardSchemaValidationError, ValidationError, WithField} from '../validation_errors';
+import {
+  addDefaultField,
+  StandardSchemaValidationError,
+  ValidationError,
+} from '../validation_errors';
 
 /**
  * Utility type that removes a string index key when its value is `unknown`,
@@ -26,7 +30,7 @@ export type RemoveStringIndexUnknownKey<K, V> = string extends K
 
 /**
  * Utility type that recursively ignores unknown string index properties on the given object.
- * We use this on the `TSchema` type in `validateStandardSchema` in order to accomodate Zod's
+ * We use this on the `TSchema` type in `validateStandardSchema` in order to accommodate Zod's
  * `looseObject` which includes `{[key: string]: unknown}` as part of the type.
  */
 export type IgnoreUnknownProperties<T> =
@@ -95,11 +99,11 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
 function standardIssueToFormTreeError(
   field: Field<unknown>,
   issue: StandardSchemaV1.Issue,
-): WithField<StandardSchemaValidationError> {
+): StandardSchemaValidationError {
   let target = field as Field<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
-  return ValidationError.standardSchema(issue, '', target);
+  return addDefaultField(ValidationError.standardSchema(issue), target);
 }

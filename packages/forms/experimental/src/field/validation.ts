@@ -8,7 +8,7 @@
 
 import {computed, Signal} from '@angular/core';
 import type {ValidationResult} from '../api/types';
-import {stripField, type ValidationError, WithField} from '../api/validation_errors';
+import type {ValidationError} from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
@@ -35,7 +35,7 @@ export interface ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  rawSyncTreeErrors: Signal<WithField<ValidationError>[]>;
+  rawSyncTreeErrors: Signal<ValidationError[]>;
 
   /**
    * The full set of synchronous errors for this field, including synchronous tree errors and server
@@ -56,7 +56,7 @@ export interface ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]>;
+  rawAsyncErrors: Signal<(ValidationError | 'pending')[]>;
 
   /**
    * The combined set of all errors that currently apply to this field.
@@ -139,7 +139,7 @@ export class FieldValidationState implements ValidationState {
    * The full set of synchronous tree errors visible to this field. This includes ones that are
    * targeted at a descendant field rather than at this field.
    */
-  readonly rawSyncTreeErrors: Signal<WithField<ValidationError>[]> = computed(() => {
+  readonly rawSyncTreeErrors: Signal<ValidationError[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
@@ -164,7 +164,7 @@ export class FieldValidationState implements ValidationState {
 
     return [
       ...this.node.logicNode.logic.syncErrors.compute(this.node.context),
-      ...this.syncTreeErrors().map(stripField),
+      ...this.syncTreeErrors(),
       ...normalizeErrors(this.node.submitState.serverErrors()),
     ];
   });
@@ -191,7 +191,7 @@ export class FieldValidationState implements ValidationState {
    * The synchronous tree errors visible to this field that are specifically targeted at this field
    * rather than a descendant.
    */
-  readonly syncTreeErrors: Signal<WithField<ValidationError>[]> = computed(() =>
+  readonly syncTreeErrors: Signal<ValidationError[]> = computed(() =>
     this.rawSyncTreeErrors().filter((err) => err.field === this.node.fieldProxy),
   );
 
@@ -200,7 +200,7 @@ export class FieldValidationState implements ValidationState {
    * targeted at a descendant field rather than at this field, as well as sentinel 'pending' values
    * indicating that the validator is still running and an error could still occur.
    */
-  readonly rawAsyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(() => {
+  readonly rawAsyncErrors: Signal<(ValidationError | 'pending')[]> = computed(() => {
     // Short-circuit running validators if validation doesn't apply to this field.
     if (this.shouldSkipValidation()) {
       return [];
@@ -219,13 +219,13 @@ export class FieldValidationState implements ValidationState {
    * rather than a descendant. This also includes all 'pending' sentinel values, since those could
    * theoretically result in errors for this field.
    */
-  readonly asyncErrors: Signal<(WithField<ValidationError> | 'pending')[]> = computed(() => {
+  readonly asyncErrors: Signal<(ValidationError | 'pending')[]> = computed(() => {
     if (this.shouldSkipValidation()) {
       return [];
     }
     return this.rawAsyncErrors().filter(
-      (err) => err === 'pending' || err.field! === this.node.fieldProxy,
-    ) as Array<WithField<ValidationError> | 'pending'>;
+      (err) => err === 'pending' || err.field === this.node.fieldProxy,
+    );
   });
 
   /**
@@ -233,9 +233,7 @@ export class FieldValidationState implements ValidationState {
    */
   readonly errors = computed(() => [
     ...this.syncErrors(),
-    ...this.asyncErrors()
-      .filter((err) => err !== 'pending')
-      .map(stripField),
+    ...this.asyncErrors().filter((err) => err !== 'pending'),
   ]);
 
   /**

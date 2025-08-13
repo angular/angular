@@ -13,16 +13,19 @@ import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
+import {isArray} from '../util/type_guards';
 import type {
   Field,
   FieldPath,
   LogicFn,
+  OneOrMany,
   PathKind,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
+  TreeValidationResult,
 } from './types';
-import {stripField, ValidationError, WithField} from './validation_errors';
+import {addDefaultField, ValidationError, WithOptionalField} from './validation_errors';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {
@@ -318,7 +321,7 @@ export function applyWhenValue(
 
 /**
  * Submits a given `Field` using the given action function and applies any server errors resulting
- * from the action to the field. Server errors retured by the `action` will be integrated into the
+ * from the action to the field. Server errors returned by the `action` will be integrated into the
  * field as a `ValidationError` on the sub-field indicated by the `field` property of the server
  * error.
  *
@@ -348,7 +351,7 @@ export function applyWhenValue(
  */
 export async function submit<TValue>(
   form: Field<TValue>,
-  action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
+  action: (form: Field<TValue>) => Promise<TreeValidationResult>,
 ) {
   const node = form() as FieldNode;
   markAllAsTouched(node);
@@ -375,15 +378,21 @@ export async function submit<TValue>(
  */
 function setServerErrors(
   submittedField: FieldNode,
-  errors: (ValidationError | WithField<ValidationError>)[],
+  errors: OneOrMany<WithOptionalField<ValidationError>>,
 ) {
+  if (!isArray(errors)) {
+    errors = [errors];
+  }
   const errorsByField = new Map<FieldNode, ValidationError[]>();
   for (const error of errors) {
-    const field = (error.field?.() as FieldNode) ?? submittedField;
-    if (!errorsByField.has(field)) {
-      errorsByField.set(field, []);
+    const errorWithField = addDefaultField(error, submittedField.fieldProxy);
+    const field = errorWithField.field() as FieldNode;
+    let fieldErrors = errorsByField.get(field);
+    if (!fieldErrors) {
+      fieldErrors = [];
+      errorsByField.set(field, fieldErrors);
     }
-    errorsByField.get(field)!.push(stripField(error));
+    fieldErrors.push(errorWithField);
   }
   for (const [field, fieldErrors] of errorsByField) {
     field.submitState.serverErrors.set(fieldErrors);
