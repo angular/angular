@@ -177,8 +177,7 @@
           "enum": [
             "Emulated",
             "None",
-            "ShadowDom",
-            "IsolatedShadowDom"
+            "ShadowDom"
           ],
           "description": "The view encapsulation strategy to use in the new application."
         }
@@ -368,8 +367,7 @@
           "enum": [
             "Emulated",
             "None",
-            "ShadowDom",
-            "IsolatedShadowDom"
+            "ShadowDom"
           ],
           "description": "The view encapsulation strategy to use in the new component."
         }

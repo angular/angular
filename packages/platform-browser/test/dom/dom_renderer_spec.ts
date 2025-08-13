@@ -30,12 +30,10 @@ describe('DefaultDomRendererV2', () => {
       declarations: [
         TestCmp,
         SomeApp,
-        IsolatedShadowComponentParentApp,
         SomeAppForCleanUp,
         CmpEncapsulationEmulated,
         CmpEncapsulationNone,
         CmpEncapsulationShadow,
-        CmpEncapsulationIsolatedShadowWithChildren,
       ],
     });
     renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
@@ -111,63 +109,20 @@ describe('DefaultDomRendererV2', () => {
     });
   });
 
-  it('should style non-descendant components correctly with different types of encapsulation', () => {
+  it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM', () => {
     const fixture = TestBed.createComponent(SomeApp);
     fixture.detectChanges();
 
     const cmp = fixture.debugElement.query(By.css('cmp-shadow')).nativeElement;
-    const shadowRoot = cmp.shadowRoot;
-    const shadow = shadowRoot.querySelector('.shadow');
+    const shadow = cmp.shadowRoot.querySelector('.shadow');
+
     expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
 
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
+    const emulated = cmp.shadowRoot.querySelector('.emulated');
     expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
 
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
+    const none = cmp.shadowRoot.querySelector('.none');
     expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
-  });
-
-  it('should encapsulate shadow DOM components, with child components inheriting from shadow styles not global styles', () => {
-    const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
-    fixture.detectChanges();
-    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
-    const shadowRoot = shadowcmp.shadowRoot;
-
-    const shadow = shadowRoot.querySelector('.shadow');
-    expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
-
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).color).toEqual('rgb(255, 0, 0)');
-
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).color).toEqual('rgb(255, 0, 0)');
-  });
-
-  it('child components of shadow components should inherit browser defaults rather than their component styles', () => {
-    const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
-    fixture.detectChanges();
-
-    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
-    const shadowRoot = shadowcmp.shadowRoot;
-    const shadow = shadowRoot.querySelector('.shadow');
-    expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
-
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
-
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
-  });
-
-  it('shadow components should not be polluted by child components styles when using IsolatedShadowDom', () => {
-    const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
-    fixture.detectChanges();
-
-    const cmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
-    const shadowRoot = cmp.shadowRoot;
-    const shadow = shadowRoot.querySelector('.shadow');
-    expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 0, 255)');
-    expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 255, 0)');
   });
 
   it('should be able to append children to a <template> element', () => {
@@ -423,14 +378,8 @@ async function styleCount(
 
 @Component({
   selector: 'cmp-emulated',
-  template: `
-    <div class="emulated"></div>`,
-  styles: [
-    `.emulated {
-      background-color: blue;
-      color: blue;
-    }`,
-  ],
+  template: `<div class="emulated"></div>`,
+  styles: [`.emulated { color: blue; }`],
   encapsulation: ViewEncapsulation.Emulated,
   standalone: false,
 })
@@ -438,14 +387,8 @@ class CmpEncapsulationEmulated {}
 
 @Component({
   selector: 'cmp-none',
-  template: `
-    <div class="none"></div>`,
-  styles: [
-    `.none {
-      background-color: lime;
-      color: lime;
-    }`,
-  ],
+  template: `<div class="none"></div>`,
+  styles: [`.none { color: lime; }`],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
 })
@@ -453,16 +396,8 @@ class CmpEncapsulationNone {}
 
 @Component({
   selector: 'cmp-none',
-  template: `
-    <div class="none"></div>`,
-  styles: [
-    `.none {
-      background-color: lime;
-      color: lime;
-    }
-
-    /*# sourceMappingURL=cmp-none.css.map */`,
-  ],
+  template: `<div class="none"></div>`,
+  styles: [`.none { color: lime; }\n/*# sourceMappingURL=cmp-none.css.map */`],
   encapsulation: ViewEncapsulation.None,
   standalone: false,
 })
@@ -470,34 +405,12 @@ class CmpEncapsulationNoneWithSourceMap {}
 
 @Component({
   selector: 'cmp-shadow',
-  template: `
-    <div class="shadow"></div>`,
-  styles: [
-    `.shadow {
-      color: red;
-    }`,
-  ],
+  template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
+  styles: [`.shadow { color: red; }`],
   encapsulation: ViewEncapsulation.ShadowDom,
   standalone: false,
 })
 class CmpEncapsulationShadow {}
-
-@Component({
-  selector: 'cmp-shadow-children',
-  template: `
-    <div class="shadow">
-      <cmp-emulated></cmp-emulated>
-      <cmp-none></cmp-none>
-    </div>`,
-  styles: [
-    `.shadow {
-      color: red;
-    }`,
-  ],
-  encapsulation: ViewEncapsulation.IsolatedShadowDom,
-  standalone: false,
-})
-class CmpEncapsulationIsolatedShadowWithChildren {}
 
 @Component({
   selector: 'some-app',
@@ -509,15 +422,6 @@ class CmpEncapsulationIsolatedShadowWithChildren {}
   standalone: false,
 })
 export class SomeApp {}
-
-@Component({
-  selector: 'shadow-parent-app-with-children',
-  template: `
-    <cmp-shadow-children></cmp-shadow-children>
-  `,
-  standalone: false,
-})
-export class IsolatedShadowComponentParentApp {}
 
 @Component({
   selector: 'test-cmp',

@@ -47,10 +47,4 @@ export enum ViewEncapsulation {
    * all the Component's styling.
    */
   ShadowDom = 3,
-  /**
-   * Similar to `ShadowDom`, but prevents any external styles from leaking into the
-   * component's ShadowRoot. This is useful when you want to ensure that the component's
-   * styles are completely isolated from the rest of the application, including global styles.
-   */
-  IsolatedShadowDom = 4,
 }
