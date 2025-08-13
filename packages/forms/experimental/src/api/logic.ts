@@ -8,16 +8,8 @@
 
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateProperty, Property} from './property';
-import type {
-  FieldContext,
-  FieldPath,
-  LogicFn,
-  PathKind,
-  TreeValidationResultWithField,
-  TreeValidator,
-  Validator,
-} from './types';
+import {type AggregateProperty, Property} from './property';
+import type {FieldContext, FieldPath, LogicFn, PathKind, TreeValidator, Validator} from './types';
 import {addDefaultField} from './validation_errors';
 
 /**
@@ -113,7 +105,10 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncErrorRule(logic as Validator<TValue>);
+  const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) =>
+    addDefaultField(logic(ctx), ctx.field);
+
+  pathNode.logic.addSyncErrorRule(wrappedLogic as Validator<TValue>);
 }
 
 /**
@@ -135,9 +130,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   const wrappedLogic = (ctx: FieldContext<TValue, TPathKind>) =>
     addDefaultField(logic(ctx), ctx.field);
 
-  pathNode.logic.addSyncTreeErrorRule(
-    wrappedLogic as LogicFn<TValue, TreeValidationResultWithField>,
-  );
+  pathNode.logic.addSyncTreeErrorRule(wrappedLogic as TreeValidator<TValue>);
 }
 
 /**

@@ -21,7 +21,7 @@ import type {
   SchemaFn,
   SchemaOrSchemaFn,
 } from './types';
-import {stripField, ValidationError, WithField} from './validation_errors';
+import {addDefaultField, ValidationError} from './validation_errors';
 import {FieldAdapter, BasicFieldAdapter} from '../field/field_adapter';
 
 /** Options that may be specified when creating a form. */
@@ -348,7 +348,7 @@ export function applyWhenValue(
  */
 export async function submit<TValue>(
   form: Field<TValue>,
-  action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>,
+  action: (form: Field<TValue>) => Promise<ValidationError[] | void>,
 ) {
   const node = form() as FieldNode;
   markAllAsTouched(node);
@@ -373,17 +373,16 @@ export async function submit<TValue>(
  * @param submittedField The field that was submitted, resulting in the errors.
  * @param errors The errors to set.
  */
-function setServerErrors(
-  submittedField: FieldNode,
-  errors: (ValidationError | WithField<ValidationError>)[],
-) {
+function setServerErrors(submittedField: FieldNode, errors: ValidationError[]) {
   const errorsByField = new Map<FieldNode, ValidationError[]>();
   for (const error of errors) {
-    const field = (error.field?.() as FieldNode) ?? submittedField;
-    if (!errorsByField.has(field)) {
-      errorsByField.set(field, []);
+    const field = addDefaultField(error, submittedField.fieldProxy).field() as FieldNode;
+    let errors = errorsByField.get(field);
+    if (!errors) {
+      errors = [];
+      errorsByField.set(field, errors);
     }
-    errorsByField.get(field)!.push(stripField(error));
+    errors.push(error);
   }
   for (const [field, fieldErrors] of errorsByField) {
     field.submitState.serverErrors.set(fieldErrors);

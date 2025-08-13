@@ -24,7 +24,7 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.required()]);
+    expect(f.name().errors()).toEqual([ValidationError.required({field: f.name})]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -43,7 +43,9 @@ describe('required validator', () => {
       },
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.custom({kind: 'required-5'})]);
+    expect(f.name().errors()).toEqual([
+      ValidationError.custom({kind: 'required-5', field: f.name}),
+    ]);
     f.name().value.set('pirojok-the-cat');
     expect(f.name().errors()).toEqual([]);
   });
@@ -66,7 +68,7 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.name().value.set('empty');
-    expect(f.name().errors()).toEqual([ValidationError.required()]);
+    expect(f.name().errors()).toEqual([ValidationError.required({field: f.name})]);
   });
 
   it('supports custom condition', () => {
@@ -87,6 +89,6 @@ describe('required validator', () => {
 
     expect(f.name().errors()).toEqual([]);
     f.age().value.set(15);
-    expect(f.name().errors()).toEqual([ValidationError.required()]);
+    expect(f.name().errors()).toEqual([ValidationError.required({field: f.name})]);
   });
 });
