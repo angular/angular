@@ -58,11 +58,13 @@ export interface BootstrapConfig {
 export interface ModuleBootstrapConfig<M> extends BootstrapConfig {
   moduleRef: InternalNgModuleRef<M>;
   allPlatformModules: NgModuleRef<unknown>[];
+  rejectAsyncInitializers?: boolean;
 }
 
 export interface ApplicationBootstrapConfig extends BootstrapConfig {
   r3Injector: R3Injector;
   rootComponent: Type<unknown> | undefined;
+  rejectAsyncInitializers?: boolean;
 }
 
 function isApplicationBootstrapConfig(
@@ -74,12 +76,18 @@ function isApplicationBootstrapConfig(
 export function bootstrap<M>(
   moduleBootstrapConfig: ModuleBootstrapConfig<M>,
 ): Promise<NgModuleRef<M>>;
+export function bootstrap<M>(
+  moduleBootstrapConfig: ModuleBootstrapConfig<M> & {rejectAsyncInitializers: true},
+): NgModuleRef<M>;
 export function bootstrap(
   applicationBootstrapConfig: ApplicationBootstrapConfig,
 ): Promise<ApplicationRef>;
+export function bootstrap(
+  applicationBootstrapConfig: ApplicationBootstrapConfig & {rejectAsyncInitializers: true},
+): ApplicationRef;
 export function bootstrap<M>(
   config: ModuleBootstrapConfig<M> | ApplicationBootstrapConfig,
-): Promise<ApplicationRef> | Promise<NgModuleRef<M>> {
+): Promise<ApplicationRef> | Promise<NgModuleRef<M>> | ApplicationRef | NgModuleRef<M> {
   const envInjector = isApplicationBootstrapConfig(config)
     ? config.r3Injector
     : config.moduleRef.injector;
@@ -135,7 +143,7 @@ export function bootstrap<M>(
       const initStatus = envInjector.get(ApplicationInitStatus);
       initStatus.runInitializers();
 
-      return initStatus.donePromise.then(() => {
+      const onInit = () => {
         // If the `LOCALE_ID` provider is defined at bootstrap then we set the value for ivy
         const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
         setLocaleId(localeId || DEFAULT_LOCALE_ID);
@@ -165,7 +173,20 @@ export function bootstrap<M>(
           moduleBootstrapImpl?.(config.moduleRef, config.allPlatformModules);
           return config.moduleRef;
         }
-      });
+      };
+
+      if (config.rejectAsyncInitializers) {
+        if (!initStatus.done) {
+          throw new RuntimeError(
+            RuntimeErrorCode.ASYNC_INITIALIZERS_REJECTED,
+            ngDevMode && `Async initializers found when 'rejectAsyncInitializers' mode is enabled.`,
+          );
+        }
+
+        return onInit();
+      }
+
+      return initStatus.donePromise.then(onInit);
     });
   });
 }

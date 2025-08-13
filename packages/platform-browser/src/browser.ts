@@ -144,6 +144,16 @@ export function createApplication(options?: ApplicationConfig) {
   return internalCreateApplication(createProvidersConfig(options));
 }
 
+/**
+ * @internal
+ */
+createApplication.sync = function (options?: ApplicationConfig) {
+  return internalCreateApplication({
+    ...createProvidersConfig(options),
+    rejectAsyncInitializers: true,
+  });
+};
+
 function createProvidersConfig(options?: ApplicationConfig) {
   return {
     appProviders: [...BROWSER_MODULE_PROVIDERS, ...(options?.providers ?? [])],

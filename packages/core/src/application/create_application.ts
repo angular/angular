@@ -22,6 +22,12 @@ import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 
+type Config = {
+  rootComponent?: Type<unknown>;
+  appProviders?: Array<Provider | EnvironmentProviders>;
+  platformProviders?: Provider[];
+};
+
 /**
  * Internal create application API that implements the core application creation logic and optional
  * bootstrap logic.
@@ -34,11 +40,18 @@ import {errorHandlerEnvironmentInitializer} from '../error_handler';
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  */
 
+export function internalCreateApplication(config: Config): Promise<ApplicationRef>;
+export function internalCreateApplication(
+  config: Config & {
+    rejectAsyncInitializers: true;
+  },
+): ApplicationRef;
 export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>;
   appProviders?: Array<Provider | EnvironmentProviders>;
   platformProviders?: Provider[];
-}): Promise<ApplicationRef> {
+  rejectAsyncInitializers?: boolean;
+}): Promise<ApplicationRef> | ApplicationRef {
   profiler(ProfilerEvent.BootstrapApplicationStart);
   try {
     const {rootComponent, appProviders, platformProviders} = config;
@@ -70,8 +83,13 @@ export function internalCreateApplication(config: {
       r3Injector: adapter.injector,
       platformInjector,
       rootComponent,
+      rejectAsyncInitializers: config.rejectAsyncInitializers,
     });
   } catch (e) {
+    if (config.rejectAsyncInitializers) {
+      throw e;
+    }
+
     return Promise.reject(e);
   } finally {
     profiler(ProfilerEvent.BootstrapApplicationEnd);
