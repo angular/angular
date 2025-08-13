@@ -1,3 +1,16 @@
+<a name="20.2.0-rc.1"></a>
+# 20.2.0-rc.1 (2025-08-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [79b91593c9](https://github.com/angular/angular/commit/79b91593c92c8fe85a9875ea31d0a2df6d5f92e2) | fix | incorrect spans for AST inside input value with leading space ([#63082](https://github.com/angular/angular/pull/63082)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c81e345e72](https://github.com/angular/angular/commit/c81e345e726b5b281621159c789e6d80a9f328e2) | feat | support auto-import for attribute completions ([#62797](https://github.com/angular/angular/pull/62797)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.7"></a>
 # 20.1.7 (2025-08-13)
 ### compiler
