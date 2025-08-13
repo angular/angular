@@ -24,7 +24,10 @@ import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public
-export function addDefaultField<E extends ValidationError>(errors: TreeValidationResult<E>, field: Field<unknown>): TreeValidationResultWithField<E>;
+export function addDefaultField<E extends ValidationError>(error: E, field: Field<unknown>): E;
+
+// @public
+export function addDefaultField<E extends ValidationError>(errors: ValidationResult<E>, field: Field<unknown>): ValidationResult<E>;
 
 // @public
 export class AggregateProperty<TAcc, TItem> {
@@ -60,10 +63,7 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(path: FieldPath
 export function applyWhenValue<TValue>(path: FieldPath<TValue>, predicate: (value: TValue) => boolean, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
 
 // @public
-export type AsyncValidationResult<E extends ValidationError = ValidationError> = TreeValidationResult<E> | 'pending';
-
-// @public
-export type AsyncValidationResultWithField = TreeValidationResultWithField | 'pending';
+export type AsyncValidationResult<E extends ValidationError = ValidationError> = ValidationResult<E> | 'pending';
 
 // @public
 export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
@@ -126,15 +126,6 @@ export class Control<T> {
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Control<any>, never>;
 }
-
-// @public
-export function createError<TError extends ValidationError, TArgs extends any[]>(errorCtor: new (...args: TArgs) => TError, target: undefined, ...params: TArgs): TError;
-
-// @public (undocumented)
-export function createError<TError extends ValidationError, TArgs extends any[]>(errorCtor: new (...args: TArgs) => TError, target: Field<unknown>, ...params: TArgs): WithField<TError>;
-
-// @public (undocumented)
-export function createError<TError extends ValidationError, TArgs extends any[]>(errorCtor: new (...args: TArgs) => TError, target: Field<unknown> | undefined, ...params: TArgs): TError | WithField<TError>;
 
 // @public
 export class CustomValidationError extends ValidationError {
@@ -289,7 +280,7 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (ctx: FieldContext<TValue, TPathKind>) => TReturn;
 
 // @public
-export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (result: TResult, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (result: TResult, ctx: FieldContext<TValue, TPathKind>) => ValidationResult;
 
 // @public
 export const MAX: AggregateProperty<number | undefined, number | undefined>;
@@ -305,7 +296,7 @@ export function maxLength<TValue extends ValueWithLengthOrSize, TPathKind extend
 
 // @public
 export class MaxLengthValidationError extends _NgValidationError {
-    constructor(maxLength: number, message?: string);
+    constructor(maxLength: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "maxLength";
     // (undocumented)
@@ -314,7 +305,7 @@ export class MaxLengthValidationError extends _NgValidationError {
 
 // @public
 export class MaxValidationError extends _NgValidationError {
-    constructor(max: number, message?: string);
+    constructor(max: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "max";
     // (undocumented)
@@ -338,7 +329,7 @@ export function minLength<TValue extends ValueWithLengthOrSize, TPathKind extend
 
 // @public
 export class MinLengthValidationError extends _NgValidationError {
-    constructor(minLength: number, message?: string);
+    constructor(minLength: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "minLength";
     // (undocumented)
@@ -347,7 +338,7 @@ export class MinLengthValidationError extends _NgValidationError {
 
 // @public
 export class MinValidationError extends _NgValidationError {
-    constructor(min: number, message?: string);
+    constructor(min: number, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "min";
     // (undocumented)
@@ -391,7 +382,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(path: FieldP
 
 // @public
 export class PatternValidationError extends _NgValidationError {
-    constructor(pattern: RegExp, message?: string);
+    constructor(pattern: RegExp, options?: ValidationErrorOptions);
     // (undocumented)
     readonly kind = "pattern";
     // (undocumented)
@@ -457,7 +448,7 @@ export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root>
 
 // @public
 export class StandardSchemaValidationError extends _NgValidationError {
-    constructor(issue: StandardSchemaV1.Issue, message?: string);
+    constructor(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions);
     // (undocumented)
     readonly issue: StandardSchemaV1.Issue;
     // (undocumented)
@@ -465,27 +456,18 @@ export class StandardSchemaValidationError extends _NgValidationError {
 }
 
 // @public
-export function stripField<E extends ValidationError>(e: WithField<E> | E): E;
-
-// @public
 export type Subfields<TValue> = {
     readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<TValue[K], string>;
 };
 
 // @public
-export function submit<TValue>(form: Field<TValue>, action: (form: Field<TValue>) => Promise<(ValidationError | WithField<ValidationError>)[] | void>): Promise<void>;
+export function submit<TValue>(form: Field<TValue>, action: (form: Field<TValue>) => Promise<ValidationError[] | void>): Promise<void>;
 
 // @public
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
 // @public
-export type TreeValidationResult<E extends ValidationError = ValidationError> = readonly (E | WithField<E>)[] | E | WithField<E> | null | undefined;
-
-// @public
-export type TreeValidationResultWithField<E extends ValidationError = ValidationError> = readonly WithField<E>[] | WithField<E> | null | undefined;
-
-// @public
-export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, TreeValidationResult, TPathKind>;
+export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult, TPathKind>;
 
 // @public
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic: NoInfer<Validator<TValue, TPathKind>>): void;
@@ -502,29 +484,19 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 // @public
 export abstract class ValidationError {
     [BRAND]: undefined;
-    constructor(
-    message?: string | undefined);
-    static custom<E extends Omit<Partial<ValidationError>, typeof BRAND>>(obj?: E): CustomValidationError;
-    static custom<E extends Omit<Partial<WithField<ValidationError>>, typeof BRAND>>(obj: E): WithField<CustomValidationError | ValidationError>;
-    static email(message?: string): EmailValidationError;
-    static email(message: string | undefined, field: Field<unknown>): WithField<EmailValidationError>;
-    readonly field?: never;
+    constructor(options?: ValidationErrorOptions);
+    static custom<E extends Omit<Partial<ValidationError>, typeof BRAND>>(obj?: E & ValidationErrorOptions): CustomValidationError;
+    static email(options?: ValidationErrorOptions): EmailValidationError;
+    readonly field: Field<unknown>;
     readonly kind: string;
-    static max(max: number, message?: string): MaxValidationError;
-    static max(max: number, message: string | undefined, field: Field<unknown>): WithField<MaxValidationError>;
-    static maxLength(maxLength: number, message?: string): MaxLengthValidationError;
-    static maxLength(maxLength: number, message: string | undefined, field: Field<unknown>): WithField<MaxLengthValidationError>;
-    readonly message?: string | undefined;
-    static min(min: number, message?: string): MinValidationError;
-    static min(min: number, message: string | undefined, field: Field<unknown>): WithField<MinValidationError>;
-    static minLength(minLength: number, message?: string): MinLengthValidationError;
-    static minLength(minLength: number, message: string | undefined, field: Field<unknown>): WithField<MinLengthValidationError>;
-    static pattern(pattern: RegExp, message?: string): PatternValidationError;
-    static pattern(pattern: RegExp, message: string | undefined, field: Field<unknown>): WithField<PatternValidationError>;
-    static required(message?: string): RequiredValidationError;
-    static required(message: string | undefined, field: Field<unknown>): WithField<RequiredValidationError>;
-    static standardSchema(issue: StandardSchemaV1.Issue, message?: string): StandardSchemaValidationError;
-    static standardSchema(issue: StandardSchemaV1.Issue, message: string | undefined, field: Field<unknown>): WithField<StandardSchemaValidationError>;
+    static max(max: number, options?: ValidationErrorOptions): MaxValidationError;
+    static maxLength(maxLength: number, options?: ValidationErrorOptions): MaxLengthValidationError;
+    readonly message?: string;
+    static min(min: number, options?: ValidationErrorOptions): MinValidationError;
+    static minLength(minLength: number, options?: ValidationErrorOptions): MinLengthValidationError;
+    static pattern(pattern: RegExp, options?: ValidationErrorOptions): PatternValidationError;
+    static required(options?: ValidationErrorOptions): RequiredValidationError;
+    static standardSchema(issue: StandardSchemaV1.Issue, options?: ValidationErrorOptions): StandardSchemaValidationError;
 }
 
 // @public
@@ -532,11 +504,6 @@ export type ValidationResult<E extends ValidationError = ValidationError> = read
 
 // @public
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult, TPathKind>;
-
-// @public
-export type WithField<E extends ValidationError> = Omit<E, 'field'> & {
-    readonly field: Field<unknown>;
-};
 
 // (No @packageDocumentation comment for this package)
 

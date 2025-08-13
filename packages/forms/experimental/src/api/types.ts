@@ -9,7 +9,7 @@
 import {Signal, WritableSignal} from '@angular/core';
 import type {Control} from '../controls/control';
 import {AggregateProperty, Property} from './property';
-import type {ValidationError, WithField} from './validation_errors';
+import type {ValidationError} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -85,22 +85,6 @@ export type ValidationResult<E extends ValidationError = ValidationError> =
   | undefined;
 
 /**
- * The result of running a tree validation function. The result may be:
- * 1. `undefined`, `null`, or `false` to indicate no errors.
- * 2. A single `ValidationError` to indicate an error on the field being validated.
- * 3. A single `ValidationError` with a field to indicate an error on the target field.
- * 4. A list of `ValidationError` (potentially with a field) to indicate multiple errors.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type TreeValidationResult<E extends ValidationError = ValidationError> =
-  | readonly (E | WithField<E>)[]
-  | E
-  | WithField<E>
-  | null
-  | undefined;
-
-/**
  * The result of running an async validation function. The result may be:
  * 1. `undefined`, `null`, or `false` to indicate no errors.
  * 2. A single `ValidationError` to indicate an error on the field being validated.
@@ -111,32 +95,14 @@ export type TreeValidationResult<E extends ValidationError = ValidationError> =
  * @template E the type of `ValidationError` (defaults to any `ValidationError`).
  */
 export type AsyncValidationResult<E extends ValidationError = ValidationError> =
-  | TreeValidationResult<E>
+  | ValidationResult<E>
   | 'pending';
-
-/**
- * The same as `TreeValidationResult`, except that any errors **must** specify a target field.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type TreeValidationResultWithField<E extends ValidationError = ValidationError> =
-  | readonly WithField<E>[]
-  | WithField<E>
-  | null
-  | undefined;
-
-/**
- * The same as `AsyncValidationResult`, except that any errors **must** specify a target field.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type AsyncValidationResultWithField = TreeValidationResultWithField | 'pending';
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
- * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structue of the
- * underlaying data. For example a `Field<{x: number}>` has a property `x` which contains a
+ * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structure of the
+ * underlying data. For example a `Field<{x: number}>` has a property `x` which contains a
  * `Field<number>`. To access the state associated with a field, call it as a function.
  *
  * @template TValue The type of the data which the field is wrapped around.
@@ -375,7 +341,7 @@ export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root>
   | SchemaFn<TValue, TPathKind>;
 
 /**
- * A function that recevies the `FieldContext` for the field the logic is bound to and returns
+ * A function that receives the `FieldContext` for the field the logic is bound to and returns
  * a specific result type.
  *
  * @template TValue The data type for the field the logic is bound to.
@@ -408,7 +374,7 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
  */
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  TreeValidationResult,
+  ValidationResult,
   TPathKind
 >;
 

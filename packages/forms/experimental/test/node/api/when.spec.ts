@@ -45,7 +45,7 @@ describe('when', () => {
     f().value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last().errors()).toEqual([]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last().errors()).toEqual([ValidationError.required()]);
+    expect(f.last().errors()).toEqual([ValidationError.required({field: f.last})]);
   });
 
   it('Disallows using non-local paths', () => {
@@ -93,11 +93,13 @@ describe('when', () => {
     );
     f.needLastName().value.set(true);
     expect(f.items[0].last().errors()).toEqual([
-      ValidationError.custom({kind: 'required1'}),
-      ValidationError.custom({kind: 'required2'}),
+      ValidationError.custom({kind: 'required1', field: f.items[0].last}),
+      ValidationError.custom({kind: 'required2', field: f.items[0].last}),
     ]);
     f.needLastName().value.set(false);
-    expect(f.items[0].last().errors()).toEqual([ValidationError.custom({kind: 'required1'})]);
+    expect(f.items[0].last().errors()).toEqual([
+      ValidationError.custom({kind: 'required1', field: f.items[0].last}),
+    ]);
   });
 
   it('accepts a schema', () => {
@@ -119,7 +121,7 @@ describe('when', () => {
     f().value.set({first: 'meow', needLastName: false, last: ''});
     expect(f.last().errors()).toEqual([]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
-    expect(f.last().errors()).toEqual([ValidationError.required()]);
+    expect(f.last().errors()).toEqual([ValidationError.required({field: f.last})]);
   });
 
   it('supports mix of conditional and non conditional validators', () => {
@@ -141,11 +143,11 @@ describe('when', () => {
     );
 
     f().value.set({first: 'meow', needLastName: false, last: ''});
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'short'})]);
+    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'short', field: f.last})]);
     f().value.set({first: 'meow', needLastName: true, last: ''});
     expect(f.last().errors()).toEqual([
-      ValidationError.custom({kind: 'short'}),
-      ValidationError.required(),
+      ValidationError.custom({kind: 'short', field: f.last}),
+      ValidationError.required({field: f.last}),
     ]);
   });
 
@@ -167,7 +169,9 @@ describe('when', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.items[0].last().errors()).toEqual([ValidationError.required()]);
+    expect(f.items[0].last().errors()).toEqual([
+      ValidationError.required({field: f.items[0].last}),
+    ]);
     f.needLastName().value.set(false);
     expect(f.items[0].last().errors()).toEqual([]);
   });
@@ -192,11 +196,17 @@ describe('applyWhenValue', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
+    expect(f.numOrNull().errors()).toEqual([
+      ValidationError.custom({kind: 'too-small', field: f.numOrNull}),
+    ]);
     f.numOrNull().value.set(5);
-    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
+    expect(f.numOrNull().errors()).toEqual([
+      ValidationError.custom({kind: 'too-small', field: f.numOrNull}),
+    ]);
     f.numOrNull().value.set(null);
-    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
+    expect(f.numOrNull().errors()).toEqual([
+      ValidationError.custom({kind: 'too-small', field: f.numOrNull}),
+    ]);
     f.numOrNull().value.set(15);
     expect(f.numOrNull().errors()).toEqual([]);
   });
@@ -221,7 +231,9 @@ describe('applyWhenValue', () => {
 
     expect(f.numOrNull().errors()).toEqual([]);
     f.numOrNull().value.set(5);
-    expect(f.numOrNull().errors()).toEqual([ValidationError.custom({kind: 'too-small'})]);
+    expect(f.numOrNull().errors()).toEqual([
+      ValidationError.custom({kind: 'too-small', field: f.numOrNull}),
+    ]);
     f.numOrNull().value.set(null);
     expect(f.numOrNull().errors()).toEqual([]);
     f.numOrNull().value.set(15);
