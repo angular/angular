@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {LogicFn, OneOrMany, PathKind} from '../types';
+import {ValidationError, WithoutField} from '../validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -19,9 +19,8 @@ export interface BaseValidatorConfig<T, TPathKind extends PathKind = PathKind.Ro
    * or a function that receives the `FieldContext` and returns custom validation error(s).
    */
   error?:
-    | ValidationError
-    | ValidationError[]
-    | LogicFn<T, ValidationError | ValidationError[], TPathKind>;
+    | OneOrMany<WithoutField<ValidationError>>
+    | LogicFn<T, OneOrMany<WithoutField<ValidationError>>, TPathKind>;
 }
 
 export function getLengthOrSize(value: ValueWithLengthOrSize) {

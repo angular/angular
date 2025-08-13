@@ -9,7 +9,7 @@
 import {untracked} from '@angular/core';
 import {AggregateProperty, Property} from '../api/property';
 import {DisabledReason, type FieldContext, type FieldPath, type LogicFn} from '../api/types';
-import {ValidationError, WithField} from '../api/validation_errors';
+import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 
@@ -133,7 +133,7 @@ export class BooleanOrLogic extends AbstractLogic<boolean> {
  */
 export class ArrayMergeIgnoreLogic<TElement, TIgnore = never> extends AbstractLogic<
   readonly TElement[],
-  TElement | readonly (TElement | TIgnore)[] | TIgnore | undefined
+  TElement | readonly (TElement | TIgnore)[] | TIgnore | undefined | void
 > {
   /** Creates an instance of this class that ignores `null` values. */
   static ignoreNull<TElement>(predicates: ReadonlyArray<BoundPredicate>) {
@@ -255,9 +255,9 @@ export class LogicContainer {
   /** Logic that produces synchronous validation errors for the field. */
   readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeIgnoreLogic<WithField<ValidationError>, null>;
+  readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeIgnoreLogic<WithField<ValidationError> | 'pending', null>;
+  readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError | 'pending', null>;
   /** A map of aggregate properties to the `AbstractLogic` instances that compute their values. */
   private readonly aggregateProperties = new Map<
     AggregateProperty<unknown, unknown>,
@@ -279,10 +279,8 @@ export class LogicContainer {
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
     this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
-    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError>>(predicates);
-    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<WithField<ValidationError> | 'pending'>(
-      predicates,
-    );
+    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError | 'pending'>(predicates);
   }
 
   /**

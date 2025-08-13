@@ -22,7 +22,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.text().errors()).toEqual([ValidationError.maxLength(3)]);
+    expect(f.text().errors()).toEqual([ValidationError.maxLength(3, {field: f.text})]);
   });
 
   it('returns maxLength error when the length is larger for arrays', () => {
@@ -35,7 +35,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.list().errors()).toEqual([ValidationError.maxLength(3)]);
+    expect(f.list().errors()).toEqual([ValidationError.maxLength(3, {field: f.list})]);
   });
 
   it('is inclusive (no error if length equals maxLength)', () => {
@@ -85,6 +85,7 @@ describe('maxLength validator', () => {
       ValidationError.custom({
         kind: 'special-maxLength',
         message: 'Length is 6',
+        field: f.text,
       }),
     ]);
   });
@@ -99,7 +100,7 @@ describe('maxLength validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f().errors()).toEqual([ValidationError.maxLength(3)]);
+    expect(f().errors()).toEqual([ValidationError.maxLength(3, {field: f})]);
   });
 
   describe('custom properties', () => {
@@ -136,12 +137,12 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        ValidationError.maxLength(10),
-        ValidationError.maxLength(5),
+        ValidationError.maxLength(10, {field: f.text}),
+        ValidationError.maxLength(5, {field: f.text}),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5, {field: f.text})]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
@@ -163,19 +164,19 @@ describe('maxLength validator', () => {
 
       f.text().value.set('abcdefghijklmno');
       expect(f.text().errors()).toEqual([
-        ValidationError.maxLength(10),
-        ValidationError.maxLength(5),
+        ValidationError.maxLength(10, {field: f.text}),
+        ValidationError.maxLength(5, {field: f.text}),
       ]);
 
       f.text().value.set('abcdefg');
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5, {field: f.text})]);
 
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
       maxLengthSignal.set(2);
 
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(2)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(2, {field: f.text})]);
       expect(f.text().property(MAX_LENGTH)()).toBe(2);
     });
   });
@@ -192,7 +193,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5, {field: f.text})]);
       dynamicMaxLength.set(7);
       expect(f.text().errors()).toEqual([]);
     });
@@ -207,7 +208,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(5)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(5, {field: f.text})]);
       dynamicMaxLength.set(undefined);
       expect(f.text().errors()).toEqual([]);
     });
@@ -224,7 +225,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().errors()).toEqual([ValidationError.maxLength(8)]);
+      expect(f.text().errors()).toEqual([ValidationError.maxLength(8, {field: f.text})]);
 
       f.category().value.set('B');
       expect(f.text().errors()).toEqual([]);

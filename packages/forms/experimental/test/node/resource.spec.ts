@@ -82,6 +82,7 @@ describe('resources', () => {
     expect(f.name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: cat',
+        field: f.name,
       }),
     ]);
 
@@ -90,6 +91,7 @@ describe('resources', () => {
     expect(f.name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: dog',
+        field: f.name,
       }),
     ]);
   });
@@ -124,11 +126,13 @@ describe('resources', () => {
     expect(f[0].name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: cat',
+        field: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: dog',
+        field: f[1].name,
       }),
     ]);
 
@@ -137,11 +141,13 @@ describe('resources', () => {
     expect(f[0].name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: bunny',
+        field: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
       ValidationError.custom({
         message: 'got: dog',
+        field: f[1].name,
       }),
     ]);
   });
@@ -174,10 +180,10 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Ziggy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Ziggy', field: f[1]}),
     ]);
   });
 
@@ -207,7 +213,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy'}),
+      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -278,6 +284,8 @@ describe('resources', () => {
     req.flush('Invalid!');
     await appRef.whenStable();
 
-    expect(addressForm.street().errors()).toEqual([ValidationError.custom({message: 'Invalid!'})]);
+    expect(addressForm.street().errors()).toEqual([
+      ValidationError.custom({message: 'Invalid!', field: addressForm.street}),
+    ]);
   });
 });

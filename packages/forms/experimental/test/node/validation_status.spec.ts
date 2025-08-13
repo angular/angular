@@ -9,16 +9,16 @@
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Field, form, validate, validateAsync, validateTree} from '../../public_api';
-import {NgValidationError, ValidationError, WithField} from '../../src/api/validation_errors';
+import {NgValidationError, ValidationError, WithoutField} from '../../src/api/validation_errors';
 
-function validateValue(value: string): ValidationError[] {
+function validateValue(value: string): WithoutField<ValidationError>[] {
   return value === 'INVALID' ? [ValidationError.custom()] : [];
 }
 
 function validateValueForChild(
   value: string,
   field: Field<unknown> | undefined,
-): WithField<ValidationError>[] {
+): ValidationError[] {
   return value === 'INVALID' ? [ValidationError.custom({field})] : [];
 }
 
@@ -182,7 +182,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<WithField<ValidationError>[]>((r) =>
+                  new Promise<ValidationError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -230,7 +230,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<WithField<ValidationError>[]>((r) =>
+                  new Promise<ValidationError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -282,7 +282,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<WithField<ValidationError>[]>((r) =>
+                  new Promise<ValidationError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -337,7 +337,7 @@ describe('validation status', () => {
               (res = resource({
                 params,
                 loader: ({params}) =>
-                  new Promise<WithField<ValidationError>[]>((r) =>
+                  new Promise<ValidationError[]>((r) =>
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
@@ -406,8 +406,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res = resource({
                 params,
-                loader: () =>
-                  new Promise<WithField<ValidationError>[]>((r) => setTimeout(() => r([]))),
+                loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]))),
               })),
             errors: (errs) => errs,
           });
@@ -445,8 +444,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () =>
-                  new Promise<WithField<ValidationError>[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]), 10)),
               })),
             errors: (errs) => errs,
           });
@@ -485,8 +483,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () =>
-                  new Promise<WithField<ValidationError>[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]), 10)),
               })),
             errors: (errs) => errs,
           });

@@ -9,7 +9,7 @@
 import {Signal, WritableSignal} from '@angular/core';
 import type {Control} from '../controls/control';
 import {AggregateProperty, Property} from './property';
-import type {ValidationError, WithField} from './validation_errors';
+import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -23,6 +23,12 @@ declare const ɵɵTYPE: unique symbol;
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
+
+/**
+ * A type that represents either a single value of type `T` or a readonly array of `T`.
+ * @template T The type of the value(s).
+ */
+export type OneOrMany<T> = T | readonly T[];
 
 /**
  * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
@@ -70,73 +76,71 @@ export interface DisabledReason {
   readonly reason?: string;
 }
 
-/**
- * The result of running a validation function. The result may be:
- * 1. `undefined`, `null`, or `false` to indicate no errors.
- * 2. A single `ValidationError` to indicate an error on the field being validated.
- * 3. A list of `ValidationError` to indicate multiple errors on the field being validated.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type ValidationResult<E extends ValidationError = ValidationError> =
-  | readonly E[]
-  | E
-  | null
-  | undefined;
+/** The absence of an error which indicates a successful validation result. */
+export type ValidationSuccess = null | undefined | void;
 
 /**
- * The result of running a tree validation function. The result may be:
- * 1. `undefined`, `null`, or `false` to indicate no errors.
- * 2. A single `ValidationError` to indicate an error on the field being validated.
- * 3. A single `ValidationError` with a field to indicate an error on the target field.
- * 4. A list of `ValidationError` (potentially with a field) to indicate multiple errors.
+ * The result of running a field validation function.
  *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
+ * The result may be one of the following:
+ * 1. A {@link ValidationSuccess} to indicate no errors.
+ * 2. A {@link ValidationError} without a field to indicate an error on the field being validated.
+ * 3. A list of {@link ValidationError} without fields to indicate multiple errors on the field
+ *    being validated.
+ *
+ * @template E the type of error (defaults to {@link ValidationError}).
+ */
+export type FieldValidationResult<E extends ValidationError = ValidationError> =
+  | ValidationSuccess
+  | OneOrMany<WithoutField<E>>;
+
+/**
+ * The result of running a tree validation function.
+ *
+ * The result may be one of the following:
+ * 1. A {@link ValidationSuccess} to indicate no errors.
+ * 2. A {@link ValidationError} without a field to indicate an error on the field being validated.
+ * 3. A {@link ValidationError} with a field to indicate an error on the target field.
+ * 4. A list of {@link ValidationError} with or without fields to indicate multiple errors.
+ *
+ * @template E the type of error (defaults to {@link ValidationError}).
  */
 export type TreeValidationResult<E extends ValidationError = ValidationError> =
-  | readonly (E | WithField<E>)[]
-  | E
-  | WithField<E>
-  | null
-  | undefined;
+  | ValidationSuccess
+  | OneOrMany<WithOptionalField<E>>;
 
 /**
- * The result of running an async validation function. The result may be:
- * 1. `undefined`, `null`, or `false` to indicate no errors.
- * 2. A single `ValidationError` to indicate an error on the field being validated.
- * 3. A single `ValidationError` with a field to indicate an error on the target field.
- * 4. A list of `ValidationError` (potentially with a field) to indicate multiple errors.
+ * A validation result where all errors explicitly define their target field.
+ *
+ * The result may be one of the following:
+ * 1. A {@link ValidationSuccess} to indicate no errors.
+ * 2. A {@link ValidationError} with a field to indicate an error on the target field.
+ * 3. A list of {@link ValidationError} with fields to indicate multiple errors.
+ *
+ * @template E the type of error (defaults to {@link ValidationError}).
+ */
+export type ValidationResult<E extends ValidationError = ValidationError> =
+  | ValidationSuccess
+  | OneOrMany<E>;
+
+/**
+ * An asynchronous validation result where all errors explicitly define their target field.
+ *
+ * The result may be one of the following:
+ * 1. A {@link ValidationResult} to indicate the result if resolved.
  * 5. 'pending' if the validation is not yet resolved.
  *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
+ * @template E the type of error (defaults to {@link ValidationError}).
  */
 export type AsyncValidationResult<E extends ValidationError = ValidationError> =
-  | TreeValidationResult<E>
+  | ValidationResult<E>
   | 'pending';
-
-/**
- * The same as `TreeValidationResult`, except that any errors **must** specify a target field.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type TreeValidationResultWithField<E extends ValidationError = ValidationError> =
-  | readonly WithField<E>[]
-  | WithField<E>
-  | null
-  | undefined;
-
-/**
- * The same as `AsyncValidationResult`, except that any errors **must** specify a target field.
- *
- * @template E the type of `ValidationError` (defaults to any `ValidationError`).
- */
-export type AsyncValidationResultWithField = TreeValidationResultWithField | 'pending';
 
 /**
  * An object that represents a single field in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
- * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structue of the
- * underlaying data. For example a `Field<{x: number}>` has a property `x` which contains a
+ * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structure of the
+ * underlying data. For example a `Field<{x: number}>` has a property `x` which contains a
  * `Field<number>`. To access the state associated with a field, call it as a function.
  *
  * @template TValue The type of the data which the field is wrapped around.
@@ -379,7 +383,7 @@ export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root>
   | SchemaFn<TValue, TPathKind>;
 
 /**
- * A function that recevies the `FieldContext` for the field the logic is bound to and returns
+ * A function that receives the `FieldContext` for the field the logic is bound to and returns
  * a specific result type.
  *
  * @template TValue The data type for the field the logic is bound to.
@@ -397,9 +401,9 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  */
-export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  ValidationResult,
+  FieldValidationResult,
   TPathKind
 >;
 
@@ -413,6 +417,20 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
   TreeValidationResult,
+  TPathKind
+>;
+
+/**
+ * A function that takes the `FieldContext` for the field being validated and returns a
+ * `ValidationResult` indicating errors for the field and its sub-fields. In a `Validator` all
+ * errors must explicitly define their target field.
+ *
+ * @template TValue The type of value stored in the field being validated
+ * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ */
+export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
+  TValue,
+  ValidationResult,
   TPathKind
 >;
 

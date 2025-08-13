@@ -7,12 +7,11 @@
  */
 
 import {AggregateProperty, Property} from '../api/property';
-import {
-  AsyncValidationResultWithField,
+import type {
+  AsyncValidationResult,
   DisabledReason,
   FieldContext,
   LogicFn,
-  TreeValidationResultWithField,
   ValidationResult,
 } from '../api/types';
 import {setBoundPathDepthForResolution} from '../field/resolution';
@@ -39,9 +38,9 @@ export abstract class AbstractLogicNodeBuilder {
   /** Adds a rule for synchronous validation errors for a field. */
   abstract addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void;
   /** Adds a rule for synchronous validation errors that apply to a subtree. */
-  abstract addSyncTreeErrorRule(logic: LogicFn<any, TreeValidationResultWithField>): void;
+  abstract addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void;
   /** Adds a rule for asynchronous validation errors for a field. */
-  abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResultWithField>): void;
+  abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute an aggregate property for a field. */
   abstract addAggregatePropertyRule<M>(
     key: AggregateProperty<unknown, M>,
@@ -110,11 +109,11 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addSyncErrorRule(logic);
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, TreeValidationResultWithField>): void {
+  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void {
     this.getCurrent().addSyncTreeErrorRule(logic);
   }
 
-  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResultWithField>): void {
+  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
@@ -223,11 +222,11 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, TreeValidationResultWithField>): void {
+  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void {
     this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResultWithField>): void {
+  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
