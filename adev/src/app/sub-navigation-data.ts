@@ -1165,6 +1165,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'cli/generate',
           },
           {
+            label: 'ai-config',
+            path: 'cli/generate/ai-config',
+          },
+          {
             label: 'app-shell',
             path: 'cli/generate/app-shell',
           },
