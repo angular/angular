@@ -20,7 +20,6 @@ NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
     "rxjs",
     "systemjs",
     "tslib",
-    "patch-package",
     "protractor",
     "terser",
     "rollup",
