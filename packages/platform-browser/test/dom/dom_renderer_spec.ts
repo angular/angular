@@ -31,10 +31,12 @@ describe('DefaultDomRendererV2', () => {
         TestCmp,
         SomeApp,
         IsolatedShadowComponentParentApp,
+        IsolatedShadowComponentProjectionParentApp,
         SomeAppForCleanUp,
         CmpEncapsulationEmulated,
         CmpEncapsulationNone,
         CmpEncapsulationShadow,
+        CmpEncapsulationIsolatedShadowProjectedChildren,
         CmpEncapsulationIsolatedShadowWithChildren,
       ],
     });
@@ -130,44 +132,74 @@ describe('DefaultDomRendererV2', () => {
   it('should encapsulate shadow DOM components, with child components inheriting from shadow styles not global styles', () => {
     const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
     fixture.detectChanges();
-    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
+
+    const shadowcmp = fixture.debugElement.query(
+      By.css('cmp-isolated-shadow-children'),
+    ).nativeElement;
     const shadowRoot = shadowcmp.shadowRoot;
+
+    // Check that styles are actually in the shadow root
+    const styleElements = shadowRoot.querySelectorAll('style');
+    let hasEmulatedStyles = false;
+    let hasNoneStyles = false;
+
+    for (const styleEl of styleElements) {
+      const styleContent = styleEl.textContent || '';
+      if (styleContent.includes('.emulated') && styleContent.includes('blue')) {
+        hasEmulatedStyles = true;
+      }
+      if (styleContent.includes('.none') && styleContent.includes('lime')) {
+        hasNoneStyles = true;
+      }
+    }
 
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
-
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).color).toEqual('rgb(255, 0, 0)');
-
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).color).toEqual('rgb(255, 0, 0)');
+    expect(hasEmulatedStyles).toBe(true);
+    expect(hasNoneStyles).toBe(true);
   });
 
-  it('child components of shadow components should inherit browser defaults rather than their component styles', () => {
+  it('child components of shadow components should have their styles applied within isolated shadow DOM', async () => {
     const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
     fixture.detectChanges();
 
-    const shadowcmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
+    // Wait for async operations to complete
+    await fixture.whenStable();
+
+    const shadowcmp = fixture.debugElement.query(
+      By.css('cmp-isolated-shadow-children'),
+    ).nativeElement;
     const shadowRoot = shadowcmp.shadowRoot;
+
+    // Verify the shadow component's own styles work
     const shadow = shadowRoot.querySelector('.shadow');
     expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
 
-    const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+    // Styles should be present in the shadow root
+    expect(hasEmulatedStyles(shadowRoot)).toBe(true);
+    expect(hasNoneStyles(shadowRoot)).toBe(true);
 
-    const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+    // Since all emulated/none components are inside the isolated shadow DOM,
+    // no emulated/none styles should be in document.head
+    expect(hasEmulatedStyles(document)).toBe(false);
+    expect(hasNoneStyles(document)).toBe(false);
   });
 
-  it('shadow components should not be polluted by child components styles when using ExperimentalIsolatedShadowDom', () => {
-    const fixture = TestBed.createComponent(IsolatedShadowComponentParentApp);
+  it('shadow components with projected components should apply correct styles when using ExperimentalIsolatedShadowDom', async () => {
+    const fixture = TestBed.createComponent(IsolatedShadowComponentProjectionParentApp);
     fixture.detectChanges();
 
-    const cmp = fixture.debugElement.query(By.css('cmp-shadow-children')).nativeElement;
-    const shadowRoot = cmp.shadowRoot;
+    const shadowcmp = fixture.debugElement.query(
+      By.css('cmp-shadow-projected-children'),
+    ).nativeElement;
+    const shadowRoot = shadowcmp.shadowRoot;
+
     const shadow = shadowRoot.querySelector('.shadow');
-    expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 0, 255)');
-    expect(window.getComputedStyle(shadow).backgroundColor).not.toEqual('rgb(0, 255, 0)');
+    expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+
+    // Verify there's exactly one emulated style and one shadow style across the entire fixture
+    expect(await styleCount(fixture, '.emulated')).toBe(1);
+    expect(await styleCount(fixture, '.shadow')).toBe(1);
   });
 
   it('should be able to append children to a <template> element', () => {
@@ -417,16 +449,58 @@ async function styleCount(
     setTimeout(() => resolve(), 0);
   });
 
-  const html = fixture.debugElement.parent?.parent;
-  const debugElements = html?.queryAll(By.css('style'));
+  let count = 0;
 
-  if (!debugElements) {
-    return 0;
+  // Check document head styles
+  const headStyles = document.head.querySelectorAll('style');
+  for (const styleEl of headStyles) {
+    if (styleEl.textContent?.includes(cssContentMatcher)) {
+      count++;
+    }
   }
 
-  return debugElements.filter(({nativeElement}) =>
-    nativeElement.textContent.includes(cssContentMatcher),
-  ).length;
+  // Check styles in all shadow roots in the fixture
+  const allElements = fixture.nativeElement.querySelectorAll('*');
+  for (const element of allElements) {
+    if (element.shadowRoot) {
+      const shadowStyles = element.shadowRoot.querySelectorAll('style');
+      for (const styleEl of shadowStyles) {
+        if (styleEl.textContent?.includes(cssContentMatcher)) {
+          count++;
+        }
+      }
+    }
+  }
+
+  return count;
+}
+
+/**
+ * Checks if the given container (Document or ShadowRoot) has styles containing emulated component styles.
+ */
+function hasEmulatedStyles(container: Document | ShadowRoot): boolean {
+  const styleElements = container.querySelectorAll('style');
+  for (const styleEl of styleElements) {
+    const styleContent = styleEl.textContent || '';
+    if (styleContent.includes('.emulated') && styleContent.includes('blue')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Checks if the given container (Document or ShadowRoot) has styles containing none-encapsulated component styles.
+ */
+function hasNoneStyles(container: Document | ShadowRoot): boolean {
+  const styleElements = container.querySelectorAll('style');
+  for (const styleEl of styleElements) {
+    const styleContent = styleEl.textContent || '';
+    if (styleContent.includes('.none') && styleContent.includes('lime')) {
+      return true;
+    }
+  }
+  return false;
 }
 
 @Component({
@@ -491,7 +565,7 @@ class CmpEncapsulationNoneWithSourceMap {}
 class CmpEncapsulationShadow {}
 
 @Component({
-  selector: 'cmp-shadow-children',
+  selector: 'cmp-isolated-shadow-children',
   template: `
     <div class="shadow">
       <cmp-emulated></cmp-emulated>
@@ -508,6 +582,21 @@ class CmpEncapsulationShadow {}
 class CmpEncapsulationIsolatedShadowWithChildren {}
 
 @Component({
+  selector: 'cmp-shadow-projected-children',
+  template: `
+    <slot></slot>
+    <div class="shadow"></div>`,
+  styles: [
+    `.shadow {
+      color: red;
+    }`,
+  ],
+  encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
+  standalone: false,
+})
+class CmpEncapsulationIsolatedShadowProjectedChildren {}
+
+@Component({
   selector: 'some-app',
   template: `
     <cmp-shadow></cmp-shadow>
@@ -521,11 +610,22 @@ export class SomeApp {}
 @Component({
   selector: 'shadow-parent-app-with-children',
   template: `
-    <cmp-shadow-children></cmp-shadow-children>
+    <cmp-isolated-shadow-children></cmp-isolated-shadow-children>
   `,
   standalone: false,
 })
 export class IsolatedShadowComponentParentApp {}
+
+@Component({
+  selector: 'shadow-parent-app-with-projected-children',
+  template: `
+    <cmp-shadow-projected-children>
+      <cmp-emulated></cmp-emulated>
+    </cmp-shadow-projected-children>
+  `,
+  standalone: false,
+})
+export class IsolatedShadowComponentProjectionParentApp {}
 
 @Component({
   selector: 'test-cmp',

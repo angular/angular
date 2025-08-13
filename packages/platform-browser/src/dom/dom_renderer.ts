@@ -32,6 +32,7 @@ import {RuntimeErrorCode} from '../errors';
 
 import {EventManager} from './events/event_manager';
 import {createLinkElement, SharedStylesHost} from './shared_styles_host';
+import {IsolatedStyleScopeService} from './isolated_style_scope';
 
 export const NAMESPACE_URIS: {[ns: string]: string} = {
   'svg': 'http://www.w3.org/2000/svg',
@@ -147,6 +148,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(TracingService)
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
+    private readonly styleScopeService: IsolatedStyleScopeService,
   ) {
     this.platformIsServer = typeof ngServerMode !== 'undefined' && ngServerMode;
     this.defaultRenderer = new DefaultDomRenderer2(
@@ -179,13 +181,13 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
       renderer.applyToHost(element);
     } else if (renderer instanceof NoneEncapsulationDomRenderer) {
-      renderer.applyStyles();
+      renderer.applyStyles(element);
     }
 
     return renderer;
   }
 
-  private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
+  private getOrCreateRenderer(element: HTMLElement, type: RendererType2): Renderer2 {
     const rendererByCompId = this.rendererByCompId;
     let renderer = rendererByCompId.get(type.id);
 
@@ -210,20 +212,10 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            this.styleScopeService,
           );
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(
-            eventManager,
-            element,
-            type,
-            doc,
-            ngZone,
-            this.nonce,
-            platformIsServer,
-            tracingService,
-            sharedStylesHost,
-          );
         case ViewEncapsulation.ExperimentalIsolatedShadowDom:
           return new ShadowDomRenderer(
             eventManager,
@@ -234,6 +226,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             this.nonce,
             platformIsServer,
             tracingService,
+            sharedStylesHost,
+            this.styleScopeService,
           );
 
         default:
@@ -246,6 +240,8 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
+            this.styleScopeService,
+            undefined,
           );
           break;
       }
@@ -282,7 +278,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     private readonly eventManager: EventManager,
     private readonly doc: Document,
     protected readonly ngZone: NgZone,
-    private readonly platformIsServer: boolean,
+    protected readonly platformIsServer: boolean,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
   ) {}
 
@@ -505,27 +501,48 @@ function isTemplateNode(node: any): node is HTMLTemplateElement {
 }
 
 class ShadowDomRenderer extends DefaultDomRenderer2 {
-  private shadowRoot: any;
+  private shadowRoot: ShadowRoot;
 
   constructor(
     eventManager: EventManager,
-    private hostEl: any,
-    component: RendererType2,
+    private hostEl: HTMLElement,
+    private component: RendererType2,
     doc: Document,
     ngZone: NgZone,
     nonce: string | null,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
-    private sharedStylesHost?: SharedStylesHost,
+    private sharedStylesHost: SharedStylesHost,
+    private styleScopeService: IsolatedStyleScopeService,
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
-    // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
-    // This is optional as it is not used by ExperimentalIsolatedShadowDom.
-    if (this.sharedStylesHost) {
+    const isIsolated = component.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom;
+
+    // Only create shadow root in browser environments
+    if (!platformIsServer) {
+      this.shadowRoot = hostEl.attachShadow({mode: 'open'});
+    } else {
+      // In SSR or environments without shadow DOM support, throw
+      throw new RuntimeError(
+        RuntimeErrorCode.SHADOWDOM_NOT_SUPPORTED_IN_SSR,
+        typeof ngDevMode !== 'undefined' && ngDevMode
+          ? 'Shadowdom is not supported in SSR mode until declarative shadow DOM is supported.'
+          : '',
+      );
+    }
+
+    // Determine if this is isolated based on component encapsulation
+
+    // Register shadow root with StyleScopeService for style targeting (only if service available and in browser)
+    if (isIsolated) {
+      this.styleScopeService.registerIsolatedShadowRoot(this.shadowRoot);
+      this.sharedStylesHost.addShadowRoot(this.shadowRoot);
+    } else {
+      this.styleScopeService.registerStandardShadowRoot(this.shadowRoot);
       this.sharedStylesHost.addHost(this.shadowRoot);
     }
+
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -533,50 +550,56 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    if (isIsolated) {
+      // For IsolatedShadowDom, use SharedStylesHost with shadowRoot targeting
+      this.sharedStylesHost.addStyles(styles, component.getExternalStyles?.(), this.shadowRoot);
+    } else {
+      // For standard ShadowDom or SSR, use original approach
+      styles = shimStylesContent(component.id, styles);
 
-    for (const style of styles) {
-      const styleEl = document.createElement('style');
+      for (const style of styles) {
+        const styleEl = doc.createElement('style');
 
-      if (nonce) {
-        styleEl.setAttribute('nonce', nonce);
+        if (nonce) {
+          styleEl.setAttribute('nonce', nonce);
+        }
+
+        styleEl.textContent = style;
+        this.shadowRoot.appendChild(styleEl);
       }
 
-      styleEl.textContent = style;
-      this.shadowRoot.appendChild(styleEl);
-    }
-
-    // Apply any external component styles to the shadow root for the component's element.
-    // The ShadowDOM renderer uses an alternative execution path for component styles that
-    // does not use the SharedStylesHost that other encapsulation modes leverage. Much like
-    // the manual addition of embedded styles directly above, any external stylesheets
-    // must be manually added here to ensure ShadowDOM components are correctly styled.
-    // TODO: Consider reworking the DOM Renderers to consolidate style handling.
-    const styleUrls = component.getExternalStyles?.();
-    if (styleUrls) {
-      for (const styleUrl of styleUrls) {
-        const linkEl = createLinkElement(styleUrl, doc);
-        if (nonce) {
-          linkEl.setAttribute('nonce', nonce);
+      // Apply any external component styles to the shadow root for the component's element.
+      // The ShadowDOM renderer uses an alternative execution path for component styles that
+      // does not use the SharedStylesHost that other encapsulation modes leverage. Much like
+      // the manual addition of embedded styles directly above, any external stylesheets
+      // must be manually added here to ensure ShadowDOM components are correctly styled.
+      // TODO: Consider reworking the DOM Renderers to consolidate style handling.
+      const styleUrls = component.getExternalStyles?.();
+      if (styleUrls) {
+        for (const styleUrl of styleUrls) {
+          const linkEl = createLinkElement(styleUrl, doc);
+          if (nonce) {
+            linkEl.setAttribute('nonce', nonce);
+          }
+          this.shadowRoot.appendChild(linkEl);
         }
-        this.shadowRoot.appendChild(linkEl);
       }
     }
   }
 
-  private nodeOrShadowRoot(node: any): any {
+  private nodeOrShadowRoot(node: HTMLElement): HTMLElement | ShadowRoot {
     return node === this.hostEl ? this.shadowRoot : node;
   }
 
-  override appendChild(parent: any, newChild: any): void {
+  override appendChild(parent: HTMLElement, newChild: Node): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
 
-  override insertBefore(parent: any, newChild: any, refChild: any): void {
+  override insertBefore(parent: HTMLElement, newChild: Node, refChild: Node): void {
     return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
   }
 
-  override removeChild(_parent: any, oldChild: any): void {
+  override removeChild(_parent: HTMLElement, oldChild: Node): void {
     return super.removeChild(null, oldChild);
   }
 
@@ -585,25 +608,31 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   }
 
   override destroy() {
-    if (this.sharedStylesHost) {
+    // Query the service to determine what type this shadow root is (only if service available and in browser)
+    if (this.styleScopeService.isIsolatedShadowRoot(this.shadowRoot)) {
+      this.styleScopeService.deregisterIsolatedShadowRoot(this.shadowRoot);
+      this.sharedStylesHost.removeShadowRoot(this.shadowRoot);
+    } else if (this.styleScopeService.isStandardShadowRoot(this.shadowRoot)) {
+      this.styleScopeService.deregisterStandardShadowRoot(this.shadowRoot);
       this.sharedStylesHost.removeHost(this.shadowRoot);
     }
   }
 }
 
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
-  private readonly styles: string[];
-  private readonly styleUrls?: string[];
+  protected readonly styles: string[];
+  protected readonly styleUrls?: string[];
 
   constructor(
     eventManager: EventManager,
-    private readonly sharedStylesHost: SharedStylesHost,
+    protected readonly sharedStylesHost: SharedStylesHost,
     component: RendererType2,
     private removeStylesOnCompDestroy: boolean,
     doc: Document,
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    protected styleScopeService: IsolatedStyleScopeService,
     compId?: string,
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
@@ -618,7 +647,19 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
-  applyStyles(): void {
+  applyStyles(element: HTMLElement): void {
+    // Check if we should target specific shadow roots (only if service and element available)
+    if (element && !this.platformIsServer) {
+      const targetShadowRoots = this.styleScopeService.determineStyleTargets(element);
+      if (targetShadowRoots.length > 0) {
+        for (const shadowRoot of targetShadowRoots) {
+          this.sharedStylesHost.addStyles(this.styles, this.styleUrls, shadowRoot);
+        }
+        return;
+      }
+    }
+
+    // Default behavior: apply to document head and all standard shadow hosts
     this.sharedStylesHost.addStyles(this.styles, this.styleUrls);
   }
 
@@ -646,6 +687,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
+    styleScopeService: IsolatedStyleScopeService,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -657,14 +699,16 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       ngZone,
       platformIsServer,
       tracingService,
+      styleScopeService,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);
     this.hostAttr = shimHostAttribute(compId);
   }
 
-  applyToHost(element: any): void {
-    this.applyStyles();
+  applyToHost(element: HTMLElement): void {
+    // Use inherited applyStyles method to handle shadow root targeting and fallback
+    this.applyStyles(element);
     this.setAttribute(element, this.hostAttr, '');
   }
 

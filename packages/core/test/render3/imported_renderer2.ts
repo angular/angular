@@ -15,6 +15,7 @@ import {
   EventManagerPlugin,
   ɵDomRendererFactory2,
   ɵSharedStylesHost,
+  ɵStyleScopeService,
 } from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '../../src/core';
@@ -54,6 +55,7 @@ export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
   const appId = 'appid';
+  const styleScopeService = new ɵStyleScopeService();
   const rendererFactory = new ɵDomRendererFactory2(
     eventManager,
     new ɵSharedStylesHost(document, appId),
@@ -62,6 +64,8 @@ export function getRendererFactory2(document: any): RendererFactory2 {
     document,
     fakeNgZone,
     null,
+    null, // tracingService
+    styleScopeService,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {

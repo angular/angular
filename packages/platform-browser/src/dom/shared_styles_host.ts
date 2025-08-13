@@ -104,21 +104,28 @@ export function createLinkElement(url: string, doc: Document): HTMLLinkElement {
 @Injectable()
 export class SharedStylesHost implements OnDestroy {
   /**
-   * Provides usage information for active inline style content and associated HTML <style> elements.
+   * Provides usage information for active inline style content and associated HTML <style> elements per host.
    * Embedded styles typically originate from the `styles` metadata of a rendered component.
    */
-  private readonly inline = new Map<string /** content */, UsageRecord<HTMLStyleElement>>();
+  private readonly inline = new Map<
+    ShadowRoot | HTMLHeadElement,
+    Map<string, UsageRecord<HTMLStyleElement>>
+  >();
 
   /**
-   * Provides usage information for active external style URLs and the associated HTML <link> elements.
+   * Provides usage information for active external style URLs and the associated HTML <link> elements per host.
    * External styles typically originate from the `ɵɵExternalStylesFeature` of a rendered component.
    */
-  private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
+  private readonly external = new Map<
+    ShadowRoot | HTMLHeadElement,
+    Map<string, UsageRecord<HTMLLinkElement>>
+  >();
 
   /**
    * Set of host DOM nodes that will have styles attached.
    */
-  private readonly hosts = new Set<Node>();
+  private readonly standardShadowHosts = new Set<Node>();
+  private readonly isolatedShadowRoots = new Set<Node>();
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -128,68 +135,135 @@ export class SharedStylesHost implements OnDestroy {
     // (it seems some TGP targets might be calling this constructor directly).
     @Inject(PLATFORM_ID) platformId: object = {},
   ) {
-    addServerStyles(doc, appId, this.inline, this.external);
-    this.hosts.add(doc.head);
+    // Initialize maps for document head
+    const inlineMap = new Map();
+    const externalMap = new Map();
+    this.inline.set(doc.head, inlineMap);
+    this.external.set(doc.head, externalMap);
+
+    addServerStyles(doc, appId, inlineMap, externalMap);
+    this.standardShadowHosts.add(doc.head);
   }
 
   /**
    * Adds embedded styles to the DOM via HTML `style` elements.
+   *
+   * Modified to support IsolatedShadowDom by accepting a specific target shadow root.
+   * This ensures styles are only added where they're actually needed rather than broadcasting
+   * to all active shadow roots.
+   *
    * @param styles An array of style content strings.
+   * @param urls An optional array of external stylesheet URL strings.
+   * @param shadowRoot Optional shadow root to add styles to. If provided, styles go only to this shadow root.
+   *                   If not provided, styles go to document head and all standard shadow DOM hosts.
    */
-  addStyles(styles: string[], urls?: string[]): void {
-    for (const value of styles) {
-      this.addUsage(value, this.inline, createStyleElement);
+  addStyles(styles: string[], urls?: string[], shadowRoot?: ShadowRoot): void {
+    for (const style of styles) {
+      this.addUsage(style, this.inline, createStyleElement, shadowRoot);
     }
-
-    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
+    urls?.forEach((url) => this.addUsage(url, this.external, createLinkElement, shadowRoot));
   }
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
+   * @param urls An optional array of external stylesheet URL strings to remove.
+   * @param shadowRoot Optional shadow root to remove styles from (for IsolatedShadowDom).
    */
-  removeStyles(styles: string[], urls?: string[]): void {
+  removeStyles(styles: string[], urls?: string[], shadowRoot?: ShadowRoot): void {
     for (const value of styles) {
-      this.removeUsage(value, this.inline);
+      this.removeUsage(value, this.inline, shadowRoot);
     }
 
-    urls?.forEach((value) => this.removeUsage(value, this.external));
+    urls?.forEach((value) => this.removeUsage(value, this.external, shadowRoot));
   }
 
+  /**
+   * Handle timing issues with projected components. When adding styles to an
+   * IsolatedShadowDom shadow root, we check if the same styles were previously added to doc.head
+   * due to timing issues (renderer creation before DOM attachment). If so, we clean up the
+   * incorrect doc.head styles to prevent duplication.
+   */
   protected addUsage<T extends HTMLElement>(
     value: string,
-    usages: Map<string, UsageRecord<T>>,
+    usagesMap: Map<ShadowRoot | HTMLHeadElement, Map<string, UsageRecord<T>>>,
     creator: (value: string, doc: Document) => T,
+    targetShadowRoot?: ShadowRoot,
   ): void {
-    // Attempt to get any current usage of the value
-    const record = usages.get(value);
+    if (targetShadowRoot) {
+      // Precise targeting for isolated shadow DOM
+      this.addUsageToTarget(value, usagesMap, creator, targetShadowRoot);
+    } else {
+      // Broadcast to all standard shadow hosts (including doc.head)
+      for (const host of this.standardShadowHosts) {
+        this.addUsageToTarget(value, usagesMap, creator, host as ShadowRoot | HTMLHeadElement);
+      }
+    }
+  }
 
-    // If existing, just increment the usage count
+  /**
+   * Helper method that handles adding styles to a specific target container
+   * while managing usage tracking and deduplication.
+   */
+  private addUsageToTarget<T extends HTMLElement>(
+    value: string,
+    usagesMap: Map<ShadowRoot | HTMLHeadElement, Map<string, UsageRecord<T>>>,
+    creator: (value: string, doc: Document) => T,
+    styleRoot: ShadowRoot | HTMLHeadElement,
+  ): void {
+    let usages = usagesMap.get(styleRoot);
+    if (!usages) {
+      usages = new Map();
+      usagesMap.set(styleRoot, usages);
+    }
+
+    const record = usages.get(value);
     if (record) {
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
-        // A usage count of zero indicates a preexisting server generated style.
-        // This attribute is solely used for debugging purposes of SSR style reuse.
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
       }
       record.usage++;
-    } else {
-      // Otherwise, create an entry to track the elements and add element for each host
-      usages.set(value, {
-        usage: 1,
-        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
-      });
+      return;
     }
+
+    // Create new usage record with element for the specific target
+    const element = this.addElement(styleRoot, creator(value, this.doc));
+    usages.set(value, {usage: 1, elements: [element]});
   }
 
+  /**
+   * Removal logic to match the new precise targeting approach.
+   * Previously removed styles from all active shadow roots, now removes only from
+   * the specific target. This prevents accidental removal of styles from unrelated
+   * IsolatedShadowDom components.
+   */
   protected removeUsage<T extends HTMLElement>(
     value: string,
-    usages: Map<string, UsageRecord<T>>,
+    usagesMap: Map<ShadowRoot | HTMLHeadElement, Map<string, UsageRecord<T>>>,
+    targetShadowRoot?: ShadowRoot,
   ): void {
-    // Attempt to get any current usage of the value
-    const record = usages.get(value);
+    if (targetShadowRoot) {
+      // Remove from specific shadow root
+      this.removeUsageFromTarget(value, usagesMap, targetShadowRoot);
+    } else {
+      // Remove from all standard shadow hosts (including doc.head)
+      for (const host of this.standardShadowHosts) {
+        this.removeUsageFromTarget(value, usagesMap, host as ShadowRoot | HTMLHeadElement);
+      }
+    }
+  }
+  /**
+   * Helper method for removing styles from a specific target container.
+   */
+  private removeUsageFromTarget<T extends HTMLElement>(
+    value: string,
+    usagesMap: Map<ShadowRoot | HTMLHeadElement, Map<string, UsageRecord<T>>>,
+    styleRoot: ShadowRoot | HTMLHeadElement,
+  ): void {
+    const usages = usagesMap.get(styleRoot);
+    if (!usages) return;
 
-    // If there is a record, reduce the usage count and if no longer used,
-    // remove from DOM and delete usage record.
+    const record = usages.get(value);
     if (record) {
       record.usage--;
       if (record.usage <= 0) {
@@ -200,10 +274,12 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    for (const [, {elements}] of [...this.inline, ...this.external]) {
-      removeElements(elements);
+    for (const usages of [...this.inline.values(), ...this.external.values()]) {
+      for (const [, {elements}] of usages) {
+        removeElements(elements);
+      }
     }
-    this.hosts.clear();
+    this.standardShadowHosts.clear();
   }
 
   /**
@@ -213,23 +289,58 @@ export class SharedStylesHost implements OnDestroy {
    * This is currently only used for Shadow DOM encapsulation mode.
    */
   addHost(hostNode: Node): void {
-    this.hosts.add(hostNode);
+    this.standardShadowHosts.add(hostNode);
 
     // Add existing styles to new host
-    for (const [style, {elements}] of this.inline) {
-      elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
+    const headInline = this.inline.get(this.doc.head);
+    const headExternal = this.external.get(this.doc.head);
+
+    // Initialize usage maps for the new host
+    const hostKey = hostNode as ShadowRoot | HTMLHeadElement;
+    const newInlineUsages = new Map();
+    const newExternalUsages = new Map();
+    this.inline.set(hostKey, newInlineUsages);
+    this.external.set(hostKey, newExternalUsages);
+
+    if (headInline) {
+      for (const [style] of headInline) {
+        const element = this.addElement(hostNode, createStyleElement(style, this.doc));
+        newInlineUsages.set(style, {usage: 1, elements: [element]});
+      }
     }
-    for (const [url, {elements}] of this.external) {
-      elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
+
+    if (headExternal) {
+      for (const [url] of headExternal) {
+        const element = this.addElement(hostNode, createLinkElement(url, this.doc));
+        newExternalUsages.set(url, {usage: 1, elements: [element]});
+      }
     }
   }
 
   removeHost(hostNode: Node): void {
-    this.hosts.delete(hostNode);
+    this.standardShadowHosts.delete(hostNode);
+
+    // Clean up usage maps for removed host
+    const hostKey = hostNode as ShadowRoot | HTMLHeadElement;
+    const inlineUsages = this.inline.get(hostKey);
+    const externalUsages = this.external.get(hostKey);
+
+    if (inlineUsages) {
+      for (const {elements} of inlineUsages.values()) {
+        removeElements(elements);
+      }
+      this.inline.delete(hostKey);
+    }
+
+    if (externalUsages) {
+      for (const {elements} of externalUsages.values()) {
+        removeElements(elements);
+      }
+      this.external.delete(hostKey);
+    }
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {
-    // Add a nonce if present
     if (this.nonce) {
       element.setAttribute('nonce', this.nonce);
     }
@@ -238,8 +349,57 @@ export class SharedStylesHost implements OnDestroy {
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
       element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
+    host.appendChild(element);
+    return element;
+  }
 
-    // Insert the element into the DOM with the host node as parent
-    return host.appendChild(element);
+  addShadowRoot(shadowRoot: ShadowRoot): void {
+    // Throw error if using isolated shadow roots in SSR mode
+    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+      throw new Error(
+        'IsolatedShadowRoot is not supported in SSR mode until declarative shadow DOM is supported.',
+      );
+    }
+
+    // Check if ShadowRoot is supported in this environment
+    if (typeof ShadowRoot === 'undefined') {
+      throw new Error('ShadowRoot is not supported in this environment.');
+    }
+
+    if (typeof ngDevMode !== 'undefined' && ngDevMode && this.isolatedShadowRoots.has(shadowRoot)) {
+      throw new Error('Shadow root is already registered.');
+    }
+
+    this.isolatedShadowRoots.add(shadowRoot);
+  }
+
+  removeShadowRoot(shadowRoot: ShadowRoot): void {
+    if (
+      typeof ngDevMode !== 'undefined' &&
+      ngDevMode &&
+      !this.isolatedShadowRoots.has(shadowRoot)
+    ) {
+      throw new Error('Attempted to remove shadow root that was not previously added.');
+    }
+
+    this.isolatedShadowRoots.delete(shadowRoot);
+
+    // Clean up usage maps for removed shadow root
+    const inlineUsages = this.inline.get(shadowRoot);
+    const externalUsages = this.external.get(shadowRoot);
+
+    if (inlineUsages) {
+      for (const {elements} of inlineUsages.values()) {
+        removeElements(elements);
+      }
+      this.inline.delete(shadowRoot);
+    }
+
+    if (externalUsages) {
+      for (const {elements} of externalUsages.values()) {
+        removeElements(elements);
+      }
+      this.external.delete(shadowRoot);
+    }
   }
 }

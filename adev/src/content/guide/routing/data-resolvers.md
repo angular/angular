@@ -205,11 +205,11 @@ export class App {
       map(event => {
         if (event instanceof NavigationError) {
           this.lastFailedUrl.set(event.url);
-  
+
           if (event.error) {
             console.error('Navigation error', event.error)
           }
-  
+
           return 'Navigation failed. Please try again.';
         }
         return '';

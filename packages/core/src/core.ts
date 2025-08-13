@@ -105,6 +105,9 @@ export {createComponent, reflectComponentType, ComponentMirror} from './render3/
 export {isStandalone} from './render3/def_getters';
 export {AfterRenderRef} from './render3/after_render/api';
 export {publishExternalGlobalUtil as ɵpublishExternalGlobalUtil} from './render3/util/global_utils';
+export {readPatchedData as eReadPatchedData} from './render3/context_discovery';
+export {unwrapRNode as ɵunwrapRNode} from './render3/util/view_utils';
+export {HOST as ɵHOST, PARENT as ɵPARENT} from './render3/interfaces/view';
 export {enableProfiling} from './render3/debug/chrome_dev_tools_performance';
 export {
   AfterRenderOptions,
@@ -126,6 +129,7 @@ export {
 } from './animation/interfaces';
 
 import {global} from './util/global';
+
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   // This helper is to give a reasonable error message to people upgrading to v9 that have not yet
   // installed `@angular/localize` in their app.

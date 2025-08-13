@@ -11,6 +11,7 @@ import {newArray} from '../../util/array_utils';
 import {assertLContainer, assertTNode} from '../assert';
 import {ComponentTemplate} from '../interfaces/definition';
 import {TAttributes, TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {ViewEncapsulation} from '../../metadata/view';
 import {ProjectionSlots} from '../interfaces/projection';
 import {
   DECLARATION_COMPONENT_VIEW,
@@ -32,6 +33,7 @@ import {addLViewToLContainer} from '../view/container';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
 import {declareNoDirectiveHostTemplate} from './template';
+import {getDeclarationComponentDef} from '../../render3/instructions/element_validation';
 
 /**
  * Checks a given node against matching projection slots and returns the
@@ -94,7 +96,24 @@ export function matchingProjectionSlotIndex(
  * @codeGenApi
  */
 export function ɵɵprojectionDef(projectionSlots?: ProjectionSlots): void {
-  const componentNode = getLView()[DECLARATION_COMPONENT_VIEW][T_HOST] as TElementNode;
+  const lView = getLView();
+  const declarationComponentView = lView[DECLARATION_COMPONENT_VIEW];
+  const componentNode = declarationComponentView[T_HOST] as TElementNode;
+
+  // Check if this is an IsolatedShadowDom component
+  // The component instance is stored in CONTEXT
+  const componentDef = getDeclarationComponentDef(declarationComponentView);
+
+  if (componentDef?.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      throw new Error(
+        `ng-content projection is not supported with ViewEncapsulation.IsolatedShadowDom. ` +
+          `Use native <slot> elements instead. Content will remain in the light DOM and be projected via slots.`,
+      );
+    }
+    // Don't setup projection for IsolatedShadowDom
+    return;
+  }
 
   if (!componentNode.projection) {
     // If no explicit projection slots are defined, fall back to a single
