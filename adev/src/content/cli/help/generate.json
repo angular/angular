@@ -48,6 +48,20 @@
   ],
   "subcommands": [
     {
+      "name": "ai-config",
+      "command": "ai-config",
+      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates configuration files that help AI tools follow Angular best practices, improving the quality of AI-generated code and suggestions.",
+      "options": [
+        {
+          "name": "tool",
+          "type": "array",
+          "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
       "name": "app-shell",
       "command": "app-shell",
       "shortDescription": "Configures your project to generate an app-shell during build time.",
