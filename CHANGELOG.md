@@ -1,3 +1,24 @@
+<a name="20.1.7"></a>
+# 20.1.7 (2025-08-13)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d9e37908a5](https://github.com/angular/angular/commit/d9e37908a5f42a4226fd6e2d3493abf35ee5a99a) | fix | incorrect spans for AST inside input value with leading space ([#63082](https://github.com/angular/angular/pull/63082)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4aa120ac00](https://github.com/angular/angular/commit/4aa120ac000a569a29e45e9c6db9e4f32c61d183) | fix | error when type checking host bindings of generic directive ([#63061](https://github.com/angular/angular/pull/63061)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [322042c5b3](https://github.com/angular/angular/commit/322042c5b30e181019bfdaa6a57fc5abaea7adc1) | fix | destroying the effect on `afterRenderEffect` ([#63001](https://github.com/angular/angular/pull/63001)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5fd79424e3](https://github.com/angular/angular/commit/5fd79424e34ea4bbbfca68bf80ca5541aece829f) | fix | attempt to resolve component resources in JIT mode ([#63062](https://github.com/angular/angular/pull/63062)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.6"></a>
 # 20.1.6 (2025-08-06)
 
