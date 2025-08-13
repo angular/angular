@@ -177,10 +177,7 @@ export function locateHostElement(
 
   // When using native Shadow DOM, do not clear host element to allow native slot
   // projection.
-  const preserveContent =
-    preserveHostContent ||
-    encapsulation === ViewEncapsulation.ShadowDom ||
-    encapsulation === ViewEncapsulation.IsolatedShadowDom;
+  const preserveContent = preserveHostContent || encapsulation === ViewEncapsulation.ShadowDom;
   const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
   applyRootElementTransform(rootElement as HTMLElement);
   return rootElement;

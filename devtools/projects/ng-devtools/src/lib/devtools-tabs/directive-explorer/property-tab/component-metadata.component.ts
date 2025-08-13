@@ -36,7 +36,7 @@ export class ComponentMetadataComponent {
 
   private _nestedProps = inject(ElementPropertyResolver);
 
-  angularViewEncapsulationModes = ['Emulated', 'Native', 'None', 'ShadowDom', 'IsolatedShadowDom'];
+  angularViewEncapsulationModes = ['Emulated', 'Native', 'None', 'ShadowDom'];
   acxViewEncapsulationModes = ['Emulated', 'None'];
 
   readonly controller = computed(() => {

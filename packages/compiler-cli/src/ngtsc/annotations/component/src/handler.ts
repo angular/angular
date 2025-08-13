@@ -862,11 +862,7 @@ export class ComponentDecoratorHandler
       }
     }
 
-    if (
-      (encapsulation === ViewEncapsulation.ShadowDom ||
-        encapsulation === ViewEncapsulation.IsolatedShadowDom) &&
-      metadata.selector !== null
-    ) {
+    if (encapsulation === ViewEncapsulation.ShadowDom && metadata.selector !== null) {
       const selectorError = checkCustomElementSelectorForErrors(metadata.selector);
       if (selectorError !== null) {
         if (diagnostics === undefined) {
