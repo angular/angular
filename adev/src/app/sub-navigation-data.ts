@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
 // These 2 imports are expected to be red because they are generated a build time
@@ -1029,6 +1030,20 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
     ],
   },
+  ...(isDevMode()
+    ? [
+        {
+          label: 'Adev Dev Guide',
+          children: [
+            {
+              label: 'Kitchen Sink',
+              path: 'kitchen-sink',
+              contentPath: 'kitchen-sink',
+            },
+          ],
+        },
+      ]
+    : []),
 ];
 
 export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [

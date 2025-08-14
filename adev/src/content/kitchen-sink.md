@@ -1,4 +1,4 @@
-<docs-decorative-header title="Kitchen sink" imgSrc="assets/images/components.svg"> <!-- markdownlint-disable-line -->
+<docs-decorative-header title="Kitchen sink" imgSrc="adev/src/assets/images/components.svg"> <!-- markdownlint-disable-line -->
 This is a visual list of all custom components and styles for Angular.dev.
 </docs-decorative-header>
 
@@ -146,14 +146,13 @@ export class ComponentOverviewComponent {}
 Here's a code example fully styled:
 
 <docs-code
-  path="hello-world/src/app/app.component-old.ts"
+  path="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
   header="A styled code example"
   language='ts'
   linenums
-  highlight="[[14,19], 27]"
-  diff="hello-world/src/app/app.component.ts"
+  highlight="[[3,7], 9]"
   preview
-  visibleLines="[13,28]">
+  visibleLines="[3,10]">
 </docs-code>
 
 We also have styling for the terminal, just set the language as `shell`:
@@ -182,19 +181,19 @@ We also have styling for the terminal, just set the language as `shell`:
 You can create multifile examples by wrapping the examples inside a `<docs-code-multifile>`.
 
 <docs-code-multifile
-  path="hello-world/src/app/app.component.ts"
+  path="adev/src/content/examples/hello-world/src/app/app.component.ts"
   preview>
   <docs-code
-    path="hello-world/src/app/app.component-old.ts"
-    diff="hello-world/src/app/app.component.ts"
-    visibleLines="[11, [13, 31]]"/>
+    path="adev/src/content/examples/hello-world/src/app/app.component.ts"
+    diff="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
+    linenums
+    visibleLines="[3, 11]"/>
   <docs-code
-    path="hello-world/src/app/app.component.html"
-    visibleLines="[1, 2]"
+    path="adev/src/content/examples/hello-world/src/app/app.component.html"
+    highlight="[1]"
     linenums/>
   <docs-code
-    path="hello-world/src/app/app.component.css"
-    highlight="[2]"/>
+    path="adev/src/content/examples/hello-world/src/app/app.component.css" />
 </docs-code-multifile>
 
 #### `<docs-code-multifile>` Attributes
@@ -210,35 +209,6 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
 Adding the `preview` flag builds a running example of the code below the code snippet. This also automatically adds a button to open the running example in Stackblitz.
 
 NOTE: `preview` only works with standalone.
-
-#### built-in-template-functions
-
-<docs-code-multifile
-  path="built-in-template-functions/src/app/app.component.ts"
-  preview>
-  <docs-code
-    path="built-in-template-functions/src/app/app.component.ts" linenums/>
-  <docs-code
-    path="built-in-template-functions/src/app/app.component.html"
-    linenums/>
-</docs-code-multifile>
-
-#### user-input
-
-<docs-code-multifile
-  path="user-input/src/app/app.component.ts"
-  preview>
-  <docs-code
-    path="user-input/src/app/app.component.ts" linenums/>
-  <docs-code
-    path="user-input/src/app/app.component.html"
-    visibleLines="[10, 19]"
-    linenums/>
-  <docs-code
-    path="user-input/src/app/click-me.component.ts" linenums/>
-  <docs-code
-    path="user-input/src/app/click-me2.component.ts" linenums/>
-</docs-code-multifile>
 
 ## Workflow
 
@@ -316,12 +286,12 @@ Steps must start on a new line, and can contain `docs-code`s and other nested el
 
 You can add images using the semantic Markdown image:
 
-![Rhubarb the cat](./images/kitchen-sink/rhubarb.jpg "Optional title")
+![Rhubarb the cat](assets/images/kitchen-sink/rhubarb.jpg "Optional title")
 
 ### Add `#small` and `#medium` to change the image size
 
-![Rhubarb the small cat](./images/kitchen-sink/rhubarb.jpg#small)
-![Rhubarb the medium cat](./images/kitchen-sink/rhubarb.jpg#medium)
+![Rhubarb the small cat](assets/images/kitchen-sink/rhubarb.jpg#small)
+![Rhubarb the medium cat](assets/images/kitchen-sink/rhubarb.jpg#medium)
 
 Embedded videos are created with `docs-video` and just need a `src` and `alt`:
 
