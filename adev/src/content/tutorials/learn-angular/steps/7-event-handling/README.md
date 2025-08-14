@@ -29,10 +29,10 @@ Alright, your turn to give this a try:
 <docs-workflow>
 
 <docs-step title="Add an event handler">
-Add the `onMouseOver` event handler function in the `App` class. Use the following code as the implementation:
+Add the `setMessage` event handler function in the `App` class. Use the following code as the implementation:
 
 ```ts
-onMouseOver() {
+setMessage() {
   this.message = 'Way to go 🚀';
 }
 ```
@@ -43,7 +43,7 @@ onMouseOver() {
 Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
 ```angular-html
-<section (mouseover)="onMouseOver()">
+<section (mouseover)="setMessage()">
 ```
 
 </docs-step>
