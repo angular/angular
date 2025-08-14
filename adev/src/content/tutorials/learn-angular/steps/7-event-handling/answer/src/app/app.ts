@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    <section (mouseover)="onMouseOver()">
+    <section (mouseover)="showSecretMessage()">
       There's a secret message for you, hover to reveal:
       {{ message }}
     </section>
@@ -12,7 +12,7 @@ import {Component} from '@angular/core';
 export class App {
   message = '';
 
-  onMouseOver() {
+  showSecretMessage() {
     this.message = 'Way to go 🚀';
   }
 }
