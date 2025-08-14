@@ -18,7 +18,6 @@ import {
   inject,
   Injector,
   input,
-  Input,
   signal,
   Type,
   viewChild,
@@ -50,10 +49,9 @@ export const HIDDEN_CLASS_NAME = 'hidden';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleViewer {
-  exampleMetadata = input<ExampleMetadata | null>(null, {alias: 'metadata'});
-
-  @Input() githubUrl: string | null = null;
-  @Input() stackblitzUrl: string | null = null;
+  readonly exampleMetadata = input<ExampleMetadata | null>(null, {alias: 'metadata'});
+  readonly githubUrl = input<string | null>(null);
+  readonly stackblitzUrl = input<string | null>(null);
   readonly matTabGroup = viewChild<MatTabGroup>('codeTabs');
 
   private readonly changeDetector = inject(ChangeDetectorRef);
