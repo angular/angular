@@ -21,6 +21,7 @@ generate_guides(
         "overview.md",
         ":files",
     ],
+    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/content/examples",
     ],
