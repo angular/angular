@@ -6,7 +6,12 @@ generate_guides(
     srcs = [
         "error.md",
     ],
-    data = [],
+    api_manifest = "//adev/src/assets:docs_api_manifest",
+    data = [
+        "//adev/src/assets/images:components.svg",
+        "//adev/src/content/examples",
+    ],
+    mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],
 )
 

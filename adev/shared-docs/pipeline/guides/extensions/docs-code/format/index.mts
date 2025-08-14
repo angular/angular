@@ -12,6 +12,7 @@ import {highlightCode} from './highlight.mjs';
 import {extractRegions} from './region.mjs';
 import {JSDOM} from 'jsdom';
 import {expandRangeStringValues} from './range.mjs';
+import {getApiLink} from '../../../utils.mjs';
 
 /** Marked token for a custom docs element. */
 export interface CodeToken extends Tokens.Generic {
@@ -61,8 +62,37 @@ export function formatCode(token: CodeToken) {
   `).firstElementChild!;
 
   applyContainerAttributesAndClasses(containerEl, token);
+  processForApiLinks(containerEl);
 
   return containerEl.outerHTML;
+}
+
+/**
+ * Process a DOM element to find spans (created by Shiki) and converts them to API links if they match entries.
+ */
+export function processForApiLinks(fragment: Element): void {
+  const spans = fragment.querySelectorAll('span:not(:has(span))');
+
+  spans.forEach((span) => {
+    const symbolMatch = span.textContent?.match(/^(.*?)(\w+)(.*)$/);
+    if (!symbolMatch) return;
+
+    // Yes, index 0 is not interesting for us here
+    const [, before, symbol, after] = symbolMatch;
+
+    const apiLink = getApiLink(symbol);
+    if (apiLink) {
+      // Create a new link element
+      const linkElement = fragment.ownerDocument!.createElement('a');
+      linkElement.href = apiLink;
+      linkElement.textContent = symbol;
+
+      // Clear the span's content and insert the link as a child
+      span.textContent = before;
+      span.appendChild(linkElement);
+      span.append(fragment.ownerDocument!.createTextNode(after));
+    }
+  });
 }
 
 /** Build the header element if a header is provided in the token. */
