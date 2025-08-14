@@ -16,7 +16,8 @@ describe('markdown to html', () => {
 
   beforeAll(async () => {
     const markdownContent = await readFile(resolve('./heading.md'), {encoding: 'utf-8'});
-    markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, {}));
+    const parsed = await parseMarkdown(markdownContent, {});
+    markdownDocument = JSDOM.fragment(parsed);
   });
 
   it('should treat # as document headers', () => {

@@ -31,11 +31,36 @@ export function getPageTitle(text: string): string {
 /** Configuration using environment for parser, providing context. */
 export interface ParserContext {
   markdownFilePath?: string;
+  apiEntries?: Record<string, string>;
 }
 
 let context: ParserContext = {};
 export function setContext(envContext: Partial<ParserContext>) {
   context = envContext;
+}
+
+export function getApiLink(entryName: string): string | undefined {
+  if (!context.apiEntries || hasMoreThanOneDot(entryName)) {
+    return undefined;
+  }
+
+  let propName: string | undefined;
+  // we want to match functions when they have parentheses
+  if (entryName.endsWith('()')) {
+    entryName = entryName.slice(0, -2);
+  }
+
+  if (entryName.startsWith('@')) {
+    entryName = entryName.slice(1);
+  }
+  if (entryName.includes('.')) {
+    [entryName, propName] = entryName.split('.');
+  }
+
+  // We don't want to match entries like "constructor"
+  const apiEntry = Object.hasOwn(context.apiEntries, entryName) && context.apiEntries[entryName];
+
+  return apiEntry ? `/api/${apiEntry}/${entryName}${propName ? `#${propName}` : ''}` : undefined;
 }
 
 /** The base directory of the workspace the script is running in. */
@@ -47,4 +72,8 @@ export function loadWorkspaceRelativeFile(filePath: string): string {
     throw Error(`Cannot find: ${filePath}`);
   }
   return readFileSync(fullFilePath, {encoding: 'utf-8'});
+}
+
+function hasMoreThanOneDot(str: string) {
+  return str.split('.').length - 1 > 1;
 }

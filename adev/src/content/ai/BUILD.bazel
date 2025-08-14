@@ -5,6 +5,7 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
+    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/assets/images:what_is_angular.svg",
         "//adev/src/context",
