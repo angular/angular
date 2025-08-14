@@ -128,6 +128,38 @@ function resolvePlaceholdersForView(
           // Clear out the pending structural directive now that its been accounted for.
           pendingStructuralDirective = undefined;
         }
+
+        if (op.fallbackView !== null) {
+          const view = job.views.get(op.fallbackView)!;
+          if (op.fallbackViewI18nPlaceholder === undefined) {
+            resolvePlaceholdersForView(job, view, i18nContexts, elements);
+          } else {
+            if (currentOps === null) {
+              throw Error('i18n tag placeholder should only occur inside an i18n block');
+            }
+            recordTemplateStart(
+              job,
+              view,
+              op.handle.slot!,
+              op.fallbackViewI18nPlaceholder,
+              currentOps.i18nContext,
+              currentOps.i18nBlock,
+              pendingStructuralDirective,
+            );
+            resolvePlaceholdersForView(job, view, i18nContexts, elements);
+            recordTemplateClose(
+              job,
+              view,
+              op.handle.slot!,
+              op.fallbackViewI18nPlaceholder,
+              currentOps.i18nContext,
+              currentOps.i18nBlock,
+              pendingStructuralDirective,
+            );
+            pendingStructuralDirective = undefined;
+          }
+        }
+
         break;
       case ir.OpKind.ConditionalCreate:
       case ir.OpKind.ConditionalBranchCreate:

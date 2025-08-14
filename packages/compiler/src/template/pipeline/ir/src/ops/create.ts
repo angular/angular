@@ -1147,6 +1147,8 @@ export interface ProjectionOp extends Op<CreateOp>, ConsumesSlotOpTrait {
   sourceSpan: ParseSourceSpan;
 
   fallbackView: XrefId | null;
+
+  fallbackViewI18nPlaceholder?: i18n.BlockPlaceholder;
 }
 
 export function createProjectionOp(
