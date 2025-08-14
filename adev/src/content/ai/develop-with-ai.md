@@ -39,3 +39,11 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 * <a href="/context/llm-files/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
 Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.
+
+## Next steps
+
+To learn about MCP Server setup, see the following guides:
+
+<docs-pill-row>
+  <docs-pill href="ai/mcp" title="Angular CLI MCP Server setup"/>
+</docs-pill-row>
