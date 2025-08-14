@@ -7,6 +7,7 @@
  */
 
 import ts from 'typescript';
+
 import {analyzeControlFlow, ControlFlowAnalysisNode} from '../../../flow_analysis';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
 import {traverseAccess} from '../../../utils/traverse_access';
