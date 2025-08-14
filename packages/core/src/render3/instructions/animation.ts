@@ -15,9 +15,12 @@ import {
   AnimationRemoveFunction,
   ANIMATIONS_DISABLED,
 } from '../../animation/interfaces';
-import {getClassListFromValue} from '../../animation/element_removal_registry';
+import {
+  AnimationRemovalRegistry,
+  getClassListFromValue,
+} from '../../animation/element_removal_registry';
 import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags} from '../interfaces/view';
+import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags, LView, TView} from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
@@ -35,6 +38,44 @@ const areAnimationSupported =
   // tslint:disable-next-line:no-toplevel-property-access
   typeof document?.documentElement?.getAnimations === 'function';
 
+/**
+ * Helper function to check if animations are disabled via injection token
+ */
+function areAnimationsDisabled(lView: LView): boolean {
+  const injector = lView[INJECTOR]!;
+  return injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
+}
+
+/**
+ * Helper function to setup element registry cleanup when LView is destroyed
+ */
+function setupElementRegistryCleanup(
+  elementRegistry: AnimationRemovalRegistry,
+  lView: LView,
+  tView: TView,
+  nativeElement: Element,
+): void {
+  if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
+    storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
+      elementRegistry.elements!.remove(elToClean);
+    });
+  }
+}
+
+/**
+ * Helper function to cleanup enterClassMap data safely
+ */
+function cleanupEnterClassData(element: HTMLElement): void {
+  const elementData = enterClassMap.get(element);
+  if (elementData) {
+    for (const fn of elementData.cleanupFns) {
+      fn();
+    }
+    enterClassMap.delete(element);
+  }
+  longestAnimations.delete(element);
+}
+
 const noOpAnimationComplete = () => {};
 
 // Tracks the list of classes added to a DOM node from `animate.enter` calls to ensure
@@ -50,7 +91,7 @@ const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
  *
- * @param value The value bound to `animate.enter`, which is a string or a string array.
+ * @param value The value bound to `animate.enter`, which is a string or a function.
  * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
@@ -61,21 +102,17 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
     return ɵɵanimateEnter;
   }
-
   ngDevMode && assertAnimationTypes(value, 'animate.enter');
 
   const lView = getLView();
-  const tNode = getCurrentTNode()!;
-  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-
-  const renderer = lView[RENDERER];
-  const injector = lView[INJECTOR]!;
-  const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
-  const ngZone = injector.get(NgZone);
-
-  if (animationsDisabled) {
+  if (areAnimationsDisabled(lView)) {
     return ɵɵanimateEnter;
   }
+
+  const tNode = getCurrentTNode()!;
+  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+  const renderer = lView[RENDERER];
+  const ngZone = lView[INJECTOR]!.get(NgZone);
 
   // Retrieve the actual class list from the value. This will resolve any resolver functions from
   // bindings.
@@ -97,7 +134,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   // When the longest animation ends, we can remove all the classes
   const handleInAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
-    animationEnd(event, nativeElement, renderer, cleanupFns);
+    animationEnd(event, nativeElement, renderer);
   };
 
   // We only need to add these event listeners if there are actual classes to apply
@@ -119,7 +156,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
     for (const klass of activeClasses) {
-      renderer.addClass(nativeElement as HTMLElement, klass);
+      renderer.addClass(nativeElement, klass);
     }
   }
 
@@ -165,14 +202,12 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   ngDevMode && assertAnimationTypes(value, 'animate.enter');
 
   const lView = getLView();
-  const tNode = getCurrentTNode()!;
-  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-  const animationsDisabled = lView[INJECTOR]!.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
-
-  if (animationsDisabled) {
+  if (areAnimationsDisabled(lView)) {
     return ɵɵanimateEnterListener;
   }
 
+  const tNode = getCurrentTNode()!;
+  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
   return ɵɵanimateEnterListener;
@@ -183,7 +218,7 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
  * It registers an animation with the ElementRegistry to be run when the element
  * is scheduled for removal from the DOM.
  *
- * @param value The value bound to `animate.leave`, which can be a string or string array.
+ * @param value The value bound to `animate.leave`, which can be a string or a function.
  * @returns This function returns itself so that it may be chained.
  *
  * @codeGenApi
@@ -198,24 +233,24 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   ngDevMode && assertAnimationTypes(value, 'animate.leave');
 
   const lView = getLView();
+  const animationsDisabled = areAnimationsDisabled(lView);
+  if (animationsDisabled) {
+    return ɵɵanimateLeave;
+  }
+
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
   // This instruction is called in the update pass.
   const renderer = lView[RENDERER];
-  const injector = lView[INJECTOR]!;
-
-  // Assume ElementRegistry and ANIMATIONS_DISABLED are injectable services.
   const elementRegistry = getAnimationElementRemovalRegistry();
   ngDevMode &&
     assertDefined(
       elementRegistry.elements,
       'Expected `ElementRegistry` to be present in animations subsystem',
     );
-
-  const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
-  const ngZone = injector.get(NgZone);
+  const ngZone = lView[INJECTOR]!.get(NgZone);
 
   // This function gets stashed in the registry to be used once the element removal process
   // begins. We pass in the values and resolvers so as to evaluate the resolved classes
@@ -240,12 +275,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   };
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
-  if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
-    storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
-      elementRegistry.elements!.remove(elToClean);
-    });
-  }
-
+  setupElementRegistryCleanup(elementRegistry, lView, tView, nativeElement);
   elementRegistry.elements!.add(nativeElement, value, animate);
 
   return ɵɵanimateLeave; // For chaining
@@ -271,6 +301,10 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   ngDevMode && assertAnimationTypes(value, 'animate.leave');
 
+  // Even when animations are disabled, we still need to register the element for removal
+  // to ensure proper cleanup and allow developers to handle element removal in tests
+  // So we don't have an early return here.
+
   const lView = getLView();
   const tNode = getCurrentTNode()!;
   const tView = getTView();
@@ -280,19 +314,16 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
     return ɵɵanimateLeaveListener;
   }
 
-  // Assume ElementRegistry and ANIMATIONS_DISABLED are injectable services.
-  const injector = lView[INJECTOR]!;
   const elementRegistry = getAnimationElementRemovalRegistry();
   ngDevMode &&
     assertDefined(
       elementRegistry.elements,
       'Expected `ElementRegistry` to be present in animations subsystem',
     );
-
-  const animationsDisabled = injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
+  const animationsDisabled = areAnimationsDisabled(lView);
 
   const animate: AnimationEventFunction = (
-    el: Element,
+    _el: Element,
     value: AnimationFunction,
   ): AnimationRemoveFunction => {
     return (removeFn: VoidFunction): void => {
@@ -311,11 +342,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   };
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
-  if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
-    storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
-      elementRegistry.elements!.remove(elToClean);
-    });
-  }
+  setupElementRegistryCleanup(elementRegistry, lView, tView, nativeElement);
   elementRegistry.elements!.addCallback(nativeElement, value, animate);
 
   return ɵɵanimateLeaveListener; // For chaining
@@ -360,13 +387,7 @@ function cancelAnimationsIfRunning(element: HTMLElement, renderer: Renderer): vo
     }
   }
   // We need to prevent any enter animation listeners from firing if they exist.
-  if (elementData) {
-    for (const fn of elementData.cleanupFns) {
-      fn();
-    }
-  }
-  longestAnimations.delete(element);
-  enterClassMap.delete(element);
+  cleanupEnterClassData(element);
 }
 
 function setupAnimationCancel(event: Event, renderer: Renderer) {
@@ -407,7 +428,6 @@ function animationEnd(
   event: AnimationEvent | TransitionEvent,
   nativeElement: HTMLElement,
   renderer: Renderer,
-  cleanupFns: Function[],
 ) {
   const elementData = enterClassMap.get(nativeElement);
   if (!elementData) return;
@@ -420,11 +440,7 @@ function animationEnd(
     for (const klass of elementData.classList) {
       renderer.removeClass(nativeElement, klass);
     }
-    enterClassMap.delete(nativeElement);
-    longestAnimations.delete(nativeElement);
-    for (const fn of cleanupFns) {
-      fn();
-    }
+    cleanupEnterClassData(nativeElement);
   }
 }
 
