@@ -57,16 +57,16 @@ export function migrateStandardTsReference(
         // Check for multiple usages of the same input in this method
         const inputName = originalNode.text;
         const methodKey = `${sf.fileName}:${inputName}`;
-        
+
         if (!methodInputUsageCount.has(methodKey)) {
           methodInputUsageCount.set(methodKey, 0);
           methodInputUsages.set(methodKey, []);
         }
-        
+
         const currentCount = methodInputUsageCount.get(methodKey)!;
         methodInputUsageCount.set(methodKey, currentCount + 1);
         methodInputUsages.get(methodKey)!.push(originalNode);
-        
+
         // If multiple usages, create a local const variable
         if (currentCount > 0) {
           // Find the method containing this node
@@ -74,7 +74,7 @@ export function migrateStandardTsReference(
           while (methodNode && !ts.isMethodDeclaration(methodNode)) {
             methodNode = methodNode.parent;
           }
-          
+
           if (methodNode && ts.isMethodDeclaration(methodNode)) {
             // Insert const declaration at the beginning of the method body
             const methodBody = methodNode.body;
@@ -94,7 +94,7 @@ export function migrateStandardTsReference(
               }
             }
           }
-          
+
           // Replace this usage with the local variable
           replacements.push(
             new Replacement(
