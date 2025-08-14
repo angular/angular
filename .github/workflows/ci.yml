@@ -64,6 +64,13 @@ jobs:
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 300
 
+        # Perform a release build of Angular DevTools using the hermetic environment to ensure it remains stable for
+        # store reviews and build verification.
+      - name: Release build
+        run: |
+          sudo apt install -qq -y podman
+          ./devtools/tools/release/build.sh
+
   test:
     runs-on: ubuntu-latest-4core
     steps:

@@ -1,0 +1,44 @@
+FROM debian:trixie-slim
+
+# Install required dependencies.
+RUN apt-get update -qq
+RUN apt-get install -y -qq curl git zip
+
+# Copy just `.nvmrc` so we don't bust the image cache more than necessary.
+COPY .nvmrc "/root/.nvmrc"
+
+# Install Node.
+RUN export readonly NODE_VERSION="$(cat /root/.nvmrc)" \
+    && export readonly NODE_MAJOR="$(echo "${NODE_VERSION}" | cut -d . -f 1)" \
+    && curl -fsSL "https://deb.nodesource.com/setup_${NODE_MAJOR}.x" | bash - \
+    && export readonly NODE_PKG_VERSION="$( \
+        apt list -a nodejs 2> /dev/null | \
+        grep "${NODE_VERSION}" | \
+        awk '{print $2}' | \
+        head -n 1 \
+    )" \
+    && apt-get install -y -qq "nodejs=${NODE_PKG_VERSION}" \
+    && corepack enable pnpm
+
+# Don't need Cypress, skipping it speeds up the install.
+# See: https://docs.cypress.io/app/references/advanced-installation#Skipping-installation
+ENV CYPRESS_INSTALL_BINARY=0
+
+# Disable Husky since it's not needed and won't work anyways as the `.git` directory is
+# not copied into the container. This just cleans up the output a bit.
+ENV HUSKY=0
+
+# Copy source code into the repo.
+ENV REPO=/angular
+COPY . "${REPO}"
+WORKDIR "${REPO}"
+
+# Install the workspace.
+RUN pnpm install --frozen-lockfile
+
+# Build DevTools.
+ENV BAZEL_FLAGS="--curses yes --color yes --show_progress_rate_limit 5"
+RUN pnpm run -s devtools:build:chrome:release ${BAZEL_FLAGS}
+RUN (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r "${REPO}/devtools-chrome.zip" *)
+RUN pnpm run -s devtools:build:firefox:release ${BAZEL_FLAGS}
+RUN (cd dist/bin/devtools/projects/shell-browser/src/prodapp && zip -r "${REPO}/devtools-firefox.zip" *)
