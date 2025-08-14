@@ -11,10 +11,15 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
         <span class="status-dot"></span>
         Status: {{ userStatus() }}
       </div>
-
+      
       <div class="status-info">
         <div class="notifications">
-          <strong>Notifications:</strong> Loading...
+          <strong>Notifications:</strong> 
+          @if (notificationsEnabled()) {
+            Enabled
+          } @else {
+            Disabled
+          }
           <!-- TODO: Add button to toggle notifications -->
         </div>
         <div class="message">
@@ -29,7 +34,7 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
           }
         </div>
       </div>
-
+      
       <div class="status-controls">
         <button (click)="goOnline()" [disabled]="userStatus() === 'online'">
           Go Online
@@ -50,7 +55,7 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  userStatus = signal<'online' | 'offline' | 'away'>('offline');
+  userStatus = signal<'online' | 'away' | 'offline'>('offline');
 
   // Currently using computed - read-only
   notificationsEnabled = computed(() => this.userStatus() === 'online');
@@ -80,10 +85,10 @@ export class App {
   });
 
   // TODO: Add toggleNotifications method to manually set notificationsEnabled
-
-  toggleNotifications() {
-    // TODO: Implement to toggle notificationsEnabled using set()
-  }
+  // toggleNotifications() {
+  //   // This works with linkedSignal but would error with computed!
+  //   this.notificationsEnabled.set(!this.notificationsEnabled());
+  // }
 
   goOnline() {
     this.userStatus.set('online');
@@ -98,17 +103,17 @@ export class App {
   }
 
   toggleStatus() {
-    this.userStatus.update((current: 'online' | 'offline' | 'away') => {
-      switch (current) {
-        case 'offline':
-          return 'online';
-        case 'online':
-          return 'away';
-        case 'away':
-          return 'offline';
-        default:
-          return 'offline';
-      }
-    });
+    const current = this.userStatus();
+    switch (current) {
+      case 'offline':
+        this.userStatus.set('online');
+        break;
+      case 'online':
+        this.userStatus.set('away');
+        break;
+      case 'away':
+        this.userStatus.set('offline');
+        break;
+    }
   }
 }

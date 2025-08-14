@@ -6,5 +6,5 @@
     "src/app/app.css"
   ],
   "type": "editor",
-  "title": "Component communication with signals"
+  "title": "Passing data to components with input signals"
 }

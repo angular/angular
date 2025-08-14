@@ -15,7 +15,7 @@ Add `computed` to your existing imports.
 
 ```ts
 // Add computed to existing imports
-import {Component, signal, computed} from '@angular/core';
+import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/core';
 ```
 
 </docs-step>

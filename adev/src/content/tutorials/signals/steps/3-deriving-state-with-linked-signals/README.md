@@ -1,6 +1,6 @@
 # Deriving state with linked signals
 
-In the [previous lesson](/tutorials/signals/2-deriving-state-with-computed-signals), you created a computed signal for `notificationsEnabled` that automatically followed your user status. But what if users want to manually disable notifications even when they're online? That's where linked signals come in.
+Now that you've learned [how to derive state with computed signals](/tutorials/signals/2-deriving-state-with-computed-signals), you created a computed signal for `notificationsEnabled` that automatically followed your user status. But what if users want to manually disable notifications even when they're online? That's where linked signals come in.
 
 Linked signals are writable signals that maintain a reactive connection to their source signals. They're perfect for creating state that normally follows a computation but can be overridden when needed.
 
@@ -17,7 +17,7 @@ Add `linkedSignal` to your existing imports.
 
 ```ts
 // Add linkedSignal to existing imports  
-import {Component, signal, computed, linkedSignal} from '@angular/core';
+import {Component, signal, computed, linkedSignal, ChangeDetectionStrategy} from '@angular/core';
 ```
 
 </docs-step>

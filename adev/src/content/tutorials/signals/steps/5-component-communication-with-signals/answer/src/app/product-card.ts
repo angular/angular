@@ -1,4 +1,4 @@
-import {Component, input, output, ChangeDetectionStrategy} from '@angular/core';
+import {Component, input, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'product-card',
@@ -6,12 +6,14 @@ import {Component, input, output, ChangeDetectionStrategy} from '@angular/core';
     <div class="product-card">
       <h3>{{ name() }}</h3>
       <p class="price">\${{ price() }}</p>
-      <p class="status">Status: {{ available() ? 'Available' : 'Out of Stock' }}</p>
-      <button
-        (click)="addToCart()"
-        [disabled]="!available()">
-        {{ available() ? 'Add to cart' : 'Unavailable' }}
-      </button>
+      <p class="status">
+        Status: 
+        @if (available()) {
+          <span class="available">Available</span>
+        } @else {
+          <span class="unavailable">Out of Stock</span>
+        }
+      </p>
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,13 +23,4 @@ export class ProductCard {
   name = input.required<string>();
   price = input.required<number>();
   available = input<boolean>(true);
-
-  // Signal output - send events to parent
-  addProductToCart = output<string>();
-
-  addToCart() {
-    if (this.available()) {
-      this.addProductToCart.emit(this.name());
-    }
-  }
 }
