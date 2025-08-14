@@ -10,6 +10,11 @@
   "deprecated": false,
   "options": [
     {
+      "name": "ai-config",
+      "type": "array",
+      "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
+    },
+    {
       "name": "collection",
       "type": "string",
       "aliases": [
@@ -191,7 +196,6 @@
     {
       "name": "zoneless",
       "type": "boolean",
-      "default": false,
       "description": "Create an initial application that does not utilize `zone.js`."
     }
   ]
