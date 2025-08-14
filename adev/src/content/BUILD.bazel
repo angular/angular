@@ -5,8 +5,13 @@ generate_guides(
     name = "content",
     srcs = [
         "error.md",
+        "kitchen-sink.md",
     ],
-    data = [],
+    data = [
+        "//adev/src/assets/images:components.svg",
+        "//adev/src/content/examples",
+    ],
+    mermaid_blocks = True,
     visibility = ["//adev:__subpackages__"],
 )
 

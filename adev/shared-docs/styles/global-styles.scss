@@ -71,13 +71,14 @@ $theme: mat.m2-define-light-theme(
 @include alert.docs-alert();
 @include callout.docs-callout();
 @include card.docs-card();
+@include code.docs-theme();
 @include code.docs-code-block();
 @include code.docs-code-editor();
+@include code.docs-syntax-highlighting();
 @include decorative-header.docs-decorative-header();
 @include icon.docs-icon();
 @include pill.docs-pill();
 @include steps.docs-steps();
-@include code.docs-syntax-highlighting();
 @include table.docs-table();
 @include video.docs-video();
 
@@ -89,61 +90,5 @@ $theme: mat.m2-define-light-theme(
   ::view-transition-old(*),
   ::view-transition-new(*) {
     animation: none !important;
-  }
-}
-
-.docs-dark-mode .shiki {
-  color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
-
-  span {
-    color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-    /* Optional, if you also want font styles */
-    font-style: var(--shiki-dark-font-style);
-    font-weight: var(--shiki-dark-font-weight);
-  }
-
-  .shiki-ln-line-highlighted,
-  button:hover {
-    span {
-      background-color: inherit;
-    }
-  }
-}
-
-.shiki {
-  &.cli {
-    padding-inline-start: 1rem;
-    padding-block: 1rem;
-  }
-
-  a {
-    color: inherit;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.docs-light-mode .shiki {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
-
-  span {
-    color: var(--shiki-light);
-    background-color: var(--shiki-light-bg);
-    /* Optional, if you also want font styles */
-    font-style: var(--shiki-light-font-style);
-    font-weight: var(--shiki-light-font-weight);
-    text-decoration: var(--shiki-light-text-decoration);
-  }
-
-  .shiki-ln-line-highlighted,
-  button:hover {
-    span {
-      background-color: inherit;
-    }
   }
 }
