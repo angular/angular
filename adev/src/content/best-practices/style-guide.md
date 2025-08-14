@@ -189,7 +189,7 @@ export class UserProfile {
 }
 ```
 
-### Use `readonly` on properties that are initialized by Angular
+### Use `readonly` for properties that shouldn't change
 
 Mark component and directive properties initialized by Angular as `readonly`. This includes
 properties initialized by `input`, `model`, `output`, and queries. The readonly access modifier
@@ -200,6 +200,7 @@ ensures that the value set by Angular is not overwritten.
 export class UserProfile {
   readonly userId = input();
   readonly userSaved = output();
+  readonly userName = model();
 }
 ```
 
