@@ -70,6 +70,16 @@ function propagateI18nBlocksToTemplates(
           );
         }
         break;
+      case ir.OpKind.Projection:
+        if (op.fallbackView !== null) {
+          subTemplateIndex = propagateI18nBlocksForView(
+            unit.job.views.get(op.fallbackView)!,
+            i18nBlock,
+            op.fallbackViewI18nPlaceholder,
+            subTemplateIndex,
+          );
+        }
+        break;
     }
   }
   return subTemplateIndex;
