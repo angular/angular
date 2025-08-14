@@ -13,16 +13,20 @@ import {listRender} from './tranformations/list.mjs';
 import {imageRender} from './tranformations/image.mjs';
 import {textRender} from './tranformations/text.mjs';
 import {headingRender} from './tranformations/heading.mjs';
+import {codespanRender} from './tranformations/code.mjs';
 
 /**
  * Custom renderer for marked that will be used to transform markdown files to HTML
  * files that can be used in the Angular docs.
  */
 export class Renderer extends _Renderer {
+  defaultRenderer = new _Renderer();
+
   override link = linkRender;
   override table = tableRender;
   override list = listRender;
   override image = imageRender;
   override text = textRender;
   override heading = headingRender;
+  override codespan = codespanRender;
 }

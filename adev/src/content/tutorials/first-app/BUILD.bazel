@@ -12,6 +12,7 @@ generate_guides(
             "**/node_modules/**/*.md",
         ],
     ),
+    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         ":files",
     ],
