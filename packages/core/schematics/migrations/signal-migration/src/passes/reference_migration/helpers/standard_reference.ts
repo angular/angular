@@ -7,12 +7,12 @@
  */
 
 import ts from 'typescript';
+
 import {analyzeControlFlow, ControlFlowAnalysisNode} from '../../../flow_analysis';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
 import {traverseAccess} from '../../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../../utils/unique_names';
 import {createNewBlockToInsertVariable} from '../helpers/create_block_arrow_function';
-import assert from 'assert';
 
 export interface NarrowableTsReferences {
   accesses: ts.Identifier[];
@@ -25,6 +25,10 @@ export function migrateStandardTsReference(
   replacements: Replacement[],
 ) {
   const nameGenerator = new UniqueNamesGenerator(['Value', 'Val', 'Input']);
+
+  // Handle multiple usages of the same input in a single method to prevent 'this' removal
+  const methodInputUsageCount = new Map<string, number>();
+  const methodInputUsages = new Map<string, ts.Identifier[]>();
 
   // TODO: Consider checking/properly handling optional chaining and narrowing.
   for (const reference of tsReferencesWithNarrowing.values()) {
@@ -50,17 +54,71 @@ export function migrateStandardTsReference(
       // Original node is preserved. No narrowing, and hence not shared.
       // Unwrap the signal directly.
       if (recommendedNode === 'preserve') {
-        // Append `()` to unwrap the signal.
-        replacements.push(
-          new Replacement(
-            projectFile(sf, info),
-            new TextUpdate({
-              position: originalNode.getEnd(),
-              end: originalNode.getEnd(),
-              toInsert: '()',
-            }),
-          ),
-        );
+        // Check for multiple usages of the same input in this method
+        const inputName = originalNode.text;
+        const methodKey = `${sf.fileName}:${inputName}`;
+
+        if (!methodInputUsageCount.has(methodKey)) {
+          methodInputUsageCount.set(methodKey, 0);
+          methodInputUsages.set(methodKey, []);
+        }
+
+        const currentCount = methodInputUsageCount.get(methodKey)!;
+        methodInputUsageCount.set(methodKey, currentCount + 1);
+        methodInputUsages.get(methodKey)!.push(originalNode);
+
+        // If multiple usages, create a local const variable
+        if (currentCount > 0) {
+          // Find the method containing this node
+          let methodNode = originalNode.parent;
+          while (methodNode && !ts.isMethodDeclaration(methodNode)) {
+            methodNode = methodNode.parent;
+          }
+
+          if (methodNode && ts.isMethodDeclaration(methodNode)) {
+            // Insert const declaration at the beginning of the method body
+            const methodBody = methodNode.body;
+            if (methodBody && ts.isBlock(methodBody)) {
+              const firstStatement = methodBody.statements[0];
+              if (firstStatement) {
+                replacements.push(
+                  new Replacement(
+                    projectFile(sf, info),
+                    new TextUpdate({
+                      position: firstStatement.getStart(),
+                      end: firstStatement.getStart(),
+                      toInsert: `const ${inputName} = this.${inputName}();\n${' '.repeat(ts.getLineAndCharacterOfPosition(sf, firstStatement.getStart()).character)}`,
+                    }),
+                  ),
+                );
+              }
+            }
+          }
+
+          // Replace this usage with the local variable
+          replacements.push(
+            new Replacement(
+              projectFile(sf, info),
+              new TextUpdate({
+                position: originalNode.getStart(),
+                end: originalNode.getEnd(),
+                toInsert: inputName,
+              }),
+            ),
+          );
+        } else {
+          // Single usage → change to this.inputName()
+          replacements.push(
+            new Replacement(
+              projectFile(sf, info),
+              new TextUpdate({
+                position: originalNode.getEnd(),
+                end: originalNode.getEnd(),
+                toInsert: '()',
+              }),
+            ),
+          );
+        }
         continue;
       }
 
@@ -71,14 +129,14 @@ export function migrateStandardTsReference(
         const toInsert = idToSharedField.get(recommendedNode);
         const replaceNode = traverseAccess(originalNode);
 
-        assert(toInsert, 'no shared variable yet available');
+        if (!toInsert) throw new Error('no shared variable yet available');
         replacements.push(
           new Replacement(
             projectFile(sf, info),
             new TextUpdate({
               position: replaceNode.getStart(),
               end: replaceNode.getEnd(),
-              toInsert,
+              toInsert: toInsert!,
             }),
           ),
         );
