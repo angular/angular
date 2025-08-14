@@ -12,5 +12,5 @@ import {Component} from '@angular/core';
 export class App {
   message = '';
 
-  onMouseOver() {}
+  showSecretMessage() {}
 }
