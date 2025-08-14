@@ -19,7 +19,7 @@ Create a file named `.cursor/mcp.json` in your project's root and add the follow
   "mcpServers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp"]
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
@@ -34,7 +34,7 @@ Create a file named `.idx/mcp.json` in your project's root and add the following
   "mcpServers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp"]
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
@@ -49,7 +49,7 @@ Create a file named `.gemini/settings.json` in your project's root and add the f
   "mcpServers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp"]
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
@@ -64,6 +64,7 @@ In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrai
   "name": "Angular CLI",
   "command": "npx",
   "args": [
+    "-y",
     "@angular/cli",
     "mcp"
   ]
@@ -79,7 +80,7 @@ In your project's root, create a file named `.vscode/mcp.json` and add the follo
   "servers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp"]
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
@@ -94,7 +95,7 @@ For other IDEs, check your IDE's documentation for the proper location of the MC
   "mcpServers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp"]
+      "args": ["-y", "@angular/cli", "mcp"]
     }
   }
 }
@@ -117,7 +118,7 @@ For example, to run the server in read-only mode in VS Code, you would update yo
   "servers": {
     "angular-cli": {
       "command": "npx",
-      "args": ["@angular/cli", "mcp", "--read-only"]
+      "args": ["-y", "@angular/cli", "mcp", "--read-only"]
     }
   }
 }
