@@ -198,7 +198,7 @@ describe('ExampleViewer', () => {
       By.css('a[aria-label="Open example on GitHub"]'),
     );
     expect(githubButton).toBeTruthy();
-    expect(githubButton.nativeElement.href).toBe(component.githubUrl);
+    expect(githubButton.nativeElement.href).toBe(component.githubUrl());
   });
 
   it('should display StackBlitz button when stackblitzUrl is provided and there is preview', async () => {
@@ -210,7 +210,8 @@ describe('ExampleViewer', () => {
         preview: true,
       }),
     );
-    component.stackblitzUrl = 'https://stackblitz.com/';
+    componentRef.setInput('stackblitzUrl', 'https://stackblitz.com/');
+
     await component.renderExample();
     fixture.detectChanges();
 
@@ -218,7 +219,7 @@ describe('ExampleViewer', () => {
       By.css('a[aria-label="Edit this example in StackBlitz"]'),
     );
     expect(stackblitzButton).toBeTruthy();
-    expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl);
+    expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
   });
 
   it('should set expanded flag in metadata after toggleExampleVisibility', async () => {
