@@ -98,9 +98,9 @@
 
   <ng-template #openCodeInExternalProvider>
     @if (exampleComponent) {
-      @if (githubUrl) {
+      @if (githubUrl()) {
         <a
-          [href]="githubUrl"
+          [href]="githubUrl()"
           target="_blank"
           title="Open example on GitHub"
           class="docs-example-github-link"
@@ -125,9 +125,9 @@
           </i>
         </a>
       }
-      @if (stackblitzUrl) {
+      @if (stackblitzUrl()) {
         <a
-          [href]="stackblitzUrl"
+          [href]="stackblitzUrl()"
           target="_blank"
           class="docs-example-stackblitz-link"
           title="Edit this example in StackBlitz"

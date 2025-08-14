@@ -200,10 +200,10 @@ export class DocViewer {
       id: this.countOfExamples,
     });
 
-    exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
+    exampleRef.setInput('githubUrl', `${GITHUB_CONTENT_URL}/${snippets[0].name}`);
 
     // TODO: Re-add support for opening examples on StackBlitz
-    exampleRef.instance.stackblitzUrl = null; // `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
+    exampleRef.setInput('stackblitzUrl', null); // `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
 
     placeholder.parentElement!.replaceChild(exampleRef.location.nativeElement, placeholder);
 
