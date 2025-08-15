@@ -1,0 +1,38 @@
+<article class="container">
+  <h2>Demo: Immutability</h2>
+  <p>Always produce a new value when updating a signal that holds an object or array.  Direct mutation, like using <code>.push()</code>, will not be detected by Angular's change detection. </p>
+
+  <div class="form-group">
+    <label for="todoInput">New Todo:</label>
+    <input id="todoInput" type="text" [(ngModel)]="newTodoText" placeholder="e.g., 'Master immutability'">
+  </div>
+
+  <div class="layout-wrapper">
+    <section class="box correct-box">
+      <h3>Correct (Immutable) Update</h3>
+      <p>Uses <code>.update()</code> to create a new array. The UI updates correctly.</p>
+      <button (click)="addTodoCorrectly()">Add Correctly</button>
+    </section>
+
+    <section class="box incorrect-box">
+      <h3>Incorrect (Mutable) Update</h3>
+      <p>Uses <code>.push()</code> on the signal's value. The UI updates correctly for the array, but the computed length does not.</p>
+      <button (click)="addTodoIncorrectly()">Add Incorrectly</button>
+    </section>
+  </div>
+
+  <section class="result-box">
+    <section class="display-section">
+      <h3>To do list:</h3>
+      <ul>
+        @for (todo of todos(); track $index) {
+          <li>{{ todo }}</li>
+        }
+      </ul>
+    </section>
+    <section class="display-section">
+      <h3>Computed to do list length:</h3>
+      <p class="list-length">Current number of to do items: <strong>{{todoCount()}}</strong></p>
+    </section>
+  </section>
+</article>

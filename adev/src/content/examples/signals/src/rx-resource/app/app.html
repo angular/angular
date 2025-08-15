@@ -1,0 +1,34 @@
+<article class="container">
+  <h2>Demo: Reactive Data Streams with rxResource</h2>
+  <p>Click the buttons to change the fetch limit. `rxResource` listens to the underlying signal and reactively creates a new data stream.</p>
+
+  <section class="button-group">
+    <button (click)="movieService.updateLimit(5)">Show 5</button>
+    <button (click)="movieService.updateLimit(10)">Show 10</button>
+    <button (click)="movieService.updateLimit(20)">Show 20</button>
+  </section>
+
+  <section class="result-box">
+    @switch (movieService.movies.status()) {
+      @case ('loading') {
+        <p class="status-loading">Loading movies...</p>
+      }
+      @case ('resolved') {
+        <h3>Showing {{ movieService.movies.value().length }} Movies</h3>
+        <ul class="movie-list">
+          @for (movie of movieService.movies.value(); track movie.id) {
+            <li>
+              <strong>{{ movie.title }}</strong>
+              <span>Directed by {{ movie.director }}</span>
+            </li>
+          } @empty {
+            <p>No movies found.</p>
+          }
+        </ul>
+      }
+      @case ('error') {
+        <p class="status-error">Error fetching data. Please try again.</p>
+      }
+    }
+  </section>
+</article>
