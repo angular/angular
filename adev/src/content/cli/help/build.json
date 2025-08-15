@@ -59,8 +59,8 @@
       "type": "string",
       "default": "none",
       "enum": [
-        "none",
         "anonymous",
+        "none",
         "use-credentials"
       ],
       "description": "Define the crossorigin attribute setting of elements that provide CORS support."
@@ -102,9 +102,9 @@
       "type": "string",
       "default": "warning",
       "enum": [
-        "warning",
         "error",
-        "ignore"
+        "ignore",
+        "warning"
       ],
       "description": "How to handle duplicate translations for i18n."
     },
@@ -113,9 +113,9 @@
       "type": "string",
       "default": "warning",
       "enum": [
-        "warning",
         "error",
-        "ignore"
+        "ignore",
+        "warning"
       ],
       "description": "How to handle missing translations for i18n."
     },
@@ -158,10 +158,10 @@
       "type": "string",
       "default": "none",
       "enum": [
-        "none",
         "all",
+        "bundles",
         "media",
-        "bundles"
+        "none"
       ],
       "description": "Define the output filename cache-busting hashing mode."
     },
@@ -169,8 +169,8 @@
       "name": "output-mode",
       "type": "string",
       "enum": [
-        "static",
-        "server"
+        "server",
+        "static"
       ],
       "description": "Defines the build output target. 'static': Generates a static site for deployment on any static hosting service. 'server': Produces an application designed for deployment on a server that supports server-side rendering (SSR)."
     },

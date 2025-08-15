@@ -55,6 +55,15 @@
         {
           "name": "tool",
           "type": "array",
+          "enum": [
+            "claude",
+            "copilot",
+            "cursor",
+            "gemini",
+            "jetbrains",
+            "none",
+            "windsurf"
+          ],
           "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
         }
       ],
@@ -173,9 +182,9 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
+            "less",
             "sass",
-            "less"
+            "scss"
           ],
           "description": "The type of stylesheet files to be created for components in the application."
         },
@@ -365,10 +374,10 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
-            "sass",
             "less",
-            "none"
+            "none",
+            "sass",
+            "scss"
           ],
           "description": "Specify the type of stylesheet to be created for the component, or `none` to skip creating a stylesheet."
         },
@@ -410,8 +419,8 @@
           "name": "type",
           "type": "string",
           "enum": [
-            "karma",
-            "browserslist"
+            "browserslist",
+            "karma"
           ],
           "description": "Specifies the type of configuration file to generate.",
           "positional": 0
@@ -561,6 +570,12 @@
           "type": "array",
           "aliases": [
             "guardType"
+          ],
+          "enum": [
+            "CanActivate",
+            "CanActivateChild",
+            "CanDeactivate",
+            "CanMatch"
           ],
           "description": "Specifies the type(s) of guard to create. You can choose one or more of the following: `CanActivate` (controls access to a route), `CanActivateChild` (controls access to child routes), `CanDeactivate` (asks for confirmation before leaving a route), `CanMatch` (determines if a route can be matched)."
         },
