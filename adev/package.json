@@ -23,7 +23,7 @@
     "@codemirror/lang-html": "6.4.9",
     "@codemirror/lang-javascript": "6.2.4",
     "@codemirror/lang-sass": "6.0.2",
-    "@codemirror/language": "6.11.2",
+    "@codemirror/language": "6.11.3",
     "@codemirror/lint": "6.8.5",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
