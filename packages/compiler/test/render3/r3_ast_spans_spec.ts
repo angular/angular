@@ -428,6 +428,24 @@ describe('R3 AST source spans', () => {
       assertValueSpan('<a [b]="    helloWorld"></a>', 12, 22);
       assertValueSpan('<a [b]="                                          helloWorld"></a>', 50, 60);
     });
+
+    it('should not throw off span of value in template attribute when leading spaces are present', () => {
+      const assertValueSpan = (template: string, start: number, end: number) => {
+        const result = parse(template);
+        const boundAttribute = (result.nodes[0] as t.Template).templateAttrs[0];
+        const span = (boundAttribute.value as ASTWithSource).ast.sourceSpan;
+
+        expect(span.start).toBe(start);
+        expect(span.end).toBe(end);
+      };
+
+      assertValueSpan('<ng-container *ngTemplateOutlet="helloWorld"/>', 33, 43);
+      assertValueSpan('<ng-container *ngTemplateOutlet=" helloWorld"/>', 34, 44);
+      assertValueSpan('<ng-container *ngTemplateOutlet="  helloWorld"/>', 35, 45);
+      assertValueSpan('<ng-container *ngTemplateOutlet="   helloWorld"/>', 36, 46);
+      assertValueSpan('<ng-container *ngTemplateOutlet="    helloWorld"/>', 37, 47);
+      assertValueSpan('<ng-container *ngTemplateOutlet="                    helloWorld"/>', 53, 63);
+    });
   });
 
   describe('templates', () => {
