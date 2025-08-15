@@ -6,6 +6,8 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
+    api_manifest =
+        "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/assets/images:dependency_injection.svg",
         "//adev/src/content/examples",
