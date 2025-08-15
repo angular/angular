@@ -53,9 +53,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: ''},
-          {name: 'file.html', content: ''},
-          {name: 'file.css', content: ''},
+          {name: 'file.ts', sanitizedContent: ''},
+          {name: 'file.html', sanitizedContent: ''},
+          {name: 'file.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -73,9 +73,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: 'typescript file'},
-          {name: 'file.html', content: 'html file'},
-          {name: 'file.css', content: 'css file'},
+          {name: 'file.ts', sanitizedContent: 'typescript file'},
+          {name: 'file.html', sanitizedContent: 'html file'},
+          {name: 'file.css', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -93,9 +93,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'example.ts', content: 'typescript file'},
-          {name: 'example.html', content: 'html file'},
-          {name: 'another-example.ts', content: 'css file'},
+          {name: 'example.ts', sanitizedContent: 'typescript file'},
+          {name: 'example.html', sanitizedContent: 'html file'},
+          {name: 'another-example.ts', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -124,7 +124,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -148,7 +148,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -242,9 +242,9 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
           },
-          {name: 'example.css', content: ''},
+          {name: 'example.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -278,8 +278,8 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
   return {
     id: 1,
     files: [
-      {name: 'example.ts', content: ''},
-      {name: 'example.css', content: ''},
+      {name: 'example.ts', sanitizedContent: ''},
+      {name: 'example.css', sanitizedContent: ''},
     ],
     preview: false,
     ...value,
