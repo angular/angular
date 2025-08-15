@@ -101,6 +101,18 @@ PRs can only be merged if the code is formatted properly and all tests are passi
 <a name="clang-format"></a>
 <a name="prettier"></a>
 
+### Testing changes against a local library/project
+
+Often for developers the best way to ensure the changes they have made work as expected is to run
+use changes in another library or project. To do this developers can build Angular locally, and
+using `pnpm link` build a local project with the created artifacts.
+
+This can be done by running:
+
+```sh
+pnpm ng-dev misc build-and-link <path-to-local-project-root>
+```
+
 ### Building and serving a project
 
 #### Cache
