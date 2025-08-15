@@ -1,0 +1,80 @@
+.user-profile {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.online .status-dot {
+  background: #4caf50;
+}
+
+.status-indicator.away .status-dot {
+  background: #ff9800;
+}
+
+.status-indicator.offline .status-dot {
+  background: #f44336;
+}
+
+.status-info {
+  margin: 20px 0;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid;
+  border-left-color: var(--status-color);
+}
+
+.notifications, .message, .working-hours {
+  margin: 8px 0;
+}
+
+.status-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+button:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+}
+
+button:disabled {
+  background-color: #6c757d;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.status-controls .toggle-btn {
+  background-color: #28a745;
+}
