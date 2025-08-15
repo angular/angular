@@ -1,10 +1,10 @@
 {
   "dependencies": {
-    "@angular-devkit/build-angular": "20.2.0-rc.0",
+    "@angular-devkit/build-angular": "20.2.0-rc.1",
     "@angular/animations": "workspace:*",
-    "@angular/build": "20.2.0-rc.0",
+    "@angular/build": "20.2.0-rc.1",
     "@angular/cdk": "20.2.0-rc.0",
-    "@angular/cli": "20.2.0-rc.0",
+    "@angular/cli": "20.2.0-rc.1",
     "@angular/common": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
     "@angular/compiler": "workspace:*",
