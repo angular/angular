@@ -84,6 +84,7 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
+            "aot": true,
             "tsConfig": "tsconfig.spec.json",
             "include": ["src/app"],
             "karmaConfig": "karma.conf.js",
