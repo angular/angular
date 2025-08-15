@@ -1,10 +1,12 @@
 :host {
   .docs-example-viewer-preview {
     .docs-dark-mode & {
-      background: var(--gray-100);
+      color: var(--primary-contrast);
+      background: var(--gray-900);
     }
     @media screen and (prefers-color-scheme: dark) {
-      background: var(--gray-100);
+      color: var(--primary-contrast);
+      background: var(--gray-900);
     }
     .docs-light-mode & {
       background: var(--page-background);
