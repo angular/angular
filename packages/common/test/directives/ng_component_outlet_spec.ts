@@ -9,22 +9,35 @@
 import {CommonModule} from '../../index';
 import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
+  Binding,
   Compiler,
   Component,
   ComponentRef,
   createEnvironmentInjector,
+  Directive,
+  DirectiveWithBindings,
+  ElementRef,
   EnvironmentInjector,
+  inject,
   Inject,
   InjectionToken,
   Injector,
+  input,
   Input,
+  inputBinding,
+  model,
   NgModule,
   NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
+  output,
+  outputBinding,
   QueryList,
+  signal,
   TemplateRef,
+  twoWayBinding,
   Type,
+  viewChild,
   ViewChild,
   ViewChildren,
   ViewContainerRef,
@@ -414,6 +427,102 @@ describe('inputs', () => {
   });
 });
 
+describe('bindings', () => {
+  it('should bind inputs to component', () => {
+    const fixture = TestBed.createComponent(TestBindingsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithSignalInput;
+    const myValue = signal('a');
+    fixture.componentInstance.bindings = [inputBinding('foo', myValue)];
+    fixture.detectChanges();
+    const outletComponentInstance = fixture.componentInstance.ngComponentOutlet()
+      ?.componentInstance as ComponentWithSignalInput;
+
+    expect(outletComponentInstance.foo()).toBe('a');
+    expect(fixture.nativeElement.textContent).toBe('foo: a');
+
+    myValue.set('b');
+    fixture.detectChanges();
+
+    expect(outletComponentInstance.foo()).toBe('b');
+    expect(fixture.nativeElement.textContent).toBe('foo: b');
+  });
+
+  it('should bind two-way to component', () => {
+    const fixture = TestBed.createComponent(TestBindingsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithModel;
+    const myValue = signal('a');
+    fixture.componentInstance.bindings = [twoWayBinding('foo', myValue)];
+    fixture.detectChanges();
+    const outletComponentInstance = fixture.componentInstance.ngComponentOutlet()
+      ?.componentInstance as ComponentWithModel;
+
+    expect(outletComponentInstance.foo()).toBe('a');
+    expect(fixture.nativeElement.textContent).toBe('foo: a');
+
+    myValue.set('b');
+    fixture.detectChanges();
+
+    expect(outletComponentInstance.foo()).toBe('a');
+    expect(fixture.nativeElement.textContent).toBe('foo: b');
+
+    outletComponentInstance.foo.set('c');
+    fixture.detectChanges();
+
+    expect(myValue()).toBe('c');
+    expect(fixture.nativeElement.textContent).toBe('foo: c');
+  });
+
+  it('should bind output to component', () => {
+    const fixture = TestBed.createComponent(TestBindingsComponent);
+    fixture.componentInstance.currentComponent = ComponentWithOutput;
+    let receivedValue: string | undefined;
+    fixture.componentInstance.bindings = [
+      outputBinding<string>('out', (value) => (receivedValue = value)),
+    ];
+    fixture.detectChanges();
+    const outletComponentInstance = fixture.componentInstance.ngComponentOutlet()
+      ?.componentInstance as ComponentWithOutput;
+
+    outletComponentInstance.out.emit('a');
+
+    expect(receivedValue).toBe('a');
+  });
+});
+
+describe('directives', () => {
+  it('should add directive', () => {
+    const fixture = TestBed.createComponent(TestDirectivesComponent);
+    fixture.componentInstance.currentComponent = ComponentWithElementRef;
+    fixture.componentInstance.directives = [DirectiveAddingDraggable];
+    fixture.detectChanges();
+    const outletComponentInstance = fixture.componentInstance.ngComponentOutlet()
+      ?.componentInstance as ComponentWithElementRef;
+    const outletElement = outletComponentInstance.elementRef.nativeElement;
+
+    expect(outletElement.draggable).toBe(true);
+  });
+
+  it('should add directive with binding', () => {
+    const fixture = TestBed.createComponent(TestDirectivesComponent);
+    fixture.componentInstance.currentComponent = ComponentWithElementRef;
+    const myValue = signal('a');
+    fixture.componentInstance.directives = [
+      {type: DirectiveWithDataInput, bindings: [inputBinding('foo', myValue)]},
+    ];
+    fixture.detectChanges();
+    const outletComponentInstance = fixture.componentInstance.ngComponentOutlet()
+      ?.componentInstance as ComponentWithElementRef;
+    const outletElement = outletComponentInstance.elementRef.nativeElement;
+
+    expect(outletElement.dataset['foo']).toBe('a');
+
+    myValue.set('b');
+    fixture.detectChanges();
+
+    expect(outletElement.dataset['foo']).toBe('b');
+  });
+});
+
 const TEST_TOKEN = new InjectionToken('TestToken');
 @Component({
   selector: 'injected-component',
@@ -522,6 +631,58 @@ class ComponentWithInputs {
 }
 
 @Component({
+  selector: 'cmp-with-signal-input',
+  template: `foo: {{ foo() }}`,
+})
+class ComponentWithSignalInput {
+  foo = input();
+}
+
+@Component({
+  selector: 'cmp-with-model',
+  template: `foo: {{ foo() }}`,
+})
+class ComponentWithModel {
+  foo = model();
+}
+
+@Component({
+  selector: 'cmp-with-output',
+  template: ``,
+})
+class ComponentWithOutput {
+  out = output<string>();
+}
+
+@Component({
+  selector: 'cmp-with-element-ref',
+  template: ``,
+})
+class ComponentWithElementRef {
+  elementRef: ElementRef<HTMLElement> = inject(ElementRef);
+}
+
+@Directive({
+  selector: '[myDir]',
+  host: {
+    '[attr.draggable]': 'true',
+  },
+})
+class DirectiveAddingDraggable {
+  foo = input.required();
+}
+
+@Directive({
+  selector: '[myDir]',
+  host: {
+    '[attr.data-foo]': 'foo()',
+  },
+})
+class DirectiveWithDataInput {
+  foo = input.required();
+}
+
+@Component({
   selector: 'another-cmp-with-inputs',
   template: `[ANOTHER] foo: {{ foo }}, bar: {{ bar }}, baz: {{ baz }}`,
 })
@@ -539,4 +700,26 @@ class AnotherComponentWithInputs {
 class TestInputsComponent {
   currentComponent: Type<unknown> | null = null;
   inputs?: Record<string, unknown>;
+}
+
+@Component({
+  selector: 'test-cmp',
+  imports: [NgComponentOutlet],
+  template: `<ng-template *ngComponentOutlet="currentComponent; bindings: bindings"></ng-template>`,
+})
+class TestBindingsComponent {
+  currentComponent: Type<unknown> | null = null;
+  bindings?: Binding[];
+  ngComponentOutlet = viewChild(NgComponentOutlet);
+}
+
+@Component({
+  selector: 'test-cmp',
+  imports: [NgComponentOutlet],
+  template: `<ng-template *ngComponentOutlet="currentComponent; directives: directives"></ng-template>`,
+})
+class TestDirectivesComponent {
+  currentComponent: Type<unknown> | null = null;
+  directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
+  ngComponentOutlet = viewChild(NgComponentOutlet);
 }
