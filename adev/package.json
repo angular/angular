@@ -15,7 +15,7 @@
     "@angular/platform-browser": "workspace:*",
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
-    "@angular/ssr": "20.2.0-rc.0",
+    "@angular/ssr": "20.2.0-rc.1",
     "@codemirror/autocomplete": "6.18.6",
     "@codemirror/commands": "6.8.1",
     "@codemirror/lang-angular": "0.1.4",
