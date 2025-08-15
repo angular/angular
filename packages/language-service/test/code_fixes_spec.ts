@@ -1013,6 +1013,62 @@ describe('code fixes', () => {
       ]);
     });
 
+    it('for a re-export symbol from the tsconfig path', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar>',
+             standalone: true
+           })
+           export class FooComponent {}
+           `,
+        'component/share/bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+             standalone: true
+           })
+           export class BarComponent {}
+           `,
+        'component/share/re_export.ts': `
+            import {BarComponent as NewBarComponent1} from "./bar"
+            export {NewBarComponent1}
+           `,
+        'component/share/public_api.ts': `
+            export {NewBarComponent1 as NewBarComponent2} from "./re_export"
+           `,
+        'component/share/index.ts': `
+            export {NewBarComponent2 as NewBarComponent3} from "./public_api"
+           `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles, {
+        paths: {'@app/*': ['./component/share/*.ts']},
+      });
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(
+        actionChanges,
+        `Import NewBarComponent3 from '@app/index' on FooComponent`,
+        [
+          [``, `import { NewBarComponent3 } from "@app/index";`],
+          [``, `, imports: [NewBarComponent3]`],
+        ],
+      );
+    });
+
     it('for a reusable path from the tsconfig', () => {
       const standaloneFiles = {
         'src/foo.ts': `
@@ -1038,6 +1094,56 @@ describe('code fixes', () => {
              template: '<div>baz</div>',
            })
            export class BazComponent {}
+           `,
+      };
+
+      const project = createModuleAndProjectWithDeclarations(env, 'test', {}, {}, standaloneFiles, {
+        paths: {'@app/*': ['./component/share/*.ts']},
+      });
+      const diags = project.getDiagnosticsForFile('src/foo.ts');
+      const fixFile = project.openFile('src/foo.ts');
+      fixFile.moveCursorToText('<¦bar>');
+
+      const codeActions = project.getCodeFixesAtPosition(
+        'src/foo.ts',
+        fixFile.cursor,
+        fixFile.cursor,
+        [diags[0].code],
+      );
+      const actionChanges = allChangesForCodeActions(fixFile.contents, codeActions);
+      actionChangesMatch(actionChanges, `Import BarComponent from '@app/bar' on FooComponent`, [
+        [`{BazComponent}`, `{ BazComponent, BarComponent }`],
+        [`imports: [BazComponent]`, `imports: [BazComponent, BarComponent]`],
+      ]);
+    });
+
+    it('for a reusable path with name export from the tsconfig', () => {
+      const standaloneFiles = {
+        'src/foo.ts': `
+           import {Component} from '@angular/core';
+           import {BazComponent} from '@app/bar';
+           @Component({
+             selector: 'foo',
+             template: '<bar></bar><baz/>',
+             imports: [BazComponent]
+           })
+           export class FooComponent {}
+           `,
+        'component/share/bar.ts': `
+           import {Component} from '@angular/core';
+           @Component({
+             selector: 'bar',
+             template: '<div>bar</div>',
+           })
+           class BarComponent {}
+
+           @Component({
+             selector: 'baz',
+             template: '<div>baz</div>',
+           })
+           class BazComponent {}
+
+           export {BarComponent, BazComponent};
            `,
       };
 
