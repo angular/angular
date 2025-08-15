@@ -11,7 +11,6 @@ import {provideHttpClient, withFetch} from '@angular/common/http';
 import {
   ApplicationConfig,
   ErrorHandler,
-  VERSION,
   inject,
   provideZonelessChangeDetection,
   provideEnvironmentInitializer,
