@@ -106,7 +106,7 @@ const initializeNavigationAdapter = () => {
       return;
     }
     clearNavigation = undefined;
-    router.getCurrentNavigation()?.abort();
+    router.currentNavigation()?.abort();
   });
   navigation.addEventListener('navigate', (navigateEvent) => {
     if (!intercept) {
@@ -127,7 +127,7 @@ const initializeNavigationAdapter = () => {
     // Skip this for popstate/traversals that are already committed.
     // The rollback is problematic so we only do it for navigations that
     // defer the actual update (pushState) on the browser.
-    const currentNavigation = router.getCurrentNavigation();
+    const currentNavigation = router.currentNavigation();
     if (currentNavigation?.trigger === 'popstate' || currentNavigation?.extras.replaceUrl) {
       return;
     }
