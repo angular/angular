@@ -7,6 +7,7 @@
  */
 
 import {Type} from '@angular/core';
+import {SafeHtml} from '@angular/platform-browser';
 
 /**
  * Map of the examples, values are functions which returns the promise of the component type, which will be displayed as preview in the ExampleViewer component
@@ -21,7 +22,7 @@ export interface Snippet {
   /** Name of the file. */
   name: string;
   /** Content of code snippet */
-  content: string;
+  sanitizedContent: SafeHtml;
   /** Text in following format `start-end`. Start and end are numbers, based on them provided range of lines will be displayed in collapsed mode  */
   visibleLinesRange?: string;
 }
