@@ -227,19 +227,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
           );
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(
-            eventManager,
-            element,
-            type,
-            doc,
-            ngZone,
-            this.nonce,
-            platformIsServer,
-            tracingService,
-            this.registry,
-            this.maxAnimationTimeout,
-            sharedStylesHost,
-          );
         case ViewEncapsulation.IsolatedShadowDom:
           return new ShadowDomRenderer(
             eventManager,
@@ -252,6 +239,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             tracingService,
             this.registry,
             this.maxAnimationTimeout,
+            sharedStylesHost,
           );
 
         default:
@@ -538,7 +526,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   constructor(
     eventManager: EventManager,
     private hostEl: any,
-    component: RendererType2,
+    private component: RendererType2,
     doc: Document,
     ngZone: NgZone,
     nonce: string | null,
@@ -546,7 +534,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     tracingService: TracingService<TracingSnapshot> | null,
     registry: AnimationRemovalRegistry,
     maxAnimationTimeout: number,
-    private sharedStylesHost?: SharedStylesHost,
+    private sharedStylesHost: SharedStylesHost,
   ) {
     super(
       eventManager,
@@ -560,8 +548,9 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
-    // This is optional as it is not used by IsolatedShadowDom.
-    if (this.sharedStylesHost) {
+    if (component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+      this.sharedStylesHost.addShadowRoot?.(this.shadowRoot);
+    } else {
       this.sharedStylesHost.addHost(this.shadowRoot);
     }
     let styles = component.styles;
@@ -571,17 +560,21 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    if (component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+      this.sharedStylesHost.addStyles(styles, component.getExternalStyles?.());
+    } else {
+      styles = shimStylesContent(component.id, styles);
 
-    for (const style of styles) {
-      const styleEl = document.createElement('style');
+      for (const style of styles) {
+        const styleEl = document.createElement('style');
 
-      if (nonce) {
-        styleEl.setAttribute('nonce', nonce);
+        if (nonce) {
+          styleEl.setAttribute('nonce', nonce);
+        }
+
+        styleEl.textContent = style;
+        this.shadowRoot.appendChild(styleEl);
       }
-
-      styleEl.textContent = style;
-      this.shadowRoot.appendChild(styleEl);
     }
 
     // Apply any external component styles to the shadow root for the component's element.
@@ -624,7 +617,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   override destroy() {
     if (this.sharedStylesHost) {
-      this.sharedStylesHost.removeHost(this.shadowRoot);
+      if (this.component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+        this.sharedStylesHost.removeShadowRoot?.(this.shadowRoot);
+      } else {
+        this.sharedStylesHost.removeHost(this.shadowRoot);
+      }
     }
   }
 }

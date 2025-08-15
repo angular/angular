@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
+import {DOCUMENT, isPlatformServer} from '@angular/common';
 import {
   APP_ID,
   CSP_NONCE,
@@ -114,11 +114,8 @@ export class SharedStylesHost implements OnDestroy {
    * External styles typically originate from the `ɵɵExternalStylesFeature` of a rendered component.
    */
   private readonly external = new Map<string /** URL */, UsageRecord<HTMLLinkElement>>();
-
-  /**
-   * Set of host DOM nodes that will have styles attached.
-   */
   private readonly hosts = new Set<Node>();
+  private readonly shadowRoots: Node[] = [];
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -126,7 +123,7 @@ export class SharedStylesHost implements OnDestroy {
     @Inject(CSP_NONCE) @Optional() private readonly nonce?: string | null,
     // Cannot remove it due to backward compatibility
     // (it seems some TGP targets might be calling this constructor directly).
-    @Inject(PLATFORM_ID) platformId: object = {},
+    @Inject(PLATFORM_ID) private readonly platformId: object = {},
   ) {
     addServerStyles(doc, appId, this.inline, this.external);
     this.hosts.add(doc.head);
@@ -137,11 +134,13 @@ export class SharedStylesHost implements OnDestroy {
    * @param styles An array of style content strings.
    */
   addStyles(styles: string[], urls?: string[]): void {
-    for (const value of styles) {
-      this.addUsage(value, this.inline, createStyleElement);
+    const host = this.shadowRoots[this.shadowRoots.length - 1];
+
+    for (const style of styles) {
+      this.addUsage(style, this.inline, createStyleElement, host);
     }
 
-    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
+    urls?.forEach((url) => this.addUsage(url, this.external, createLinkElement, host));
   }
 
   /**
@@ -160,6 +159,7 @@ export class SharedStylesHost implements OnDestroy {
     value: string,
     usages: Map<string, UsageRecord<T>>,
     creator: (value: string, doc: Document) => T,
+    host?: Node,
   ): void {
     // Attempt to get any current usage of the value
     const record = usages.get(value);
@@ -173,10 +173,14 @@ export class SharedStylesHost implements OnDestroy {
       }
       record.usage++;
     } else {
+      const hosts = host ? [host] : this.hosts ? [...this.hosts] : [];
+      if (hosts.length === 0) {
+        return;
+      }
       // Otherwise, create an entry to track the elements and add element for each host
       usages.set(value, {
         usage: 1,
-        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
+        elements: hosts.map((hostNode) => this.addElement(hostNode, creator(value, this.doc))),
       });
     }
   }
@@ -229,17 +233,26 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {
-    // Add a nonce if present
     if (this.nonce) {
       element.setAttribute('nonce', this.nonce);
     }
-
-    // Add application identifier when on the server to support client-side reuse
-    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    // The `ng-app-id` attribute is used on the server to identify which styles were
+    // created by the server renderer.
+    if (isPlatformServer(this.platformId) && host === this.doc.head) {
       element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
+    host.appendChild(element);
+    return element;
+  }
 
-    // Insert the element into the DOM with the host node as parent
-    return host.appendChild(element);
+  addShadowRoot(shadowRoot: Node): void {
+    this.shadowRoots.push(shadowRoot);
+  }
+
+  removeShadowRoot(shadowRoot: Node): void {
+    const index = this.shadowRoots.indexOf(shadowRoot);
+    if (index > -1) {
+      this.shadowRoots.splice(index, 1);
+    }
   }
 }
