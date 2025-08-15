@@ -26,7 +26,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(@angular/ssr@20.2.0-rc.0)(@types/node@18.19.122)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-rc.0(@angular/ssr@20.2.0-rc.1)(@types/node@18.19.122)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular-devkit/core':
         specifier: 20.2.0-rc.0
         version: 20.2.0-rc.0(chokidar@4.0.3)
@@ -41,7 +41,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 20.2.0-rc.0
         version: 20.2.0-rc.0(rxjs@7.8.2)
@@ -91,8 +91,8 @@ importers:
         specifier: workspace:*
         version: link:packages/service-worker
       '@angular/ssr':
-        specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0
+        specifier: 20.2.0-rc.1
+        version: 20.2.0-rc.1
       '@angular/upgrade':
         specifier: 'workspace: *'
         version: link:packages/upgrade
@@ -531,13 +531,13 @@ importers:
         version: 5.35.0
       '@angular-devkit/build-angular':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(utf-8-validate@6.0.5)(yaml@2.8.1)
+        version: 20.2.0-rc.0(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(utf-8-validate@6.0.5)(yaml@2.8.1)
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/build':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 20.2.0-rc.0
         version: 20.2.0-rc.0(rxjs@7.8.2)
@@ -575,8 +575,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/router
       '@angular/ssr':
-        specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0
+        specifier: 20.2.0-rc.1
+        version: 20.2.0-rc.1
       '@codemirror/autocomplete':
         specifier: 6.18.6
         version: 6.18.6
@@ -831,7 +831,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1005,7 +1005,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 20.2.0-rc.0
-        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+        version: 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1395,8 +1395,8 @@ packages:
     version: 0.0.0-7a11f99c467ca5ae4411c27beeec4300e32b616a
     hasBin: true
 
-  '@angular/ssr@20.2.0-rc.0':
-    resolution: {integrity: sha512-AGtRFfTZ2ZHe/VqyVtJGnfDHJBDGjqGsxG8YWmsKxtjBm0OQNfhJw/tcZuhZ42HSl7Ry1U97SF//7Wea9cqKOQ==}
+  '@angular/ssr@20.2.0-rc.1':
+    resolution: {integrity: sha512-LZgIdhE6djQ/c9JdeM4iBzVpXrdrYt9aQi1qOHx2Ka09rgr7mYUUxKBqI3tXP3YvdyVW0Y4szd9vJCewapk9rw==}
 
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
@@ -11429,13 +11429,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@20.2.0-rc.0(@angular/ssr@20.2.0-rc.0)(@types/node@18.19.122)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular-devkit/build-angular@20.2.0-rc.0(@angular/ssr@20.2.0-rc.1)(@types/node@18.19.122)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-rc.0(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-rc.0(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.1(esbuild@0.25.9)))(webpack@5.101.1(esbuild@0.25.9))
       '@angular-devkit/core': 20.2.0-rc.0(chokidar@4.0.3)
-      '@angular/build': 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11493,7 +11493,7 @@ snapshots:
       webpack-merge: 6.0.1
       webpack-subresource-integrity: 5.1.0(webpack@5.101.1(esbuild@0.25.9))
     optionalDependencies:
-      '@angular/ssr': 20.2.0-rc.0
+      '@angular/ssr': 20.2.0-rc.1
       esbuild: 0.25.9
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       protractor: 7.0.0
@@ -11519,13 +11519,13 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-angular@20.2.0-rc.0(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(utf-8-validate@6.0.5)(yaml@2.8.1)':
+  '@angular-devkit/build-angular@20.2.0-rc.0(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tsx@4.20.4)(typescript@5.9.2)(utf-8-validate@6.0.5)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-rc.0(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2002.0-rc.0(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.1(esbuild@0.25.9)))(webpack@5.101.1(esbuild@0.25.9))
       '@angular-devkit/core': 20.2.0-rc.0(chokidar@4.0.3)
-      '@angular/build': 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11583,7 +11583,7 @@ snapshots:
       webpack-merge: 6.0.1
       webpack-subresource-integrity: 5.1.0(webpack@5.101.1(esbuild@0.25.9))
     optionalDependencies:
-      '@angular/ssr': 20.2.0-rc.0
+      '@angular/ssr': 20.2.0-rc.1
       esbuild: 0.25.9
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       protractor: 7.0.0
@@ -11646,7 +11646,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@18.19.122)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-rc.0(chokidar@4.0.3)
@@ -11684,7 +11684,7 @@ snapshots:
       vite: 7.1.2(@types/node@18.19.122)(jiti@1.21.7)(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
       watchpack: 2.4.4
     optionalDependencies:
-      '@angular/ssr': 20.2.0-rc.0
+      '@angular/ssr': 20.2.0-rc.1
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.0
       lmdb: 3.4.2
@@ -11702,7 +11702,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.0)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@20.2.0-rc.0(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@20.2.0-rc.1)(@types/node@24.2.1)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.4)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2002.0-rc.0(chokidar@4.0.3)
@@ -11740,7 +11740,7 @@ snapshots:
       vite: 7.1.2(@types/node@24.2.1)(jiti@1.21.7)(less@4.4.0)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.4)(yaml@2.8.1)
       watchpack: 2.4.4
     optionalDependencies:
-      '@angular/ssr': 20.2.0-rc.0
+      '@angular/ssr': 20.2.0-rc.1
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.0
       lmdb: 3.4.2
@@ -11897,7 +11897,7 @@ snapshots:
       - '@modelcontextprotocol/sdk'
       - '@react-native-async-storage/async-storage'
 
-  '@angular/ssr@20.2.0-rc.0':
+  '@angular/ssr@20.2.0-rc.1':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core

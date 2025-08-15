@@ -70,7 +70,7 @@
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/service-worker": "workspace:*",
-    "@angular/ssr": "20.2.0-rc.0",
+    "@angular/ssr": "20.2.0-rc.1",
     "@angular/upgrade": "workspace: *",
     "@babel/cli": "7.28.3",
     "@babel/core": "7.28.3",
