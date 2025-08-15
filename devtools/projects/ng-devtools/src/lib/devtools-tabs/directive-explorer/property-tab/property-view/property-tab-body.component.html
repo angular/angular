@@ -3,7 +3,9 @@
     <ng-property-view
       (inspect)="inspect.emit($event)"
       (viewSource)="viewSource.emit(directive.name)"
+      (showSignalGraph)="showSignalGraph.emit($event)"
       [directive]="directive"
+      [signalGraphEnabled]="signalGraphEnabled()"
     />
   </div>
 }

@@ -26,6 +26,7 @@ ng_project(
         "//:node_modules/@types/chrome",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/application-services:theme",

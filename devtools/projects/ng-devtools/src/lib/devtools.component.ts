@@ -14,7 +14,7 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
-import {Events, MessageBus, SupportedApis} from '../../../protocol';
+import {Events, MessageBus} from '../../../protocol';
 import {interval} from 'rxjs';
 
 import {FrameManager} from './application-services/frame_manager';
@@ -25,6 +25,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Frame} from './application-environment';
 import {BrowserStylesService} from './application-services/browser_styles_service';
 import {MatIconRegistry} from '@angular/material/icon';
+import {SUPPORTED_APIS} from './application-providers/supported_apis';
 
 const DETECT_ANGULAR_ATTEMPTS = 10;
 
@@ -56,18 +57,13 @@ const LAST_SUPPORTED_VERSION = 9;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsComponent implements OnDestroy {
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
+
   readonly AngularStatus = AngularStatus;
   readonly angularStatus = signal(AngularStatus.UNKNOWN);
   readonly angularVersion = signal<string | undefined>(undefined);
   readonly angularIsInDevMode = signal(true);
   readonly hydration = signal(false);
-  readonly supportedApis = signal<SupportedApis>({
-    profiler: false,
-    dependencyInjection: false,
-    routes: false,
-    signals: false,
-    transferState: false,
-  });
   readonly ivy = signal<boolean | undefined>(undefined);
 
   readonly supportedVersion = computed(() => {
@@ -104,7 +100,7 @@ export class DevToolsComponent implements OnDestroy {
       this.ivy.set(ivy);
       this._interval$.unsubscribe();
       this.hydration.set(hydration);
-      this.supportedApis.set(supportedApis);
+      this.supportedApis.init(supportedApis);
     });
   }
 
