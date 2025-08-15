@@ -104,11 +104,11 @@
       "name": "package-manager",
       "type": "string",
       "enum": [
-        "npm",
-        "yarn",
-        "pnpm",
+        "bun",
         "cnpm",
-        "bun"
+        "npm",
+        "pnpm",
+        "yarn"
       ],
       "description": "The package manager used to install dependencies."
     },
@@ -172,9 +172,9 @@
       "type": "string",
       "enum": [
         "css",
-        "scss",
+        "less",
         "sass",
-        "less"
+        "scss"
       ],
       "description": "The type of stylesheet files to be created for components in the initial project."
     },
