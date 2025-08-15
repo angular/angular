@@ -9,7 +9,7 @@
 import {Diagnostic, linter} from '@codemirror/lint';
 import {TsVfsWorkerActions} from '../workers/enums/actions';
 import {Signal} from '@angular/core';
-import {EditorFile} from '../code-mirror-editor.service';
+import type {EditorFile} from '../code-mirror-editor.service';
 import {ActionMessage} from '../workers/interfaces/message';
 import {DiagnosticsRequest} from '../workers/interfaces/diagnostics-request';
 import {Subject, filter, take} from 'rxjs';

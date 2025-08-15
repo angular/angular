@@ -9,7 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 
 import {ErrorType, NodeRuntimeState} from './node-runtime-state.service';
-import {OUT_OF_MEMORY_MSG} from './node-runtime-sandbox.service';
+import {OUT_OF_MEMORY_MSG} from './node-runtime-errors';
 
 describe('NodeRuntimeState', () => {
   let service: NodeRuntimeState;
