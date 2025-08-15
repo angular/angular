@@ -39,6 +39,7 @@ import {fromEvent} from 'rxjs';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {DomSanitizer} from '@angular/platform-browser';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
@@ -74,6 +75,7 @@ export class DocViewer {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
@@ -215,7 +217,7 @@ export class DocViewer {
 
     return tabs.map((tab) => ({
       name: tab.getAttribute('path') ?? tab.getAttribute('header') ?? '',
-      content: tab.innerHTML,
+      sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(tab.innerHTML),
       visibleLinesRange: tab.getAttribute('visibleLines') ?? undefined,
     }));
   }
@@ -235,7 +237,9 @@ export class DocViewer {
     return {
       title,
       name: path,
-      content: content?.outerHTML,
+      sanitizedContent: content?.outerHTML
+        ? this.sanitizer.bypassSecurityTrustHtml(content.outerHTML)
+        : '',
       visibleLinesRange: visibleLines,
     };
   }
