@@ -1,4 +1,4 @@
-# CLI Reference
+# CLI References
 
 | Command                           | Alias  | Description                                                       |
 |:---                               |:---    |:---                                                               |
