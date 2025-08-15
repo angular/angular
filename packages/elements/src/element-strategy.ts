@@ -31,6 +31,7 @@ export interface NgElementStrategy {
   disconnect(): void;
   getInputValue(propName: string): any;
   setInputValue(propName: string, value: string, transform?: (value: any) => any): void;
+  applyMethod?(methodName: keyof any, args: any[]): any;
 }
 
 /**

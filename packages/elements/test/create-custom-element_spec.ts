@@ -18,7 +18,7 @@ import {
   Output,
 } from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
-import {Subject} from 'rxjs';
+import {NEVER, Subject} from 'rxjs';
 
 import {createCustomElement, NgElementConstructor} from '../src/create-custom-element';
 import {
@@ -314,6 +314,133 @@ describe('createCustomElement', () => {
     expect(strategy.inputs.get('barBar')).toBe('bar-attr-value');
     expect(strategy.inputs.get('fooTransformed')).toBe(false);
     expect(strategy.inputs.get('fooSignal')).toBe('value-signal');
+  });
+
+  describe('exposedMethods', () => {
+    @Component({
+      template: '',
+    })
+    class TestComponent {
+      publicMethod1(value: number): string {
+        return `test value ${value}`;
+      }
+
+      publicMethod2(a: number, b: number): number {
+        return a + b;
+      }
+
+      protected protectedMethod(value: number): string {
+        return '';
+      }
+
+      private privateMethod(value: number): string {
+        return '';
+      }
+    }
+
+    let selector: string;
+
+    beforeEach(() => {
+      selector = `test-${Math.random().toString(36).substring(2)}`;
+    });
+
+    it('should throw error if the component does not have such public method', () => {
+      expect(() =>
+        createCustomElement(TestComponent, {
+          // @ts-expect-error test with unknown method
+          exposedMethods: ['unknownMethod'],
+          injector,
+        }),
+      ).toThrow(
+        new Error(
+          'Cannot expose method "unknownMethod" because it is not a function of the component.',
+        ),
+      );
+    });
+
+    it('should throw error if strategy does not have `applyMethod` method', () => {
+      class CustomElementStrategy implements NgElementStrategy {
+        events = NEVER;
+
+        connect(element: HTMLElement): void {}
+
+        disconnect(): void {}
+
+        getInputValue(propName: string): void {}
+
+        setInputValue(propName: string, value: string): void {}
+      }
+
+      class CustomElementStrategyFactory implements NgElementStrategyFactory {
+        create(): NgElementStrategy {
+          return new CustomElementStrategy();
+        }
+      }
+
+      const ElementCtor = createCustomElement(TestComponent, {
+        exposedMethods: ['publicMethod1'],
+        injector,
+        strategyFactory: new CustomElementStrategyFactory(),
+      });
+
+      customElements.define(selector, ElementCtor);
+
+      const element = document.createElement(selector) as InstanceType<typeof ElementCtor>;
+
+      expect(() => {
+        element.publicMethod1(123);
+      }).toThrow(new Error('Method not supported by the current strategy.'));
+    });
+
+    it('should throw error if call exposed method on detached element', () => {
+      const ElementCtor = createCustomElement(TestComponent, {
+        exposedMethods: ['publicMethod1', 'publicMethod2'],
+        injector,
+      });
+
+      customElements.define(selector, ElementCtor);
+
+      const element = document.createElement(selector) as InstanceType<typeof ElementCtor>;
+
+      expect(() => element.publicMethod1(123)).toThrow(new Error('Component is detached from DOM'));
+      expect(() => element.publicMethod2(1, 2)).toThrow(
+        new Error('Component is detached from DOM'),
+      );
+    });
+
+    it('should expose public methods', () => {
+      const ElementCtor = createCustomElement(TestComponent, {
+        exposedMethods: ['publicMethod1', 'publicMethod2'],
+        injector,
+      });
+
+      customElements.define(selector, ElementCtor);
+
+      const element = document.createElement(selector) as InstanceType<typeof ElementCtor>;
+
+      document.body.appendChild(element);
+
+      expect(element.publicMethod1(123)).toBe('test value 123');
+      expect(element.publicMethod2(1, 2)).toBe(3);
+
+      element.remove();
+    });
+
+    it('should not expose protected methods', () => {
+      createCustomElement(TestComponent, {
+        // @ts-expect-error
+        exposedMethods: ['protectedMethod'],
+        injector,
+      });
+    });
+
+    it('should not expose private methods', () => {
+      createCustomElement(TestComponent, {
+        // @ts-expect-error
+        exposedMethods: ['privateMethod'],
+        injector,
+      });
+    });
   });
 
   // Helpers
