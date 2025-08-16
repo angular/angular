@@ -32,7 +32,7 @@ Alright, your turn to give this a try:
 Add the `showSecretMessage()` event handler function in the `App` class. Use the following code as the implementation:
 
 ```ts
-showSecretMessage()() {
+showSecretMessage() {
   this.message = 'Way to go 🚀';
 }
 ```
@@ -43,7 +43,7 @@ showSecretMessage()() {
 Update the template code in `app.ts` to bind to the `mouseover` event of the `section` element.
 
 ```angular-html
-<section (mouseover)="showSecretMessage()()">
+<section (mouseover)="showSecretMessage()">
 ```
 
 </docs-step>
