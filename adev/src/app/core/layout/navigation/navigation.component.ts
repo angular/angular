@@ -21,13 +21,13 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '../../constants/links';
+import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '@adev/constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
-import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '@adev/constants/element-ids';
+import {COMMAND, SEARCH_TRIGGER_KEY, CONTROL} from '@adev/constants/keys';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
