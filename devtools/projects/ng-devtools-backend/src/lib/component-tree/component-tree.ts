@@ -31,7 +31,7 @@ import {
   UpdatedStateData,
 } from '../../../../protocol';
 import {
-  buildDirectiveTree,
+  buildDirectiveForestWithStrategy,
   getLViewFromDirectiveOrElementInstance,
 } from '../directive-forest/index';
 import {
@@ -45,7 +45,7 @@ import {
 } from '../state-serializer/state-serializer';
 import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
-import {getRoots} from './get-roots';
+import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
@@ -548,9 +548,104 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
   return rootLViews;
 };
 
+function getRootElements(): Element[] {
+  if (!ngDebugClient().getComponent) {
+    // If the ngDebugClient does not support getComponent, we cannot proceed.
+    return [];
+  }
+
+  const roots = getAppRoots();
+  const rootSet = new Set(roots);
+
+  // Traverse the DOM tree for other non application root Angular components.
+  // Pass in the existing roots to inform the traversal that we can skip those paths.
+  discoverNonApplicationRootComponents(document.body, rootSet);
+
+  return [...rootSet];
+}
+
+/**
+ * Warning: This function mutates the `roots` arg!
+ *
+ * Recursively traverse the DOM tree to find all Angular component root elements.
+ *
+ * This function starts from the given element and traverses its children.
+ * When it finds an Angular component, it adds that element to the `roots` set.
+ *
+ * If we discover an angular component that we've already added to the `roots` set,
+ * we skip traversing its children. This is to ensure that we only collect unique root elements.
+ *
+ *
+ * Example:
+ *
+ * Lets say we have the following DOM structure:
+ *
+ * ```html
+ * <body>
+ *   <app-root-1>...</app-root-1>
+ *   <app-root-2>...</app-root-2>
+ *
+ *   <mat-dialog>
+ *    ...
+ *   </mat-dialog>
+ *
+ *   <div id="not-angular">Not an angular component</div>
+ * </body>
+ *
+ * ```
+ *
+ * In this case, `app-root-1` and `app-root-2` are the root elements of Angular components.
+ * The `mat-dialog` is a non application root Angular component.
+ *
+ * We can discover the roots by searching for ng-version. This gives us a set of paths that we can skip traversing.
+ *
+ * ```ts
+ * const rootSet = new Set(getAppRoots());
+ * console.log(rootSet);
+ * // Set(<app-root-1>, <app-root-2>)
+ * discoverNonApplicationRootComponents(document.body, rootSet);
+ * console.log(rootSet);
+ * // Set(<app-root-1>, <app-root-2>, <mat-dialog>)
+ * ```
+ *
+ * ```md
+ *
+ * traversing document.body.children:
+ * - child: <app-root-1>
+ *   - Since we have this already in the `roots` set, we skip traversing its children.
+ * - child: <app-root-2>
+ *   - Since we have this already in the `roots` set, we skip traversing its children.
+ * - child: <mat-dialog>
+ *   - Since this is not in the `roots` set, we check if it is an Angular component.
+ *   - Since it is, we add it to the `roots` set and break the loop.
+ * - child: <div id="not-angular">
+ *   - Since this is not an Angular component, we traverse its children to see if we can find any Angular components.
+ *
+ * ```
+ *
+ * @param element The current DOM element being traversed.
+ * @param roots A set of root elements found during the traversal.
+ */
+function discoverNonApplicationRootComponents(element: Element, roots: Set<Element>): void {
+  const children = Array.from(element.children);
+  for (const child of children) {
+    if (roots.has(child)) {
+      continue;
+    }
+
+    const ng = ngDebugClient();
+    if (ng.getComponent && ng.getComponent(child)) {
+      roots.add(child);
+      // If the child is an Angular component, we can skip traversing its children.
+      continue;
+    }
+
+    discoverNonApplicationRootComponents(child, roots);
+  }
+}
+
 export const buildDirectiveForest = (): ComponentTreeNode[] => {
-  const roots = getRoots();
-  return Array.prototype.concat.apply([], Array.from(roots).map(buildDirectiveTree));
+  return buildDirectiveForestWithStrategy(getRootElements());
 };
 
 // Based on an ElementID we return a specific component node.
