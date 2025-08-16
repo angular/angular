@@ -705,7 +705,12 @@ export function handleUncaughtError(lView: LView, error: any): void {
   if (!injector) {
     return;
   }
-  const errorHandler = injector.get(INTERNAL_APPLICATION_ERROR_HANDLER, null);
+  let errorHandler: ((e: any) => void) | null;
+  try {
+    errorHandler = injector.get(INTERNAL_APPLICATION_ERROR_HANDLER, null);
+  } catch {
+    errorHandler = null;
+  }
   errorHandler?.(error);
 }
 
