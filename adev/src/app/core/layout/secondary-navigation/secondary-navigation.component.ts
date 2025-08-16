@@ -32,7 +32,7 @@ import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
 import {PagePrefix} from '../../enums/pages';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {isPlatformBrowser} from '@angular/common';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
+import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '@adev/constants/element-ids';
 
 export const ANIMATION_DURATION = 500;
 
