@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CurrencyPipe, DecimalPipe, PercentPipe} from '../../index';
+import {
+  CurrencyPipe,
+  DecimalPipe,
+  PercentPipe,
+  useLegacyImplementation,
+  useIntlImplementation,
+} from '../../index';
 import localeAr from '../../locales/ar';
 import localeDa from '../../locales/da';
 import localeDeAt from '../../locales/de-AT';
@@ -16,18 +22,32 @@ import localeFr from '../../locales/fr';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
+// Following ignore is to ease the review of the diff
+// prettier-ignore
+[true, false].forEach((useIntl) => {
+  describe(useIntl ? '- Intl formatting - ' : ' - Legacy formatting -', () => {
+    beforeAll(() => {
+      ɵregisterLocaleData(localeEn);
+      ɵregisterLocaleData(localeEsUS);
+      ɵregisterLocaleData(localeFr);
+      ɵregisterLocaleData(localeAr);
+      ɵregisterLocaleData(localeDeAt);
+      ɵregisterLocaleData(localeDa);
+    });
+  
+    afterAll(() => ɵunregisterLocaleData());
+  
+    beforeEach(() => {
+      if (useIntl) {
+        useIntlImplementation();
+      }
+    });
+  
+    afterEach(() => {
+      useLegacyImplementation();
+    });
+
 describe('Number pipes', () => {
-  beforeAll(() => {
-    ɵregisterLocaleData(localeEn);
-    ɵregisterLocaleData(localeEsUS);
-    ɵregisterLocaleData(localeFr);
-    ɵregisterLocaleData(localeAr);
-    ɵregisterLocaleData(localeDeAt);
-    ɵregisterLocaleData(localeDa);
-  });
-
-  afterAll(() => ɵunregisterLocaleData());
-
   describe('DecimalPipe', () => {
     describe('transform', () => {
       let pipe: DecimalPipe;
@@ -158,9 +178,9 @@ describe('Number pipes', () => {
     describe('transform', () => {
       it('should return correct value for numbers', () => {
         expect(pipe.transform(123)).toEqual('$123.00');
-        expect(pipe.transform(12, 'EUR', 'code', '.1')).toEqual('EUR12.0');
-        expect(pipe.transform(5.1234, 'USD', 'code', '.0-3')).toEqual('USD5.123');
-        expect(pipe.transform(5.1234, 'USD', 'code')).toEqual('USD5.12');
+        expect(pipe.transform(12, 'EUR', 'code', '.1')).toEqual(useIntl ?'EUR 12.0':'EUR12.0');
+        expect(pipe.transform(5.1234, 'USD', 'code', '.0-3')).toEqual(useIntl ? 'USD 5.123':'USD5.123');
+        expect(pipe.transform(5.1234, 'USD', 'code')).toEqual(useIntl ? 'USD 5.12':'USD5.12');
         expect(pipe.transform(5.1234, 'USD', '')).toEqual('5.12');
         expect(pipe.transform(5.1234, 'USD', 'symbol')).toEqual('$5.12');
         expect(pipe.transform(5.1234, 'CAD', 'symbol')).toEqual('CA$5.12');
@@ -182,7 +202,7 @@ describe('Number pipes', () => {
 
       it('should use the injected default currency code if none is provided', () => {
         const clpPipe = new CurrencyPipe('en-US', 'CLP');
-        expect(clpPipe.transform(1234)).toEqual('CLP1,234');
+        expect(clpPipe.transform(1234)).toEqual(useIntl ?'CLP 1,234':'CLP1,234');
       });
 
       it('should support any currency code name', () => {
@@ -245,3 +265,5 @@ describe('Number pipes', () => {
     });
   });
 });
+
+});});
