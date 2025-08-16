@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ANGULAR_LINKS} from '@adev/constants/links';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
-import {GITHUB, X, MEDIUM, YOUTUBE, BLUESKY} from './../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
@@ -19,9 +19,5 @@ import {GITHUB, X, MEDIUM, YOUTUBE, BLUESKY} from './../../constants/links';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
-  readonly GITHUB = GITHUB;
-  readonly X = X;
-  readonly YOUTUBE = YOUTUBE;
-  readonly MEDIUM = MEDIUM;
-  readonly BLUESKY = BLUESKY;
+  protected ngLinks = ANGULAR_LINKS;
 }
