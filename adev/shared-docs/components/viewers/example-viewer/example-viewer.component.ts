@@ -14,6 +14,7 @@ import {
   computed,
   DestroyRef,
   ElementRef,
+  forwardRef,
   inject,
   Injector,
   input,
@@ -43,7 +44,13 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, DocViewer, CopySourceCodeButton, MatTabsModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    forwardRef(() => DocViewer),
+    CopySourceCodeButton,
+    MatTabsModule,
+    MatTooltipModule,
+  ],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
