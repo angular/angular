@@ -27,7 +27,7 @@ export class DocumentCoreMigration extends TsurgeFunnelMigration<
   CompilationUnitData
 > {
   override async analyze(info: ProgramInfo): Promise<Serializable<CompilationUnitData>> {
-    const replacements: Replacement[] = [];
+    let replacements: Replacement[] = [];
     let importManager: ImportManager | null = null;
 
     for (const sourceFile of info.sourceFiles) {
@@ -52,7 +52,7 @@ export class DocumentCoreMigration extends TsurgeFunnelMigration<
     }
 
     if (importManager !== null) {
-      applyImportManagerChanges(importManager, replacements, info.sourceFiles, info);
+      replacements = applyImportManagerChanges(importManager, info.sourceFiles, info);
     }
 
     return confirmAsSerializable({replacements});

@@ -75,13 +75,11 @@ export class InjectFlagsMigration extends TsurgeFunnelMigration<
 
       const file = projectFile(sourceFile, info);
       const importManager = new ImportManager();
-      const importReplacements: Replacement[] = [];
 
       // Always remove the `InjectFlags` since it has been removed from Angular.
       // Note that it be better to do this inside of `migrate`, but we don't have AST access there.
       importManager.removeImport(sourceFile, 'InjectFlags', '@angular/core');
-      applyImportManagerChanges(importManager, importReplacements, [sourceFile], info);
-      importRemovals[file.id] = importReplacements;
+      importRemovals[file.id] = applyImportManagerChanges(importManager, [sourceFile], info);
 
       sourceFile.forEachChild(function walk(node) {
         if (

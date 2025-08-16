@@ -19,13 +19,13 @@ import {ProgramInfo} from '../program_info';
  */
 export function applyImportManagerChanges(
   importManager: ImportManager,
-  replacements: Replacement[],
   sourceFiles: readonly ts.SourceFile[],
   info: Pick<ProgramInfo, 'sortedRootDirs' | 'projectRoot'>,
-) {
+): Replacement[] {
   const {newImports, updatedImports, deletedImports} = importManager.finalize();
   const printer = ts.createPrinter({});
   const pathToFile = new Map<string, ts.SourceFile>(sourceFiles.map((s) => [s.fileName, s]));
+  const replacements: Replacement[] = [];
 
   // Capture new imports
   newImports.forEach((newImports, fileName) => {
@@ -99,4 +99,6 @@ export function applyImportManagerChanges(
       ),
     );
   }
+
+  return replacements;
 }

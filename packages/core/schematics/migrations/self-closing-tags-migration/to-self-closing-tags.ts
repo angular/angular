@@ -13,7 +13,7 @@ import {
   Text,
   visitAll,
 } from '@angular/compiler';
-import {parseTemplate} from './util';
+import {parseTemplate} from '../../utils/parse_html';
 
 export function migrateTemplateToSelfClosingTags(template: string): {
   replacementCount: number;
