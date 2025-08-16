@@ -12,10 +12,11 @@ import {join, relative} from 'path';
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {migrateTemplate} from './migration';
-import {AnalyzedFile, MigrateError} from './types';
+import {AnalyzedFile} from './types';
 import {analyze} from './util';
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
 import {normalizePath} from '../../utils/change_tracker';
+import {MigrateError} from '../../utils/parse_html';
 
 interface Options {
   path?: string;

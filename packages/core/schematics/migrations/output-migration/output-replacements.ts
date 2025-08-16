@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {
   ProgramInfo,
   ProjectFile,
@@ -86,9 +86,6 @@ export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<
 
   for (const sf of sourceFiles) {
     const importManager = new ImportManager();
-
-    const addOnly: Replacement[] = [];
-    const addRemove: Replacement[] = [];
     const file = projectFile(sf, info);
 
     importManager.addImport({
@@ -96,11 +93,11 @@ export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<
       exportModuleSpecifier: '@angular/core',
       exportSymbolName: 'output',
     });
-    applyImportManagerChanges(importManager, addOnly, [sf], info);
+    const addOnly: Replacement[] = applyImportManagerChanges(importManager, [sf], info);
 
     importManager.removeImport(sf, 'Output', '@angular/core');
     importManager.removeImport(sf, 'EventEmitter', '@angular/core');
-    applyImportManagerChanges(importManager, addRemove, [sf], info);
+    const addRemove: Replacement[] = applyImportManagerChanges(importManager, [sf], info);
 
     importReplacements[file.id] = {
       add: addOnly,
@@ -165,17 +162,14 @@ export function calculatePipeCallReplacement(
       node.arguments,
     );
 
-    const replacements = [
+    return [
       prepareTextReplacementForNode(
         info,
         node,
         printer.printNode(ts.EmitHint.Unspecified, pipeCallExp, sf),
       ),
+      ...applyImportManagerChanges(importManager, [sf], info),
     ];
-
-    applyImportManagerChanges(importManager, replacements, [sf], info);
-
-    return replacements;
   } else {
     // TODO: assert instead?
     throw new Error(

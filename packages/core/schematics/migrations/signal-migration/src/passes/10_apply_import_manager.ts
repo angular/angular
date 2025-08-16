@@ -22,5 +22,5 @@ export function pass10_applyImportManager(
   sourceFiles: readonly ts.SourceFile[],
   info: Pick<ProgramInfo, 'sortedRootDirs' | 'projectRoot'>,
 ) {
-  applyImportManagerChanges(importManager, result.replacements, sourceFiles, info);
+  result.replacements.push(...applyImportManagerChanges(importManager, sourceFiles, info));
 }

@@ -9,22 +9,15 @@
 import {Element, Node, Text, visitAll} from '@angular/compiler';
 
 import {cases} from './cases';
-import {
-  ElementCollector,
-  ElementToMigrate,
-  endMarker,
-  MigrateError,
-  Result,
-  startMarker,
-} from './types';
+import {ElementCollector, ElementToMigrate, endMarker, Result, startMarker} from './types';
 import {
   calculateNesting,
   getMainBlock,
   getOriginals,
   hasLineBreaks,
-  parseTemplate,
   reduceNestingOffset,
 } from './util';
+import {MigrateError, parseTemplate} from '../../utils/parse_html';
 
 export const ngswitch = '[ngSwitch]';
 

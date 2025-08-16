@@ -9,11 +9,9 @@
 import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {getAngularDecorators, QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import assert from 'assert';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
-  MigrationStats,
   ProgramInfo,
   projectFile,
   Replacement,
@@ -407,7 +405,7 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
     const checker = program.getTypeChecker();
     const reflector = new TypeScriptReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflector, checker, null);
-    const replacements: Replacement[] = [];
+    let replacements: Replacement[] = [];
     const importManager = new ImportManager();
     const printer = ts.createPrinter();
 
@@ -593,7 +591,10 @@ export class SignalQueriesMigration extends TsurgeComplexMigration<
       }
     }
 
-    applyImportManagerChanges(importManager, replacements, sourceFiles, info);
+    replacements = [
+      ...replacements,
+      ...applyImportManagerChanges(importManager, sourceFiles, info),
+    ];
 
     return {replacements, knownQueries};
   }

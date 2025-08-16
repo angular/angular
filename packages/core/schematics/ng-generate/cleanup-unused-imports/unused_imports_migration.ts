@@ -331,7 +331,7 @@ export class UnusedImportsMigration extends TsurgeFunnelMigration<
       });
     });
 
-    applyImportManagerChanges(importManager, replacements, [sourceFile], info);
+    replacements.push(...applyImportManagerChanges(importManager, [sourceFile], info));
   }
 }
 
