@@ -55,11 +55,11 @@ export class AppComponent {
   private readonly router = inject(Router);
   private readonly headerService = inject(HeaderService);
 
-  isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  readonly displaySecondaryNav = signal(false);
-  readonly displayFooter = signal(false);
-  readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
+  private displaySecondaryNav = signal(false);
+  private displayFooter = signal(false);
+  private displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
   constructor() {
     this.closeSearchDialogOnNavigationSkipped();
