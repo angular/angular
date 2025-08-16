@@ -10,6 +10,7 @@
     <label for="show-full-path">Show full path</label>
   </div>
 </div>
+
 <as-split unit="percent" direction="horizontal" [gutterSize]="9" class="visualization">
   <aside class="legend" aria-hidden="true">
     <ul>
@@ -42,28 +43,43 @@
             ng-route-details-row
             label="Path"
             type="chip"
-            [data]="route.data.path"
+            dataKey="path"
+            [data]="route.data"
             (btnClick)="navigateRoute(route)"
           ></tr>
+
           <tr
             ng-route-details-row
             label="Component"
             type="chip"
-            [data]="route.data.component"
+            dataKey="component"
+            [data]="route.data"
             (btnClick)="viewComponentSource(route.data.component)"
           ></tr>
           @if (route.data.pathMatch) {
-            <tr ng-route-details-row label="Path Match" [data]="route.data.pathMatch"></tr>
+            <tr
+              ng-route-details-row
+              label="Path Match"
+              dataKey="pathMatch"
+              [data]="route.data"
+            ></tr>
           }
           @if (route?.data?.data?.length > 0) {
-            <tr ng-route-details-row label="Data" [data]="route.data.data | json"></tr>
+            <tr
+              ng-route-details-row
+              label="Data"
+              [renderValueAsJson]="true"
+              dataKey="data"
+              [data]="route.data"
+            ></tr>
           }
           @if (route.data.canActivateGuards && route.data.canActivateGuards.length > 0) {
             <tr
               ng-route-details-row
               label="Can Activate Guards"
               type="list"
-              [data]="route.data.canActivateGuards"
+              dataKey="canActivateGuards"
+              [data]="route.data"
               (btnClick)="viewSourceFromRouter($event, 'canActivate')"
             ></tr>
           }
@@ -72,7 +88,8 @@
               ng-route-details-row
               label="Can Activate Child Guards"
               type="list"
-              [data]="route.data.canActivateChildGuards"
+              dataKey="canActivateChildGuards"
+              [data]="route.data"
               (btnClick)="viewSourceFromRouter($event, 'canActivateChild')"
             ></tr>
           }
@@ -81,7 +98,8 @@
               ng-route-details-row
               label="Can DeActivate Guards"
               type="list"
-              [data]="route.data.canDeactivateGuards"
+              dataKey="canDeactivateGuards"
+              [data]="route.data"
               (btnClick)="viewSourceFromRouter($event, 'canDeactivate')"
             ></tr>
           }
@@ -90,7 +108,8 @@
               ng-route-details-row
               label="Can Match Guards"
               type="list"
-              [data]="route.data.canMatchGuards"
+              dataKey="canMatchGuards"
+              [data]="route.data"
               (btnClick)="viewSourceFromRouter($event, 'canMatch')"
             ></tr>
           }
@@ -100,16 +119,42 @@
               ng-route-details-row
               label="Providers"
               type="list"
-              [data]="route.data.providers"
+              dataKey="providers"
+              [data]="route.data"
               (btnClick)="viewSourceFromRouter($event, 'providers')"
             ></tr>
           }
           @if (route.data.title) {
-            <tr ng-route-details-row label="Title" [data]="route.data.title"></tr>
+            <tr ng-route-details-row label="Title" dataKey="title" [data]="route.data"></tr>
           }
-          <tr ng-route-details-row label="Active" type="flag" [data]="route.data.isActive"></tr>
-          <tr ng-route-details-row label="Auxiliary" type="flag" [data]="route.data.isAux"></tr>
-          <tr ng-route-details-row label="Lazy" type="flag" [data]="route.data.isLazy"></tr>
+          <tr
+            ng-route-details-row
+            label="Active"
+            type="flag"
+            dataKey="isActive"
+            [data]="route.data"
+          ></tr>
+          <tr
+            ng-route-details-row
+            label="Auxiliary"
+            type="flag"
+            dataKey="isAux"
+            [data]="route.data"
+          ></tr>
+          <tr
+            ng-route-details-row
+            label="Lazy"
+            type="flag"
+            dataKey="isLazy"
+            [data]="route.data"
+          ></tr>
+          <tr
+            ng-route-details-row
+            label="Redirecting"
+            type="flag"
+            dataKey="isRedirect"
+            [data]="route.data"
+          ></tr>
         </table>
       </div>
     </as-split-area>

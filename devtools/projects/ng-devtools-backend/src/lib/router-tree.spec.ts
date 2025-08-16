@@ -20,6 +20,7 @@ describe('parseRoutes', () => {
       isAux: false,
       isLazy: false,
       isActive: false,
+      isRedirect: false,
     });
   });
 
@@ -39,6 +40,7 @@ describe('parseRoutes', () => {
       'isAux': false,
       'isLazy': false,
       'isActive': false,
+      isRedirect: false,
     });
   });
 
@@ -111,6 +113,7 @@ describe('parseRoutes', () => {
           'isAux': true,
           'isLazy': false,
           'isActive': undefined,
+          'isRedirect': false,
         },
         {
           'component': 'component-two',
@@ -126,6 +129,7 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': false,
           'isActive': undefined,
+          'isRedirect': false,
           'children': [
             {
               'component': 'component-two-two',
@@ -141,6 +145,7 @@ describe('parseRoutes', () => {
               'isAux': false,
               'isLazy': false,
               'isActive': undefined,
+              'isRedirect': false,
             },
           ],
         },
@@ -158,6 +163,7 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': true,
           'isActive': undefined,
+          'isRedirect': false,
         },
         {
           'component': 'redirect -> redirecting to -> "redirectTo"',
@@ -173,10 +179,12 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': false,
           'isActive': undefined,
+          'isRedirect': true,
         },
       ],
       'isAux': false,
       'isLazy': false,
+      'isRedirect': false,
       'data': [],
       'isActive': false,
     } as any);

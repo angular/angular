@@ -24,6 +24,7 @@ describe('RouteDetailsRowComponent', () => {
     component = fixture.componentInstance;
 
     fixture.componentRef.setInput('label', 'Route Title');
+    fixture.componentRef.setInput('data', 'Route Data');
     fixture.detectChanges();
   });
 
@@ -32,10 +33,6 @@ describe('RouteDetailsRowComponent', () => {
   });
 
   it('should render a label and text data', () => {
-    fixture.componentRef.setInput('label', 'Route Title');
-    fixture.componentRef.setInput('data', 'Route Data');
-    fixture.detectChanges();
-
     const labelElement = fixture.debugElement.query(By.css('th'));
     expect(labelElement.nativeElement.innerText).toEqual('Route Title');
 
