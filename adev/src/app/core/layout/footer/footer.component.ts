@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {GITHUB, X, YOUTUBE, MEDIUM, BLUESKY, DISCORD, StackOverflow} from '@adev/constants/links';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
-import {GITHUB, X, MEDIUM, YOUTUBE, BLUESKY} from './../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
@@ -24,4 +24,6 @@ export class Footer {
   readonly YOUTUBE = YOUTUBE;
   readonly MEDIUM = MEDIUM;
   readonly BLUESKY = BLUESKY;
+  readonly DISCORD = DISCORD;
+  readonly StackOverflow = StackOverflow;
 }

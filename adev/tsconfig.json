@@ -30,7 +30,8 @@
     "skipLibCheck": true,
     "paths": {
       "@angular/docs": ["./shared-docs"],
-      "@angular/*": ["../packages/*/index"]
+      "@angular/*": ["../packages/*/index"],
+      "@adev/constants/*": ["./src/app/core/constants/*"],
     }
   },
   "angularCompilerOptions": {
