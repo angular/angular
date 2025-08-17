@@ -52,10 +52,10 @@ import {SearchHistoryComponent} from '../search-history/search-history.component
   styleUrls: ['./search-dialog.component.scss'],
 })
 export class SearchDialog {
-  onClose = output();
-  dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
-  items = viewChildren(SearchItem);
-  textField = viewChild(TextField);
+  readonly onClose = output();
+  readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
+  readonly items = viewChildren(SearchItem);
+  readonly textField = viewChild(TextField);
 
   readonly history = inject(SearchHistory);
   private readonly search = inject(Search);
@@ -68,9 +68,9 @@ export class SearchDialog {
     this.injector,
   ).withWrap();
 
-  searchQuery = this.search.searchQuery;
-  resultsResource = this.search.resultsResource;
-  searchResults = this.search.searchResults;
+  readonly searchQuery = this.search.searchQuery;
+  readonly resultsResource = this.search.resultsResource;
+  readonly searchResults = this.search.searchResults;
 
   // We use a FormControl instead of relying on NgModel+signal to avoid
   // the issue https://github.com/angular/angular/issues/13568
