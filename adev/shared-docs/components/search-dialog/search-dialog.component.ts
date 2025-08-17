@@ -52,10 +52,10 @@ import {SearchHistoryComponent} from '../search-history/search-history.component
   styleUrls: ['./search-dialog.component.scss'],
 })
 export class SearchDialog {
-  onClose = output();
-  dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
-  items = viewChildren(SearchItem);
-  textField = viewChild(TextField);
+  readonly onClose = output();
+  readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('searchDialog');
+  readonly items = viewChildren(SearchItem);
+  readonly textField = viewChild(TextField);
 
   readonly history = inject(SearchHistory);
   private readonly search = inject(Search);

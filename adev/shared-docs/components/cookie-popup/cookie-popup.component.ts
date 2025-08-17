@@ -11,7 +11,7 @@ import {LOCAL_STORAGE} from '../../providers/index';
 import {setCookieConsent} from '../../utils';
 
 /**
- * Decelare gtag as part of the window in this file as gtag is expected to already be loaded.
+ * Declare gtag as part of the window in this file as gtag is expected to already be loaded.
  */
 declare const window: Window & typeof globalThis & {gtag?: Function};
 

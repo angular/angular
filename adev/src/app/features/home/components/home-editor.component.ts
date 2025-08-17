@@ -35,7 +35,7 @@ export class CodeEditorComponent {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
 
-  tutorialFiles = input.required<string>();
+  readonly tutorialFiles = input.required<string>();
 
   constructor() {
     this.loadEmbeddedEditor();

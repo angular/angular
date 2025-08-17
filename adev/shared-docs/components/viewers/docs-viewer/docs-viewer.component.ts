@@ -60,8 +60,8 @@ export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/
   },
 })
 export class DocViewer {
-  docContent = input<string | undefined>();
-  hasToc = input(false);
+  readonly docContent = input<string | undefined>();
+  readonly hasToc = input(false);
   readonly contentLoaded = output<void>();
 
   private readonly destroyRef = inject(DestroyRef);
