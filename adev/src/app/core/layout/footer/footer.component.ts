@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {GITHUB, X, YOUTUBE, MEDIUM, BLUESKY, DISCORD, StackOverflow} from '@adev/constants/links';
+import {ANGULAR_LINKS} from '@adev/constants/links';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
@@ -19,11 +19,5 @@ import {RouterLink} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
-  readonly GITHUB = GITHUB;
-  readonly X = X;
-  readonly YOUTUBE = YOUTUBE;
-  readonly MEDIUM = MEDIUM;
-  readonly BLUESKY = BLUESKY;
-  readonly DISCORD = DISCORD;
-  readonly StackOverflow = StackOverflow;
+  protected ngLinks = ANGULAR_LINKS;
 }

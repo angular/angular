@@ -21,7 +21,7 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '@adev/constants/links';
+import {ANGULAR_LINKS} from '@adev/constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
@@ -55,12 +55,7 @@ export class Navigation {
   readonly REFERENCE_ROUTE = PagePrefix.REFERENCE;
   readonly TUTORIALS_ROUTE = PagePrefix.TUTORIALS;
 
-  readonly GITHUB = GITHUB;
-  readonly X = X;
-  readonly MEDIUM = MEDIUM;
-  readonly YOUTUBE = YOUTUBE;
-  readonly DISCORD = DISCORD;
-  readonly BLUESKY = BLUESKY;
+  protected ngLinks = ANGULAR_LINKS;
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
