@@ -65,9 +65,9 @@ export default class ApiReferenceList {
   private readonly injector = inject(EnvironmentInjector);
 
   // inputs
-  queryInput = input<string | undefined>('', {alias: 'query'});
-  typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
-  statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
+  readonly queryInput = input<string | undefined>('', {alias: 'query'});
+  readonly typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
+  readonly statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
 
   // inputs are route binded, they can reset to undefined
   // also we want a writable state, so we use a linked signal
