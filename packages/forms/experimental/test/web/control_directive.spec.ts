@@ -9,13 +9,11 @@
 import {
   Component,
   Injector,
-  Input,
   input,
   model,
   provideZonelessChangeDetection,
   signal,
-  ViewChildren,
-  type QueryList,
+  viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
@@ -29,9 +27,8 @@ import {Control} from '../../src/controls/control';
   imports: [Control],
 })
 class TestStringControl {
-  // Note: @Input, @ViewChildren required due to JIT transforms not running in our tests.
-  @Input('control') readonly control = input.required<Field<string>>();
-  @ViewChildren(Control) readonly controlDirective!: QueryList<Control<unknown>>;
+  readonly control = input.required<Field<string>>();
+  readonly controlDirective = viewChild.required(Control);
 }
 
 describe('control directive', () => {
@@ -109,16 +106,14 @@ describe('control directive', () => {
 
     // Model -> View
     act(() => cmp.f().value.set('c'));
-    expect(inputA.checked).toBeFalse();
-    expect(inputB.checked).toBeFalse();
-    expect(inputC.checked).toBeTrue();
+    expectStates(false, false, true);
 
     // View -> Model
     act(() => {
       inputB.click();
-      expect(inputB.checked).toBeTrue();
+      expectStates(false, true, false);
     });
-    expect(cmp.f().value()).toBe('c');
+    expect(cmp.f().value()).toBe('b');
   });
 
   it('synchronizes with a custom value control', () => {
@@ -173,7 +168,7 @@ describe('control directive', () => {
 
     @Component({
       imports: [Control, CustomInput],
-      template: `<my-input [control]="f" />`,
+      template: `<my-input [control]="f" value />`,
     })
     class TestCmp {
       f = form<string>(signal('test'));
@@ -223,11 +218,9 @@ describe('control directive', () => {
   it('does not interfere with a component which accepts a control input directly', () => {
     @Component({
       selector: 'my-wrapper',
-      template: `{{ control().value() }}`,
+      template: `{{ control()().value() }}`,
     })
     class WrapperCmp {
-      // Note: @Input required due to JIT transforms not running in our tests.
-      @Input('control')
       readonly control = input.required<Field<string>>();
     }
 
@@ -249,10 +242,10 @@ describe('control directive', () => {
 
     const fixture = act(() => {
       const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
+      fixture.componentRef.setInput('control', f);
       return fixture;
     });
-    expect(f().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    expect(f().controls()).toEqual([fixture.componentInstance.controlDirective()]);
 
     act(() => fixture.destroy());
     expect(f().controls()).toEqual([]);
@@ -262,36 +255,35 @@ describe('control directive', () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
     const fixture1 = act(() => {
       const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
+      fixture.componentRef.setInput('control', f);
       return fixture;
     });
     const fixture2 = act(() => {
       const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
+      fixture.componentRef.setInput('control', f);
       return fixture;
     });
 
     expect(f().controls()).toEqual([
-      fixture1.componentInstance.controlDirective.get(0)!,
-      fixture2.componentInstance.controlDirective.get(0)!,
+      fixture1.componentInstance.controlDirective(),
+      fixture2.componentInstance.controlDirective(),
     ]);
   });
 
   it('should update bound controls on both fields when field binding changes', async () => {
     const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
     const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
-    const field = signal<Field<string>>(f1);
     const fixture = act(() => {
       const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', field);
+      fixture.componentRef.setInput('control', f1);
       return fixture;
     });
-    expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective()]);
     expect(f2().controls()).toEqual([]);
 
-    act(() => field.set(f2));
+    act(() => fixture.componentRef.setInput('control', f2));
     expect(f1().controls()).toEqual([]);
-    expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective()]);
   });
 });
 

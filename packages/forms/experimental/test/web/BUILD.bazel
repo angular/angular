@@ -1,0 +1,27 @@
+load("//tools:defaults2.bzl", "ng_project", "zoneless_web_test_suite")
+
+ng_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/zod",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/forms/experimental",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+    ],
+)
+
+# To run this:
+# yarn bazel test //packages/forms/experimental/test/web:test
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)
