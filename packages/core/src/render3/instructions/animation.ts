@@ -88,6 +88,23 @@ const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // from an `@if` or `@for`.
 const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 
+function clearLeavingNodes(tNode: TNode): void {
+  if (leavingNodes.get(tNode)?.length === 0) {
+    leavingNodes.delete(tNode);
+  }
+}
+
+function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
+  // We need to track this tNode's element just to be sure we don't add
+  // a new RNode for this TNode while this one is still animating away.
+  // once the animation is complete, we remove this reference.
+  if (leavingNodes.has(tNode)) {
+    leavingNodes.get(tNode)?.push(el);
+  } else {
+    leavingNodes.set(tNode, [el]);
+  }
+}
+
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
  *
@@ -208,6 +225,15 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+  // In the case that we have an existing node that's animating away, like when
+  // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
+  // need to end the animation for the former node and remove it right away to
+  // prevent duplicate nodes showing up.
+  leavingNodes
+    .get(tNode)
+    ?.pop()
+    ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
   return ɵɵanimateEnterListener;
@@ -320,7 +346,10 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
       elementRegistry.elements,
       'Expected `ElementRegistry` to be present in animations subsystem',
     );
+
+  const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
+  const ngZone = lView[INJECTOR]!.get(NgZone);
 
   const animate: AnimationEventFunction = (
     _el: Element,
@@ -333,9 +362,15 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
         const event: AnimationCallbackEvent = {
           target: nativeElement,
           animationComplete: () => {
+            clearLeavingNodes(tNode);
             removeFn();
           },
         };
+        trackLeavingNodes(tNode, _el as HTMLElement);
+
+        ngZone.runOutsideAngular(() => {
+          renderer.listen(_el, 'animationend', () => removeFn(), {once: true});
+        });
         value.call(lView[CONTEXT], event);
       }
     };
@@ -485,9 +520,7 @@ function animateLeaveClassRunner(
       // affect any other animations on the page.
       event.stopImmediatePropagation();
       longestAnimations.delete(el);
-      if (leavingNodes.get(tNode)?.length === 0) {
-        leavingNodes.delete(tNode);
-      }
+      clearLeavingNodes(tNode);
       finalRemoveFn();
     }
   };
@@ -499,14 +532,7 @@ function animateLeaveClassRunner(
       renderer.listen(el, 'animationend', handleOutAnimationEnd);
       renderer.listen(el, 'transitionend', handleOutAnimationEnd);
     });
-    // We need to track this tNode's element just to be sure we don't add
-    // a new RNode for this TNode while this one is still animating away.
-    // once the animation is complete, we remove this reference.
-    if (leavingNodes.has(tNode)) {
-      leavingNodes.get(tNode)?.push(el);
-    } else {
-      leavingNodes.set(tNode, [el]);
-    }
+    trackLeavingNodes(tNode, el);
     for (const item of classList) {
       renderer.addClass(el, item);
     }
