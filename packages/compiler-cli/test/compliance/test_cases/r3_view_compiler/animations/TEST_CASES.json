@@ -36,6 +36,23 @@
       ]
     },
     {
+      "description": "should generate animate enter instructions with host binding and event",
+      "inputFiles": [
+        "animate_enter_with_event_host_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_enter_with_event_host_bindings_template.js",
+              "generated": "animate_enter_with_event_host_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
       "description": "should generate animate enter instructions on element with a binding",
       "inputFiles": [
         "animate_enter_with_binding.ts"
@@ -131,6 +148,23 @@
             {
               "expected": "animate_leave_with_string_host_bindings_template.js",
               "generated": "animate_leave_with_string_host_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions with host binding and event",
+      "inputFiles": [
+        "animate_leave_with_event_host_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_event_host_bindings_template.js",
+              "generated": "animate_leave_with_event_host_bindings.js"
             }
           ],
           "failureMessage": "Incorrect ɵɵanimateLeave() call"
