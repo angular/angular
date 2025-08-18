@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ANGULAR_LINKS} from '@adev/constants/links';
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ExternalLink} from '@angular/docs';
 import {RouterLink} from '@angular/router';
+import {ANGULAR_LINKS} from '../../constants/links';
 
 @Component({
   selector: 'footer[adev-footer]',
