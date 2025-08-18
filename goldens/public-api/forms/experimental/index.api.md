@@ -192,8 +192,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     readonly readonly: Signal<boolean>;
     reset(): void;
     readonly submitting: Signal<boolean>;
-    readonly syncErrors: Signal<ValidationError[]>;
-    readonly syncValid: Signal<boolean>;
     readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
     readonly value: WritableSignal<TValue>;
