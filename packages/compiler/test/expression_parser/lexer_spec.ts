@@ -72,6 +72,18 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
   expect(token.toString()).toEqual(message);
 }
 
+function expectRegExpBodyToken(token: any, index: number, end: number, str: string) {
+  expectToken(token, index, end);
+  expect(token.isRegExpBody()).toBe(true);
+  expect(token.toString()).toEqual(str);
+}
+
+function expectRegExpFlagsToken(token: any, index: number, end: number, str: string) {
+  expectToken(token, index, end);
+  expect(token.isRegExpFlags()).toBe(true);
+  expect(token.toString()).toEqual(str);
+}
+
 describe('lexer', () => {
   describe('token', () => {
     it('should tokenize a simple identifier', () => {
@@ -410,7 +422,7 @@ describe('lexer', () => {
       expectOperatorToken(lex('+=')[0], 0, 2, '+=');
       expectOperatorToken(lex('-=')[0], 0, 2, '-=');
       expectOperatorToken(lex('*=')[0], 0, 2, '*=');
-      expectOperatorToken(lex('/=')[0], 0, 2, '/=');
+      expectOperatorToken(lex('a /= b')[1], 2, 4, '/=');
       expectOperatorToken(lex('%=')[0], 0, 2, '%=');
       expectOperatorToken(lex('**=')[0], 0, 3, '**=');
       expectOperatorToken(lex('&&=')[0], 0, 3, '&&=');
@@ -671,6 +683,266 @@ describe('lexer', () => {
         expectStringToken(tokens[4], 15, 22, 'world', StringTokenKind.TemplateLiteralEnd);
         expectOperatorToken(tokens[5], 22, 23, '}');
         expectStringToken(tokens[6], 23, 24, '', StringTokenKind.TemplateLiteralEnd);
+      });
+    });
+
+    describe('regular expressions', () => {
+      it('should tokenize a simple regex', () => {
+        const tokens: Token[] = lex('/abc/');
+        expect(tokens.length).toBe(1);
+        expectRegExpBodyToken(tokens[0], 0, 5, 'abc');
+      });
+
+      it('should tokenize a regex with flags', () => {
+        const tokens: Token[] = lex('/abc/gim');
+        expect(tokens.length).toBe(2);
+        expectRegExpBodyToken(tokens[0], 0, 5, 'abc');
+        expectRegExpFlagsToken(tokens[1], 5, 8, 'gim');
+      });
+
+      it('should tokenize an identifier immediately after a regex', () => {
+        const tokens: Token[] = lex('/abc/ g');
+        expect(tokens.length).toBe(2);
+        expectRegExpBodyToken(tokens[0], 0, 5, 'abc');
+        expectIdentifierToken(tokens[1], 6, 7, 'g');
+      });
+
+      it('should tokenize a regex with an escaped slashes', () => {
+        const tokens: Token[] = lex('/^http:\\/\\/foo\\.bar/');
+        expect(tokens.length).toBe(1);
+        expectRegExpBodyToken(tokens[0], 0, 20, '^http:\\/\\/foo\\.bar');
+      });
+
+      it('should tokenize a regex with un-escaped slashes in a character class', () => {
+        const tokens: Token[] = lex('/[a/]$/');
+        expect(tokens.length).toBe(1);
+        expectRegExpBodyToken(tokens[0], 0, 7, '[a/]$');
+      });
+
+      it('should tokenize a regex with a backslash', () => {
+        const tokens: Token[] = lex('/a\\w+/');
+        expect(tokens.length).toBe(1);
+        expectRegExpBodyToken(tokens[0], 0, 6, 'a\\w+');
+      });
+
+      it('should tokenize a regex after an operator', () => {
+        const tokens: Token[] = lex('a = /b/');
+        expect(tokens.length).toBe(3);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 2, 3, '=');
+        expectRegExpBodyToken(tokens[2], 4, 7, 'b');
+      });
+
+      it('should tokenize a regex inside parentheses', () => {
+        const tokens: Token[] = lex('log(/a/)');
+        expect(tokens.length).toBe(4);
+        expectIdentifierToken(tokens[0], 0, 3, 'log');
+        expectCharacterToken(tokens[1], 3, 4, '(');
+        expectRegExpBodyToken(tokens[2], 4, 7, 'a');
+        expectCharacterToken(tokens[3], 7, 8, ')');
+      });
+
+      it('should tokenize a regex at the beggining of an array', () => {
+        const tokens: Token[] = lex('[/a/]');
+        expect(tokens.length).toBe(3);
+        expectCharacterToken(tokens[0], 0, 1, '[');
+        expectRegExpBodyToken(tokens[1], 1, 4, 'a');
+        expectCharacterToken(tokens[2], 4, 5, ']');
+      });
+
+      it('should tokenize a regex in the middle of an array', () => {
+        const tokens: Token[] = lex('[1, /a/, 2]');
+        expect(tokens.length).toBe(7);
+        expectCharacterToken(tokens[0], 0, 1, '[');
+        expectNumberToken(tokens[1], 1, 2, 1);
+        expectCharacterToken(tokens[2], 2, 3, ',');
+        expectRegExpBodyToken(tokens[3], 4, 7, 'a');
+        expectCharacterToken(tokens[4], 7, 8, ',');
+        expectNumberToken(tokens[5], 9, 10, 2);
+        expectCharacterToken(tokens[6], 10, 11, ']');
+      });
+
+      it('should tokenize a regex inside an object literal', () => {
+        const tokens: Token[] = lex('{a: /b/}');
+        expect(tokens.length).toBe(5);
+        expectCharacterToken(tokens[0], 0, 1, '{');
+        expectIdentifierToken(tokens[1], 1, 2, 'a');
+        expectCharacterToken(tokens[2], 2, 3, ':');
+        expectRegExpBodyToken(tokens[3], 4, 7, 'b');
+        expectCharacterToken(tokens[4], 7, 8, '}');
+      });
+
+      it('should tokenize a regex after a negation operator', () => {
+        const tokens: Token[] = lex('log(!/a/.test("1"))');
+        expect(tokens.length).toBe(10);
+        expectIdentifierToken(tokens[0], 0, 3, 'log');
+        expectCharacterToken(tokens[1], 3, 4, '(');
+        expectOperatorToken(tokens[2], 4, 5, '!');
+        expectRegExpBodyToken(tokens[3], 5, 8, 'a');
+        expectCharacterToken(tokens[4], 8, 9, '.');
+        expectIdentifierToken(tokens[5], 9, 13, 'test');
+        expectCharacterToken(tokens[6], 13, 14, '(');
+        expectStringToken(tokens[7], 14, 17, '1', StringTokenKind.Plain);
+        expectCharacterToken(tokens[8], 17, 18, ')');
+        expectCharacterToken(tokens[9], 18, 19, ')');
+      });
+
+      it('should tokenize a regex after several negation operators', () => {
+        const tokens: Token[] = lex('log(!!!!!!/a/.test("1"))');
+        expect(tokens.length).toBe(15);
+        expectIdentifierToken(tokens[0], 0, 3, 'log');
+        expectCharacterToken(tokens[1], 3, 4, '(');
+        expectOperatorToken(tokens[2], 4, 5, '!');
+        expectOperatorToken(tokens[3], 5, 6, '!');
+        expectOperatorToken(tokens[4], 6, 7, '!');
+        expectOperatorToken(tokens[5], 7, 8, '!');
+        expectOperatorToken(tokens[6], 8, 9, '!');
+        expectOperatorToken(tokens[7], 9, 10, '!');
+        expectRegExpBodyToken(tokens[8], 10, 13, 'a');
+        expectCharacterToken(tokens[9], 13, 14, '.');
+        expectIdentifierToken(tokens[10], 14, 18, 'test');
+        expectCharacterToken(tokens[11], 18, 19, '(');
+        expectStringToken(tokens[12], 19, 22, '1', StringTokenKind.Plain);
+        expectCharacterToken(tokens[13], 22, 23, ')');
+        expectCharacterToken(tokens[14], 23, 24, ')');
+      });
+
+      it('should tokenize a method call on a regex', () => {
+        const tokens: Token[] = lex('/abc/.test("foo")');
+        expect(tokens.length).toBe(6);
+        expectRegExpBodyToken(tokens[0], 0, 5, 'abc');
+        expectCharacterToken(tokens[1], 5, 6, '.');
+        expectIdentifierToken(tokens[2], 6, 10, 'test');
+        expectCharacterToken(tokens[3], 10, 11, '(');
+        expectStringToken(tokens[4], 11, 16, 'foo', StringTokenKind.Plain);
+        expectCharacterToken(tokens[5], 16, 17, ')');
+      });
+
+      it('should tokenize a method call with a regex parameter', () => {
+        const tokens: Token[] = lex('"foo".match(/abc/)');
+        expect(tokens.length).toBe(6);
+        expectStringToken(tokens[0], 0, 5, 'foo', StringTokenKind.Plain);
+        expectCharacterToken(tokens[1], 5, 6, '.');
+        expectIdentifierToken(tokens[2], 6, 11, 'match');
+        expectCharacterToken(tokens[3], 11, 12, '(');
+        expectRegExpBodyToken(tokens[4], 12, 17, 'abc');
+        expectCharacterToken(tokens[5], 17, 18, ')');
+      });
+
+      it('should not tokenize a regex preceded by a square bracket', () => {
+        const tokens: Token[] = lex('a[0] /= b');
+        expect(tokens.length).toBe(6);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectCharacterToken(tokens[1], 1, 2, '[');
+        expectNumberToken(tokens[2], 2, 3, 0);
+        expectCharacterToken(tokens[3], 3, 4, ']');
+        expectOperatorToken(tokens[4], 5, 7, '/=');
+        expectIdentifierToken(tokens[5], 8, 9, 'b');
+      });
+
+      it('should not tokenize a regex preceded by an identifier', () => {
+        const tokens: Token[] = lex('a / b');
+        expect(tokens.length).toBe(3);
+        expectIdentifierToken(tokens[0], 0, 1, 'a');
+        expectOperatorToken(tokens[1], 2, 3, '/');
+        expectIdentifierToken(tokens[2], 4, 5, 'b');
+      });
+
+      it('should not tokenize a regex preceded by a number', () => {
+        const tokens: Token[] = lex('1 / b');
+        expect(tokens.length).toBe(3);
+        expectNumberToken(tokens[0], 0, 1, 1);
+        expectOperatorToken(tokens[1], 2, 3, '/');
+        expectIdentifierToken(tokens[2], 4, 5, 'b');
+      });
+
+      it('should not tokenize a regex that is preceded by a string', () => {
+        const tokens: Token[] = lex('"a" / b');
+        expect(tokens.length).toBe(3);
+        expectStringToken(tokens[0], 0, 3, 'a', StringTokenKind.Plain);
+        expectOperatorToken(tokens[1], 4, 5, '/');
+        expectIdentifierToken(tokens[2], 6, 7, 'b');
+      });
+
+      it('should not tokenize a regex preceded by a closing parenthesis', () => {
+        const tokens: Token[] = lex('(a) / b');
+        expect(tokens.length).toBe(5);
+        expectCharacterToken(tokens[0], 0, 1, '(');
+        expectIdentifierToken(tokens[1], 1, 2, 'a');
+        expectCharacterToken(tokens[2], 2, 3, ')');
+        expectOperatorToken(tokens[3], 4, 5, '/');
+        expectIdentifierToken(tokens[4], 6, 7, 'b');
+      });
+
+      it('should not tokenize a regex that is preceded by a keyword', () => {
+        const tokens: Token[] = lex('this / b');
+        expect(tokens.length).toBe(3);
+        expectKeywordToken(tokens[0], 0, 4, 'this');
+        expectOperatorToken(tokens[1], 5, 6, '/');
+        expectIdentifierToken(tokens[2], 7, 8, 'b');
+      });
+
+      it('should not tokenize a regex preceded by a non-null assertion on an identifier', () => {
+        const tokens: Token[] = lex('foo! / 2');
+        expect(tokens.length).toBe(4);
+        expectIdentifierToken(tokens[0], 0, 3, 'foo');
+        expectOperatorToken(tokens[1], 3, 4, '!');
+        expectOperatorToken(tokens[2], 5, 6, '/');
+        expectNumberToken(tokens[3], 7, 8, 2);
+      });
+
+      it('should not tokenize a regex preceded by a non-null assertion on a function call', () => {
+        const tokens: Token[] = lex('foo()! / 2');
+        expect(tokens.length).toBe(6);
+        expectIdentifierToken(tokens[0], 0, 3, 'foo');
+        expectCharacterToken(tokens[1], 3, 4, '(');
+        expectCharacterToken(tokens[2], 4, 5, ')');
+        expectOperatorToken(tokens[3], 5, 6, '!');
+        expectOperatorToken(tokens[4], 7, 8, '/');
+        expectNumberToken(tokens[5], 9, 10, 2);
+      });
+
+      it('should not tokenize a regex preceded by a non-null assertion on an array', () => {
+        const tokens: Token[] = lex('[1]! / 2');
+        expect(tokens.length).toBe(6);
+        expectCharacterToken(tokens[0], 0, 1, '[');
+        expectNumberToken(tokens[1], 1, 2, 1);
+        expectCharacterToken(tokens[2], 2, 3, ']');
+        expectOperatorToken(tokens[3], 3, 4, '!');
+        expectOperatorToken(tokens[4], 5, 6, '/');
+        expectNumberToken(tokens[5], 7, 8, 2);
+      });
+
+      it('should not tokenize consecutive regexes', () => {
+        const tokens: Token[] = lex('/ 1 / 2 / 3 / 4');
+        expect(tokens.length).toBe(6);
+        expectRegExpBodyToken(tokens[0], 0, 5, ' 1 ');
+        expectNumberToken(tokens[1], 6, 7, 2);
+        expectOperatorToken(tokens[2], 8, 9, '/');
+        expectNumberToken(tokens[3], 10, 11, 3);
+        expectOperatorToken(tokens[4], 12, 13, '/');
+        expectNumberToken(tokens[5], 14, 15, 4);
+      });
+
+      it('should not tokenize regex-like characters inside of a pipe', () => {
+        const tokens: Token[] = lex(`foo / 1000 | date: 'M/d/yy'`);
+        expect(tokens.length).toBe(7);
+        expectIdentifierToken(tokens[0], 0, 3, 'foo');
+        expectOperatorToken(tokens[1], 4, 5, '/');
+        expectNumberToken(tokens[2], 6, 10, 1000);
+        expectOperatorToken(tokens[3], 11, 12, '|');
+        expectIdentifierToken(tokens[4], 13, 17, 'date');
+        expectCharacterToken(tokens[5], 17, 18, ':');
+        expectStringToken(tokens[6], 19, 27, 'M/d/yy', StringTokenKind.Plain);
+      });
+
+      it('should produce an error for an unterminated regex', () => {
+        expectErrorToken(
+          lex('/a')[0],
+          2,
+          2,
+          'Lexer Error: Unterminated regular expression at column 2 in expression [/a]',
+        );
       });
     });
   });
