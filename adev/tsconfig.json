@@ -31,7 +31,7 @@
     "paths": {
       "@angular/docs": ["./shared-docs"],
       "@angular/*": ["../packages/*/index"],
-      "@adev/constants/*": ["./src/app/core/constants/*"],
+      "@adev/constants/*": ["./src/app/core/constants/*"]
     }
   },
   "angularCompilerOptions": {
