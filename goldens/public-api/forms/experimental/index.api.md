@@ -54,7 +54,7 @@ export function applyEach<TValue>(path: FieldPath<TValue[]>, schema: NoInfer<Sch
 export function applyWhen<TValue>(path: FieldPath<TValue>, logic: LogicFn<TValue, boolean>, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
 
 // @public
-export function applyWhenValue<TValue, TNarrowed extends TValue>(path: FieldPath<TValue>, predicate: (value: TValue) => value is TNarrowed, schema: NoInfer<SchemaOrSchemaFn<TNarrowed>>): void;
+export function applyWhenValue<TValue, TNarrowed extends TValue>(path: FieldPath<TValue>, predicate: (value: TValue) => value is TNarrowed, schema: SchemaOrSchemaFn<TNarrowed>): void;
 
 // @public
 export function applyWhenValue<TValue>(path: FieldPath<TValue>, predicate: (value: TValue) => boolean, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
@@ -168,9 +168,9 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 // @public
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
     [ɵɵTYPE]: [TValue, TPathKind];
-} & (TValue extends any[] ? {} : TValue extends Record<PropertyKey, any> ? {
-    [K in keyof TValue]: FieldPath<TValue[K], PathKind.Child>;
-} : {});
+} & (TValue extends Array<unknown> ? unknown : TValue extends Record<string, any> ? {
+    [K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child>;
+} : unknown);
 
 // @public
 export interface FieldState<TValue, TKey extends string | number = string | number> {
@@ -321,6 +321,9 @@ export class MaxValidationError extends _NgValidationError {
 
 // @public
 export type MaybeField<TValue, TKey extends string | number = string | number> = (TValue & undefined) | Field<Exclude<TValue, undefined>, TKey>;
+
+// @public
+export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = (TValue & undefined) | FieldPath<Exclude<TValue, undefined>, TPathKind>;
 
 // @public
 export const MIN: AggregateProperty<number | undefined, number | undefined>;
