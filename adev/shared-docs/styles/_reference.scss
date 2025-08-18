@@ -373,6 +373,12 @@
 
     // "CLI member card"-specific styles
     .docs-reference-member-card {
+      .docs-reference-option-aliases {
+        span {
+          padding-right: 0.4rem;
+        }
+      }
+
       .docs-ref-content {
         padding: 1rem 0;
 
