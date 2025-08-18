@@ -195,8 +195,8 @@ export class Control<T> {
     // TODO: consider making a global configuration option for using aria-disabled instead.
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
     this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
+
     this.maybeSynchronize(this.propertySource(REQUIRED), withBooleanAttribute(input, 'required'));
-    this.maybeSynchronize(this.propertySource(REQUIRED), withAttribute(input, 'required'));
     this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
     this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
@@ -273,8 +273,8 @@ export class Control<T> {
 
     this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
+    this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
     this.maybeSynchronize(() => this.state().hidden(), withInput(cmp.hidden));
-    this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.hidden));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
     this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
     this.maybeSynchronize(() => this.state().dirty(), withInput(cmp.dirty));
