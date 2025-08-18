@@ -54,7 +54,21 @@ export class FieldPropertyState {
     return this.properties.get(prop)! as Signal<T>;
   }
 
+  /**
+   * Checks whether the current property state has the given property.
+   * @param prop
+   * @returns
+   */
   has(prop: Property<unknown> | AggregateProperty<unknown, unknown>): boolean {
-    return this.properties.has(prop);
+    if (prop instanceof AggregateProperty) {
+      // For aggregate properties, they get added to the map lazily, on first access, so we can't
+      // rely on checking presence in the properties map. Instead we check if there is any logic for
+      // the given property.
+      return this.node.logicNode.logic.hasAggregateProperty(prop);
+    } else {
+      // Non-aggregate proeprties get added to our properties map on construction, so we can just
+      // refer to their presence in the map.
+      return this.properties.has(prop);
+    }
   }
 }
