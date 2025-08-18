@@ -52,7 +52,7 @@
     "karma-coverage": "2.2.1",
     "karma-jasmine-html-reporter": "2.1.0",
     "karma-jasmine": "5.1.0",
-    "marked": "16.1.2",
+    "marked": "16.2.0",
     "mermaid": "11.9.0",
     "ngx-progressbar": "14.0.0",
     "open-in-idx": "0.1.1",
