@@ -186,7 +186,7 @@ the generated partial output, we must update the `GOLDEN_PARTIAL.js` file.
 This is done by running a specific bazel rule of the form:
 
 ```sh
-bazel run //packages/compiler-cli/test/compliance/test_cases:<path/to/test_case>.golden.update
+bazel run //packages/compiler-cli/test/compliance/test_cases:<path/to/test_case>.golden
 ```
 
 where to replace `<path/to/test_case>` with the path (relative to `test_cases`) of the directory
