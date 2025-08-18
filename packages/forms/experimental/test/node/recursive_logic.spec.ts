@@ -40,7 +40,7 @@ describe('recursive schema logic', () => {
       applyWhenValue(p.next, isNonNull, s);
     });
     const f = form<TreeData>(
-      signal({level: 0, next: {level: 1, next: {level: 2, next: {level: 3, next: null!}}}}),
+      signal({level: 0, next: {level: 1, next: {level: 2, next: {level: 3, next: null}}}}),
       s,
       {injector: TestBed.inject(Injector)},
     );
