@@ -91,7 +91,7 @@ cd my-first-angular-app
 
 </docs-code>
 
-All of your dependencies should be installed at this point (which you can verify by checking for the existent for a `node_modules` folder in your project), so you can start your project by running the command:
+All of your dependencies should be installed at this point (which you can verify by checking for the existence of a `node_modules` folder in your project), so you can start your project by running the command:
 
 <docs-code language="shell">
 
