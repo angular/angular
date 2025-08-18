@@ -237,11 +237,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal containing the current errors for the field.
    */
   readonly errors: Signal<ValidationError[]>;
-
-  /**
-   * A signal containing the current errors for the field.
-   */
-  readonly syncErrors: Signal<ValidationError[]>;
   /**
    * A signal indicating whether the field's value is currently valid.
    *
@@ -270,11 +265,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Whether there are any validators still pending for this field.
    */
   readonly pending: Signal<boolean>;
-  /**
-   * A signal indicating whether the field's value is currently valid according to its synchronous
-   * validators. (The field's asynchronous validators may still be pending or failing).
-   */
-  readonly syncValid: Signal<boolean>;
   /**
    * A signal indicating whether the field is currently in the process of being submitted.
    */

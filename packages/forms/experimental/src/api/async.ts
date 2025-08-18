@@ -141,7 +141,8 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   const RESOURCE = property(path, (ctx) => {
     const params = computed(() => {
       const node = ctx.stateOf(path) as FieldNode;
-      if (node.validationState.shouldSkipValidation() || !node.syncValid()) {
+      const validationState = node.validationState;
+      if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
         return undefined;
       }
       return opts.params(ctx);

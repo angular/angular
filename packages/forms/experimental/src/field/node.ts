@@ -83,14 +83,6 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.keyInParent;
   }
 
-  get syncErrors(): Signal<ValidationError[]> {
-    return this.validationState.syncErrors;
-  }
-
-  get syncValid(): Signal<boolean> {
-    return this.validationState.syncValid;
-  }
-
   get errors(): Signal<ValidationError[]> {
     return this.validationState.errors;
   }
