@@ -18,7 +18,7 @@ cd my-project
 Next, open a terminal in your Angular project's root directory and run the following command to install Tailwind CSS and its peer dependencies:
 
 <docs-code language="shell">
-npm install tailwindcss @tailwindcss/postcss postcss --force
+npm install tailwindcss @tailwindcss/postcss postcss
 </docs-code>
 
 ### 3. Configure PostCSS Plugins
@@ -26,7 +26,7 @@ npm install tailwindcss @tailwindcss/postcss postcss --force
 Next, add a `.postcssrc.json` file in the file root of the project. 
 Add the `@tailwindcss/postcss` plugin into your PostCSS configuration.
 
-<docs-code language="javascript" header=".postcssrc.json">
+<docs-code language="json" header=".postcssrc.json">
 {
   "plugins": {
     "@tailwindcss/postcss": {}
