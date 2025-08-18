@@ -20,7 +20,7 @@ interface TreeData {
   next: TreeData;
 }
 
-describe('reccursive schema logic', () => {
+describe('recursive schema logic', () => {
   it('should support recursive logic', () => {
     const s = schema<TreeData>((p) => {
       disabled(p.level, ({valueOf}) => {
