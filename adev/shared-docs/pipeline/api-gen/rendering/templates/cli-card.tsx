@@ -37,14 +37,12 @@ export function CliCard(props: {card: CliCardRenderable}) {
               {item.enum ? (
                 <>
                   <span>Allowed Values</span>
-                  <span>
-                    {item.enum.map((val, i, items) => (
-                      <>
-                        <code>{val}</code>
-                        {i < items.length - 1 && ', '}
-                      </>
-                    ))}
-                  </span>
+                  {item.enum.map((val, i, items) => (
+                    <>
+                      <code>{val}</code>
+                      {i < items.length - 1 && ', '}
+                    </>
+                  ))}
                 </>
               ) : (
                 <></>
