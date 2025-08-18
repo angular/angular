@@ -244,10 +244,6 @@ const REDIRECT_ROUTES: Route[] = [
     path: 'guide/animations/route-animations',
     redirectTo: '/guide/routing/route-transition-animations',
   },
-  {
-    path: 'guide/tailwind',
-    redirectTo: 'guide/tailwind',
-  },
 ];
 
 export const routes: Route[] = [

@@ -1013,6 +1013,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'Tailwind',
         path: 'guide/tailwind',
         contentPath: 'guide/tailwind',
+        status: 'new',
       },
       {
         label: 'Angular Fire',
