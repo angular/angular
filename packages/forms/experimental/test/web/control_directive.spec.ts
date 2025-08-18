@@ -8,6 +8,7 @@
 
 import {
   Component,
+  ElementRef,
   Injector,
   input,
   model,
@@ -16,9 +17,11 @@ import {
   viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {MAX, readonly} from '../../public_api';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
 import {form} from '../../src/api/structure';
 import {Field} from '../../src/api/types';
+import {max, maxLength, min, minLength, required} from '../../src/api/validators';
 import {Control} from '../../src/controls/control';
 
 @Component({
@@ -285,6 +288,67 @@ describe('control directive', () => {
     expect(f1().controls()).toEqual([]);
     expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective()]);
   });
+
+  it('should synchronize custom properties', () => {
+    @Component({
+      template: `
+        <input #text type="text" [control]="f.text">
+        <input #number type="number" [control]="f.number">
+      `,
+      imports: [Control],
+    })
+    class CustomPropsTestCmp {
+      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      numberInput = viewChild.required<ElementRef<HTMLInputElement>>('number');
+      data = signal({
+        number: 0,
+        text: '',
+      });
+      f = form(this.data, (p) => {
+        required(p.text);
+        minLength(p.text, 0);
+        maxLength(p.text, 100);
+        min(p.number, 0);
+        max(p.number, 100);
+      });
+    }
+
+    const comp = act(() => {
+      const fixture = TestBed.createComponent(CustomPropsTestCmp);
+      return fixture;
+    }).componentInstance;
+
+    expect(comp.f.number().property(MAX)()).toBe(100);
+    expect(comp.textInput().nativeElement.required).toBe(true);
+    expect(comp.textInput().nativeElement.minLength).toBe(0);
+    expect(comp.textInput().nativeElement.maxLength).toBe(100);
+    expect(comp.numberInput().nativeElement.required).toBe(false);
+    expect(comp.numberInput().nativeElement.min).toBe('0');
+    expect(comp.numberInput().nativeElement.max).toBe('100');
+  });
+
+  it('should synchronize readonly', () => {
+    @Component({
+      template: `
+        <input #text type="text" [control]="f">
+      `,
+      imports: [Control],
+    })
+    class ReadonlyTestCmp {
+      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      data = signal('');
+      f = form(this.data, (p) => {
+        readonly(p);
+      });
+    }
+
+    const comp = act(() => {
+      const fixture = TestBed.createComponent(ReadonlyTestCmp);
+      return fixture;
+    }).componentInstance;
+
+    expect(comp.textInput().nativeElement.readOnly).toBe(true);
+  });
 });
 
 function setupRadioGroup() {
@@ -307,11 +371,6 @@ function setupRadioGroup() {
   const fix = act(() => TestBed.createComponent(TestCmp));
   const formEl = (fix.nativeElement as HTMLElement).firstChild as HTMLFormElement;
   const inputs = Array.from(formEl.children) as HTMLInputElement[];
-
-  // A fix for Domino issues with <form> around <input>.
-  for (const input of inputs) {
-    Object.defineProperty(input, 'form', {get: () => formEl});
-  }
 
   const [inputA, inputB, inputC] = inputs;
   const cmp = fix.componentInstance as TestCmp;
