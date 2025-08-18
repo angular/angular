@@ -51,9 +51,8 @@ import {InteropNgControl} from './interop_ng_control';
  * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
- * 3. A component that provides a ControlValueAccessor. This is supported to allow controls designed
- *    to work with reactive forms work with signal forms as well. It is not the preferred way for a
- *    custom UI control to integrate with this directive.
+ * 3. A component that provides a ControlValueAccessor. This should only be used to backwards
+ *    compatibility with reactive forms. Prefer options (1) and (2).
  *
  * This directive has several responsibilities:
  * 1. Two-way binds the field's value with the UI control's value
