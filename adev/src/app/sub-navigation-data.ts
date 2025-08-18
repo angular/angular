@@ -1003,6 +1003,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'ecosystem/custom-build-pipeline',
       },
       {
+        label: 'Tailwind',
+        path: 'guide/tailwind',
+        contentPath: 'guide/tailwind',
+      },
+      {
         label: 'Angular Fire',
         path: 'https://github.com/angular/angularfire#readme',
       },
