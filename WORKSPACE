@@ -166,7 +166,7 @@ http_archive(
 
 git_repository(
     name = "devinfra",
-    commit = "96411830d91356417856c3e3a22287e2309adc64",
+    commit = "1e09768cbc5effa0c0ad3f82c33f615efb15c9ce",
     remote = "https://github.com/angular/dev-infra.git",
 )
 
