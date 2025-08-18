@@ -282,6 +282,89 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     });
 
+    it('should be host bindable with brackets', () => {
+      @Component({
+        selector: 'fade-cmp',
+        styles: styles,
+        host: {'[animate.leave]': 'fade()'},
+        template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class FadeComponent {
+        fade = signal('fade');
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [FadeComponent],
+        template: '@if (show()) { <fade-cmp /> }',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const fadeCmp = fixture.debugElement.query(By.css('fade-cmp'));
+
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      fadeCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
+      fixture.detectChanges();
+      fadeCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+    });
+
+    it('should be host bindable with events', () => {
+      const fadeCalled = jasmine.createSpy('fadeCalled');
+      @Component({
+        selector: 'fade-cmp',
+        styles: styles,
+        host: {'(animate.leave)': 'fadeIn($event)'},
+        template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class FadeComponent {
+        fadeIn(event: AnimationCallbackEvent) {
+          fadeCalled();
+          event.target.classList.add('fade');
+          event.animationComplete();
+        }
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [FadeComponent],
+        template: '@if (show()) { <fade-cmp /> }',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const fadeCmp = fixture.debugElement.query(By.css('fade-cmp'));
+
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      expect(fadeCalled).toHaveBeenCalled();
+    });
+
     it('should compose class list when host binding and regular binding', () => {
       const multiple = `
         .slide-out {
@@ -845,6 +928,53 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'slide-in'}),
       );
       expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
+    });
+
+    it('should be host bindable with brackets', () => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        host: {'[animate.enter]': 'slideIn()'},
+        template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        slideIn = signal('slide-in');
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      expect(fixture.debugElement.nativeElement.outerHTML).toContain('class="slide-in"');
+    });
+
+    it('should be host bindable with events', () => {
+      const slideInCalled = jasmine.createSpy('slideInCalled');
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        host: {'(animate.enter)': 'slideIn($event)'},
+        template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        slideIn(event: AnimationCallbackEvent) {
+          slideInCalled();
+          event.target.classList.add('slide-in');
+          event.animationComplete();
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      expect(slideInCalled).toHaveBeenCalled();
     });
 
     it('should compose class list when host binding and regular binding', () => {

@@ -200,21 +200,37 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const [phase, target] =
-    event.type !== e.ParsedEventType.LegacyAnimation
-      ? [null, event.targetOrPhase]
-      : [event.targetOrPhase, null];
-  const eventBinding = ir.createListenerOp(
-    job.root.xref,
-    new ir.SlotHandle(),
-    event.name,
-    null,
-    makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
-    phase,
-    target,
-    true,
-    event.sourceSpan,
-  );
+  let eventBinding: ir.CreateOp;
+  if (event.type === e.ParsedEventType.Animation) {
+    eventBinding = ir.createAnimationListenerOp(
+      job.root.xref,
+      new ir.SlotHandle(),
+      event.name,
+      null,
+      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
+      event.name.endsWith('enter') ? ir.AnimationKind.ENTER : ir.AnimationKind.LEAVE,
+      event.targetOrPhase,
+      true,
+      event.sourceSpan,
+    );
+  } else {
+    const [phase, target] =
+      event.type !== e.ParsedEventType.LegacyAnimation
+        ? [null, event.targetOrPhase]
+        : [event.targetOrPhase, null];
+
+    eventBinding = ir.createListenerOp(
+      job.root.xref,
+      new ir.SlotHandle(),
+      event.name,
+      null,
+      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
+      phase,
+      target,
+      true,
+      event.sourceSpan,
+    );
+  }
   job.root.create.push(eventBinding);
 }
 
