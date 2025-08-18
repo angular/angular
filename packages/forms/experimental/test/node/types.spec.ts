@@ -73,7 +73,7 @@ function typeVerificationOnlyDoNotRunMe() {
       form(pizzaOrder, phoneOrderSchema);
     });
 
-    it('should now allow binding logic to a potentially undefined field', () => {
+    it('should not allow binding logic to a potentially undefined field', () => {
       schema<{a: number; b: number | undefined; c?: number}>((p) => {
         required(p.a);
         // @ts-expect-error
