@@ -273,12 +273,16 @@ export class Control<T> {
 
     this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
+    this.maybeSynchronize(() => this.state().disabledReasons(), withInput(cmp.disabledReasons));
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
     this.maybeSynchronize(() => this.state().hidden(), withInput(cmp.hidden));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
-    this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
+    if (illegallyIsModelInput(cmp.touched) || illegallyIsSignalInput(cmp.touched)) {
+      this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
+    }
     this.maybeSynchronize(() => this.state().dirty(), withInput(cmp.dirty));
-    this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
+    this.maybeSynchronize(() => this.state().invalid(), withInput(cmp.invalid));
+    this.maybeSynchronize(() => this.state().pending(), withInput(cmp.pending));
 
     this.maybeSynchronize(this.propertySource(REQUIRED), withInput(cmp.required));
     this.maybeSynchronize(this.propertySource(MIN), withInput(cmp.min));
@@ -289,8 +293,8 @@ export class Control<T> {
 
     let cleanupTouch: OutputRefSubscription | undefined;
     let cleanupDefaultTouch: (() => void) | undefined;
-    if (cmp.touch !== undefined) {
-      cleanupTouch = cmp.touch.subscribe(() => this.state().markAsTouched());
+    if (illegallyIsModelInput(cmp.touched) || isOutputRef(cmp.touched)) {
+      cleanupTouch = cmp.touched.subscribe(() => this.state().markAsTouched());
     } else {
       // If the component did not give us a touch event stream, use the standard touch logic,
       // marking it touched when the focus moves from inside the host element to outside.
@@ -378,11 +382,15 @@ function isFormUiControl(cmp: unknown): cmp is FormUiControl {
     (isFormValueControl(castCmp) || isFormCheckboxControl(castCmp)) &&
     (castCmp.readonly === undefined || illegallyIsSignalInput(castCmp.readonly)) &&
     (castCmp.disabled === undefined || illegallyIsSignalInput(castCmp.disabled)) &&
+    (castCmp.disabledReasons === undefined || illegallyIsSignalInput(castCmp.disabledReasons)) &&
     (castCmp.errors === undefined || illegallyIsSignalInput(castCmp.errors)) &&
-    (castCmp.valid === undefined || illegallyIsSignalInput(castCmp.valid)) &&
-    (castCmp.touched === undefined || illegallyIsSignalInput(castCmp.touched)) &&
+    (castCmp.invalid === undefined || illegallyIsSignalInput(castCmp.invalid)) &&
+    (castCmp.pending === undefined || illegallyIsSignalInput(castCmp.pending)) &&
+    (castCmp.touched === undefined ||
+      illegallyIsModelInput(castCmp.touched) ||
+      illegallyIsSignalInput(castCmp.touched) ||
+      isOutputRef(castCmp.touched)) &&
     (castCmp.dirty === undefined || illegallyIsSignalInput(castCmp.dirty)) &&
-    (castCmp.touch === undefined || isOutputRef(castCmp.touch)) &&
     (castCmp.min === undefined || illegallyIsSignalInput(castCmp.min)) &&
     (castCmp.minLength === undefined || illegallyIsSignalInput(castCmp.minLength)) &&
     (castCmp.max === undefined || illegallyIsSignalInput(castCmp.max)) &&

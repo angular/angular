@@ -353,6 +353,70 @@ describe('control directive', () => {
 
     expect(comp.textInput().nativeElement.readOnly).toBe(true);
   });
+
+  it('should synchronize disabled reasons', () => {
+    @Component({
+      template: `
+        <input #text type="text" [control]="f">
+      `,
+      imports: [Control],
+    })
+    class ReadonlyTestCmp {
+      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      data = signal('');
+      f = form(this.data, (p) => {
+        readonly(p);
+      });
+    }
+
+    const comp = act(() => {
+      const fixture = TestBed.createComponent(ReadonlyTestCmp);
+      return fixture;
+    }).componentInstance;
+
+    expect(comp.textInput().nativeElement.readOnly).toBe(true);
+  });
+
+  it('should synchronize with custom control touched status', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      touched = model(false);
+
+      touchIt() {
+        this.touched.set(true);
+      }
+    }
+
+    @Component({
+      imports: [Control, CustomInput],
+      template: `<my-input [control]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+      myInput = viewChild.required(CustomInput);
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const field = fix.componentInstance.f;
+    const myInput = fix.componentInstance.myInput();
+
+    // Initial state
+    expect(field().touched()).toBe(false);
+
+    // View -> Model
+    act(() => {
+      myInput.touchIt();
+    });
+    expect(field().touched()).toBe(true);
+
+    // Model -> View
+    act(() => field().reset());
+    expect(myInput.touched()).toBe(false);
+  });
 });
 
 function setupRadioGroup() {

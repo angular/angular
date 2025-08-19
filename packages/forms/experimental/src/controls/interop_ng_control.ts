@@ -25,7 +25,7 @@ import type {FieldState} from '../api/types';
 // - name
 // - path
 // - markAs[Touched,Dirty,etc.]
-// - updateValueAndValidity
+
 /**
  * Properties of both NgControl & AbstractControl that are supported by the InteropNgControl.
  */
@@ -135,5 +135,10 @@ export class InteropNgControl
       return this.field().property(REQUIRED)();
     }
     return false;
+  }
+
+  updateValueAndValidity() {
+    // No-op since value and validity are always up to date in signal forms.
+    // We offer this method so that reactive forms code attempting to call it doesn't error.
   }
 }
