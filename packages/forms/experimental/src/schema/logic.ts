@@ -283,6 +283,11 @@ export class LogicContainer {
     this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError | 'pending'>(predicates);
   }
 
+  /** Checks whether there is logic for the given aggregate property. */
+  hasAggregateProperty(prop: AggregateProperty<unknown, unknown>) {
+    return this.aggregateProperties.has(prop);
+  }
+
   /**
    * Gets an iterable of [aggregate property, logic function] pairs.
    * @returns An iterable of aggregate property entries.

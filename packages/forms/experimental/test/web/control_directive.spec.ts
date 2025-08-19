@@ -8,19 +8,21 @@
 
 import {
   Component,
+  ElementRef,
   Injector,
-  Input,
   input,
+  inputBinding,
   model,
   provideZonelessChangeDetection,
   signal,
-  ViewChildren,
-  type QueryList,
+  viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {disabled, MAX, readonly} from '../../public_api';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
 import {form} from '../../src/api/structure';
-import {Field} from '../../src/api/types';
+import {Field, type DisabledReason} from '../../src/api/types';
+import {max, maxLength, min, minLength, required} from '../../src/api/validators';
 import {Control} from '../../src/controls/control';
 
 @Component({
@@ -29,9 +31,8 @@ import {Control} from '../../src/controls/control';
   imports: [Control],
 })
 class TestStringControl {
-  // Note: @Input, @ViewChildren required due to JIT transforms not running in our tests.
-  @Input('control') readonly control = input.required<Field<string>>();
-  @ViewChildren(Control) readonly controlDirective!: QueryList<Control<unknown>>;
+  readonly control = input.required<Field<string>>();
+  readonly controlDirective = viewChild.required(Control);
 }
 
 describe('control directive', () => {
@@ -100,7 +101,7 @@ describe('control directive', () => {
   });
 
   it('synchronizes with a radio group', () => {
-    const {cmp, expectStates, inputA, inputB, inputC} = setupRadioGroup();
+    const {cmp, inputA, inputB, inputC} = setupRadioGroup();
 
     // All the inputs should have the same name.
     expect(inputA.name).toBe('test');
@@ -109,16 +110,18 @@ describe('control directive', () => {
 
     // Model -> View
     act(() => cmp.f().value.set('c'));
-    expect(inputA.checked).toBeFalse();
-    expect(inputB.checked).toBeFalse();
-    expect(inputC.checked).toBeTrue();
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(false);
+    expect(inputC.checked).toBe(true);
 
     // View -> Model
     act(() => {
       inputB.click();
-      expect(inputB.checked).toBeTrue();
     });
-    expect(cmp.f().value()).toBe('c');
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(true);
+    expect(inputC.checked).toBe(false);
+    expect(cmp.f().value()).toBe('b');
   });
 
   it('synchronizes with a custom value control', () => {
@@ -173,7 +176,7 @@ describe('control directive', () => {
 
     @Component({
       imports: [Control, CustomInput],
-      template: `<my-input [control]="f" />`,
+      template: `<my-input [control]="f" value />`,
     })
     class TestCmp {
       f = form<string>(signal('test'));
@@ -223,11 +226,9 @@ describe('control directive', () => {
   it('does not interfere with a component which accepts a control input directly', () => {
     @Component({
       selector: 'my-wrapper',
-      template: `{{ control().value() }}`,
+      template: `{{ control()().value() }}`,
     })
     class WrapperCmp {
-      // Note: @Input required due to JIT transforms not running in our tests.
-      @Input('control')
       readonly control = input.required<Field<string>>();
     }
 
@@ -247,12 +248,12 @@ describe('control directive', () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
     expect(f().controls()).toEqual([]);
 
-    const fixture = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
-      return fixture;
-    });
-    expect(f().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    const fixture = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
+    expect(f().controls()).toEqual([fixture.componentInstance.controlDirective()]);
 
     act(() => fixture.destroy());
     expect(f().controls()).toEqual([]);
@@ -260,38 +261,165 @@ describe('control directive', () => {
 
   it('should track multiple bound controls per field', async () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
-    const fixture1 = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
-      return fixture;
-    });
-    const fixture2 = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', signal(f));
-      return fixture;
-    });
+    const fixture1 = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
+    const fixture2 = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
 
     expect(f().controls()).toEqual([
-      fixture1.componentInstance.controlDirective.get(0)!,
-      fixture2.componentInstance.controlDirective.get(0)!,
+      fixture1.componentInstance.controlDirective(),
+      fixture2.componentInstance.controlDirective(),
     ]);
   });
 
   it('should update bound controls on both fields when field binding changes', async () => {
     const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
     const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
-    const field = signal<Field<string>>(f1);
-    const fixture = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', field);
-      return fixture;
-    });
-    expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    const control = signal(f1);
+    const fixture = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', control)],
+      }),
+    );
+    expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective()]);
     expect(f2().controls()).toEqual([]);
 
-    act(() => field.set(f2));
+    act(() => control.set(f2));
     expect(f1().controls()).toEqual([]);
-    expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective.get(0)!]);
+    expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective()]);
+  });
+
+  it('should synchronize custom properties', () => {
+    @Component({
+      template: `
+        <input #text type="text" [control]="f.text">
+        <input #number type="number" [control]="f.number">
+      `,
+      imports: [Control],
+    })
+    class CustomPropsTestCmp {
+      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      numberInput = viewChild.required<ElementRef<HTMLInputElement>>('number');
+      data = signal({
+        number: 0,
+        text: '',
+      });
+      f = form(this.data, (p) => {
+        required(p.text);
+        minLength(p.text, 0);
+        maxLength(p.text, 100);
+        min(p.number, 0);
+        max(p.number, 100);
+      });
+    }
+
+    const comp = act(() => TestBed.createComponent(CustomPropsTestCmp)).componentInstance;
+
+    expect(comp.f.number().property(MAX)()).toBe(100);
+    expect(comp.textInput().nativeElement.required).toBe(true);
+    expect(comp.textInput().nativeElement.minLength).toBe(0);
+    expect(comp.textInput().nativeElement.maxLength).toBe(100);
+    expect(comp.numberInput().nativeElement.required).toBe(false);
+    expect(comp.numberInput().nativeElement.min).toBe('0');
+    expect(comp.numberInput().nativeElement.max).toBe('100');
+  });
+
+  it('should synchronize readonly', () => {
+    @Component({
+      template: `
+        <input #text type="text" [control]="f">
+      `,
+      imports: [Control],
+    })
+    class ReadonlyTestCmp {
+      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      data = signal('');
+      f = form(this.data, (p) => {
+        readonly(p);
+      });
+    }
+
+    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
+
+    expect(comp.textInput().nativeElement.readOnly).toBe(true);
+  });
+
+  it('should synchronize disabled reasons', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      disabledReasons = input<readonly DisabledReason[]>([]);
+    }
+
+    @Component({
+      template: `
+        <my-input [control]="f" />
+      `,
+      imports: [CustomInput, Control],
+    })
+    class ReadonlyTestCmp {
+      myInput = viewChild.required<CustomInput>(CustomInput);
+      data = signal('');
+      f = form(this.data, (p) => {
+        disabled(p, () => 'Currently unavailable');
+      });
+    }
+
+    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
+
+    expect(comp.myInput().disabledReasons()).toEqual([
+      {reason: 'Currently unavailable', field: comp.f},
+    ]);
+  });
+
+  it('should synchronize with custom control touched status', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      touched = model(false);
+
+      touchIt() {
+        this.touched.set(true);
+      }
+    }
+
+    @Component({
+      imports: [Control, CustomInput],
+      template: `<my-input [control]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+      myInput = viewChild.required(CustomInput);
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const field = fix.componentInstance.f;
+    const myInput = fix.componentInstance.myInput();
+
+    // Initial state
+    expect(field().touched()).toBe(false);
+
+    // View -> Model
+    act(() => {
+      myInput.touchIt();
+    });
+    expect(field().touched()).toBe(true);
+
+    // Model -> View
+    act(() => field().reset());
+    expect(myInput.touched()).toBe(false);
   });
 });
 
@@ -316,21 +444,10 @@ function setupRadioGroup() {
   const formEl = (fix.nativeElement as HTMLElement).firstChild as HTMLFormElement;
   const inputs = Array.from(formEl.children) as HTMLInputElement[];
 
-  // A fix for Domino issues with <form> around <input>.
-  for (const input of inputs) {
-    Object.defineProperty(input, 'form', {get: () => formEl});
-  }
-
   const [inputA, inputB, inputC] = inputs;
   const cmp = fix.componentInstance as TestCmp;
 
-  function expectStates(a: boolean, b: boolean, c: boolean): void {
-    expect(inputA.checked).toBe(a);
-    expect(inputB.checked).toBe(b);
-    expect(inputC.checked).toBe(c);
-  }
-
-  return {cmp, expectStates, inputA, inputB, inputC};
+  return {cmp, inputA, inputB, inputC};
 }
 
 function act<T>(fn: () => T): T {

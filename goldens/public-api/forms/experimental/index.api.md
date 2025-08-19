@@ -8,6 +8,7 @@ import { AbstractControl } from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
 import { ElementRef } from '@angular/core';
+import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -72,54 +73,20 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 }
 
-// @public (undocumented)
-export interface BaseUiControl {
-    // (undocumented)
-    readonly disabled?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
-    // (undocumented)
-    readonly max?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly maxLength?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly min?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly minLength?: InputSignal<number | undefined>;
-    // (undocumented)
-    readonly name?: InputSignal<string>;
-    // (undocumented)
-    readonly readonly?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly touch?: OutputRef<void>;
-    // (undocumented)
-    readonly touched?: InputSignal<boolean | undefined>;
-    // (undocumented)
-    readonly valid?: InputSignal<boolean | undefined>;
-}
-
 // @public
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
 }
 
-// @public (undocumented)
+// @public
 export class Control<T> {
-    // (undocumented)
     get cva(): ControlValueAccessor | undefined;
-    // (undocumented)
     readonly cvaArray: ControlValueAccessor[] | null;
-    // (undocumented)
     readonly el: ElementRef<HTMLElement>;
-    // (undocumented)
     readonly field: i0.WritableSignal<Field<T>>;
     // (undocumented)
     set _field(value: Field<T>);
-    // (undocumented)
-    readonly injector: Injector;
-    // (undocumented)
     get ngControl(): NgControl;
-    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "_field": { "alias": "control"; "required": true; }; }, {}, never, never, true, never>;
@@ -204,11 +171,9 @@ export function form<TValue>(model: WritableSignal<TValue>, schemaOrOptions: Sch
 // @public
 export function form<TValue>(model: WritableSignal<TValue>, schema: SchemaOrSchemaFn<TValue>, options: FormOptions): Field<TValue>;
 
-// @public (undocumented)
-export interface FormCheckboxControl extends BaseUiControl {
-    // (undocumented)
+// @public
+export interface FormCheckboxControl extends FormUiControl {
     readonly checked: ModelSignal<boolean>;
-    // (undocumented)
     readonly value?: undefined;
 }
 
@@ -220,11 +185,29 @@ export interface FormOptions {
     name?: string;
 }
 
-// @public (undocumented)
-export interface FormValueControl<TValue> extends BaseUiControl {
-    // (undocumented)
+// @public
+export interface FormUiControl {
+    readonly dirty?: InputSignal<boolean>;
+    readonly disabled?: InputSignal<boolean>;
+    readonly disabledReasons?: InputSignal<readonly DisabledReason[]>;
+    readonly errors?: InputSignal<readonly ValidationError[]>;
+    readonly hidden?: InputSignal<boolean>;
+    readonly invalid?: InputSignal<boolean>;
+    readonly max?: InputSignal<number | undefined>;
+    readonly maxLength?: InputSignal<number | undefined>;
+    readonly min?: InputSignal<number | undefined>;
+    readonly minLength?: InputSignal<number | undefined>;
+    readonly name?: InputSignal<string>;
+    readonly pattern?: InputSignal<readonly RegExp[]>;
+    readonly pending?: InputSignal<boolean>;
+    readonly readonly?: InputSignal<boolean>;
+    readonly required?: InputSignal<boolean>;
+    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | OutputRef<boolean>;
+}
+
+// @public
+export interface FormValueControl<TValue> extends FormUiControl {
     readonly checked?: undefined;
-    // (undocumented)
     readonly value: ModelSignal<TValue>;
 }
 
@@ -238,7 +221,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 }
 
-// @public (undocumented)
+// @public
 export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>, Pick<AbstractControl<unknown>, InteropSharedKeys | 'hasValidator'> {
     constructor(field: () => FieldState<unknown>);
     // (undocumented)
@@ -262,9 +245,13 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     // (undocumented)
     get pristine(): boolean;
     // (undocumented)
+    get status(): FormControlStatus;
+    // (undocumented)
     get touched(): boolean;
     // (undocumented)
     get untouched(): boolean;
+    // (undocumented)
+    updateValueAndValidity(): void;
     // (undocumented)
     get valid(): boolean;
     // (undocumented)
@@ -273,8 +260,8 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     valueAccessor: ControlValueAccessor | null;
 }
 
-// @public (undocumented)
-export type InteropSharedKeys = 'value' | 'valid' | 'invalid' | 'touched' | 'untouched' | 'disabled' | 'enabled' | 'errors' | 'pristine' | 'dirty';
+// @public
+export type InteropSharedKeys = 'value' | 'valid' | 'invalid' | 'touched' | 'untouched' | 'disabled' | 'enabled' | 'errors' | 'pristine' | 'dirty' | 'status';
 
 // @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {

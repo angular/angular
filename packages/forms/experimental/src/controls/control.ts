@@ -26,8 +26,16 @@ import {
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {BaseUiControl, FormCheckboxControl, FormValueControl} from '../api/control';
-import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH} from '../api/property';
+import {FormCheckboxControl, FormUiControl, FormValueControl} from '../api/control';
+import {
+  AggregateProperty,
+  MAX,
+  MAX_LENGTH,
+  MIN,
+  MIN_LENGTH,
+  PATTERN,
+  REQUIRED,
+} from '../api/property';
 import {Field} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {
@@ -39,6 +47,21 @@ import {
 } from '../util/illegal';
 import {InteropNgControl} from './interop_ng_control';
 
+/**
+ * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
+ * 1. A native HTML input or textarea
+ * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
+ * 3. A component that provides a ControlValueAccessor. This should only be used to backwards
+ *    compatibility with reactive forms. Prefer options (1) and (2).
+ *
+ * This directive has several responsibilities:
+ * 1. Two-way binds the field's value with the UI control's value
+ * 2. Binds additional forms related state on the field to the UI control (disabled, required, etc.)
+ * 3. Relays relevant events on the control to the field (e.g. marks field touched on blur)
+ * 4. Provides a fake `NgControl` that implements a subset of the features available on the reactive
+ *    forms `NgControl`. This is provided to improve interoperability with controls designed to work
+ *    with reactive forms. It should not be used by controls written for signal forms.
+ */
 @Directive({
   selector: '[control]',
   providers: [
@@ -49,10 +72,14 @@ import {InteropNgControl} from './interop_ng_control';
   ],
 })
 export class Control<T> {
-  readonly injector = inject(Injector);
-  readonly field = signal<Field<T>>(undefined as any);
+  /** The injector for this component. */
+  private readonly injector = inject(Injector);
 
+  /** Whether state synchronization with the field has been setup yet. */
   private initialized = false;
+
+  /** The field that is bound to this control. */
+  readonly field = signal<Field<T>>(undefined as any);
 
   // If `[control]` is applied to a custom UI control, it wants to synchronize state in the field w/
   // the inputs of that custom control. This is difficult to do in user-land. We use `effect`, but
@@ -73,51 +100,58 @@ export class Control<T> {
     }
   }
 
+  /** The field state of the bound field. */
   readonly state = computed(() => this.field()());
+
+  /** The HTMLElement this directive is attached to. */
   readonly el: ElementRef<HTMLElement> = inject(ElementRef);
+
+  /** The NG_VALUE_ACCESSOR array for the host component. */
   readonly cvaArray = inject<ControlValueAccessor[]>(NG_VALUE_ACCESSOR, {optional: true});
 
+  /** The Cached value for the lazily created interop NgControl. */
   private _ngControl: InteropNgControl | undefined;
 
+  /** A fake NgControl provided for better interop with reactive forms. */
   get ngControl(): NgControl {
     return (this._ngControl ??= new InteropNgControl(() => this.state())) as unknown as NgControl;
   }
 
+  /** The ControlValueAccessor for the host component. */
   get cva(): ControlValueAccessor | undefined {
     return this.cvaArray?.[0] ?? this._ngControl?.valueAccessor ?? undefined;
   }
 
+  /** Initializes state synchronization between the field and the host UI control. */
   private initialize() {
     this.initialized = true;
     const injector = this.injector;
     const cmp = illegallyGetComponentInstance(injector);
 
-    if (cmp && isBaseUiControl(cmp)) {
-      this.setupCustomUiControl(cmp);
-    } else if (cmp && isShadowedControlComponent(cmp)) {
-      // TODO: Reconsider where this case should go. Currently if we see an input named `control`
-      // on a native input, we return here and do not synchronize its value and other state.
-      // However in the case of a custom input control with a `control` input, we *do* synchronize
-      // its value and other state (in the previous if case). This doesn't feel consistent.
+    // If component has a `control` input, we assume that it will handle binding the field to the
+    // appropriate native/custom control in its template, so we do not attempt to bind any inputs on
+    // this component.
+    if (cmp && isShadowedControlComponent(cmp)) {
       return;
+    }
+
+    if (cmp && isFormUiControl(cmp)) {
+      // If we're binding to a component that follows the standard form ui control contract,
+      // set up state synchronization based on the contract.
+      this.setupCustomUiControl(cmp);
+    } else if (this.cva !== undefined) {
+      // If we're binding to a component that doesn't follow the standard contract, but provides a
+      // control value accessor, set up state synchronization based on th CVA.
+      this.setupControlValueAccessor(this.cva);
     } else if (
       this.el.nativeElement instanceof HTMLInputElement ||
       this.el.nativeElement instanceof HTMLTextAreaElement
     ) {
+      // If we're binding to a native html input, set up state synchronization with its native
+      // properties / attributes.
       this.setupNativeInput(this.el.nativeElement);
-    } else if (this.cva !== undefined) {
-      // TODO: Reconsider where this case should go. Currently for a native input with a CVA,
-      // we directly synchronize state with the native input rather than going through the CVA.
-      // This feels likely to break directives designed to be placed on a native input and manage
-      // its updates through a CVA.
-      this.setupControlValueAccessor(this.cva);
     } else {
       throw new Error(`Unhandled control?`);
-    }
-
-    if (this.cva) {
-      this.cva.writeValue(this.state().value());
-      this.cva.setDisabledState?.(this.state().disabled());
     }
 
     // Register this control on the field it is currently bound to. We do this at the end of
@@ -135,9 +169,7 @@ export class Control<T> {
     );
   }
 
-  /**
-   * Bind our field to an <input> or <textarea>.
-   */
+  /** Set up state synchronization between the field and a native <input> or <textarea>. */
   private setupNativeInput(input: HTMLInputElement | HTMLTextAreaElement): void {
     const inputType = input instanceof HTMLTextAreaElement ? 'text' : input.type;
 
@@ -160,9 +192,11 @@ export class Control<T> {
     input.addEventListener('blur', () => this.state().markAsTouched());
 
     this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
+    // TODO: consider making a global configuration option for using aria-disabled instead.
     this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
     this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
 
+    this.maybeSynchronize(this.propertySource(REQUIRED), withBooleanAttribute(input, 'required'));
     this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
     this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
@@ -196,9 +230,7 @@ export class Control<T> {
     }
   }
 
-  /**
-   * Binding to a `ControlValueAccessor` based UI control
-   */
+  /** Set up state synchronization between the field and a ControlValueAccessor. */
   private setupControlValueAccessor(cva: ControlValueAccessor): void {
     cva.registerOnChange((value: T) => this.state().value.set(value));
     cva.registerOnTouched(() => this.state().markAsTouched());
@@ -214,12 +246,13 @@ export class Control<T> {
         (value) => cva.setDisabledState!(value),
       );
     }
+
+    cva.writeValue(this.state().value());
+    cva.setDisabledState?.(this.state().disabled());
   }
 
-  /**
-   * Connect to a UI component that implements the control interface.
-   */
-  private setupCustomUiControl(cmp: BaseUiControl) {
+  /** Set up state synchronization between the field and a FormUiControl. */
+  private setupCustomUiControl(cmp: FormUiControl) {
     // Handle the property side of the model binding. How we do this depends on the shape of the
     // component. There are 2 options:
     // * it provides a `value` model (most controls that edit a single value)
@@ -240,20 +273,28 @@ export class Control<T> {
 
     this.maybeSynchronize(() => this.state().name(), withInput(cmp.name));
     this.maybeSynchronize(() => this.state().disabled(), withInput(cmp.disabled));
+    this.maybeSynchronize(() => this.state().disabledReasons(), withInput(cmp.disabledReasons));
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
+    this.maybeSynchronize(() => this.state().hidden(), withInput(cmp.hidden));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
-    this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
-    this.maybeSynchronize(() => this.state().valid(), withInput(cmp.valid));
+    if (illegallyIsModelInput(cmp.touched) || illegallyIsSignalInput(cmp.touched)) {
+      this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
+    }
+    this.maybeSynchronize(() => this.state().dirty(), withInput(cmp.dirty));
+    this.maybeSynchronize(() => this.state().invalid(), withInput(cmp.invalid));
+    this.maybeSynchronize(() => this.state().pending(), withInput(cmp.pending));
 
+    this.maybeSynchronize(this.propertySource(REQUIRED), withInput(cmp.required));
     this.maybeSynchronize(this.propertySource(MIN), withInput(cmp.min));
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), withInput(cmp.minLength));
     this.maybeSynchronize(this.propertySource(MAX), withInput(cmp.max));
     this.maybeSynchronize(this.propertySource(MAX_LENGTH), withInput(cmp.maxLength));
+    this.maybeSynchronize(this.propertySource(PATTERN), withInput(cmp.pattern));
 
     let cleanupTouch: OutputRefSubscription | undefined;
     let cleanupDefaultTouch: (() => void) | undefined;
-    if (cmp.touch !== undefined) {
-      cleanupTouch = cmp.touch.subscribe(() => this.state().markAsTouched());
+    if (illegallyIsModelInput(cmp.touched) || isOutputRef(cmp.touched)) {
+      cleanupTouch = cmp.touched.subscribe(() => this.state().markAsTouched());
     } else {
       // If the component did not give us a touch event stream, use the standard touch logic,
       // marking it touched when the focus moves from inside the host element to outside.
@@ -275,6 +316,7 @@ export class Control<T> {
     });
   }
 
+  /** Synchronize a value from a reactive source to a given sink. */
   private maybeSynchronize<T>(source: () => T, sink: ((value: T) => void) | undefined): void {
     if (!sink) {
       return undefined;
@@ -291,18 +333,21 @@ export class Control<T> {
     illegallyRunEffect(ref);
   }
 
-  private propertySource<T>(key: AggregateProperty<T, any>): () => T | undefined {
+  /** Creates a reactive value source by reading the given AggregateProperty from the field. */
+  private propertySource<T>(key: AggregateProperty<T, any>): () => T {
     const metaSource = computed(() =>
-      this.state().hasProperty(key) ? this.state().property(key) : undefined,
+      this.state().hasProperty(key) ? this.state().property(key) : key.getInitial,
     );
     return () => metaSource()?.();
   }
 }
 
+/** Creates a value sync from an input signal. */
 function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) | undefined {
   return input ? (value: T) => illegallySetInputSignal(input, value) : undefined;
 }
 
+/** Creates a boolean value sync that writes the given attribute of the given element. */
 function withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
   return (value) => {
     if (value) {
@@ -313,6 +358,7 @@ function withBooleanAttribute(element: HTMLElement, attribute: string): (value: 
   };
 }
 
+/** Creates a (non-boolean) value sync that writes the given attribute of the given element. */
 function withAttribute(
   element: HTMLElement,
   attribute: string,
@@ -326,16 +372,25 @@ function withAttribute(
   };
 }
 
-function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
-  const castCmp = cmp as BaseUiControl;
+/**
+ * Checks whether the given component matches the contract for either FormValueControl or
+ * FormCheckboxControl.
+ */
+function isFormUiControl(cmp: unknown): cmp is FormUiControl {
+  const castCmp = cmp as FormUiControl;
   return (
     (isFormValueControl(castCmp) || isFormCheckboxControl(castCmp)) &&
     (castCmp.readonly === undefined || illegallyIsSignalInput(castCmp.readonly)) &&
     (castCmp.disabled === undefined || illegallyIsSignalInput(castCmp.disabled)) &&
+    (castCmp.disabledReasons === undefined || illegallyIsSignalInput(castCmp.disabledReasons)) &&
     (castCmp.errors === undefined || illegallyIsSignalInput(castCmp.errors)) &&
-    (castCmp.valid === undefined || illegallyIsSignalInput(castCmp.valid)) &&
-    (castCmp.touched === undefined || illegallyIsSignalInput(castCmp.touched)) &&
-    (castCmp.touch === undefined || isOutputRef(castCmp.touch)) &&
+    (castCmp.invalid === undefined || illegallyIsSignalInput(castCmp.invalid)) &&
+    (castCmp.pending === undefined || illegallyIsSignalInput(castCmp.pending)) &&
+    (castCmp.touched === undefined ||
+      illegallyIsModelInput(castCmp.touched) ||
+      illegallyIsSignalInput(castCmp.touched) ||
+      isOutputRef(castCmp.touched)) &&
+    (castCmp.dirty === undefined || illegallyIsSignalInput(castCmp.dirty)) &&
     (castCmp.min === undefined || illegallyIsSignalInput(castCmp.min)) &&
     (castCmp.minLength === undefined || illegallyIsSignalInput(castCmp.minLength)) &&
     (castCmp.max === undefined || illegallyIsSignalInput(castCmp.max)) &&
@@ -343,25 +398,26 @@ function isBaseUiControl(cmp: unknown): cmp is BaseUiControl {
   );
 }
 
-function isFormValueControl(cmp: BaseUiControl): cmp is FormValueControl<unknown> {
+/** Checks whether the given FormUiControl is a FormValueControl. */
+function isFormValueControl(cmp: FormUiControl): cmp is FormValueControl<unknown> {
   return illegallyIsModelInput((cmp as FormValueControl<unknown>).value);
 }
 
-function isFormCheckboxControl(cmp: BaseUiControl): cmp is FormCheckboxControl {
+/** Checks whether the given FormUiControl is a FormCheckboxControl. */
+function isFormCheckboxControl(cmp: FormUiControl): cmp is FormCheckboxControl {
   return (
     illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
     (cmp as FormCheckboxControl).value === undefined
   );
 }
 
-/**
- * Whether `cmp` has a `control` input of its own.
- */
+/** Checks whether the given component has an input called `control`. */
 function isShadowedControlComponent(cmp: unknown): boolean {
   const mirror = reflectComponentType((cmp as {}).constructor as Type<unknown>);
   return mirror?.inputs.some((input) => input.templateName === 'control') ?? false;
 }
 
+/** Checks whether the given object is an output ref. */
 function isOutputRef(value: unknown): value is OutputRef<unknown> {
   return value instanceof OutputEmitterRef || value instanceof EventEmitter;
 }
