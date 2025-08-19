@@ -25,7 +25,6 @@ generate_api_docs(
     name = "animations_browser_testing_docs",
     srcs = [
         ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
     ],
     entry_point = ":index.ts",
     module_name = "@angular/animations/browser/testing",

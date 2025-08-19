@@ -889,9 +889,6 @@ importers:
 
   packages/animations:
     dependencies:
-      '@angular/common':
-        specifier: 'workspace: *'
-        version: link:../common
       '@angular/core':
         specifier: 'workspace: *'
         version: link:../core
