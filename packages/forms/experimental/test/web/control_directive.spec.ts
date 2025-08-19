@@ -11,6 +11,7 @@ import {
   ElementRef,
   Injector,
   input,
+  inputBinding,
   model,
   provideZonelessChangeDetection,
   signal,
@@ -247,11 +248,11 @@ describe('control directive', () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
     expect(f().controls()).toEqual([]);
 
-    const fixture = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', f);
-      return fixture;
-    });
+    const fixture = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
     expect(f().controls()).toEqual([fixture.componentInstance.controlDirective()]);
 
     act(() => fixture.destroy());
@@ -260,16 +261,16 @@ describe('control directive', () => {
 
   it('should track multiple bound controls per field', async () => {
     const f = form(signal(''), {injector: TestBed.inject(Injector)});
-    const fixture1 = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', f);
-      return fixture;
-    });
-    const fixture2 = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', f);
-      return fixture;
-    });
+    const fixture1 = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
+    const fixture2 = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', () => f)],
+      }),
+    );
 
     expect(f().controls()).toEqual([
       fixture1.componentInstance.controlDirective(),
@@ -280,15 +281,16 @@ describe('control directive', () => {
   it('should update bound controls on both fields when field binding changes', async () => {
     const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
     const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
-    const fixture = act(() => {
-      const fixture = TestBed.createComponent(TestStringControl);
-      fixture.componentRef.setInput('control', f1);
-      return fixture;
-    });
+    const control = signal(f1);
+    const fixture = act(() =>
+      TestBed.createComponent(TestStringControl, {
+        bindings: [inputBinding('control', control)],
+      }),
+    );
     expect(f1().controls()).toEqual([fixture.componentInstance.controlDirective()]);
     expect(f2().controls()).toEqual([]);
 
-    act(() => fixture.componentRef.setInput('control', f2));
+    act(() => control.set(f2));
     expect(f1().controls()).toEqual([]);
     expect(f2().controls()).toEqual([fixture.componentInstance.controlDirective()]);
   });
@@ -317,10 +319,7 @@ describe('control directive', () => {
       });
     }
 
-    const comp = act(() => {
-      const fixture = TestBed.createComponent(CustomPropsTestCmp);
-      return fixture;
-    }).componentInstance;
+    const comp = act(() => TestBed.createComponent(CustomPropsTestCmp)).componentInstance;
 
     expect(comp.f.number().property(MAX)()).toBe(100);
     expect(comp.textInput().nativeElement.required).toBe(true);
@@ -346,10 +345,7 @@ describe('control directive', () => {
       });
     }
 
-    const comp = act(() => {
-      const fixture = TestBed.createComponent(ReadonlyTestCmp);
-      return fixture;
-    }).componentInstance;
+    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
     expect(comp.textInput().nativeElement.readOnly).toBe(true);
   });
@@ -369,10 +365,7 @@ describe('control directive', () => {
       });
     }
 
-    const comp = act(() => {
-      const fixture = TestBed.createComponent(ReadonlyTestCmp);
-      return fixture;
-    }).componentInstance;
+    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
     expect(comp.textInput().nativeElement.readOnly).toBe(true);
   });
