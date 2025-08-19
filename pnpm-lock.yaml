@@ -719,11 +719,11 @@ importers:
         specifier: 1.54.2
         version: 1.54.2
       preact:
-        specifier: 10.27.0
-        version: 10.27.0
+        specifier: 10.27.1
+        version: 10.27.1
       preact-render-to-string:
         specifier: 6.5.13
-        version: 6.5.13(preact@10.27.0)
+        version: 6.5.13(preact@10.27.1)
       prettier:
         specifier: 3.6.2
         version: 3.6.2
@@ -9120,8 +9120,8 @@ packages:
     peerDependencies:
       preact: '>=10'
 
-  preact@10.27.0:
-    resolution: {integrity: sha512-/DTYoB6mwwgPytiqQTh/7SFRL98ZdiD8Sk8zIUVOxtwq4oWcwrcd1uno9fE/zZmUaUrFNYzbH14CPebOz9tZQw==}
+  preact@10.27.1:
+    resolution: {integrity: sha512-V79raXEWch/rbqoNc7nT9E4ep7lu+mI3+sBmfRD4i1M73R3WLYcCtdI0ibxGVf4eQL8ZIz2nFacqEC+rmnOORQ==}
 
   prettier@3.6.2:
     resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
@@ -21322,11 +21322,11 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  preact-render-to-string@6.5.13(preact@10.27.0):
+  preact-render-to-string@6.5.13(preact@10.27.1):
     dependencies:
-      preact: 10.27.0
+      preact: 10.27.1
 
-  preact@10.27.0: {}
+  preact@10.27.1: {}
 
   prettier@3.6.2: {}
 
