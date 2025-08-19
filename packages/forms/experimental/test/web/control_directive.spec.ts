@@ -18,10 +18,10 @@ import {
   viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MAX, readonly} from '../../public_api';
+import {disabled, MAX, readonly} from '../../public_api';
 import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
 import {form} from '../../src/api/structure';
-import {Field} from '../../src/api/types';
+import {Field, type DisabledReason} from '../../src/api/types';
 import {max, maxLength, min, minLength, required} from '../../src/api/validators';
 import {Control} from '../../src/controls/control';
 
@@ -352,22 +352,33 @@ describe('control directive', () => {
 
   it('should synchronize disabled reasons', () => {
     @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      disabledReasons = input<readonly DisabledReason[]>([]);
+    }
+
+    @Component({
       template: `
-        <input #text type="text" [control]="f">
+        <my-input [control]="f" />
       `,
-      imports: [Control],
+      imports: [CustomInput, Control],
     })
     class ReadonlyTestCmp {
-      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
+      myInput = viewChild.required<CustomInput>(CustomInput);
       data = signal('');
       f = form(this.data, (p) => {
-        readonly(p);
+        disabled(p, () => 'Currently unavailable');
       });
     }
 
     const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
-    expect(comp.textInput().nativeElement.readOnly).toBe(true);
+    expect(comp.myInput().disabledReasons()).toEqual([
+      {reason: 'Currently unavailable', field: comp.f},
+    ]);
   });
 
   it('should synchronize with custom control touched status', () => {
