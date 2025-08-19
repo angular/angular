@@ -187,21 +187,22 @@ export interface FormOptions {
 
 // @public
 export interface FormUiControl {
-    readonly dirty?: InputSignal<boolean | undefined>;
-    readonly disabled?: InputSignal<boolean | undefined>;
-    readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
-    readonly hidden?: InputSignal<boolean | undefined>;
+    readonly dirty?: InputSignal<boolean>;
+    readonly disabled?: InputSignal<boolean>;
+    readonly disabledReasons?: InputSignal<readonly DisabledReason[]>;
+    readonly errors?: InputSignal<readonly ValidationError[]>;
+    readonly hidden?: InputSignal<boolean>;
+    readonly invalid?: InputSignal<boolean>;
     readonly max?: InputSignal<number | undefined>;
     readonly maxLength?: InputSignal<number | undefined>;
     readonly min?: InputSignal<number | undefined>;
     readonly minLength?: InputSignal<number | undefined>;
-    readonly name?: InputSignal<string | undefined>;
-    readonly pattern?: InputSignal<readonly RegExp[] | undefined>;
-    readonly readonly?: InputSignal<boolean | undefined>;
-    readonly required?: InputSignal<boolean | undefined>;
-    readonly touch?: OutputRef<void>;
-    readonly touched?: InputSignal<boolean | undefined>;
-    readonly valid?: InputSignal<boolean | undefined>;
+    readonly name?: InputSignal<string>;
+    readonly pattern?: InputSignal<readonly RegExp[]>;
+    readonly pending?: InputSignal<boolean>;
+    readonly readonly?: InputSignal<boolean>;
+    readonly required?: InputSignal<boolean>;
+    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | OutputRef<boolean>;
 }
 
 // @public
@@ -249,6 +250,8 @@ export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'co
     get touched(): boolean;
     // (undocumented)
     get untouched(): boolean;
+    // (undocumented)
+    updateValueAndValidity(): void;
     // (undocumented)
     get valid(): boolean;
     // (undocumented)
