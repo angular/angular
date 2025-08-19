@@ -18,7 +18,7 @@ zoneless_jasmine_test(
     name = "unit_tests",
     data = [
         ":unit_test_lib",
-        "@rules_browsers//src/browsers/chromium",
+        "@rules_browsers//browsers/chromium",
     ] + glob([
         "**/*.md",
         "**/*.svg",
@@ -27,5 +27,5 @@ zoneless_jasmine_test(
     env = {
         "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
+    toolchains = ["@rules_browsers//browsers/chromium:toolchain_alias"],
 )

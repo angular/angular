@@ -1,5 +1,5 @@
 load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
-load("@rules_browsers//src/wtr:index.bzl", "wtr_test")
+load("@rules_browsers//wtr:index.bzl", "wtr_test")
 
 def web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages:tsconfig_build", **kwargs):
     spec_bundle(

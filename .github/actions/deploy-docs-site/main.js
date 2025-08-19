@@ -9,7 +9,8 @@ var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
   get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
 }) : x)(function(x) {
-  if (typeof require !== "undefined") return require.apply(this, arguments);
+  if (typeof require !== "undefined")
+    return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
 var __commonJS = (cb, mod) => function __require2() {
@@ -69,7 +70,8 @@ var require_command = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -78,7 +80,8 @@ var require_command = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -87,10 +90,13 @@ var require_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -155,7 +161,8 @@ var require_file_command = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -164,7 +171,8 @@ var require_file_command = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -173,10 +181,13 @@ var require_file_command = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -539,7 +550,8 @@ var require_lib = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -548,7 +560,8 @@ var require_lib = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -557,10 +570,13 @@ var require_lib = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1654,7 +1670,8 @@ var require_path_utils = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -1663,7 +1680,8 @@ var require_path_utils = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1672,10 +1690,13 @@ var require_path_utils = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1703,12 +1724,14 @@ var require_io_util = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1717,10 +1740,13 @@ var require_io_util = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -1876,12 +1902,14 @@ var require_io = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -1890,10 +1918,13 @@ var require_io = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2124,12 +2155,14 @@ var require_toolrunner = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2138,10 +2171,13 @@ var require_toolrunner = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2608,12 +2644,14 @@ var require_exec = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       Object.defineProperty(o, k2, { enumerable: true, get: function() {
         return m[k];
       } });
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2622,10 +2660,13 @@ var require_exec = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2715,7 +2756,8 @@ var require_platform = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -2724,7 +2766,8 @@ var require_platform = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2733,10 +2776,13 @@ var require_platform = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -2834,7 +2880,8 @@ var require_core = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -2843,7 +2890,8 @@ var require_core = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -2852,10 +2900,13 @@ var require_core = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -3122,7 +3173,8 @@ var require_utils2 = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -3131,7 +3183,8 @@ var require_utils2 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -3140,10 +3193,13 @@ var require_utils2 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -3743,7 +3799,8 @@ var require_wrappy = __commonJS({
   ""(exports, module) {
     module.exports = wrappy;
     function wrappy(fn, cb) {
-      if (fn && cb) return wrappy(fn)(cb);
+      if (fn && cb)
+        return wrappy(fn)(cb);
       if (typeof fn !== "function")
         throw new TypeError("need wrapper function");
       Object.keys(fn).forEach(function(k) {
@@ -3790,7 +3847,8 @@ var require_once = __commonJS({
     });
     function once(fn) {
       var f = function() {
-        if (f.called) return f.value;
+        if (f.called)
+          return f.value;
         f.called = true;
         return f.value = fn.apply(this, arguments);
       };
@@ -4184,7 +4242,8 @@ var require_dist_node6 = __commonJS({
           );
         }
         for (const key in options) {
-          if (!FORBIDDEN_VARIABLE_OPTIONS2.includes(key)) continue;
+          if (!FORBIDDEN_VARIABLE_OPTIONS2.includes(key))
+            continue;
           return Promise.reject(
             new Error(
               `[@octokit/graphql] "${key}" cannot be used as variable name`
@@ -7028,7 +7087,8 @@ var require_utils3 = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -7037,7 +7097,8 @@ var require_utils3 = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -7046,10 +7107,13 @@ var require_utils3 = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -7088,7 +7152,8 @@ var require_github = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -7097,7 +7162,8 @@ var require_github = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -7106,10 +7172,13 @@ var require_github = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
@@ -7157,14 +7226,16 @@ var require_tmp = __commonJS({
     function tmpName(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
       _assertAndSanitizeOptions(opts, function(err, sanitizedOptions) {
-        if (err) return cb(err);
+        if (err)
+          return cb(err);
         let tries = sanitizedOptions.tries;
         (function _getUniqueName() {
           try {
             const name = _generateTmpName(sanitizedOptions);
             fs.stat(name, function(err2) {
               if (!err2) {
-                if (tries-- > 0) return _getUniqueName();
+                if (tries-- > 0)
+                  return _getUniqueName();
                 return cb(new Error("Could not get a unique tmp filename, max tries reached " + name));
               }
               cb(null, name);
@@ -7192,9 +7263,11 @@ var require_tmp = __commonJS({
     function file(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
       tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err) return cb(err);
+        if (err)
+          return cb(err);
         fs.open(name, CREATE_FLAGS, opts.mode || FILE_MODE, function _fileCreated(err2, fd) {
-          if (err2) return cb(err2);
+          if (err2)
+            return cb(err2);
           if (opts.discardDescriptor) {
             return fs.close(fd, function _discardCallback(possibleErr) {
               return cb(possibleErr, name, void 0, _prepareTmpFileRemoveCallback(name, -1, opts, false));
@@ -7224,9 +7297,11 @@ var require_tmp = __commonJS({
     function dir(options, callback) {
       const args = _parseArguments(options, callback), opts = args[0], cb = args[1];
       tmpName(opts, function _tmpNameCreated(err, name) {
-        if (err) return cb(err);
+        if (err)
+          return cb(err);
         fs.mkdir(name, opts.mode || DIR_MODE, function _dirCreated(err2) {
-          if (err2) return cb(err2);
+          if (err2)
+            return cb(err2);
           cb(null, name, _prepareTmpDirRemoveCallback(name, opts, false));
         });
       });
@@ -7251,19 +7326,23 @@ var require_tmp = __commonJS({
         fs.close(fdPath[0], function() {
           fs.unlink(fdPath[1], _handler);
         });
-      else fs.unlink(fdPath[1], _handler);
+      else
+        fs.unlink(fdPath[1], _handler);
     }
     function _removeFileSync(fdPath) {
       let rethrownException = null;
       try {
-        if (0 <= fdPath[0]) fs.closeSync(fdPath[0]);
+        if (0 <= fdPath[0])
+          fs.closeSync(fdPath[0]);
       } catch (e) {
-        if (!_isEBADF(e) && !_isENOENT(e)) throw e;
+        if (!_isEBADF(e) && !_isENOENT(e))
+          throw e;
       } finally {
         try {
           fs.unlinkSync(fdPath[1]);
         } catch (e) {
-          if (!_isENOENT(e)) rethrownException = e;
+          if (!_isENOENT(e))
+            rethrownException = e;
         }
       }
       if (rethrownException !== null) {
@@ -7273,7 +7352,8 @@ var require_tmp = __commonJS({
     function _prepareTmpFileRemoveCallback(name, fd, opts, sync) {
       const removeCallbackSync = _prepareRemoveCallback(_removeFileSync, [fd, name], sync);
       const removeCallback = _prepareRemoveCallback(_removeFileAsync, [fd, name], sync, removeCallbackSync);
-      if (!opts.keep) _removeObjects.unshift(removeCallbackSync);
+      if (!opts.keep)
+        _removeObjects.unshift(removeCallbackSync);
       return sync ? removeCallbackSync : removeCallback;
     }
     function _prepareTmpDirRemoveCallback(name, opts, sync) {
@@ -7281,7 +7361,8 @@ var require_tmp = __commonJS({
       const removeFunctionSync = opts.unsafeCleanup ? FN_RIMRAF_SYNC : FN_RMDIR_SYNC;
       const removeCallbackSync = _prepareRemoveCallback(removeFunctionSync, name, sync);
       const removeCallback = _prepareRemoveCallback(removeFunction, name, sync, removeCallbackSync);
-      if (!opts.keep) _removeObjects.unshift(removeCallbackSync);
+      if (!opts.keep)
+        _removeObjects.unshift(removeCallbackSync);
       return sync ? removeCallbackSync : removeCallback;
     }
     function _prepareRemoveCallback(removeFunction, fileOrDirName, sync, cleanupCallbackSync) {
@@ -7290,7 +7371,8 @@ var require_tmp = __commonJS({
         if (!called) {
           const toRemove = cleanupCallbackSync || _cleanupCallback;
           const index = _removeObjects.indexOf(toRemove);
-          if (index >= 0) _removeObjects.splice(index, 1);
+          if (index >= 0)
+            _removeObjects.splice(index, 1);
           called = true;
           if (sync || removeFunction === FN_RMDIR_SYNC || removeFunction === FN_RIMRAF_SYNC) {
             return removeFunction(fileOrDirName);
@@ -7302,7 +7384,8 @@ var require_tmp = __commonJS({
       };
     }
     function _garbageCollector() {
-      if (!_gracefulCleanup) return;
+      if (!_gracefulCleanup)
+        return;
       while (_removeObjects.length) {
         try {
           _removeObjects[0]();
@@ -7343,7 +7426,8 @@ var require_tmp = __commonJS({
       fs.stat(pathToResolve, function(err) {
         if (err) {
           fs.realpath(path.dirname(pathToResolve), function(err2, parentDir) {
-            if (err2) return cb(err2);
+            if (err2)
+              return cb(err2);
             cb(null, path.join(parentDir, path.basename(pathToResolve)));
           });
         } else {
@@ -7382,7 +7466,8 @@ var require_tmp = __commonJS({
     function _assertOptionsBase(options) {
       if (!_isUndefined(options.name)) {
         const name = options.name;
-        if (path.isAbsolute(name)) throw new Error(`name option must not contain an absolute path, found "${name}".`);
+        if (path.isAbsolute(name))
+          throw new Error(`name option must not contain an absolute path, found "${name}".`);
         const basename = path.basename(name);
         if (basename === ".." || basename === "." || basename !== name)
           throw new Error(`name option must not contain a path, found "${name}".`);
@@ -7402,9 +7487,11 @@ var require_tmp = __commonJS({
       options.postfix = _isUndefined(options.postfix) ? "" : options.postfix;
     }
     function _getRelativePath(option, name, tmpDir, cb) {
-      if (_isUndefined(name)) return cb(null);
+      if (_isUndefined(name))
+        return cb(null);
       _resolvePath(name, tmpDir, function(err, resolvedPath) {
-        if (err) return cb(err);
+        if (err)
+          return cb(err);
         const relativePath = path.relative(tmpDir, resolvedPath);
         if (!resolvedPath.startsWith(tmpDir)) {
           return cb(new Error(`${option} option must be relative to "${tmpDir}", found "${relativePath}".`));
@@ -7413,7 +7500,8 @@ var require_tmp = __commonJS({
       });
     }
     function _getRelativePathSync(option, name, tmpDir) {
-      if (_isUndefined(name)) return;
+      if (_isUndefined(name))
+        return;
       const resolvedPath = _resolvePathSync(name, tmpDir);
       const relativePath = path.relative(tmpDir, resolvedPath);
       if (!resolvedPath.startsWith(tmpDir)) {
@@ -7423,7 +7511,8 @@ var require_tmp = __commonJS({
     }
     function _assertAndSanitizeOptions(options, cb) {
       _getTmpDir(options, function(err, tmpDir) {
-        if (err) return cb(err);
+        if (err)
+          return cb(err);
         options.tmpdir = tmpDir;
         try {
           _assertOptionsBase(options, tmpDir);
@@ -7431,10 +7520,12 @@ var require_tmp = __commonJS({
           return cb(err2);
         }
         _getRelativePath("dir", options.dir, tmpDir, function(err2, dir2) {
-          if (err2) return cb(err2);
+          if (err2)
+            return cb(err2);
           options.dir = _isUndefined(dir2) ? "" : dir2;
           _getRelativePath("template", options.template, tmpDir, function(err3, template) {
-            if (err3) return cb(err3);
+            if (err3)
+              return cb(err3);
             options.template = template;
             cb(null, options);
           });
@@ -7832,8 +7923,6 @@ var require_semver = __commonJS({
             this.inc("patch", identifier, identifierBase);
             this.inc("pre", identifier, identifierBase);
             break;
-          // If the input is a non-prerelease version, this acts the same as
-          // prepatch.
           case "prerelease":
             if (this.prerelease.length === 0) {
               this.inc("patch", identifier, identifierBase);
@@ -7867,8 +7956,6 @@ var require_semver = __commonJS({
             }
             this.prerelease = [];
             break;
-          // This probably shouldn't be used publicly.
-          // 1.0.0 'pre' would become 1.0.0-0 which is the wrong direction.
           case "pre": {
             const base = Number(identifierBase) ? 1 : 0;
             if (this.prerelease.length === 0) {
@@ -8939,7 +9026,6 @@ var require_min_version = __commonJS({
                 compver.prerelease.push(0);
               }
               compver.raw = compver.format();
-            /* fallthrough */
             case "":
             case ">=":
               if (!setMin || gt(compver, setMin)) {
@@ -8949,7 +9035,6 @@ var require_min_version = __commonJS({
             case "<":
             case "<=":
               break;
-            /* istanbul ignore next */
             default:
               throw new Error(`Unexpected operation: ${comparator.operator}`);
           }
@@ -9152,18 +9237,19 @@ var require_subset = __commonJS({
       sub = new Range(sub, options);
       dom = new Range(dom, options);
       let sawNonNull = false;
-      OUTER: for (const simpleSub of sub.set) {
-        for (const simpleDom of dom.set) {
-          const isSub = simpleSubset(simpleSub, simpleDom, options);
-          sawNonNull = sawNonNull || isSub !== null;
-          if (isSub) {
-            continue OUTER;
+      OUTER:
+        for (const simpleSub of sub.set) {
+          for (const simpleDom of dom.set) {
+            const isSub = simpleSubset(simpleSub, simpleDom, options);
+            sawNonNull = sawNonNull || isSub !== null;
+            if (isSub) {
+              continue OUTER;
+            }
+          }
+          if (sawNonNull) {
+            return false;
           }
         }
-        if (sawNonNull) {
-          return false;
-        }
-      }
       return true;
     };
     var minimumVersionWithPreRelease = [new Comparator(">=0.0.0-0")];
@@ -9601,7 +9687,9 @@ var require_dist = __commonJS({
       __assign = Object.assign || function __assign2(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
           s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
         }
         return t;
       };
@@ -9898,7 +9986,8 @@ var require_cjs = __commonJS({
   ""(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
         desc = { enumerable: true, get: function() {
@@ -9907,7 +9996,8 @@ var require_cjs = __commonJS({
       }
       Object.defineProperty(o, k2, desc);
     } : function(o, m, k, k2) {
-      if (k2 === void 0) k2 = k;
+      if (k2 === void 0)
+        k2 = k;
       o[k2] = m[k];
     });
     var __setModuleDefault = exports && exports.__setModuleDefault || (Object.create ? function(o, v) {
@@ -9916,16 +10006,21 @@ var require_cjs = __commonJS({
       o["default"] = v;
     });
     var __importStar = exports && exports.__importStar || function(mod) {
-      if (mod && mod.__esModule) return mod;
+      if (mod && mod.__esModule)
+        return mod;
       var result = {};
       if (mod != null) {
-        for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+        for (var k in mod)
+          if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+            __createBinding(result, mod, k);
       }
       __setModuleDefault(result, mod);
       return result;
     };
     var __exportStar = exports && exports.__exportStar || function(m, exports2) {
-      for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p)) __createBinding(exports2, m, p);
+      for (var p in m)
+        if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p))
+          __createBinding(exports2, m, p);
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.sync = exports.isexe = exports.posix = exports.win32 = void 0;
@@ -10256,11 +10351,13 @@ var require_lockfile = __commonJS({
                     for (var _iterator4 = destFiles, _isArray4 = Array.isArray(_iterator4), _i4 = 0, _iterator4 = _isArray4 ? _iterator4 : _iterator4[Symbol.iterator](); ; ) {
                       var _ref6;
                       if (_isArray4) {
-                        if (_i4 >= _iterator4.length) break;
+                        if (_i4 >= _iterator4.length)
+                          break;
                         _ref6 = _iterator4[_i4++];
                       } else {
                         _i4 = _iterator4.next();
-                        if (_i4.done) break;
+                        if (_i4.done)
+                          break;
                         _ref6 = _i4.value;
                       }
                       const file = _ref6;
@@ -10271,11 +10368,13 @@ var require_lockfile = __commonJS({
                           for (var _iterator5 = yield readdir(loc), _isArray5 = Array.isArray(_iterator5), _i5 = 0, _iterator5 = _isArray5 ? _iterator5 : _iterator5[Symbol.iterator](); ; ) {
                             var _ref7;
                             if (_isArray5) {
-                              if (_i5 >= _iterator5.length) break;
+                              if (_i5 >= _iterator5.length)
+                                break;
                               _ref7 = _iterator5[_i5++];
                             } else {
                               _i5 = _iterator5.next();
-                              if (_i5.done) break;
+                              if (_i5.done)
+                                break;
                               _ref7 = _i5.value;
                             }
                             const file2 = _ref7;
@@ -10316,11 +10415,13 @@ var require_lockfile = __commonJS({
                   for (var _iterator6 = srcFiles, _isArray6 = Array.isArray(_iterator6), _i6 = 0, _iterator6 = _isArray6 ? _iterator6 : _iterator6[Symbol.iterator](); ; ) {
                     var _ref8;
                     if (_isArray6) {
-                      if (_i6 >= _iterator6.length) break;
+                      if (_i6 >= _iterator6.length)
+                        break;
                       _ref8 = _iterator6[_i6++];
                     } else {
                       _i6 = _iterator6.next();
-                      if (_i6.done) break;
+                      if (_i6.done)
+                        break;
                       _ref8 = _i6.value;
                     }
                     const file = _ref8;
@@ -10366,11 +10467,13 @@ var require_lockfile = __commonJS({
             for (var _iterator = queue, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref2;
               if (_isArray) {
-                if (_i >= _iterator.length) break;
+                if (_i >= _iterator.length)
+                  break;
                 _ref2 = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done) break;
+                if (_i.done)
+                  break;
                 _ref2 = _i.value;
               }
               const item = _ref2;
@@ -10395,11 +10498,13 @@ var require_lockfile = __commonJS({
             for (var _iterator2 = artifactFiles, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ; ) {
               var _ref3;
               if (_isArray2) {
-                if (_i2 >= _iterator2.length) break;
+                if (_i2 >= _iterator2.length)
+                  break;
                 _ref3 = _iterator2[_i2++];
               } else {
                 _i2 = _iterator2.next();
-                if (_i2.done) break;
+                if (_i2.done)
+                  break;
                 _ref3 = _i2.value;
               }
               const file = _ref3;
@@ -10411,11 +10516,13 @@ var require_lockfile = __commonJS({
             for (var _iterator3 = possibleExtraneous, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator](); ; ) {
               var _ref4;
               if (_isArray3) {
-                if (_i3 >= _iterator3.length) break;
+                if (_i3 >= _iterator3.length)
+                  break;
                 _ref4 = _iterator3[_i3++];
               } else {
                 _i3 = _iterator3.next();
-                if (_i3.done) break;
+                if (_i3.done)
+                  break;
                 _ref4 = _i3.value;
               }
               const loc = _ref4;
@@ -10486,11 +10593,13 @@ var require_lockfile = __commonJS({
                     for (var _iterator10 = destFiles, _isArray10 = Array.isArray(_iterator10), _i10 = 0, _iterator10 = _isArray10 ? _iterator10 : _iterator10[Symbol.iterator](); ; ) {
                       var _ref14;
                       if (_isArray10) {
-                        if (_i10 >= _iterator10.length) break;
+                        if (_i10 >= _iterator10.length)
+                          break;
                         _ref14 = _iterator10[_i10++];
                       } else {
                         _i10 = _iterator10.next();
-                        if (_i10.done) break;
+                        if (_i10.done)
+                          break;
                         _ref14 = _i10.value;
                       }
                       const file = _ref14;
@@ -10501,11 +10610,13 @@ var require_lockfile = __commonJS({
                           for (var _iterator11 = yield readdir(loc), _isArray11 = Array.isArray(_iterator11), _i11 = 0, _iterator11 = _isArray11 ? _iterator11 : _iterator11[Symbol.iterator](); ; ) {
                             var _ref15;
                             if (_isArray11) {
-                              if (_i11 >= _iterator11.length) break;
+                              if (_i11 >= _iterator11.length)
+                                break;
                               _ref15 = _iterator11[_i11++];
                             } else {
                               _i11 = _iterator11.next();
-                              if (_i11.done) break;
+                              if (_i11.done)
+                                break;
                               _ref15 = _i11.value;
                             }
                             const file2 = _ref15;
@@ -10540,11 +10651,13 @@ var require_lockfile = __commonJS({
                   for (var _iterator12 = srcFiles, _isArray12 = Array.isArray(_iterator12), _i12 = 0, _iterator12 = _isArray12 ? _iterator12 : _iterator12[Symbol.iterator](); ; ) {
                     var _ref16;
                     if (_isArray12) {
-                      if (_i12 >= _iterator12.length) break;
+                      if (_i12 >= _iterator12.length)
+                        break;
                       _ref16 = _iterator12[_i12++];
                     } else {
                       _i12 = _iterator12.next();
-                      if (_i12.done) break;
+                      if (_i12.done)
+                        break;
                       _ref16 = _i12.value;
                     }
                     const file = _ref16;
@@ -10588,11 +10701,13 @@ var require_lockfile = __commonJS({
             for (var _iterator7 = queue, _isArray7 = Array.isArray(_iterator7), _i7 = 0, _iterator7 = _isArray7 ? _iterator7 : _iterator7[Symbol.iterator](); ; ) {
               var _ref10;
               if (_isArray7) {
-                if (_i7 >= _iterator7.length) break;
+                if (_i7 >= _iterator7.length)
+                  break;
                 _ref10 = _iterator7[_i7++];
               } else {
                 _i7 = _iterator7.next();
-                if (_i7.done) break;
+                if (_i7.done)
+                  break;
                 _ref10 = _i7.value;
               }
               const item = _ref10;
@@ -10615,11 +10730,13 @@ var require_lockfile = __commonJS({
             for (var _iterator8 = artifactFiles, _isArray8 = Array.isArray(_iterator8), _i8 = 0, _iterator8 = _isArray8 ? _iterator8 : _iterator8[Symbol.iterator](); ; ) {
               var _ref11;
               if (_isArray8) {
-                if (_i8 >= _iterator8.length) break;
+                if (_i8 >= _iterator8.length)
+                  break;
                 _ref11 = _iterator8[_i8++];
               } else {
                 _i8 = _iterator8.next();
-                if (_i8.done) break;
+                if (_i8.done)
+                  break;
                 _ref11 = _i8.value;
               }
               const file = _ref11;
@@ -10631,11 +10748,13 @@ var require_lockfile = __commonJS({
             for (var _iterator9 = possibleExtraneous, _isArray9 = Array.isArray(_iterator9), _i9 = 0, _iterator9 = _isArray9 ? _iterator9 : _iterator9[Symbol.iterator](); ; ) {
               var _ref12;
               if (_isArray9) {
-                if (_i9 >= _iterator9.length) break;
+                if (_i9 >= _iterator9.length)
+                  break;
                 _ref12 = _iterator9[_i9++];
               } else {
                 _i9 = _iterator9.next();
-                if (_i9.done) break;
+                if (_i9.done)
+                  break;
                 _ref12 = _i9.value;
               }
               const loc = _ref12;
@@ -10731,11 +10850,13 @@ var require_lockfile = __commonJS({
             for (var _iterator13 = files, _isArray13 = Array.isArray(_iterator13), _i13 = 0, _iterator13 = _isArray13 ? _iterator13 : _iterator13[Symbol.iterator](); ; ) {
               var _ref22;
               if (_isArray13) {
-                if (_i13 >= _iterator13.length) break;
+                if (_i13 >= _iterator13.length)
+                  break;
                 _ref22 = _iterator13[_i13++];
               } else {
                 _i13 = _iterator13.next();
-                if (_i13.done) break;
+                if (_i13.done)
+                  break;
                 _ref22 = _i13.value;
               }
               const file = _ref22;
@@ -10838,11 +10959,13 @@ var require_lockfile = __commonJS({
             for (var _iterator14 = filenames, _isArray14 = Array.isArray(_iterator14), _i14 = 0, _iterator14 = _isArray14 ? _iterator14 : _iterator14[Symbol.iterator](); ; ) {
               var _ref28;
               if (_isArray14) {
-                if (_i14 >= _iterator14.length) break;
+                if (_i14 >= _iterator14.length)
+                  break;
                 _ref28 = _iterator14[_i14++];
               } else {
                 _i14 = _iterator14.next();
-                if (_i14.done) break;
+                if (_i14.done)
+                  break;
                 _ref28 = _i14.value;
               }
               const name = _ref28;
@@ -10943,11 +11066,13 @@ var require_lockfile = __commonJS({
             for (var _iterator15 = paths, _isArray15 = Array.isArray(_iterator15), _i15 = 0, _iterator15 = _isArray15 ? _iterator15 : _iterator15[Symbol.iterator](); ; ) {
               var _ref35;
               if (_isArray15) {
-                if (_i15 >= _iterator15.length) break;
+                if (_i15 >= _iterator15.length)
+                  break;
                 _ref35 = _iterator15[_i15++];
               } else {
                 _i15 = _iterator15.next();
-                if (_i15.done) break;
+                if (_i15.done)
+                  break;
                 _ref35 = _i15.value;
               }
               const path = _ref35;
@@ -10972,11 +11097,13 @@ var require_lockfile = __commonJS({
             for (var _iterator16 = paths, _isArray16 = Array.isArray(_iterator16), _i16 = 0, _iterator16 = _isArray16 ? _iterator16 : _iterator16[Symbol.iterator](); ; ) {
               var _ref37;
               if (_isArray16) {
-                if (_i16 >= _iterator16.length) break;
+                if (_i16 >= _iterator16.length)
+                  break;
                 _ref37 = _iterator16[_i16++];
               } else {
                 _i16 = _iterator16.next();
-                if (_i16.done) break;
+                if (_i16.done)
+                  break;
                 _ref37 = _i16.value;
               }
               const folder = _ref37;
@@ -11045,7 +11172,8 @@ var require_lockfile = __commonJS({
             var newObj = {};
             if (obj != null) {
               for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+                if (Object.prototype.hasOwnProperty.call(obj, key))
+                  newObj[key] = obj[key];
               }
             }
             newObj.default = obj;
@@ -11244,7 +11372,8 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2) {
         var global = module2.exports = typeof window != "undefined" && window.Math == Math ? window : typeof self != "undefined" && self.Math == Math ? self : Function("return this")();
-        if (typeof __g == "number") __g = global;
+        if (typeof __g == "number")
+          __g = global;
       },
       /* 12 */
       /***/
@@ -11403,7 +11532,8 @@ var require_lockfile = __commonJS({
             var newObj = {};
             if (obj != null) {
               for (var key in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key];
+                if (Object.prototype.hasOwnProperty.call(obj, key))
+                  newObj[key] = obj[key];
               }
             }
             newObj.default = obj;
@@ -11530,11 +11660,13 @@ var require_lockfile = __commonJS({
             for (var _iterator = sortedPatternsKeys, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref;
               if (_isArray) {
-                if (_i >= _iterator.length) break;
+                if (_i >= _iterator.length)
+                  break;
                 _ref = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done) break;
+                if (_i.done)
+                  break;
                 _ref = _i.value;
               }
               const pattern = _ref;
@@ -11596,11 +11728,13 @@ var require_lockfile = __commonJS({
             for (var _iterator = obj, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
               var _ref;
               if (_isArray) {
-                if (_i >= _iterator.length) break;
+                if (_i >= _iterator.length)
+                  break;
                 _ref = _iterator[_i++];
               } else {
                 _i = _iterator.next();
-                if (_i.done) break;
+                if (_i.done)
+                  break;
                 _ref = _i.value;
               }
               const item = _ref;
@@ -11627,7 +11761,8 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2) {
         var core = module2.exports = { version: "2.5.7" };
-        if (typeof __e == "number") __e = core;
+        if (typeof __e == "number")
+          __e = core;
       },
       ,
       ,
@@ -11637,7 +11772,8 @@ var require_lockfile = __commonJS({
       function(module2, exports2, __webpack_require__) {
         var isObject = __webpack_require__(34);
         module2.exports = function(it) {
-          if (!isObject(it)) throw TypeError(it + " is not an object!");
+          if (!isObject(it))
+            throw TypeError(it + " is not an object!");
           return it;
         };
       },
@@ -11859,10 +11995,12 @@ var require_lockfile = __commonJS({
           var expProto = exports3[PROTOTYPE];
           var target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE];
           var key, own, out;
-          if (IS_GLOBAL) source = name;
+          if (IS_GLOBAL)
+            source = name;
           for (key in source) {
             own = !IS_FORCED && target && target[key] !== void 0;
-            if (own && has(exports3, key)) continue;
+            if (own && has(exports3, key))
+              continue;
             out = own ? target[key] : source[key];
             exports3[key] = IS_GLOBAL && typeof target[key] != "function" ? source[key] : IS_BIND && own ? ctx(out, global) : IS_WRAP && target[key] == out ? function(C) {
               var F = function(a, b, c) {
@@ -11884,7 +12022,8 @@ var require_lockfile = __commonJS({
             }(out) : IS_PROTO && typeof out == "function" ? ctx(Function.call, out) : out;
             if (IS_PROTO) {
               (exports3.virtual || (exports3.virtual = {}))[key] = out;
-              if (type & $export.R && expProto && !expProto[key]) hide(expProto, key, out);
+              if (type & $export.R && expProto && !expProto[key])
+                hide(expProto, key, out);
             }
           }
         };
@@ -11903,7 +12042,8 @@ var require_lockfile = __commonJS({
       function(module2, exports2, __webpack_require__) {
         try {
           var util = __webpack_require__(2);
-          if (typeof util.inherits !== "function") throw "";
+          if (typeof util.inherits !== "function")
+            throw "";
           module2.exports = util.inherits;
         } catch (e) {
           module2.exports = __webpack_require__(224);
@@ -11935,7 +12075,8 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2) {
         module2.exports = function(it) {
-          if (typeof it != "function") throw TypeError(it + " is not a function!");
+          if (typeof it != "function")
+            throw TypeError(it + " is not a function!");
           return it;
         };
       },
@@ -11953,7 +12094,8 @@ var require_lockfile = __commonJS({
         var aFunction = __webpack_require__(46);
         module2.exports = function(fn, that, length) {
           aFunction(fn);
-          if (that === void 0) return fn;
+          if (that === void 0)
+            return fn;
           switch (length) {
             case 1:
               return function(a) {
@@ -11992,12 +12134,15 @@ var require_lockfile = __commonJS({
           anObject(O);
           P = toPrimitive(P, true);
           anObject(Attributes);
-          if (IE8_DOM_DEFINE) try {
-            return dP(O, P, Attributes);
-          } catch (e) {
-          }
-          if ("get" in Attributes || "set" in Attributes) throw TypeError("Accessors not supported!");
-          if ("value" in Attributes) O[P] = Attributes.value;
+          if (IE8_DOM_DEFINE)
+            try {
+              return dP(O, P, Attributes);
+            } catch (e) {
+            }
+          if ("get" in Attributes || "set" in Attributes)
+            throw TypeError("Accessors not supported!");
+          if ("value" in Attributes)
+            O[P] = Attributes.value;
           return O;
         };
       },
@@ -12420,7 +12565,8 @@ var require_lockfile = __commonJS({
           return t;
         }
         minimatch.defaults = function(def) {
-          if (!def || !Object.keys(def).length) return minimatch;
+          if (!def || !Object.keys(def).length)
+            return minimatch;
           var orig = minimatch;
           var m = function minimatch2(p, pattern, options) {
             return orig.minimatch(p, pattern, ext(def, options));
@@ -12431,18 +12577,21 @@ var require_lockfile = __commonJS({
           return m;
         };
         Minimatch.defaults = function(def) {
-          if (!def || !Object.keys(def).length) return Minimatch;
+          if (!def || !Object.keys(def).length)
+            return Minimatch;
           return minimatch.defaults(def).Minimatch;
         };
         function minimatch(p, pattern, options) {
           if (typeof pattern !== "string") {
             throw new TypeError("glob pattern string required");
           }
-          if (!options) options = {};
+          if (!options)
+            options = {};
           if (!options.nocomment && pattern.charAt(0) === "#") {
             return false;
           }
-          if (pattern.trim() === "") return p === "";
+          if (pattern.trim() === "")
+            return p === "";
           return new Minimatch(pattern, options).match(p);
         }
         function Minimatch(pattern, options) {
@@ -12452,7 +12601,8 @@ var require_lockfile = __commonJS({
           if (typeof pattern !== "string") {
             throw new TypeError("glob pattern string required");
           }
-          if (!options) options = {};
+          if (!options)
+            options = {};
           pattern = pattern.trim();
           if (path.sep !== "/") {
             pattern = pattern.split(path.sep).join("/");
@@ -12470,7 +12620,8 @@ var require_lockfile = __commonJS({
         };
         Minimatch.prototype.make = make;
         function make() {
-          if (this._made) return;
+          if (this._made)
+            return;
           var pattern = this.pattern;
           var options = this.options;
           if (!options.nocomment && pattern.charAt(0) === "#") {
@@ -12483,7 +12634,8 @@ var require_lockfile = __commonJS({
           }
           this.parseNegate();
           var set = this.globSet = this.braceExpand();
-          if (options.debug) this.debug = console.error;
+          if (options.debug)
+            this.debug = console.error;
           this.debug(this.pattern, set);
           set = this.globParts = set.map(function(s) {
             return s.split(slashSplit);
@@ -12505,12 +12657,14 @@ var require_lockfile = __commonJS({
           var negate = false;
           var options = this.options;
           var negateOffset = 0;
-          if (options.nonegate) return;
+          if (options.nonegate)
+            return;
           for (var i = 0, l = pattern.length; i < l && pattern.charAt(i) === "!"; i++) {
             negate = !negate;
             negateOffset++;
           }
-          if (negateOffset) this.pattern = pattern.substr(negateOffset);
+          if (negateOffset)
+            this.pattern = pattern.substr(negateOffset);
           this.negate = negate;
         }
         minimatch.braceExpand = function(pattern, options) {
@@ -12541,8 +12695,10 @@ var require_lockfile = __commonJS({
             throw new TypeError("pattern is too long");
           }
           var options = this.options;
-          if (!options.noglobstar && pattern === "**") return GLOBSTAR;
-          if (pattern === "") return "";
+          if (!options.noglobstar && pattern === "**")
+            return GLOBSTAR;
+          if (pattern === "")
+            return "";
           var re = "";
           var hasMagic = !!options.nocase;
           var escaping = false;
@@ -12587,8 +12743,6 @@ var require_lockfile = __commonJS({
                 clearStateChar();
                 escaping = true;
                 continue;
-              // the various stateChar values
-              // for the "extglob" stuff.
               case "?":
               case "*":
               case "+":
@@ -12597,14 +12751,16 @@ var require_lockfile = __commonJS({
                 this.debug("%s	%s %s %j <-- stateChar", pattern, i, re, c);
                 if (inClass) {
                   this.debug("  in class");
-                  if (c === "!" && i === classStart + 1) c = "^";
+                  if (c === "!" && i === classStart + 1)
+                    c = "^";
                   re += c;
                   continue;
                 }
                 self2.debug("call clearStateChar %j", stateChar);
                 clearStateChar();
                 stateChar = c;
-                if (options.noext) clearStateChar();
+                if (options.noext)
+                  clearStateChar();
                 continue;
               case "(":
                 if (inClass) {
@@ -12649,7 +12805,6 @@ var require_lockfile = __commonJS({
                 clearStateChar();
                 re += "|";
                 continue;
-              // these are mostly the same in regexp and glob
               case "[":
                 clearStateChar();
                 if (inClass) {
@@ -12771,7 +12926,8 @@ var require_lockfile = __commonJS({
         };
         Minimatch.prototype.makeRe = makeRe;
         function makeRe() {
-          if (this.regexp || this.regexp === false) return this.regexp;
+          if (this.regexp || this.regexp === false)
+            return this.regexp;
           var set = this.set;
           if (!set.length) {
             this.regexp = false;
@@ -12786,7 +12942,8 @@ var require_lockfile = __commonJS({
             }).join("\\/");
           }).join("|");
           re = "^(?:" + re + ")$";
-          if (this.negate) re = "^(?!" + re + ").*$";
+          if (this.negate)
+            re = "^(?!" + re + ").*$";
           try {
             this.regexp = new RegExp(re, flags);
           } catch (ex) {
@@ -12808,9 +12965,12 @@ var require_lockfile = __commonJS({
         Minimatch.prototype.match = match;
         function match(f, partial) {
           this.debug("match", f, this.pattern);
-          if (this.comment) return false;
-          if (this.empty) return f === "";
-          if (f === "/" && partial) return true;
+          if (this.comment)
+            return false;
+          if (this.empty)
+            return f === "";
+          if (f === "/" && partial)
+            return true;
           var options = this.options;
           if (path.sep !== "/") {
             f = f.split(path.sep).join("/");
@@ -12823,7 +12983,8 @@ var require_lockfile = __commonJS({
           var i;
           for (i = f.length - 1; i >= 0; i--) {
             filename = f[i];
-            if (filename) break;
+            if (filename)
+              break;
           }
           for (i = 0; i < set.length; i++) {
             var pattern = set[i];
@@ -12833,11 +12994,13 @@ var require_lockfile = __commonJS({
             }
             var hit = this.matchOne(file, pattern, partial);
             if (hit) {
-              if (options.flipNegate) return true;
+              if (options.flipNegate)
+                return true;
               return !this.negate;
             }
           }
-          if (options.flipNegate) return false;
+          if (options.flipNegate)
+            return false;
           return this.negate;
         }
         Minimatch.prototype.matchOne = function(file, pattern, partial) {
@@ -12852,7 +13015,8 @@ var require_lockfile = __commonJS({
             var p = pattern[pi];
             var f = file[fi];
             this.debug(pattern, p, f);
-            if (p === false) return false;
+            if (p === false)
+              return false;
             if (p === GLOBSTAR) {
               this.debug("GLOBSTAR", [pattern, p, f]);
               var fr = fi;
@@ -12860,7 +13024,8 @@ var require_lockfile = __commonJS({
               if (pr === pl) {
                 this.debug("** at the end");
                 for (; fi < fl; fi++) {
-                  if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".") return false;
+                  if (file[fi] === "." || file[fi] === ".." || !options.dot && file[fi].charAt(0) === ".")
+                    return false;
                 }
                 return true;
               }
@@ -12881,7 +13046,8 @@ var require_lockfile = __commonJS({
               }
               if (partial) {
                 this.debug("\n>>> no match, partial?", file, fr, pattern, pr);
-                if (fr === fl) return true;
+                if (fr === fl)
+                  return true;
               }
               return false;
             }
@@ -12897,7 +13063,8 @@ var require_lockfile = __commonJS({
               hit = f.match(p);
               this.debug("pattern match", p, f, hit);
             }
-            if (!hit) return false;
+            if (!hit)
+              return false;
           }
           if (fi === fl && pi === pl) {
             return true;
@@ -12938,7 +13105,8 @@ var require_lockfile = __commonJS({
         });
         function once(fn) {
           var f = function() {
-            if (f.called) return f.value;
+            if (f.called)
+              return f.value;
             f.called = true;
             return f.value = fn.apply(this, arguments);
           };
@@ -12971,7 +13139,8 @@ var require_lockfile = __commonJS({
       /***/
       function(module2, exports2) {
         module2.exports = function(it) {
-          if (it == void 0) throw TypeError("Can't call method on  " + it);
+          if (it == void 0)
+            throw TypeError("Can't call method on  " + it);
           return it;
         };
       },
@@ -12998,7 +13167,8 @@ var require_lockfile = __commonJS({
         function PromiseCapability(C) {
           var resolve, reject;
           this.promise = new C(function($$resolve, $$reject) {
-            if (resolve !== void 0 || reject !== void 0) throw TypeError("Bad Promise constructor");
+            if (resolve !== void 0 || reject !== void 0)
+              throw TypeError("Bad Promise constructor");
             resolve = $$resolve;
             reject = $$reject;
           });
@@ -13016,7 +13186,8 @@ var require_lockfile = __commonJS({
         var has = __webpack_require__(49);
         var TAG = __webpack_require__(13)("toStringTag");
         module2.exports = function(it, tag, stat) {
-          if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
+          if (it && !has(it = stat ? it : it.prototype, TAG))
+            def(it, TAG, { configurable: true, value: tag });
         };
       },
       /* 72 */
@@ -13071,8 +13242,10 @@ var require_lockfile = __commonJS({
         var isIgnored = common.isIgnored;
         var once = __webpack_require__(61);
         function glob(pattern, options, cb) {
-          if (typeof options === "function") cb = options, options = {};
-          if (!options) options = {};
+          if (typeof options === "function")
+            cb = options, options = {};
+          if (!options)
+            options = {};
           if (options.sync) {
             if (cb)
               throw new TypeError("callback provided to sync glob");
@@ -13266,7 +13439,6 @@ var require_lockfile = __commonJS({
           }
           var prefix;
           switch (n) {
-            // if not, then this is rather simple
             case pattern.length:
               this._processSimple(pattern.join("/"), index, cb);
               return;
@@ -13454,7 +13626,6 @@ var require_lockfile = __commonJS({
             return;
           switch (er.code) {
             case "ENOTSUP":
-            // https://github.com/isaacs/node-glob/issues/205
             case "ENOTDIR":
               var abs = this._makeAbs(f);
               this.cache[abs] = "FILE";
@@ -13467,7 +13638,6 @@ var require_lockfile = __commonJS({
               }
               break;
             case "ENOENT":
-            // not terribly unusual
             case "ELOOP":
             case "ENAMETOOLONG":
             case "UNKNOWN":
@@ -13886,11 +14056,13 @@ var require_lockfile = __commonJS({
                   for (var _iterator = keys, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator](); ; ) {
                     var _ref;
                     if (_isArray) {
-                      if (_i >= _iterator.length) break;
+                      if (_i >= _iterator.length)
+                        break;
                       _ref = _iterator[_i++];
                     } else {
                       _i = _iterator.next();
-                      if (_i.done) break;
+                      if (_i.done)
+                        break;
                       _ref = _i.value;
                     }
                     const key2 = _ref;
@@ -13903,11 +14075,13 @@ var require_lockfile = __commonJS({
                   for (var _iterator2 = keys, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator](); ; ) {
                     var _ref2;
                     if (_isArray2) {
-                      if (_i2 >= _iterator2.length) break;
+                      if (_i2 >= _iterator2.length)
+                        break;
                       _ref2 = _iterator2[_i2++];
                     } else {
                       _i2 = _iterator2.next();
-                      if (_i2.done) break;
+                      if (_i2.done)
+                        break;
                       _ref2 = _i2.value;
                     }
                     const key2 = _ref2;
@@ -14175,7 +14349,8 @@ var require_lockfile = __commonJS({
         module2.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
           $iterCreate(Constructor, NAME, next);
           var getMethod = function(kind) {
-            if (!BUGGY && kind in proto2) return proto2[kind];
+            if (!BUGGY && kind in proto2)
+              return proto2[kind];
             switch (kind) {
               case KEYS:
                 return function keys() {
@@ -14203,7 +14378,8 @@ var require_lockfile = __commonJS({
             IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
             if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {
               setToStringTag(IteratorPrototype, TAG, true);
-              if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != "function") hide(IteratorPrototype, ITERATOR, returnThis);
+              if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != "function")
+                hide(IteratorPrototype, ITERATOR, returnThis);
             }
           }
           if (DEF_VALUES && $native && $native.name !== VALUES) {
@@ -14223,10 +14399,13 @@ var require_lockfile = __commonJS({
               keys: IS_SET ? $default : getMethod(KEYS),
               entries: $entries
             };
-            if (FORCED) for (key in methods) {
-              if (!(key in proto2)) redefine(proto2, key, methods[key]);
-            }
-            else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
+            if (FORCED)
+              for (key in methods) {
+                if (!(key in proto2))
+                  redefine(proto2, key, methods[key]);
+              }
+            else
+              $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
           }
           return methods;
         };
@@ -14250,7 +14429,8 @@ var require_lockfile = __commonJS({
         var newPromiseCapability = __webpack_require__(70);
         module2.exports = function(C, x) {
           anObject(C);
-          if (isObject(x) && x.constructor === C) return x;
+          if (isObject(x) && x.constructor === C)
+            return x;
           var promiseCapability = newPromiseCapability.f(C);
           var resolve = promiseCapability.resolve;
           resolve(x);
@@ -14328,7 +14508,8 @@ var require_lockfile = __commonJS({
           setTask = function setImmediate(fn) {
             var args = [];
             var i = 1;
-            while (arguments.length > i) args.push(arguments[i++]);
+            while (arguments.length > i)
+              args.push(arguments[i++]);
             queue[++counter] = function() {
               invoke(typeof fn == "function" ? fn : Function(fn), args);
             };
@@ -14416,7 +14597,8 @@ var require_lockfile = __commonJS({
         function createDebug(namespace) {
           var prevTime;
           function debug() {
-            if (!debug.enabled) return;
+            if (!debug.enabled)
+              return;
             var self2 = debug;
             var curr = +/* @__PURE__ */ new Date();
             var ms = curr - (prevTime || curr);
@@ -14434,7 +14616,8 @@ var require_lockfile = __commonJS({
             }
             var index = 0;
             args[0] = args[0].replace(/%([a-zA-Z%])/g, function(match, format) {
-              if (match === "%%") return match;
+              if (match === "%%")
+                return match;
               index++;
               var formatter = exports2.formatters[format];
               if ("function" === typeof formatter) {
@@ -14477,7 +14660,8 @@ var require_lockfile = __commonJS({
           var split = (typeof namespaces === "string" ? namespaces : "").split(/[\s,]+/);
           var len = split.length;
           for (i = 0; i < len; i++) {
-            if (!split[i]) continue;
+            if (!split[i])
+              continue;
             namespaces = split[i].replace(/\*/g, ".*?");
             if (namespaces[0] === "-") {
               exports2.skips.push(new RegExp("^" + namespaces.substr(1) + "$"));
@@ -14511,7 +14695,8 @@ var require_lockfile = __commonJS({
           return false;
         }
         function coerce(val) {
-          if (val instanceof Error) return val.stack || val.message;
+          if (val instanceof Error)
+            return val.stack || val.message;
           return val;
         }
       },
@@ -14786,7 +14971,8 @@ var require_lockfile = __commonJS({
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
-          if (!made) made = null;
+          if (!made)
+            made = null;
           var cb = f || function() {
           };
           p = path.resolve(p);
@@ -14798,17 +14984,18 @@ var require_lockfile = __commonJS({
             switch (er.code) {
               case "ENOENT":
                 mkdirP(path.dirname(p), opts, function(er2, made2) {
-                  if (er2) cb(er2, made2);
-                  else mkdirP(p, opts, cb, made2);
+                  if (er2)
+                    cb(er2, made2);
+                  else
+                    mkdirP(p, opts, cb, made2);
                 });
                 break;
-              // In the case of any other error, just see if there's a dir
-              // there already.  If so, then hooray!  If not, then something
-              // is borked.
               default:
                 xfs.stat(p, function(er2, stat) {
-                  if (er2 || !stat.isDirectory()) cb(er, made);
-                  else cb(null, made);
+                  if (er2 || !stat.isDirectory())
+                    cb(er, made);
+                  else
+                    cb(null, made);
                 });
                 break;
             }
@@ -14823,7 +15010,8 @@ var require_lockfile = __commonJS({
           if (mode === void 0) {
             mode = _0777 & ~process.umask();
           }
-          if (!made) made = null;
+          if (!made)
+            made = null;
           p = path.resolve(p);
           try {
             xfs.mkdirSync(p, mode);
@@ -14834,9 +15022,6 @@ var require_lockfile = __commonJS({
                 made = sync(path.dirname(p), opts, made);
                 sync(p, opts, made);
                 break;
-              // In the case of any other error, just see if there's a dir
-              // there already.  If so, then hooray!  If not, then something
-              // is borked.
               default:
                 var stat;
                 try {
@@ -14844,7 +15029,8 @@ var require_lockfile = __commonJS({
                 } catch (err1) {
                   throw err0;
                 }
-                if (!stat.isDirectory()) throw err0;
+                if (!stat.isDirectory())
+                  throw err0;
                 break;
             }
           }
@@ -14875,7 +15061,8 @@ var require_lockfile = __commonJS({
       function(module2, exports2) {
         module2.exports = wrappy;
         function wrappy(fn, cb) {
-          if (fn && cb) return wrappy(fn)(cb);
+          if (fn && cb)
+            return wrappy(fn)(cb);
           if (typeof fn !== "function")
             throw new TypeError("need wrapper function");
           Object.keys(fn).forEach(function(k) {
@@ -15284,8 +15471,10 @@ ${indent}`);
         "use strict";
         module2.exports = balanced;
         function balanced(a, b, str) {
-          if (a instanceof RegExp) a = maybeMatch(a, str);
-          if (b instanceof RegExp) b = maybeMatch(b, str);
+          if (a instanceof RegExp)
+            a = maybeMatch(a, str);
+          if (b instanceof RegExp)
+            b = maybeMatch(b, str);
           var r = range(a, b, str);
           return r && {
             start: r[0],
@@ -15397,7 +15586,8 @@ ${indent}`);
         function expand2(str, isTop) {
           var expansions = [];
           var m = balanced("{", "}", str);
-          if (!m || /\$$/.test(m.pre)) return [str];
+          if (!m || /\$$/.test(m.pre))
+            return [str];
           var isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
           var isAlphaSequence = /^[a-zA-Z]\.\.[a-zA-Z](?:\.\.-?\d+)?$/.test(m.body);
           var isSequence = isNumericSequence || isAlphaSequence;
@@ -15535,8 +15725,10 @@ ${indent}`);
           var res = [];
           for (var i = 0; i < xs.length; i++) {
             var x = fn(xs[i], i);
-            if (isArray(x)) res.push.apply(res, x);
-            else res.push(x);
+            if (isArray(x))
+              res.push.apply(res, x);
+            else
+              res.push(x);
           }
           return res;
         };
@@ -15583,13 +15775,18 @@ ${indent}`);
             var length = toLength(O.length);
             var index = toAbsoluteIndex(fromIndex, length);
             var value;
-            if (IS_INCLUDES && el != el) while (length > index) {
-              value = O[index++];
-              if (value != value) return true;
-            }
-            else for (; length > index; index++) if (IS_INCLUDES || index in O) {
-              if (O[index] === el) return IS_INCLUDES || index || 0;
-            }
+            if (IS_INCLUDES && el != el)
+              while (length > index) {
+                value = O[index++];
+                if (value != value)
+                  return true;
+              }
+            else
+              for (; length > index; index++)
+                if (IS_INCLUDES || index in O) {
+                  if (O[index] === el)
+                    return IS_INCLUDES || index || 0;
+                }
             return !IS_INCLUDES && -1;
           };
         };
@@ -15612,15 +15809,20 @@ ${indent}`);
           var f = ctx(fn, that, entries ? 2 : 1);
           var index = 0;
           var length, step, iterator2, result;
-          if (typeof iterFn != "function") throw TypeError(iterable + " is not iterable!");
-          if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {
-            result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
-            if (result === BREAK || result === RETURN) return result;
-          }
-          else for (iterator2 = iterFn.call(iterable); !(step = iterator2.next()).done; ) {
-            result = call(iterator2, f, step.value, entries);
-            if (result === BREAK || result === RETURN) return result;
-          }
+          if (typeof iterFn != "function")
+            throw TypeError(iterable + " is not iterable!");
+          if (isArrayIter(iterFn))
+            for (length = toLength(iterable.length); length > index; index++) {
+              result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+              if (result === BREAK || result === RETURN)
+                return result;
+            }
+          else
+            for (iterator2 = iterFn.call(iterable); !(step = iterator2.next()).done; ) {
+              result = call(iterator2, f, step.value, entries);
+              if (result === BREAK || result === RETURN)
+                return result;
+            }
         };
         exports2.BREAK = BREAK;
         exports2.RETURN = RETURN;
@@ -15673,7 +15875,8 @@ ${indent}`);
             return entries ? fn(anObject(value)[0], value[1]) : fn(value);
           } catch (e) {
             var ret = iterator2["return"];
-            if (ret !== void 0) anObject(ret.call(iterator2));
+            if (ret !== void 0)
+              anObject(ret.call(iterator2));
             throw e;
           }
         };
@@ -15710,7 +15913,8 @@ ${indent}`);
         } catch (e) {
         }
         module2.exports = function(exec, skipClosing) {
-          if (!skipClosing && !SAFE_CLOSING) return false;
+          if (!skipClosing && !SAFE_CLOSING)
+            return false;
           var safe = false;
           try {
             var arr = [7];
@@ -15747,20 +15951,24 @@ ${indent}`);
           var head, last, notify;
           var flush = function() {
             var parent, fn;
-            if (isNode && (parent = process4.domain)) parent.exit();
+            if (isNode && (parent = process4.domain))
+              parent.exit();
             while (head) {
               fn = head.fn;
               head = head.next;
               try {
                 fn();
               } catch (e) {
-                if (head) notify();
-                else last = void 0;
+                if (head)
+                  notify();
+                else
+                  last = void 0;
                 throw e;
               }
             }
             last = void 0;
-            if (parent) parent.enter();
+            if (parent)
+              parent.enter();
           };
           if (isNode) {
             notify = function() {
@@ -15785,7 +15993,8 @@ ${indent}`);
           }
           return function(fn) {
             var task = { fn, next: void 0 };
-            if (last) last.next = task;
+            if (last)
+              last.next = task;
             if (!head) {
               head = task;
               notify();
@@ -15818,7 +16027,8 @@ ${indent}`);
           iframeDocument.write(lt + "script" + gt + "document.F=Object" + lt + "/script" + gt);
           iframeDocument.close();
           createDict = iframeDocument.F;
-          while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];
+          while (i--)
+            delete createDict[PROTOTYPE][enumBugKeys[i]];
           return createDict();
         };
         module2.exports = Object.create || function create(O, Properties) {
@@ -15828,7 +16038,8 @@ ${indent}`);
             result = new Empty();
             Empty[PROTOTYPE] = null;
             result[IE_PROTO] = O;
-          } else result = createDict();
+          } else
+            result = createDict();
           return Properties === void 0 ? result : dPs(result, Properties);
         };
       },
@@ -15844,7 +16055,8 @@ ${indent}`);
           var length = keys.length;
           var i = 0;
           var P;
-          while (length > i) dP.f(O, P = keys[i++], Properties[P]);
+          while (length > i)
+            dP.f(O, P = keys[i++], Properties[P]);
           return O;
         };
       },
@@ -15857,7 +16069,8 @@ ${indent}`);
         var ObjectProto = Object.prototype;
         module2.exports = Object.getPrototypeOf || function(O) {
           O = toObject(O);
-          if (has(O, IE_PROTO)) return O[IE_PROTO];
+          if (has(O, IE_PROTO))
+            return O[IE_PROTO];
           if (typeof O.constructor == "function" && O instanceof O.constructor) {
             return O.constructor.prototype;
           }
@@ -15876,10 +16089,13 @@ ${indent}`);
           var i = 0;
           var result = [];
           var key;
-          for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);
-          while (names.length > i) if (has(O, key = names[i++])) {
-            ~arrayIndexOf(result, key) || result.push(key);
-          }
+          for (key in O)
+            if (key != IE_PROTO)
+              has(O, key) && result.push(key);
+          while (names.length > i)
+            if (has(O, key = names[i++])) {
+              ~arrayIndexOf(result, key) || result.push(key);
+            }
           return result;
         };
       },
@@ -15889,8 +16105,10 @@ ${indent}`);
         var hide = __webpack_require__(31);
         module2.exports = function(target, src, safe) {
           for (var key in src) {
-            if (safe && target[key]) target[key] = src[key];
-            else hide(target, key, src[key]);
+            if (safe && target[key])
+              target[key] = src[key];
+            else
+              hide(target, key, src[key]);
           }
           return target;
         };
@@ -15911,12 +16129,13 @@ ${indent}`);
         var SPECIES = __webpack_require__(13)("species");
         module2.exports = function(KEY) {
           var C = typeof core[KEY] == "function" ? core[KEY] : global[KEY];
-          if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {
-            configurable: true,
-            get: function() {
-              return this;
-            }
-          });
+          if (DESCRIPTORS && C && !C[SPECIES])
+            dP.f(C, SPECIES, {
+              configurable: true,
+              get: function() {
+                return this;
+              }
+            });
         };
       },
       /* 199 */
@@ -15930,7 +16149,8 @@ ${indent}`);
             var i = toInteger(pos);
             var l = s.length;
             var a, b;
-            if (i < 0 || i >= l) return TO_STRING ? "" : void 0;
+            if (i < 0 || i >= l)
+              return TO_STRING ? "" : void 0;
             a = s.charCodeAt(i);
             return a < 55296 || a > 56319 || i + 1 === l || (b = s.charCodeAt(i + 1)) < 56320 || b > 57343 ? TO_STRING ? s.charAt(i) : a : TO_STRING ? s.slice(i, i + 2) : (a - 55296 << 10) + (b - 56320) + 65536;
           };
@@ -15952,11 +16172,15 @@ ${indent}`);
       function(module2, exports2, __webpack_require__) {
         var isObject = __webpack_require__(34);
         module2.exports = function(it, S) {
-          if (!isObject(it)) return it;
+          if (!isObject(it))
+            return it;
           var fn, val;
-          if (S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it))) return val;
-          if (typeof (fn = it.valueOf) == "function" && !isObject(val = fn.call(it))) return val;
-          if (!S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it))) return val;
+          if (S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it)))
+            return val;
+          if (typeof (fn = it.valueOf) == "function" && !isObject(val = fn.call(it)))
+            return val;
+          if (!S && typeof (fn = it.toString) == "function" && !isObject(val = fn.call(it)))
+            return val;
           throw TypeError("Can't convert object to primitive value");
         };
       },
@@ -15974,7 +16198,8 @@ ${indent}`);
         var ITERATOR = __webpack_require__(13)("iterator");
         var Iterators = __webpack_require__(35);
         module2.exports = __webpack_require__(23).getIteratorMethod = function(it) {
-          if (it != void 0) return it[ITERATOR] || it["@@iterator"] || Iterators[classof(it)];
+          if (it != void 0)
+            return it[ITERATOR] || it["@@iterator"] || Iterators[classof(it)];
         };
       },
       /* 204 */
@@ -15997,8 +16222,10 @@ ${indent}`);
             this._t = void 0;
             return step(1);
           }
-          if (kind == "keys") return step(0, index);
-          if (kind == "values") return step(0, O[index]);
+          if (kind == "keys")
+            return step(0, index);
+          if (kind == "values")
+            return step(0, O[index]);
           return step(0, [index, O[index]]);
         }, "values");
         Iterators.Arguments = Iterators.Array;
@@ -16056,7 +16283,8 @@ ${indent}`);
           return isObject(it) && typeof (then = it.then) == "function" ? then : false;
         };
         var notify = function(promise, isReject) {
-          if (promise._n) return;
+          if (promise._n)
+            return;
           promise._n = true;
           var chain = promise._c;
           microtask(function() {
@@ -16072,12 +16300,15 @@ ${indent}`);
               try {
                 if (handler2) {
                   if (!ok) {
-                    if (promise._h == 2) onHandleUnhandled(promise);
+                    if (promise._h == 2)
+                      onHandleUnhandled(promise);
                     promise._h = 1;
                   }
-                  if (handler2 === true) result = value;
+                  if (handler2 === true)
+                    result = value;
                   else {
-                    if (domain) domain.enter();
+                    if (domain)
+                      domain.enter();
                     result = handler2(value);
                     if (domain) {
                       domain.exit();
@@ -16088,17 +16319,22 @@ ${indent}`);
                     reject(TypeError2("Promise-chain cycle"));
                   } else if (then = isThenable(result)) {
                     then.call(result, resolve, reject);
-                  } else resolve(result);
-                } else reject(value);
+                  } else
+                    resolve(result);
+                } else
+                  reject(value);
               } catch (e) {
-                if (domain && !exited) domain.exit();
+                if (domain && !exited)
+                  domain.exit();
                 reject(e);
               }
             };
-            while (chain.length > i) run(chain[i++]);
+            while (chain.length > i)
+              run(chain[i++]);
             promise._c = [];
             promise._n = false;
-            if (isReject && !promise._h) onUnhandled(promise);
+            if (isReject && !promise._h)
+              onUnhandled(promise);
           });
         };
         var onUnhandled = function(promise) {
@@ -16119,7 +16355,8 @@ ${indent}`);
               promise._h = isNode || isUnhandled(promise) ? 2 : 1;
             }
             promise._a = void 0;
-            if (unhandled && result.e) throw result.v;
+            if (unhandled && result.e)
+              throw result.v;
           });
         };
         var isUnhandled = function(promise) {
@@ -16137,22 +16374,26 @@ ${indent}`);
         };
         var $reject = function(value) {
           var promise = this;
-          if (promise._d) return;
+          if (promise._d)
+            return;
           promise._d = true;
           promise = promise._w || promise;
           promise._v = value;
           promise._s = 2;
-          if (!promise._a) promise._a = promise._c.slice();
+          if (!promise._a)
+            promise._a = promise._c.slice();
           notify(promise, true);
         };
         var $resolve = function(value) {
           var promise = this;
           var then;
-          if (promise._d) return;
+          if (promise._d)
+            return;
           promise._d = true;
           promise = promise._w || promise;
           try {
-            if (promise === value) throw TypeError2("Promise can't be resolved itself");
+            if (promise === value)
+              throw TypeError2("Promise can't be resolved itself");
             if (then = isThenable(value)) {
               microtask(function() {
                 var wrapper = { _w: promise, _d: false };
@@ -16199,8 +16440,10 @@ ${indent}`);
               reaction.fail = typeof onRejected == "function" && onRejected;
               reaction.domain = isNode ? process4.domain : void 0;
               this._c.push(reaction);
-              if (this._a) this._a.push(reaction);
-              if (this._s) notify(this, false);
+              if (this._a)
+                this._a.push(reaction);
+              if (this._s)
+                notify(this, false);
               return reaction.promise;
             },
             // 25.4.5.1 Promise.prototype.catch(onRejected)
@@ -16256,7 +16499,8 @@ ${indent}`);
                 values.push(void 0);
                 remaining++;
                 C.resolve(promise).then(function(value) {
-                  if (alreadyCalled) return;
+                  if (alreadyCalled)
+                    return;
                   alreadyCalled = true;
                   values[$index] = value;
                   --remaining || resolve(values);
@@ -16264,7 +16508,8 @@ ${indent}`);
               });
               --remaining || resolve(values);
             });
-            if (result.e) reject(result.v);
+            if (result.e)
+              reject(result.v);
             return capability.promise;
           },
           // 25.4.4.4 Promise.race(iterable)
@@ -16277,7 +16522,8 @@ ${indent}`);
                 C.resolve(promise).then(capability.resolve, reject);
               });
             });
-            if (result.e) reject(result.v);
+            if (result.e)
+              reject(result.v);
             return capability.promise;
           }
         });
@@ -16294,7 +16540,8 @@ ${indent}`);
           var O = this._t;
           var index = this._i;
           var point;
-          if (index >= O.length) return { value: void 0, done: true };
+          if (index >= O.length)
+            return { value: void 0, done: true };
           point = $at(O, index);
           this._i += point.length;
           return { value: point, done: false };
@@ -16353,7 +16600,8 @@ ${indent}`);
           var NAME = DOMIterables[i];
           var Collection2 = global[NAME];
           var proto2 = Collection2 && Collection2.prototype;
-          if (proto2 && !proto2[TO_STRING_TAG]) hide(proto2, TO_STRING_TAG, NAME);
+          if (proto2 && !proto2[TO_STRING_TAG])
+            hide(proto2, TO_STRING_TAG, NAME);
           Iterators[NAME] = Iterators.Array;
         }
       },
@@ -16468,13 +16716,15 @@ ${indent}`);
         function formatArgs(args) {
           var useColors2 = this.useColors;
           args[0] = (useColors2 ? "%c" : "") + this.namespace + (useColors2 ? " %c" : " ") + args[0] + (useColors2 ? "%c " : " ") + "+" + exports2.humanize(this.diff);
-          if (!useColors2) return;
+          if (!useColors2)
+            return;
           var c = "color: " + this.color;
           args.splice(1, 0, c, "color: inherit");
           var index = 0;
           var lastC = 0;
           args[0].replace(/%[a-zA-Z%]/g, function(match) {
-            if ("%%" === match) return;
+            if ("%%" === match)
+              return;
             index++;
             if ("%c" === match) {
               lastC = index;
@@ -16627,10 +16877,14 @@ ${indent}`);
             return k.toUpperCase();
           });
           var val = process.env[key];
-          if (/^(yes|on|true|enabled)$/i.test(val)) val = true;
-          else if (/^(no|off|false|disabled)$/i.test(val)) val = false;
-          else if (val === "null") val = null;
-          else val = Number(val);
+          if (/^(yes|on|true|enabled)$/i.test(val))
+            val = true;
+          else if (/^(no|off|false|disabled)$/i.test(val))
+            val = false;
+          else if (val === "null")
+            val = null;
+          else
+            val = Number(val);
           obj[prop] = val;
           return obj;
         }, {});
@@ -16781,7 +17035,8 @@ ${indent}`);
               var stat = fs.lstatSync(base);
               if (!stat.isSymbolicLink()) {
                 knownHard[base] = true;
-                if (cache) cache[base] = base;
+                if (cache)
+                  cache[base] = base;
                 continue;
               }
               var linkTarget = null;
@@ -16796,13 +17051,16 @@ ${indent}`);
                 linkTarget = fs.readlinkSync(base);
               }
               resolvedLink = pathModule.resolve(previous, linkTarget);
-              if (cache) cache[base] = resolvedLink;
-              if (!isWindows) seenLinks[id] = linkTarget;
+              if (cache)
+                cache[base] = resolvedLink;
+              if (!isWindows)
+                seenLinks[id] = linkTarget;
             }
             p = pathModule.resolve(resolvedLink, p.slice(pos));
             start();
           }
-          if (cache) cache[original] = p;
+          if (cache)
+            cache[original] = p;
           return p;
         };
         exports2.realpath = function realpath(p, cache, cb) {
@@ -16828,7 +17086,8 @@ ${indent}`);
             previous = "";
             if (isWindows && !knownHard[base]) {
               fs.lstat(base, function(err) {
-                if (err) return cb(err);
+                if (err)
+                  return cb(err);
                 knownHard[base] = true;
                 LOOP();
               });
@@ -16838,7 +17097,8 @@ ${indent}`);
           }
           function LOOP() {
             if (pos >= p.length) {
-              if (cache) cache[original] = p;
+              if (cache)
+                cache[original] = p;
               return cb(null, p);
             }
             nextPartRe.lastIndex = pos;
@@ -16856,10 +17116,12 @@ ${indent}`);
             return fs.lstat(base, gotStat);
           }
           function gotStat(err, stat) {
-            if (err) return cb(err);
+            if (err)
+              return cb(err);
             if (!stat.isSymbolicLink()) {
               knownHard[base] = true;
-              if (cache) cache[base] = base;
+              if (cache)
+                cache[base] = base;
               return process.nextTick(LOOP);
             }
             if (!isWindows) {
@@ -16869,17 +17131,21 @@ ${indent}`);
               }
             }
             fs.stat(base, function(err2) {
-              if (err2) return cb(err2);
+              if (err2)
+                return cb(err2);
               fs.readlink(base, function(err3, target) {
-                if (!isWindows) seenLinks[id] = target;
+                if (!isWindows)
+                  seenLinks[id] = target;
                 gotTarget(err3, target);
               });
             });
           }
           function gotTarget(err, target, base2) {
-            if (err) return cb(err);
+            if (err)
+              return cb(err);
             var resolvedLink = pathModule.resolve(previous, target);
-            if (cache) cache[base2] = resolvedLink;
+            if (cache)
+              cache[base2] = resolvedLink;
             gotResolvedLink(resolvedLink);
           }
           function gotResolvedLink(resolvedLink) {
@@ -16961,7 +17227,6 @@ ${indent}`);
           }
           var prefix;
           switch (n) {
-            // if not, then this is rather simple
             case pattern.length:
               this._processSimple(pattern.join("/"), index);
               return;
@@ -17121,7 +17386,6 @@ ${indent}`);
         GlobSync.prototype._readdirError = function(f, er) {
           switch (er.code) {
             case "ENOTSUP":
-            // https://github.com/isaacs/node-glob/issues/205
             case "ENOTDIR":
               var abs = this._makeAbs(f);
               this.cache[abs] = "FILE";
@@ -17133,7 +17397,6 @@ ${indent}`);
               }
               break;
             case "ENOENT":
-            // not terribly unusual
             case "ELOOP":
             case "ENAMETOOLONG":
             case "UNKNOWN":
@@ -17297,7 +17560,8 @@ ${indent}`);
         function slice(args) {
           var length = args.length;
           var array = [];
-          for (var i = 0; i < length; i++) array[i] = args[i];
+          for (var i = 0; i < length; i++)
+            array[i] = args[i];
           return array;
         }
       },
@@ -17523,7 +17787,8 @@ ${indent}`);
                       rimraf_(p2, options, CB);
                     }, timeout++);
                   }
-                  if (er2.code === "ENOENT") er2 = null;
+                  if (er2.code === "ENOENT")
+                    er2 = null;
                 }
                 timeout = 0;
                 next(er2);
@@ -21617,7 +21882,6 @@ var require_resolve_props = __commonJS({
               hasSpace = false;
               break;
             }
-          // else fallthrough
           default:
             onError(token, "UNEXPECTED_TOKEN", `Unexpected ${token.type} token`);
             atNewline = false;
@@ -21995,18 +22259,19 @@ var require_resolve_flow_collection = __commonJS({
             onError(props.start, "MISSING_CHAR", `Missing , between ${fcName} items`);
           if (props.comment) {
             let prevItemComment = "";
-            loop: for (const st of start) {
-              switch (st.type) {
-                case "comma":
-                case "space":
-                  break;
-                case "comment":
-                  prevItemComment = st.source.substring(1);
-                  break loop;
-                default:
-                  break loop;
+            loop:
+              for (const st of start) {
+                switch (st.type) {
+                  case "comma":
+                  case "space":
+                    break;
+                  case "comment":
+                    prevItemComment = st.source.substring(1);
+                    break loop;
+                  default:
+                    break loop;
+                }
               }
-            }
             if (prevItemComment) {
               let prev = coll.items[coll.items.length - 1];
               if (identity.isPair(prev))
@@ -22326,7 +22591,6 @@ var require_resolve_block_scalar = __commonJS({
         switch (token.type) {
           case "space":
             hasSpace = true;
-          // fallthrough
           case "newline":
             length += token.source.length;
             break;
@@ -22342,7 +22606,6 @@ var require_resolve_block_scalar = __commonJS({
             onError(token, "UNEXPECTED_TOKEN", token.message);
             length += token.source.length;
             break;
-          /* istanbul ignore next should not happen */
           default: {
             const message = `Unexpected token in block scalar header: ${token.type}`;
             onError(token, "UNEXPECTED_TOKEN", message);
@@ -22392,7 +22655,6 @@ var require_resolve_flow_scalar = __commonJS({
           _type = Scalar.Scalar.QUOTE_DOUBLE;
           value = doubleQuotedValue(source, _onError);
           break;
-        /* istanbul ignore next should not happen */
         default:
           onError(scalar, "UNEXPECTED_TOKEN", `Expected a flow scalar value, but found: ${type}`);
           return {
@@ -22414,7 +22676,6 @@ var require_resolve_flow_scalar = __commonJS({
     function plainValue(source, onError) {
       let badChar = "";
       switch (source[0]) {
-        /* istanbul ignore next should not happen */
         case "	":
           badChar = "a tab character";
           break;
@@ -23673,7 +23934,6 @@ var require_lexer = __commonJS({
         switch (line[n]) {
           case "#":
             yield* this.pushCount(line.length - n);
-          // fallthrough
           case void 0:
             yield* this.pushNewline();
             return yield* this.parseLineStart();
@@ -23769,7 +24029,6 @@ var require_lexer = __commonJS({
               return "flow";
             }
           }
-          // fallthrough
           default:
             this.flowKey = false;
             return yield* this.parsePlainScalar();
@@ -23831,27 +24090,27 @@ var require_lexer = __commonJS({
         let nl = this.pos - 1;
         let indent = 0;
         let ch;
-        loop: for (let i2 = this.pos; ch = this.buffer[i2]; ++i2) {
-          switch (ch) {
-            case " ":
-              indent += 1;
-              break;
-            case "\n":
-              nl = i2;
-              indent = 0;
-              break;
-            case "\r": {
-              const next = this.buffer[i2 + 1];
-              if (!next && !this.atEnd)
-                return this.setNext("block-scalar");
-              if (next === "\n")
+        loop:
+          for (let i2 = this.pos; ch = this.buffer[i2]; ++i2) {
+            switch (ch) {
+              case " ":
+                indent += 1;
                 break;
+              case "\n":
+                nl = i2;
+                indent = 0;
+                break;
+              case "\r": {
+                const next = this.buffer[i2 + 1];
+                if (!next && !this.atEnd)
+                  return this.setNext("block-scalar");
+                if (next === "\n")
+                  break;
+              }
+              default:
+                break loop;
             }
-            // fallthrough
-            default:
-              break loop;
           }
-        }
         if (!ch && !this.atEnd)
           return this.setNext("block-scalar");
         if (indent >= this.indentNext) {
@@ -23965,9 +24224,7 @@ var require_lexer = __commonJS({
           case "&":
             return (yield* this.pushUntil(isNotAnchorChar)) + (yield* this.pushSpaces(true)) + (yield* this.pushIndicators());
           case "-":
-          // this is an error
           case "?":
-          // this is an error outside flow collections
           case ":": {
             const inFlow = this.flowLevel > 0;
             const ch1 = this.charAt(1);
@@ -24116,7 +24373,6 @@ var require_parser = __commonJS({
         }
         case "block-seq":
           return parent.items[parent.items.length - 1].start;
-        /* istanbul ignore next should not happen */
         default:
           return [];
       }
@@ -24125,16 +24381,17 @@ var require_parser = __commonJS({
       if (prev.length === 0)
         return [];
       let i = prev.length;
-      loop: while (--i >= 0) {
-        switch (prev[i].type) {
-          case "doc-start":
-          case "explicit-key-ind":
-          case "map-value-ind":
-          case "seq-item-ind":
-          case "newline":
-            break loop;
+      loop:
+        while (--i >= 0) {
+          switch (prev[i].type) {
+            case "doc-start":
+            case "explicit-key-ind":
+            case "map-value-ind":
+            case "seq-item-ind":
+            case "newline":
+              break loop;
+          }
         }
-      }
       while (prev[++i]?.type === "space") {
       }
       return prev.splice(i, prev.length);
@@ -24350,7 +24607,6 @@ var require_parser = __commonJS({
                 Object.assign(it, { key: token, sep: [] });
               return;
             }
-            /* istanbul ignore next should not happen */
             default:
               yield* this.pop();
               yield* this.pop(token);
@@ -24472,7 +24728,6 @@ var require_parser = __commonJS({
             }
             yield* this.pop();
             break;
-          /* istanbul ignore next should not happen */
           default:
             yield* this.pop();
             yield* this.step();
@@ -24918,7 +25173,6 @@ var require_parser = __commonJS({
             break;
           case "newline":
             this.onKeyLine = false;
-          // fallthrough
           case "space":
           case "comment":
           default:
@@ -26748,10 +27002,13 @@ function lowercaseKeys(object) {
   }, {});
 }
 function isPlainObject(value) {
-  if (typeof value !== "object" || value === null) return false;
-  if (Object.prototype.toString.call(value) !== "[object Object]") return false;
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
   const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null) return true;
+  if (proto2 === null)
+    return true;
   const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
@@ -26759,8 +27016,10 @@ function mergeDeep(defaults, options) {
   const result = Object.assign({}, defaults);
   Object.keys(options).forEach((key) => {
     if (isPlainObject(options[key])) {
-      if (!(key in defaults)) Object.assign(result, { [key]: options[key] });
-      else result[key] = mergeDeep(defaults[key], options[key]);
+      if (!(key in defaults))
+        Object.assign(result, { [key]: options[key] });
+      else
+        result[key] = mergeDeep(defaults[key], options[key]);
     } else {
       Object.assign(result, { [key]: options[key] });
     }
@@ -27087,10 +27346,13 @@ var defaults_default = {
   }
 };
 function isPlainObject2(value) {
-  if (typeof value !== "object" || value === null) return false;
-  if (Object.prototype.toString.call(value) !== "[object Object]") return false;
+  if (typeof value !== "object" || value === null)
+    return false;
+  if (Object.prototype.toString.call(value) !== "[object Object]")
+    return false;
   const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null) return true;
+  if (proto2 === null)
+    return true;
   const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
@@ -27295,7 +27557,8 @@ function graphql(request2, query2, options) {
       );
     }
     for (const key in options) {
-      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key)) continue;
+      if (!FORBIDDEN_VARIABLE_OPTIONS.includes(key))
+        continue;
       return Promise.reject(
         new Error(
           `[@octokit/graphql] "${key}" cannot be used as variable name`
@@ -27579,7 +27842,8 @@ function normalizePaginatedListResponse(response) {
     };
   }
   const responseNeedsNormalization = ("total_count" in response.data || "total_commits" in response.data) && !("url" in response.data);
-  if (!responseNeedsNormalization) return response;
+  if (!responseNeedsNormalization)
+    return response;
   const incompleteResults = response.data.incomplete_results;
   const repositorySelection = response.data.repository_selection;
   const totalCount = response.data.total_count;
@@ -27610,7 +27874,8 @@ function iterator(octokit, route, parameters) {
   return {
     [Symbol.asyncIterator]: () => ({
       async next() {
-        if (!url) return { done: true };
+        if (!url)
+          return { done: true };
         try {
           const response = await requestMethod({ method, url, headers });
           const normalizedResponse = normalizePaginatedListResponse(response);
@@ -27629,7 +27894,8 @@ function iterator(octokit, route, parameters) {
           }
           return { value: normalizedResponse };
         } catch (error) {
-          if (error.status !== 409) throw error;
+          if (error.status !== 409)
+            throw error;
           url = "";
           return {
             value: {
