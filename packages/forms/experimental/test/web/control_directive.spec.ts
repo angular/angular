@@ -100,7 +100,7 @@ describe('control directive', () => {
   });
 
   it('synchronizes with a radio group', () => {
-    const {cmp, expectStates, inputA, inputB, inputC} = setupRadioGroup();
+    const {cmp, inputA, inputB, inputC} = setupRadioGroup();
 
     // All the inputs should have the same name.
     expect(inputA.name).toBe('test');
@@ -109,13 +109,17 @@ describe('control directive', () => {
 
     // Model -> View
     act(() => cmp.f().value.set('c'));
-    expectStates(false, false, true);
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(false);
+    expect(inputC.checked).toBe(true);
 
     // View -> Model
     act(() => {
       inputB.click();
-      expectStates(false, true, false);
     });
+    expect(inputA.checked).toBe(false);
+    expect(inputB.checked).toBe(true);
+    expect(inputC.checked).toBe(false);
     expect(cmp.f().value()).toBe('b');
   });
 
@@ -375,13 +379,7 @@ function setupRadioGroup() {
   const [inputA, inputB, inputC] = inputs;
   const cmp = fix.componentInstance as TestCmp;
 
-  function expectStates(a: boolean, b: boolean, c: boolean): void {
-    expect(inputA.checked).toBe(a);
-    expect(inputB.checked).toBe(b);
-    expect(inputC.checked).toBe(c);
-  }
-
-  return {cmp, expectStates, inputA, inputB, inputC};
+  return {cmp, inputA, inputB, inputC};
 }
 
 function act<T>(fn: () => T): T {
