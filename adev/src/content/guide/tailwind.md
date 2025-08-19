@@ -67,4 +67,3 @@ Run your build process with `ng serve` and you should see the styled heading.
 ## Additional Resources
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Angular Documentation](https://angular.dev/)
