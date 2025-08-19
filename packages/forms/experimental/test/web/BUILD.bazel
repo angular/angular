@@ -17,7 +17,7 @@ ng_project(
 )
 
 # To run this:
-# yarn bazel test //packages/forms/experimental/test/web:test
+# pnpm bazel test //packages/forms/experimental/test/web:test
 
 zoneless_web_test_suite(
     name = "test",
