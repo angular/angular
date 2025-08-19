@@ -11,6 +11,7 @@
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
       "pnpm install --frozen-lockfile",
+      "pnpm bazel mod deps --lockfile_mode=update",
       "pnpm bazel run //.github/actions/deploy-docs-site:main",
       "pnpm bazel run //packages/common:base_currencies_file",
       "pnpm bazel run //packages/common/locales:closure_locale_file",
@@ -18,7 +19,8 @@
     ],
     "fileFilters": [
       ".github/actions/deploy-docs-site/**/*",
-      "packages/**/*"
+      "packages/**/*",
+      "MODULE.bazel.lock"
     ],
     "executionMode": "branch"
   },

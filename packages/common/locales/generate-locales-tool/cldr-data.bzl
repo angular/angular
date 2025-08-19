@@ -21,6 +21,13 @@ filegroup(
   srcs = glob(["**/*.json"]),
   visibility = ["//visibility:public"],
 )
+filegroup(
+  name = "ROOT_BUILD_FILE",
+  srcs = [
+    "BUILD.bazel",
+  ],
+  visibility = ["//visibility:public"],
+)
   """)
 
 def _cldr_xml_data_repository_impl(ctx):
@@ -35,6 +42,13 @@ def _cldr_xml_data_repository_impl(ctx):
 filegroup(
   name = "all_xml",
   srcs = glob(["**/*.xml"]),
+  visibility = ["//visibility:public"],
+)
+filegroup(
+  name = "ROOT_BUILD_FILE",
+  srcs = [
+    "BUILD.bazel",
+  ],
   visibility = ["//visibility:public"],
 )
   """)

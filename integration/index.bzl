@@ -43,8 +43,8 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     data = kwargs.pop("data", [])
 
     if setup_chromium:
-        data.append("@rules_browsers//src/browsers/chromium")
-        toolchains.append("@rules_browsers//src/browsers/chromium:toolchain_alias")
+        data.append("@rules_browsers//browsers/chromium")
+        toolchains.append("@rules_browsers//browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             "CHROME_BIN": "$(CHROME-HEADLESS-SHELL)",
