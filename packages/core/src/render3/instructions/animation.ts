@@ -141,7 +141,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    determineLongestAnimation(event, nativeElement, longestAnimations, areAnimationSupported);
     setupAnimationCancel(event, renderer);
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
@@ -175,6 +174,20 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement, klass);
     }
+    // In the case that the classes added have no animations, we need to remove
+    // the classes right away. This could happen because someone is intentionally
+    // preventing an animation via selector specificity.
+    ngZone.runOutsideAngular(() => {
+      requestAnimationFrame(() => {
+        determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
+        if (!longestAnimations.has(nativeElement)) {
+          for (const klass of activeClasses) {
+            renderer.removeClass(nativeElement, klass);
+          }
+          cleanupEnterClassData(nativeElement);
+        }
+      });
+    });
   }
 
   return ɵɵanimateEnter; // For chaining
@@ -504,13 +517,10 @@ function animateLeaveClassRunner(
   if (animationsDisabled) {
     longestAnimations.delete(el);
     finalRemoveFn();
+    return;
   }
 
   cancelAnimationsIfRunning(el, renderer);
-
-  const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    determineLongestAnimation(event, el, longestAnimations, areAnimationSupported);
-  };
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
     if (event instanceof CustomEvent || isLongestAnimation(event, el)) {
@@ -525,16 +535,24 @@ function animateLeaveClassRunner(
     }
   };
 
-  if (!animationsDisabled) {
-    ngZone.runOutsideAngular(() => {
-      renderer.listen(el, 'animationstart', handleAnimationStart, {once: true});
-      renderer.listen(el, 'transitionstart', handleAnimationStart, {once: true});
-      renderer.listen(el, 'animationend', handleOutAnimationEnd);
-      renderer.listen(el, 'transitionend', handleOutAnimationEnd);
-    });
-    trackLeavingNodes(tNode, el);
-    for (const item of classList) {
-      renderer.addClass(el, item);
-    }
+  ngZone.runOutsideAngular(() => {
+    renderer.listen(el, 'animationend', handleOutAnimationEnd);
+    renderer.listen(el, 'transitionend', handleOutAnimationEnd);
+  });
+  trackLeavingNodes(tNode, el);
+  for (const item of classList) {
+    renderer.addClass(el, item);
   }
+  // In the case that the classes added have no animations, we need to remove
+  // the element right away. This could happen because someone is intentionally
+  // preventing an animation via selector specificity.
+  ngZone.runOutsideAngular(() => {
+    requestAnimationFrame(() => {
+      determineLongestAnimation(el, longestAnimations, areAnimationSupported);
+      if (!longestAnimations.has(el)) {
+        clearLeavingNodes(tNode);
+        finalRemoveFn();
+      }
+    });
+  });
 }
