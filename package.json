@@ -203,7 +203,6 @@
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
     "live-server": "^1.2.2",
-    "patch-package": "^7.0.0",
     "playwright-core": "^1.41.2",
     "prettier": "^3.0.0",
     "rollup-plugin-sourcemaps2": "^0.5.1",

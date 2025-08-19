@@ -478,9 +478,6 @@ importers:
       live-server:
         specifier: ^1.2.2
         version: 1.2.2
-      patch-package:
-        specifier: ^7.0.0
-        version: 7.0.2
       playwright-core:
         specifier: ^1.41.2
         version: 1.54.1
@@ -8863,11 +8860,6 @@ packages:
 
   passerror@1.1.1:
     resolution: {integrity: sha512-PwrEQJBkJMxnxG+tdraz95vTstYnCRqiURNbGtg/vZHLgcAODc9hbiD5ZumGUoh3bpw0F0qKLje7Vd2Fd5Lx3g==}
-
-  patch-package@7.0.2:
-    resolution: {integrity: sha512-PMYfL8LXxGIRmxXLqlEaBxzKPu7/SdP13ld6GSfAUJUZRmBDPp8chZs0dpzaAFn9TSPnFiMwkC6PJt6pBiAl8Q==}
-    engines: {node: '>=14', npm: '>5'}
-    hasBin: true
 
   path-case@3.0.4:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
@@ -21160,23 +21152,6 @@ snapshots:
   pascalcase@0.1.1: {}
 
   passerror@1.1.1: {}
-
-  patch-package@7.0.2:
-    dependencies:
-      '@yarnpkg/lockfile': 1.1.0
-      chalk: 4.1.2
-      ci-info: 3.9.0
-      cross-spawn: 7.0.6
-      find-yarn-workspace-root: 2.0.0
-      fs-extra: 9.1.0
-      klaw-sync: 6.0.0
-      minimist: 1.2.8
-      open: 7.4.2
-      rimraf: 2.7.1
-      semver: 7.7.2
-      slash: 2.0.0
-      tmp: 0.0.33
-      yaml: 2.8.0
 
   path-case@3.0.4:
     dependencies:

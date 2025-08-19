@@ -34,8 +34,7 @@
     "angular-mocks-1.8",
     "convert-source-map",
     "selenium-webdriver",
-    "systemjs",
-    "patch-package"
+    "systemjs"
   ],
   "packageRules": [
     {
