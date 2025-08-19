@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {resolve} from 'path';
+import {resolve, dirname} from 'path';
 
 import {CldrLocaleData} from './cldr-data';
 
@@ -13,7 +13,9 @@ import {CldrLocaleData} from './cldr-data';
 const {load: createCldr} = await import('cldr' as any);
 
 // Load once to avoid re-parsing CLDR XML data on every invocation.
-const cldr = createCldr(resolve(process.env['RUNFILES']!, 'cldr_xml_data'));
+const cldr = createCldr(
+  dirname(resolve(process.env['RUNFILES']!, process.env['CLDR_XML_DATA_RUNFILES_PATH']!)),
+);
 
 /**
  * Returns the plural function for a locale.
