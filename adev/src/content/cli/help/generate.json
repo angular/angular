@@ -55,6 +55,7 @@
         {
           "name": "tool",
           "type": "array",
+          "default": "none",
           "enum": [
             "claude",
             "copilot",
