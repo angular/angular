@@ -8,6 +8,7 @@
 
 import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/core';
 
+import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {FieldPathNode} from '../schema/path_node';
@@ -22,7 +23,6 @@ import type {
   SchemaOrSchemaFn,
 } from './types';
 import {stripField, ValidationError, WithField} from './validation_errors';
-import {FieldAdapter, BasicFieldAdapter} from '../field/field_adapter';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {
@@ -290,7 +290,7 @@ export function applyWhen<TValue>(
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
   path: FieldPath<TValue>,
   predicate: (value: TValue) => value is TNarrowed,
-  schema: NoInfer<SchemaOrSchemaFn<TNarrowed>>,
+  schema: SchemaOrSchemaFn<TNarrowed>,
 ): void;
 
 /**
