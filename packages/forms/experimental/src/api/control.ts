@@ -15,23 +15,23 @@ export interface FormUiControl {
    * An input to receive the errors for the field. If implemented, the `Control` directive will
    * automatically bind errors from the bound field to this input.
    */
-  readonly errors?: InputSignal<readonly ValidationError[] | undefined>;
+  readonly errors?: InputSignal<readonly ValidationError[]>;
   // TODO: should we have an input for binding disabled reason?
   /**
    * An input to receive the disabled status for the field. If implemented, the `Control` directive
    * will automatically bind the disabled status from the bound field to this input.
    */
-  readonly disabled?: InputSignal<boolean | undefined>;
+  readonly disabled?: InputSignal<boolean>;
   /**
    * An input to receive the readonly status for the field. If implemented, the `Control` directive
    * will automatically bind the readonly status from the bound field to this input.
    */
-  readonly readonly?: InputSignal<boolean | undefined>;
+  readonly readonly?: InputSignal<boolean>;
   /**
    * An input to receive the hidden status for the field. If implemented, the `Control` directive
    * will automatically bind the hidden status from the bound field to this input.
    */
-  readonly hidden?: InputSignal<boolean | undefined>;
+  readonly hidden?: InputSignal<boolean>;
   // TODO: what do we do about the whole valid != !invalid thing?
   // Should we bind both of them? neither? treat valid+pending as valid? some kind of combined tri-/quad-state?
   // Should we allow binding in the pending state?
@@ -39,27 +39,27 @@ export interface FormUiControl {
    * An input to receive the valid status for the field. If implemented, the `Control` directive
    * will automatically bind the valid status from the bound field to this input.
    */
-  readonly valid?: InputSignal<boolean | undefined>;
+  readonly valid?: InputSignal<boolean>;
   /**
    * An input to receive the touched status for the field. If implemented, the `Control` directive
    * will automatically bind the touched status from the bound field to this input.
    */
-  readonly touched?: InputSignal<boolean | undefined>;
+  readonly touched?: InputSignal<boolean>;
   /**
    * An input to receive the dirty status for the field. If implemented, the `Control` directive
    * will automatically bind the dirty status from the bound field to this input.
    */
-  readonly dirty?: InputSignal<boolean | undefined>;
+  readonly dirty?: InputSignal<boolean>;
   /**
    * An input to receive the name for the field. If implemented, the `Control` directive will
    * automatically bind the name from the bound field to this input.
    */
-  readonly name?: InputSignal<string | undefined>;
+  readonly name?: InputSignal<string>;
   /**
    * An input to receive the required status for the field. If implemented, the `Control` directive
    * will automatically bind the required status from the bound field to this input.
    */
-  readonly required?: InputSignal<boolean | undefined>;
+  readonly required?: InputSignal<boolean>;
   /**
    * An input to receive the min value for the field. If implemented, the `Control` directive will
    * automatically bind the min value from the bound field to this input.
@@ -84,7 +84,7 @@ export interface FormUiControl {
    * An input to receive the value patterns for the field. If implemented, the `Control` directive
    * will automatically bind the value patterns from the bound field to this input.
    */
-  readonly pattern?: InputSignal<readonly RegExp[] | undefined>;
+  readonly pattern?: InputSignal<readonly RegExp[]>;
   // TODO: what should we name this output? `touch` feels weird. The rest of the inputs here are
   // named after their corresponding DOM concept (when applicable). Following that pattern, `blur`
   // might make sense, though maybe we consider this a separate thing that only happens to align
