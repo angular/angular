@@ -55,10 +55,4 @@ export {
 export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/watch';
 export {setAlternateWeakRefImpl} from './src/weak_ref';
 export {untracked} from './src/untracked';
-export {
-  runEffect,
-  BASE_EFFECT_NODE,
-  BaseEffectNode,
-  EffectCleanupFn,
-  EffectCleanupRegisterFn,
-} from './src/effect';
+export {runEffect, BASE_EFFECT_NODE, BaseEffectNode} from './src/effect';

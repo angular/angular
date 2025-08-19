@@ -5,18 +5,16 @@
 ```ts
 
 // @public (undocumented)
-export const BASE_EFFECT_NODE: Omit<BaseEffectNode, 'fn' | 'destroy' | 'cleanup'>;
+export const BASE_EFFECT_NODE: Omit<BaseEffectNode, 'fn' | 'destroy' | 'cleanup' | 'run'>;
 
 // @public (undocumented)
 export interface BaseEffectNode extends ReactiveNode {
     // (undocumented)
     cleanup(): void;
     // (undocumented)
-    cleanupFn: EffectCleanupRegisterFn;
-    // (undocumented)
     destroy(): void;
     // (undocumented)
-    fn: (cleanupFn: EffectCleanupRegisterFn) => void;
+    fn: () => void;
     // (undocumented)
     hasRun: boolean;
     // (undocumented)
@@ -67,12 +65,6 @@ export function createWatch(fn: (onCleanup: WatchCleanupRegisterFn) => void, sch
 
 // @public
 export function defaultEquals<T>(a: T, b: T): boolean;
-
-// @public
-export type EffectCleanupFn = () => void;
-
-// @public
-export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;

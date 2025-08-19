@@ -11,10 +11,7 @@ import {
   consumerDestroy,
   isInNotificationPhase,
   setActiveConsumer,
-  getActiveConsumer,
   BaseEffectNode,
-  EffectCleanupFn,
-  EffectCleanupRegisterFn,
   BASE_EFFECT_NODE,
   runEffect,
 } from '../../../primitives/signals';
@@ -95,6 +92,22 @@ export interface CreateEffectOptions {
    */
   debugName?: string;
 }
+
+/**
+ * An effect can, optionally, register a cleanup function. If registered, the cleanup is executed
+ * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
+ * previous effect run might have started.
+ *
+ * @publicApi 20.0
+ */
+export type EffectCleanupFn = () => void;
+
+/**
+ * A callback passed to the effect function that makes it possible to register cleanup logic.
+ *
+ * @publicApi 20.0
+ */
+export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
 
 /**
  * Registers an "effect" that will be scheduled & executed whenever the signals that it reads
