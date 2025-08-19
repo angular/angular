@@ -30,7 +30,6 @@ generate_api_docs(
     name = "animations_browser_docs",
     srcs = [
         ":files_for_docgen",
-        "//packages:common_files_and_deps_for_docs",
         "//packages/animations:files_for_docgen",
     ],
     entry_point = ":index.ts",
