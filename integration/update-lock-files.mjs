@@ -11,13 +11,12 @@
 import childProcess from 'child_process';
 import url from 'url';
 import path from 'path';
-import {globSync} from 'tinyglobby';
+import { globSync } from 'tinyglobby';
 import fs from 'fs';
 
 const containingDir = path.dirname(url.fileURLToPath(import.meta.url));
-const testDirs = globSync('*/BUILD.bazel', {cwd: containingDir}).map((d) =>
-  path.join(containingDir, path.dirname(d)),
-);
+const testDirs = globSync('*/BUILD.bazel', {cwd: containingDir})
+                     .map((d) => path.join(containingDir, path.dirname(d)));
 
 const yarnTestTmpDir = path.join(containingDir, '.tmp-yarn-cache');
 
