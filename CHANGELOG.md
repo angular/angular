@@ -63,7 +63,6 @@
 ### platform-browser
 | Commit | Type | Description |
 | -- | -- | -- |
-| [d24d5742db](https://github.com/angular/angular/commit/d24d5742db694604b09d57a3503e8c32751c4836) | feat | Add IsolatedShadowDom encapsulation method ([#62723](https://github.com/angular/angular/pull/62723)) |
 | [52b8e07d6e](https://github.com/angular/angular/commit/52b8e07d6e568a527fae18a8a867dacdf8053e20) | feat | Warns on conflicting hydration and blocking navigation ([#62963](https://github.com/angular/angular/pull/62963)) |
 ### router
 | Commit | Type | Description |
