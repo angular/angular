@@ -1,3 +1,17 @@
+<a name="20.1.8"></a>
+# 20.1.8 (2025-08-20)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [691f5ed033](https://github.com/angular/angular/commit/691f5ed0332d813801f599448577a2c1d450a5ad) | fix | error when ng-content fallback has translated children ([#63156](https://github.com/angular/angular/pull/63156)) |
+| [b1dec9bc50](https://github.com/angular/angular/commit/b1dec9bc50f5694cfa1e3629fd48543126debd10) | fix | incorrect source span for expression AST inside template attribute ([#63175](https://github.com/angular/angular/pull/63175)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cda402f1d8](https://github.com/angular/angular/commit/cda402f1d8bddeedc9aca1979a9bf01be32f81b2) | fix | account for expression with type arguments during HMR extraction ([#63261](https://github.com/angular/angular/pull/63261)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.1.7"></a>
 # 20.1.7 (2025-08-13)
 ### compiler
