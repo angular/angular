@@ -844,9 +844,6 @@ export interface HostListenerDecorator {
     new (eventName: string, args?: string[]): any;
 }
 
-// @public @deprecated
-export type ImportedNgModuleProviders = EnvironmentProviders;
-
 // @public
 export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders;
 
