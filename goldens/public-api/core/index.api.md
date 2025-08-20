@@ -592,9 +592,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     onDestroy(): void;
 }
 
-// @public @deprecated (undocumented)
-export const defineInjectable: typeof ɵɵdefineInjectable;
-
 // @public
 export interface DestroyableInjector extends Injector {
     // (undocumented)
