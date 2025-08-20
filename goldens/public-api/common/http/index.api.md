@@ -2520,7 +2520,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
 }
 
 // @public
-export type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpProgressEvent | HttpUserEvent<T>;
+export type HttpEvent<T> = HttpSentEvent | HttpHeaderResponse | HttpResponse<T> | HttpDownloadProgressEvent | HttpUploadProgressEvent | HttpUserEvent<T>;
 
 // @public
 export enum HttpEventType {
