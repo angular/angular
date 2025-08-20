@@ -912,6 +912,37 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should capture expressions with type arguments', () => {
+      enableHmr();
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, viewChild, TemplateRef} from '@angular/core';
+
+          @Component({
+            template: '<ng-template #template/>'
+          })
+          export class Cmp {
+            template = viewChild('template', {
+              read: TemplateRef<unknown>,
+            });
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [TemplateRef, Component], import.meta, id));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, TemplateRef, Component) {',
+      );
+    });
+
     it('should generate HMR code for a transformed class', () => {
       env.write(
         'test.ts',
