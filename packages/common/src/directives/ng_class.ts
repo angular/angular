@@ -178,11 +178,16 @@ export class NgClass implements DoCheck {
   }
 
   private _toggleClass(klass: string, enabled: boolean): void {
-    if (ngDevMode) {
-      if (typeof klass !== 'string') {
+    if (typeof klass !== 'string') {
+      if (ngDevMode) {
         throw new Error(
           `NgClass can only toggle CSS classes expressed as strings, got ${stringify(klass)}`,
         );
+      } else {
+        console.warn(
+          `NgClass can only toggle CSS classes expressed as strings, got ${stringify(klass)}`,
+        );
+        return;
       }
     }
     klass = klass.trim();
