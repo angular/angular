@@ -1,88 +1,48 @@
-<a name="20.2.0-rc.1"></a>
-# 20.2.0-rc.1 (2025-08-13)
+<a name="20.2.0"></a>
+# 20.2.0 (2025-08-20)
+## Deprecations
+### animations
+- @angular/animations
+### core
+- @angular/animations
+### router
+- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
+- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9766116cea](https://github.com/angular/angular/commit/9766116cea69607d80144251a599f1cc1b12e02c) | refactor | deprecate the animations package ([#62795](https://github.com/angular/angular/pull/62795)) |
 ### compiler
 | Commit | Type | Description |
 | -- | -- | -- |
-| [79b91593c9](https://github.com/angular/angular/commit/79b91593c92c8fe85a9875ea31d0a2df6d5f92e2) | fix | incorrect spans for AST inside input value with leading space ([#63082](https://github.com/angular/angular/pull/63082)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c81e345e72](https://github.com/angular/angular/commit/c81e345e726b5b281621159c789e6d80a9f328e2) | feat | support auto-import for attribute completions ([#62797](https://github.com/angular/angular/pull/62797)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-rc.0"></a>
-# 20.2.0-rc.0 (2025-08-11)
+| [7767aa640c](https://github.com/angular/angular/commit/7767aa640c542f5058df9322f2bbe974fa8d3c81) | fix | allow more characters in square-bracketed attribute names ([#62742](https://github.com/angular/angular/pull/62742)) |
+| [7b51728813](https://github.com/angular/angular/commit/7b517288139aec166e5e5b60e84b1e22e3d6b70f) | fix | fixes animation event host bindings not firing ([#63217](https://github.com/angular/angular/pull/63217)) |
 ### compiler-cli
 | Commit | Type | Description |
 | -- | -- | -- |
-| [c77e51930d](https://github.com/angular/angular/commit/c77e51930d1e438b2363cb2f020c12ed53b32314) | fix | error when type checking host bindings of generic directive ([#63061](https://github.com/angular/angular/pull/63061)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a409534d6c](https://github.com/angular/angular/commit/a409534d6c3d7cb4472afffd6b17df8c25e34106) | feat | support `as` aliases on `else if` blocks ([#63047](https://github.com/angular/angular/pull/63047)) |
-| [85d51a3215](https://github.com/angular/angular/commit/85d51a32150c9ed280a615d9140795d02c8c3fd0) | fix | destroying the effect on `afterRenderEffect` ([#63001](https://github.com/angular/angular/pull/63001)) |
-| [6a1184600c](https://github.com/angular/angular/commit/6a1184600ce0fc7a3f338d6766612e9510ef5518) | fix | prevents duplicate nodes when `@if` toggles with leave animations ([#63048](https://github.com/angular/angular/pull/63048)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [660444fbf2](https://github.com/angular/angular/commit/660444fbf296ce45f0a33d443e804237fa9bb8cc) | fix | attempt to resolve component resources in JIT mode ([#63062](https://github.com/angular/angular/pull/63062)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [3b214d2040](https://github.com/angular/angular/commit/3b214d20403160ab73e65dca0352545efd577c31) | feat | Logs unhandled promise rejections in service worker ([#63059](https://github.com/angular/angular/pull/63059)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.6"></a>
-# 20.2.0-next.6 (2025-08-07)
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
+| [5abfe4a899](https://github.com/angular/angular/commit/5abfe4a8999e42ad44e6f1d4414f241094bb8fdb) | feat | add diagnostic for uninvoked functions in text interpolation ([#59191](https://github.com/angular/angular/pull/59191)) |
+| [c4917074f1](https://github.com/angular/angular/commit/c4917074f1e278ea24948a8810b3d4f306765174) | fix | display proper function in NG8117 message ([#62842](https://github.com/angular/angular/pull/62842)) |
 | [812463c563](https://github.com/angular/angular/commit/812463c5636effe5bd5ba5c7c7fc65c3cc08d047) | fix | Ignore diagnostics on ngTemplateContextGuard lines in TCB ([#63054](https://github.com/angular/angular/pull/63054)) |
 | [45b030b5ce](https://github.com/angular/angular/commit/45b030b5ce1e116a88fe1c2fe133f654fb1f66c5) | fix | prevent dom event assertion in TCB generation on older angular versions ([#63053](https://github.com/angular/angular/pull/63053)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.5"></a>
-# 20.2.0-next.5 (2025-08-06)
-## Deprecations
-### router
-- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d24d5742db](https://github.com/angular/angular/commit/d24d5742db694604b09d57a3503e8c32751c4836) | feat | Add IsolatedShadowDom encapsulation method ([#62723](https://github.com/angular/angular/pull/62723)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [687c374826](https://github.com/angular/angular/commit/687c374826c5e9ea91839c20f0df815ce085c583) | feat | add a currentNavigation signal to the Router service. ([#63011](https://github.com/angular/angular/pull/63011)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.1.6"></a>
-# 20.1.6 (2025-08-06)
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.4"></a>
-# 20.2.0-next.4 (2025-08-06)
-## Deprecations
-### router
-- The Router.getCurrentNavigation method is deprecated. Use the Router.currentNavigation signal instead.
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [fb1fc823c4](https://github.com/angular/angular/commit/fb1fc823c47ef34347ba758dd73cc997c7f0c009) | fix | correctly type check host listeners to own outputs ([#62965](https://github.com/angular/angular/pull/62965)) |
 ### core
 | Commit | Type | Description |
 | -- | -- | -- |
+| [6b1f4b9e8b](https://github.com/angular/angular/commit/6b1f4b9e8bb981377e271e6af0d9768ff7f765e9) | feat | add enter and leave animation instructions ([#62682](https://github.com/angular/angular/pull/62682)) |
+| [cec91c0035](https://github.com/angular/angular/commit/cec91c00356ee3974c39c9471b243a2a16149f5b) | feat | add option to infer the tag names of components in tests ([#62283](https://github.com/angular/angular/pull/62283)) |
 | [141bb75ff2](https://github.com/angular/angular/commit/141bb75ff241425a93ce5b60b56a4247e67d7648) | feat | Promote zoneless to stable ([#62699](https://github.com/angular/angular/pull/62699)) |
+| [4138aca91f](https://github.com/angular/angular/commit/4138aca91fe828f0cfbd779d0c456cdea7703bdc) | feat | render ARIA property bindings as attributes ([#62630](https://github.com/angular/angular/pull/62630)) |
+| [a409534d6c](https://github.com/angular/angular/commit/a409534d6c3d7cb4472afffd6b17df8c25e34106) | feat | support `as` aliases on `else if` blocks ([#63047](https://github.com/angular/angular/pull/63047)) |
+| [745ea44394](https://github.com/angular/angular/commit/745ea4439465494ab5b7002dd1fa320cd32220fb) | feat | support TypeScript 5.9 ([#62541](https://github.com/angular/angular/pull/62541)) |
+| [593cc8a368](https://github.com/angular/angular/commit/593cc8a3684dfb163bfffa265c5efb3bc7efacd1) | fix | checks if body exists before continuing ([#62768](https://github.com/angular/angular/pull/62768)) |
+| [bdc31675b7](https://github.com/angular/angular/commit/bdc31675b7e5f37d2b312c766fe4963305620bdf) | fix | ensure animate events do not have duplicate elements ([#63216](https://github.com/angular/angular/pull/63216)) |
 | [de3a0c5cf3](https://github.com/angular/angular/commit/de3a0c5cf3f87782fa63d30edf6ac05eb6be9fac) | fix | Fix `animate.enter` class removal when composing classes ([#62981](https://github.com/angular/angular/pull/62981)) |
 | [6597ac0af7](https://github.com/angular/angular/commit/6597ac0af78ac2224ec2f9a37283b53aee11abe1) | fix | fix support for space separated strings in leave animations ([#62979](https://github.com/angular/angular/pull/62979)) |
 | [ebd622b344](https://github.com/angular/angular/commit/ebd622b3449789b72efc8295244ca924a299e7c1) | fix | fixes empty animations when recalculating styles ([#63007](https://github.com/angular/angular/pull/63007)) |
 | [455b147488](https://github.com/angular/angular/commit/455b147488dc0a064c0ca13a96a4df3c3ed01152) | fix | fixes timing issues with enter animations ([#62925](https://github.com/angular/angular/pull/62925)) |
-| [648bbb097e](https://github.com/angular/angular/commit/648bbb097e858fd1276b6ee88c82b674341e6163) | fix | properly recognize failed `fetch` responses when loading external resources in JIT ([#62992](https://github.com/angular/angular/pull/62992)) |
+| [f9d73cc687](https://github.com/angular/angular/commit/f9d73cc6877d516da4ab4704c21bb19164123fa1) | fix | handle cases where classes added have no animations ([#63242](https://github.com/angular/angular/pull/63242)) |
+| [6a1184600c](https://github.com/angular/angular/commit/6a1184600ce0fc7a3f338d6766612e9510ef5518) | fix | prevents duplicate nodes when `@if` toggles with leave animations ([#63048](https://github.com/angular/angular/pull/63048)) |
+| [063b5e166f](https://github.com/angular/angular/commit/063b5e166f66bce1abd06c258242212009e76cca) | fix | switch check to documentElement with chaining ([#62773](https://github.com/angular/angular/pull/62773)) |
+| [320de4e96d](https://github.com/angular/angular/commit/320de4e96d250cad1ce2c9f8c0fa2022da53b734) | refactor | deprecate animations field on component interface ([#62895](https://github.com/angular/angular/pull/62895)) |
 ### forms
 | Commit | Type | Description |
 | -- | -- | -- |
@@ -90,24 +50,41 @@
 ### http
 | Commit | Type | Description |
 | -- | -- | -- |
-| [e5d6fb5825](https://github.com/angular/angular/commit/e5d6fb5825d5e1b76d73d5c1c64c9986cfb02874) | fix | Reset headers, progress, and statusCode when using `set()` in `HttpResource` ([#62873](https://github.com/angular/angular/pull/62873)) |
-### migrations
+| [0984b30388](https://github.com/angular/angular/commit/0984b30388ef51dfad66f1228f665b89b73ef3fb) | feat | Add redirected property to HttpResponse and HttpErrorResponse ([#62675](https://github.com/angular/angular/pull/62675)) |
+| [be811fee79](https://github.com/angular/angular/commit/be811fee7925fb482567fa7cd9d485ac28acdade) | feat | add referrer & integrity support for fetch requests in httpResource ([#62461](https://github.com/angular/angular/pull/62461)) |
+| [1cf9d9064c](https://github.com/angular/angular/commit/1cf9d9064c15c00071ece3b78c8019035a6db6ce) | feat | Add support for fetch referrer & integrity options in HttpClient ([#62417](https://github.com/angular/angular/pull/62417)) |
+| [1408baff45](https://github.com/angular/angular/commit/1408baff453e636da05838fa17c6e4abd86c4b72) | fix | Add missing timeout and transferCache options to `HttpClient` ([#62586](https://github.com/angular/angular/pull/62586)) |
+### language-service
 | Commit | Type | Description |
 | -- | -- | -- |
-| [b1514d512e](https://github.com/angular/angular/commit/b1514d512e041674d1ebbac88eb2d9f6a0f2cf5e) | fix | incorrect filtering in inject migration ([#62913](https://github.com/angular/angular/pull/62913)) |
+| [c81e345e72](https://github.com/angular/angular/commit/c81e345e726b5b281621159c789e6d80a9f328e2) | feat | support auto-import for attribute completions ([#62797](https://github.com/angular/angular/pull/62797)) |
+| [d64dd27a02](https://github.com/angular/angular/commit/d64dd27a02630b631bc9890d7292d4683493cb65) | feat | support to report the deprecated API in the template ([#62054](https://github.com/angular/angular/pull/62054)) |
+| [591c7e2ec8](https://github.com/angular/angular/commit/591c7e2ec82c6669ffa6e0011b8a0a4fc12e9c3a) | fix | Support to resolve the re-export component. ([#62585](https://github.com/angular/angular/pull/62585)) |
 ### platform-browser
 | Commit | Type | Description |
 | -- | -- | -- |
+| [d24d5742db](https://github.com/angular/angular/commit/d24d5742db694604b09d57a3503e8c32751c4836) | feat | Add IsolatedShadowDom encapsulation method ([#62723](https://github.com/angular/angular/pull/62723)) |
 | [52b8e07d6e](https://github.com/angular/angular/commit/52b8e07d6e568a527fae18a8a867dacdf8053e20) | feat | Warns on conflicting hydration and blocking navigation ([#62963](https://github.com/angular/angular/pull/62963)) |
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
 | [d00b3fed58](https://github.com/angular/angular/commit/d00b3fed58496369d9f3a1ac0d74416a586be78b) | feat | add a `currentNavigation` signal to the `Router` service. ([#62971](https://github.com/angular/angular/pull/62971)) |
+| [687c374826](https://github.com/angular/angular/commit/687c374826c5e9ea91839c20f0df815ce085c583) | feat | add a currentNavigation signal to the Router service. ([#63011](https://github.com/angular/angular/pull/63011)) |
+| [9c45c322d1](https://github.com/angular/angular/commit/9c45c322d1ac3b05c916b7c956263066fb9be47f) | fix | ensure preloaded components are properly activated ([#62502](https://github.com/angular/angular/pull/62502)) |
 ### service-worker
 | Commit | Type | Description |
 | -- | -- | -- |
 | [8255e0cf15](https://github.com/angular/angular/commit/8255e0cf15353e9eee339ae01851e32c0e5e174d) | feat | add messageerror event handling and logging ([#62834](https://github.com/angular/angular/pull/62834)) |
 | [5220b51e75](https://github.com/angular/angular/commit/5220b51e75e672ff41c90f4798289961973df8e0) | feat | Adds for type in provideServiceWorker ([#62831](https://github.com/angular/angular/pull/62831)) |
+| [4ac6171b09](https://github.com/angular/angular/commit/4ac6171b09e449c619e0588c366861f8f3bb59be) | feat | Adds support for updateViaCache in provideServiceWorker ([#62721](https://github.com/angular/angular/pull/62721)) |
+| [b65c3d5e19](https://github.com/angular/angular/commit/b65c3d5e195267dd90b2826d4615ced1328b1709) | feat | Improves storage full detection in data caching ([#62737](https://github.com/angular/angular/pull/62737)) |
+| [3b214d2040](https://github.com/angular/angular/commit/3b214d20403160ab73e65dca0352545efd577c31) | feat | Logs unhandled promise rejections in service worker ([#63059](https://github.com/angular/angular/pull/63059)) |
+| [6d011687ec](https://github.com/angular/angular/commit/6d011687ec1fa2b8f0211379bb98adc8e02f4e9a) | feat | notify clients about version failures ([#62718](https://github.com/angular/angular/pull/62718)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
+<a name="20.1.6"></a>
+# 20.1.6 (2025-08-06)
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -132,44 +109,6 @@
 
 <!-- CHANGELOG SPLIT MARKER -->
 
-<a name="20.2.0-next.3"></a>
-# 20.2.0-next.3 (2025-07-31)
-## Deprecations
-### animations
-- @angular/animations
-### core
-- @angular/animations
-### animations
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9766116cea](https://github.com/angular/angular/commit/9766116cea69607d80144251a599f1cc1b12e02c) | refactor | deprecate the animations package ([#62795](https://github.com/angular/angular/pull/62795)) |
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5b25d93f27](https://github.com/angular/angular/commit/5b25d93f27b259098ed968a8a355e9c16867b37b) | fix | exclude more safe reads expression from 2way-binding ([#62852](https://github.com/angular/angular/pull/62852)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [c4917074f1](https://github.com/angular/angular/commit/c4917074f1e278ea24948a8810b3d4f306765174) | fix | display proper function in NG8117 message ([#62842](https://github.com/angular/angular/pull/62842)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [92c2d2a006](https://github.com/angular/angular/commit/92c2d2a0065a1d5a7e87fb54a4cd454f21bd8ab9) | fix | update symbols for new signals api ([#62284](https://github.com/angular/angular/pull/62284)) |
-| [320de4e96d](https://github.com/angular/angular/commit/320de4e96d250cad1ce2c9f8c0fa2022da53b734) | refactor | deprecate animations field on component interface ([#62895](https://github.com/angular/angular/pull/62895)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [0984b30388](https://github.com/angular/angular/commit/0984b30388ef51dfad66f1228f665b89b73ef3fb) | feat | Add redirected property to HttpResponse and HttpErrorResponse ([#62675](https://github.com/angular/angular/pull/62675)) |
-| [245494ad29](https://github.com/angular/angular/commit/245494ad292ea0b61ad7e314c8913afdcd8ca837) | fix | add missing http options allowed in fetch API ([#62881](https://github.com/angular/angular/pull/62881)) |
-| [1b73c23597](https://github.com/angular/angular/commit/1b73c235977f37ca7fbc5f4be8b194054632352b) | fix | propagate plain errors when parsing fails ([#62765](https://github.com/angular/angular/pull/62765)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [b65c3d5e19](https://github.com/angular/angular/commit/b65c3d5e195267dd90b2826d4615ced1328b1709) | feat | Improves storage full detection in data caching ([#62737](https://github.com/angular/angular/pull/62737)) |
-| [6d011687ec](https://github.com/angular/angular/commit/6d011687ec1fa2b8f0211379bb98adc8e02f4e9a) | feat | notify clients about version failures ([#62718](https://github.com/angular/angular/pull/62718)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
 <a name="20.1.4"></a>
 # 20.1.4 (2025-07-31)
 ### compiler
@@ -185,37 +124,6 @@
 | -- | -- | -- |
 | [ab6033979a](https://github.com/angular/angular/commit/ab6033979a3b409738d55d0c01effb378473c05a) | fix | add missing http options allowed in fetch API ([#62881](https://github.com/angular/angular/pull/62881)) |
 | [15670d8417](https://github.com/angular/angular/commit/15670d8417449c5b5f2990209552a1fc61420acb) | fix | propagate plain errors when parsing fails ([#62765](https://github.com/angular/angular/pull/62765)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.2"></a>
-# 20.2.0-next.2 (2025-07-23)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [7767aa640c](https://github.com/angular/angular/commit/7767aa640c542f5058df9322f2bbe974fa8d3c81) | fix | allow more characters in square-bracketed attribute names ([#62742](https://github.com/angular/angular/pull/62742)) |
-| [3171d01452](https://github.com/angular/angular/commit/3171d01452444721dbea53d1d1ca758f38d083a5) | fix | fix detection of directive deps in JIT ([#62666](https://github.com/angular/angular/pull/62666)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [5abfe4a899](https://github.com/angular/angular/commit/5abfe4a8999e42ad44e6f1d4414f241094bb8fdb) | feat | add diagnostic for uninvoked functions in text interpolation ([#59191](https://github.com/angular/angular/pull/59191)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [6b1f4b9e8b](https://github.com/angular/angular/commit/6b1f4b9e8bb981377e271e6af0d9768ff7f765e9) | feat | add enter and leave animation instructions ([#62682](https://github.com/angular/angular/pull/62682)) |
-| [cec91c0035](https://github.com/angular/angular/commit/cec91c00356ee3974c39c9471b243a2a16149f5b) | feat | add option to infer the tag names of components in tests ([#62283](https://github.com/angular/angular/pull/62283)) |
-| [4138aca91f](https://github.com/angular/angular/commit/4138aca91fe828f0cfbd779d0c456cdea7703bdc) | feat | render ARIA property bindings as attributes ([#62630](https://github.com/angular/angular/pull/62630)) |
-| [593cc8a368](https://github.com/angular/angular/commit/593cc8a3684dfb163bfffa265c5efb3bc7efacd1) | fix | checks if body exists before continuing ([#62768](https://github.com/angular/angular/pull/62768)) |
-| [b8e415a717](https://github.com/angular/angular/commit/b8e415a717fd3747c7bab3f6ea652874082a19bb) | fix | fix change tracking for Resource#hasValue ([#62595](https://github.com/angular/angular/pull/62595)) |
-| [063b5e166f](https://github.com/angular/angular/commit/063b5e166f66bce1abd06c258242212009e76cca) | fix | switch check to documentElement with chaining ([#62773](https://github.com/angular/angular/pull/62773)) |
-### platform-browser
-| Commit | Type | Description |
-| -- | -- | -- |
-| [74d99ed379](https://github.com/angular/angular/commit/74d99ed3796a3ced462e327c9b5857e5de4b7cb9) | fix | resolve component resources before bootstrapping in JIT mode ([#62758](https://github.com/angular/angular/pull/62758)) |
-### service-worker
-| Commit | Type | Description |
-| -- | -- | -- |
-| [4ac6171b09](https://github.com/angular/angular/commit/4ac6171b09e449c619e0588c366861f8f3bb59be) | feat | Adds support for updateViaCache in provideServiceWorker ([#62721](https://github.com/angular/angular/pull/62721)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -238,41 +146,6 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [8ad10fd63b](https://github.com/angular/angular/commit/8ad10fd63b01a906efbfa50ccccb7914610c61bd) | fix | fix detection of directive deps in JIT ([#62666](https://github.com/angular/angular/pull/62666)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.1"></a>
-# 20.2.0-next.1 (2025-07-16)
-### compiler
-| Commit | Type | Description |
-| -- | -- | -- |
-| [a1e3f2bcd1](https://github.com/angular/angular/commit/a1e3f2bcd14f897e685e11a84e011406dd6f7a33) | fix | incorrect spans for left side of binary operation ([#62641](https://github.com/angular/angular/pull/62641)) |
-| [18a675081f](https://github.com/angular/angular/commit/18a675081f945ed4d7f4c0ee83172ca1528e7b2e) | fix | more permissive parsing of @ characters ([#62644](https://github.com/angular/angular/pull/62644)) |
-### compiler-cli
-| Commit | Type | Description |
-| -- | -- | -- |
-| [527bd778a7](https://github.com/angular/angular/commit/527bd778a7b23c23766bad7fb272d61df9a884b1) | fix | infer type of event target for void elements ([#62648](https://github.com/angular/angular/pull/62648)) |
-### core
-| Commit | Type | Description |
-| -- | -- | -- |
-| [745ea44394](https://github.com/angular/angular/commit/745ea4439465494ab5b7002dd1fa320cd32220fb) | feat | support TypeScript 5.9 ([#62541](https://github.com/angular/angular/pull/62541)) |
-| [859958dbfe](https://github.com/angular/angular/commit/859958dbfe5b8b505c84ecfed81d43e6c59e6f0c) | fix | Ensure application remains unstable during bootstrap ([#62631](https://github.com/angular/angular/pull/62631)) |
-| [780774f948](https://github.com/angular/angular/commit/780774f94806b8eb895cb2a77c0d2a154f3d2d22) | fix | InputBinding marks component a dirty. ([#62613](https://github.com/angular/angular/pull/62613)) |
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [be811fee79](https://github.com/angular/angular/commit/be811fee7925fb482567fa7cd9d485ac28acdade) | feat | add referrer & integrity support for fetch requests in httpResource ([#62461](https://github.com/angular/angular/pull/62461)) |
-| [1408baff45](https://github.com/angular/angular/commit/1408baff453e636da05838fa17c6e4abd86c4b72) | fix | Add missing timeout and transferCache options to `HttpClient` ([#62586](https://github.com/angular/angular/pull/62586)) |
-| [75a5d08c5e](https://github.com/angular/angular/commit/75a5d08c5e9947f835ef911aacfe6c673e4c9e94) | fix | do not display warnings `Angular detected that a `HttpClient` request with the `keepalive` option was sent using XHR` when option is not true ([#62536](https://github.com/angular/angular/pull/62536)) |
-### language-service
-| Commit | Type | Description |
-| -- | -- | -- |
-| [d64dd27a02](https://github.com/angular/angular/commit/d64dd27a02630b631bc9890d7292d4683493cb65) | feat | support to report the deprecated API in the template ([#62054](https://github.com/angular/angular/pull/62054)) |
-### router
-| Commit | Type | Description |
-| -- | -- | -- |
-| [9c45c322d1](https://github.com/angular/angular/commit/9c45c322d1ac3b05c916b7c956263066fb9be47f) | fix | ensure preloaded components are properly activated ([#62502](https://github.com/angular/angular/pull/62502)) |
-| [e9f215624f](https://github.com/angular/angular/commit/e9f215624f73c6aec6ec78117339c803830f4114) | fix | handle errors from view transition readiness ([#62535](https://github.com/angular/angular/pull/62535)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 
@@ -300,15 +173,6 @@
 | Commit | Type | Description |
 | -- | -- | -- |
 | [5949373692](https://github.com/angular/angular/commit/59493736925d27ca26f0bb041978a51c4ced975b) | fix | handle errors from view transition readiness ([#62535](https://github.com/angular/angular/pull/62535)) |
-
-<!-- CHANGELOG SPLIT MARKER -->
-
-<a name="20.2.0-next.0"></a>
-# 20.2.0-next.0 (2025-07-09)
-### http
-| Commit | Type | Description |
-| -- | -- | -- |
-| [1cf9d9064c](https://github.com/angular/angular/commit/1cf9d9064c15c00071ece3b78c8019035a6db6ce) | feat | Add support for fetch referrer & integrity options in HttpClient ([#62417](https://github.com/angular/angular/pull/62417)) |
 
 <!-- CHANGELOG SPLIT MARKER -->
 

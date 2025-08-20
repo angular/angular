@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "20.2.0-rc.1",
+  "version": "20.2.0",
   "private": true,
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
