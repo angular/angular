@@ -12,6 +12,9 @@ common --@aspect_rules_ts//ts:default_to_tsc_transpiler
 # Needed as otherwise `env` of TS actions would be ignored.
 common --incompatible_merge_fixed_and_default_shell_env
 
+# Frozen lockfile
+common --lockfile_mode=error
+
 ###############################
 # Filesystem interactions     #
 ###############################
