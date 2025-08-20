@@ -144,7 +144,8 @@ export type HttpEvent<T> =
   | HttpSentEvent
   | HttpHeaderResponse
   | HttpResponse<T>
-  | HttpProgressEvent
+  | HttpDownloadProgressEvent
+  | HttpUploadProgressEvent
   | HttpUserEvent<T>;
 
 /**
