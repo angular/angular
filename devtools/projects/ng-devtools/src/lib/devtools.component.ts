@@ -27,7 +27,7 @@ import {BrowserStylesService} from './application-services/browser_styles_servic
 import {MatIconRegistry} from '@angular/material/icon';
 import {SUPPORTED_APIS} from './application-providers/supported_apis';
 
-const DETECT_ANGULAR_ATTEMPTS = 10;
+const DETECT_ANGULAR_ATTEMPTS = 20;
 
 enum AngularStatus {
   /**
