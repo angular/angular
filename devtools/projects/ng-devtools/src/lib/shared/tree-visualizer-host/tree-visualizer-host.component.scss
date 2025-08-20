@@ -35,6 +35,10 @@
         }
       }
 
+      .node-wrapper {
+        overflow: visible;
+      }
+
       .node {
         cursor: pointer;
         border: 1px solid var(--quaternary-contrast);
@@ -51,13 +55,6 @@
         border-style: solid;
         border-width: 2px;
         font-weight: 300;
-
-        &.node-search {
-          border-width: 4px !important;
-          border-style: groove !important;
-          text-decoration: underline;
-          font-weight: bold;
-        }
 
         &.node-environment {
           border: 1px solid var(--red-05);
@@ -102,6 +99,15 @@
           &:hover {
             color: black;
           }
+        }
+
+        &.node-search {
+          outline: 4px solid
+            color-mix(in srgb, var(--quaternary-contrast) 80%, var(--full-contrast) 20%);
+        }
+
+        &.node-faded {
+          opacity: 0.3;
         }
 
         &.highlighted,

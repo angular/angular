@@ -3,23 +3,24 @@
   "extends": [
     "github>angular/dev-infra//renovate-presets/default.json5"
   ],
-  "baseBranches": [
+  "baseBranchPatterns": [
     "main",
-    "20.1.x"
+    "20.2.x"
   ],
   "postUpgradeTasks": {
     "commands": [
       "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
       "pnpm install --frozen-lockfile",
-      "pnpm bazel run //.github/actions/deploy-docs-site:main.update",
-      "pnpm bazel run //packages/common:base_currencies_file.update",
-      "pnpm bazel run //packages/common/locales:closure_locale_file.update",
-      "pnpm bazel run //packages/core:base_locale_file.update"
+      "pnpm bazel mod deps --lockfile_mode=update",
+      "pnpm bazel run //.github/actions/deploy-docs-site:main",
+      "pnpm bazel run //packages/common:base_currencies_file",
+      "pnpm bazel run //packages/common/locales:closure_locale_file",
+      "pnpm bazel run //packages/core:base_locale_file"
     ],
     "fileFilters": [
       ".github/actions/deploy-docs-site/**/*",
       "packages/**/*",
-      "pnpm-lock.yaml"
+      "MODULE.bazel.lock"
     ],
     "executionMode": "branch"
   },
@@ -35,8 +36,7 @@
     "angular-mocks-1.8",
     "convert-source-map",
     "selenium-webdriver",
-    "systemjs",
-    "patch-package"
+    "systemjs"
   ],
   "packageRules": [
     {
@@ -58,6 +58,7 @@
     {
       "matchFileNames": [
         "integration/**",
+        "modules/ssr-benchmarks/package.json",
         "packages/core/schematics/migrations/signal-migration/test/**",
         "packages/zone.js/test/typings/package.json"
       ],

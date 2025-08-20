@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
-load("@npm2//:typescript/package_json.bzl", tsc = "bin")
+load("@npm//:typescript/package_json.bzl", tsc = "bin")
 
 def zone_bundle(
         name,

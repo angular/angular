@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getRoots} from './get-roots';
+import {getAppRoots} from './get-roots';
 
 function createRoot() {
   const root = document.createElement('div');
@@ -26,7 +26,7 @@ describe('getRoots', () => {
     rootElement.appendChild(childElement);
     document.body.appendChild(rootElement);
 
-    const roots = getRoots();
+    const roots = getAppRoots();
 
     expect(roots.length).toEqual(1);
     expect(roots.pop()).toEqual(rootElement);
@@ -39,7 +39,7 @@ describe('getRoots', () => {
     document.body.appendChild(firstRoot);
     document.body.appendChild(secondRoot);
 
-    const roots = getRoots();
+    const roots = getAppRoots();
 
     expect(roots.length).toEqual(2);
     expect(roots).toContain(firstRoot);

@@ -6,6 +6,9 @@ import ts from 'typescript';
 import {findAllEntryPointsAndExportedModules} from './find-all-modules.mjs';
 
 async function main() {
+  // Touch the TEST_SHARD_FILE to mark for bazel that sharding is supported.
+  await fs.writeFile(process.env.TEST_SHARD_STATUS_FILE!, '', {encoding: 'utf-8'});
+
   const [configPath] = process.argv.slice(2);
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ng-module-test-'));
   const config = JSON.parse(await fs.readFile(configPath, 'utf8')) as {

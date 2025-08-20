@@ -119,7 +119,7 @@ export interface InputFunction {
  * To use signal-based inputs, import `input` from `@angular/core`.
  *
  * ```ts
- * import {input} from '@angular/core`;
+ * import {input} from '@angular/core';
  * ```
  *
  * Inside your component, introduce a new class member and initialize

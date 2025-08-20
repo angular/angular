@@ -36,11 +36,11 @@ if (typeof __karma__ !== 'undefined') {
 System.config({
   defaultJSExtensions: true,
   map: {
-    'rxjs': 'base/angular/node_modules/rxjs/index',
-    'rxjs/operators': 'base/angular/node_modules/rxjs/operators/index',
-    'core-js/features/set': 'base/angular/node_modules/core-js/es6/set',
-    'core-js/features/map': 'base/angular/node_modules/core-js/es6/map',
-    'es6-promise': 'base/angular/node_modules/es6-promise/dist/es6-promise',
+    'rxjs': 'base/_main/node_modules/rxjs/index',
+    'rxjs/operators': 'base/_main/node_modules/rxjs/operators/index',
+    'core-js/features/set': 'base/_main/node_modules/core-js/es6/set',
+    'core-js/features/map': 'base/_main/node_modules/core-js/es6/map',
+    'es6-promise': 'base/_main/node_modules/es6-promise/dist/es6-promise',
   },
 });
 

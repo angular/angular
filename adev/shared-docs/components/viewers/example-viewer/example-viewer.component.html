@@ -5,11 +5,7 @@
     }
 
     @if (view() === CodeExampleViewMode.MULTI_FILE) {
-      <mat-tab-group
-        #codeTabs
-        animationDuration="0ms"
-        mat-stretch-tabs="false"
-      >
+      <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
         @for (tab of tabs(); track tab) {
           <mat-tab [label]="tab.name"></mat-tab>
         }
@@ -87,7 +83,9 @@
     [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
   >
     <button docs-copy-source-code></button>
-    <docs-viewer [docContent]="snippetCode()?.content" />
+    @if (snippetCode()?.sanitizedContent; as content) {
+      <div [innerHTML]="content"></div>
+    }
   </div>
 
   @if (exampleComponent) {
@@ -98,9 +96,9 @@
 
   <ng-template #openCodeInExternalProvider>
     @if (exampleComponent) {
-      @if (githubUrl) {
+      @if (githubUrl()) {
         <a
-          [href]="githubUrl"
+          [href]="githubUrl()"
           target="_blank"
           title="Open example on GitHub"
           class="docs-example-github-link"
@@ -125,9 +123,9 @@
           </i>
         </a>
       }
-      @if (stackblitzUrl) {
+      @if (stackblitzUrl()) {
         <a
-          [href]="stackblitzUrl"
+          [href]="stackblitzUrl()"
           target="_blank"
           class="docs-example-stackblitz-link"
           title="Edit this example in StackBlitz"

@@ -631,11 +631,11 @@ class HtmlAstToIvyAst implements html.Visitor {
 
         const parsedVariables: ParsedVariable[] = [];
         const absoluteValueOffset = attribute.valueSpan
-          ? attribute.valueSpan.start.offset
+          ? attribute.valueSpan.fullStart.offset
           : // If there is no value span the attribute does not have a value, like `attr` in
             //`<div attr></div>`. In this case, point to one character beyond the last character of
             // the attribute name.
-            attribute.sourceSpan.start.offset + attribute.name.length;
+            attribute.sourceSpan.fullStart.offset + attribute.name.length;
 
         this.bindingParser.parseInlineTemplateBinding(
           templateKey,
@@ -697,8 +697,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     const value = attribute.value;
     const srcSpan = attribute.sourceSpan;
     const absoluteOffset = attribute.valueSpan
-      ? attribute.valueSpan.start.offset
-      : srcSpan.start.offset;
+      ? attribute.valueSpan.fullStart.offset
+      : srcSpan.fullStart.offset;
 
     function createKeySpan(srcSpan: ParseSourceSpan, prefix: string, identifier: string) {
       // We need to adjust the start location for the keySpan to account for the removed 'data-'

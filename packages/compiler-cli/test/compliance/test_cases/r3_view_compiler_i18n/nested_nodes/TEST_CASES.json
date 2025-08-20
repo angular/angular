@@ -284,6 +284,20 @@
       ]
     },
     {
+      "description": "should handle ng-content with i18n children",
+      "inputFiles": [
+        "ng_content_with_i18n_children.ts"
+      ],
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
       "description": "when the last element inside an i18n block has i18n attributes",
       "inputFiles": [
         "last_elem_inside_i18n_block.ts"

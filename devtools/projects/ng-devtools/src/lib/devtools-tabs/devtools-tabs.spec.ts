@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -14,12 +14,14 @@ import {Events, MessageBus} from '../../../../protocol';
 import {Subject} from 'rxjs';
 
 import {ApplicationEnvironment} from '../application-environment';
-import {Theme, ThemeService} from '../application-services/theme_service';
+import {ThemeService} from '../application-services/theme_service';
 
 import {DevToolsTabsComponent} from './devtools-tabs.component';
 import {TabUpdate} from './tab-update/index';
 import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {FrameManager} from '../application-services/frame_manager';
+import {SETTINGS_MOCK} from '../application-services/test-utils/settings_mock';
+import {ThemeUi} from '../application-services/theme_types';
 
 @Component({
   selector: 'ng-directive-explorer',
@@ -41,7 +43,8 @@ describe('DevtoolsTabsComponent', () => {
       imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
       providers: [
         TabUpdate,
-        {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<Theme>()})},
+        SETTINGS_MOCK,
+        {provide: ThemeService, useFactory: () => ({currentTheme: new Subject<ThemeUi>()})},
         {provide: MessageBus, useValue: messageBusMock},
         {provide: ApplicationEnvironment, useValue: applicationEnvironmentMock},
         {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},

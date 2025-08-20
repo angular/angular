@@ -53,9 +53,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: ''},
-          {name: 'file.html', content: ''},
-          {name: 'file.css', content: ''},
+          {name: 'file.ts', sanitizedContent: ''},
+          {name: 'file.html', sanitizedContent: ''},
+          {name: 'file.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -73,9 +73,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: 'typescript file'},
-          {name: 'file.html', content: 'html file'},
-          {name: 'file.css', content: 'css file'},
+          {name: 'file.ts', sanitizedContent: 'typescript file'},
+          {name: 'file.html', sanitizedContent: 'html file'},
+          {name: 'file.css', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -93,9 +93,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'example.ts', content: 'typescript file'},
-          {name: 'example.html', content: 'html file'},
-          {name: 'another-example.ts', content: 'css file'},
+          {name: 'example.ts', sanitizedContent: 'typescript file'},
+          {name: 'example.html', sanitizedContent: 'html file'},
+          {name: 'another-example.ts', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -124,7 +124,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -148,7 +148,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -198,7 +198,7 @@ describe('ExampleViewer', () => {
       By.css('a[aria-label="Open example on GitHub"]'),
     );
     expect(githubButton).toBeTruthy();
-    expect(githubButton.nativeElement.href).toBe(component.githubUrl);
+    expect(githubButton.nativeElement.href).toBe(component.githubUrl());
   });
 
   it('should display StackBlitz button when stackblitzUrl is provided and there is preview', async () => {
@@ -210,7 +210,8 @@ describe('ExampleViewer', () => {
         preview: true,
       }),
     );
-    component.stackblitzUrl = 'https://stackblitz.com/';
+    componentRef.setInput('stackblitzUrl', 'https://stackblitz.com/');
+
     await component.renderExample();
     fixture.detectChanges();
 
@@ -218,7 +219,7 @@ describe('ExampleViewer', () => {
       By.css('a[aria-label="Edit this example in StackBlitz"]'),
     );
     expect(stackblitzButton).toBeTruthy();
-    expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl);
+    expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
   });
 
   it('should set expanded flag in metadata after toggleExampleVisibility', async () => {
@@ -242,9 +243,9 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
           },
-          {name: 'example.css', content: ''},
+          {name: 'example.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -278,8 +279,8 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
   return {
     id: 1,
     files: [
-      {name: 'example.ts', content: ''},
-      {name: 'example.css', content: ''},
+      {name: 'example.ts', sanitizedContent: ''},
+      {name: 'example.css', sanitizedContent: ''},
     ],
     preview: false,
     ...value,

@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export const GITHUB = 'https://github.com/angular/angular';
-export const X = 'https://x.com/angular';
-export const MEDIUM = 'https://blog.angular.dev';
-export const YOUTUBE = 'https://www.youtube.com/angular';
-export const DISCORD = 'https://discord.gg/angular';
-export const BLUESKY = 'https://bsky.app/profile/angular.dev';
+export const ANGULAR_LINKS = {
+  GITHUB: 'https://github.com/angular/angular',
+  X: 'https://x.com/angular',
+  MEDIUM: 'https://blog.angular.dev',
+  YOUTUBE: 'https://www.youtube.com/angular',
+  DISCORD: 'https://discord.gg/angular',
+  BLUESKY: 'https://bsky.app/profile/angular.dev',
+  STACKOVERFLOW: 'https://stackoverflow.com/questions/tagged/angular',
+} as const;

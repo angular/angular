@@ -1,5 +1,5 @@
 // #docregion
-import {Directive, input} from '@angular/core';
+import {Directive, forwardRef, input} from '@angular/core';
 import {
   AbstractControl,
   NG_VALIDATORS,
@@ -22,7 +22,13 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
 @Directive({
   selector: '[appForbiddenName]',
   // #docregion directive-providers
-  providers: [{provide: NG_VALIDATORS, useExisting: ForbiddenValidatorDirective, multi: true}],
+  providers: [
+    {
+      provide: NG_VALIDATORS,
+      useExisting: forwardRef(() => ForbiddenValidatorDirective),
+      multi: true,
+    },
+  ],
 })
 export class ForbiddenValidatorDirective implements Validator {
   forbiddenName = input<string>('', {alias: 'appForbiddenName'});

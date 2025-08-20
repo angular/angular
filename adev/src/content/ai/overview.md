@@ -60,60 +60,6 @@ The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state
 
 * [AI Chatbot app template](https://github.com/FirebaseExtended/firebase-framework-tools/tree/main/starters/angular/ai-chatbot) - This template starts with a chatbot user interface that communicates with the Gemini API via HTTP. 
 
-## AI patterns in action: Streaming chat responses
-Having text appear as the response is received from the model is a common UI pattern for web apps using AI. You can achieve this asynchronous task with Angular's `resource` API. The `stream` property of `resource` accepts an asynchronous function you can use to apply updates to a signal value over time. The signal being updated represents the data being streamed.
-
-```ts
-characters = resource({
-    stream: async () => {
-      const data = signal<{ value: string } | { error: unknown }>({
-        value: "",
-      });
-
-      fetch(this.url).then(async (response) => {
-        if (!response.body) return;
-        
-        for await (const chunk of response.body) {
-          const chunkText = this.decoder.decode(chunk);
-          data.update((prev) => {
-            if ("value" in prev) {
-              return { value: `${prev.value} ${chunkText}` };
-            } else {
-              return { error: chunkText };
-            }
-          });
-        }
-      });
-
-      return data;
-    },
-  });
-
-```
-
-The `characters` member is updated asynchronously and can be displayed in the template.
-
-```html
-<p>{{ characters.value() }}</p>
-```
-
-On the server side, in `server.ts` for example, the defined endpoint sends the data to be streamed to the client. The following code uses the Gemini API but this technique is applicable to other tools and frameworks that support streaming responses from LLMs:
-
-```ts
- app.get("/api/stream-response", async (req, res) => {
-   ai.models.generateContentStream({
-     model: "gemini-2.0-flash",
-     contents: "Explain how AI works",
-   }).then(async (response) => {
-     for await (const chunk of response) {
-       res.write(chunk.text);
-     }
-   });
- });
-
-```
-This example connects to the Gemini API but other APIs that support streaming responses can be used here as well. [You can find the complete example on the Angular Github](https://github.com/angular/examples/tree/main/streaming-example).
-
 ## Best Practices
 ### Connecting to model providers and keeping your API Credentials Secure
 When connecting to model providers, it is important to keep your API secrets safe. *Never put your API key in a file that ships to the client, such as `environments.ts`*.
@@ -145,3 +91,11 @@ Consider this example: The LLM provider is not responding. A potential strategy 
 * Save the response from the user to used in a retry scenario (now or at a later time)
 * Alert the user to the outage with an appropriate message that doesn't reveal sensitive information
 * Resume the conversation at a later time once the services are available again.
+
+## Next steps
+
+To learn about LLM prompts and AI IDE setup, see the following guides:
+
+<docs-pill-row>
+  <docs-pill href="ai/develop-with-ai" title="LLM prompts and IDE setup"/>
+</docs-pill-row>

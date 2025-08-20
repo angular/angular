@@ -709,14 +709,16 @@ export class Router {
     // (undocumented)
     config: Routes;
     createUrlTree(commands: readonly any[], navigationExtras?: UrlCreationOptions): UrlTree;
+    readonly currentNavigation: Signal<Navigation | null>;
     dispose(): void;
     get events(): Observable<Event_2>;
+    // @deprecated
     getCurrentNavigation(): Navigation | null;
     initialNavigation(): void;
     // @deprecated
     isActive(url: string | UrlTree, exact: boolean): boolean;
     isActive(url: string | UrlTree, matchOptions: IsActiveMatchOptions): boolean;
-    get lastSuccessfulNavigation(): Navigation | null;
+    get lastSuccessfulNavigation(): Signal<Navigation | null>;
     navigate(commands: readonly any[], extras?: NavigationExtras): Promise<boolean>;
     navigateByUrl(url: string | UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean>;
     navigated: boolean;

@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, Provider} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 
-export const WINDOW = new InjectionToken<Window>('WINDOW');
-
-export const WINDOW_PROVIDER: Provider = {
-  provide: WINDOW,
-  useValue: window,
-};
+export const WINDOW = new InjectionToken<Window>('WINDOW', {
+  factory: () => window,
+});

@@ -127,7 +127,7 @@ function addBody<T>(
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class HttpClient {
   constructor(private handler: HttpHandler) {}
 

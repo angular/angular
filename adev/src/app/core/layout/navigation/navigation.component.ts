@@ -21,12 +21,12 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '../../constants/links';
 import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
+import {ANGULAR_LINKS} from '../../constants/links';
+import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
@@ -55,12 +55,7 @@ export class Navigation {
   readonly REFERENCE_ROUTE = PagePrefix.REFERENCE;
   readonly TUTORIALS_ROUTE = PagePrefix.TUTORIALS;
 
-  readonly GITHUB = GITHUB;
-  readonly X = X;
-  readonly MEDIUM = MEDIUM;
-  readonly YOUTUBE = YOUTUBE;
-  readonly DISCORD = DISCORD;
-  readonly BLUESKY = BLUESKY;
+  protected ngLinks = ANGULAR_LINKS;
 
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;

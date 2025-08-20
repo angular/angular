@@ -70,6 +70,20 @@ interface PushSubscriptionChangeEvent extends ExtendableEvent {
   newSubscription: PushSubscription | null;
 }
 
+/**
+ * Determines if a given URL scope corresponds to localhost.
+ *
+ * @param scope The service worker registration scope URL to test
+ * @returns true if the scope is considered localhost, false otherwise
+ */
+export function isLocalhost(scope: string): boolean {
+  // Use non-capturing groups and ensure localhost is at word boundary
+  // This prevents matching domains like "mylocalhost.com" while allowing valid localhost URLs
+  return /(?:^https?:\/\/)?(?:(?:^|[^\w.])localhost|\[::1\]|127(?:\.\d{1,3}){3})(?::\d+)?(?:\/.*)?$/.test(
+    scope,
+  );
+}
+
 export enum DriverReadyState {
   // The SW is operating in a normal mode, responding to all traffic.
   NORMAL,
@@ -190,7 +204,8 @@ export class Driver implements Debuggable, UpdateSource {
     });
 
     // Handle the fetch, message, push, notificationclick,
-    // notificationclose, pushsubscriptionchange, and messageerror events.
+    // notificationclose, pushsubscriptionchange, messageerror, rejectionhandled,
+    // and unhandledrejection events.
     this.scope.addEventListener('fetch', (event) => this.onFetch(event!));
     this.scope.addEventListener('message', (event) => this.onMessage(event!));
     this.scope.addEventListener('push', (event) => this.onPush(event!));
@@ -202,6 +217,7 @@ export class Driver implements Debuggable, UpdateSource {
       this.onPushSubscriptionChange(event as PushSubscriptionChangeEvent),
     );
     this.scope.addEventListener('messageerror', (event) => this.onMessageError(event));
+    this.scope.addEventListener('unhandledrejection', (event) => this.onUnhandledRejection(event));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -345,6 +361,15 @@ export class Driver implements Debuggable, UpdateSource {
     this.debugger.log(
       `Message error occurred - data could not be deserialized`,
       `Driver.onMessageError(origin: ${event.origin})`,
+    );
+  }
+
+  private onUnhandledRejection(event: PromiseRejectionEvent): void {
+    // Handle unhandled promise rejections in the service worker.
+    // This is for debugging and preventing silent failures.
+    this.debugger.log(
+      `Unhandled promise rejection occurred`,
+      `Driver.onUnhandledRejection(reason: ${event.reason})`,
     );
   }
 
@@ -941,10 +966,11 @@ export class Driver implements Debuggable, UpdateSource {
         await this.versionFailed(appVersion, err);
       }
     };
-    // TODO: better logic for detecting localhost.
-    if (this.scope.registration.scope.indexOf('://localhost') > -1) {
+
+    if (isLocalhost(this.scope.registration.scope)) {
       return initialize();
     }
+
     this.idle.schedule(`initialization(${appVersion.manifestHash})`, initialize);
   }
 

@@ -13,7 +13,7 @@ import {HeroDetailService} from './hero-detail.service';
   templateUrl: './hero-detail.component.html',
   styleUrls: ['./hero-detail.component.css'],
   providers: [HeroDetailService],
-  imports: [sharedImports, RouterLink],
+  imports: [...sharedImports],
 })
 export class HeroDetailComponent {
   // #docregion inject

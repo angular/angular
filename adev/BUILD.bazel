@@ -1,5 +1,5 @@
 load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
-load("@npm2//:defs.bzl", "npm_link_all_packages")
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
 load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
 load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
@@ -87,8 +87,8 @@ TEST_DEPS = [
     for dep in APPLICATION_DEPS
     if dep != "//adev:node_modules/@types/node"
 ] + [
-    "@rules_browsers//src/browsers/chromium",
-    "@rules_browsers//src/browsers/firefox",
+    "@rules_browsers//browsers/chromium",
+    "@rules_browsers//browsers/firefox",
     "//adev/tools:windows-chromium-path",
 ]
 
@@ -155,7 +155,7 @@ ng_test(
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
     toolchains = [
-        "@rules_browsers//src/browsers/chromium:toolchain_alias",
-        "@rules_browsers//src/browsers/firefox:toolchain_alias",
+        "@rules_browsers//browsers/chromium:toolchain_alias",
+        "@rules_browsers//browsers/firefox:toolchain_alias",
     ],
 )

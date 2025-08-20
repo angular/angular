@@ -9,6 +9,7 @@
 import {
   consumerAfterComputation,
   consumerBeforeComputation,
+  consumerDestroy,
   consumerPollProducersForChange,
   producerAccessed,
   SIGNAL,
@@ -39,6 +40,7 @@ import {
 import {LView} from '../interfaces/view';
 import {ViewContext} from '../view_context';
 import {assertNotInReactiveContext} from './asserts';
+import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
 
 const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
@@ -152,7 +154,7 @@ const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
 /**
  * An `AfterRenderSequence` that manages an `afterRenderEffect`'s phase effects.
  */
-class AfterRenderEffectSequence extends AfterRenderSequence {
+export class AfterRenderEffectSequence extends AfterRenderSequence {
   /**
    * While this sequence is executing, this tracks the last phase which was called by the
    * `afterRender` machinery.
@@ -178,12 +180,19 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
     effectHooks: Array<AfterRenderPhaseEffectHook | undefined>,
     view: LView | undefined,
     readonly scheduler: ChangeDetectionScheduler,
-    destroyRef: DestroyRef,
+    injector: Injector,
     snapshot: TracingSnapshot | null = null,
   ) {
     // Note that we also initialize the underlying `AfterRenderSequence` hooks to `undefined` and
     // populate them as we create reactive nodes below.
-    super(impl, [undefined, undefined, undefined, undefined], view, false, destroyRef, snapshot);
+    super(
+      impl,
+      [undefined, undefined, undefined, undefined],
+      view,
+      false,
+      injector.get(DestroyRef),
+      snapshot,
+    );
 
     // Setup a reactive node for each phase.
     for (const phase of AFTER_RENDER_PHASES) {
@@ -209,6 +218,10 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
 
       // Install the upstream hook which runs the `phaseFn` for this phase.
       this.hooks[phase] = (value) => node.phaseFn(value);
+
+      if (ngDevMode) {
+        setupDebugInfo(node, injector);
+      }
     }
   }
 
@@ -223,8 +236,14 @@ class AfterRenderEffectSequence extends AfterRenderSequence {
 
     // Run the cleanup functions for each node.
     for (const node of this.nodes) {
-      for (const fn of node?.cleanup ?? EMPTY_CLEANUP_SET) {
-        fn();
+      if (node) {
+        try {
+          for (const fn of node.cleanup ?? EMPTY_CLEANUP_SET) {
+            fn();
+          }
+        } finally {
+          consumerDestroy(node);
+        }
       }
     }
   }
@@ -392,9 +411,32 @@ export function afterRenderEffect<E = never, W = never, M = never>(
     [spec.earlyRead, spec.write, spec.mixedReadWrite, spec.read] as AfterRenderPhaseEffectHook[],
     viewContext?.view,
     scheduler,
-    injector.get(DestroyRef),
+    injector,
     tracing?.snapshot(null),
   );
   manager.impl.register(sequence);
   return sequence;
+}
+
+function setupDebugInfo(node: AfterRenderPhaseEffectNode, injector: Injector): void {
+  node.debugName = `afterRenderEffect - ${phaseDebugName(node.phase)} phase`;
+  const prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
+  try {
+    emitEffectCreatedEvent({[SIGNAL]: node, destroy() {}} as any);
+  } finally {
+    setInjectorProfilerContext(prevInjectorProfilerContext);
+  }
+}
+
+function phaseDebugName(phase: AfterRenderPhase): string {
+  switch (phase) {
+    case AfterRenderPhase.EarlyRead:
+      return 'EarlyRead';
+    case AfterRenderPhase.Write:
+      return 'Write';
+    case AfterRenderPhase.MixedReadWrite:
+      return 'MixedReadWrite';
+    case AfterRenderPhase.Read:
+      return 'Read';
+  }
 }

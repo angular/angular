@@ -913,5 +913,29 @@ runInEachFileSystem(() => {
         `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
       );
     });
+
+    it('should check generic component', () => {
+      env.write(
+        'test.ts',
+        `
+          import { Component, output } from '@angular/core';
+
+          @Component({
+            host: {
+              '(customEvent)': 'doesNotExist()',
+            },
+            template: ''
+          })
+          export class App<T> {
+            customEvent = output<T>();
+          }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(diags[0].messageText).toBe(`Property 'doesNotExist' does not exist on type 'App<T>'.`);
+      expect(getDiagnosticSourceCode(diags[0])).toBe('doesNotExist');
+    });
   });
 });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AnimationRemovalRegistry, ElementRegistry} from '../animation';
+import {AnimationRemovalRegistry, ElementRegistry} from '../animation/element_removal_registry';
 import {InternalInjectFlags} from '../di/interface/injector';
 import {
   assertDefined,

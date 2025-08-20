@@ -12,6 +12,7 @@ import {FrameManager} from './application-services/frame_manager';
 import {DevToolsComponent} from './devtools.component';
 import {DevToolsTabsComponent} from './devtools-tabs/devtools-tabs.component';
 import {MessageBus} from '../../../protocol';
+import {SETTINGS_MOCK} from './application-services/test-utils/settings_mock';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -27,7 +28,7 @@ describe('DevtoolsComponent', () => {
     const mockMessageBus = jasmine.createSpyObj('MessageBus', ['on', 'emit', 'once']);
 
     TestBed.configureTestingModule({
-      providers: [{provide: MessageBus, useValue: mockMessageBus}],
+      providers: [{provide: MessageBus, useValue: mockMessageBus}, SETTINGS_MOCK],
     }).overrideComponent(DevToolsComponent, {
       remove: {imports: [DevToolsTabsComponent], providers: [FrameManager]},
       add: {

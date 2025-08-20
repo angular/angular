@@ -20,7 +20,6 @@ NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
     "rxjs",
     "systemjs",
     "tslib",
-    "patch-package",
     "protractor",
     "terser",
     "rollup",
@@ -44,8 +43,8 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     data = kwargs.pop("data", [])
 
     if setup_chromium:
-        data.append("@rules_browsers//src/browsers/chromium")
-        toolchains.append("@rules_browsers//src/browsers/chromium:toolchain_alias")
+        data.append("@rules_browsers//browsers/chromium")
+        toolchains.append("@rules_browsers//browsers/chromium:toolchain_alias")
         environment.update({
             "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
             "CHROME_BIN": "$(CHROME-HEADLESS-SHELL)",
@@ -77,8 +76,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
             # Integration tests do not work inside of a sandbox as they may run host applications such
             # as chrome (which is run by ng) that require access to files outside of the sandbox.
             "no-sandbox",
-            # Remote doesn't work as it needs network access right now
-            "no-remote-exec",
         ],
         data = data,
         environment = environment,

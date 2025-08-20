@@ -1,11 +1,13 @@
 {
   "dependencies": {
     "@angular/animations": "workspace:*",
-    "@angular/build": "20.2.0-next.2",
+    "@angular/build": "21.0.0-next.0",
     "@angular/common": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/compiler": "workspace:*",
     "@angular/core": "workspace:*",
     "@angular/forms": "workspace:*",
-    "@angular/router": "workspace:*",
-    "@angular/platform-browser": "workspace:*"
+    "@angular/platform-browser": "workspace:*",
+    "@angular/router": "workspace:*"
   }
 }

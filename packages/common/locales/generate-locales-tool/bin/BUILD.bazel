@@ -23,12 +23,21 @@ ts_project(
     name = entrypoint,
     data = [
         ":bin",
+        "//packages:package_json",
+        "@cldr_json_data//:ROOT_BUILD_FILE",
         "@cldr_json_data//:all_json",
+        "@cldr_xml_data//:ROOT_BUILD_FILE",
         "@cldr_xml_data//:all_xml",
     ],
     entry_point = ":%s.js" % entrypoint,
+    env = {
+        "CLDR_JSON_DATA_RUNFILES_PATH": "$(rlocationpath @cldr_json_data//:ROOT_BUILD_FILE)",
+        "CLDR_XML_DATA_RUNFILES_PATH": "$(rlocationpath @cldr_xml_data//:ROOT_BUILD_FILE)",
+    },
     no_copy_to_bin = [
         "@cldr_xml_data//:all_xml",
+        "@cldr_xml_data//:ROOT_BUILD_FILE",
         "@cldr_json_data//:all_json",
+        "@cldr_json_data//:ROOT_BUILD_FILE",
     ],
 ) for entrypoint in BIN_ENTRYPOINTS]

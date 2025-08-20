@@ -39,10 +39,11 @@ import {fromEvent} from 'rxjs';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {DomSanitizer} from '@angular/platform-browser';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
-export const DOCS_VIEWER_SELECTOR = 'docs-viewer';
+export const DOCS_VIEWER_SELECTOR = 'docs-viewer, main[docsViewer]';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 // TODO: Update the branch/sha
@@ -74,6 +75,7 @@ export class DocViewer {
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly injector = inject(Injector);
   private readonly appRef = inject(ApplicationRef);
+  private readonly sanitizer = inject(DomSanitizer);
 
   protected animateContent = false;
   private readonly pendingTasks = inject(PendingTasks);
@@ -200,10 +202,10 @@ export class DocViewer {
       id: this.countOfExamples,
     });
 
-    exampleRef.instance.githubUrl = `${GITHUB_CONTENT_URL}/${snippets[0].name}`;
+    exampleRef.setInput('githubUrl', `${GITHUB_CONTENT_URL}/${snippets[0].name}`);
 
     // TODO: Re-add support for opening examples on StackBlitz
-    exampleRef.instance.stackblitzUrl = null; // `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
+    exampleRef.setInput('stackblitzUrl', null); // `${ASSETS_EXAMPLES_PATH}/${snippets[0].name}.html`;
 
     placeholder.parentElement!.replaceChild(exampleRef.location.nativeElement, placeholder);
 
@@ -215,7 +217,7 @@ export class DocViewer {
 
     return tabs.map((tab) => ({
       name: tab.getAttribute('path') ?? tab.getAttribute('header') ?? '',
-      content: tab.innerHTML,
+      sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(tab.innerHTML),
       visibleLinesRange: tab.getAttribute('visibleLines') ?? undefined,
     }));
   }
@@ -235,7 +237,9 @@ export class DocViewer {
     return {
       title,
       name: path,
-      content: content?.outerHTML,
+      sanitizedContent: content?.outerHTML
+        ? this.sanitizer.bypassSecurityTrustHtml(content.outerHTML)
+        : '',
       visibleLinesRange: visibleLines,
     };
   }

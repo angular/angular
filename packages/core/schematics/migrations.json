@@ -1,25 +1,21 @@
 {
   "schematics": {
-    "inject-flags": {
-      "version": "20.0.0",
-      "description": "Replaces usages of the deprecated InjectFlags enum",
-      "factory": "./bundles/inject-flags.cjs#migrate"
-    },
-    "test-bed-get": {
-      "version": "20.0.0",
-      "description": "Replaces usages of the deprecated TestBed.get method with TestBed.inject",
-      "factory": "./bundles/test-bed-get.cjs#migrate"
-    },
     "control-flow-migration": {
-      "version": "20.0.0",
+      "version": "21.0.0",
       "description": "Converts the entire application to block control flow syntax",
       "factory": "./bundles/control-flow-migration.cjs#migrate",
       "optional": true
     },
-    "document-core": {
-      "version": "20.0.0",
-      "description": "Moves imports of `DOCUMENT` from `@angular/common` to `@angular/core`",
-      "factory": "./bundles/document-core.cjs#migrate"
+    "router-current-navigation": {
+      "version": "21.0.0",
+      "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
+      "factory": "./bundles/router-current-navigation.cjs#migrate",
+      "optional": true
+    },
+    "router-last-successful-navigation": {
+      "version": "21.0.0",
+      "description": "Ensures that the Router.lastSuccessfulNavigation signal is now invoked",
+      "factory": "./bundles/router-last-successful-navigation.cjs#migrate"
     }
   }
 }

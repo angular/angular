@@ -22,7 +22,7 @@ import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
 import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
-import {WINDOW_PROVIDER} from '../../application-providers/window_provider';
+import {SignalGraphManager} from './signal-graph/signal-graph-manager';
 
 @Component({
   selector: 'ng-directive-forest',
@@ -101,7 +101,6 @@ describe('DirectiveExplorerComponent', () => {
           useValue: new ElementPropertyResolver(messageBusMock),
         },
         {provide: FrameManager, useFactory: () => FrameManager.initialize(123)},
-        WINDOW_PROVIDER,
       ],
     }).overrideComponent(DirectiveExplorerComponent, {
       add: {schemas: [CUSTOM_ELEMENTS_SCHEMA]},
@@ -109,9 +108,21 @@ describe('DirectiveExplorerComponent', () => {
     });
 
     fixture = TestBed.overrideComponent(DirectiveExplorerComponent, {
-      remove: {imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyTabComponent]},
+      remove: {
+        imports: [DirectiveForestComponent, BreadcrumbsComponent, PropertyTabComponent],
+        providers: [SignalGraphManager],
+      },
       add: {
         imports: [MockDirectiveForestComponent, MockBreadcrumbsComponent, MockPropertyTabComponent],
+        providers: [
+          {
+            provide: SignalGraphManager,
+            useValue: {
+              listen: () => {},
+              destroy: () => {},
+            },
+          },
+        ],
       },
     }).createComponent(DirectiveExplorerComponent);
     comp = fixture.componentInstance;

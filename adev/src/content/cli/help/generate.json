@@ -48,6 +48,30 @@
   ],
   "subcommands": [
     {
+      "name": "ai-config",
+      "command": "ai-config",
+      "shortDescription": "Generates AI configuration files for Angular projects. This schematic creates configuration files that help AI tools follow Angular best practices, improving the quality of AI-generated code and suggestions.",
+      "options": [
+        {
+          "name": "tool",
+          "type": "array",
+          "default": "none",
+          "enum": [
+            "claude",
+            "copilot",
+            "cursor",
+            "gemini",
+            "jetbrains",
+            "none",
+            "windsurf"
+          ],
+          "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
+        }
+      ],
+      "aliases": [],
+      "deprecated": false
+    },
+    {
       "name": "app-shell",
       "command": "app-shell",
       "shortDescription": "Configures your project to generate an app-shell during build time.",
@@ -159,9 +183,9 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
+            "less",
             "sass",
-            "less"
+            "scss"
           ],
           "description": "The type of stylesheet files to be created for components in the application."
         },
@@ -351,10 +375,10 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
-            "sass",
             "less",
-            "none"
+            "none",
+            "sass",
+            "scss"
           ],
           "description": "Specify the type of stylesheet to be created for the component, or `none` to skip creating a stylesheet."
         },
@@ -396,8 +420,8 @@
           "name": "type",
           "type": "string",
           "enum": [
-            "karma",
-            "browserslist"
+            "browserslist",
+            "karma"
           ],
           "description": "Specifies the type of configuration file to generate.",
           "positional": 0
@@ -547,6 +571,12 @@
           "type": "array",
           "aliases": [
             "guardType"
+          ],
+          "enum": [
+            "CanActivate",
+            "CanActivateChild",
+            "CanDeactivate",
+            "CanMatch"
           ],
           "description": "Specifies the type(s) of guard to create. You can choose one or more of the following: `CanActivate` (controls access to a route), `CanActivateChild` (controls access to child routes), `CanDeactivate` (asks for confirmation before leaving a route), `CanMatch` (determines if a route can be matched)."
         },

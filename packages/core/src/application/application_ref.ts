@@ -92,22 +92,10 @@ export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
 }
 
 /**
- * A token for third-party components that can register themselves with NgProbe.
- *
- * @deprecated
- * @publicApi
- */
-export class NgProbeToken {
-  constructor(
-    public name: string,
-    public token: any,
-  ) {}
-}
-
-/**
  * Provides additional options to the bootstrapping process.
  *
  * @publicApi
+ * @deprecated 20.2 Configure `NgZone` in the `providers` array of the application module instead.
  */
 export interface BootstrapOptions {
   /**
@@ -116,6 +104,8 @@ export interface BootstrapOptions {
    * - Provide your own `NgZone` instance.
    * - `zone.js` - Use default `NgZone` which requires `Zone.js`.
    * - `noop` - Use `NoopNgZone` which does nothing.
+   *
+   * @deprecated BootstrapOptions is deprecated. Provide `NgZone` in the `providers` array of the module instead.
    */
   ngZone?: NgZone | 'zone.js' | 'noop';
 
@@ -139,6 +129,8 @@ export interface BootstrapOptions {
    * And if this option be set to true, the change detection will be
    * triggered async by scheduling a animation frame. So in the case above,
    * the change detection will only be triggered once.
+   *
+   * @deprecated BootstrapOptions is deprecated. Use `provideZoneChangeDetection` instead to configure coalescing.
    */
   ngZoneEventCoalescing?: boolean;
 
@@ -159,6 +151,7 @@ export interface BootstrapOptions {
    * With ngZoneRunCoalescing options, all change detections in an event loop trigger only once.
    * In addition, the change detection executes in requestAnimation.
    *
+   * @deprecated BootstrapOptions is deprecated. Use `provideZoneChangeDetection` instead to configure coalescing.
    */
   ngZoneRunCoalescing?: boolean;
 

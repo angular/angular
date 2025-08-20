@@ -49,7 +49,7 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_point, assets = [
 
     http_server(
         name = "devserver",
-        additional_root_paths = ["angular/packages/examples/upgrade"],
+        additional_root_paths = ["_main/packages/examples/upgrade"],
         srcs = [
             "//packages/examples/upgrade:index.html",
             "//:node_modules/zone.js",

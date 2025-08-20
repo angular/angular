@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ElementRegistry} from '../../animation';
+import {ElementRegistry} from '../../animation/element_removal_registry';
 import {setAnimationElementRemovalRegistry} from '../state';
 
 /**

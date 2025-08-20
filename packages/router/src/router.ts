@@ -14,7 +14,9 @@ import {
   Injectable,
   ɵPendingTasksInternal as PendingTasks,
   ɵRuntimeError as RuntimeError,
+  Signal,
   Type,
+  untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
@@ -176,6 +178,13 @@ export class Router {
    */
   readonly componentInputBindingEnabled: boolean = !!inject(INPUT_BINDER, {optional: true});
 
+  /**
+   * Signal of the current `Navigation` object when the router is navigating, and `null` when idle.
+   *
+   * Note: The current navigation becomes to null after the NavigationEnd event is emitted.
+   */
+  readonly currentNavigation = this.navigationTransitions.currentNavigation.asReadonly();
+
   constructor() {
     this.resetConfig(this.config);
 
@@ -192,7 +201,8 @@ export class Router {
     const subscription = this.navigationTransitions.events.subscribe((e) => {
       try {
         const currentTransition = this.navigationTransitions.currentTransition;
-        const currentNavigation = this.navigationTransitions.currentNavigation;
+        const currentNavigation = untracked(this.navigationTransitions.currentNavigation);
+
         if (currentTransition !== null && currentNavigation !== null) {
           this.stateManager.handleRouterEvent(e, currentNavigation);
           if (
@@ -337,16 +347,18 @@ export class Router {
   /**
    * Returns the current `Navigation` object when the router is navigating,
    * and `null` when idle.
+   *
+   * @deprecated 20.2 Use the `currentNavigation` signal instead.
    */
   getCurrentNavigation(): Navigation | null {
-    return this.navigationTransitions.currentNavigation;
+    return untracked(this.navigationTransitions.currentNavigation);
   }
 
   /**
    * The `Navigation` object of the most recent navigation to succeed and `null` if there
    *     has not been a successful navigation yet.
    */
-  get lastSuccessfulNavigation(): Navigation | null {
+  get lastSuccessfulNavigation(): Signal<Navigation | null> {
     return this.navigationTransitions.lastSuccessfulNavigation;
   }
 

@@ -1,5 +1,63 @@
 $code-font-size: 0.875rem;
 
+@mixin docs-theme {
+  .docs-dark-mode .shiki {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+
+    span {
+      color: var(--shiki-dark);
+      background-color: var(--shiki-dark-bg);
+      /* Optional, if you also want font styles */
+      font-style: var(--shiki-dark-font-style);
+      font-weight: var(--shiki-dark-font-weight);
+    }
+
+    .shiki-ln-line-highlighted,
+    button:hover {
+      span {
+        background-color: inherit;
+      }
+    }
+  }
+
+  .shiki {
+    &.cli {
+      padding-inline-start: 1rem;
+      padding-block: 1rem;
+    }
+
+    a {
+      color: inherit;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .docs-light-mode .shiki {
+    color: var(--shiki-light);
+    background-color: var(--shiki-light-bg);
+
+    span {
+      color: var(--shiki-light);
+      background-color: var(--shiki-light-bg);
+      /* Optional, if you also want font styles */
+      font-style: var(--shiki-light-font-style);
+      font-weight: var(--shiki-light-font-weight);
+      text-decoration: var(--shiki-light-text-decoration);
+    }
+
+    .shiki-ln-line-highlighted,
+    button:hover {
+      span {
+        background-color: inherit;
+      }
+    }
+  }
+}
+
 @mixin docs-code-block {
   // code across docs, inline, blocks, shell, example viewer, etc.
   code {
@@ -92,6 +150,7 @@ $code-font-size: 0.875rem;
     border: 1px solid var(--senary-contrast);
     border-radius: 0.25rem;
     background: var(--octonary-contrast);
+    overflow: hidden;
     transition:
       background 0.3s ease,
       border-color 0.3s ease;
@@ -124,8 +183,6 @@ $code-font-size: 0.875rem;
 
   // shell doesn't have a header, for commands only
   .shell {
-    border: 1px solid var(--quinary-contrast);
-
     pre {
       white-space: nowrap;
     }
@@ -139,31 +196,6 @@ $code-font-size: 0.875rem;
 
       &.hidden {
         display: none;
-      }
-    }
-
-    button[docs-copy-source-code] {
-      background-color: var(--quaternary-contrast);
-      border: 1px solid var(--quinary-contrast);
-
-      @container codeblock (min-width: 400px) {
-        border: 1px solid transparent;
-      }
-
-      .docs-copy {
-        path {
-          fill: var(--quinary-contrast);
-        }
-      }
-      .docs-check {
-        color: var(--page-background);
-      }
-      &:hover {
-        .docs-copy {
-          path {
-            fill: var(--octonary-contrast);
-          }
-        }
       }
     }
   }
@@ -182,10 +214,6 @@ $code-font-size: 0.875rem;
     transition:
       background-color 0.3s ease,
       border-color 0.3s ease;
-
-    @container codeblock (min-width: 400px) {
-      border: 1px solid transparent;
-    }
 
     .docs-icon {
       transition: opacity 0.3s ease-out;
@@ -296,29 +324,49 @@ $code-font-size: 0.875rem;
     }
   }
 
-  .shiki-ln-number {
-    border-inline-end: 1px solid var(--senary-contrast);
-    padding-inline-start: 0.75rem;
-    padding-inline-end: 0.5rem;
-    color: var(--quaternary-contrast);
-    font-size: $code-font-size;
-    text-align: right;
-  }
+  .shiki {
+    .shiki-ln-number.shiki-ln-number.shiki-ln-number {
+      border-inline-end: 1px solid var(--senary-contrast);
+      padding-inline-start: 0.75rem;
+      padding-inline-end: 0.5rem;
+      color: var(--quaternary-contrast);
+      font-size: $code-font-size;
+      text-align: right;
+      padding-block: 0.25rem;
+    }
+    
+    .line {
+      &.highlighted {
+        background-color: color-mix(in srgb, var(--bright-blue) 9%, var(--page-background));
+        color: color-mix(in srgb, var(--bright-blue) 60%, var(--full-contrast));
 
-  .highlighted {
-    background: color-mix(in srgb, var(--bright-blue) 9%, var(--page-background));
-    color: color-mix(in srgb, var(--bright-blue) 60%, var(--full-contrast));
-  }
-  .remove {
-    background: color-mix(in srgb, var(--orange-red) 10%, var(--page-background));
-    color: color-mix(in srgb, var(--hot-red) 80%, var(--full-contrast));
-  }
-  .add {
-    background: color-mix(in srgb, oklch(68.82% 0.224 155.13) 12%, var(--page-background));
-    color: color-mix(in srgb, var(--super-green), var(--full-contrast) 50%);
-  }
-  .hidden {
-    display: none;
+        span {
+          background-color: inherit;
+        }
+      }
+
+      &.remove {
+        background-color: color-mix(in srgb, var(--orange-red) 11%, var(--page-background));
+        color: color-mix(in srgb, var(--hot-red) 80%, var(--full-contrast));
+
+        span {
+          background-color: inherit;
+        }
+      }
+
+      &.add {
+        background-color: color-mix(in srgb, var(--super-green) 14%, var(--page-background));
+        color: color-mix(in srgb, var(--super-green), var(--full-contrast) 50%);
+
+        span {
+          background-color: inherit;
+        }
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
   }
 }
 

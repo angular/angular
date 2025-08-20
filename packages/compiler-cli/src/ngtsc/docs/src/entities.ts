@@ -15,6 +15,10 @@ export interface EntryCollection {
 
   moduleLabel: string;
   entries: DocEntry[];
+
+  repo: string; // The github repo
+
+  symbols?: string[][];
 }
 
 /** Type of top-level documentation entry. */

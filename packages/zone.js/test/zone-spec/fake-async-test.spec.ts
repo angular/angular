@@ -1152,6 +1152,86 @@ describe('FakeAsyncTestZoneSpec', () => {
       emptyRun,
     ),
   );
+
+  describe('setTickMode', () => {
+    it('should execute timers automatically when mode is set to automatic', async () => {
+      let ran = false;
+      await new Promise<void>((resolve) => {
+        fakeAsyncTestZone.run(() => {
+          setTimeout(() => {
+            ran = true;
+            resolve();
+          }, 10);
+          testZoneSpec.setTickMode('automatic');
+        });
+      });
+
+      expect(ran).toBe(true);
+      fakeAsyncTestZone.run(() => {
+        testZoneSpec.setTickMode('manual');
+      });
+    });
+
+    it('should execute multiple timers automatically', async () => {
+      const log: string[] = [];
+      const promise = new Promise<void>((resolve) => {
+        fakeAsyncTestZone.run(() => {
+          setTimeout(() => {
+            log.push('timer A');
+          }, 10);
+          setTimeout(() => {
+            log.push('timer B');
+            resolve();
+          }, 20);
+          testZoneSpec.setTickMode('automatic');
+        });
+      });
+
+      await promise;
+      expect(log).toEqual(['timer A', 'timer B']);
+      fakeAsyncTestZone.run(() => {
+        testZoneSpec.setTickMode('manual');
+      });
+    });
+
+    it('should allow mutation observers to execute between timers', async () => {
+      if (isNode) {
+        return;
+      }
+      const log: string[] = [];
+      const el = document.createElement('div');
+      let observer: MutationObserver;
+
+      await new Promise<void>((resolve) => {
+        fakeAsyncTestZone.run(() => {
+          document.body.appendChild(el);
+          observer = new MutationObserver(() => {
+            log.push('mutation');
+          });
+          observer.observe(el, {attributes: true});
+
+          setTimeout(() => {
+            log.push('timer A');
+            el.style.width = '100px'; // trigger mutation observer
+          }, 10);
+          setTimeout(() => {
+            debugger;
+            log.push('timer B');
+            resolve();
+          }, 10);
+
+          testZoneSpec.setTickMode('automatic');
+        });
+      });
+
+      expect(log).toEqual(['timer A', 'mutation', 'timer B']);
+      fakeAsyncTestZone.run(() => {
+        testZoneSpec.setTickMode('manual');
+        observer.disconnect();
+      });
+      document.body.removeChild(el);
+    });
+  });
 });
 
 class Log<T> {

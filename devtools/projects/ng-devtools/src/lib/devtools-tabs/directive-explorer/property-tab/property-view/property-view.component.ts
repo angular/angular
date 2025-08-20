@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
-import {DirectivePosition} from '../../../../../../../protocol';
+import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body.component';
@@ -22,8 +22,11 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
 })
 export class PropertyViewComponent {
   readonly directive = input.required<{name: string}>();
+  readonly signalGraphEnabled = input.required<boolean>();
+
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
+  readonly showSignalGraph = output<DebugSignalGraphNode>();
 
   private _nestedProps = inject(ElementPropertyResolver);
 

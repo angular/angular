@@ -2,29 +2,27 @@
 $dark-theme-class: 'dark-theme';
 $light-theme-class: 'light-theme';
 
-/* $browser expects 'chrome', 'firefox' or 'safari' */
-@mixin _theme($theme, $browser: '') {
-  @if $browser == '' {
+/* $top-level-style is required when the mixin is used in a global/top-level stylesheet. */
+@mixin _theme($theme, $top-level-style: false) {
+  @if $top-level-style == false {
     :host-context(:root.#{$theme}) {
       @content;
     }
   } @else {
-    /* Keep browser class name in sync with BrowserService. */
-    $browser-class: $browser + '-ui';
-    :host-context(:root.#{$theme}.#{$browser-class}) {
+    .#{$theme} {
       @content;
     }
   }
 }
 
-@mixin dark-theme($browser: '') {
-  @include _theme($dark-theme-class, $browser) {
+@mixin dark-theme($top-level-style: false) {
+  @include _theme($dark-theme-class, $top-level-style) {
     @content;
   }
 }
 
-@mixin light-theme($browser: '') {
-  @include _theme($light-theme-class, $browser) {
+@mixin light-theme($top-level-style: false) {
+  @include _theme($light-theme-class, $top-level-style) {
     @content;
   }
 }

@@ -12,6 +12,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ErrorHandler,
   Injectable,
   NgModule,
   TemplateRef,
@@ -19,6 +20,7 @@ import {
   ViewChild,
   ViewContainerRef,
   inject,
+  provideZonelessChangeDetection,
   signal,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -26,6 +28,7 @@ import {
   ChildrenOutletContexts,
   DefaultUrlSerializer,
   NavigationCancel,
+  NavigationEnd,
   NavigationError,
   Router,
   RouterModule,
@@ -33,12 +36,19 @@ import {
   UrlSerializer,
   UrlTree,
 } from '../index';
-import {of} from 'rxjs';
+import {firstValueFrom, of} from 'rxjs';
 import {switchMap, filter, mapTo, take} from 'rxjs/operators';
 
-import {provideRouter, withRouterConfig} from '../src/provide_router';
+import {
+  provideRouter,
+  withDisabledInitialNavigation,
+  withRouterConfig,
+  withViewTransitions,
+} from '../src/provide_router';
 import {afterNextNavigation} from '../src/utils/navigations';
 import {timeout} from './helpers';
+import {isBrowser, withBody} from '@angular/private/testing';
+import {bootstrapApplication} from '@angular/platform-browser';
 
 describe('Integration', () => {
   describe('routerLinkActive', () => {
@@ -509,6 +519,50 @@ describe('Integration', () => {
     // navigations to a and b were both cancelled.
     expect(cancellations.length).toEqual(2);
   });
+
+  if (isBrowser) {
+    it(
+      'should allow navigating during template execution',
+      withBody('<test-app></test-app>', async () => {
+        // Note this might not be a behavior that we want to keep, but it is currently relied on by some targets on G3
+        @Component({
+          template: 'simple',
+        })
+        class SimpleCmp {}
+
+        @Component({
+          selector: 'test-app',
+          template: `<router-outlet /> {{sideEffectWithRedirection()}}      `,
+          imports: [RouterOutlet],
+        })
+        class App {
+          navigate = true;
+          constructor(private router: Router) {}
+
+          sideEffectWithRedirection() {
+            if (this.navigate) {
+              this.router.navigateByUrl('/simple');
+              this.navigate = false;
+            }
+          }
+        }
+
+        const appRef = await bootstrapApplication(App, {
+          providers: [
+            provideZonelessChangeDetection(),
+            provideRouter(
+              [{path: 'simple', component: SimpleCmp}],
+              withDisabledInitialNavigation(),
+              withViewTransitions({skipInitialTransition: true}),
+            ),
+          ],
+        });
+
+        await appRef.injector.get(Router).navigateByUrl('/simple');
+        await expectAsync(appRef.whenStable()).toBeResolved();
+      }),
+    );
+  }
 });
 
 async function advance<T>(fixture: ComponentFixture<T>): Promise<void> {

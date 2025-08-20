@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
 // These 2 imports are expected to be red because they are generated a build time
@@ -373,6 +374,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/lifecycle-and-events',
           },
           {
+            label: 'Testing routing and navigation',
+            path: 'guide/routing/testing',
+            contentPath: 'guide/routing/testing',
+            status: 'new',
+          },
+          {
             label: 'Other routing tasks',
             path: 'guide/routing/common-router-tasks',
             contentPath: 'guide/routing/common-router-tasks',
@@ -383,9 +390,20 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/routing-with-urlmatcher',
           },
           {
+            label: 'Rendering strategies',
+            path: 'guide/routing/rendering-strategies',
+            contentPath: 'guide/routing/rendering-strategies',
+            status: 'new',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
+          },
+          {
+            label: 'Route transition animations',
+            path: 'guide/routing/route-transition-animations',
+            contentPath: 'guide/routing/route-transition-animations',
           },
         ],
       },
@@ -523,6 +541,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/pipes',
           },
           {
+            label: 'Testing routing and navigation',
+            path: 'guide/routing/testing',
+            contentPath: 'guide/routing/testing',
+            status: 'new',
+          },
+          {
             label: 'Debugging tests',
             path: 'guide/testing/debugging',
             contentPath: 'guide/testing/debugging',
@@ -636,8 +660,8 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
           },
           {
             label: 'Route transition animations',
-            path: 'guide/animations/route-animations',
-            contentPath: 'guide/animations/route-animations',
+            path: 'guide/routing/route-transition-animations',
+            contentPath: 'guide/routing/route-transition-animations',
           },
         ],
       },
@@ -661,6 +685,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         label: 'LLM prompts and AI IDE setup',
         path: 'ai/develop-with-ai',
         contentPath: 'ai/develop-with-ai',
+      },
+      {
+        label: 'Design Patterns',
+        path: 'ai/design-patterns',
+        contentPath: 'ai/design-patterns',
       },
       {
         label: 'Angular CLI MCP Server setup',
@@ -929,6 +958,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'ecosystem/rxjs-interop/output-interop',
             contentPath: 'ecosystem/rxjs-interop/output-interop',
           },
+          {
+            label: 'Unsubscribing with takeUntilDestroyed',
+            path: 'ecosystem/rxjs-interop/take-until-destroyed',
+            contentPath: 'ecosystem/rxjs-interop/take-until-destroyed',
+          },
         ],
       },
       {
@@ -982,6 +1016,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'ecosystem/custom-build-pipeline',
       },
       {
+        label: 'Tailwind',
+        path: 'guide/tailwind',
+        contentPath: 'guide/tailwind',
+        status: 'new',
+      },
+      {
         label: 'Angular Fire',
         path: 'https://github.com/angular/angularfire#readme',
       },
@@ -1007,6 +1047,20 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
     ],
   },
+  ...(isDevMode()
+    ? [
+        {
+          label: 'Adev Dev Guide',
+          children: [
+            {
+              label: 'Kitchen Sink',
+              path: 'kitchen-sink',
+              contentPath: 'kitchen-sink',
+            },
+          ],
+        },
+      ]
+    : []),
 ];
 
 export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
@@ -1141,6 +1195,10 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
           {
             label: 'Overview',
             path: 'cli/generate',
+          },
+          {
+            label: 'ai-config',
+            path: 'cli/generate/ai-config',
           },
           {
             label: 'app-shell',

@@ -17,12 +17,6 @@ describe('CanvasComponent', () => {
   });
   // #enddocregion enable-toBlob-macrotask
   // #docregion without-toBlob-macrotask
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CanvasComponent],
-    });
-  });
-
   it('should be able to generate blob data from canvas', fakeAsync(() => {
     const fixture = TestBed.createComponent(CanvasComponent);
     const canvasComp = fixture.componentInstance;

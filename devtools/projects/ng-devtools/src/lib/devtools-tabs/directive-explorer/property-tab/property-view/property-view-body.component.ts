@@ -17,7 +17,11 @@ import {
   output,
   signal,
 } from '@angular/core';
-import {DirectivePosition, SerializedInjectedService} from '../../../../../../../protocol';
+import {
+  DebugSignalGraphNode,
+  DirectivePosition,
+  SerializedInjectedService,
+} from '../../../../../../../protocol';
 
 import {
   DirectivePropertyResolver,
@@ -49,8 +53,10 @@ export class PropertyViewBodyComponent {
   readonly directivePropControls = input.required<DirectiveTreeData>();
   readonly directiveOutputControls = input.required<DirectiveTreeData>();
   readonly directiveStateControls = input.required<DirectiveTreeData>();
+  readonly signalGraphEnabled = input.required<boolean>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
+  readonly showSignalGraph = output<DebugSignalGraphNode>();
 
   protected readonly dependencies = computed(() => {
     const metadata = this.controller().directiveMetadata;

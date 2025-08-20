@@ -1,6 +1,6 @@
 @use 'sass:color';
 @use 'sass:map';
-@use './theme' as theme;
+@use './theme' as th;
 
 /* A map with all available solid colors (excl. Special). Available as CSS vars as well. */
 /* prettier-ignore */
@@ -183,9 +183,13 @@ $colors: convert-to-rgb($_colors); /* Main color map */
   :root {
     @include convert-color-map-to-vars($colors);
     @include _light-colors();
+  }
 
-    &.#{theme.$dark-theme-class} {
-      @include _dark-colors();
-    }
+  @include th.light-theme(true) {
+    @include _light-colors();
+  }
+
+  @include th.dark-theme(true) {
+    @include _dark-colors();
   }
 }

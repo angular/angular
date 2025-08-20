@@ -62,7 +62,7 @@ module.exports = function (config) {
     // Bazel inter-op: Allow tests to request resources from either
     //   /base/node_modules/path/to/thing
     // or
-    //   /base/angular/node_modules/path/to/thing
+    //   /base/_main/node_modules/path/to/thing
     // This can be removed when all karma tests are run under Bazel, then we
     // don't need this entire config file.
     proxies: {

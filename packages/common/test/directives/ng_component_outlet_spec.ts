@@ -187,20 +187,6 @@ describe('insert/remove', () => {
     expect(fixture.nativeElement).toHaveText('projected foo');
   }));
 
-  it('should resolve components from other modules, if supplied as an NgModuleFactory', waitForAsync(() => {
-    const compiler = TestBed.inject(Compiler);
-    let fixture = TestBed.createComponent(TestComponent);
-
-    fixture.detectChanges();
-    expect(fixture.nativeElement).toHaveText('');
-
-    fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
-    fixture.componentInstance.currentComponent = Module2InjectedComponent;
-
-    fixture.detectChanges();
-    expect(fixture.nativeElement).toHaveText('baz');
-  }));
-
   it('should resolve components from other modules, if supplied as an NgModule class reference', waitForAsync(() => {
     let fixture = TestBed.createComponent(TestComponent);
 
@@ -212,21 +198,6 @@ describe('insert/remove', () => {
 
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('baz');
-  }));
-
-  it('should clean up moduleRef, if supplied as an NgModuleFactory', waitForAsync(() => {
-    const compiler = TestBed.inject(Compiler);
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
-    fixture.componentInstance.currentComponent = Module2InjectedComponent;
-    fixture.detectChanges();
-
-    const moduleRef = fixture.componentInstance.ngComponentOutlet?.['_moduleRef']!;
-    spyOn(moduleRef, 'destroy').and.callThrough();
-
-    expect(moduleRef.destroy).not.toHaveBeenCalled();
-    fixture.destroy();
-    expect(moduleRef.destroy).toHaveBeenCalled();
   }));
 
   it('should clean up moduleRef, if supplied as an NgModule class reference', waitForAsync(() => {
@@ -241,39 +212,6 @@ describe('insert/remove', () => {
     expect(moduleRef.destroy).not.toHaveBeenCalled();
     fixture.destroy();
     expect(moduleRef.destroy).toHaveBeenCalled();
-  }));
-
-  it("should not re-create moduleRef when it didn't actually change", waitForAsync(() => {
-    const compiler = TestBed.inject(Compiler);
-    const fixture = TestBed.createComponent(TestComponent);
-
-    fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
-    fixture.componentInstance.currentComponent = Module2InjectedComponent;
-    fixture.detectChanges();
-    expect(fixture.nativeElement).toHaveText('baz');
-    const moduleRef = fixture.componentInstance.ngComponentOutlet?.['_moduleRef'];
-
-    fixture.componentInstance.currentComponent = Module2InjectedComponent2;
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement).toHaveText('baz2');
-    expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet?.['_moduleRef']);
-  }));
-
-  it('should re-create moduleRef when changed (NgModuleFactory)', waitForAsync(() => {
-    const compiler = TestBed.inject(Compiler);
-    const fixture = TestBed.createComponent(TestComponent);
-    fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule2);
-    fixture.componentInstance.currentComponent = Module2InjectedComponent;
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement).toHaveText('baz');
-
-    fixture.componentInstance.ngModuleFactory = compiler.compileModuleSync(TestModule3);
-    fixture.componentInstance.currentComponent = Module3InjectedComponent;
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement).toHaveText('bat');
   }));
 
   it('should re-create moduleRef when changed (NgModule class reference)', waitForAsync(() => {
@@ -438,7 +376,6 @@ const TEST_CMP_TEMPLATE = `<ng-template *ngComponentOutlet="
       inputs: inputs;
       content: projectables;
       ngModule: ngModule;
-      ngModuleFactory: ngModuleFactory;
     "></ng-template>`;
 @Component({
   selector: 'test-cmp',
@@ -452,7 +389,6 @@ class TestComponent {
   inputs?: Record<string, unknown>;
   projectables?: any[][];
   ngModule?: Type<unknown>;
-  ngModuleFactory?: NgModuleFactory<unknown>;
 
   get cmpRef(): ComponentRef<any> | undefined {
     return this.ngComponentOutlet?.['_componentRef'];

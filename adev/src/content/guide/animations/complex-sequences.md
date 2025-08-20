@@ -121,11 +121,11 @@ IMPORTANT: If you need to animate the items of an `*ngFor` list and there is a p
 
 ## Animations and Component View Encapsulation
 
-Angular animations are based on the components DOM structure and do not directly take [View Encapsulation](guide/components/styling#style-scoping) into account, this means that components using `ViewEncapsulation.Emulated` behave exactly as if they were using `ViewEncapsulation.None` (`ViewEncapsulation.ShadowDom` behaves differently as we'll discuss shortly).
+Angular animations are based on the components DOM structure and do not directly take [View Encapsulation](guide/components/styling#style-scoping) into account, this means that components using `ViewEncapsulation.Emulated` behave exactly as if they were using `ViewEncapsulation.None` (`ViewEncapsulation.ShadowDom` and `ViewEncapsulation.IsolatedShadowDom` behave differently as we'll discuss shortly).
 
 For example if the `query()` function (which you'll see more of in the rest of the Animations guide) were to be applied at the top of a tree of components using the emulated view encapsulation, such query would be able to identify (and thus animate) DOM elements on any depth of the tree.
 
-On the other hand the `ViewEncapsulation.ShadowDom` changes the component's DOM structure by "hiding" DOM elements inside [`ShadowRoot`](https://developer.mozilla.org/docs/Web/API/ShadowRoot) elements. Such DOM manipulations do prevent some of the animations implementation to work properly since it relies on simple DOM structures and doesn't take `ShadowRoot` elements into account. Therefore it is advised to avoid applying animations to views incorporating components using the ShadowDom view encapsulation.
+On the other hand the `ViewEncapsulation.ShadowDom` and `ViewEncapsulation.IsolatedShadowDom` changes the component's DOM structure by "hiding" DOM elements inside [`ShadowRoot`](https://developer.mozilla.org/docs/Web/API/ShadowRoot) elements. Such DOM manipulations do prevent some of the animations implementation to work properly since it relies on simple DOM structures and doesn't take `ShadowRoot` elements into account. Therefore it is advised to avoid applying animations to views incorporating components using the ShadowDom view encapsulation.
 
 ## Animation sequence summary
 
@@ -140,5 +140,5 @@ You might also be interested in the following:
   <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
   <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
   <docs-pill href="guide/animations/reusable-animations" title="Reusable animations"/>
-  <docs-pill href="guide/animations/route-animations" title="Route transition animations"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
 </docs-pill-row>

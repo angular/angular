@@ -2704,3 +2704,241 @@ export declare class MyApp {
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_with_alias.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.one = false;
+        this.value = () => 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @if (one) {
+        {{one}}
+      } @else if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @if (one) {
+        {{one}}
+      } @else if (value(); as alias) {
+        {{value()}} as {{alias}}
+      }
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_with_alias.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    one: boolean;
+    value: () => number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_with_same_alias.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.one = false;
+        this.two = 2;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @if (one; as alias) {
+        {{alias}}
+      } @else if (two; as alias) {
+        {{alias}}
+      }
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @if (one; as alias) {
+        {{alias}}
+      } @else if (two; as alias) {
+        {{alias}}
+      }
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_with_same_alias.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    one: boolean;
+    two: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_multiple_with_alias.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.message = 'hello';
+        this.one = 1;
+        this.two = 2;
+        this.three = 3;
+        this.four = 4;
+        this.five = 5;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div>
+      {{message}}
+      @if (one; as foo) {
+        One: {{foo}}
+      } @else if (two) {
+        Two: {{two}}
+      } @else if (three; as bar) {
+        Three: {{bar}}
+      } @else if (four; as baz) {
+        Four: {{baz}}
+      } @else if (five) {
+        Five: {{five}}
+      }
+    </div>
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <div>
+      {{message}}
+      @if (one; as foo) {
+        One: {{foo}}
+      } @else if (two) {
+        Two: {{two}}
+      } @else if (three; as bar) {
+        Three: {{bar}}
+      } @else if (four; as baz) {
+        Four: {{baz}}
+      } @else if (five) {
+        Five: {{five}}
+      }
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_multiple_with_alias.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    message: string;
+    one: number;
+    two: number;
+    three: number;
+    four: number;
+    five: number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_nested_with_alias.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+export class MyApp {
+    constructor() {
+        this.foo = false;
+        this.value = () => 1;
+    }
+}
+MyApp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "0.0.0-PLACEHOLDER", type: MyApp, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    @if (foo) {
+      foo
+    } @else if (value(); as root) {
+      Root: {{value()}}/{{root}}
+
+      @if (foo) {
+        foo
+      } @else if (value(); as inner) {
+        Inner: {{value()}}/{{root}}/{{inner}}
+
+        @if (foo) {
+          foo
+        } @else if (value(); as innermost) {
+          Innermost: {{value()}}/{{root}}/{{inner}}/{{innermost}}
+        }
+      }
+    }
+  `, isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    @if (foo) {
+      foo
+    } @else if (value(); as root) {
+      Root: {{value()}}/{{root}}
+
+      @if (foo) {
+        foo
+      } @else if (value(); as inner) {
+        Inner: {{value()}}/{{root}}/{{inner}}
+
+        @if (foo) {
+          foo
+        } @else if (value(); as innermost) {
+          Innermost: {{value()}}/{{root}}/{{inner}}/{{innermost}}
+        }
+      }
+    }
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: else_if_nested_with_alias.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class MyApp {
+    foo: boolean;
+    value: () => number;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never, true, never>;
+}
+

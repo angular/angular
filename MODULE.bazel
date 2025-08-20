@@ -1,0 +1,163 @@
+"""Rules/toolchains for angular with Bazel."""
+
+module(
+    name = "angular",
+)
+
+bazel_dep(name = "rules_pkg", version = "1.1.0")
+bazel_dep(name = "rules_nodejs", version = "6.5.0")
+bazel_dep(name = "aspect_rules_ts", version = "3.7.0")
+bazel_dep(name = "aspect_rules_js", version = "2.4.2")
+bazel_dep(name = "aspect_rules_esbuild", version = "0.22.1")
+bazel_dep(name = "aspect_rules_jasmine", version = "2.0.0")
+bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
+bazel_dep(name = "bazel_skylib", version = "1.8.1")
+bazel_dep(name = "aspect_bazel_lib", version = "2.21.0")
+bazel_dep(name = "tar.bzl", version = "0.5.5")
+bazel_dep(name = "yq.bzl", version = "0.2.0")
+bazel_dep(name = "rules_angular")
+git_override(
+    module_name = "rules_angular",
+    commit = "17eac47ea99057f7473a7d93292e76327c894ed9",
+    remote = "https://github.com/devversion/rules_angular.git",
+)
+
+bazel_dep(name = "devinfra")
+git_override(
+    module_name = "devinfra",
+    commit = "72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c",
+    remote = "https://github.com/angular/dev-infra.git",
+)
+
+bazel_dep(name = "rules_sass")
+git_override(
+    module_name = "rules_sass",
+    commit = "76078d5e9776a0080dcee496e90b88d8a6179c19",
+    remote = "https://github.com/devversion/rules_sass.git",
+)
+
+bazel_dep(name = "rules_browsers")
+git_override(
+    module_name = "rules_browsers",
+    commit = "8ee9ae3216ef26516c8ef20537c89857343cdc3a",
+    remote = "https://github.com/devversion/rules_browsers.git",
+)
+
+yq = use_extension("@yq.bzl//yq:extensions.bzl", "yq")
+use_repo(yq, "yq_toolchains")
+
+node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
+node.toolchain(node_version = "20.19.0")
+use_repo(node, "nodejs_toolchains")
+use_repo(node, "nodejs_darwin_amd64")
+use_repo(node, "nodejs_darwin_arm64")
+use_repo(node, "nodejs_linux_amd64")
+use_repo(node, "nodejs_linux_arm64")
+use_repo(node, "nodejs_linux_ppc64le")
+use_repo(node, "nodejs_linux_s390x")
+use_repo(node, "nodejs_windows_amd64")
+
+pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+use_repo(pnpm, "pnpm")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+npm.npm_translate_lock(
+    name = "npm",
+    data = [
+        "//:.pnpmfile.cjs",
+        "//:package.json",
+        "//:pnpm-workspace.yaml",
+        "//:tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
+        "//adev:package.json",
+        "//adev/shared-docs:package.json",
+        "//adev/shared-docs/pipeline/api-gen:package.json",
+        "//integration:package.json",
+        "//modules:package.json",
+        "//packages/animations:package.json",
+        "//packages/benchpress:package.json",
+        "//packages/common:package.json",
+        "//packages/compiler:package.json",
+        "//packages/compiler-cli:package.json",
+        "//packages/compiler-cli/linker/babel/test:package.json",
+        "//packages/core:package.json",
+        "//packages/core/test/bundling:package.json",
+        "//packages/elements:package.json",
+        "//packages/forms:package.json",
+        "//packages/language-service:package.json",
+        "//packages/localize:package.json",
+        "//packages/platform-browser:package.json",
+        "//packages/platform-browser-dynamic:package.json",
+        "//packages/platform-server:package.json",
+        "//packages/router:package.json",
+        "//packages/service-worker:package.json",
+        "//packages/upgrade:package.json",
+        "//tools/bazel/rules_angular_store:package.json",
+    ],
+    npmrc = "//:.npmrc",
+    pnpm_lock = "//:pnpm-lock.yaml",
+    verify_node_modules_ignored = "//:.bazelignore",
+)
+use_repo(npm, "npm")
+
+rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
+rules_ts_ext.deps(
+    name = "angular_npm_typescript",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.2 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==",
+    ts_version_from = "//:package.json",
+)
+use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
+
+rules_angular = use_extension("@rules_angular//setup:extensions.bzl", "rules_angular")
+rules_angular.setup(
+    name = "components_rules_angular_configurable_deps",
+    angular_compiler_cli = "//:node_modules/@angular/compiler-cli",
+    typescript = "//:node_modules/typescript",
+)
+use_repo(rules_angular, **{"rules_angular_configurable_deps": "components_rules_angular_configurable_deps"})
+
+register_toolchains(
+    "@devinfra//bazel/git-toolchain:git_linux_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_x86_toolchain",
+    "@devinfra//bazel/git-toolchain:git_macos_arm64_toolchain",
+    "@devinfra//bazel/git-toolchain:git_windows_toolchain",
+)
+
+CLDR_VERSION = "41"
+
+cldr_json_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_json_data_repository")
+
+cldr_json_data(
+    name = "cldr_json_data",
+    urls = {
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (CLDR_VERSION, CLDR_VERSION): "649b76647269e32b1b0a5f7b6eed52e9e63a1581f1afdcf4f6771e49c9713614",
+    },
+)
+
+cldr_xml_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_xml_data_repository")
+
+cldr_xml_data(
+    name = "cldr_xml_data",
+    urls = {
+        "https://github.com/unicode-org/cldr/releases/download/release-%s/cldr-common-%s.0.zip" % (CLDR_VERSION, CLDR_VERSION): "823c6170c41e2de2c229574e8a436332d25f1c9723409867fe721e00bc92d853",
+    },
+)
+
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
+http_archive(
+    name = "sauce_connect_linux_amd64",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "26b9c3630f441b47854b6032f7eca6f1d88d3f62e50ee44c27015d71a5155c36",
+    strip_prefix = "sc-4.8.2-linux",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-linux.tar.gz",
+)
+
+http_archive(
+    name = "sauce_connect_mac",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "28277ce81ef9ab84f5b87b526258920a8ead44789a5034346e872629bbf38089",
+    strip_prefix = "sc-4.8.2-osx",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
+)

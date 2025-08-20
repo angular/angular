@@ -1,6 +1,5 @@
 load("//packages/common/locales:index.bzl", "LOCALES", "generate_all_locale_files", "generate_closure_locale_file")
-load("//tools:defaults.bzl", "pkg_npm")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults2.bzl", "npm_package", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -31,9 +30,11 @@ ts_project(
     ),
 )
 
-pkg_npm(
-    name = "package",
+npm_package(
     # TODO(devversion): Remove glob for checked-in legacy locale files that haven't been
     # removed in the past (when CLDR has been updated). These can be removed in a major.
-    deps = ["global/%s.js" % l for l in LOCALES] + [":locales"] + glob(["global/*.js"]),
+    srcs = ["global/%s.js" % l for l in LOCALES] + [
+        ":locales",
+        ":locales_types",
+    ] + glob(["global/*.js"]),
 )

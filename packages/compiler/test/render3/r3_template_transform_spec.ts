@@ -2386,6 +2386,24 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse an else if block with an aliased expression', () => {
+      expectFromHtml(`
+        @if (cond.expr; as foo) {
+          Main case was true!
+        } @else if (other.expr; as bar) {
+          Other case was true!
+        }
+        `).toEqual([
+        ['IfBlock'],
+        ['IfBlockBranch', 'cond.expr'],
+        ['Variable', 'foo', 'foo'],
+        ['Text', ' Main case was true! '],
+        ['IfBlockBranch', 'other.expr'],
+        ['Variable', 'bar', 'bar'],
+        ['Text', ' Other case was true! '],
+      ]);
+    });
+
     describe('validations', () => {
       it('should report an if block without a condition', () => {
         expect(() =>
@@ -2430,14 +2448,6 @@ describe('R3 template transform', () => {
           @if (foo) {hello} @else\nif (bar) {goodbye}
         `),
         ).toThrowError(/Unrecognized block @else\nif/);
-      });
-
-      it('should report an else if block that has an `as` expression', () => {
-        expect(() =>
-          parse(`
-          @if (foo) {hello} @else if (bar; as alias) {goodbye}
-        `),
-        ).toThrowError(/"as" expression is only allowed on the primary @if block/);
       });
 
       it('should report an @else if block used without an @if block', () => {

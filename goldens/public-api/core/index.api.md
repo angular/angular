@@ -197,12 +197,15 @@ export interface Binding {
 // @public
 export function booleanAttribute(value: unknown): boolean;
 
-// @public
+// @public @deprecated
 export interface BootstrapOptions {
     // @deprecated
     ignoreChangesOutsideZone?: boolean;
+    // @deprecated
     ngZone?: NgZone | 'zone.js' | 'noop';
+    // @deprecated
     ngZoneEventCoalescing?: boolean;
+    // @deprecated
     ngZoneRunCoalescing?: boolean;
 }
 
@@ -588,9 +591,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     // (undocumented)
     onDestroy(): void;
 }
-
-// @public @deprecated (undocumented)
-export const defineInjectable: typeof ɵɵdefineInjectable;
 
 // @public
 export interface DestroyableInjector extends Injector {
@@ -1275,15 +1275,6 @@ export abstract class NgModuleRef<T> {
     abstract onDestroy(callback: () => void): void;
 }
 
-// @public @deprecated
-export class NgProbeToken {
-    constructor(name: string, token: any);
-    // (undocumented)
-    name: string;
-    // (undocumented)
-    token: any;
-}
-
 // @public
 export class NgZone {
     constructor(options: {
@@ -1397,9 +1388,6 @@ export interface OutputRefSubscription {
     // (undocumented)
     unsubscribe(): void;
 }
-
-// @public @deprecated
-export const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 // @public
 export class PendingTasks {
@@ -2019,6 +2007,7 @@ export abstract class ViewContainerRef {
 // @public
 export enum ViewEncapsulation {
     Emulated = 0,
+    IsolatedShadowDom = 4,
     None = 2,
     ShadowDom = 3
 }

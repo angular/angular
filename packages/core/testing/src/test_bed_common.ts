@@ -99,7 +99,7 @@ export interface TestModuleMetadata {
 
   /**
    * Whether animate.enter / animate.leave should trigger as normal or be disabled.
-   * Defaults to `true`.
+   * Defaults to `false`.
    */
   animationsEnabled?: boolean;
 }

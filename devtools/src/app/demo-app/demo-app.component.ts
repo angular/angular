@@ -7,6 +7,7 @@
  */
 
 import {
+  afterRenderEffect,
   Component,
   computed,
   CUSTOM_ELEMENTS_SCHEMA,
@@ -82,5 +83,11 @@ export class DemoAppComponent {
       return '► Click to expand';
     }
     return '▼ Click to collapse';
+  }
+
+  constructor() {
+    afterRenderEffect(() => {
+      this.zippy();
+    });
   }
 }
