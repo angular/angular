@@ -103,7 +103,7 @@ export function ngDebugSignalPropertiesInspectionApiIsSupported(): boolean {
   const ng = ngDebugClient();
 
   // If all apps are Angular, make the API available.
-  const roots = getRoots();
+  const roots = getAppRoots();
   return (
     !!roots.length &&
     roots.every((el) => {
