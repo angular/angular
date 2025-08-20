@@ -14,13 +14,7 @@
 
 export * from './metadata';
 export {assertInInjectionContext, runInInjectionContext} from './contextual';
-export {
-  ɵɵdefineInjectable,
-  defineInjectable,
-  ɵɵdefineInjector,
-  InjectableType,
-  InjectorType,
-} from './interface/defs';
+export {ɵɵdefineInjectable, ɵɵdefineInjector, InjectableType, InjectorType} from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {Injector, DestroyableInjector} from './injector';
