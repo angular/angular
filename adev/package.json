@@ -56,7 +56,7 @@
     "mermaid": "11.10.0",
     "ngx-progressbar": "14.0.0",
     "open-in-idx": "0.1.1",
-    "playwright-core": "1.54.2",
+    "playwright-core": "1.55.0",
     "preact-render-to-string": "6.6.1",
     "preact": "10.27.1",
     "prettier": "3.6.2",

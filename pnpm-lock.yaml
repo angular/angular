@@ -713,8 +713,8 @@ importers:
         specifier: 0.1.1
         version: 0.1.1
       playwright-core:
-        specifier: 1.54.2
-        version: 1.54.2
+        specifier: 1.55.0
+        version: 1.55.0
       preact:
         specifier: 10.27.1
         version: 10.27.1
@@ -9004,8 +9004,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright-core@1.54.2:
-    resolution: {integrity: sha512-n5r4HFbMmWsB4twG7tJLDN9gmBUeSPcsBZiWSE4DnYz9mJMAFqr2ID7+eGC9kpEnxExJ1epttwR59LEWCk8mtA==}
+  playwright-core@1.55.0:
+    resolution: {integrity: sha512-GvZs4vU3U5ro2nZpeiwyb0zuFaqb9sUiAJuyrWpcGouD8y9/HLgGbNRjIph7zU9D3hnPaisMl9zG9CgFi/biIg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -21256,7 +21256,7 @@ snapshots:
 
   playwright-core@1.54.1: {}
 
-  playwright-core@1.54.2: {}
+  playwright-core@1.55.0: {}
 
   plugin-error@2.0.1:
     dependencies:
