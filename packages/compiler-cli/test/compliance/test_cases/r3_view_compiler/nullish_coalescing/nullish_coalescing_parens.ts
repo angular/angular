@@ -6,6 +6,10 @@ import {Component} from '@angular/core';
     <div>{{ (x && y) ?? z }}</div>
     <div>{{ x && (y ?? z) }}</div>
     <div>{{ x?.y ?? y?.z }}</div>
+    <div>{{ (x?.y ?? y) || z }}</div>
+    <div>{{ (x?.y ?? y) && z }}</div>
+    <div>{{ z || (x?.y ?? y) }}</div>
+    <div>{{ z && (x?.y ?? y) }}</div>
     `,
 })
 export class MyApp {
