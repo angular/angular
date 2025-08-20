@@ -69,16 +69,6 @@ export const PLATFORM_ID = new InjectionToken<Object>(ngDevMode ? 'Platform ID' 
   factory: () => 'unknown', // set a default platform name, when none set explicitly
 });
 
-/**
- * A DI token that indicates the root directory of
- * the application
- * @publicApi
- * @deprecated
- */
-export const PACKAGE_ROOT_URL = new InjectionToken<string>(
-  ngDevMode ? 'Application Packages Root URL' : '',
-);
-
 // We keep this token here, rather than the animations package, so that modules that only care
 // about which animations module is loaded (e.g. the CDK) can retrieve it without having to
 // include extra dependencies. See #44970 for more context.
