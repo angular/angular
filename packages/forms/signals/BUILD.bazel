@@ -3,7 +3,7 @@ load("//tools:defaults2.bzl", "ng_project")
 package(default_visibility = ["//visibility:public"])
 
 ng_project(
-    name = "experimental",
+    name = "signals",
     srcs = glob(
         [
             "*.ts",

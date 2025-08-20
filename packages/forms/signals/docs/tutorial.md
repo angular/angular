@@ -115,7 +115,7 @@ A simple form just takes a signal with the data and produces matching field stru
 // feedback.ts
 import {
   form,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 @Component({/*...*/})
 export class FeedbackComponent {
@@ -134,7 +134,7 @@ Now in the template we can use the new `[control]` directive.
 import {
   form,
   Control,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
@@ -200,7 +200,7 @@ import {
   Control,
   // Import the required validator
   required,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 /* ... */
 export class FeedbackComponent {
   readonly data = signal<Feedback>({/*...*/});
@@ -298,7 +298,7 @@ import {
   required,
   // Import validate
   validate,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 ```
 
 Similar to `required`, it takes a path, but also a validator function:
@@ -451,7 +451,7 @@ In our case, we'll create a `RatingComponent` which will display stars like this
 import {
   FormUiControl,
   FormError
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 import {input, model} from '@angular/core';
 
 export class RatingComponent implements FormUiControl<number> {
@@ -492,7 +492,7 @@ We use the `disabled` rule for this.
 import {
   /* ... */
   disabled,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 /* ... */
 export class FeedbackComponent {
@@ -560,7 +560,7 @@ import {
   Schema,
   required,
   validate,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 export const friendSchema: Schema<Friend> = (friend) => {
   required(friend.name);
@@ -583,7 +583,7 @@ We'll create a separate file for reusable validators.
 // validator.ts
 import {
   Validator
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 export const emailValidator: Validator<string> =
   ({value}) => {
@@ -599,7 +599,7 @@ import {
   Schema,
   required,
   validate,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 import {emailValidator} from './validators';
 
 // Schema is not used in this file.
@@ -617,7 +617,7 @@ This component will display the form fields for a single friend and used in arra
 ```typescript
 // friend.ts
 import { Component, ChangeDetectionStrategy, input } from '@angular/core';
-import { Field } from '@angular/forms/experimental';
+import { Field } from '@angular/forms/signals';
 
 
 @Component({
@@ -666,7 +666,7 @@ We can use the `applyEach` rule within our main form definition to apply the `fr
 import {
   /* ... */
   applyEach,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 import { friendSchema } from './friend';
 
@@ -733,7 +733,7 @@ import {
   /* ... */
   applyEach,
   hidden
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 import { friendSchema } from './friend';
 
@@ -867,7 +867,7 @@ To handle form submission, use the `submit` function, passing it your form insta
 import {
   /* ... */
   submit,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 /* ... */
 export class FeedbackComponent {

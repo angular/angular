@@ -11,7 +11,7 @@ ts_project(
         "//packages/core",
         "//packages/core/testing",
         "//packages/forms",
-        "//packages/forms/experimental",
+        "//packages/forms/signals",
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
@@ -19,7 +19,7 @@ ts_project(
 )
 
 # To run this:
-# yarn bazel test //packages/forms/experimental/test/node:test
+# pnpm bazel test //packages/forms/signals/test/node:test
 
 zoneless_jasmine_test(
     name = "test",

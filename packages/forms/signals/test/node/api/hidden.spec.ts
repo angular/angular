@@ -7,7 +7,7 @@
  */
 
 import {Injector, signal} from '@angular/core';
-import {form, hidden, validate, ValidationError} from '@angular/forms/experimental';
+import {form, hidden, validate, ValidationError} from '@angular/forms/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('hidden', () => {

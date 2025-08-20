@@ -78,7 +78,7 @@ export const catSchema = schema<Cat>((cat) => {
 
 ```typescript
 // Before
-import {FieldDirective} from '@angular/forms/experimental';
+import {FieldDirective} from '@angular/forms/signals';
 
 @Component({
   imports: [FieldDirective],
@@ -88,7 +88,7 @@ class CatComponent {
 }
 
 // After
-import {Control} from '@angular/forms/experimental';
+import {Control} from '@angular/forms/signals';
 
 @Component({
   imports: [Control],
@@ -258,7 +258,7 @@ field.
 ```typescript
 // product.service.ts
 import {ResourceRef} from '@angular/core';
-import {DataKey} from '@angular/forms/experimental';
+import {DataKey} from '@angular/forms/signals';
 
 // Each product would have a list of available versions, e.g. [1, 2, 3]
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
@@ -269,7 +269,7 @@ Then, let's create a separate schema for a product.
 ```typescript
 // product.service.ts
 import {ResourceRef} from '@angular/core';
-import {schema} from '@angular/forms/experimental';
+import {schema} from '@angular/forms/signals';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -290,7 +290,7 @@ service:
 ```typescript
 // product.service.ts
 import {ResourceRef, inject} from '@angular/core';
-import {schema, required} from '@angular/forms/experimental';
+import {schema, required} from '@angular/forms/signals';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -307,7 +307,7 @@ Now we can use `define` rule to attach a resource to the `product.name` field.
 ```typescript
 // product.service.ts
 import {ResourceRef, inject, resource} from '@angular/core';
-import {schema, required, define} from '@angular/forms/experimental';
+import {schema, required, define} from '@angular/forms/signals';
 
 export const VERSIONS_KEY = new DataKey<ResourceRef<number[]>>();
 
@@ -446,7 +446,7 @@ The new `readonly` rule is very similar to `disabled`:
 import {
   /* ... */
   readonly,
-} from '@angular/forms/experimental';
+} from '@angular/forms/signals';
 
 /* ... */
 export class FeedbackComponent {

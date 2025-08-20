@@ -36,7 +36,7 @@ ng_package(
     ],
     deps = [
         ":forms",
-        "//packages/forms/experimental",
+        "//packages/forms/signals",
     ],
 )
 
@@ -78,7 +78,7 @@ filegroup(
             "src/**/*.ts",
         ],
         exclude = [
-            "experimental/**/*.ts",
+            "signals/**/*.ts",
         ],
     ) + ["PACKAGE.md"],
 )
