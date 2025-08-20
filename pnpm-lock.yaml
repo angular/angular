@@ -374,8 +374,8 @@ importers:
         specifier: 0.2100.0-next.0
         version: 0.2100.0-next.0(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#d4d56bbdde1c29d7a97080bde10dd87aec64a0c3
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d4d56bbdde1c29d7a97080bde10dd87aec64a0c3(@modelcontextprotocol/sdk@1.17.3)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#c93dfc86a1a9a4eaa73c5ed26ef5f3bd333128d9
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c93dfc86a1a9a4eaa73c5ed26ef5f3bd333128d9(@modelcontextprotocol/sdk@1.17.3)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.3)
@@ -1390,9 +1390,9 @@ packages:
       '@angular/cdk': 21.0.0-next.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d4d56bbdde1c29d7a97080bde10dd87aec64a0c3':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d4d56bbdde1c29d7a97080bde10dd87aec64a0c3}
-    version: 0.0.0-5dcd68302563500c0931b35b8d42e03ad5157db1
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c93dfc86a1a9a4eaa73c5ed26ef5f3bd333128d9':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c93dfc86a1a9a4eaa73c5ed26ef5f3bd333128d9}
+    version: 0.0.0-72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c
     hasBin: true
 
   '@angular/ssr@21.0.0-next.0':
@@ -11892,7 +11892,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/d4d56bbdde1c29d7a97080bde10dd87aec64a0c3(@modelcontextprotocol/sdk@1.17.3)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/c93dfc86a1a9a4eaa73c5ed26ef5f3bd333128d9(@modelcontextprotocol/sdk@1.17.3)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.1.0)
@@ -13587,19 +13587,19 @@ snapshots:
     optionalDependencies:
       '@types/node': 18.19.122
 
-  '@inquirer/confirm@5.1.14(@types/node@24.2.0)':
-    dependencies:
-      '@inquirer/core': 10.1.15(@types/node@24.2.0)
-      '@inquirer/type': 3.0.8(@types/node@24.2.0)
-    optionalDependencies:
-      '@types/node': 24.2.0
-
   '@inquirer/confirm@5.1.15(@types/node@18.19.122)':
     dependencies:
       '@inquirer/core': 10.1.15(@types/node@18.19.122)
       '@inquirer/type': 3.0.8(@types/node@18.19.122)
     optionalDependencies:
       '@types/node': 18.19.122
+
+  '@inquirer/confirm@5.1.15(@types/node@24.2.0)':
+    dependencies:
+      '@inquirer/core': 10.1.15(@types/node@24.2.0)
+      '@inquirer/type': 3.0.8(@types/node@24.2.0)
+    optionalDependencies:
+      '@types/node': 24.2.0
 
   '@inquirer/confirm@5.1.15(@types/node@24.3.0)':
     dependencies:
@@ -13801,7 +13801,7 @@ snapshots:
   '@inquirer/prompts@7.8.0(@types/node@24.2.0)':
     dependencies:
       '@inquirer/checkbox': 4.2.1(@types/node@24.2.0)
-      '@inquirer/confirm': 5.1.14(@types/node@24.2.0)
+      '@inquirer/confirm': 5.1.15(@types/node@24.2.0)
       '@inquirer/editor': 4.2.17(@types/node@24.2.0)
       '@inquirer/expand': 4.0.17(@types/node@24.2.0)
       '@inquirer/input': 4.2.1(@types/node@24.2.0)
