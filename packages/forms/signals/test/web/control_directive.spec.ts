@@ -124,6 +124,68 @@ describe('control directive', () => {
     expect(cmp.f().value()).toBe('b');
   });
 
+  it('synchronizes with a textarea', () => {
+    @Component({
+      imports: [Control],
+      template: `<textarea #textarea [control]="f"></textarea>`,
+    })
+    class TestCmp {
+      f = form(signal(''));
+      textarea = viewChild.required<ElementRef<HTMLTextAreaElement>>('textarea');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const textarea = fix.componentInstance.textarea().nativeElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(textarea.value).toEqual('');
+
+    // Model -> View
+    act(() => cmp.f().value.set('hello'));
+    expect(textarea.value).toEqual('hello');
+
+    // View -> Model
+    act(() => {
+      textarea.value = 'hi';
+      textarea.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('hi');
+  });
+
+  it('synchronizes with a select', () => {
+    @Component({
+      imports: [Control],
+      template: `
+        <select #select [control]="f">
+          <option value="one">One</option>
+          <option value="two">Two</option>
+          <option value="three">Three</option>
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('invalid'));
+      select = viewChild.required<ElementRef<HTMLSelectElement>>('select');
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const select = fix.componentInstance.select().nativeElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(select.value).toEqual('');
+
+    // Model -> View
+    act(() => cmp.f().value.set('one'));
+    expect(select.value).toEqual('one');
+
+    // View -> Model
+    act(() => {
+      select.value = 'two';
+      select.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('two');
+  });
+
   it('synchronizes with a custom value control', () => {
     @Component({
       selector: 'my-input',

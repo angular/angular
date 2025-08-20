@@ -145,7 +145,8 @@ export class Control<T> {
       this.setupControlValueAccessor(this.cva);
     } else if (
       this.el.nativeElement instanceof HTMLInputElement ||
-      this.el.nativeElement instanceof HTMLTextAreaElement
+      this.el.nativeElement instanceof HTMLTextAreaElement ||
+      this.el.nativeElement instanceof HTMLSelectElement
     ) {
       // If we're binding to a native html input, set up state synchronization with its native
       // properties / attributes.
@@ -169,9 +170,16 @@ export class Control<T> {
     );
   }
 
-  /** Set up state synchronization between the field and a native <input> or <textarea>. */
-  private setupNativeInput(input: HTMLInputElement | HTMLTextAreaElement): void {
-    const inputType = input instanceof HTMLTextAreaElement ? 'text' : input.type;
+  /**
+   * Set up state synchronization between the field and a native <input>, <textarea>, or <select>.
+   */
+  private setupNativeInput(
+    input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
+  ): void {
+    const inputType =
+      input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement
+        ? 'text'
+        : input.type;
 
     input.addEventListener('input', () => {
       switch (inputType) {
