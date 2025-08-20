@@ -27,7 +27,6 @@ export * from './di';
 export {
   BootstrapOptions,
   ApplicationRef,
-  NgProbeToken,
   APP_BOOTSTRAP_LISTENER,
 } from './application/application_ref';
 export {PlatformRef} from './platform/platform_ref';

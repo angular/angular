@@ -1278,15 +1278,6 @@ export abstract class NgModuleRef<T> {
     abstract onDestroy(callback: () => void): void;
 }
 
-// @public @deprecated
-export class NgProbeToken {
-    constructor(name: string, token: any);
-    // (undocumented)
-    name: string;
-    // (undocumented)
-    token: any;
-}
-
 // @public
 export class NgZone {
     constructor(options: {
