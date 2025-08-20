@@ -1401,9 +1401,6 @@ export interface OutputRefSubscription {
     unsubscribe(): void;
 }
 
-// @public @deprecated
-export const PACKAGE_ROOT_URL: InjectionToken<string>;
-
 // @public
 export class PendingTasks {
     add(): () => void;
