@@ -1,3 +1,27 @@
+<a name="21.0.0-next.0"></a>
+# 21.0.0-next.0 (2025-08-20)
+## Breaking Changes
+### compiler-cli
+- The Angular compiler now produces an error when the
+  the `emitDeclarationOnly` TS compiler option is enabled as this mode is
+  not supported.
+### router
+- `lastSuccessfulNavigation` is now a signal and needs to be invoked
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be7110342b](https://github.com/angular/angular/commit/be7110342b61d837822524d4f60f56a7f859f594) | fix | disallow compiling with the `emitDeclarationOnly` TS compiler option enabled ([#61609](https://github.com/angular/angular/pull/61609)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4bed062bc9](https://github.com/angular/angular/commit/4bed062bc9f2a0a66c9af3cb8aeb42ee023c6393) | feat | Provide http services in root ([#56212](https://github.com/angular/angular/pull/56212)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4e0fc81491](https://github.com/angular/angular/commit/4e0fc81491bfe6e4eac5c59ef0bde908a3d58413) | feat | convert `lastSuccessfulNavigation` to signal ([#63057](https://github.com/angular/angular/pull/63057)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.0"></a>
 # 20.2.0 (2025-08-20)
 ## Deprecations
