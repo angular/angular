@@ -9,11 +9,9 @@
 import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
 import {getAngularDecorators, QueryFunctionName} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import assert from 'assert';
 import ts from 'typescript';
 import {
   confirmAsSerializable,
-  MigrationStats,
   ProgramInfo,
   projectFile,
   Replacement,
