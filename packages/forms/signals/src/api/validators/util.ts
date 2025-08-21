@@ -48,5 +48,5 @@ export function getOption<TOption, TValue, TPathKind extends PathKind = PathKind
   opt: Exclude<TOption, Function> | LogicFn<TValue, TOption, TPathKind> | undefined,
   ctx: FieldContext<TValue, TPathKind>,
 ): TOption | undefined {
-  return typeof opt === 'function' ? (opt as LogicFn<TValue, TOption, TPathKind>)(ctx) : opt;
+  return opt instanceof Function ? opt(ctx) : opt;
 }
