@@ -119,7 +119,6 @@
       "type": "string",
       "enum": [
         "bun",
-        "cnpm",
         "npm",
         "pnpm",
         "yarn"
