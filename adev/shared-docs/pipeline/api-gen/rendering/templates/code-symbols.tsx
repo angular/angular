@@ -9,6 +9,7 @@
 import {h} from 'preact';
 import {getModuleName} from '../symbol-context.mjs';
 import {getLinkToModule} from '../transforms/url-transforms.mjs';
+import {shouldLinkSymbol} from '../../../shared/link-exemption.mjs';
 
 const symbolRegex = /([a-zA-Z_$][a-zA-Z_$0-9\.]*)/;
 
@@ -26,7 +27,7 @@ export function CodeSymbol(props: {code: string}) {
         let [symbol, subSymbol] = rawSymbol.split('.'); // Also takes care of methods, enum value etc.
         const moduleName = getModuleName(symbol);
 
-        if (moduleName) {
+        if (shouldLinkSymbol(symbol) && moduleName) {
           const url = getLinkToModule(moduleName, symbol, subSymbol);
           return <a href={url}>{rawSymbol}</a>;
         }
