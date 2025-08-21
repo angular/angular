@@ -458,18 +458,24 @@ describe('FieldNode', () => {
       ]);
     });
 
-    it('should disable unconditionally with message', () => {
+    it('should disable unconditionally', () => {
       const f = form(
-        signal(''),
+        signal({a: '', b: ''}),
         (p) => {
-          disabled(p, 'disabled!');
+          disabled(p.a);
+          disabled(p.b, 'disabled!');
         },
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().disabledReasons()).toEqual([
+      expect(f.a().disabledReasons()).toEqual([
         {
-          field: f,
+          field: f.a,
+        },
+      ]);
+      expect(f.b().disabledReasons()).toEqual([
+        {
+          field: f.b,
           message: 'disabled!',
         },
       ]);

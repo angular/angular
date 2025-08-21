@@ -100,12 +100,12 @@ export class CustomValidationError extends ValidationError {
 }
 
 // @public
-export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
+export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>): void;
 
 // @public
 export interface DisabledReason {
     readonly field: Field<unknown>;
-    readonly reason?: string;
+    readonly message?: string;
 }
 
 // @public
