@@ -7,8 +7,7 @@
  */
 
 import {signal} from '@angular/core';
-import {FieldContext, FieldState} from '../../public_api';
-import {customError} from '../../src/api/validation_errors';
+import {FieldContext, FieldState, customError} from '../../public_api';
 import {DYNAMIC} from '../../src/schema/logic';
 import {LogicNodeBuilder} from '../../src/schema/logic_node';
 

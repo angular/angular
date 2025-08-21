@@ -3,7 +3,7 @@ load("//tools:defaults2.bzl", "ng_project", "zoneless_web_test_suite")
 ng_project(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
         "//:node_modules/zod",
         "//packages/core",
@@ -15,9 +15,6 @@ ng_project(
         "//packages/private/testing",
     ],
 )
-
-# To run this:
-# pnpm bazel test //packages/forms/signals/test/web:test
 
 zoneless_web_test_suite(
     name = "test",

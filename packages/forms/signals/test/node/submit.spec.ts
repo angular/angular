@@ -8,8 +8,14 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, required, submit} from '../../public_api';
-import {customError, requiredError, ValidationError} from '../../src/api/validation_errors';
+import {
+  customError,
+  form,
+  required,
+  requiredError,
+  submit,
+  ValidationError,
+} from '../../public_api';
 
 describe('submit', () => {
   it('fails fast on invalid form', async () => {

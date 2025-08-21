@@ -8,10 +8,10 @@
 
 import {computed, Injector, signal, type Signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {customError} from '../../public_api';
 import {disabled, validate} from '../../src/api/logic';
 import {applyEach, applyWhen, applyWhenValue, form, schema} from '../../src/api/structure';
 import type {Field, Schema} from '../../src/api/types';
-import {customError} from '../../src/api/validation_errors';
 
 interface TreeData {
   level: number;

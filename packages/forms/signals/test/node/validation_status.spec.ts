@@ -8,15 +8,19 @@
 
 import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {Field, form, validate, validateAsync, validateTree} from '../../public_api';
 import {
   customError,
+  Field,
+  form,
   NgValidationError,
   patternError,
   requiredError,
+  validate,
+  validateAsync,
+  validateTree,
   ValidationError,
-  WithoutField,
-} from '../../src/api/validation_errors';
+  type WithoutField,
+} from '../../public_api';
 
 function validateValue(value: string): WithoutField<ValidationError>[] {
   return value === 'INVALID' ? [customError()] : [];

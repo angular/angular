@@ -18,12 +18,22 @@ import {
   viewChild,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {disabled, MAX, readonly} from '../../public_api';
-import {FormCheckboxControl, FormValueControl} from '../../src/api/control';
-import {form} from '../../src/api/structure';
-import {Field, type DisabledReason} from '../../src/api/types';
-import {max, maxLength, min, minLength, required} from '../../src/api/validators';
-import {Control} from '../../src/controls/control';
+import {
+  Control,
+  disabled,
+  form,
+  max,
+  MAX,
+  maxLength,
+  min,
+  minLength,
+  readonly,
+  required,
+  type DisabledReason,
+  type Field,
+  type FormCheckboxControl,
+  type FormValueControl,
+} from '../../public_api';
 
 @Component({
   selector: 'string-control',
