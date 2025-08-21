@@ -88,10 +88,28 @@ const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // from an `@if` or `@for`.
 const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 
-function clearLeavingNodes(tNode: TNode): void {
-  if (leavingNodes.get(tNode)?.length === 0) {
+function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
+  const nodes = leavingNodes.get(tNode);
+  if (nodes && nodes.length > 0) {
+    const ix = nodes.findIndex((node) => node === el);
+    if (ix > -1) nodes.splice(ix, 1);
+  }
+  if (nodes?.length === 0) {
     leavingNodes.delete(tNode);
   }
+}
+
+/**
+ * In the case that we have an existing node that's animating away, like when
+ * an `@if` toggles quickly or `@for` adds and removes elements quickly, we
+ * need to end the animation for the former node and remove it right away to
+ * prevent duplicate nodes showing up.
+ */
+function cancelLeavingNodes(tNode: TNode, el: HTMLElement): void {
+  leavingNodes
+    .get(tNode)
+    ?.pop()
+    ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
 }
 
 function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
@@ -160,15 +178,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
-    // In the case that we have an existing node that's animating away, like when
-    // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
-    // need to end the animation for the former node and remove it right away to
-    // prevent duplicate nodes showing up.
-    leavingNodes
-      .get(tNode)
-      ?.pop()
-      ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
-
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
     for (const klass of activeClasses) {
@@ -179,6 +188,12 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     // preventing an animation via selector specificity.
     ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => {
+        // In the case that we have an existing node that's animating away, like when
+        // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
+        // need to end the animation for the former node and remove it right away to
+        // prevent duplicate nodes showing up.
+        cancelLeavingNodes(tNode, nativeElement);
+
         determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
         if (!longestAnimations.has(nativeElement)) {
           for (const klass of activeClasses) {
@@ -242,10 +257,7 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
   // need to end the animation for the former node and remove it right away to
   // prevent duplicate nodes showing up.
-  leavingNodes
-    .get(tNode)
-    ?.pop()
-    ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+  cancelLeavingNodes(tNode, nativeElement);
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
@@ -375,7 +387,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
         const event: AnimationCallbackEvent = {
           target: nativeElement,
           animationComplete: () => {
-            clearLeavingNodes(tNode);
+            clearLeavingNodes(tNode, _el as HTMLElement);
             removeFn();
           },
         };
@@ -530,7 +542,7 @@ function animateLeaveClassRunner(
       // affect any other animations on the page.
       event.stopImmediatePropagation();
       longestAnimations.delete(el);
-      clearLeavingNodes(tNode);
+      clearLeavingNodes(tNode, el);
       finalRemoveFn();
     }
   };
@@ -550,7 +562,7 @@ function animateLeaveClassRunner(
     requestAnimationFrame(() => {
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
-        clearLeavingNodes(tNode);
+        clearLeavingNodes(tNode, el);
         finalRemoveFn();
       }
     });
