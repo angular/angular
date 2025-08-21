@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {minError} from '../validation_errors';
 import {BaseValidatorConfig, getOption} from './util';
 
 /**
@@ -44,7 +44,7 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.min(min, {message: getOption(config?.message, ctx)});
+        return minError(min, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

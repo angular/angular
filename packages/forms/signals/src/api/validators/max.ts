@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {MAX} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {maxError} from '../validation_errors';
 import {BaseValidatorConfig, getOption} from './util';
 
 /**
@@ -44,7 +44,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.max(max, {message: getOption(config?.message, ctx)});
+        return maxError(max, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

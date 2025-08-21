@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {REQUIRED} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {requiredError} from '../validation_errors';
 import {BaseValidatorConfig, getOption} from './util';
 
 /**
@@ -47,7 +47,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.required({message: getOption(config?.message, ctx)});
+        return requiredError({message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

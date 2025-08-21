@@ -14,7 +14,6 @@ import {isNode} from '@angular/private/testing';
 import {
   applyEach,
   form,
-  Property,
   property,
   required,
   schema,
@@ -23,7 +22,7 @@ import {
   validateAsync,
   validateHttp,
 } from '../../public_api';
-import {ValidationError} from '../../src/api/validation_errors';
+import {customError, ValidationError} from '../../src/api/validation_errors';
 
 interface Cat {
   name: string;
@@ -67,7 +66,7 @@ describe('resources', () => {
       validate(p.name, ({state}) => {
         const remote = state.property(RES)!;
         if (remote.hasValue()) {
-          return ValidationError.custom({message: remote.value()});
+          return customError({message: remote.value()});
         } else {
           return undefined;
         }
@@ -80,7 +79,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: cat',
         field: f.name,
       }),
@@ -89,7 +88,7 @@ describe('resources', () => {
     f.name().value.set('dog');
     await appRef.whenStable();
     expect(f.name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: dog',
         field: f.name,
       }),
@@ -99,8 +98,7 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = Property.create<Resource<string | undefined>>();
-        property(p.name, RES, ({value}) => {
+        const RES = property(p.name, ({value}) => {
           return resource({
             params: () => ({x: value()}),
             loader: async ({params}) => `got: ${params.x}`,
@@ -110,7 +108,7 @@ describe('resources', () => {
         validate(p.name, ({state}) => {
           const remote = state.property(RES)!;
           if (remote.hasValue()) {
-            return ValidationError.custom({message: remote.value()});
+            return customError({message: remote.value()});
           } else {
             return undefined;
           }
@@ -124,13 +122,13 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: cat',
         field: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: dog',
         field: f[1].name,
       }),
@@ -139,13 +137,13 @@ describe('resources', () => {
     f[0].name().value.set('bunny');
     await appRef.whenStable();
     expect(f[0].name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: bunny',
         field: f[0].name,
       }),
     ]);
     expect(f[1].name().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         message: 'got: dog',
         field: f[1].name,
       }),
@@ -165,7 +163,7 @@ describe('resources', () => {
           }),
         errors: (cats, {fieldOf}) => {
           return cats.map((cat, index) =>
-            ValidationError.custom({
+            customError({
               kind: 'meows_too_much',
               name: cat.name,
               field: fieldOf(p)[index],
@@ -180,10 +178,10 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Ziggy', field: f[1]}),
+      customError({kind: 'meows_too_much', name: 'Ziggy', field: f[1]}),
     ]);
   });
 
@@ -199,7 +197,7 @@ describe('resources', () => {
             },
           }),
         errors: (cats, {fieldOf}) => {
-          return ValidationError.custom({
+          return customError({
             kind: 'meows_too_much',
             name: cats[0].name,
             field: fieldOf(p)[0],
@@ -213,7 +211,7 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      ValidationError.custom({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([]);
   });
@@ -225,7 +223,7 @@ describe('resources', () => {
         validateHttp(p, {
           request: ({value}) => `/api/check?username=${value()}`,
           errors: (available: boolean) =>
-            available ? undefined : ValidationError.custom({kind: 'username-taken'}),
+            available ? undefined : customError({kind: 'username-taken'}),
         });
       },
       {injector},
@@ -269,7 +267,7 @@ describe('resources', () => {
       validateHttp(address, {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
         errors: (message: string, {fieldOf}) =>
-          ValidationError.custom({message, field: fieldOf(address.street)}),
+          customError({message, field: fieldOf(address.street)}),
       });
     });
     const addressForm = form(addressModel, addressSchema, {injector});
@@ -285,7 +283,7 @@ describe('resources', () => {
     await appRef.whenStable();
 
     expect(addressForm.street().errors()).toEqual([
-      ValidationError.custom({message: 'Invalid!', field: addressForm.street}),
+      customError({message: 'Invalid!', field: addressForm.street}),
     ]);
   });
 });

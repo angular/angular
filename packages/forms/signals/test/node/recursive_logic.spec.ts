@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {disabled, validate} from '../../src/api/logic';
 import {applyEach, applyWhen, applyWhenValue, form, schema} from '../../src/api/structure';
 import type {Field, Schema} from '../../src/api/types';
-import {ValidationError} from '../../src/api/validation_errors';
+import {customError} from '../../src/api/validation_errors';
 
 interface TreeData {
   level: number;
@@ -99,7 +99,7 @@ describe('recursive schema logic', () => {
         (children) => {
           applyEach(children, (c) => {
             validate(c.tag, ({value}) =>
-              value() !== 'tr' ? ValidationError.custom({kind: 'invalid-child'}) : undefined,
+              value() !== 'tr' ? customError({kind: 'invalid-child'}) : undefined,
             );
           });
         },
@@ -110,7 +110,7 @@ describe('recursive schema logic', () => {
         (children) => {
           applyEach(children, (c) => {
             validate(c.tag, ({value}) =>
-              value() !== 'td' ? ValidationError.custom({kind: 'invalid-child'}) : undefined,
+              value() !== 'td' ? customError({kind: 'invalid-child'}) : undefined,
             );
           });
         },

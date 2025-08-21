@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {email, form} from '../../../../public_api';
-import {ValidationError} from '../../../../src/api/validation_errors';
+import {customError, emailError} from '../../../../src/api/validation_errors';
 
 describe('email validator', () => {
   it('returns requiredTrue error when the value is false', () => {
@@ -26,7 +26,7 @@ describe('email validator', () => {
 
     expect(f.email().errors()).toEqual([]);
     f.email().value.set('not-real-email');
-    expect(f.email().errors()).toEqual([ValidationError.email({field: f.email})]);
+    expect(f.email().errors()).toEqual([emailError({field: f.email})]);
   });
 
   it('supports custom errors', () => {
@@ -35,7 +35,7 @@ describe('email validator', () => {
       cat,
       (p) => {
         email(p.email, {
-          error: (ctx) => ValidationError.custom({kind: `special-email-${ctx.valueOf(p.name)}`}),
+          error: (ctx) => customError({kind: `special-email-${ctx.valueOf(p.name)}`}),
         });
       },
       {
@@ -44,7 +44,7 @@ describe('email validator', () => {
     );
 
     expect(f.email().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         kind: 'special-email-pirojok-the-cat',
         field: f.email,
       }),
@@ -66,7 +66,7 @@ describe('email validator', () => {
     );
 
     expect(f.email().errors()).toEqual([
-      ValidationError.email({
+      emailError({
         message: 'email error',
         field: f.email,
       }),

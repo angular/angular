@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {PATTERN, form, pattern} from '../../../../public_api';
-import {ValidationError} from '../../../../src/api/validation_errors';
+import {customError, patternError} from '../../../../src/api/validation_errors';
 
 describe('pattern validator', () => {
   it('validates whether a value matches the pattern', () => {
@@ -22,7 +22,7 @@ describe('pattern validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.pattern(/pir.*jok/, {field: f.name})]);
+    expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
   });
 
   it('supports custom error', () => {
@@ -30,12 +30,12 @@ describe('pattern validator', () => {
     const f = form(
       cat,
       (p) => {
-        pattern(p.name, /pir.*jok/, {error: ValidationError.custom()});
+        pattern(p.name, /pir.*jok/, {error: customError()});
       },
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.name().errors()).toEqual([ValidationError.custom({field: f.name})]);
+    expect(f.name().errors()).toEqual([customError({field: f.name})]);
   });
 
   it('supports custom error message', () => {
@@ -49,7 +49,7 @@ describe('pattern validator', () => {
     );
 
     expect(f.name().errors()).toEqual([
-      ValidationError.pattern(/pir.*jok/, {message: 'pattern error', field: f.name}),
+      patternError(/pir.*jok/, {message: 'pattern error', field: f.name}),
     ]);
   });
 
@@ -106,12 +106,12 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().errors()).toEqual([ValidationError.pattern(/pir.*jok/, {field: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/pir.*jok/, {field: f.name})]);
 
       patternSignal.set(/p.*/);
       expect(f.name().errors()).toEqual([]);
       patternSignal.set(/meow/);
-      expect(f.name().errors()).toEqual([ValidationError.pattern(/meow/, {field: f.name})]);
+      expect(f.name().errors()).toEqual([patternError(/meow/, {field: f.name})]);
 
       patternSignal.set(undefined);
 

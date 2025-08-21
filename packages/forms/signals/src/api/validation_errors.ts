@@ -67,7 +67,215 @@ export type WithOptionalField<T> = T & {field?: Field<unknown>};
  */
 export type WithoutField<T> = T & {field: never};
 
-/** Common interface for all validation errors. */
+/**
+ * Create a required error associated with the target field
+ * @param options The validation error options
+ */
+export function requiredError(options: WithField<ValidationErrorOptions>): RequiredValidationError;
+/**
+ * Create a required error
+ * @param options The optional validation error options
+ */
+export function requiredError(
+  options?: ValidationErrorOptions,
+): WithoutField<RequiredValidationError>;
+export function requiredError(
+  options?: ValidationErrorOptions,
+): WithOptionalField<RequiredValidationError> {
+  return new RequiredValidationError(options);
+}
+
+/**
+ * Create a min value error associated with the target field
+ * @param min The min value constraint
+ * @param options The validation error options
+ */
+export function minError(
+  min: number,
+  options: WithField<ValidationErrorOptions>,
+): MinValidationError;
+/**
+ * Create a min value error
+ * @param min The min value constraint
+ * @param options The optional validation error options
+ */
+export function minError(
+  min: number,
+  options?: ValidationErrorOptions,
+): WithoutField<MinValidationError>;
+export function minError(
+  min: number,
+  options?: ValidationErrorOptions,
+): WithOptionalField<MinValidationError> {
+  return new MinValidationError(min, options);
+}
+
+/**
+ * Create a max value error associated with the target field
+ * @param max The max value constraint
+ * @param options The validation error options
+ */
+export function maxError(
+  max: number,
+  options: WithField<ValidationErrorOptions>,
+): MaxValidationError;
+/**
+ * Create a max value error
+ * @param max The max value constraint
+ * @param options The optional validation error options
+ */
+export function maxError(
+  max: number,
+  options?: ValidationErrorOptions,
+): WithoutField<MaxValidationError>;
+export function maxError(
+  max: number,
+  options?: ValidationErrorOptions,
+): WithOptionalField<MaxValidationError> {
+  return new MaxValidationError(max, options);
+}
+
+/**
+ * Create a minLength error associated with the target field
+ * @param minLength The minLength constraint
+ * @param options The validation error options
+ */
+export function minLengthError(
+  minLength: number,
+  options: WithField<ValidationErrorOptions>,
+): MinLengthValidationError;
+/**
+ * Create a minLength error
+ * @param minLength The minLength constraint
+ * @param options The optional validation error options
+ */
+export function minLengthError(
+  minLength: number,
+  options?: ValidationErrorOptions,
+): WithoutField<MinLengthValidationError>;
+export function minLengthError(
+  minLength: number,
+  options?: ValidationErrorOptions,
+): WithOptionalField<MinLengthValidationError> {
+  return new MinLengthValidationError(minLength, options);
+}
+
+/**
+ * Create a maxLength error associated with the target field
+ * @param maxLength The maxLength constraint
+ * @param options The validation error options
+ */
+export function maxLengthError(
+  maxLength: number,
+  options: WithField<ValidationErrorOptions>,
+): MaxLengthValidationError;
+/**
+ * Create a maxLength error
+ * @param maxLength The maxLength constraint
+ * @param options The optional validation error options
+ */
+export function maxLengthError(
+  maxLength: number,
+  options?: ValidationErrorOptions,
+): WithoutField<MaxLengthValidationError>;
+export function maxLengthError(
+  maxLength: number,
+  options?: ValidationErrorOptions,
+): WithOptionalField<MaxLengthValidationError> {
+  return new MaxLengthValidationError(maxLength, options);
+}
+
+/**
+ * Create a pattern matching error associated with the target field
+ * @param pattern The violated pattern
+ * @param options The validation error options
+ */
+export function patternError(
+  pattern: RegExp,
+  options: WithField<ValidationErrorOptions>,
+): PatternValidationError;
+/**
+ * Create a pattern matching error
+ * @param pattern The violated pattern
+ * @param options The optional validation error options
+ */
+export function patternError(
+  pattern: RegExp,
+  options?: ValidationErrorOptions,
+): WithoutField<PatternValidationError>;
+export function patternError(
+  pattern: RegExp,
+  options?: ValidationErrorOptions,
+): WithOptionalField<PatternValidationError> {
+  return new PatternValidationError(pattern, options);
+}
+
+/**
+ * Create an email format error associated with the target field
+ * @param options The validation error options
+ */
+export function emailError(options: WithField<ValidationErrorOptions>): EmailValidationError;
+/**
+ * Create an email format error
+ * @param options The optional validation error options
+ */
+export function emailError(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
+export function emailError(
+  options?: ValidationErrorOptions,
+): WithOptionalField<EmailValidationError> {
+  return new EmailValidationError(options);
+}
+
+/**
+ * Create a standard schema issue error associated with the target field
+ * @param issue The standard schema issue
+ * @param options The validation error options
+ */
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options: WithField<ValidationErrorOptions>,
+): StandardSchemaValidationError;
+/**
+ * Create a standard schema issue error
+ * @param issue The standard schema issue
+ * @param options The optional validation error options
+ */
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options?: ValidationErrorOptions,
+): WithoutField<StandardSchemaValidationError>;
+export function standardSchemaError(
+  issue: StandardSchemaV1.Issue,
+  options?: ValidationErrorOptions,
+): WithOptionalField<StandardSchemaValidationError> {
+  return new StandardSchemaValidationError(issue, options);
+}
+
+/**
+ * Create a custom error associated with the target field
+ * @param obj The object to create an error from
+ */
+export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+  obj: WithField<E>,
+): CustomValidationError;
+/**
+ * Create a custom error
+ * @param obj The object to create an error from
+ */
+export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+  obj?: E,
+): WithoutField<CustomValidationError>;
+export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+  obj?: E,
+): WithOptionalField<CustomValidationError> {
+  return new CustomValidationError(obj);
+}
+
+/**
+ * Common interface for all validation errors.
+ *
+ * Use the creation functions to create an instance (e.g. `requiredError`, `minError`, etc.).
+ */
 export abstract class ValidationError {
   /** Brand the class to avoid Typescript structural matching */
   [BRAND] = undefined;
@@ -85,186 +293,6 @@ export abstract class ValidationError {
     if (options) {
       Object.assign(this, options);
     }
-  }
-
-  /**
-   * Create a required error associated with the target field
-   * @param options The validation error options
-   */
-  static required(options: WithField<ValidationErrorOptions>): RequiredValidationError;
-  /**
-   * Create a required error
-   * @param options The optional validation error options
-   */
-  static required(options?: ValidationErrorOptions): WithoutField<RequiredValidationError>;
-  static required(options?: ValidationErrorOptions): WithOptionalField<RequiredValidationError> {
-    return new RequiredValidationError(options);
-  }
-
-  /**
-   * Create a min value error associated with the target field
-   * @param min The min value constraint
-   * @param options The validation error options
-   */
-  static min(min: number, options: WithField<ValidationErrorOptions>): MinValidationError;
-  /**
-   * Create a min value error
-   * @param min The min value constraint
-   * @param options The optional validation error options
-   */
-  static min(min: number, options?: ValidationErrorOptions): WithoutField<MinValidationError>;
-  static min(min: number, options?: ValidationErrorOptions): WithOptionalField<MinValidationError> {
-    return new MinValidationError(min, options);
-  }
-
-  /**
-   * Create a max value error associated with the target field
-   * @param max The max value constraint
-   * @param options The validation error options
-   */
-  static max(max: number, options: WithField<ValidationErrorOptions>): MaxValidationError;
-  /**
-   * Create a max value error
-   * @param max The max value constraint
-   * @param options The optional validation error options
-   */
-  static max(max: number, options?: ValidationErrorOptions): WithoutField<MaxValidationError>;
-  static max(max: number, options?: ValidationErrorOptions): WithOptionalField<MaxValidationError> {
-    return new MaxValidationError(max, options);
-  }
-
-  /**
-   * Create a minLength error associated with the target field
-   * @param minLength The minLength constraint
-   * @param options The validation error options
-   */
-  static minLength(
-    minLength: number,
-    options: WithField<ValidationErrorOptions>,
-  ): MinLengthValidationError;
-  /**
-   * Create a minLength error
-   * @param minLength The minLength constraint
-   * @param options The optional validation error options
-   */
-  static minLength(
-    minLength: number,
-    options?: ValidationErrorOptions,
-  ): WithoutField<MinLengthValidationError>;
-  static minLength(
-    minLength: number,
-    options?: ValidationErrorOptions,
-  ): WithOptionalField<MinLengthValidationError> {
-    return new MinLengthValidationError(minLength, options);
-  }
-
-  /**
-   * Create a maxLength error associated with the target field
-   * @param maxLength The maxLength constraint
-   * @param options The validation error options
-   */
-  static maxLength(
-    maxLength: number,
-    options: WithField<ValidationErrorOptions>,
-  ): MaxLengthValidationError;
-  /**
-   * Create a maxLength error
-   * @param maxLength The maxLength constraint
-   * @param options The optional validation error options
-   */
-  static maxLength(
-    maxLength: number,
-    options?: ValidationErrorOptions,
-  ): WithoutField<MaxLengthValidationError>;
-  static maxLength(
-    maxLength: number,
-    options?: ValidationErrorOptions,
-  ): WithOptionalField<MaxLengthValidationError> {
-    return new MaxLengthValidationError(maxLength, options);
-  }
-
-  /**
-   * Create a pattern matching error associated with the target field
-   * @param pattern The violated pattern
-   * @param options The validation error options
-   */
-  static pattern(
-    pattern: RegExp,
-    options: WithField<ValidationErrorOptions>,
-  ): PatternValidationError;
-  /**
-   * Create a pattern matching error
-   * @param pattern The violated pattern
-   * @param options The optional validation error options
-   */
-  static pattern(
-    pattern: RegExp,
-    options?: ValidationErrorOptions,
-  ): WithoutField<PatternValidationError>;
-  static pattern(
-    pattern: RegExp,
-    options?: ValidationErrorOptions,
-  ): WithOptionalField<PatternValidationError> {
-    return new PatternValidationError(pattern, options);
-  }
-
-  /**
-   * Create an email format error associated with the target field
-   * @param options The validation error options
-   */
-  static email(options: WithField<ValidationErrorOptions>): EmailValidationError;
-  /**
-   * Create an email format error
-   * @param options The optional validation error options
-   */
-  static email(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
-  static email(options?: ValidationErrorOptions): WithOptionalField<EmailValidationError> {
-    return new EmailValidationError(options);
-  }
-
-  /**
-   * Create a standard schema issue error associated with the target field
-   * @param issue The standard schema issue
-   * @param options The validation error options
-   */
-  static standardSchema(
-    issue: StandardSchemaV1.Issue,
-    options: WithField<ValidationErrorOptions>,
-  ): StandardSchemaValidationError;
-  /**
-   * Create a standard schema issue error
-   * @param issue The standard schema issue
-   * @param options The optional validation error options
-   */
-  static standardSchema(
-    issue: StandardSchemaV1.Issue,
-    options?: ValidationErrorOptions,
-  ): WithoutField<StandardSchemaValidationError>;
-  static standardSchema(
-    issue: StandardSchemaV1.Issue,
-    options?: ValidationErrorOptions,
-  ): WithOptionalField<StandardSchemaValidationError> {
-    return new StandardSchemaValidationError(issue, options);
-  }
-
-  /**
-   * Create a custom error associated with the target field
-   * @param obj The object to create an error from
-   */
-  static custom<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
-    obj: WithField<E>,
-  ): CustomValidationError;
-  /**
-   * Create a custom error
-   * @param obj The object to create an error from
-   */
-  static custom<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
-    obj?: E,
-  ): WithoutField<CustomValidationError>;
-  static custom<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
-    obj?: E,
-  ): WithOptionalField<CustomValidationError> {
-    return new CustomValidationError(obj);
   }
 }
 

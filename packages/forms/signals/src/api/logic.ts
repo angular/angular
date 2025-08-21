@@ -8,7 +8,7 @@
 
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {type AggregateProperty, Property} from './property';
+import {AggregateProperty, createProperty, Property} from './property';
 import type {
   FieldContext,
   FieldPath,
@@ -201,7 +201,7 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
   } else {
     [factory] = rest;
   }
-  key ??= Property.create();
+  key ??= createProperty();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addPropertyFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);

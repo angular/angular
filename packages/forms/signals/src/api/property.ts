@@ -13,14 +13,13 @@
 export class Property<TValue> {
   private brand!: TValue;
 
-  protected constructor() {}
+  /** Use {@link createProperty}. */
+  private constructor() {}
+}
 
-  /**
-   * Creates a `Property`.
-   */
-  static create<TValue>() {
-    return new Property<TValue>();
-  }
+/** Creates a {@link Property}. */
+export function createProperty<TValue>(): Property<TValue> {
+  return new (Property as new () => Property<TValue>)();
 }
 
 /**
@@ -32,119 +31,121 @@ export class Property<TValue> {
 export class AggregateProperty<TAcc, TItem> {
   private brand!: [TAcc, TItem];
 
-  protected constructor(
+  /** Use {@link reducedProperty}. */
+  private constructor(
     readonly reduce: (acc: TAcc, item: TItem) => TAcc,
     readonly getInitial: () => TAcc,
   ) {}
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values into an accumulated value
-   * using the given `reduce` and `getDefault` functions.
-   * @param reduce The reducer function
-   * @param getInitial A function that gets the initial value for the reduce operation.
-   */
-  static reduce<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: () => TAcc) {
-    return new AggregateProperty(reduce, getInitial);
-  }
+/**
+ * Creates an aggregate property that reduces its individual values into an accumulated value using
+ * the given `reduce` and `getInitial` functions.
+ * @param reduce The reducer function.
+ * @param getInitial A function that gets the initial value for the reduce operation.
+ */
+export function reducedProperty<TAcc, TItem>(
+  reduce: (acc: TAcc, item: TItem) => TAcc,
+  getInitial: () => TAcc,
+): AggregateProperty<TAcc, TItem> {
+  return new (AggregateProperty as new (
+    reduce: (acc: TAcc, item: TItem) => TAcc,
+    getInitial: () => TAcc,
+  ) => AggregateProperty<TAcc, TItem>)(reduce, getInitial);
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values into a list.
-   */
-  static list<TItem>() {
-    return new AggregateProperty<TItem[], TItem | undefined>(
-      (acc, item) => (item === undefined ? acc : [...acc, item]),
-      () => [],
-    );
-  }
+/**
+ * Creates an aggregate property that reduces its individual values into a list.
+ */
+export function listProperty<TItem>(): AggregateProperty<TItem[], TItem | undefined> {
+  return reducedProperty<TItem[], TItem | undefined>(
+    (acc, item) => (item === undefined ? acc : [...acc, item]),
+    () => [],
+  );
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values by taking their min.
-   */
-  static min() {
-    return new AggregateProperty<number | undefined, number | undefined>(
-      (prev, next) => {
-        if (prev === undefined) {
-          return next;
-        }
-        if (next === undefined) {
-          return prev;
-        }
-        return Math.min(prev, next);
-      },
-      () => undefined,
-    );
-  }
+/**
+ * Creates an aggregate property that reduces its individual values by taking their min.
+ */
+export function minProperty(): AggregateProperty<number | undefined, number | undefined> {
+  return reducedProperty<number | undefined, number | undefined>(
+    (prev, next) => {
+      if (prev === undefined) {
+        return next;
+      }
+      if (next === undefined) {
+        return prev;
+      }
+      return Math.min(prev, next);
+    },
+    () => undefined,
+  );
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values by taking their max.
-   */
-  static max() {
-    return new AggregateProperty<number | undefined, number | undefined>(
-      (prev, next) => {
-        if (prev === undefined) {
-          return next;
-        }
-        if (next === undefined) {
-          return prev;
-        }
-        return Math.max(prev, next);
-      },
-      () => undefined,
-    );
-  }
+/**
+ * Creates an aggregate property that reduces its individual values by taking their max.
+ */
+export function maxProperty(): AggregateProperty<number | undefined, number | undefined> {
+  return reducedProperty<number | undefined, number | undefined>(
+    (prev, next) => {
+      if (prev === undefined) {
+        return next;
+      }
+      if (next === undefined) {
+        return prev;
+      }
+      return Math.max(prev, next);
+    },
+    () => undefined,
+  );
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values by logically or-ing them.
-   */
-  static or() {
-    return new AggregateProperty<boolean, boolean>(
-      (prev, next) => prev || next,
-      () => false,
-    );
-  }
+/**
+ * Creates an aggregate property that reduces its individual values by logically or-ing them.
+ */
+export function orProperty(): AggregateProperty<boolean, boolean> {
+  return reducedProperty(
+    (prev, next) => prev || next,
+    () => false,
+  );
+}
 
-  /**
-   * Creates an aggregate property that reduces its individual values by logically and-ing them.
-   */
-  static and() {
-    return new AggregateProperty<boolean, boolean>(
-      (prev, next) => prev && next,
-      () => true,
-    );
-  }
+/**
+ * Creates an aggregate property that reduces its individual values by logically and-ing them.
+ */
+export function andProperty(): AggregateProperty<boolean, boolean> {
+  return reducedProperty(
+    (prev, next) => prev && next,
+    () => true,
+  );
 }
 
 /**
  * An aggregate property representing whether the field is required.
  */
-export const REQUIRED: AggregateProperty<boolean, boolean> = AggregateProperty.or();
+export const REQUIRED: AggregateProperty<boolean, boolean> = orProperty();
 
 /**
  * An aggregate property representing the min value of the field.
  */
-export const MIN: AggregateProperty<number | undefined, number | undefined> =
-  AggregateProperty.max();
+export const MIN: AggregateProperty<number | undefined, number | undefined> = maxProperty();
 
 /**
  * An aggregate property representing the max value of the field.
  */
-export const MAX: AggregateProperty<number | undefined, number | undefined> =
-  AggregateProperty.min();
+export const MAX: AggregateProperty<number | undefined, number | undefined> = minProperty();
 
 /**
  * An aggregate property representing the min length of the field.
  */
-export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined> =
-  AggregateProperty.max();
+export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined> = maxProperty();
 
 /**
  * An aggregate property representing the max length of the field.
  */
-export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined> =
-  AggregateProperty.min();
+export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined> = minProperty();
 
 /**
  * An aggregate property representing the patterns the field must match.
  */
-export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> =
-  AggregateProperty.list<RegExp>();
+export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> = listProperty<RegExp>();

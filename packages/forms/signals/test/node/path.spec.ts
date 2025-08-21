@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {apply, applyEach, applyWhen, form, validate} from '../../public_api';
-import {ValidationError} from '../../src/api/validation_errors';
+import {customError, requiredError} from '../../src/api/validation_errors';
 
 describe('path', () => {
   describe('Active path', () => {
@@ -25,7 +25,7 @@ describe('path', () => {
             (/* UNUSED */) => {
               expect(() => {
                 validate(path.last, ({value}) =>
-                  value().length > 0 ? undefined : ValidationError.required(),
+                  value().length > 0 ? undefined : requiredError(),
                 );
               }).toThrowError();
             },
@@ -44,7 +44,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path.last, () => {
-                return ValidationError.custom();
+                return customError();
               });
             }).toThrowError();
           });
@@ -62,7 +62,7 @@ describe('path', () => {
           apply(path, () => {
             expect(() => {
               validate(path, () => {
-                return ValidationError.custom();
+                return customError();
               });
             }).toThrowError();
           });
@@ -83,7 +83,7 @@ describe('path', () => {
           applyEach(path.items, () => {
             expect(() => {
               validate(path.needLastName, () => {
-                return ValidationError.custom();
+                return customError();
               });
             }).toThrowError();
           });

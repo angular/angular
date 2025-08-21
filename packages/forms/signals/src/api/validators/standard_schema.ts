@@ -13,8 +13,8 @@ import {property, validateTree} from '../logic';
 import {Field, FieldPath} from '../types';
 import {
   addDefaultField,
+  standardSchemaError,
   StandardSchemaValidationError,
-  ValidationError,
 } from '../validation_errors';
 
 /**
@@ -105,5 +105,5 @@ function standardIssueToFormTreeError(
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
   }
-  return addDefaultField(ValidationError.standardSchema(issue), target);
+  return addDefaultField(standardSchemaError(issue), target);
 }
