@@ -31,23 +31,22 @@ import {addDefaultField} from './validation_errors';
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  logic: NoInfer<LogicFn<TValue, boolean | string, TPathKind>> = () => true,
+  logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addDisabledReasonRule((ctx) => {
-    const result = logic(ctx as FieldContext<TValue, TPathKind>);
-    if (!result) {
-      return undefined;
+    let result: boolean | string = true;
+    if (typeof logic === 'string') {
+      result = logic;
+    } else if (logic) {
+      result = logic(ctx as FieldContext<TValue, TPathKind>);
     }
     if (typeof result === 'string') {
-      return {
-        field: ctx.field,
-        reason: result,
-      };
+      return {field: ctx.field, message: result};
     }
-    return {field: ctx.field};
+    return result ? {field: ctx.field} : undefined;
   });
 }
 

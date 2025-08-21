@@ -405,7 +405,7 @@ describe('FieldNode', () => {
       expect(f.a().disabledReasons()).toEqual([
         {
           field: f.a,
-          reason: 'a cannot be changed',
+          message: 'a cannot be changed',
         },
       ]);
     });
@@ -428,7 +428,7 @@ describe('FieldNode', () => {
       expect(f.a().disabledReasons()).toEqual([
         {
           field: f.a,
-          reason: 'a cannot be changed',
+          message: 'a cannot be changed',
         },
       ]);
     });
@@ -446,14 +446,31 @@ describe('FieldNode', () => {
       expect(f().disabledReasons()).toEqual([
         {
           field: f,
-          reason: 'form unavailable',
+          message: 'form unavailable',
         },
       ]);
       expect(f.a().disabled()).toBe(true);
       expect(f.a().disabledReasons()).toEqual([
         {
           field: f,
-          reason: 'form unavailable',
+          message: 'form unavailable',
+        },
+      ]);
+    });
+
+    it('should disable unconditionally with message', () => {
+      const f = form(
+        signal(''),
+        (p) => {
+          disabled(p, 'disabled!');
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().disabledReasons()).toEqual([
+        {
+          field: f,
+          message: 'disabled!',
         },
       ]);
     });

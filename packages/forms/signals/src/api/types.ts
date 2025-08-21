@@ -72,8 +72,8 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 export interface DisabledReason {
   /** The field that is disabled. */
   readonly field: Field<unknown>;
-  /** The reason for the disablement. */
-  readonly reason?: string;
+  /** A user-facing message describing the reason for the disablement. */
+  readonly message?: string;
 }
 
 /** The absence of an error which indicates a successful validation result. */
