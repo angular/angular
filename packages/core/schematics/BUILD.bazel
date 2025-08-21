@@ -43,6 +43,7 @@ npm_package(
         "migrations.json",
         ":bundles",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
@@ -98,6 +99,10 @@ bundle_entrypoints = [
         "packages/core/schematics/migrations/control-flow-migration/index.js",
     ],
     [
+        "ngclass-to-class-migration",
+        "packages/core/schematics/migrations/ngclass-to-class-migration/index.js",
+    ],
+    [
         "router-current-navigation",
         "packages/core/schematics/migrations/router-current-navigation/index.js",
     ],
@@ -117,6 +122,7 @@ rollup.rollup(
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
         "//packages/core/schematics/migrations/control-flow-migration",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
         "//packages/core/schematics/migrations/router-last-successful-navigation",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
