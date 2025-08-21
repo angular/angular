@@ -20,6 +20,7 @@ import {
   Testability,
   TestabilityRegistry,
   type OutputEmitterRef,
+  type OutputRef,
   type ɵInputSignalNode as InputSignalNode,
   ɵSIGNAL as SIGNAL,
 } from '@angular/core';
@@ -130,12 +131,21 @@ export class DowngradeComponentAdapter {
   ): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
+    const outputs = this.componentFactory.outputs || [];
+    
+    // Create a map of output names for quick lookup to identify model signals
+    const outputsMap = new Set(outputs.map(output => output.propName));
+    
     for (const input of inputs) {
       const inputBinding = new PropertyBinding(input.propName, input.templateName);
+      
+      // Check if this input is part of a model signal (signal input that also has a corresponding output)
+      const isModelSignal = input.isSignal && outputsMap.has(input.propName);
+      
       let expr: string | null = null;
 
       if (attrs.hasOwnProperty(inputBinding.attr)) {
-        const observeFn = ((prop, isSignal) => {
+        const observeFn = ((prop, isSignal, isModel) => {
           let prevValue = INITIAL_VALUE;
           return (currValue: any) => {
             // Initially, both `$observe()` and `$watch()` will call this function.
@@ -144,11 +154,11 @@ export class DowngradeComponentAdapter {
                 prevValue = currValue;
               }
 
-              this.updateInput(componentRef, prop, prevValue, currValue, isSignal);
+              this.updateInput(componentRef, prop, prevValue, currValue, isSignal, isModel);
               prevValue = currValue;
             }
           };
-        })(inputBinding.prop, input.isSignal);
+        })(inputBinding.prop, input.isSignal, isModelSignal);
         attrs.$observe(inputBinding.attr, observeFn);
 
         // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
@@ -170,9 +180,9 @@ export class DowngradeComponentAdapter {
       }
       if (expr != null) {
         const watchFn = (
-          (prop, isSignal) => (currValue: unknown, prevValue: unknown) =>
-            this.updateInput(componentRef, prop, prevValue, currValue, isSignal)
-        )(inputBinding.prop, input.isSignal);
+          (prop, isSignal, isModel) => (currValue: unknown, prevValue: unknown) =>
+            this.updateInput(componentRef, prop, prevValue, currValue, isSignal, isModel)
+        )(inputBinding.prop, input.isSignal, isModelSignal);
         this.componentScope.$watch(expr, watchFn);
       }
     }
@@ -259,7 +269,7 @@ export class DowngradeComponentAdapter {
     if (isAssignment && !setter) {
       throw new Error(`Expression '${expr}' is not assignable!`);
     }
-    const emitter = componentRef.instance[output.prop] as EventEmitter<any> | OutputEmitterRef<any>;
+    const emitter = componentRef.instance[output.prop] as EventEmitter<any> | OutputEmitterRef<any> | OutputRef<any>;
     if (emitter) {
       const subscription = emitter.subscribe(
         isAssignment
@@ -319,6 +329,7 @@ export class DowngradeComponentAdapter {
     prevValue: any,
     currValue: any,
     isSignal: boolean,
+    isModelSignal: boolean = false,
   ) {
     if (this.implementsOnChanges) {
       this.inputChanges[prop] = new SimpleChange(prevValue, currValue, prevValue === currValue);
@@ -326,8 +337,21 @@ export class DowngradeComponentAdapter {
 
     this.inputChangeCount++;
     if (isSignal && !this.unsafelyOverwriteSignalInputs) {
-      const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
-      node.applyValueToInputSignal(node, currValue);
+      if (isModelSignal) {
+        // For model signals, use the .set() method to trigger output emission
+        const modelSignal = componentRef.instance[prop];
+        if (modelSignal && typeof modelSignal.set === 'function') {
+          modelSignal.set(currValue);
+        } else {
+          // Fallback to direct signal update if .set() is not available
+          const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
+          node.applyValueToInputSignal(node, currValue);
+        }
+      } else {
+        // For regular input signals, use the direct node update
+        const node = componentRef.instance[prop][SIGNAL] as InputSignalNode<unknown, unknown>;
+        node.applyValueToInputSignal(node, currValue);
+      }
     } else {
       componentRef.instance[prop] = currValue;
     }
