@@ -74,7 +74,8 @@ function normalizeFormArgs<TValue>(
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
  * as well.
  *
- * @example ```
+ * @example
+ * ```
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -98,7 +99,8 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
  * as well.
  *
- * @example ```
+ * @example
+ * ```
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -110,10 +112,11 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
  * form. The schema can be either a pre-defined schema created with the `schema` function, or a
  * function that builds the schema by binding logic to a parts of the field structure.
  *
- * @example ```
+ * @example
+ * ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
+ *   pattern(name.last, /^[a-z]+$/i, {message: 'Alphabet characters only'});
  * });
  * nameForm().valid(); // false
  * nameForm().value.set({first: 'John', last: 'Doe'});
@@ -143,7 +146,8 @@ export function form<TValue>(
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
  * as well.
  *
- * @example ```
+ * @example
+ * ```
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -155,7 +159,8 @@ export function form<TValue>(
  * form. The schema can be either a pre-defined schema created with the `schema` function, or a
  * function that builds the schema by binding logic to a parts of the field structure.
  *
- * @example ```
+ * @example
+ * ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
  *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
@@ -194,22 +199,24 @@ export function form<TValue>(...args: any[]): Field<TValue> {
 /**
  * Applies a schema to each item of an array.
  *
- * @example ```
+ * @example
+ * ```
  * const nameSchema = schema<{first: string, last: string}>((name) => {
  *   required(name.first);
  *   required(name.last);
  * });
  * const namesForm = form(signal([{first: '', last: ''}]), (names) => {
- *   array(names, nameSchema);
+ *   applyEach(names, nameSchema);
  * });
  * ```
  *
  * When binding logic to the array items, the `Field` for the array item is passed as an additional
  * argument. This can be used to reference other properties on the item.
  *
- * @example ```
+ * @example
+ * ```
  * const namesForm = form(signal([{first: '', last: ''}]), (names) => {
- *   array(names, (name) => {
+ *   applyEach(names, (name) => {
  *     error(
  *       name.last,
  *       (value, nameField) => value === nameField.first().value(),
@@ -237,7 +244,8 @@ export function applyEach<TValue>(
 /**
  * Applies a predefined schema to a given `FieldPath`.
  *
- * @example ```
+ * @example
+ * ```
  * const nameSchema = schema<{first: string, last: string}>((name) => {
  *   required(name.first);
  *   required(name.last);
@@ -325,7 +333,8 @@ export function applyWhenValue(
  * field as a `ValidationError` on the sub-field indicated by the `field` property of the server
  * error.
  *
- * @example ```
+ * @example
+ * ```
  * async function registerNewUser(registrationForm: Field<{username: string, password: string}>) {
  *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {

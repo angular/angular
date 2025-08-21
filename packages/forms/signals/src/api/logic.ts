@@ -159,13 +159,12 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
 }
 
 /**
- * Defines the value of a `Property` for a given field.
+ * Creates a new `Property` and defines the value of the new property for the given field.
  *
  * @param path The path to define the property for.
- * @param prop  The property to define.
  * @param factory A factory function that creates the value for the property.
  *   This function is **not** reactive. It is run once when the field is created.
- * @returns The given property
+ * @returns The newly created property
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -173,12 +172,13 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
 ): Property<TData>;
 
 /**
- * Creates a new `Property` and defines the value of the new property for the given field.
+ * Defines the value of a `Property` for a given field.
  *
  * @param path The path to define the property for.
+ * @param prop  The property to define.
  * @param factory A factory function that creates the value for the property.
  *   This function is **not** reactive. It is run once when the field is created.
- * @returns The newly created property
+ * @returns The given property
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,

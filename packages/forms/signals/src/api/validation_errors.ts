@@ -414,7 +414,8 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * The base class for all built-in, non-custom errors. This class can be used to check if an error
  * is one of the standard kinds, allowing you to switch on the kind to further narrow the type.
  *
- * @example ```
+ * @example
+ * ```
  * const f = form(...);
  * for (const e of form().errors()) {
  *   if (e instanceof NgValidationError) {
