@@ -10,12 +10,7 @@
   --pie6: '#fe3700';
 
   background-color: var(--page-background) !important; // svg background color
-  g {
-    rect {
-      stroke: black !important; // border around the rectangles, same for dark/light theme
-      filter: drop-shadow(5px 5px 0px var(--primary-contrast));
-    }
-  }
+
   .messageText,
   .pieTitleText {
     fill: var(--primary-contrast) !important; // pie chart title text and line labels
@@ -47,13 +42,16 @@
   .marker,
   #statediagram-barbEnd,
   .transition,
-  #arrowhead path {
+  #arrowhead path,
+  #mermaid-generated-diagram_stateDiagram-barbEnd {
     // arrows
     stroke: var(--primary-contrast) !important;
     fill: var(--primary-contrast) !important;
   }
   .cluster rect,
-  .nodes rect {
+  .nodes rect,
+  .node path,
+  .cluster path {
     stroke: var(--primary-contrast) !important;
     fill: var(--page-background) !important;
   }
