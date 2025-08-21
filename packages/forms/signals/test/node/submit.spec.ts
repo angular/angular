@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form, required, submit} from '../../public_api';
-import {ValidationError} from '../../src/api/validation_errors';
+import {customError, requiredError, ValidationError} from '../../src/api/validation_errors';
 
 describe('submit', () => {
   it('fails fast on invalid form', async () => {
@@ -26,7 +26,7 @@ describe('submit', () => {
       fail('Submit action should run not on invalid form');
     });
 
-    expect(f.first().errors()).toEqual([ValidationError.required({field: f.first})]);
+    expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
   });
 
   it('maps error to a field', async () => {
@@ -42,14 +42,14 @@ describe('submit', () => {
 
     await submit(f, (form) => {
       return Promise.resolve(
-        ValidationError.custom({
+        customError({
           kind: 'lastName',
           field: form.last,
         }),
       );
     });
 
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'lastName', field: f.last})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'lastName', field: f.last})]);
   });
 
   it('maps errors to multiple fields', async () => {
@@ -58,27 +58,25 @@ describe('submit', () => {
 
     await submit(f, (form) => {
       return Promise.resolve([
-        ValidationError.custom({
+        customError({
           kind: 'firstName',
           field: form.first,
         }),
-        ValidationError.custom({
+        customError({
           kind: 'lastName',
           field: form.last,
         }),
-        ValidationError.custom({
+        customError({
           kind: 'lastName2',
           field: form.last,
         }),
       ]);
     });
 
-    expect(f.first().errors()).toEqual([
-      ValidationError.custom({kind: 'firstName', field: f.first}),
-    ]);
+    expect(f.first().errors()).toEqual([customError({kind: 'firstName', field: f.first})]);
     expect(f.last().errors()).toEqual([
-      ValidationError.custom({kind: 'lastName', field: f.last}),
-      ValidationError.custom({kind: 'lastName2', field: f.last}),
+      customError({kind: 'lastName', field: f.last}),
+      customError({kind: 'lastName2', field: f.last}),
     ]);
   });
 
@@ -116,10 +114,10 @@ describe('submit', () => {
     );
 
     await submit(f, () => {
-      return Promise.resolve(ValidationError.custom());
+      return Promise.resolve(customError());
     });
 
-    expect(f().errors()).toEqual([ValidationError.custom({field: f})]);
+    expect(f().errors()).toEqual([customError({field: f})]);
   });
 
   it('marks the form as submitting', async () => {
@@ -199,7 +197,7 @@ describe('submit', () => {
 
     await submit(f.first, (form) => {
       submitSpy(form().value());
-      return Promise.resolve(ValidationError.custom({kind: 'lastName'}));
+      return Promise.resolve(customError({kind: 'lastName'}));
     });
 
     expect(submitSpy).toHaveBeenCalledWith('meow');
@@ -225,18 +223,18 @@ describe('submit', () => {
 
     await submit(f, async (form) => {
       return [
-        ValidationError.custom({kind: 'submit', field: f.first}),
-        ValidationError.custom({kind: 'submit', field: f.last}),
+        customError({kind: 'submit', field: f.first}),
+        customError({kind: 'submit', field: f.last}),
       ];
     });
 
-    expect(f.first().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.first})]);
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.last})]);
+    expect(f.first().errors()).toEqual([customError({kind: 'submit', field: f.first})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'submit', field: f.last})]);
 
     f.first().value.set('Hello');
 
     expect(f.first().errors()).toEqual([]);
-    expect(f.last().errors()).toEqual([ValidationError.custom({kind: 'submit', field: f.last})]);
+    expect(f.last().errors()).toEqual([customError({kind: 'submit', field: f.last})]);
   });
 });
 

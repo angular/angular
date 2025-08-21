@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {MAX_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {maxLengthError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, getOption, ValueWithLengthOrSize} from './util';
 
 /**
@@ -48,7 +48,7 @@ export function maxLength<
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.maxLength(maxLength, {message: getOption(config?.message, ctx)});
+        return maxLengthError(maxLength, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

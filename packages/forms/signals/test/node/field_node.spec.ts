@@ -23,7 +23,7 @@ import {
   validate,
   validateTree,
 } from '../../public_api';
-import {ValidationError} from '../../src/api/validation_errors';
+import {customError, requiredError, ValidationError} from '../../src/api/validation_errors';
 import {SchemaImpl} from '../../src/schema/schema';
 
 describe('FieldNode', () => {
@@ -555,7 +555,7 @@ describe('FieldNode', () => {
         (p) => {
           validate(p.a, ({value}) => {
             if (value() > 10) {
-              return ValidationError.custom({kind: 'too-damn-high'});
+              return customError({kind: 'too-damn-high'});
             }
             return undefined;
           });
@@ -569,7 +569,7 @@ describe('FieldNode', () => {
       expect(f().valid()).toBe(true);
 
       f.a().value.set(11);
-      expect(f.a().errors()).toEqual([ValidationError.custom({kind: 'too-damn-high', field: f.a})]);
+      expect(f.a().errors()).toEqual([customError({kind: 'too-damn-high', field: f.a})]);
       expect(f.a().valid()).toBe(false);
       expect(f().errors()).toEqual([]);
       expect(f().valid()).toBe(false);
@@ -581,10 +581,7 @@ describe('FieldNode', () => {
         (p) => {
           validate(p.a, ({value}) => {
             if (value() > 10) {
-              return [
-                ValidationError.custom({kind: 'too-damn-high'}),
-                ValidationError.custom({kind: 'bad'}),
-              ];
+              return [customError({kind: 'too-damn-high'}), customError({kind: 'bad'})];
             }
             return undefined;
           });
@@ -597,8 +594,8 @@ describe('FieldNode', () => {
 
       f.a().value.set(11);
       expect(f.a().errors()).toEqual([
-        ValidationError.custom({kind: 'too-damn-high', field: f.a}),
-        ValidationError.custom({kind: 'bad', field: f.a}),
+        customError({kind: 'too-damn-high', field: f.a}),
+        customError({kind: 'bad', field: f.a}),
       ]);
       expect(f.a().valid()).toBe(false);
     });
@@ -613,7 +610,7 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.first().errors()).toEqual([ValidationError.required({field: f.first})]);
+      expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
       expect(f.first().valid()).toBe(false);
       expect(f.first().property(REQUIRED)()).toBe(true);
 
@@ -641,7 +638,7 @@ describe('FieldNode', () => {
 
       f.last().value.set('Loblaw');
 
-      expect(f.first().errors()).toEqual([ValidationError.required({field: f.first})]);
+      expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
       expect(f.first().valid()).toBe(false);
       expect(f.first().property(REQUIRED)()).toBe(true);
 
@@ -663,7 +660,7 @@ describe('FieldNode', () => {
       );
 
       expect(f.quantity().property(REQUIRED)()).toBe(true);
-      expect(f.quantity().errors()).toEqual([ValidationError.required({field: f.quantity})]);
+      expect(f.quantity().errors()).toEqual([requiredError({field: f.quantity})]);
 
       f.quantity().value.set(1);
       expect(f.quantity().property(REQUIRED)()).toBe(true);
@@ -677,11 +674,11 @@ describe('FieldNode', () => {
         (tx) => {
           required(tx.name, {
             when: ({valueOf}) => valueOf(tx.country) === 'USA',
-            error: ValidationError.required({message: 'Name is required in your country'}),
+            error: requiredError({message: 'Name is required in your country'}),
           });
           required(tx.name, {
             when: ({valueOf}) => valueOf(tx.amount) >= 1000,
-            error: ValidationError.required({
+            error: requiredError({
               message: 'Name is required for large transactions',
             }),
           });
@@ -693,7 +690,7 @@ describe('FieldNode', () => {
 
       f.country().value.set('USA');
       expect(f.name().errors()).toEqual([
-        ValidationError.required({
+        requiredError({
           message: 'Name is required in your country',
           field: f.name,
         }),
@@ -701,11 +698,11 @@ describe('FieldNode', () => {
 
       f.amount().value.set(1000);
       expect(f.name().errors()).toEqual([
-        ValidationError.required({
+        requiredError({
           message: 'Name is required in your country',
           field: f.name,
         }),
-        ValidationError.required({
+        requiredError({
           message: 'Name is required for large transactions',
           field: f.name,
         }),
@@ -713,7 +710,7 @@ describe('FieldNode', () => {
 
       f.country().value.set('Canada');
       expect(f.name().errors()).toEqual([
-        ValidationError.required({
+        requiredError({
           message: 'Name is required for large transactions',
           field: f.name,
         }),
@@ -727,7 +724,7 @@ describe('FieldNode', () => {
       const f = form(
         signal({a: 1, b: 2}),
         (p) => {
-          validate(p.a, ({value}) => (value() > 1 ? ValidationError.custom() : null));
+          validate(p.a, ({value}) => (value() > 1 ? customError() : null));
         },
         {injector: TestBed.inject(Injector)},
       );
@@ -736,7 +733,7 @@ describe('FieldNode', () => {
       expect(f.a().valid()).toBe(true);
 
       f.a().value.set(2);
-      expect(f.a().errors()).toEqual([ValidationError.custom({field: f.a})]);
+      expect(f.a().errors()).toEqual([customError({field: f.a})]);
       expect(f.a().valid()).toBe(false);
     });
 
@@ -749,12 +746,10 @@ describe('FieldNode', () => {
             validateTree(p, ({value, fieldOf}) => {
               const errors: ValidationError[] = [];
               if (value().name.length > 8) {
-                errors.push(ValidationError.custom({kind: 'long_name', field: fieldOf(p.name)}));
+                errors.push(customError({kind: 'long_name', field: fieldOf(p.name)}));
               }
               if (value().age < 0) {
-                errors.push(
-                  ValidationError.custom({kind: 'temporal_anomaly', field: fieldOf(p.age)}),
-                );
+                errors.push(customError({kind: 'temporal_anomaly', field: fieldOf(p.age)}));
               }
               return errors;
             });
@@ -768,14 +763,10 @@ describe('FieldNode', () => {
         f.age().value.set(-10);
 
         expect(f.name().errors()).toEqual([]);
-        expect(f.age().errors()).toEqual([
-          ValidationError.custom({kind: 'temporal_anomaly', field: f.age}),
-        ]);
+        expect(f.age().errors()).toEqual([customError({kind: 'temporal_anomaly', field: f.age})]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name().errors()).toEqual([
-          ValidationError.custom({kind: 'long_name', field: f.name}),
-        ]);
+        expect(f.name().errors()).toEqual([customError({kind: 'long_name', field: f.name})]);
         expect(f.age().errors()).toEqual([]);
       });
 
@@ -787,12 +778,10 @@ describe('FieldNode', () => {
             validateTree(p, ({value, fieldOf}) => {
               const errors: ValidationError[] = [];
               if (value().name.length > 8) {
-                errors.push(ValidationError.custom({kind: 'long_name', field: fieldOf(p.name)}));
+                errors.push(customError({kind: 'long_name', field: fieldOf(p.name)}));
               }
               if (value().age < 0) {
-                errors.push(
-                  ValidationError.custom({kind: 'temporal_anomaly', field: fieldOf(p.age)}),
-                );
+                errors.push(customError({kind: 'temporal_anomaly', field: fieldOf(p.age)}));
               }
               return errors;
             });
@@ -806,14 +795,10 @@ describe('FieldNode', () => {
         f.age().value.set(-10);
 
         expect(f.name().errors()).toEqual([]);
-        expect(f.age().errors()).toEqual([
-          ValidationError.custom({kind: 'temporal_anomaly', field: f.age}),
-        ]);
+        expect(f.age().errors()).toEqual([customError({kind: 'temporal_anomaly', field: f.age})]);
 
         cat.set({name: 'Fluffy McFluffington', age: 10});
-        expect(f.name().errors()).toEqual([
-          ValidationError.custom({kind: 'long_name', field: f.name}),
-        ]);
+        expect(f.name().errors()).toEqual([customError({kind: 'long_name', field: f.name})]);
         expect(f.age().errors()).toEqual([]);
       });
     });
@@ -837,7 +822,7 @@ describe('FieldNode', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f().errorSummary()).toEqual([ValidationError.required({field: f})]);
+      expect(f().errorSummary()).toEqual([requiredError({field: f})]);
     });
 
     it('should contain errors from child fields', () => {
@@ -852,8 +837,8 @@ describe('FieldNode', () => {
       );
 
       expect(f().errorSummary()).toEqual([
-        ValidationError.required({field: f.first}),
-        ValidationError.required({field: f.last}),
+        requiredError({field: f.first}),
+        requiredError({field: f.last}),
       ]);
     });
 
@@ -866,24 +851,24 @@ describe('FieldNode', () => {
       const f = form(
         data,
         (p) => {
-          validate(p, () => ValidationError.custom({kind: 'root'}));
-          validate(p.child, () => ValidationError.custom({kind: 'child'}));
-          validate(p.child.child, () => ValidationError.custom({kind: 'grandchild'}));
+          validate(p, () => customError({kind: 'root'}));
+          validate(p.child, () => customError({kind: 'child'}));
+          validate(p.child.child, () => customError({kind: 'grandchild'}));
         },
         {injector: TestBed.inject(Injector)},
       );
 
       expect(f.child.child().errorSummary()).toEqual([
-        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+        customError({kind: 'grandchild', field: f.child.child}),
       ]);
       expect(f.child().errorSummary()).toEqual([
-        ValidationError.custom({kind: 'child', field: f.child}),
-        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+        customError({kind: 'child', field: f.child}),
+        customError({kind: 'grandchild', field: f.child.child}),
       ]);
       expect(f().errorSummary()).toEqual([
-        ValidationError.custom({kind: 'root', field: f}),
-        ValidationError.custom({kind: 'child', field: f.child}),
-        ValidationError.custom({kind: 'grandchild', field: f.child.child}),
+        customError({kind: 'root', field: f}),
+        customError({kind: 'child', field: f.child}),
+        customError({kind: 'grandchild', field: f.child.child}),
       ]);
     });
   });

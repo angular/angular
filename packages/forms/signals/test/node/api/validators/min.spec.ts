@@ -9,7 +9,7 @@
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MIN, form, min} from '../../../../public_api';
-import {ValidationError} from '../../../../src/api/validation_errors';
+import {customError, minError} from '../../../../src/api/validation_errors';
 
 describe('min validator', () => {
   it('returns min error when the value is smaller', () => {
@@ -22,7 +22,7 @@ describe('min validator', () => {
       {injector: TestBed.inject(Injector)},
     );
 
-    expect(f.age().errors()).toEqual([ValidationError.min(5, {field: f.age})]);
+    expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
   });
 
   it('is inclusive', () => {
@@ -58,7 +58,7 @@ describe('min validator', () => {
       (p) => {
         min(p.age, 5, {
           error: ({value}) => {
-            return ValidationError.custom({kind: 'special-min', message: value().toString()});
+            return customError({kind: 'special-min', message: value().toString()});
           },
         });
       },
@@ -66,7 +66,7 @@ describe('min validator', () => {
     );
 
     expect(f.age().errors()).toEqual([
-      ValidationError.custom({
+      customError({
         kind: 'special-min',
         message: '3',
         field: f.age,
@@ -87,7 +87,7 @@ describe('min validator', () => {
     );
 
     expect(f.age().errors()).toEqual([
-      ValidationError.min(5, {
+      minError(5, {
         message: 'min error!!',
         field: f.age,
       }),
@@ -115,7 +115,7 @@ describe('min validator', () => {
         (p) => {
           min(p.age, 5, {
             error: ({value}) => {
-              return ValidationError.custom({kind: 'special-min', message: value().toString()});
+              return customError({kind: 'special-min', message: value().toString()});
             },
           });
         },
@@ -137,12 +137,9 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([
-        ValidationError.min(5, {field: f.age}),
-        ValidationError.min(10, {field: f.age}),
-      ]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age}), minError(10, {field: f.age})]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([ValidationError.min(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
 
@@ -162,16 +159,13 @@ describe('min validator', () => {
       );
 
       f.age().value.set(3);
-      expect(f.age().errors()).toEqual([
-        ValidationError.min(5, {field: f.age}),
-        ValidationError.min(10, {field: f.age}),
-      ]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age}), minError(10, {field: f.age})]);
       f.age().value.set(7);
-      expect(f.age().errors()).toEqual([ValidationError.min(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
       f.age().value.set(15);
       expect(f.age().errors()).toEqual([]);
       minSignal.set(30);
-      expect(f.age().errors()).toEqual([ValidationError.min(30, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(30, {field: f.age})]);
       expect(f.age().property(MIN)()).toBe(30);
     });
 
@@ -189,11 +183,11 @@ describe('min validator', () => {
       );
 
       expect(f.age().errors()).toEqual([
-        ValidationError.min(15, {field: f.age}),
-        ValidationError.min(10, {field: f.age}),
+        minError(15, {field: f.age}),
+        minError(10, {field: f.age}),
       ]);
       minSignal.set(undefined);
-      expect(f.age().errors()).toEqual([ValidationError.min(10, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(10, {field: f.age})]);
       minSignal2.set(undefined);
       expect(f.age().errors()).toEqual([]);
     });
@@ -211,11 +205,11 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([ValidationError.min(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
       minValue.set(undefined);
       expect(f.age().errors()).toEqual([]);
       minValue.set(5);
-      expect(f.age().errors()).toEqual([ValidationError.min(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
     });
 
     it('handles dynamic value', () => {
@@ -229,7 +223,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([ValidationError.min(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
       minValue.set(2);
       expect(f.age().errors()).toEqual([]);
     });
@@ -247,7 +241,7 @@ describe('min validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().errors()).toEqual([ValidationError.min(5, {field: f.age})]);
+      expect(f.age().errors()).toEqual([minError(5, {field: f.age})]);
       f.name().value.set('other cat');
       expect(f.age().errors()).toEqual([]);
     });

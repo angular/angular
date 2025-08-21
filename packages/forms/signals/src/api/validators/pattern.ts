@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {PATTERN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {patternError} from '../validation_errors';
 import {BaseValidatorConfig, getOption} from './util';
 
 /**
@@ -47,7 +47,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.pattern(pattern, {message: getOption(config?.message, ctx)});
+        return patternError(pattern, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

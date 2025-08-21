@@ -10,7 +10,7 @@ import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {MIN_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
-import {ValidationError} from '../validation_errors';
+import {minLengthError} from '../validation_errors';
 import {BaseValidatorConfig, getLengthOrSize, getOption, ValueWithLengthOrSize} from './util';
 
 /**
@@ -48,7 +48,7 @@ export function minLength<
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
-        return ValidationError.minLength(minLength, {message: getOption(config?.message, ctx)});
+        return minLengthError(minLength, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;
