@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
@@ -42,9 +42,9 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
     }
     if (ctx.value() < min) {
       if (config?.error) {
-        return typeof config.error === 'function' ? config.error(ctx) : config.error;
+        return getOption(config.error, ctx);
       } else {
-        return ValidationError.min(min);
+        return ValidationError.min(min, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

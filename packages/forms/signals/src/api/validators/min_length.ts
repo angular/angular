@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MIN_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
+import {BaseValidatorConfig, getLengthOrSize, getOption, ValueWithLengthOrSize} from './util';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be greater than or
@@ -46,9 +46,9 @@ export function minLength<
     }
     if (getLengthOrSize(ctx.value()) < minLength) {
       if (config?.error) {
-        return typeof config.error === 'function' ? config.error(ctx) : config.error;
+        return getOption(config.error, ctx);
       } else {
-        return ValidationError.minLength(minLength);
+        return ValidationError.minLength(minLength, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

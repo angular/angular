@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MAX_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig, getLengthOrSize, ValueWithLengthOrSize} from './util';
+import {BaseValidatorConfig, getLengthOrSize, getOption, ValueWithLengthOrSize} from './util';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be less than or
@@ -46,9 +46,9 @@ export function maxLength<
     }
     if (getLengthOrSize(ctx.value()) > maxLength) {
       if (config?.error) {
-        return typeof config.error === 'function' ? config.error(ctx) : config.error;
+        return getOption(config.error, ctx);
       } else {
-        return ValidationError.maxLength(maxLength);
+        return ValidationError.maxLength(maxLength, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

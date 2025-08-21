@@ -50,4 +50,26 @@ describe('email validator', () => {
       }),
     ]);
   });
+
+  it('supports custom error message', () => {
+    const cat = signal({name: 'pirojok-the-cat', email: ''});
+    const f = form(
+      cat,
+      (p) => {
+        email(p.email, {
+          message: 'email error',
+        });
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f.email().errors()).toEqual([
+      ValidationError.email({
+        message: 'email error',
+        field: f.email,
+      }),
+    ]);
+  });
 });

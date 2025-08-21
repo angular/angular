@@ -38,6 +38,21 @@ describe('pattern validator', () => {
     expect(f.name().errors()).toEqual([ValidationError.custom({field: f.name})]);
   });
 
+  it('supports custom error message', () => {
+    const cat = signal({name: 'pelmeni-the-cat'});
+    const f = form(
+      cat,
+      (p) => {
+        pattern(p.name, /pir.*jok/, {message: 'pattern error'});
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.name().errors()).toEqual([
+      ValidationError.pattern(/pir.*jok/, {message: 'pattern error', field: f.name}),
+    ]);
+  });
+
   describe('custom properties', () => {
     it('sets the PATTERN property', () => {
       const cat = signal({name: 'pelmeni-the-cat'});
