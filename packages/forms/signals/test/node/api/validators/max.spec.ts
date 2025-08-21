@@ -74,6 +74,26 @@ describe('max validator', () => {
     ]);
   });
 
+  it('supports custom error messgaes', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 6});
+    const f = form(
+      cat,
+      (p) => {
+        max(p.age, 5, {
+          message: 'max error',
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.age().errors()).toEqual([
+      ValidationError.max(5, {
+        message: 'max error',
+        field: f.age,
+      }),
+    ]);
+  });
+
   it('treats NaN as no maximum', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 6});
     const f = form(

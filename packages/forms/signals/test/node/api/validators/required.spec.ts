@@ -50,6 +50,27 @@ describe('required validator', () => {
     expect(f.name().errors()).toEqual([]);
   });
 
+  it('supports custom error messages', () => {
+    const cat = signal({name: '', age: 5});
+    const f = form(
+      cat,
+      (p) => {
+        required(p.name, {
+          message: 'required error',
+        });
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f.name().errors()).toEqual([
+      ValidationError.required({message: 'required error', field: f.name}),
+    ]);
+    f.name().value.set('pirojok-the-cat');
+    expect(f.name().errors()).toEqual([]);
+  });
+
   it('supports custom emptyPredicate', () => {
     const cat = signal({name: ''});
     const f = form(

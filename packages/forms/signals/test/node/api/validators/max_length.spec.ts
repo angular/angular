@@ -90,6 +90,26 @@ describe('maxLength validator', () => {
     ]);
   });
 
+  it('supports custom error message', () => {
+    const data = signal({text: 'abcdef'});
+    const f = form(
+      data,
+      (p) => {
+        maxLength(p.text, 5, {
+          message: ({value}) => `${value()} is an error!`,
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.text().errors()).toEqual([
+      ValidationError.maxLength(5, {
+        message: 'abcdef is an error!',
+        field: f.text,
+      }),
+    ]);
+  });
+
   it('works with sets', () => {
     const data = signal(new Set([1, 2, 3, 4]));
     const f = form(

@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {PATTERN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to match a specific regex pattern.
@@ -45,9 +45,9 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
 
     if (!pattern.test(ctx.value())) {
       if (config?.error) {
-        return typeof config.error === 'function' ? config.error(ctx) : config.error;
+        return getOption(config.error, ctx);
       } else {
-        return ValidationError.pattern(pattern);
+        return ValidationError.pattern(pattern, {message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

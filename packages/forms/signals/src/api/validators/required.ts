@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {REQUIRED} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {ValidationError} from '../validation_errors';
-import {BaseValidatorConfig} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be non-empty.
@@ -45,9 +45,9 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   validate(path, (ctx) => {
     if (ctx.state.property(REQUIRED_MEMO)!() && emptyPredicate(ctx.value())) {
       if (config?.error) {
-        return typeof config.error === 'function' ? config.error(ctx) : config.error;
+        return getOption(config.error, ctx);
       } else {
-        return ValidationError.required();
+        return ValidationError.required({message: getOption(config?.message, ctx)});
       }
     }
     return undefined;

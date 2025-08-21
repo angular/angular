@@ -90,6 +90,26 @@ describe('minLength validator', () => {
     ]);
   });
 
+  it('supports custom error messages', () => {
+    const data = signal({text: 'ab'});
+    const f = form(
+      data,
+      (p) => {
+        minLength(p.text, 5, {
+          message: ({value}) => `${value()} is error!`,
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.text().errors()).toEqual([
+      ValidationError.minLength(5, {
+        message: 'ab is error!',
+        field: f.text,
+      }),
+    ]);
+  });
+
   it('works with sets', () => {
     const data = signal(new Set([1, 2, 3, 4]));
     const f = form(

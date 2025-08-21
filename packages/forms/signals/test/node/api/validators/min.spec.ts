@@ -74,6 +74,26 @@ describe('min validator', () => {
     ]);
   });
 
+  it('supports custom error messages', () => {
+    const cat = signal({name: 'pirojok-the-cat', age: 3});
+    const f = form(
+      cat,
+      (p) => {
+        min(p.age, 5, {
+          message: 'min error!!',
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f.age().errors()).toEqual([
+      ValidationError.min(5, {
+        message: 'min error!!',
+        field: f.age,
+      }),
+    ]);
+  });
+
   it('treats NaN as no minimum', () => {
     const cat = signal({name: 'pirojok-the-cat', age: 4});
     const f = form(
