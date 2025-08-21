@@ -530,7 +530,7 @@ const userSchema = schema<User>((userPath) => {
     this.usersModel.set([{username: 'newuser', name: 'John Doe'}]);
 
     this.usersForm[0].username().disabled(); // true
-    this.usersForm[0].username().disabledReasons(); // [{field: this.usersForm[0].username, reason: 'Username cannot be changed'}]
+    this.usersForm[0].username().disabledReasons(); // [{field: this.usersForm[0].username, message: 'Username cannot be changed'}]
   }
 }
 ```

@@ -439,7 +439,7 @@ describe('control directive', () => {
     const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
 
     expect(comp.myInput().disabledReasons()).toEqual([
-      {reason: 'Currently unavailable', field: comp.f},
+      {message: 'Currently unavailable', field: comp.f},
     ]);
   });
 
