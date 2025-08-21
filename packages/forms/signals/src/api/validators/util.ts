@@ -13,20 +13,22 @@ import {ValidationError, WithoutField} from '../validation_errors';
 export type ValueWithLengthOrSize = {length: number} | {size: number};
 
 /** Common options available on the standard validators. */
-export interface BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Root> {
-  /**
-   * A user-facing error message to include with the error.
-   * This option is ignored when passing the `error` option.
-   */
-  message?: string | LogicFn<TValue, string, TPathKind>;
-  /**
-   * Custom validation error(s) to report instead of the default,
-   * or a function that receives the `FieldContext` and returns custom validation error(s).
-   */
-  error?:
-    | OneOrMany<WithoutField<ValidationError>>
-    | LogicFn<TValue, OneOrMany<WithoutField<ValidationError>>, TPathKind>;
-}
+export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Root> =
+  | {
+      /** A user-facing error message to include with the error. */
+      message?: string | LogicFn<TValue, string, TPathKind>;
+      error?: never;
+    }
+  | {
+      /**
+       * Custom validation error(s) to report instead of the default,
+       * or a function that receives the `FieldContext` and returns custom validation error(s).
+       */
+      error?:
+        | OneOrMany<WithoutField<ValidationError>>
+        | LogicFn<TValue, OneOrMany<WithoutField<ValidationError>>, TPathKind>;
+      message?: never;
+    };
 
 /** Gets the length or size of the given value. */
 export function getLengthOrSize(value: ValueWithLengthOrSize) {
@@ -43,8 +45,8 @@ export function getLengthOrSize(value: ValueWithLengthOrSize) {
  * @returns The value for the option.
  */
 export function getOption<TOption, TValue, TPathKind extends PathKind = PathKind.Root>(
-  opt: TOption | LogicFn<TValue, TOption, TPathKind>,
+  opt: Exclude<TOption, Function> | LogicFn<TValue, TOption, TPathKind> | undefined,
   ctx: FieldContext<TValue, TPathKind>,
-) {
+): TOption | undefined {
   return typeof opt === 'function' ? (opt as LogicFn<TValue, TOption, TPathKind>)(ctx) : opt;
 }
