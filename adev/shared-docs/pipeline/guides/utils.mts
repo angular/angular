@@ -9,6 +9,7 @@
 import {existsSync, readFileSync} from 'fs';
 import {join} from 'path';
 import {cwd} from 'process';
+import {shouldLinkSymbol} from '../shared/link-exemption.mjs';
 
 // TODO(josephperrott): Set edit content url based on the owner, repo and branch.
 
@@ -40,7 +41,7 @@ export function setContext(envContext: Partial<ParserContext>) {
 }
 
 export function getApiLink(entryName: string): string | undefined {
-  if (!context.apiEntries || hasMoreThanOneDot(entryName)) {
+  if (!context.apiEntries || hasMoreThanOneDot(entryName) || !shouldLinkSymbol(entryName)) {
     return undefined;
   }
 

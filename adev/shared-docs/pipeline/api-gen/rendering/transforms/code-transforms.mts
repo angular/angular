@@ -44,6 +44,7 @@ import {
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
 import {getLinkToModule} from './url-transforms.mjs';
 import {formatJs} from './format-code.mjs';
+import {shouldLinkSymbol} from '../../../shared/link-exemption.mjs';
 
 const INDENT = '  ';
 const SPACE = ' ';
@@ -525,13 +526,14 @@ export function addApiLinksToHtml(htmlString: string): string {
     //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
-      const [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
-
       // mySymbol() => mySymbol
-      const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
-      const moduleName = getModuleName(symbolWithoutInvocation);
+      const symbolWithoutInvocation = potentialSymbolName.replace(/\([^)]*\);?/g, '');
 
-      if (moduleName) {
+      const [symbol, subSymbol] = symbolWithoutInvocation.split(/(?:#|\.)/) as [string, string?];
+
+      const moduleName = getModuleName(symbol);
+
+      if (shouldLinkSymbol(symbol) && moduleName) {
         return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
       }
 
