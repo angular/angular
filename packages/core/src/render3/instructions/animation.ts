@@ -20,7 +20,16 @@ import {
   getClassListFromValue,
 } from '../../animation/element_removal_registry';
 import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags, LView, TView} from '../interfaces/view';
+import {
+  RENDERER,
+  INJECTOR,
+  CONTEXT,
+  FLAGS,
+  LViewFlags,
+  LView,
+  TView,
+  DECLARATION_LCONTAINER,
+} from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
@@ -30,6 +39,7 @@ import {NgZone} from '../../zone';
 import {assertDefined} from '../../util/assert';
 import {determineLongestAnimation, LongestAnimation} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
+import {getBeforeNodeForView} from '../node_manipulation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 const areAnimationSupported =
@@ -101,15 +111,25 @@ function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
 
 /**
  * In the case that we have an existing node that's animating away, like when
- * an `@if` toggles quickly or `@for` adds and removes elements quickly, we
- * need to end the animation for the former node and remove it right away to
- * prevent duplicate nodes showing up.
+ * an `@if` toggles quickly, we need to end the animation for the former node
+ * and remove it right away to prevent duplicate nodes showing up.
  */
-function cancelLeavingNodes(tNode: TNode, el: HTMLElement): void {
-  leavingNodes
-    .get(tNode)
-    ?.pop()
-    ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+function cancelLeavingNodes(tNode: TNode, lView: LView): void {
+  const leavingEl = leavingNodes.get(tNode)?.shift();
+  const lContainer = lView[DECLARATION_LCONTAINER];
+  if (lContainer) {
+    // this is the insertion point for the new TNode element.
+    // it will be inserted before the declaring containers anchor.
+    const beforeNode = getBeforeNodeForView(tNode.index, lContainer);
+    // here we need to check the previous sibling of that anchor
+    const previousNode = beforeNode?.previousSibling;
+    // We really only want to cancel animations if the leaving node is the
+    // same as the node before where the new node will be inserted. This is
+    // the control flow scenario where an if was toggled.
+    if (leavingEl && previousNode && leavingEl === previousNode) {
+      leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+    }
+  }
 }
 
 function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
@@ -178,6 +198,8 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
+    cancelLeavingNodes(tNode, lView);
+
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
     for (const klass of activeClasses) {
@@ -188,12 +210,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     // preventing an animation via selector specificity.
     ngZone.runOutsideAngular(() => {
       requestAnimationFrame(() => {
-        // In the case that we have an existing node that's animating away, like when
-        // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
-        // need to end the animation for the former node and remove it right away to
-        // prevent duplicate nodes showing up.
-        cancelLeavingNodes(tNode, nativeElement);
-
         determineLongestAnimation(nativeElement, longestAnimations, areAnimationSupported);
         if (!longestAnimations.has(nativeElement)) {
           for (const klass of activeClasses) {
@@ -253,11 +269,8 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-  // In the case that we have an existing node that's animating away, like when
-  // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
-  // need to end the animation for the former node and remove it right away to
-  // prevent duplicate nodes showing up.
-  cancelLeavingNodes(tNode, nativeElement);
+
+  cancelLeavingNodes(tNode, lView);
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
