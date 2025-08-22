@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ng_project")
+load("//tools:defaults2.bzl", "api_golden_test", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,4 +15,14 @@ ng_project(
         "//packages/core",
         "//packages/forms",
     ],
+)
+
+api_golden_test(
+    name = "forms_signals_api",
+    data = [
+        "//goldens:public-api",
+        "//packages/forms/signals",
+    ],
+    entry_point = "index.d.ts",
+    golden = "goldens/public-api/forms/signals/index.api.md",
 )
