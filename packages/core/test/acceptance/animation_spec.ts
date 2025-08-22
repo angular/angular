@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgFor} from '@angular/common';
 import {ViewEncapsulation} from '@angular/compiler';
 import {
   AnimationCallbackEvent,
@@ -1246,6 +1247,149 @@ describe('Animation', () => {
       expect(cmp.show()).toBeTruthy();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
+    }));
+
+    it('should always run animations for `@for` loops when adding and removing quickly', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @for (item of items; track item) {
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+        max = 3;
+
+        addremove() {
+          this.max++;
+          this.items.splice(this.items.length, 0, this.max);
+          this.items.splice(0, 1);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
+    }));
+
+    it('should always run animations for custom repeater loops when adding and removing quickly', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        imports: [NgFor],
+        template: `
+          <div>
+            <ng-container *ngFor="let item of items; trackBy: trackByIndex; let i=index">
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+            </ng-container>
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+        max = 3;
+
+        addremove() {
+          this.max++;
+          this.items.splice(this.items.length, 0, this.max);
+          this.items.splice(0, 1);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
     }));
   });
 });
