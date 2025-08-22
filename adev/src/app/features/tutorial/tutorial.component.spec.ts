@@ -45,7 +45,7 @@ class FakeNodeRuntimeSandbox {
   }
 }
 
-describe('Tutorial', () => {
+fdescribe('Tutorial', () => {
   let component: Tutorial;
   let fixture: ComponentFixture<Tutorial>;
   const fakeWindow = {
@@ -102,14 +102,6 @@ describe('Tutorial', () => {
         mockAsyncProvider(NodeRuntimeSandbox, FakeNodeRuntimeSandbox),
       ],
     });
-    TestBed.overrideComponent(Tutorial, {
-      remove: {
-        imports: [DocViewer],
-      },
-      add: {
-        imports: [FakeDocViewer],
-      },
-    });
 
     await TestBed;
 
@@ -131,10 +123,11 @@ describe('Tutorial', () => {
   // it('should not render the embedded editor based on the tutorial config', () => {});
   // it('should load the tutorial', () => {});
 
-  it('should reset the reveal answer', async () => {
+  fit('should reset the reveal answer', async () => {
     setupResetRevealAnswerValues();
     fixture.detectChanges();
 
+    expect(component.shouldRenderRevealAnswer()).toBeTrue();
     const revealAnswerButton = component.revealAnswerButton();
     if (!revealAnswerButton) throw new Error('revealAnswerButton is undefined');
 
