@@ -889,7 +889,7 @@ export const provideImgixLoader: (path: string) => Provider[];
 // @public
 export function provideNetlifyLoader(path?: string): Provider[];
 
-// @public
+// @public @deprecated
 export function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
 
 // @public
@@ -951,6 +951,12 @@ export class UpperCasePipe implements PipeTransform {
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<UpperCasePipe, "uppercase", true>;
 }
+
+// @public (undocumented)
+export const useIntlImplementation: () => void;
+
+// @public (undocumented)
+export const useLegacyImplementation: () => void;
 
 // @public (undocumented)
 export const VERSION: Version;
