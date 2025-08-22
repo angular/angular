@@ -164,7 +164,7 @@
 
           <ng-template #docsVersionMiniMenu>
             <ul class="adev-mini-menu adev-version-picker" cdkMenu>
-              @for (item of versions(); track item) {
+              @for (item of versions(); track item.url) {
               <li>
                 <a
                   type="button"

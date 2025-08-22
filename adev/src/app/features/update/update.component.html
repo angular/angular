@@ -101,7 +101,7 @@
       }
 
       <h3>Other dependencies</h3>
-      @for (option of optionList; track $index) {
+      @for (option of optionList; track option.id) {
         <div>
           <mat-checkbox
             (change)="options[option.id] = $event.checked; showUpdatePath()"
