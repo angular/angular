@@ -1,0 +1,289 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
+
+import {
+  applyEach,
+  customError,
+  form,
+  property,
+  required,
+  schema,
+  SchemaOrSchemaFn,
+  validate,
+  validateAsync,
+  validateHttp,
+} from '../../public_api';
+
+interface Cat {
+  name: string;
+}
+
+interface Address {
+  street: string;
+  city: string;
+  zip: string;
+}
+
+describe('resources', () => {
+  let appRef: ApplicationRef;
+  let backend: HttpTestingController;
+  let injector: Injector;
+
+  beforeEach(() => {
+    globalThis['ngServerMode'] = isNode;
+  });
+
+  afterEach(() => {
+    globalThis['ngServerMode'] = undefined;
+  });
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting()]});
+    appRef = TestBed.inject(ApplicationRef);
+    backend = TestBed.inject(HttpTestingController);
+    injector = TestBed.inject(Injector);
+  });
+
+  it('Takes a simple resource which reacts to data changes', async () => {
+    const s: SchemaOrSchemaFn<Cat> = function (p) {
+      const RES = property(p.name, ({value}) => {
+        return resource({
+          params: () => ({x: value()}),
+          loader: async ({params}) => `got: ${params.x}`,
+        });
+      });
+
+      validate(p.name, ({state}) => {
+        const remote = state.property(RES)!;
+        if (remote.hasValue()) {
+          return customError({message: remote.value()});
+        } else {
+          return undefined;
+        }
+      });
+    };
+
+    const cat = signal({name: 'cat'});
+
+    const f = form(cat, s, {injector});
+
+    await appRef.whenStable();
+    expect(f.name().errors()).toEqual([
+      customError({
+        message: 'got: cat',
+        field: f.name,
+      }),
+    ]);
+
+    f.name().value.set('dog');
+    await appRef.whenStable();
+    expect(f.name().errors()).toEqual([
+      customError({
+        message: 'got: dog',
+        field: f.name,
+      }),
+    ]);
+  });
+
+  it('should create a resource per entry in an array', async () => {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
+      applyEach(p, (p) => {
+        const RES = property(p.name, ({value}) => {
+          return resource({
+            params: () => ({x: value()}),
+            loader: async ({params}) => `got: ${params.x}`,
+          });
+        });
+
+        validate(p.name, ({state}) => {
+          const remote = state.property(RES)!;
+          if (remote.hasValue()) {
+            return customError({message: remote.value()});
+          } else {
+            return undefined;
+          }
+        });
+      });
+    };
+
+    const cat = signal([{name: 'cat'}, {name: 'dog'}]);
+
+    const f = form(cat, s, {injector});
+
+    await appRef.whenStable();
+    expect(f[0].name().errors()).toEqual([
+      customError({
+        message: 'got: cat',
+        field: f[0].name,
+      }),
+    ]);
+    expect(f[1].name().errors()).toEqual([
+      customError({
+        message: 'got: dog',
+        field: f[1].name,
+      }),
+    ]);
+
+    f[0].name().value.set('bunny');
+    await appRef.whenStable();
+    expect(f[0].name().errors()).toEqual([
+      customError({
+        message: 'got: bunny',
+        field: f[0].name,
+      }),
+    ]);
+    expect(f[1].name().errors()).toEqual([
+      customError({
+        message: 'got: dog',
+        field: f[1].name,
+      }),
+    ]);
+  });
+
+  it('should support tree validation for resources', async () => {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
+      validateAsync(p, {
+        params: ({value}) => value(),
+        factory: (params) =>
+          resource({
+            params,
+            loader: async ({params}) => {
+              return params as Cat[];
+            },
+          }),
+        errors: (cats, {fieldOf}) => {
+          return cats.map((cat, index) =>
+            customError({
+              kind: 'meows_too_much',
+              name: cat.name,
+              field: fieldOf(p)[index],
+            }),
+          );
+        },
+      });
+    };
+
+    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
+    const f = form(cats, s, {injector});
+
+    await appRef.whenStable();
+    expect(f[0]().errors()).toEqual([
+      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+    ]);
+    expect(f[1]().errors()).toEqual([
+      customError({kind: 'meows_too_much', name: 'Ziggy', field: f[1]}),
+    ]);
+  });
+
+  it('should support tree validation for resources', async () => {
+    const s: SchemaOrSchemaFn<Cat[]> = function (p) {
+      validateAsync(p, {
+        params: ({value}) => value(),
+        factory: (params) =>
+          resource({
+            params,
+            loader: async ({params}) => {
+              return params as Cat[];
+            },
+          }),
+        errors: (cats, {fieldOf}) => {
+          return customError({
+            kind: 'meows_too_much',
+            name: cats[0].name,
+            field: fieldOf(p)[0],
+          });
+        },
+      });
+    };
+
+    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
+    const f = form(cats, s, {injector});
+
+    await appRef.whenStable();
+    expect(f[0]().errors()).toEqual([
+      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
+    ]);
+    expect(f[1]().errors()).toEqual([]);
+  });
+
+  it('should support shorthand http validation', async () => {
+    const usernameForm = form(
+      signal('unique-user'),
+      (p) => {
+        validateHttp(p, {
+          request: ({value}) => `/api/check?username=${value()}`,
+          errors: (available: boolean) =>
+            available ? undefined : customError({kind: 'username-taken'}),
+        });
+      },
+      {injector},
+    );
+
+    TestBed.tick();
+    const req1 = backend.expectOne('/api/check?username=unique-user');
+
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(true);
+
+    req1.flush(true);
+    await appRef.whenStable();
+
+    expect(usernameForm().valid()).toBe(true);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(false);
+    expect(true).toBe(true);
+
+    usernameForm().value.set('taken-user');
+    TestBed.tick();
+    const req2 = backend.expectOne('/api/check?username=taken-user');
+
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(false);
+    expect(usernameForm().pending()).toBe(true);
+
+    req2.flush(false);
+    await appRef.whenStable();
+
+    expect(usernameForm().valid()).toBe(false);
+    expect(usernameForm().invalid()).toBe(true);
+    expect(usernameForm().pending()).toBe(false);
+  });
+
+  it('should only run async validation when synchronously valid', async () => {
+    const addressModel = signal<Address>({street: '', city: '', zip: ''});
+    const addressSchema = schema<Address>((address) => {
+      required(address.street);
+      validateHttp(address, {
+        request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
+        errors: (message: string, {fieldOf}) =>
+          customError({message, field: fieldOf(address.street)}),
+      });
+    });
+    const addressForm = form(addressModel, addressSchema, {injector});
+
+    TestBed.tick();
+    backend.expectNone(() => true);
+
+    addressForm.street().value.set('123 Main St');
+
+    TestBed.tick();
+    const req = backend.expectOne('/checkaddress?street=123%20Main%20St&city=&zip=');
+    req.flush('Invalid!');
+    await appRef.whenStable();
+
+    expect(addressForm.street().errors()).toEqual([
+      customError({message: 'Invalid!', field: addressForm.street}),
+    ]);
+  });
+});
