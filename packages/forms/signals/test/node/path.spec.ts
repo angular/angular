@@ -8,8 +8,15 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {apply, applyEach, applyWhen, form, validate} from '../../public_api';
-import {customError, requiredError} from '../../src/api/validation_errors';
+import {
+  apply,
+  applyEach,
+  applyWhen,
+  customError,
+  form,
+  requiredError,
+  validate,
+} from '../../public_api';
 
 describe('path', () => {
   describe('Active path', () => {

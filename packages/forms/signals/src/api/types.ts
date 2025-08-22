@@ -215,13 +215,13 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal indicating whether a field is hidden.
    *
    * When a field is hidden it is ignored when determining the valid, touched, and dirty states.
-   * TODO: Looks like touched/dirty is not implemented yet.
    *
    * Note: This doesn't hide the field in the template, that must be done manually.
-   *
-   *   @if (!field.hidden()) {
-   *     ...
-   *   }
+   * ```
+   * @if (!field.hidden()) {
+   *   ...
+   * }
+   * ```
    */
   readonly hidden: Signal<boolean>;
 

@@ -424,6 +424,7 @@ function getAllChildBuilders(
  * and applies the provided predicates.
  * @param builder The `AbstractLogicNodeBuilder` to process.
  * @param predicates Predicates to apply to the logic derived from the builder.
+ * @param depth The depth in the field tree of the field which this logic applies to.
  * @returns The `Logic` instance.
  */
 function createLogic(
@@ -433,10 +434,6 @@ function createLogic(
 ): LogicContainer {
   const logic = new LogicContainer(predicates);
   if (builder instanceof LogicNodeBuilder) {
-    // TODO: do we need to bind predicate to a specific field here?
-    // Specifically I think we need to split the idea of a predicate in the LogicNodeBuilder from
-    // the idea of a predicate in the LogicNode. Instead of a path, the LogicNode version should
-    // have a field context.
     const builtNodes = builder.all.map(
       ({builder, predicate}) =>
         new LeafLogicNode(

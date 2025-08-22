@@ -3,7 +3,7 @@ load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test")
 ts_project(
     name = "test_lib",
     testonly = True,
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(["**/*.spec.ts"]),
     deps = [
         "//:node_modules/zod",
         "//packages/common/http",
@@ -17,9 +17,6 @@ ts_project(
         "//packages/private/testing",
     ],
 )
-
-# To run this:
-# pnpm bazel test //packages/forms/signals/test/node:test
 
 zoneless_jasmine_test(
     name = "test",

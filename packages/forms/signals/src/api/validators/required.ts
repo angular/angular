@@ -20,11 +20,12 @@ import {BaseValidatorConfig, getOption} from './util';
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
+ *  - `message`: A user-facing message for the error.
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.required()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  *  - `emptyPredicate`: A function that receives the value, and returns `true` if it is considered empty.
  *    By default `false`, `''`, `null`, and `undefined` are considered empty
- *  - `condition`: A function that receives the `FieldContext` and returns true if the field is required
+ *  - `when`: A function that receives the `FieldContext` and returns true if the field is required
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  */

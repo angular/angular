@@ -7,12 +7,13 @@
  */
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
+  customError,
   form,
   property,
   required,
@@ -22,7 +23,6 @@ import {
   validateAsync,
   validateHttp,
 } from '../../public_api';
-import {customError, ValidationError} from '../../src/api/validation_errors';
 
 interface Cat {
   name: string;

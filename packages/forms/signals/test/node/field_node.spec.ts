@@ -11,19 +11,21 @@ import {TestBed} from '@angular/core/testing';
 import {
   apply,
   applyEach,
+  customError,
   disabled,
   FieldPath,
   form,
   readonly,
   required,
   REQUIRED,
+  requiredError,
   Schema,
   schema,
   SchemaOrSchemaFn,
   validate,
   validateTree,
+  ValidationError,
 } from '../../public_api';
-import {customError, requiredError, ValidationError} from '../../src/api/validation_errors';
 import {SchemaImpl} from '../../src/schema/schema';
 
 describe('FieldNode', () => {
