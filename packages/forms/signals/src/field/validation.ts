@@ -262,7 +262,7 @@ export class FieldValidationState implements ValidationState {
     reduceChildren(
       this.node,
       this.asyncErrors().includes('pending'),
-      (c, r) => r || c.validationState.asyncErrors().includes('pending'),
+      (child, value) => value || child.validationState.asyncErrors().includes('pending'),
     ),
   );
 
