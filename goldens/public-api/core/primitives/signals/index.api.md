@@ -5,6 +5,23 @@
 ```ts
 
 // @public (undocumented)
+export const BASE_EFFECT_NODE: Omit<BaseEffectNode, 'fn' | 'destroy' | 'cleanup' | 'run'>;
+
+// @public (undocumented)
+export interface BaseEffectNode extends ReactiveNode {
+    // (undocumented)
+    cleanup(): void;
+    // (undocumented)
+    destroy(): void;
+    // (undocumented)
+    fn: () => void;
+    // (undocumented)
+    hasRun: boolean;
+    // (undocumented)
+    run(): void;
+}
+
+// @public (undocumented)
 export type ComputationFn<S, D> = (source: S, previous?: {
     source: S;
     value: D;
@@ -133,6 +150,9 @@ export interface ReactiveNode {
     recomputing: boolean;
     version: Version;
 }
+
+// @public (undocumented)
+export function runEffect(node: BaseEffectNode): void;
 
 // @public (undocumented)
 export function runPostProducerCreatedFn(node: ReactiveNode): void;
