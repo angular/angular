@@ -2979,6 +2979,7 @@ export abstract class HttpResponseBase {
     readonly ok: boolean;
     readonly redirected?: boolean;
     readonly status: number;
+    // @deprecated
     readonly statusText: string;
     readonly type: HttpEventType.Response | HttpEventType.ResponseHeader;
     readonly url: string | null;
