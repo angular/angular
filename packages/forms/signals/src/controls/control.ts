@@ -7,6 +7,7 @@
  */
 
 import {
+  afterNextRender,
   computed,
   DestroyRef,
   Directive,
@@ -177,9 +178,11 @@ export class Control<T> {
     input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement,
   ): void {
     const inputType =
-      input instanceof HTMLTextAreaElement || input instanceof HTMLSelectElement
+      input instanceof HTMLTextAreaElement
         ? 'text'
-        : input.type;
+        : input instanceof HTMLSelectElement
+          ? 'select'
+          : input.type;
 
     input.addEventListener('input', () => {
       switch (inputType) {
@@ -224,6 +227,15 @@ export class Control<T> {
             // Although HTML behavior is to clear the input already, we do this just in case.
             // It seems like it might be necessary in certain environments (e.g. Domino).
             (input as HTMLInputElement).checked = input.value === value;
+          },
+        );
+        break;
+      case 'select':
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => {
+            // A select will not take a value unil the value's option has rendered.
+            afterNextRender(() => (input.value = value as string), {injector: this.injector});
           },
         );
         break;
