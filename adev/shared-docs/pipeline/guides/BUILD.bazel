@@ -71,6 +71,7 @@ ts_project(
         "//adev:node_modules/mermaid",
         "//adev:node_modules/playwright-core",
         "//adev:node_modules/shiki",
+        "//adev/shared-docs/pipeline/shared",
     ],
 )
 

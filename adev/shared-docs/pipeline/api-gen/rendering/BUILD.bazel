@@ -20,7 +20,6 @@ ts_project(
         [
             "**/*.mts",
             "**/*.tsx",
-            "shiki.d.ts",
         ],
         exclude = [
             "entities.mts",
@@ -35,6 +34,7 @@ ts_project(
         "//adev:node_modules/preact-render-to-string",
         "//adev:node_modules/prettier",
         "//adev:node_modules/shiki",
+        "//adev/shared-docs/pipeline/shared",
     ],
 )
 

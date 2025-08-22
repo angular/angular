@@ -32,6 +32,17 @@ describe('markdown to html', () => {
       "Cats" : 85
       "Rats" : 15
 \`\`\`
+
+\`\`\`mermaid
+  stateDiagram-v2
+    elementInjector: foo
+    rootInjector: bar
+    nullInjector: baz
+
+    direction BT
+    rootInjector --> elementInjector
+    elementInjector --> nullInjector
+\`\`\`;
     `;
 
     const markedInstance = marked.use({
@@ -44,6 +55,24 @@ describe('markdown to html', () => {
   }, 15_000);
 
   it('should create an svg for each mermaid code block', () => {
-    expect(markdownDocument.querySelectorAll('svg')).toHaveSize(2);
+    expect(markdownDocument.querySelectorAll('svg')).toHaveSize(3);
+  });
+
+  describe('stateDiagram-v2', () => {
+    // The custom styling is senstive to the generated SVG structure.
+    // If one of those test breaks, make sure the styling is stil OK on both the light and dark theme
+    it('should have a marker with id mermaid-generated-diagram_stateDiagram-barbEnd', async () => {
+      const stateDiagram = markdownDocument.querySelectorAll('svg')[2];
+      const marker = stateDiagram.querySelector('#mermaid-generated-diagram_stateDiagram-barbEnd');
+      expect(marker).not.toBeNull();
+      expect(marker?.tagName).toBe('marker');
+    });
+
+    it('should have a structure .statediagram-state > g > path', () => {
+      const stateDiagram = markdownDocument.querySelectorAll('svg')[2];
+      const path = stateDiagram.querySelector('.statediagram-state > g > path');
+      expect(path).not.toBeNull();
+      expect(path?.tagName).toBe('path');
+    });
   });
 });

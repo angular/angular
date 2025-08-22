@@ -1,3 +1,12 @@
+<a name="20.2.1"></a>
+# 20.2.1 (2025-08-21)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a28672fb70](https://github.com/angular/angular/commit/a28672fb7017cc62e42829c5910c3b39373d7913) | fix | Keep paraenthesis in Nullish + Boolean expression. ([#63292](https://github.com/angular/angular/pull/63292)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.0"></a>
 # 21.0.0-next.0 (2025-08-20)
 ## Breaking Changes

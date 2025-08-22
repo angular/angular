@@ -57,6 +57,12 @@
       "factory": "./bundles/control-flow-migration.cjs#migrate",
       "schema": "./migrations/control-flow-migration/schema.json",
       "aliases": ["control-flow"]
+    },
+    "ngclass-to-class-migration": {
+      "description": "Updates usages of `ngClass` directives to the `class` bindings where possible",
+      "factory": "./bundles/ngclass-to-class-migration.cjs#migrate",
+      "schema": "./migrations/ngclass-to-class-migration/schema.json",
+      "aliases": ["ngclass-to-class"]
     }
   }
 }
