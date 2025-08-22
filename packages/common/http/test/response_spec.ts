@@ -7,7 +7,7 @@
  */
 
 import {HttpHeaders} from '../src/headers';
-import {HttpResponse, HttpStatusCode} from '../src/response';
+import {HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from '../src/response';
 
 describe('HttpResponse', () => {
   describe('constructor()', () => {
@@ -92,6 +92,20 @@ describe('HttpResponse', () => {
       expect(clone.url).toBe('/bar');
       expect(clone.headers).toBe(orig.headers);
       expect(clone.redirected).toBe(false);
+    });
+  });
+
+  describe('typings', () => {
+    it('should correctly narrow based on the type', () => {
+      const httpEvent: HttpEvent<any> = {
+        type: HttpEventType.DownloadProgress,
+        loaded: 100,
+        total: 200,
+      };
+
+      if (httpEvent.type === HttpEventType.DownloadProgress) {
+        const partialText: string | undefined = httpEvent.partialText;
+      }
     });
   });
 });
