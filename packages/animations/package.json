@@ -11,8 +11,7 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER"
+    "@angular/core": "0.0.0-PLACEHOLDER"
   },
   "repository": {
     "type": "git",

@@ -9,7 +9,6 @@ ts_project(
         "//packages/animations",
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
-        "//packages/common",
         "//packages/core",
         "//packages/core/testing",
         "//packages/platform-browser",
