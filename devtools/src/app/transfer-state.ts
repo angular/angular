@@ -8,7 +8,6 @@
 
 import {HttpClient} from '@angular/common/http';
 import {APP_ID, DOCUMENT, inject, makeStateKey, TransferState} from '@angular/core';
-import {firstValueFrom} from 'rxjs';
 
 /**
  * This function serializes the transfer state into the DOM.

@@ -28,6 +28,7 @@ ng_project(
         "//:node_modules/@angular/forms",
         "//:node_modules/@angular/material",
         "//:node_modules/rxjs",
+        "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
         "//devtools/projects/ng-devtools/src/lib/application-services:browser_styles",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",

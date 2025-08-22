@@ -27,6 +27,7 @@ ng_project(
         "//adev/shared-docs/directives",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/pipes",
+        "//adev/shared-docs/providers",
         "//adev/shared-docs/services",
     ],
 )

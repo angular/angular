@@ -15,6 +15,7 @@ ng_project(
     deps = [
         "//:node_modules/rxjs",
         "//packages/core",
+        "//packages/core/primitives/signals",
     ],
 )
 
