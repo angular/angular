@@ -177,6 +177,7 @@ groups:
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
+        - JeanMeche
 
   # =========================================================
   #  Framework: Security-sensitive files which require extra review
@@ -273,7 +274,7 @@ groups:
         - bencodezen
         - crisbeto
         - kirjs
-        - ~JeanMeche
+        - JeanMeche
         - jelbourn
         - thePunderWoman
         - devversion
