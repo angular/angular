@@ -16,8 +16,8 @@ import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/defer
 import ERRORS_NAV_DATA from '../../src/assets/content/reference/errors/routes.json';
 import EXT_DIAGNOSTICS_NAV_DATA from '../../src/assets/content/reference/extended-diagnostics/routes.json';
 
-import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
+import {DEFAULT_PAGES} from './core/constants/pages';
 
 interface SubNavigationData {
   docs: NavigationItem[];
@@ -1068,7 +1068,7 @@ export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   LEARN_ANGULAR_TUTORIAL_NAV_DATA,
   DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA,
   {
-    path: DefaultPage.TUTORIALS,
+    path: DEFAULT_PAGES.TUTORIALS,
     contentPath: 'tutorials/home',
     label: 'Tutorials',
   },

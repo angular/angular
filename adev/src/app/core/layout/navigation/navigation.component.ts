@@ -21,13 +21,13 @@ import {
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
 import {ANGULAR_LINKS} from '../../constants/links';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {PAGE_PREFIX} from '../../constants/pages';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -49,14 +49,8 @@ export class Navigation {
   private readonly isSearchDialogOpen = inject(IS_SEARCH_DIALOG_OPEN);
   private readonly versionManager = inject(VersionManager);
 
-  readonly DOCS_ROUTE = PagePrefix.DOCS;
-  readonly HOME_ROUTE = PagePrefix.HOME;
-  readonly PLAYGROUND_ROUTE = PagePrefix.PLAYGROUND;
-  readonly REFERENCE_ROUTE = PagePrefix.REFERENCE;
-  readonly TUTORIALS_ROUTE = PagePrefix.TUTORIALS;
-
+  protected PAGE_PREFIX = PAGE_PREFIX;
   protected ngLinks = ANGULAR_LINKS;
-
   readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
   readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
 
@@ -170,25 +164,25 @@ export class Navigation {
   // (*) Reference navigation tree contains items which are not start with prefix like /migrations or /errors.
   private setActivePrimaryRoute(urlAfterRedirects: string): void {
     if (urlAfterRedirects === '') {
-      this.activeRouteItem.set(PagePrefix.HOME);
-    } else if (urlAfterRedirects.startsWith(PagePrefix.DOCS)) {
-      this.activeRouteItem.set(PagePrefix.DOCS);
+      this.activeRouteItem.set(PAGE_PREFIX.HOME);
+    } else if (urlAfterRedirects.startsWith(PAGE_PREFIX.DOCS)) {
+      this.activeRouteItem.set(PAGE_PREFIX.DOCS);
     } else if (
-      urlAfterRedirects.startsWith(PagePrefix.REFERENCE) ||
-      urlAfterRedirects.startsWith(PagePrefix.API) ||
-      urlAfterRedirects.startsWith(PagePrefix.UPDATE)
+      urlAfterRedirects.startsWith(PAGE_PREFIX.REFERENCE) ||
+      urlAfterRedirects.startsWith(PAGE_PREFIX.API) ||
+      urlAfterRedirects.startsWith(PAGE_PREFIX.UPDATE)
     ) {
-      this.activeRouteItem.set(PagePrefix.REFERENCE);
-    } else if (urlAfterRedirects === PagePrefix.PLAYGROUND) {
-      this.activeRouteItem.set(PagePrefix.PLAYGROUND);
-    } else if (urlAfterRedirects.startsWith(PagePrefix.TUTORIALS)) {
-      this.activeRouteItem.set(PagePrefix.TUTORIALS);
+      this.activeRouteItem.set(PAGE_PREFIX.REFERENCE);
+    } else if (urlAfterRedirects === PAGE_PREFIX.PLAYGROUND) {
+      this.activeRouteItem.set(PAGE_PREFIX.PLAYGROUND);
+    } else if (urlAfterRedirects.startsWith(PAGE_PREFIX.TUTORIALS)) {
+      this.activeRouteItem.set(PAGE_PREFIX.TUTORIALS);
     } else if (DOCS_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.DOCS);
+      this.activeRouteItem.set(PAGE_PREFIX.DOCS);
     } else if (REFERENCE_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.REFERENCE);
+      this.activeRouteItem.set(PAGE_PREFIX.REFERENCE);
     } else if (TUTORIALS_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.TUTORIALS);
+      this.activeRouteItem.set(PAGE_PREFIX.TUTORIALS);
     } else {
       // Reset if no active route item could be found
       this.activeRouteItem.set(null);
