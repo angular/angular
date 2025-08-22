@@ -371,8 +371,8 @@ importers:
         specifier: 0.2002.0
         version: 0.2002.0(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#b10e59cc51436b8a18529532814372eca00c7bbc
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b10e59cc51436b8a18529532814372eca00c7bbc(@modelcontextprotocol/sdk@1.17.3)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#3a48544562fccd5a230f9d93dc50ebfaf4682d35
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3a48544562fccd5a230f9d93dc50ebfaf4682d35(@modelcontextprotocol/sdk@1.17.3)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.3)
@@ -1387,9 +1387,9 @@ packages:
       '@angular/cdk': 20.2.0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b10e59cc51436b8a18529532814372eca00c7bbc':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b10e59cc51436b8a18529532814372eca00c7bbc}
-    version: 0.0.0-f27fc330e9ebdd07ca713aff3c25a553cb824e37
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3a48544562fccd5a230f9d93dc50ebfaf4682d35':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3a48544562fccd5a230f9d93dc50ebfaf4682d35}
+    version: 0.0.0-cb03391a53dec7a1d7de8f3b2cd60935e82837fa
     hasBin: true
 
   '@angular/ssr@20.2.0':
@@ -11859,7 +11859,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b10e59cc51436b8a18529532814372eca00c7bbc(@modelcontextprotocol/sdk@1.17.3)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/3a48544562fccd5a230f9d93dc50ebfaf4682d35(@modelcontextprotocol/sdk@1.17.3)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.1.0)
