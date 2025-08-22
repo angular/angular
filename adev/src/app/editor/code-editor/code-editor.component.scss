@@ -1,66 +1,80 @@
 :host {
   // backgrounds
-  --code-editor-selection-background: color-mix(
-    in srgb,
-    var(--selection-background) 5%,
-    var(--octonary-contrast)
-  );
-  --code-editor-focused-selection-background: color-mix(
-    in srgb,
-    var(--selection-background) 12%,
-    var(--octonary-contrast)
-  );
-
+  --code-editor-selection-background: #264F78;
+  --code-editor-focused-selection-background: #0078D4;
   // text base colors
-  --code-editor-text-base-color: var(--primary-contrast);
-
+  --code-editor-text-base-color: #CCCCCC;
   // tooltips
-  --code-editor-tooltip-background: color-mix(
-    in srgb,
-    var(--bright-blue),
-    var(--page-background) 90%
-  );
-  --code-editor-tooltip-color: var(--primary-contrast);
-  --code-editor-tooltip-border: 1px solid
-    color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
+  --code-editor-tooltip-background: #252526;
+  --code-editor-tooltip-color: #CCCCCC;
+  --code-editor-tooltip-border: 1px solid #454545;
   --code-editor-tooltip-border-radius: 0.25rem;
-
   // autocomplete
-  --code-editor-autocomplete-item-background: var(--senary-contrast);
-  --code-editor-autocomplete-item-color: var(--primary-contrast);
-
+  --code-editor-autocomplete-item-background: #2D2D30;
+  --code-editor-autocomplete-item-color: #CCCCCC;
   // cursor
-  --code-name: var(--primary-contrast);
-  --code-editor-cursor-color: var(--code-name);
-  --code-variable-name: var(--bright-blue);
-  --code-property-name: var(--code-name);
-  --code-definition-keyword: var(--electric-violet);
-
+  --code-name: #9CDCFE;
+  --code-editor-cursor-color: #AEAFAD;
+  --code-variable-name: #9CDCFE;
+  --code-property-name: #9CDCFE;
+  --code-definition-keyword: #569CD6;
   // comments
-  --code-comment: var(--electric-violet);
-  --code-line-comment: var(--symbolic-gray);
-  --code-block-comment: var(--symbolic-brown);
-  --code-doc-comment: var(--code-comment);
-
+  --code-comment: #6A9955;
+  --code-line-comment: #6A9955;
+  --code-block-comment: #6A9955;
+  --code-doc-comment: #6A9955;
   // keywords
-  --code-keyword: var(--electric-violet);
-  --code-modifier: var(--code-keyword);
-  --code-operator-keyword: var(--code-keyword);
-  --code-control-keyword: var(--code-keyword);
-  --code-module-keyword: var(--code-keyword);
-
-  // structural
-  --code-brace: var(--vivid-pink);
-
-  // Misc
-  --code-bool: var(--bright-blue);
-  --code-string: var(--orange-red);
-  --code-regexp: var(--orange-red);
-
-  --code-tags: var(--bright-blue);
-  --code-component: var(--primary-contrast);
-  --code-type-name: var(--vivid-pink);
-  --code-self: var(--orange-red);
+  --code-keyword: #569CD6;
+  --code-modifier: #569CD6;
+  --code-operator-keyword: #569CD6;
+  // strings and literals
+  --code-string: #CE9178;
+  --code-number: #B5CEA8;
+  --code-literal: #B5CEA8;
+  --code-character: #CE9178;
+  --code-attribute-value: #CE9178;
+  --code-integer: #B5CEA8;
+  --code-float: #B5CEA8;
+  --code-bool: #569CD6;
+  --code-regexp: #CE9178;
+  --code-escape: #D7BA7D;
+  --code-color: #B5CEA8;
+  --code-url: #3794FF;
+  --code-doc-string: #CE9178;
+  // tags and names
+  --code-tags: #569CD6;
+  --code-component: #4EC9B0;
+  --code-type-name: #4EC9B0;
+  --code-attribute-name: #92C5F8;
+  --code-label-name: #CCCCCC;
+  --code-namespace: #4EC9B0;
+  --code-macro-name: #569CD6;
+  --code-self: #569CD6;
+  // headings
+  --code-heading2: #CCCCCC;
+  --code-heading3: #CCCCCC;
+  --code-heading4: #CCCCCC;
+  --code-heading5: #CCCCCC;
+  --code-heading6: #CCCCCC;
+  // content formatting
+  --code-content-separator: #6A9955;
+  --code-list: #CCCCCC;
+  --code-quote: #CE9178;
+  --code-emphasis: #569CD6;
+  --code-strong: #569CD6;
+  --code-link: #3794FF;
+  --code-monospace: #CE9178;
+  --code-strikethrough: #808080;
+  // change tracking
+  --code-inserted: #89D185;
+  --code-deleted: #F48771;
+  --code-changed: #E2C08D;
+  // meta and special
+  --code-invalid: #F44747;
+  --code-meta: #569CD6;
+  --code-document-meta: #569CD6;
+  --code-annotation: #DCDCAA;
+  --code-processing-instruction: #569CD6;
 
   position: relative;
 }
