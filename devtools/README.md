@@ -73,7 +73,19 @@ pnpm devtools:test:e2e
 
 ### Release builds
 
-You can build the release version of Angular DevTools for either Chrome or Firefox with:
+You can build the release version of Angular DevTools in a hermetic environment by
+[installing `buildah`](https://github.com/containers/buildah/blob/main/install.md) and running:
+
+```shell
+sudo ./devtools/tools/build-release.sh
+```
+
+The built zip files for both Chrome and Firefox will be placed in `~/devtools-chrome.zip` and
+`~/devtools-firefox.zip`.
+
+### Local production builds
+
+You can build the production version of Angular DevTools locally for either Chrome or Firefox with:
 
 ```shell
 pnpm devtools:build:chrome:release

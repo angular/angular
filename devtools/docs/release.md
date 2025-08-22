@@ -62,7 +62,7 @@ or checking out the merged commit, doing so is useful for release stability (act
 releasing what the commit history says we are) and is _necessary_ for accurate changelog
 generation.
 
-## 4. Publish to Chrome Chrome
+## 4. Publish to Chrome
 
 First, make sure you have access to publish the extension by ensuring you are part of
 [the relevant Google Group](http://g/angular-chrome-web-store-publisher).
