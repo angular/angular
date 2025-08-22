@@ -8,18 +8,17 @@
 
 import {contentResolver, flatNavigationData, mapNavigationItemsToRoutes} from '@angular/docs';
 import {Route} from '@angular/router';
-
-import {DefaultPage, PagePrefix} from './core/enums/pages';
 import {SUB_NAVIGATION_DATA} from './sub-navigation-data';
 import {mapApiManifestToRoutes} from './features/references/helpers/manifest.helper';
 import MainComponent from './main.component';
+import {DEFAULT_PAGES, PAGE_PREFIX} from './core/constants/pages';
 
 // Docs navigation data contains routes which navigates to /tutorials pages, in
 // that case we should load Tutorial component
 export const DOCS_ROUTES: Route[] = mapNavigationItemsToRoutes(
   flatNavigationData(SUB_NAVIGATION_DATA.docs).filter(
     (route) =>
-      !route.path?.startsWith(PagePrefix.TUTORIALS) && route.path !== PagePrefix.PLAYGROUND,
+      !route.path?.startsWith(PAGE_PREFIX.TUTORIALS) && route.path !== PAGE_PREFIX.PLAYGROUND,
   ),
   {
     loadComponent: () => import('./features/docs/docs.component'),
@@ -34,7 +33,7 @@ const commonReferenceRouteData = {
   displaySecondaryNav: true,
 };
 const referencePageRoutes = mapNavigationItemsToRoutes(
-  referenceNavigationItems.filter((r) => r.path === DefaultPage.REFERENCE),
+  referenceNavigationItems.filter((r) => r.path === DEFAULT_PAGES.REFERENCE),
   {
     loadComponent: () =>
       import('./features/references/api-reference-list/api-reference-list.component'),
@@ -43,13 +42,13 @@ const referencePageRoutes = mapNavigationItemsToRoutes(
 );
 
 const updateGuidePageRoute: Route = {
-  path: referenceNavigationItems.find((r) => r.path === DefaultPage.UPDATE)!.path,
+  path: referenceNavigationItems.find((r) => r.path === DEFAULT_PAGES.UPDATE)!.path,
   loadComponent: () => import('./features/update/update.component'),
   data: commonReferenceRouteData,
 };
 
 const cliReferencePageRoutes = mapNavigationItemsToRoutes(
-  referenceNavigationItems.filter((r) => r.path?.startsWith(`${PagePrefix.CLI}/`)),
+  referenceNavigationItems.filter((r) => r.path?.startsWith(`${PAGE_PREFIX.CLI}/`)),
   {
     loadComponent: () =>
       import(
@@ -67,10 +66,10 @@ const cliReferencePageRoutes = mapNavigationItemsToRoutes(
 const docsReferencePageRoutes = mapNavigationItemsToRoutes(
   referenceNavigationItems.filter(
     (r) =>
-      r.path !== DefaultPage.REFERENCE &&
-      r.path !== DefaultPage.UPDATE &&
-      !r.path?.startsWith(`${PagePrefix.API}/`) &&
-      !r.path?.startsWith(`${PagePrefix.CLI}/`),
+      r.path !== DEFAULT_PAGES.REFERENCE &&
+      r.path !== DEFAULT_PAGES.UPDATE &&
+      !r.path?.startsWith(`${PAGE_PREFIX.API}/`) &&
+      !r.path?.startsWith(`${PAGE_PREFIX.CLI}/`),
   ),
   {
     loadComponent: () => import('./features/docs/docs.component'),
@@ -90,7 +89,7 @@ const commonTutorialRouteData = {
   hideFooter: true,
 };
 const docsTutorialsRoutes = mapNavigationItemsToRoutes(
-  tutorialsNavigationItems.filter((route) => route.path === DefaultPage.TUTORIALS),
+  tutorialsNavigationItems.filter((route) => route.path === DEFAULT_PAGES.TUTORIALS),
   {
     loadComponent: () => import('./features/docs/docs.component'),
     data: {
@@ -99,7 +98,7 @@ const docsTutorialsRoutes = mapNavigationItemsToRoutes(
   },
 );
 const tutorialComponentRoutes = mapNavigationItemsToRoutes(
-  tutorialsNavigationItems.filter((route) => route.path !== DefaultPage.TUTORIALS),
+  tutorialsNavigationItems.filter((route) => route.path !== DEFAULT_PAGES.TUTORIALS),
   {
     loadComponent: () => import('./features/tutorial/tutorial.component'),
     data: {...commonTutorialRouteData},
@@ -257,15 +256,15 @@ export const routes: Route[] = [
         data: {label: 'Home'},
       },
       {
-        path: PagePrefix.DOCS,
-        redirectTo: DefaultPage.DOCS,
+        path: PAGE_PREFIX.DOCS,
+        redirectTo: DEFAULT_PAGES.DOCS,
       },
       {
-        path: PagePrefix.REFERENCE,
-        redirectTo: DefaultPage.REFERENCE,
+        path: PAGE_PREFIX.REFERENCE,
+        redirectTo: DEFAULT_PAGES.REFERENCE,
       },
       {
-        path: PagePrefix.PLAYGROUND,
+        path: PAGE_PREFIX.PLAYGROUND,
         loadComponent: () => import('./features/playground/playground.component'),
         data: {...commonTutorialRouteData, label: 'Playground'},
       },

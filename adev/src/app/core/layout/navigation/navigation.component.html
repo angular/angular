@@ -79,62 +79,69 @@
       <!-- Home / Angular logo -->
       <li
         class="adev-nav-item adev-nav-item--logo"
-        [class.adev-nav-item--active]="activeRouteItem() === HOME_ROUTE"
+        [class.adev-nav-item--active]="activeRouteItem() === PAGE_PREFIX.HOME"
       >
         <a aria-label="Angular homepage" routerLink="/">
           <!-- Logo Symbol -->
-          @if(!isUwu) {
-          <svg class="angular-logo" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 223 236" width="32">
-            <g clip-path="url(#a)">
-              <path
-                fill="url(#b)"
-                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-              />
-              <path
-                fill="url(#c)"
-                d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-              />
-            </g>
-            <defs>
-              <linearGradient
-                id="b"
-                x1="49.009"
-                x2="225.829"
-                y1="213.75"
-                y2="129.722"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#E40035" />
-                <stop offset=".24" stop-color="#F60A48" />
-                <stop offset=".352" stop-color="#F20755" />
-                <stop offset=".494" stop-color="#DC087D" />
-                <stop offset=".745" stop-color="#9717E7" />
-                <stop offset="1" stop-color="#6C00F5" />
-              </linearGradient>
-              <linearGradient
-                id="c"
-                x1="41.025"
-                x2="156.741"
-                y1="28.344"
-                y2="160.344"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stop-color="#FF31D9" />
-                <stop offset="1" stop-color="#FF5BE1" stop-opacity="0" />
-              </linearGradient>
-              <clipPath id="a">
-                <path fill="#fff" d="M0 0h223v236H0z" />
-              </clipPath>
-            </defs>
-          </svg>
-        } @else {
-          <img
-            src="assets/images/uwu.png"
-            style="width: auto; margin: 0"
-            class="uwu-logo"
-            alt="Angular logo"
-            height="34"/>
-        }
+          @if (!isUwu) {
+            <svg
+              class="angular-logo"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 223 236"
+              width="32"
+            >
+              <g clip-path="url(#a)">
+                <path
+                  fill="url(#b)"
+                  d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+                />
+                <path
+                  fill="url(#c)"
+                  d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+                />
+              </g>
+              <defs>
+                <linearGradient
+                  id="b"
+                  x1="49.009"
+                  x2="225.829"
+                  y1="213.75"
+                  y2="129.722"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#E40035" />
+                  <stop offset=".24" stop-color="#F60A48" />
+                  <stop offset=".352" stop-color="#F20755" />
+                  <stop offset=".494" stop-color="#DC087D" />
+                  <stop offset=".745" stop-color="#9717E7" />
+                  <stop offset="1" stop-color="#6C00F5" />
+                </linearGradient>
+                <linearGradient
+                  id="c"
+                  x1="41.025"
+                  x2="156.741"
+                  y1="28.344"
+                  y2="160.344"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#FF31D9" />
+                  <stop offset="1" stop-color="#FF5BE1" stop-opacity="0" />
+                </linearGradient>
+                <clipPath id="a">
+                  <path fill="#fff" d="M0 0h223v236H0z" />
+                </clipPath>
+              </defs>
+            </svg>
+          } @else {
+            <img
+              src="assets/images/uwu.png"
+              style="width: auto; margin: 0"
+              class="uwu-logo"
+              alt="Angular logo"
+              height="34"
+            />
+          }
         </a>
 
         <!-- Version picker for v18+ -->
@@ -211,8 +218,11 @@
       </li>
 
       <!-- Docs -->
-      <li class="adev-nav-item" [class.adev-nav-item--active]="activeRouteItem() === DOCS_ROUTE">
-        <a [routerLink]="DOCS_ROUTE">
+      <li
+        class="adev-nav-item"
+        [class.adev-nav-item--active]="activeRouteItem() === PAGE_PREFIX.DOCS"
+      >
+        <a [routerLink]="PAGE_PREFIX.DOCS">
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
@@ -231,9 +241,9 @@
       <!-- Tutorials -->
       <li
         class="adev-nav-item"
-        [class.adev-nav-item--active]="activeRouteItem() === TUTORIALS_ROUTE"
+        [class.adev-nav-item--active]="activeRouteItem() === PAGE_PREFIX.TUTORIALS"
       >
-        <a [routerLink]="TUTORIALS_ROUTE">
+        <a [routerLink]="PAGE_PREFIX.TUTORIALS">
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
@@ -252,9 +262,9 @@
       <!-- Playground -->
       <li
         class="adev-nav-item"
-        [class.adev-nav-item--active]="activeRouteItem() === PLAYGROUND_ROUTE"
+        [class.adev-nav-item--active]="activeRouteItem() === PAGE_PREFIX.PLAYGROUND"
       >
-        <a [routerLink]="PLAYGROUND_ROUTE">
+        <a [routerLink]="PAGE_PREFIX.PLAYGROUND">
           <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
             <path
               d="M450.001-611.691v-32.386q-39.385-9.923-64.692-41.897-25.308-31.975-25.308-74.025 0-49.922 35.038-84.96 35.039-35.038 84.961-35.038t84.961 35.038q35.038 35.038 35.038 84.96 0 42.05-25.308 74.025-25.307 31.974-64.692 41.897v32.386l273.846 157.538q17.173 9.912 26.663 26.582 9.491 16.671 9.491 36.495v62.152q0 19.824-9.491 36.495-9.49 16.67-26.663 26.582L516.154-111.771q-17.203 9.846-36.217 9.846t-36.091-9.846L176.155-265.847q-17.173-9.912-26.663-26.582-9.491-16.671-9.491-36.495v-62.152q0-19.824 9.491-36.495 9.49-16.67 26.663-26.582l273.846-157.538Zm-6.155 364.537L200-387.461v58.537q0 3.078 1.539 5.962 1.538 2.885 4.615 4.808l267.692 154.692q3.077 1.923 6.154 1.923t6.154-1.923l267.692-154.692q3.077-1.923 4.615-4.808 1.539-2.884 1.539-5.962v-58.537L516.154-247.154q-17.203 9.847-36.217 9.847t-36.091-9.847Zm6.155-162.847V-542.77L250.46-427.691l223.386 128.846q3.077 1.924 6.154 1.924t6.154-1.924l223.001-128.846L509.999-542.77v132.769h-59.998ZM480-699.999q25 0 42.5-17.5t17.5-42.5q0-25-17.5-42.5t-42.5-17.5q-25 0-42.5 17.5t-17.5 42.5q0 25 17.5 42.5t42.5 17.5Zm-2.308 538.46Z"
@@ -267,9 +277,9 @@
       <!-- API Ref -->
       <li
         class="adev-nav-item"
-        [class.adev-nav-item--active]="activeRouteItem() === REFERENCE_ROUTE"
+        [class.adev-nav-item--active]="activeRouteItem() === PAGE_PREFIX.REFERENCE"
       >
-        <a [routerLink]="REFERENCE_ROUTE">
+        <a [routerLink]="PAGE_PREFIX.REFERENCE">
           <svg
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
@@ -363,8 +373,9 @@
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-			<path
-				d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.697-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948Z"></path>
+                  <path
+                    d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.697-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948Z"
+                  ></path>
                 </svg>
               </a>
             </li>
@@ -385,7 +396,13 @@
               </a>
             </li>
             <li>
-              <a [href]="ngLinks.GITHUB" cdkMenuItem title="Angular Github" target="_blank" rel="noopener">
+              <a
+                [href]="ngLinks.GITHUB"
+                cdkMenuItem
+                title="Angular Github"
+                target="_blank"
+                rel="noopener"
+              >
                 <!-- Github Icon -->
                 <svg
                   width="20"
@@ -403,21 +420,27 @@
               </a>
             </li>
             <li>
-              <a [href]="ngLinks.DISCORD" cdkMenuItem title="Angular Discord" target="_blank" rel="noopener">
+              <a
+                [href]="ngLinks.DISCORD"
+                cdkMenuItem
+                title="Angular Discord"
+                target="_blank"
+                rel="noopener"
+              >
                 <!-- Discord Icon -->
                 <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 127.14 96.36"
-                    width="20"
-                    height="20"
-                    fill="none"
-                    >
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,110.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
-                    />
-                  </svg>
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 127.14 96.36"
+                  width="20"
+                  height="20"
+                  fill="none"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,110.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
+                  />
+                </svg>
               </a>
             </li>
           </ul>
@@ -434,13 +457,17 @@
           (cdkMenuOpened)="openMenu('theme-picker')"
         >
           <docs-icon role="presentation">
-            @switch (theme()) { @case ('light') {
-            {{ 'light_mode' }}
-            } @case ('dark') {
-            {{ 'dark_mode' }}
-            } @case ('auto') {
-            {{ 'routine' }}
-            } }
+            @switch (theme()) {
+              @case ('light') {
+                {{ 'light_mode' }}
+              }
+              @case ('dark') {
+                {{ 'dark_mode' }}
+              }
+              @case ('auto') {
+                {{ 'routine' }}
+              }
+            }
           </docs-icon>
         </button>
 
@@ -486,16 +513,17 @@
   </nav>
 
   <!-- Tablet: Second horizontal nav layer which opens the secondary nav -->
-  @if (activeRouteItem() === DOCS_ROUTE || activeRouteItem() === REFERENCE_ROUTE) {
-  <div class="adev-secondary-tablet-bar">
-    <button type="button" (click)="openMobileNav($event)">
-      <docs-icon class="docs-icon_high-contrast">menu</docs-icon>
-      @if (activeRouteItem() === DOCS_ROUTE) {
-      <span>Docs</span>
-      } @if (activeRouteItem() === REFERENCE_ROUTE) {
-      <span>API</span>
-      }
-    </button>
-  </div>
+  @if (activeRouteItem() === PAGE_PREFIX.DOCS || activeRouteItem() === PAGE_PREFIX.REFERENCE) {
+    <div class="adev-secondary-tablet-bar">
+      <button type="button" (click)="openMobileNav($event)">
+        <docs-icon class="docs-icon_high-contrast">menu</docs-icon>
+        @if (activeRouteItem() === PAGE_PREFIX.DOCS) {
+          <span>Docs</span>
+        }
+        @if (activeRouteItem() === PAGE_PREFIX.REFERENCE) {
+          <span>API</span>
+        }
+      </button>
+    </div>
   }
 </div>

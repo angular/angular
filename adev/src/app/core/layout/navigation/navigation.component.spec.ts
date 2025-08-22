@@ -11,12 +11,12 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Navigation} from './navigation.component';
 import {provideRouter} from '@angular/router';
 import {By} from '@angular/platform-browser';
-import {PagePrefix} from '../../enums/pages';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {Version, signal} from '@angular/core';
 import {of} from 'rxjs';
 import {VersionManager} from '../../services/version-manager.service';
 import {Search, WINDOW} from '@angular/docs';
+import {PAGE_PREFIX} from '../../constants/pages';
 
 describe('Navigation', () => {
   let component: Navigation;
@@ -61,7 +61,7 @@ describe('Navigation', () => {
   });
 
   it('should append active class to DOCS_ROUTE when DOCS_ROUTE is active', () => {
-    component.activeRouteItem.set(PagePrefix.DOCS);
+    component.activeRouteItem.set(PAGE_PREFIX.DOCS);
 
     fixture.detectChanges();
 
