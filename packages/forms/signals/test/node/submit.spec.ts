@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal} from '@angular/core';
+import {Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   customError,
@@ -14,6 +14,7 @@ import {
   required,
   requiredError,
   submit,
+  validateAsync,
   ValidationError,
 } from '../../public_api';
 
@@ -33,6 +34,34 @@ describe('submit', () => {
     });
 
     expect(f.first().errors()).toEqual([requiredError({field: f.first})]);
+  });
+
+  it('should not block on pending async validators', async () => {
+    const data = signal('');
+    const resolvers = promiseWithResolvers();
+    const f = form(
+      data,
+      (p) => {
+        validateAsync(p, {
+          params: ({value}) => value(),
+          factory: (params) =>
+            resource({
+              params,
+              loader: () => resolvers.promise,
+            }),
+          errors: () => {},
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().pending()).toBe(true);
+
+    const submitSpy = jasmine.createSpy();
+    await submit(f, submitSpy);
+
+    expect(f().pending()).toBe(true);
+    expect(submitSpy).toHaveBeenCalled();
   });
 
   it('maps error to a field', async () => {
