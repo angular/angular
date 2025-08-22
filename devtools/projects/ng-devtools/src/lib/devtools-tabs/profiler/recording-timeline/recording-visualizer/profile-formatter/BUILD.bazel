@@ -7,5 +7,6 @@ ts_project(
     srcs = ["profile-formatter.ts"],
     deps = [
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/recording-visualizer:recording-visualizer-types",
+        "//devtools/projects/protocol",
     ],
 )

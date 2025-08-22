@@ -20,19 +20,18 @@ import {
   viewChildren,
 } from '@angular/core';
 
-import {WINDOW} from '../../providers/index';
-import {ClickOutside} from '../../directives/index';
-import {Search, SearchHistory} from '../../services/index';
+import {WINDOW} from '../../providers';
+import {ClickOutside, SearchItem} from '../../directives';
+import {Search, SearchHistory} from '../../services';
 
 import {TextField} from '../text-field/text-field.component';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
-import {SearchItem} from '../../directives/search-item/search-item.directive';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Router, RouterLink} from '@angular/router';
 import {fromEvent} from 'rxjs';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
-import {RelativeLink} from '../../pipes/relative-link.pipe';
+import {RelativeLink} from '../../pipes';
 import {SearchHistoryComponent} from '../search-history/search-history.component';
 
 @Component({

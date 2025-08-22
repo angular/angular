@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import assert from 'assert';
+import assert from 'node:assert';
 import ts from 'typescript';
 
 import {ConvertInputPreparation} from './prepare_and_check';

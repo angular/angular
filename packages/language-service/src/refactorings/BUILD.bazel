@@ -17,6 +17,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/migrations/signal-queries-migration:migration",
+        "//packages/core/schematics/utils/tsurge",
         "//packages/language-service:api",
         "//packages/language-service/src/utils",
     ],

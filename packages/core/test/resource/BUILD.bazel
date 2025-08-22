@@ -10,6 +10,7 @@ ng_project(
     ),
     deps = [
         "//packages/core",
+        "//packages/core/src/util",
         "//packages/core/testing",
     ],
 )

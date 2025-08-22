@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import {executeAnalyzePhase} from '../../../../utils/tsurge/executors/analyze_exec';
 import {executeMigratePhase} from '../../../../utils/tsurge/executors/migrate_exec';
 import {SignalInputMigration} from '../migration';

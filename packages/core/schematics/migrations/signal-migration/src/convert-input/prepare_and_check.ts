@@ -14,7 +14,7 @@ import {
 } from '../passes/problematic_patterns/incompatibility';
 import {InputNode} from '../input_detection/input_node';
 import {Decorator} from '@angular/compiler-cli/src/ngtsc/reflection';
-import assert from 'assert';
+import assert from 'node:assert';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 
 /**

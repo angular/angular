@@ -65,20 +65,11 @@ ts_project(
     ],
 )
 
-ts_project(
-    name = "render3_node_lib",
-    testonly = True,
-    srcs = [],
-    deps = [
-        ":domino",
-        ":render3_lib",
-    ],
-)
-
 angular_jasmine_test(
     name = "render3",
     data = [
-        ":render3_node_lib",
+        ":domino",
+        ":render3_lib",
     ],
 )
 
