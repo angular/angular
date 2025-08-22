@@ -387,6 +387,54 @@ describe('validation status', () => {
       expect(f.sibling().valid()).toBe(true);
       expect(f.sibling().invalid()).toBe(false);
     });
+
+    it('parent should be pending/invalid while child is pending/invalid', async () => {
+      let res: Resource<unknown>;
+
+      const f = form(
+        signal({child: 'VALID'}),
+        (p) => {
+          validateAsync(p.child, {
+            params: ({value}) => value(),
+            factory: (params) =>
+              (res = resource({
+                params,
+                loader: ({params}) =>
+                  new Promise<ValidationError[]>((r) =>
+                    setTimeout(() => r(validateValueForChild(params, undefined))),
+                  ),
+              })),
+            errors: (errs) => errs,
+          });
+        },
+        {injector},
+      );
+
+      await waitFor(() => res?.isLoading());
+
+      expect(f().pending()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(false);
+
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(true);
+      expect(f().invalid()).toBe(false);
+
+      f.child().value.set('INVALID');
+      await waitFor(() => res?.isLoading());
+
+      expect(f().pending()).toBe(true);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(false);
+
+      await appRef.whenStable();
+
+      expect(f().pending()).toBe(false);
+      expect(f().valid()).toBe(false);
+      expect(f().invalid()).toBe(true);
+    });
   });
 
   describe('multiple validators', () => {

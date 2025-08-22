@@ -59,6 +59,13 @@ export interface ValidationState {
   rawAsyncErrors: Signal<(ValidationError | 'pending')[]>;
 
   /**
+   * The asynchronous tree errors visible to this field that are specifically targeted at this field
+   * rather than a descendant. This also includes all 'pending' sentinel values, since those could
+   * theoretically result in errors for this field.
+   */
+  asyncErrors: Signal<(ValidationError | 'pending')[]>;
+
+  /**
    * The combined set of all errors that currently apply to this field.
    */
   errors: Signal<ValidationError[]>;
@@ -251,7 +258,13 @@ export class FieldValidationState implements ValidationState {
   /**
    * Whether this field has any asynchronous validators still pending.
    */
-  readonly pending = computed(() => this.asyncErrors().includes('pending'));
+  readonly pending = computed(() =>
+    reduceChildren(
+      this.node,
+      this.asyncErrors().includes('pending'),
+      (child, value) => value || child.validationState.asyncErrors().includes('pending'),
+    ),
+  );
 
   /**
    * The validation status of the field.
