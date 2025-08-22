@@ -16,6 +16,7 @@ ts_test_library(
     srcs = glob(["*.spec.ts"]),
     deps = [
         ":signal-graph-manager",
+        "//:node_modules/@angular/core",
         "//devtools/projects/protocol",
     ],
 )

@@ -17,6 +17,7 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     data = ["schema.json"],
     deps = [
+        "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
         "//packages/compiler",

@@ -38,6 +38,8 @@ ts_project(
         ":search-history",
         "//adev:node_modules/@angular/core",
         "//adev:node_modules/@angular/platform-browser",
+        "//adev:node_modules/@angular/router",
+        "//adev/shared-docs/providers",
         "//adev/shared-docs/services",
         "//adev/shared-docs/testing",
     ],
