@@ -8,7 +8,7 @@
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
-import {platform} from 'os';
+import {platform} from 'node:os';
 
 import {NgtscTestEnvironment} from './env';
 

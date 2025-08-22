@@ -7,7 +7,7 @@
  */
 
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {join, relative} from 'path';
+import {join, relative} from 'node:path';
 
 import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 

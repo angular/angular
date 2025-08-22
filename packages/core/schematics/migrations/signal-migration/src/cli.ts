@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import path from 'path';
+import path from 'node:path';
 
-import assert from 'assert';
+import assert from 'node:assert';
 import {SignalInputMigration} from './migration';
 import {writeMigrationReplacements} from './write_replacements';
 import {NodeJSFileSystem} from '../../../../../compiler-cli';

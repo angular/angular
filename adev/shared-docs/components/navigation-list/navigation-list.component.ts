@@ -11,7 +11,7 @@ import {NavigationItem} from '../../interfaces/index';
 import {NavigationState} from '../../services/index';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
-import {IsActiveNavigationItem} from '../../pipes/is-active-navigation-item.pipe';
+import {IsActiveNavigationItem} from '../../pipes';
 import {NgTemplateOutlet} from '@angular/common';
 import {MatTooltipModule} from '@angular/material/tooltip';
 

@@ -18,6 +18,7 @@ ts_project(
     srcs = ["browser_tests.init.mts"],
     deps = [
         ":zone_base_setup_lib",
+        "//:node_modules/zone.js",
         "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-browser/animations",

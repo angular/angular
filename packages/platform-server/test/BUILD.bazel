@@ -44,6 +44,7 @@ ts_project(
         "//packages/platform-browser",
         "//packages/platform-browser/animations",
         "//packages/platform-server",
+        "//packages/platform-server:bundled_domino_lib",
         "//packages/private/testing",
         "//packages/router",
     ],

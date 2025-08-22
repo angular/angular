@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {getControlFlowContainer, isControlFlowBoundary} from './flow_containers';
 import {getFlowNode, traverseFlowForInterestingNodes} from './flow_node_traversal';
 import {unwrapParent} from '../utils/unwrap_parent';
-import assert from 'assert';
+import assert from 'node:assert';
 
 /**
  * Type describing an index of a node inside a control flow

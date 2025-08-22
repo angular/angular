@@ -21,7 +21,7 @@ import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
 
 import {SearchHistory} from '../../services';
 import {RelativeLink} from '../../pipes';
-import {SearchItem} from '../../directives/search-item/search-item.directive';
+import {SearchItem} from '../../directives';
 
 @Component({
   selector: 'docs-search-history',
