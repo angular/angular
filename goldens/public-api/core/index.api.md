@@ -1144,6 +1144,7 @@ export function linkedSignal<S, D>(options: {
         value: NoInfer<D>;
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
+    debugName?: string;
 }): WritableSignal<D>;
 
 // @public
