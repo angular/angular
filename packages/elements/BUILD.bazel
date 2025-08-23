@@ -14,7 +14,6 @@ ng_project(
         "//:node_modules/rxjs",
         "//:node_modules/zone.js",
         "//packages/core",
-        "//packages/platform-browser",
     ],
 )
 

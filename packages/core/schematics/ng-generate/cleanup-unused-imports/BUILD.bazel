@@ -24,6 +24,5 @@ ts_project(
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
-        "//packages/core/schematics/utils/tsurge/helpers/ast",
     ],
 )

@@ -14,7 +14,6 @@ ng_project(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/primitives/dom-navigation/testing",
-        "//packages/localize",
     ],
 )
 

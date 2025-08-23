@@ -104,7 +104,6 @@ ts_project(
         "extra/bluebird.spec.ts",
     ],
     deps = [
-        ":common_spec_env",
         "//:node_modules/bluebird",
         "//packages/zone.js/lib",
     ],

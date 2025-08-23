@@ -15,7 +15,6 @@ ng_project(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/upgrade",
         "//packages/upgrade/src/common",
     ],
 )

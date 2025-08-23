@@ -10,7 +10,6 @@ ng_project(
     ),
     deps = [
         "//devtools/projects/ng-devtools-backend/src/lib:utils",
-        "//devtools/projects/ng-devtools-backend/src/lib/directive-forest",
         "//devtools/projects/protocol",
     ],
 )

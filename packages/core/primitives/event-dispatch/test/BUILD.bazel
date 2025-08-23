@@ -10,7 +10,6 @@ ts_project(
     ),
     deps = [
         "//packages/core/primitives/event-dispatch",
-        "//packages/private/testing",
     ],
 )
 

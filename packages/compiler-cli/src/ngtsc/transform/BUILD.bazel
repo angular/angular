@@ -18,7 +18,6 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/perf",
         "//packages/compiler-cli/src/ngtsc/reflection",
-        "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
