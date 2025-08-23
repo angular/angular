@@ -76,6 +76,7 @@ import {assertComponentDef} from './errors';
  * and `element3` into a separate `<ng-content>`.
  *  * `directives` (optional): Directives that should be applied to the component.
  *  * `binding` (optional): Bindings to apply to the root component.
+ *  * `selector` (optional): Selector from the component that will be used to locate the host element.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
@@ -89,6 +90,7 @@ export function createComponent<C>(
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    selector?: string;
   },
 ): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
@@ -102,6 +104,7 @@ export function createComponent<C>(
     options.environmentInjector,
     options.directives,
     options.bindings,
+    options.selector,
   );
 }
 
