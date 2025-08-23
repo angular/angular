@@ -12,8 +12,8 @@ ng_project(
     ),
     deps = [
         "//:node_modules/rxjs",
+        "//packages/common",
         "//packages/core",
-        "//packages/platform-browser",
     ],
 )
 
