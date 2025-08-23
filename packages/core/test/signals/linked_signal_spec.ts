@@ -46,6 +46,18 @@ describe('linkedSignal', () => {
     expect(firstLetterReadonly()).toBe('c');
   });
 
+  it('should support debugName in options object', () => {
+    const options = signal(['apple', 'banana', 'fig']);
+    const choice = linkedSignal({
+      source: options,
+      computation: (options) => options[0],
+      debugName: 'TestChoice',
+    });
+
+    expect(choice()).toBe('apple');
+    expect(choice.toString()).toBe('[LinkedSignal: apple]');
+  });
+
   it('should update when the source changes', () => {
     const options = signal(['apple', 'banana', 'fig']);
     const choice = linkedSignal({
