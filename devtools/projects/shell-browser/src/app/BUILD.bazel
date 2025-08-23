@@ -27,13 +27,8 @@ ng_project(
         "//:node_modules/@angular/platform-browser",
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools",
-        "//devtools/projects/ng-devtools-backend",
-        "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
-        "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/protocol",
-        "//devtools/projects/shell-browser/src/app:backend",
-        "//devtools/projects/shell-browser/src/app:background",
     ],
 )
 
@@ -77,7 +72,6 @@ ts_project(
         "chrome-application-operations.ts",
     ],
     deps = [
-        ":chrome_application_environment",
         "//:node_modules/@angular/cdk",
         "//:node_modules/@angular/core",
         "//:node_modules/@types/chrome",
@@ -115,7 +109,6 @@ ts_project(
         "background.ts",
     ],
     deps = [
-        ":detect_angular_for_extension_icon",
         ":tab_manager",
         "//devtools/projects/protocol",
     ],
