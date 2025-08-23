@@ -1138,19 +1138,10 @@ export class KeyValueDiffers {
 }
 
 // @public
-export function linkedSignal<D>(computation: () => D, options?: {
-    equal?: ValueEqualityFn<NoInfer<D>>;
-}): WritableSignal<D>;
+export function linkedSignal<D>(computation: () => D, options?: CreateLinkedSignalOptions<D>): WritableSignal<D>;
 
 // @public
-export function linkedSignal<S, D>(options: {
-    source: () => S;
-    computation: (source: NoInfer<S>, previous?: {
-        source: NoInfer<S>;
-        value: NoInfer<D>;
-    }) => D;
-    equal?: ValueEqualityFn<NoInfer<D>>;
-}): WritableSignal<D>;
+export function linkedSignal<S, D>(options: CreateLinkedSignalWithSourceOptions<S, D>): WritableSignal<D>;
 
 // @public
 export interface ListenerOptions {
