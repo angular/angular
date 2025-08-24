@@ -957,7 +957,6 @@
       "postProducerCreatedFn",
       "postSignalSetFn",
       "prefixedWith",
-      "prependTokenToDependencyPath",
       "prioritizedGuardValue",
       "process",
       "processCleanups",
