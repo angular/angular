@@ -9,6 +9,7 @@
 import {Tokens, Token, RendererThis, TokenizerThis} from 'marked';
 import {anchorTarget} from '../../helpers.mjs';
 import {loadWorkspaceRelativeFile} from '../../utils.mjs';
+import {setInsideLink} from '../../tranformations/link.mjs';
 
 interface DocsCardToken extends Tokens.Generic {
   type: 'docs-card';
@@ -73,7 +74,7 @@ function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
       <div>
         <h3>${token.title}</h3>
-        ${renderer.parser.parse(token.tokens)}
+        ${parseWithoutCreatingLinks(renderer, token)}
       </div>
       <span>${token.link ? token.link : 'Learn more'}</span>
     </a>
@@ -88,6 +89,15 @@ function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
     ${token.link ? `<span>${token.link}</span>` : ''}
   </div>
   `;
+}
+
+function parseWithoutCreatingLinks(renderer: RendererThis, token: DocsCardToken) {
+  setInsideLink(true);
+  try {
+    return renderer.parser.parse(token.tokens);
+  } finally {
+    setInsideLink(false);
+  }
 }
 
 function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken) {
