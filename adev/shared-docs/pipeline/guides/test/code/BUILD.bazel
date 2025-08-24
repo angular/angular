@@ -1,9 +1,11 @@
 load("//adev/shared-docs:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
-    name = "docs-card",
+    name = "code",
     testonly = True,
-    srcs = glob(["*.spec.mts"]),
+    srcs = glob([
+        "**/*.spec.mts",
+    ]),
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
@@ -15,8 +17,7 @@ ts_project(
 zoneless_jasmine_test(
     name = "test",
     data = [
-        "angular.svg",
-        "docs-card.md",
-        ":docs-card",
+        "code.md",
+        ":code",
     ],
 )
