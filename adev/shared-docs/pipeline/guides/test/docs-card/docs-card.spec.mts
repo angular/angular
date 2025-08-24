@@ -10,13 +10,15 @@ import {parseMarkdown} from '../../parse.mjs';
 import {resolve} from 'node:path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
+import {parser} from 'marked';
+import {parserContext} from '../parser-context.mjs';
 
 describe('markdown to html', () => {
   let markdownDocument: DocumentFragment;
 
   beforeAll(async () => {
     const markdownContent = await readFile(resolve('docs-card.md'), {encoding: 'utf-8'});
-    markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, {}));
+    markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, parserContext));
   });
 
   it('creates cards with no links', () => {
@@ -33,6 +35,12 @@ describe('markdown to html', () => {
     expect(cardEl.tagName).toBe('A');
 
     expect(cardEl.getAttribute('href')).toBe('in/app/link');
+  });
+
+  it('should not create nested links', () => {
+    // Because nested links are invalid HTML, we should ensure that we do not create them when proccessing the nested tokens.
+    const cardEl = markdownDocument.querySelectorAll('.docs-card')[1];
+    expect(cardEl.querySelectorAll('a').length).toBe(0);
   });
 
   it('creates cards with svg images', () => {
