@@ -79,7 +79,6 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {
   Injector as PrimitivesInjector,
   InjectionToken as PrimitivesInjectionToken,
-  NOT_FOUND,
   NotFound,
   isNotFound,
 } from '@angular/core/primitives/di';
@@ -392,18 +391,23 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
         errorCode === RuntimeErrorCode.CYCLIC_DI_DEPENDENCY ||
         errorCode === RuntimeErrorCode.PROVIDER_NOT_FOUND
       ) {
-        if (!ngDevMode) {
-          throw new RuntimeError(errorCode, null);
-        }
+        // Note: we use `if (ngDevMode) { ... }` instead of an early return.
+        // ESBuild is conservative about removing dead code that follows `return;`
+        // inside a function body, so the block may remain in the bundle.
+        // Using a conditional ensures the dev-only logic is reliably tree-shaken
+        // in production builds.
+        if (ngDevMode) {
+          prependTokenToDependencyPath(error, token);
 
-        prependTokenToDependencyPath(error, token);
-
-        if (previousInjector) {
-          // We still have a parent injector, keep throwing
-          throw error;
+          if (previousInjector) {
+            // We still have a parent injector, keep throwing
+            throw error;
+          } else {
+            // Format & throw the final error message when we don't have any previous injector
+            throw augmentRuntimeError(error, this.source);
+          }
         } else {
-          // Format & throw the final error message when we don't have any previous injector
-          throw augmentRuntimeError(error, this.source);
+          throw new RuntimeError(errorCode, null);
         }
       } else {
         throw error;
