@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
+import {inject, Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
@@ -166,14 +166,13 @@ export class KeyValueDiffers {
   static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider {
     return {
       provide: KeyValueDiffers,
-      useFactory: (parent: KeyValueDiffers) => {
+      useFactory: () => {
+        const parent = inject(KeyValueDiffers, {optional: true, skipSelf: true});
         // if parent is null, it means that we are in the root injector and we have just overridden
         // the default injection mechanism for KeyValueDiffers, in such a case just assume
         // `defaultKeyValueDiffersFactory`.
         return KeyValueDiffers.create(factories, parent || defaultKeyValueDiffersFactory());
       },
-      // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[KeyValueDiffers, new SkipSelf(), new Optional()]],
     };
   }
 
