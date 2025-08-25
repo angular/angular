@@ -172,7 +172,7 @@
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
-    "@bazel/ibazel": "0.25.0",
+    "@bazel/ibazel": "0.26.10",
     "@inquirer/prompts": "^7.0.0",
     "@nginfra/angular-linking": "^1.0.10",
     "@octokit/graphql": "^9.0.0",
