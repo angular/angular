@@ -648,15 +648,15 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         status: 'updated',
         children: [
           {
-            label: 'Animating your content',
-            path: 'guide/animations/css',
-            contentPath: 'guide/animations/css',
-          },
-          {
             label: 'Enter and Leave animations',
-            path: 'guide/animations/enter-and-leave',
+            path: 'guide/animations',
             contentPath: 'guide/animations/enter-and-leave',
             status: 'new',
+          },
+          {
+            label: 'Complex Animations with CSS',
+            path: 'guide/animations/css',
+            contentPath: 'guide/animations/css',
           },
           {
             label: 'Route transition animations',
@@ -916,26 +916,26 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'guide/ngmodules/overview',
       },
       {
-        label: 'Animations',
+        label: 'Legacy Animations',
         children: [
           {
             label: 'Overview',
-            path: 'guide/animations',
+            path: 'guide/legacy-animations',
             contentPath: 'guide/animations/overview',
           },
           {
             label: 'Transition and Triggers',
-            path: 'guide/animations/transition-and-triggers',
+            path: 'guide/legacy-animations/transition-and-triggers',
             contentPath: 'guide/animations/transition-and-triggers',
           },
           {
             label: 'Complex Sequences',
-            path: 'guide/animations/complex-sequences',
+            path: 'guide/legacy-animations/complex-sequences',
             contentPath: 'guide/animations/complex-sequences',
           },
           {
             label: 'Reusable Animations',
-            path: 'guide/animations/reusable-animations',
+            path: 'guide/legacy-animations/reusable-animations',
             contentPath: 'guide/animations/reusable-animations',
           },
           {
