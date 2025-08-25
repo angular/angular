@@ -76,5 +76,7 @@ ts_project(
     deps = [
         ":guides_lib",
         "//adev:node_modules/@types/node",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
     ],
 )
