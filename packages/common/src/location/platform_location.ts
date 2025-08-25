@@ -158,7 +158,20 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   override pushState(state: any, title: string, url: string): void {
-    this._history.pushState(state, title, url);
+    try {
+      this._history.pushState(state, title, url);
+    } catch (error) {
+      // If the exception is because `state` can't be serialized, let that throw
+      // outwards just like a replace call would so the dev knows the cause
+      // https://html.spec.whatwg.org/multipage/nav-history-apis.html#shared-history-push/replace-state-steps
+      // https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal
+      if (error instanceof DOMException && error.name === 'DataCloneError') {
+        throw error;
+      }
+      // They are going to lose state here, but there is no real
+      // way to warn them about it since the page will refresh...
+      this._location.assign(url);
+    }
   }
 
   override replaceState(state: any, title: string, url: string): void {
