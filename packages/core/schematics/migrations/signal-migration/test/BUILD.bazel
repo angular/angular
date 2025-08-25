@@ -1,5 +1,5 @@
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
-load("//tools:defaults2.bzl", "jasmine_test", "js_binary", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "js_binary", "ts_project")
 
 ts_project(
     name = "test_runners_lib",
