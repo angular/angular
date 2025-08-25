@@ -22,6 +22,7 @@ import {
   Control,
   disabled,
   form,
+  hidden,
   max,
   MAX,
   maxLength,
@@ -194,6 +195,35 @@ describe('control directive', () => {
       select.dispatchEvent(new Event('input'));
     });
     expect(cmp.f().value()).toBe('two');
+  });
+
+  it('should assign correct value when unhiding select', () => {
+    @Component({
+      imports: [Control],
+      template: `
+        @if (!f().hidden()) {
+          <select #select [control]="f">
+            @for(opt of options; track opt) {
+              <option [value]="opt">{{opt}}</option>
+            }
+          </select>
+        }
+      `,
+    })
+    class TestCmp {
+      f = form(signal(''), (p) => hidden(p, ({value}) => value() === ''));
+      select = viewChild<ElementRef<HTMLSelectElement>>('select');
+      options = ['one', 'two', 'three'];
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(fix.componentInstance.select()).toBeUndefined();
+
+    act(() => cmp.f().value.set('two'));
+    expect(fix.componentInstance.select()).not.toBeUndefined();
+    expect(fix.componentInstance.select()!.nativeElement.value).toEqual('two');
   });
 
   it('synchronizes with a custom value control', () => {
