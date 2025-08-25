@@ -1,6 +1,6 @@
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
-load("//tools:defaults2.bzl", "http_server")
+load("//tools:defaults.bzl", "http_server")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 

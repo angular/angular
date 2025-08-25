@@ -1,6 +1,6 @@
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_file")
 load("@cldr_json_data//:index.bzl", _ALL_CLDR_LOCALES = "LOCALES")
-load("//tools:defaults2.bzl", "js_run_binary")
+load("//tools:defaults.bzl", "js_run_binary")
 
 # List of locales the tool can generate files for.
 LOCALES = _ALL_CLDR_LOCALES

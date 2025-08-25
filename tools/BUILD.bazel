@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_config")
+load("//tools:defaults.bzl", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
 
