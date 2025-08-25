@@ -22,7 +22,6 @@ import {PropertyViewHeaderComponent} from './property-view-header.component';
 })
 export class PropertyViewComponent {
   readonly directive = input.required<{name: string}>();
-  readonly signalGraphEnabled = input.required<boolean>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();

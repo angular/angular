@@ -53,7 +53,6 @@ export class PropertyViewBodyComponent {
   readonly directivePropControls = input.required<DirectiveTreeData>();
   readonly directiveOutputControls = input.required<DirectiveTreeData>();
   readonly directiveStateControls = input.required<DirectiveTreeData>();
-  readonly signalGraphEnabled = input.required<boolean>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly showSignalGraph = output<DebugSignalGraphNode>();

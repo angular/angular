@@ -24,7 +24,6 @@
             <ng-property-view-tree
               [dataSource]="panel.controls().dataSource"
               [treeControl]="panel.controls().treeControl"
-              [signalGraphEnabled]="signalGraphEnabled()"
               (updateValue)="updateValue($event)"
               (inspect)="handleInspect($event)"
               (showSignalGraph)="showSignalGraph.emit($event)"

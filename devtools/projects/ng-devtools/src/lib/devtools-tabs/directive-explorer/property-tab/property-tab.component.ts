@@ -24,7 +24,6 @@ import {DeferViewComponent} from './defer-view/defer-view.component';
 })
 export class PropertyTabComponent {
   readonly currentSelectedElement = input.required<IndexedNode | null>();
-  readonly signalGraphEnabled = input.required<boolean>();
 
   readonly viewSource = output<string>();
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();

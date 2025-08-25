@@ -3,7 +3,6 @@
 @if (currentSelectedElement) {
   <ng-property-tab-header
     [currentSelectedElement]="currentSelectedElement"
-    [signalGraphEnabled]="signalGraphEnabled()"
     (showSignalGraph)="showSignalGraph.emit(null)"
   />
   <ng-property-tab-body
@@ -11,7 +10,6 @@
     (viewSource)="viewSource.emit($event)"
     (showSignalGraph)="showSignalGraph.emit($event)"
     [currentSelectedElement]="currentSelectedElement"
-    [signalGraphEnabled]="signalGraphEnabled()"
   />
 
   @let hydration = currentSelectedElement.hydration;
