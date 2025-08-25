@@ -4,5 +4,8 @@ ts_project(
     name = "renderer_context",
     srcs = ["renderer-context.mts"],
     visibility = ["//adev/shared-docs/pipeline/shared/marked/test:__subpackages__"],
-    deps = ["//adev/shared-docs/pipeline/shared/marked"],
+    deps = [
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
+    ],
 )

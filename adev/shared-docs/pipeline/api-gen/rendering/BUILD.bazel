@@ -27,9 +27,12 @@ ts_project(
     ),
     deps = [
         ":entities",
+        "//adev:node_modules/marked",
         "//adev:node_modules/preact",
         "//adev:node_modules/preact-render-to-string",
         "//adev:node_modules/prettier",
+        "//adev:node_modules/shiki",
+        "//adev/shared-docs/pipeline/shared:linking",
         "//adev/shared-docs/pipeline/shared:shiki",
         "//adev/shared-docs/pipeline/shared/marked",
         "//adev/shared-docs/pipeline/shared/regions",
