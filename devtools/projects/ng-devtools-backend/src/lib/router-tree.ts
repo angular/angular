@@ -27,6 +27,7 @@ export function parseRoutes(router: Router): Route {
     children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
     isAux: false,
     isLazy: false,
+    isRedirect: false,
     data: [],
     isActive: currentUrl === '/',
   };
@@ -62,6 +63,7 @@ function assignChildrenToParent(
 
     // only found in aux routes, otherwise property will be undefined
     const isAux = Boolean(child.outlet);
+    const isRedirect = Boolean(child.redirectTo);
     const isLazy = Boolean(child.loadChildren || child.loadComponent);
 
     const pathWithoutParams = routePath.split('/:')[0];
@@ -81,6 +83,7 @@ function assignChildrenToParent(
       isAux,
       isLazy,
       isActive,
+      isRedirect,
     };
 
     if (childDescendents) {

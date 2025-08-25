@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JsonPipe} from '@angular/common';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -46,7 +45,6 @@ const SEARCH_DEBOUNCE = 250;
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
   imports: [
-    JsonPipe,
     TreeVisualizerHostComponent,
     SplitComponent,
     SplitAreaDirective,
@@ -66,6 +64,9 @@ export class RouterTreeComponent {
   private readonly frameManager = inject(FrameManager);
 
   protected selectedRoute = signal<RouterTreeD3Node | null>(null);
+  protected routeData = computed<RouterTreeNode | undefined>(() => {
+    return this.selectedRoute()?.data;
+  });
 
   routes = input<Route[]>([]);
   snapToRoot = input(false);
@@ -117,10 +118,28 @@ export class RouterTreeComponent {
   }
 
   viewSourceFromRouter(className: string, type: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
   viewComponentSource(component: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      // todo: replace with UI notification.
+      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(
       component,
       'component',
