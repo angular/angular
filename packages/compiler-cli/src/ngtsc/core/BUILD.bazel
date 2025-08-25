@@ -57,6 +57,5 @@ ts_project(
         "//:node_modules/typescript",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/shims:api",
     ],
 )

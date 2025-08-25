@@ -31,6 +31,5 @@ ts_project(
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/reflection",
     ],
 )

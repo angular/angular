@@ -9,6 +9,5 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler",
     ],
 )

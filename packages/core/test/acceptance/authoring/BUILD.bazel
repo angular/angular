@@ -22,7 +22,6 @@ ts_project(
     srcs = ["authoring_test_compiler.ts"],
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/reflection",

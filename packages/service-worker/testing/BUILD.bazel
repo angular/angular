@@ -8,6 +8,5 @@ ng_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/rxjs",
-        "//packages/core",
     ],
 )

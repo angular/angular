@@ -14,7 +14,6 @@ ts_project(
         "//:node_modules/ngx-flamegraph",
         "//:node_modules/rxjs",
         "//:node_modules/tslib",
-        "//devtools/projects/ng-devtools/src/lib/application-services:theme",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/record-formatter",
         "//devtools/projects/protocol",
     ],

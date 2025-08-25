@@ -18,7 +18,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
-        "//packages/compiler-cli",
         "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/reflection",

@@ -10,7 +10,6 @@ ts_project(
         "//:node_modules/rxjs",
         "//:node_modules/typescript",
         "//packages:types",
-        "//packages/core",
         "//packages/service-worker/worker",
     ],
 )

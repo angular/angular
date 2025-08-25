@@ -19,7 +19,6 @@ ts_project(
         "//:node_modules/@types/babel__core",
         "//packages/compiler",
         "//packages/compiler-cli/linker",
-        "//packages/compiler-cli/private",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/logging",
         "//packages/compiler-cli/src/ngtsc/translator",

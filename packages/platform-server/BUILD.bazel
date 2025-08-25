@@ -20,7 +20,6 @@ ng_project(
         "//:node_modules/xhr2",
         "//packages/common",
         "//packages/common/http",
-        "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
     ],

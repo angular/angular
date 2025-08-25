@@ -10,7 +10,6 @@ ts_project(
     deps = [
         "//packages/common",
         "//packages/core",
-        "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/platform-server",
     ],

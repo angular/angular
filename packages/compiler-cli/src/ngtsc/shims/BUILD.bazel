@@ -20,9 +20,7 @@ ts_project(
         ":api",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
-        "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/util",
     ],
 )
