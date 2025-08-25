@@ -6,21 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  NavigationNavigateOptions,
-  NavigationTypeString,
-  NavigationOptions,
-  NavigateEvent,
-  NavigationCurrentEntryChangeEvent,
-  NavigationTransition,
-  NavigationUpdateCurrentEntryOptions,
-  NavigationReloadOptions,
-  NavigationResult,
-  NavigationHistoryEntry,
-  NavigationInterceptOptions,
-  NavigationDestination,
-  Navigation,
-} from '../src/navigation_types';
+/// <reference types="dom-navigation" />
 
 /**
  * Fake implementation of user agent history and navigation behavior. This is a
