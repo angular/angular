@@ -862,7 +862,6 @@
       "populateDehydratedViewsInLContainer",
       "postProducerCreatedFn",
       "postSignalSetFn",
-      "prependTokenToDependencyPath",
       "process",
       "processCleanups",
       "processHostBindingOpCodes",
