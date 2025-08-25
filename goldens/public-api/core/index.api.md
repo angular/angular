@@ -462,6 +462,7 @@ export function createComponent<C>(component: Type<C>, options: {
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    selector?: string;
 }): ComponentRef<C>;
 
 // @public
