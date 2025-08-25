@@ -328,17 +328,17 @@ export class ViewRef<T> implements EmbeddedViewRef<T>, ChangeDetectorRefInterfac
    * introduce other changes.
    */
   checkNoChanges(): void {
-    if (!ngDevMode) return;
-
-    try {
-      this.exhaustive ??= this._lView[INJECTOR].get(
-        UseExhaustiveCheckNoChanges,
-        USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
-      );
-    } catch {
-      this.exhaustive = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+    if (ngDevMode) {
+      try {
+        this.exhaustive ??= this._lView[INJECTOR].get(
+          UseExhaustiveCheckNoChanges,
+          USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT,
+        );
+      } catch {
+        this.exhaustive = USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT;
+      }
+      checkNoChangesInternal(this._lView, this.exhaustive);
     }
-    checkNoChangesInternal(this._lView, this.exhaustive);
   }
 
   attachToViewContainerRef() {
