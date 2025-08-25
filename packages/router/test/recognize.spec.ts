@@ -573,9 +573,8 @@ describe('recognize', () => {
           tree('/b'),
           'emptyOnly',
           new DefaultUrlSerializer(),
-        )
-          .recognize()
-          .toPromise();
+          new AbortController().signal,
+        ).recognize();
         await expectAsync(recognizePromise).toBeRejected();
       });
     });
@@ -821,9 +820,8 @@ async function recognize(
     tree(url),
     paramsInheritanceStrategy,
     serializer,
-  )
-    .recognize()
-    .toPromise();
+    new AbortController().signal,
+  ).recognize();
   return result!.state;
 }
 

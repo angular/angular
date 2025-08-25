@@ -8,6 +8,7 @@
 
 import {Injector, runInInjectionContext, ɵRuntimeError as RuntimeError} from '@angular/core';
 import {Observable, of, throwError} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {NavigationCancellationCode} from './events';
@@ -18,11 +19,10 @@ import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {wrapIntoObservable} from './utils/collection';
 
-export class NoMatch extends Error {
+export class NoMatch {
   public segmentGroup: UrlSegmentGroup | null;
 
   constructor(segmentGroup?: UrlSegmentGroup) {
-    super();
     this.segmentGroup = segmentGroup || null;
   }
 }
@@ -33,19 +33,31 @@ export class AbsoluteRedirect extends Error {
   }
 }
 
-export function namedOutletsRedirect(redirectTo: string): never {
-  throw new RuntimeError(
-    RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`,
+export function noMatch(segmentGroup: UrlSegmentGroup): Observable<any> {
+  return throwError(new NoMatch(segmentGroup));
+}
+
+export function absoluteRedirect(newTree: UrlTree): Observable<any> {
+  return throwError(new AbsoluteRedirect(newTree));
+}
+
+export function namedOutletsRedirect(redirectTo: string): Observable<any> {
+  return throwError(
+    new RuntimeError(
+      RuntimeErrorCode.NAMED_OUTLET_REDIRECT,
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Only absolute redirects can have named outlets. redirectTo: '${redirectTo}'`,
+    ),
   );
 }
 
-export function canLoadFails(route: Route): never {
-  throw navigationCancelingError(
-    (typeof ngDevMode === 'undefined' || ngDevMode) &&
-      `Cannot load children because the guard of the route "path: '${route.path}'" returned false`,
-    NavigationCancellationCode.GuardRejected,
+export function canLoadFails(route: Route): Observable<LoadedRouterConfig> {
+  return throwError(
+    navigationCancelingError(
+      (typeof ngDevMode === 'undefined' || ngDevMode) &&
+        `Cannot load children because the guard of the route "path: '${route.path}'" returned false`,
+      NavigationCancellationCode.GuardRejected,
+    ),
   );
 }
 
@@ -55,46 +67,49 @@ export class ApplyRedirects {
     private urlTree: UrlTree,
   ) {}
 
-  async lineralizeSegments(route: Route, urlTree: UrlTree): Promise<UrlSegment[]> {
+  lineralizeSegments(route: Route, urlTree: UrlTree): Observable<UrlSegment[]> {
     let res: UrlSegment[] = [];
     let c = urlTree.root;
     while (true) {
       res = res.concat(c.segments);
       if (c.numberOfChildren === 0) {
-        return res;
+        return of(res);
       }
 
       if (c.numberOfChildren > 1 || !c.children[PRIMARY_OUTLET]) {
-        throw namedOutletsRedirect(`${route.redirectTo!}`);
+        return namedOutletsRedirect(`${route.redirectTo!}`);
       }
 
       c = c.children[PRIMARY_OUTLET];
     }
   }
 
-  async applyRedirectCommands(
+  applyRedirectCommands(
     segments: UrlSegment[],
     redirectTo: string | RedirectFunction,
     posParams: {[k: string]: UrlSegment},
     currentSnapshot: ActivatedRouteSnapshot,
     injector: Injector,
-  ): Promise<UrlTree> {
-    const redirect = await getRedirectResult(redirectTo, currentSnapshot, injector);
-    if (redirect instanceof UrlTree) {
-      throw new AbsoluteRedirect(redirect);
-    }
+  ): Observable<UrlTree> {
+    return getRedirectResult(redirectTo, currentSnapshot, injector).pipe(
+      map((redirect) => {
+        if (redirect instanceof UrlTree) {
+          throw new AbsoluteRedirect(redirect);
+        }
 
-    const newTree = this.applyRedirectCreateUrlTree(
-      redirect,
-      this.urlSerializer.parse(redirect),
-      segments,
-      posParams,
+        const newTree = this.applyRedirectCreateUrlTree(
+          redirect,
+          this.urlSerializer.parse(redirect),
+          segments,
+          posParams,
+        );
+
+        if (redirect[0] === '/') {
+          throw new AbsoluteRedirect(newTree);
+        }
+        return newTree;
+      }),
     );
-
-    if (redirect[0] === '/') {
-      throw new AbsoluteRedirect(newTree);
-    }
-    return newTree;
   }
 
   applyRedirectCreateUrlTree(
@@ -186,9 +201,9 @@ function getRedirectResult(
   redirectTo: string | RedirectFunction,
   currentSnapshot: ActivatedRouteSnapshot,
   injector: Injector,
-): Promise<string | UrlTree> {
+): Observable<string | UrlTree> {
   if (typeof redirectTo === 'string') {
-    return Promise.resolve(redirectTo);
+    return of(redirectTo);
   }
   const redirectToFn = redirectTo;
   const {queryParams, fragment, routeConfig, url, outlet, params, data, title} = currentSnapshot;
@@ -196,5 +211,5 @@ function getRedirectResult(
     runInInjectionContext(injector, () =>
       redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
     ),
-  ).toPromise() as Promise<string | UrlTree>;
+  );
 }
