@@ -292,6 +292,14 @@ export class SwTestHarnessImpl
     this.eventHandlers.get('unhandledrejection')!.call(this, event);
   }
 
+  handleSecurityPolicyViolation(event: SecurityPolicyViolationEvent): void {
+    if (!this.eventHandlers.has('securitypolicyviolation')) {
+      throw new Error('No securitypolicyviolation handler registered');
+    }
+
+    this.eventHandlers.get('securitypolicyviolation')!.call(this, event);
+  }
+
   override timeout(ms: number): Promise<void> {
     const promise = new Promise<void>((resolve) => {
       this.timers.push({

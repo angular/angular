@@ -1223,6 +1223,27 @@ import {envIsSupported} from '../testing/utils';
       });
     });
 
+    describe('securitypolicyviolation events', () => {
+      it('broadcasts security policy violation events', async () => {
+        await driver.initialized;
+        const debuggerLogSpy = spyOn(driver.debugger, 'log');
+
+        const event = {
+          violatedDirective: 'script-src',
+          blockedURI: 'http://example.com',
+          originalPolicy: "default-src 'self'",
+          statusCode: 500,
+        } as SecurityPolicyViolationEvent;
+
+        scope.handleSecurityPolicyViolation(event);
+
+        expect(debuggerLogSpy).toHaveBeenCalledWith(
+          'Security Policy Violation',
+          jasmine.stringMatching(/^Driver\.onSecurityPolicyViolation\(reason: .*?\)$/),
+        );
+      });
+    });
+
     describe('notification close events', () => {
       it('broadcasts notification close events', async () => {
         expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');

@@ -218,6 +218,11 @@ export class Driver implements Debuggable, UpdateSource {
     );
     this.scope.addEventListener('messageerror', (event) => this.onMessageError(event));
     this.scope.addEventListener('unhandledrejection', (event) => this.onUnhandledRejection(event));
+    this.scope.addEventListener('securitypolicyviolation', (event) =>
+      // It seems that typescript has not registered the event as indicated in the documentation.
+      // Issue: https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/2123
+      this.onSecurityPolicyViolation(event as SecurityPolicyViolationEvent),
+    );
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -370,6 +375,15 @@ export class Driver implements Debuggable, UpdateSource {
     this.debugger.log(
       `Unhandled promise rejection occurred`,
       `Driver.onUnhandledRejection(reason: ${event.reason})`,
+    );
+  }
+
+  private onSecurityPolicyViolation(event: SecurityPolicyViolationEvent): void {
+    // Handle security policy violations in the service worker.
+    // This is for debugging and preventing silent failures.
+    this.debugger.log(
+      `Security Policy Violation`,
+      `Driver.onSecurityPolicyViolation(reason: ${JSON.stringify(event)})`,
     );
   }
 
