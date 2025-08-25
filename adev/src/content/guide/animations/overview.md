@@ -1,6 +1,6 @@
 # Introduction to Angular animations
 
-IMPORTANT: The Angular team recommends using native CSS for animations instead of the Animations package for all new code. Use this guide to understand existing code built with the Animations Package. See [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start using pure CSS animations in your apps.
+IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations/enter-and-leave). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
 
 Animation provides the illusion of motion: HTML elements change styling over time.
 Well-designed animations can make your application more fun and straightforward to use, but they aren't just cosmetic.
