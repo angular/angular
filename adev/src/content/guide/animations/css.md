@@ -90,7 +90,7 @@ Animating an element when it leaves the view is similar to animating when enteri
     <docs-code header="src/app/remove.component.css" path="adev/src/content/examples/animations/src/app/native-css/remove.component.css"  />
 </docs-code-multifile>
 
-For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations/enter-and-leave).
+For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
 
 ### Animating increment and decrement
 
@@ -178,3 +178,12 @@ Items in a `@for` loop will be removed and re-added, which will fire off animati
 ## Programmatic control of animations
 
 You can retrieve animations off an element directly using [`Element.getAnimations()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/getAnimations). This returns an array of every [`Animation`](https://developer.mozilla.org/en-US/docs/Web/API/Animation) on that element. You can use the `Animation` API to do much more than you could with what the `AnimationPlayer` from the animations package offered. From here you can `cancel()`, `play()`, `pause()`, `reverse()` and much more. This native API should provide everything you need to control your animations.
+
+## More on Angular animations
+
+You might also be interested in the following:
+
+<docs-pill-row>
+  <docs-pill href="guide/animations" title="Enter and Leave animations"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+</docs-pill-row>

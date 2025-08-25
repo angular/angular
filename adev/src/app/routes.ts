@@ -243,6 +243,22 @@ const REDIRECT_ROUTES: Route[] = [
     path: 'guide/animations/route-animations',
     redirectTo: '/guide/routing/route-transition-animations',
   },
+  {
+    path: 'guide/animations/enter-and-leave',
+    redirectTo: '/guide/animations',
+  },
+  {
+    path: 'guide/animations/transitions-and-triggers',
+    redirectTo: '/guide/legacy-animations/transitions-and-triggers',
+  },
+  {
+    path: 'guide/animations/complex-sequences',
+    redirectTo: '/guide/legacy-animations/complex-sequences',
+  },
+  {
+    path: 'guide/animations/reusable-animations',
+    redirectTo: '/guide/legacy-animations/reusable-animations',
+  },
 ];
 
 export const routes: Route[] = [
