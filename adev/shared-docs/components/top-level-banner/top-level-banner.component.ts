@@ -29,16 +29,16 @@ export class TopLevelBannerComponent {
    * separately for different events or instances. Without a unique ID,
    * closing one banner could inadvertently hide other banners for different events.
    */
-  id = input.required<string>();
+  readonly id = input.required<string>();
   // Optional URL link that the banner should navigate to when clicked.
-  link = input<string>();
+  readonly link = input<string>();
   // Text content to be displayed in the banner.
-  text = input.required<string>();
+  readonly text = input.required<string>();
   // Optional expiry date. Setting the default expiry as a future date so we
   // don't have to deal with undefined signal values.
-  expiry = input(new Date('3000-01-01'), {transform: parseDate});
+  readonly expiry = input(new Date('3000-01-01'), {transform: parseDate});
   // Whether the user has closed the banner or the survey has expired.
-  hasClosed = linkedSignal(() => {
+  readonly hasClosed = linkedSignal(() => {
     const expired = Date.now() > this.expiry().getTime();
 
     // Needs to be in a try/catch, because some browsers will

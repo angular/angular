@@ -32,8 +32,8 @@ export default class ApiReferenceDetailsPage {
 
   private highlightedElement: HTMLElement | null = null;
 
-  docContent = input<DocContent | undefined>();
-  urlFragment = toSignal(this.route.fragment);
+  readonly docContent = input<DocContent | undefined>();
+  readonly urlFragment = toSignal(this.route.fragment);
 
   constructor() {
     effect(() => this.highlightCard());
