@@ -547,7 +547,7 @@
         "bzlTransitiveDigest": "9IJp6IlB/FMHFBJe4MX/DQM4zi3oArC8yqYE/+NyPwk=",
         "usagesDigest": "1rX5zKEA5AF0V7MwOa4Uu00O9/xtmOXAgV3jUGUxeQk=",
         "recordedFileInputs": {
-          "@@//package.json": "ef144de9019c3a5751aebbc6d12a9f22d3d1ca0a6868aea348cc38847517ac1c",
+          "@@//package.json": "5a98de041b8a40a949062b59a03709726850890c86bcca142f2a47de022e3e0d",
           "@@devinfra~//bazel/package.json": "960bcecf963a211f96a3967c7cfb5d3e1cea08d94b27056a3e8dbf2fad1e2dd3",
           "@@rules_browsers~//package.json": "45572077938c7a4916e4aaedf7db7ce8425854ab92f35348cff02a2134023bb8"
         },
