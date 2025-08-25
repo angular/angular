@@ -7,6 +7,7 @@ ts_project(
     deps = [
         "//adev:node_modules/@types/jsdom",
         "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
         "//adev/shared-docs/pipeline/guides:guides_lib",
         "//adev/shared-docs/pipeline/guides/test:parser_context",
     ],
