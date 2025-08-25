@@ -25,12 +25,6 @@ import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public
-export function addDefaultField<E extends ValidationError>(error: WithOptionalField<E>, field: Field<unknown>): E;
-
-// @public (undocumented)
-export function addDefaultField<E extends ValidationError>(errors: TreeValidationResult<E>, field: Field<unknown>): ValidationResult<E>;
-
-// @public
 export class AggregateProperty<TAcc, TItem> {
     // (undocumented)
     readonly getInitial: () => TAcc;

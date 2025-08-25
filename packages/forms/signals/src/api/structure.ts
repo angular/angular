@@ -11,6 +11,7 @@ import {inject, Injector, runInInjectionContext, WritableSignal} from '@angular/
 import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
+import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
 import {isArray} from '../util/type_guards';
@@ -25,7 +26,7 @@ import type {
   SchemaOrSchemaFn,
   TreeValidationResult,
 } from './types';
-import {addDefaultField, ValidationError, WithOptionalField} from './validation_errors';
+import {ValidationError, WithOptionalField} from './validation_errors';
 
 /** Options that may be specified when creating a form. */
 export interface FormOptions {

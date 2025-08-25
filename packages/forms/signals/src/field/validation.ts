@@ -7,8 +7,8 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import type {ValidationResult} from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+import type {Field, Mutable, TreeValidationResult, ValidationResult} from '../api/types';
+import type {ValidationError, WithOptionalField} from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitFalse} from './util';
@@ -349,4 +349,32 @@ function normalizeErrors(error: ValidationResult): readonly ValidationError[] {
   }
 
   return [error as ValidationError];
+}
+
+/**
+ * Sets the given field on the given error(s) if it does not already have a field.
+ * @param errors The error(s) to add the field to
+ * @param field The default field to add
+ * @returns The passed in error(s), with its field set.
+ */
+export function addDefaultField<E extends ValidationError>(
+  error: WithOptionalField<E>,
+  field: Field<unknown>,
+): E;
+export function addDefaultField<E extends ValidationError>(
+  errors: TreeValidationResult<E>,
+  field: Field<unknown>,
+): ValidationResult<E>;
+export function addDefaultField<E extends ValidationError>(
+  errors: TreeValidationResult<E>,
+  field: Field<unknown>,
+): ValidationResult<E> {
+  if (isArray(errors)) {
+    for (const error of errors) {
+      (error as Mutable<ValidationError>).field ??= field;
+    }
+  } else if (errors) {
+    (errors as Mutable<ValidationError>).field ??= field;
+  }
+  return errors as ValidationResult<E>;
 }

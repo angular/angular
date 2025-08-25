@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
 import {AggregateProperty, createProperty, Property} from './property';
@@ -17,7 +18,6 @@ import type {
   PathKind,
   TreeValidator,
 } from './types';
-import {addDefaultField} from './validation_errors';
 
 /**
  * Adds logic to a field to conditionally disable it. A disabled field does not contribute to the
