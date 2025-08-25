@@ -297,6 +297,71 @@ IMPORTANT: The above tokens will be `null` in the following scenarios:
 - When performing static site generation (SSG).
 - During route extraction in development (at the time of the request).
 
+### Advanced usage of RESPONSE_INIT
+
+#### Setting Custom Headers
+
+You can use `RESPONSE_INIT` to set custom headers for your server-side rendered responses. This is useful for implementing HTTP response customizations.
+
+```ts
+import { inject, Injectable, RESPONSE_INIT } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HeaderService {
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+
+  setCustomHeaders(): void {
+    if (this.responseInit) {
+      const headers = new Headers(this.responseInit.headers);
+
+
+      // Custom application headers
+      headers.append('X-App-Version', '1.0.0');
+      headers.append('X-Server-Rendered', 'true');
+
+      this.responseInit.headers = headers;
+    }
+  }
+
+}
+```
+
+#### Setting Cookies
+
+Setting cookies with `RESPONSE_INIT` allows you to manage user sessions, preferences, and other stateful information during server-side rendering.
+
+```ts
+import { inject, Injectable, RESPONSE_INIT } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CookieService {
+  private readonly responseInit = inject(RESPONSE_INIT, { optional: true });
+
+  setSessionCookie(sessionId: string): void {
+    if (this.responseInit) {
+      const headers = new Headers(this.responseInit.headers);
+      const cookieString = `session_id=${sessionId}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${60 * 60 * 24}`;
+      headers.append('Set-Cookie', cookieString);
+      this.responseInit.headers = headers;
+    }
+  }
+
+  setUserPreferences(preferences: object): void {
+    if (this.responseInit) {
+      const headers = new Headers(this.responseInit.headers);
+      const prefsValue = encodeURIComponent(JSON.stringify(preferences));
+      const cookieString = `user_prefs=${prefsValue}; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 30}`;
+      headers.append('Set-Cookie', cookieString);
+      this.responseInit.headers = headers;
+    }
+  }
+}
+```
+
 ## Generate a fully static application
 
 By default, Angular prerenders your entire application and generates a server file for handling requests. This allows your app to serve pre-rendered content to users. However, if you prefer a fully static site without a server, you can opt out of this behavior by setting the `outputMode` to `static` in your `angular.json` configuration file.
