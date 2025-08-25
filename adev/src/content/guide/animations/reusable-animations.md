@@ -1,6 +1,6 @@
 # Reusable animations
 
-IMPORTANT: The Angular team recommends using native CSS for animations instead of the Animations package for all new code. Use this guide to understand existing code built with the Animations Package. See [Migrating away from Angular's Animations package](guide/animations/migration#creating-reusable-animations) to learn how you can start using pure CSS animations in your apps.
+IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations/enter-and-leave). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
 
 This topic provides some examples of how to create reusable animations.
 
