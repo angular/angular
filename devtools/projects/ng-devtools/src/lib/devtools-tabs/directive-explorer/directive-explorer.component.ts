@@ -118,8 +118,6 @@ export class DirectiveExplorerComponent {
     read: ElementRef,
   });
 
-  readonly signalGraphEnabled = input.required<boolean>();
-
   readonly currentSelectedElement = signal<IndexedNode | null>(null);
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');

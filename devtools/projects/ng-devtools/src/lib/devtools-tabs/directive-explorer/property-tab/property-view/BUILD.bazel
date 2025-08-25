@@ -61,6 +61,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/application-environment",
         "//devtools/projects/ng-devtools/src/lib/application-providers:supported_apis",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/application-services:settings",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view/resolution-path",
