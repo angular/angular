@@ -55,11 +55,11 @@ export function rxResource<T, R>(opts: RxResourceOptions<T, R>): ResourceRef<T |
     ...opts,
     loader: undefined,
     stream: (params) => {
-      let sub: Subscription;
+      let sub: Subscription | undefined;
 
       // Track the abort listener so it can be removed if the Observable completes (as a memory
       // optimization).
-      const onAbort = () => sub.unsubscribe();
+      const onAbort = () => sub?.unsubscribe();
       params.abortSignal.addEventListener('abort', onAbort);
 
       // Start off stream as undefined.
