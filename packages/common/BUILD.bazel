@@ -1,7 +1,17 @@
 load("//packages/common/locales:index.bzl", "generate_base_currencies_file")
-load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test", "api_golden_test_npm_package", "generate_api_docs", "ng_package", "ng_project", "ts_config")
 
 package(default_visibility = ["//visibility:public"])
+
+ts_config(
+    name = "tsconfig_build",
+    src = "tsconfig.json",
+    visibility = ["//packages/common:__subpackages__"],
+    deps = [
+        "//:node_modules/@types/dom-navigation",
+        "//packages:tsconfig_build",
+    ],
+)
 
 # This generates the `src/i18n/currencies.ts` file through the `generate-locales` tool. Since
 # the base locale file is checked-in for Google3, it is additionally stored in a golden location.
@@ -18,7 +28,9 @@ ng_project(
             "src/**/*.ts",
         ],
     ),
+    tsconfig = ":tsconfig_build",
     deps = [
+        "//:node_modules/@types/dom-navigation",
         "//:node_modules/rxjs",
         "//packages/core",
         "//packages/core/primitives/dom-navigation",

@@ -5,21 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-export {
-  type NavigateEvent as ɵNavigateEvent,
-  type Navigation as ɵNavigation,
-  type NavigationCurrentEntryChangeEvent as ɵNavigationCurrentEntryChangeEvent,
-  type NavigationHistoryEntry as ɵNavigationHistoryEntry,
-  type NavigationNavigateOptions as ɵNavigationNavigateOptions,
-  type NavigationOptions as ɵNavigationOptions,
-  type NavigationReloadOptions as ɵNavigationReloadOptions,
-  type NavigationResult as ɵNavigationResult,
-  type NavigationTransition as ɵNavigationTransition,
-  type NavigationUpdateCurrentEntryOptions as ɵNavigationUpdateCurrentEntryOptions,
-  type NavigationTypeString as ɵNavigationTypeString,
-  type NavigationInterceptOptions as ɵNavigationInterceptOptions,
-  type NavigationDestination as ɵNavigationDestination,
-} from '../primitives/dom-navigation';
 export {setAlternateWeakRefImpl as ɵsetAlternateWeakRefImpl} from '../primitives/signals';
 export {INTERNAL_APPLICATION_ERROR_HANDLER as ɵINTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 export {

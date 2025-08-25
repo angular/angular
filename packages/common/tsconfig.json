@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig-build.json",
+  "compilerOptions": {
+    "types": ["dom-navigation"],
+    "paths": {
+      "@angular/*": ["../*"],
+    }
+  }
+}
