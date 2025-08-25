@@ -18,6 +18,8 @@
         class="docs-example-copy-link"
         [attr.aria-label]="'Copy link to ' + exampleMetadata()?.title + ' example to the clipboard'"
         (click)="copyLink()"
+        matTooltip="Copy link to example"
+        matTooltipPosition="above"
       >
         <i aria-hidden="true">
           <svg
@@ -41,8 +43,9 @@
         <button
           type="button"
           (click)="toggleExampleVisibility()"
-          [attr.title]="(expanded() ? 'Collapse' : 'Expand') + ' example'"
           [attr.aria-label]="(expanded() ? 'Collapse' : 'Expand') + ' code example'"
+          matTooltip="{{ expanded() ? 'Collapse' : 'Expand' }} example"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             @if (!expanded()) {
@@ -100,9 +103,10 @@
         <a
           [href]="githubUrl()"
           target="_blank"
-          title="Open example on GitHub"
           class="docs-example-github-link"
           aria-label="Open example on GitHub"
+          matTooltip="Open example on GitHub"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg
@@ -128,8 +132,9 @@
           [href]="stackblitzUrl()"
           target="_blank"
           class="docs-example-stackblitz-link"
-          title="Edit this example in StackBlitz"
-          aria-label="Edit this example in StackBlitz"
+          aria-label="Edit example in StackBlitz"
+          matTooltip="Edit example in StackBlitz"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg
