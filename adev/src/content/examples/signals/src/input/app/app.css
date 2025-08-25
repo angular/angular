@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.container {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: auto;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+  color: #ffffff;
+}
+
+p {
+  color: #b0b0b0;
+  font-size: 0.9em;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
+.control-box,
+.child-view-box {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+  margin-top: 24px;
+}
+
+.child-view-box {
+  background-color: transparent;
+  padding: 20px;
+  border: 1px solid #007bff;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 1.1em;
+  color: #ffffff;
+}
+
+.inputs-wrapper {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+label {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  color: #c0c0c0;
+}
+
+input,
+select {
+  background-color: #3a3a3a;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 12px;
+  color: #e0e0e0;
+  font-size: 1em;
+}
+
+select {
+  padding-right: 30px;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #007bff;
+}

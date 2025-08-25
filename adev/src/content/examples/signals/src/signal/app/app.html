@@ -1,0 +1,21 @@
+<article class="container">
+  <h2>Demo: Basic Counter</h2>
+  <p>This demo shows a writable signal for a counter, updated with <code>set()</code> and <code>update()</code>. The "Read-Only View" demonstrates using <code>.asReadonly()</code>.</p>
+
+  <div class="content-wrapper">
+    <section class="control-box">
+      <h3>Writable Control:</h3>
+      <div class="counter-controls">
+        <span class="count-display">{{ count() }}</span>
+        <button class="btn increment" (click)="increment()">+</button>
+        <button class="btn decrement" (click)="decrement()">-</button>
+        <button class="btn reset" (click)="reset()">Reset</button>
+      </div>
+    </section>
+
+    <section class="view-box">
+      <h3>Read-Only View:</h3>
+      <p class="read-only-text">Current count is: <strong>{{ count() }}</strong></p>
+    </section>
+  </div>
+</article>
