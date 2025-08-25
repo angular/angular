@@ -963,12 +963,12 @@ function dispatchNavigateEvent({
         }
         navigation.navigateEvent = null;
         finishNavigationEvent(event, true);
+        result.finishedResolve();
         const navigatesuccessEvent = new Event('navigatesuccess', {
           bubbles: false,
           cancelable: false,
         });
         navigation.eventTarget.dispatchEvent(navigatesuccessEvent);
-        result.finishedResolve();
         (navigation.transition as InternalNavigationTransition)?.finishedResolve();
         navigation.transition = null;
       })
@@ -996,16 +996,14 @@ function dispatchNavigateEvent({
     } else if (this.interceptionState === 'intercepted') {
       this.interceptionState = 'finished';
     }
+    result.committedReject(reason);
+    result.finishedReject(reason);
     const navigateerrorEvent = new Event('navigateerror', {
       bubbles: false,
       cancelable,
     }) as ErrorEvent;
     (navigateerrorEvent as unknown as {error: Error}).error = reason;
     navigation.eventTarget.dispatchEvent(navigateerrorEvent);
-    if (result.committedTo === null && !result.signal.aborted) {
-      result.committedReject(reason);
-    }
-    result.finishedReject(reason);
     const transition = navigation.transition as InternalNavigationTransition | undefined;
     transition?.committedReject(reason);
     transition?.finishedReject(reason);
