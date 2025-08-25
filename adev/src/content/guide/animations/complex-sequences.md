@@ -37,7 +37,7 @@ The first argument of `query()` is a [css selector](https://developer.mozilla.or
 
 Not all child elements are actually considered as entering/leaving; this can, at times, be counterintuitive and confusing. Please see the [query api docs](api/animations/query#entering-and-leaving-elements) for more information.
 
-You can also see an illustration of this in the animations example \(introduced in the animations [introduction section](guide/animations#about-this-guide)\) under the Querying tab.
+You can also see an illustration of this in the animations example \(introduced in the animations [introduction section](guide/legacy-animations#about-this-guide)\) under the Querying tab.
 
 </docs-callout>
 
@@ -137,8 +137,9 @@ The remaining functions, `stagger()`, [`group()`](api/animations/group), and `se
 You might also be interested in the following:
 
 <docs-pill-row>
-  <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
-  <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
-  <docs-pill href="guide/animations/reusable-animations" title="Reusable animations"/>
+  <docs-pill href="guide/legacy-animations" title="Introduction to Angular animations"/>
+  <docs-pill href="guide/legacy-animations/transition-and-triggers" title="Transition and triggers"/>
+  <docs-pill href="guide/legacy-animations/reusable-animations" title="Reusable animations"/>
   <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+  <docs-pill href="guide/animations/migration" title="Migrating to Native CSS Animations"/>
 </docs-pill-row>

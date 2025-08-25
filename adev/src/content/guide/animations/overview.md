@@ -56,7 +56,7 @@ If you plan to use specific animation functions in component files, import those
 
 <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/animations/src/app/app.component.ts" visibleRegion="imports"/>
 
-See all [available animation functions](guide/animations#animations-api-summary) at the end of this guide.
+See all [available animation functions](guide/legacy-animations#animations-api-summary) at the end of this guide.
 
 </docs-step>
 <docs-step title="Adding the animation metadata property">
@@ -263,7 +263,7 @@ Here are the code files discussed in the transition example.
 
 You learned to add animation to a transition between two states, using `style()` and [`state()`](api/animations/state) along with `animate()` for the timing.
 
-Learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/animations/transition-and-triggers).
+Learn about more advanced features in Angular animations under the Animation section, beginning with advanced techniques in [transition and triggers](guide/legacy-animations/transition-and-triggers).
 
 ## Animations API summary
 
@@ -295,8 +295,9 @@ HELPFUL: Check out this [presentation](https://www.youtube.com/watch?v=rnTK9meY5
 You might also be interested in the following:
 
 <docs-pill-row>
-  <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
-  <docs-pill href="guide/animations/complex-sequences" title="Complex animation sequences"/>
-  <docs-pill href="guide/animations/reusable-animations" title="Reusable animations"/>
+  <docs-pill href="guide/legacy-animations/transition-and-triggers" title="Transition and triggers"/>
+  <docs-pill href="guide/legacy-animations/complex-sequences" title="Complex animation sequences"/>
+  <docs-pill href="guide/legacy-animations/reusable-animations" title="Reusable animations"/>
   <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+  <docs-pill href="guide/animations/migration" title="Migrating to Native CSS Animations"/>
 </docs-pill-row>

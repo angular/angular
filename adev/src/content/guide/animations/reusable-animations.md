@@ -30,8 +30,9 @@ For example, the following code snippet imports the `transitionAnimation` variab
 You might also be interested in the following:
 
 <docs-pill-row>
-  <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
-  <docs-pill href="guide/animations/transition-and-triggers" title="Transition and triggers"/>
-  <docs-pill href="guide/animations/complex-sequences" title="Complex animation sequences"/>
+  <docs-pill href="guide/legacy-animations" title="Introduction to Angular animations"/>
+  <docs-pill href="guide/legacy-animations/transition-and-triggers" title="Transition and triggers"/>
+  <docs-pill href="guide/legacy-animations/complex-sequences" title="Complex animation sequences"/>
   <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+  <docs-pill href="guide/animations/migration" title="Migrating to Native CSS Animations"/>
 </docs-pill-row>
