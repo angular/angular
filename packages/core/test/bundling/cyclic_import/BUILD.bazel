@@ -1,5 +1,5 @@
 load("@rules_angular//src/optimization:index.bzl", "optimize_angular_app")
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 

@@ -1,6 +1,6 @@
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
 load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
-load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
