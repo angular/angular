@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {inject} from '../../di';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {StaticProvider} from '../../di/interface/provider';
-import {Optional, SkipSelf} from '../../di/metadata';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
 
@@ -233,14 +233,13 @@ export class IterableDiffers {
   static extend(factories: IterableDifferFactory[]): StaticProvider {
     return {
       provide: IterableDiffers,
-      useFactory: (parent: IterableDiffers | null) => {
+      useFactory: () => {
+        const parent = inject(IterableDiffers, {optional: true, skipSelf: true});
         // if parent is null, it means that we are in the root injector and we have just overridden
         // the default injection mechanism for IterableDiffers, in such a case just assume
         // `defaultIterableDiffersFactory`.
         return IterableDiffers.create(factories, parent || defaultIterableDiffersFactory());
       },
-      // Dependency technically isn't optional, but we can provide a better error message this way.
-      deps: [[IterableDiffers, new SkipSelf(), new Optional()]],
     };
   }
 
