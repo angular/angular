@@ -19,13 +19,7 @@ import {RuntimeErrorCode} from './errors';
 
 import type {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
-import {
-  ACCEPT_HEADER,
-  ACCEPT_HEADER_VALUE,
-  CONTENT_TYPE_HEADER,
-  HttpRequest,
-  X_REQUEST_URL_HEADER,
-} from './request';
+import {ACCEPT_HEADER, ACCEPT_HEADER_VALUE, CONTENT_TYPE_HEADER, HttpRequest} from './request';
 import {
   HTTP_STATUS_CODE_OK,
   HttpDownloadProgressEvent,
@@ -40,19 +34,6 @@ import {
 import type {} from 'zone.js';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
-
-/**
- * Determine an appropriate URL for the response, by checking either
- * response url or the X-Request-URL header.
- */
-function getResponseUrl(response: Response): string | null {
-  if (response.url) {
-    return response.url;
-  }
-  // stored as lowercase in the map
-  const xRequestUrl = X_REQUEST_URL_HEADER.toLocaleLowerCase();
-  return response.headers.get(xRequestUrl);
-}
 
 /**
  * An internal injection token to reference `FetchBackend` implementation
@@ -159,7 +140,7 @@ export class FetchBackend implements HttpBackend {
 
     const headers = new HttpHeaders(response.headers);
     const statusText = response.statusText;
-    const url = getResponseUrl(response) ?? request.urlWithParams;
+    const url = response.url || request.urlWithParams;
 
     let status = response.status;
     let body: string | ArrayBuffer | Blob | object | null = null;
@@ -253,7 +234,7 @@ export class FetchBackend implements HttpBackend {
             headers: new HttpHeaders(response.headers),
             status: response.status,
             statusText: response.statusText,
-            url: getResponseUrl(response) ?? request.urlWithParams,
+            url: response.url || request.urlWithParams,
           }),
         );
         return;

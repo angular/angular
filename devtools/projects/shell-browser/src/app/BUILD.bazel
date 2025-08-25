@@ -30,6 +30,7 @@ ng_project(
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
         "//devtools/projects/ng-devtools-backend/src/lib/component-tree",
+        "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
         "//devtools/projects/protocol",
         "//devtools/projects/shell-browser/src/app:backend",
         "//devtools/projects/shell-browser/src/app:background",

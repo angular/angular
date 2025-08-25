@@ -135,7 +135,7 @@ Use `animate.leave` to animate elements as they leave the view, which will apply
     <docs-code header="src/app/remove.component.css" path="adev/src/content/examples/animations/src/app/native-css/remove.component.css"  />
 </docs-code-multifile>
 
-For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations/enter-and-leave).
+For more information on `animate.enter` and `animate.leave`, see the [Enter and Leave animations guide](guide/animations).
 
 ### Animating increment and decrement
 

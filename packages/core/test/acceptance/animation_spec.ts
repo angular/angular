@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgFor} from '@angular/common';
 import {ViewEncapsulation} from '@angular/compiler';
 import {
   AnimationCallbackEvent,
@@ -157,6 +158,66 @@ describe('Animation', () => {
       class TestComponent {
         show = signal(true);
         classArray = ['slide-out', 'fade'];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const paragragh = fixture.debugElement.query(By.css('p'));
+
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      expect(fixture.nativeElement.outerHTML).toContain('class="slide-out fade"');
+      fixture.detectChanges();
+      paragragh.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      paragragh.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-out'}),
+      );
+      expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
+    }));
+
+    it('should support binding strings with spaces', fakeAsync(() => {
+      const multiple = `
+        .slide-out {
+          animation: slide-out 2ms;
+        }
+        .fade {
+          animation: fade-out 1ms;
+        }
+        @keyframes slide-out {
+          from {
+            transform: translateX(0);
+          }
+          to {
+            transform: translateX(10px);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template: `<div>@if (show()) {<p [animate.leave]="'slide-out fade'" #el>I should slide out</p>}</div>`,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
         @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
       }
 
@@ -811,6 +872,60 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     }));
 
+    it('should support binding to a string with a space', fakeAsync(() => {
+      const multiple = `
+      .slide-in {
+        animation: slide-in 1ms;
+      }
+      .fade-in {
+        animation: fade-in 2ms;
+      }
+      @keyframes slide-in {
+        from {
+          transform: translateX(-10px);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template: `<div>@if (show()) {<p [animate.enter]="'slide-in fade-in'" #el>I should slide in</p>}</div>`,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      expect(cmp.show()).toBeFalsy();
+      cmp.show.set(true);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraph = fixture.debugElement.query(By.css('p'));
+      expect(cmp.show()).toBeTruthy();
+      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in fade-in"');
+      paragraph.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      paragraph.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
+    }));
+
     it('should support multple classes as a single string separated by a space', fakeAsync(() => {
       const multiple = `
       .slide-in {
@@ -1246,6 +1361,149 @@ describe('Animation', () => {
       expect(cmp.show()).toBeTruthy();
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
+    }));
+
+    it('should always run animations for `@for` loops when adding and removing quickly', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @for (item of items; track item) {
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+        max = 3;
+
+        addremove() {
+          this.max++;
+          this.items.splice(this.items.length, 0, this.max);
+          this.items.splice(0, 1);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
+    }));
+
+    it('should always run animations for custom repeater loops when adding and removing quickly', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        imports: [NgFor],
+        template: `
+          <div>
+            <ng-container *ngFor="let item of items; trackBy: trackByIndex; let i=index">
+              <p animate.enter="slide-in" animate.leave="fade" #el>I should slide in {{item}}.</p>
+            </ng-container>
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [1, 2, 3];
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+        max = 3;
+
+        addremove() {
+          this.max++;
+          this.items.splice(this.items.length, 0, this.max);
+          this.items.splice(0, 1);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
     }));
   });
 });

@@ -35,6 +35,11 @@ export interface RNode {
   nextSibling: RNode | null;
 
   /**
+   * Gets the Node immediately preceding this one in the parent's childNodes
+   */
+  previousSibling: RNode | null;
+
+  /**
    * Insert a child node.
    *
    * Used exclusively for adding View root nodes into ViewAnchor location.

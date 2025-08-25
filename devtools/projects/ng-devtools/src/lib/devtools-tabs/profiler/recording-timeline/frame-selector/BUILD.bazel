@@ -28,5 +28,6 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/profiler/recording-timeline/shared:estimate-frame-rate",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/ng-devtools/src/lib/shared/button",
+        "//devtools/projects/protocol",
     ],
 )

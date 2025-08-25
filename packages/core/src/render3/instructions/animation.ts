@@ -20,7 +20,16 @@ import {
   getClassListFromValue,
 } from '../../animation/element_removal_registry';
 import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, FLAGS, LViewFlags, LView, TView} from '../interfaces/view';
+import {
+  RENDERER,
+  INJECTOR,
+  CONTEXT,
+  FLAGS,
+  LViewFlags,
+  LView,
+  TView,
+  DECLARATION_LCONTAINER,
+} from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
@@ -30,6 +39,7 @@ import {NgZone} from '../../zone';
 import {assertDefined} from '../../util/assert';
 import {determineLongestAnimation, LongestAnimation} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
+import {getBeforeNodeForView} from '../node_manipulation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 const areAnimationSupported =
@@ -88,9 +98,37 @@ const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 // from an `@if` or `@for`.
 const leavingNodes = new WeakMap<TNode, HTMLElement[]>();
 
-function clearLeavingNodes(tNode: TNode): void {
-  if (leavingNodes.get(tNode)?.length === 0) {
+function clearLeavingNodes(tNode: TNode, el: HTMLElement): void {
+  const nodes = leavingNodes.get(tNode);
+  if (nodes && nodes.length > 0) {
+    const ix = nodes.findIndex((node) => node === el);
+    if (ix > -1) nodes.splice(ix, 1);
+  }
+  if (nodes?.length === 0) {
     leavingNodes.delete(tNode);
+  }
+}
+
+/**
+ * In the case that we have an existing node that's animating away, like when
+ * an `@if` toggles quickly, we need to end the animation for the former node
+ * and remove it right away to prevent duplicate nodes showing up.
+ */
+function cancelLeavingNodes(tNode: TNode, lView: LView): void {
+  const leavingEl = leavingNodes.get(tNode)?.shift();
+  const lContainer = lView[DECLARATION_LCONTAINER];
+  if (lContainer) {
+    // this is the insertion point for the new TNode element.
+    // it will be inserted before the declaring containers anchor.
+    const beforeNode = getBeforeNodeForView(tNode.index, lContainer);
+    // here we need to check the previous sibling of that anchor
+    const previousNode = beforeNode?.previousSibling;
+    // We really only want to cancel animations if the leaving node is the
+    // same as the node before where the new node will be inserted. This is
+    // the control flow scenario where an if was toggled.
+    if (leavingEl && previousNode && leavingEl === previousNode) {
+      leavingEl.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+    }
   }
 }
 
@@ -160,14 +198,7 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
-    // In the case that we have an existing node that's animating away, like when
-    // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
-    // need to end the animation for the former node and remove it right away to
-    // prevent duplicate nodes showing up.
-    leavingNodes
-      .get(tNode)
-      ?.pop()
-      ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+    cancelLeavingNodes(tNode, lView);
 
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
@@ -238,14 +269,8 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-  // In the case that we have an existing node that's animating away, like when
-  // an `@if` toggles quickly or `@for` adds and removes elements quickly, we
-  // need to end the animation for the former node and remove it right away to
-  // prevent duplicate nodes showing up.
-  leavingNodes
-    .get(tNode)
-    ?.pop()
-    ?.dispatchEvent(new CustomEvent('animationend', {detail: {cancel: true}}));
+
+  cancelLeavingNodes(tNode, lView);
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 
@@ -375,7 +400,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
         const event: AnimationCallbackEvent = {
           target: nativeElement,
           animationComplete: () => {
-            clearLeavingNodes(tNode);
+            clearLeavingNodes(tNode, _el as HTMLElement);
             removeFn();
           },
         };
@@ -405,13 +430,11 @@ function getClassList(value: Set<string> | null, resolvers: Function[] | undefin
   const classList = new Set<string>(value);
   if (resolvers && resolvers.length) {
     for (const resolverFn of resolvers) {
-      const resolvedValue = resolverFn();
-      if (resolvedValue instanceof Array) {
+      const resolvedValue = getClassListFromValue(resolverFn);
+      if (resolvedValue) {
         for (const rv of resolvedValue) {
           classList.add(rv);
         }
-      } else {
-        classList.add(resolvedValue);
       }
     }
   }
@@ -530,7 +553,7 @@ function animateLeaveClassRunner(
       // affect any other animations on the page.
       event.stopImmediatePropagation();
       longestAnimations.delete(el);
-      clearLeavingNodes(tNode);
+      clearLeavingNodes(tNode, el);
       finalRemoveFn();
     }
   };
@@ -550,7 +573,7 @@ function animateLeaveClassRunner(
     requestAnimationFrame(() => {
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
-        clearLeavingNodes(tNode);
+        clearLeavingNodes(tNode, el);
         finalRemoveFn();
       }
     });

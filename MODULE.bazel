@@ -7,12 +7,12 @@ module(
 bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_nodejs", version = "6.5.0")
 bazel_dep(name = "aspect_rules_ts", version = "3.7.0")
-bazel_dep(name = "aspect_rules_js", version = "2.4.2")
+bazel_dep(name = "aspect_rules_js", version = "2.5.0")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.22.1")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.0")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.8.1")
-bazel_dep(name = "aspect_bazel_lib", version = "2.21.0")
+bazel_dep(name = "aspect_bazel_lib", version = "2.21.1")
 bazel_dep(name = "tar.bzl", version = "0.5.5")
 bazel_dep(name = "yq.bzl", version = "0.2.0")
 bazel_dep(name = "rules_angular")
@@ -25,7 +25,7 @@ git_override(
 bazel_dep(name = "devinfra")
 git_override(
     module_name = "devinfra",
-    commit = "72f5a5f5bbbdf5bbaf0c8abf33cf6fbaef2ff50c",
+    commit = "acce054082b688da9a5a3d12c6550184eb9f7725",
     remote = "https://github.com/angular/dev-infra.git",
 )
 

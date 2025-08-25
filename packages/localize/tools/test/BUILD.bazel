@@ -9,6 +9,7 @@ ts_project(
     visibility = ["//packages/localize/tools/test:__subpackages__"],
     deps = [
         "//:node_modules/@babel/generator",
+        "//:node_modules/@types/babel__core",
         "//:node_modules/@types/babel__generator",
         "//:node_modules/tinyglobby",
         "//packages:types",

@@ -16,8 +16,8 @@ import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/defer
 import ERRORS_NAV_DATA from '../../src/assets/content/reference/errors/routes.json';
 import EXT_DIAGNOSTICS_NAV_DATA from '../../src/assets/content/reference/extended-diagnostics/routes.json';
 
-import {DefaultPage} from './core/enums/pages';
 import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
+import {DEFAULT_PAGES} from './core/constants/pages';
 
 interface SubNavigationData {
   docs: NavigationItem[];
@@ -648,15 +648,15 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         status: 'updated',
         children: [
           {
-            label: 'Animating your content',
-            path: 'guide/animations/css',
-            contentPath: 'guide/animations/css',
-          },
-          {
             label: 'Enter and Leave animations',
-            path: 'guide/animations/enter-and-leave',
+            path: 'guide/animations',
             contentPath: 'guide/animations/enter-and-leave',
             status: 'new',
+          },
+          {
+            label: 'Complex Animations with CSS',
+            path: 'guide/animations/css',
+            contentPath: 'guide/animations/css',
           },
           {
             label: 'Route transition animations',
@@ -916,26 +916,26 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'guide/ngmodules/overview',
       },
       {
-        label: 'Animations',
+        label: 'Legacy Animations',
         children: [
           {
             label: 'Overview',
-            path: 'guide/animations',
+            path: 'guide/legacy-animations',
             contentPath: 'guide/animations/overview',
           },
           {
             label: 'Transition and Triggers',
-            path: 'guide/animations/transition-and-triggers',
+            path: 'guide/legacy-animations/transition-and-triggers',
             contentPath: 'guide/animations/transition-and-triggers',
           },
           {
             label: 'Complex Sequences',
-            path: 'guide/animations/complex-sequences',
+            path: 'guide/legacy-animations/complex-sequences',
             contentPath: 'guide/animations/complex-sequences',
           },
           {
             label: 'Reusable Animations',
-            path: 'guide/animations/reusable-animations',
+            path: 'guide/legacy-animations/reusable-animations',
             contentPath: 'guide/animations/reusable-animations',
           },
           {
@@ -1068,7 +1068,7 @@ export const TUTORIALS_SUB_NAVIGATION_DATA: NavigationItem[] = [
   LEARN_ANGULAR_TUTORIAL_NAV_DATA,
   DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA,
   {
-    path: DefaultPage.TUTORIALS,
+    path: DEFAULT_PAGES.TUTORIALS,
     contentPath: 'tutorials/home',
     label: 'Tutorials',
   },

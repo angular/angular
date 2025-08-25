@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {indexForest} from './';
+import {indexForest} from './index';
 import {DevToolsNode} from '../../../../../../../protocol';
 
 describe('indexForest', () => {

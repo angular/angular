@@ -9,7 +9,7 @@
 import {NgtscProgram} from '../../src/ngtsc/program';
 import {CompilerOptions} from '../../src/transformers/api';
 import {createCompilerHost} from '../../src/transformers/compiler_host';
-import {platform} from 'os';
+import {platform} from 'node:os';
 import ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../src/ngtsc/diagnostics';

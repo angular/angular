@@ -28,11 +28,11 @@ import {
   effect,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services/index';
+import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services';
 import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 import {IconComponent} from '../../icon/icon.component';
-import {handleHrefClickEventWithRouter} from '../../../utils/index';
-import {Snippet} from '../../../interfaces/index';
+import {handleHrefClickEventWithRouter} from '../../../utils';
+import {Snippet} from '../../../interfaces';
 import {Router} from '@angular/router';
 import {fromEvent} from 'rxjs';
 

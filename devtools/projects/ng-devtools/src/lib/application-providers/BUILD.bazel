@@ -35,6 +35,7 @@ ts_test_library(
     srcs = glob(["*_spec.ts"]),
     deps = [
         ":supported_apis",
+        "//:node_modules/@angular/core",
     ],
 )
 

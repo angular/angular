@@ -6,7 +6,7 @@ ts_config(
     name = "tsconfig",
     src = "tsconfig.json",
     deps = [
-        "//packages:tsconfig_test",
+        "//packages/core:tsconfig_test",
     ],
 )
 
@@ -16,7 +16,6 @@ ts_project(
     srcs = glob(
         ["**/*.ts"],
     ),
-    extends = "//packages/core:tsconfig_test",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/core",

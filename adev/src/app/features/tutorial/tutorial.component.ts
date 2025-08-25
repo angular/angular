@@ -39,7 +39,6 @@ import {ActivatedRoute, RouterLink} from '@angular/router';
 import {from} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
-import {PagePrefix} from '../../core/enums/pages';
 import {
   EmbeddedTutorialManager,
   LoadingStep,
@@ -48,6 +47,7 @@ import {
   injectNodeRuntimeSandbox,
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
+import {PAGE_PREFIX} from '../../core/constants/pages';
 
 const INTRODUCTION_LABEL = 'Introduction';
 
@@ -112,7 +112,7 @@ export default class Tutorial {
     this.route.data
       .pipe(
         filter(() =>
-          Boolean(this.route?.routeConfig?.path?.startsWith(`${PagePrefix.TUTORIALS}/`)),
+          Boolean(this.route?.routeConfig?.path?.startsWith(`${PAGE_PREFIX.TUTORIALS}/`)),
         ),
         takeUntilDestroyed(),
       )
@@ -202,7 +202,7 @@ export default class Tutorial {
       this.isBrowser
     ) {
       await this.setEditorTutorialData(
-        tutorialNavigationItem.path.replace(`${PagePrefix.TUTORIALS}/`, ''),
+        tutorialNavigationItem.path.replace(`${PAGE_PREFIX.TUTORIALS}/`, ''),
       );
     }
   }
@@ -252,7 +252,7 @@ export default class Tutorial {
   private async setEditorTutorialData(tutorialPath: string) {
     this.shouldRenderEmbeddedEditor.set(true);
 
-    const currentTutorial = tutorialPath.replace(`${PagePrefix.TUTORIALS}/`, '');
+    const currentTutorial = tutorialPath.replace(`${PAGE_PREFIX.TUTORIALS}/`, '');
 
     await this.embeddedTutorialManager.fetchAndSetTutorialFiles(currentTutorial);
 
