@@ -86,3 +86,12 @@ If you want to test that the animations are animating in a browser test, for exa
 This will configure animations in your test environment to behave normally.
 
 NOTE: Some test environments do not emit animation events like `animationstart`, `animationend` and their transition event equivalents.
+
+## More on Angular animations
+
+You might also be interested in the following:
+
+<docs-pill-row>
+  <docs-pill href="guide/animations/css" title="Complex Animations with CSS"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+</docs-pill-row>
