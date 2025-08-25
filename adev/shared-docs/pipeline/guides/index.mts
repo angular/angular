@@ -8,8 +8,8 @@
 
 import {readFileSync, writeFileSync} from 'fs';
 import path from 'path';
-import {parseMarkdown} from './parse.mjs';
-import {initHighlighter} from './extensions/docs-code/format/highlight.mjs';
+import {initHighlighter} from '../shared/shiki.mjs';
+import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
 
 type ApiManifest = ApiManifestPackage[];
 interface ApiManifestPackage {
@@ -24,7 +24,7 @@ async function main() {
 
   // The highlighter needs to be setup asynchronously
   // so we're doing it at the start of the pipeline
-  await initHighlighter();
+  const highlighter = await initHighlighter();
 
   for (const filePath of srcs.split(',')) {
     if (!filePath.endsWith('.md')) {
@@ -42,9 +42,10 @@ async function main() {
     }
 
     const markdownContent = readFileSync(filePath, {encoding: 'utf8'});
-    const htmlOutputContent = await parseMarkdown(markdownContent, {
+    const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
       markdownFilePath: filePath,
       apiEntries: mapManifestToEntries(apiManifest),
+      highlighter,
     });
 
     // The expected file name structure is the [name of the file].md.html.

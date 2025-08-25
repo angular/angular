@@ -14,7 +14,7 @@ describe('jsdoc transforms', () => {
   it('should transform links', () => {
     setCurrentSymbol('Router');
     setSymbols(
-      new Map([
+      Object.fromEntries([
         ['Route', 'test'],
         ['Router', 'test'],
         ['Router.someMethod', 'test'],

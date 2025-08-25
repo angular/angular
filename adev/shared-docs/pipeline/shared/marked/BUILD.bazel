@@ -1,0 +1,25 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "marked",
+    srcs = glob(["**/*.mts"]),
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+    deps = [
+        "//adev:node_modules/@types/jsdom",
+        "//adev:node_modules/@types/node",
+        "//adev:node_modules/diff",
+        "//adev:node_modules/emoji-regex",
+        "//adev:node_modules/html-entities",
+        "//adev:node_modules/jsdom",
+        "//adev:node_modules/marked",
+        "//adev:node_modules/mermaid",
+        "//adev:node_modules/playwright-core",
+        "//adev/shared-docs/pipeline/shared:linking",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/regions",
+    ],
+)
