@@ -430,13 +430,11 @@ function getClassList(value: Set<string> | null, resolvers: Function[] | undefin
   const classList = new Set<string>(value);
   if (resolvers && resolvers.length) {
     for (const resolverFn of resolvers) {
-      const resolvedValue = resolverFn();
-      if (resolvedValue instanceof Array) {
+      const resolvedValue = getClassListFromValue(resolverFn);
+      if (resolvedValue) {
         for (const rv of resolvedValue) {
           classList.add(rv);
         }
-      } else {
-        classList.add(resolvedValue);
       }
     }
   }
