@@ -43,7 +43,6 @@
       @if (currentSelectedElement(); as currentSelectedElement) {
         <ng-property-tab
           [currentSelectedElement]="currentSelectedElement"
-          [signalGraphEnabled]="signalGraphEnabled()"
           (showSignalGraph)="showSignalGraph($event)"
           (inspect)="inspect($event)"
           (viewSource)="viewSource($event)"
