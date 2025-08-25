@@ -53,7 +53,6 @@ ts_project(
     srcs = glob(
         [
             "**/*.mts",
-            "shiki.d.ts",
         ],
         exclude = ["index.mts"],
     ),
@@ -61,17 +60,8 @@ ts_project(
         "//adev/shared-docs:__subpackages__",
     ],
     deps = [
-        "//adev:node_modules/@types/jsdom",
-        "//adev:node_modules/@types/node",
-        "//adev:node_modules/diff",
-        "//adev:node_modules/emoji-regex",
-        "//adev:node_modules/html-entities",
-        "//adev:node_modules/jsdom",
-        "//adev:node_modules/marked",
-        "//adev:node_modules/mermaid",
-        "//adev:node_modules/playwright-core",
-        "//adev:node_modules/shiki",
-        "//adev/shared-docs/pipeline/shared",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
     ],
 )
 

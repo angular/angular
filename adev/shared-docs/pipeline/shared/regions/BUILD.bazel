@@ -1,0 +1,11 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "regions",
+    srcs = glob(["**/*.mts"]),
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+)

@@ -1,8 +1,0 @@
-load("//adev/shared-docs:defaults.bzl", "ts_project")
-
-ts_project(
-    name = "parser_context",
-    srcs = glob(["*.mts"]),
-    visibility = ["//adev/shared-docs/pipeline/guides/test:__subpackages__"],
-    deps = ["//adev/shared-docs/pipeline/guides:guides_lib"],
-)
