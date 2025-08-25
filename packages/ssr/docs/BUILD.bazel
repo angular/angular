@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "generate_api_docs", "ts_project")
+load("//tools:defaults.bzl", "generate_api_docs", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 

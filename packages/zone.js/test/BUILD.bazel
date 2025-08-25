@@ -1,5 +1,5 @@
 load("//packages/zone.js/test:karma_test.bzl", "karma_test")
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
 
 package(default_visibility = ["//:__subpackages__"])
 
