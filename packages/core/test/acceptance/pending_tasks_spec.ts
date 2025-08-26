@@ -11,7 +11,7 @@ import {TestBed} from '../../testing';
 import {EMPTY, firstValueFrom, of} from 'rxjs';
 import {map, withLatestFrom} from 'rxjs/operators';
 
-import {PendingTasksInternal} from '../../src/pending_tasks';
+import {PendingTasksInternal} from '../../src/pending_tasks_internal';
 
 describe('PendingTasks', () => {
   it('should wait until all tasks are completed', async () => {

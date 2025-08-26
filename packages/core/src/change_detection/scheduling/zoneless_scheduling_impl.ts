@@ -14,7 +14,7 @@ import {inject} from '../../di/injector_compatibility';
 import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
-import {PendingTasksInternal} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks_internal';
 import {
   scheduleCallbackWithMicrotask,
   scheduleCallbackWithRafRace,

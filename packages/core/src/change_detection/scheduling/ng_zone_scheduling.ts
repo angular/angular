@@ -17,10 +17,11 @@ import {
   Injectable,
   InjectionToken,
   makeEnvironmentProviders,
+  provideEnvironmentInitializer,
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {PendingTasksInternal} from '../../pending_tasks';
+import {PendingTasksInternal} from '../../pending_tasks_internal';
 import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
@@ -131,26 +132,6 @@ export function internalProvideZoneChangeDetection({
     {
       provide: SCHEDULE_IN_ROOT_ZONE,
       useValue: scheduleInRootZone ?? SCHEDULE_IN_ROOT_ZONE_DEFAULT,
-    },
-    {
-      provide: INTERNAL_APPLICATION_ERROR_HANDLER,
-      useFactory: () => {
-        const zone = inject(NgZone);
-        const injector = inject(EnvironmentInjector);
-        let userErrorHandler: ErrorHandler;
-        return (e: unknown) => {
-          zone.runOutsideAngular(() => {
-            if (injector.destroyed && !userErrorHandler) {
-              setTimeout(() => {
-                throw e;
-              });
-            } else {
-              userErrorHandler ??= injector.get(ErrorHandler);
-              userErrorHandler.handleError(e);
-            }
-          });
-        };
-      },
     },
   ];
 }
