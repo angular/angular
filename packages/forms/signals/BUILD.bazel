@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "api_golden_test", "ng_project")
+load("//tools:defaults.bzl", "api_golden_test", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 

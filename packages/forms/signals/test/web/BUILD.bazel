@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ng_project", "zoneless_web_test_suite")
+load("//tools:defaults.bzl", "ng_project", "zoneless_web_test_suite")
 
 ng_project(
     name = "test_lib",

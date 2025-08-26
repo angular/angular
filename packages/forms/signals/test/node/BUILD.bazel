@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project", "zoneless_jasmine_test")
+load("//tools:defaults.bzl", "ts_project", "zoneless_jasmine_test")
 
 ts_project(
     name = "test_lib",
