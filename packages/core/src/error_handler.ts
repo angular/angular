@@ -14,6 +14,7 @@ import {makeEnvironmentProviders, provideEnvironmentInitializer} from './di/prov
 import {EnvironmentInjector} from './di/r3_injector';
 import {DOCUMENT} from './document';
 import {DestroyRef} from './linker/destroy_ref';
+import {NgZone} from './zone/ng_zone';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -67,17 +68,20 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
     factory: () => {
       // The user's error handler may depend on things that create a circular dependency
       // so we inject it lazily.
+      const zone = inject(NgZone);
       const injector = inject(EnvironmentInjector);
       let userErrorHandler: ErrorHandler;
       return (e: unknown) => {
-        if (injector.destroyed && !userErrorHandler) {
-          setTimeout(() => {
-            throw e;
-          });
-        } else {
-          userErrorHandler ??= injector.get(ErrorHandler);
-          userErrorHandler.handleError(e);
-        }
+        zone.runOutsideAngular(() => {
+          if (injector.destroyed && !userErrorHandler) {
+            setTimeout(() => {
+              throw e;
+            });
+          } else {
+            userErrorHandler ??= injector.get(ErrorHandler);
+            userErrorHandler.handleError(e);
+          }
+        });
       };
     },
   },

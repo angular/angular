@@ -7,7 +7,7 @@
  */
 
 import {EnvironmentInjector, ApplicationRef} from '../../src/core';
-import {PendingTasksInternal} from '../../src/pending_tasks';
+import {PendingTasksInternal} from '../../src/pending_tasks_internal';
 import {
   BehaviorSubject,
   EMPTY,

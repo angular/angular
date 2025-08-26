@@ -26,7 +26,7 @@ import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
-import {PendingTasksInternal} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 
 const REQUIRE_ONE_CD_PROVIDER = false;
 
