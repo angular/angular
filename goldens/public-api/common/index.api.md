@@ -32,6 +32,16 @@ import { TrackByFunction } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
+import { ɵNavigateEvent } from '@angular/core';
+import { ɵNavigation } from '@angular/core';
+import { ɵNavigationCurrentEntryChangeEvent } from '@angular/core';
+import { ɵNavigationHistoryEntry } from '@angular/core';
+import { ɵNavigationNavigateOptions } from '@angular/core';
+import { ɵNavigationOptions } from '@angular/core';
+import { ɵNavigationReloadOptions } from '@angular/core';
+import { ɵNavigationResult } from '@angular/core';
+import { ɵNavigationTransition } from '@angular/core';
+import { ɵNavigationUpdateCurrentEntryOptions } from '@angular/core';
 
 // @public
 export const APP_BASE_HREF: InjectionToken<string>;
@@ -840,6 +850,50 @@ export abstract class PlatformLocation {
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformLocation, never>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
+}
+
+// @public
+export abstract class PlatformNavigation implements ɵNavigation {
+    // (undocumented)
+    abstract addEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract back(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract canGoBack: boolean;
+    // (undocumented)
+    abstract canGoForward: boolean;
+    // (undocumented)
+    abstract currentEntry: ɵNavigationHistoryEntry | null;
+    // (undocumented)
+    abstract dispatchEvent(event: Event): boolean;
+    // (undocumented)
+    abstract entries(): ɵNavigationHistoryEntry[];
+    // (undocumented)
+    abstract forward(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract navigate(url: string, options?: ɵNavigationNavigateOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract oncurrententrychange: ((this: ɵNavigation, ev: ɵNavigationCurrentEntryChangeEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigate: ((this: ɵNavigation, ev: ɵNavigateEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigateerror: ((this: ɵNavigation, ev: ErrorEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigatesuccess: ((this: ɵNavigation, ev: Event) => any) | null;
+    // (undocumented)
+    abstract reload(options?: ɵNavigationReloadOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract removeEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract transition: ɵNavigationTransition | null;
+    // (undocumented)
+    abstract traverseTo(key: string, options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract updateCurrentEntry(options: ɵNavigationUpdateCurrentEntryOptions): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformNavigation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformNavigation>;
 }
 
 // @public @deprecated

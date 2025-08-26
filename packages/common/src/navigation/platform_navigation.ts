@@ -23,6 +23,11 @@ import {
 /**
  * This class wraps the platform Navigation API which allows server-specific and test
  * implementations.
+ *
+ * Browser support is limited, so this API may not be available in all environments,
+ * may contain bugs, and is experimental.
+ *
+ * @experimental 21.0.0
  */
 @Injectable({providedIn: 'platform', useFactory: () => (window as any).navigation})
 export abstract class PlatformNavigation implements Navigation {
