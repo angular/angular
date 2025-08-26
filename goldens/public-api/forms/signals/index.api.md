@@ -88,14 +88,18 @@ export class Control<T> {
 export function createProperty<TValue>(): Property<TValue>;
 
 // @public
-export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(obj: WithField<E>): CustomValidationError;
+export function customError<E extends Partial<ValidationError>>(obj: WithField<E>): CustomValidationError;
 
 // @public
-export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(obj?: E): WithoutField<CustomValidationError>;
+export function customError<E extends Partial<ValidationError>>(obj?: E): WithoutField<CustomValidationError>;
 
 // @public
-export class CustomValidationError extends ValidationError {
+export class CustomValidationError implements ValidationError {
+    constructor(options?: ValidationErrorOptions);
     [key: PropertyKey]: unknown;
+    readonly field: Field<unknown>;
+    readonly kind: string;
+    readonly message?: string;
 }
 
 // @public
@@ -194,8 +198,8 @@ export interface FormOptions {
 export interface FormUiControl {
     readonly dirty?: InputSignal<boolean>;
     readonly disabled?: InputSignal<boolean>;
-    readonly disabledReasons?: InputSignal<readonly DisabledReason[]>;
-    readonly errors?: InputSignal<readonly ValidationError[]>;
+    readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]>;
+    readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]>;
     readonly hidden?: InputSignal<boolean>;
     readonly invalid?: InputSignal<boolean>;
     readonly max?: InputSignal<number | undefined>;
@@ -542,9 +546,7 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic: NoInfer<TreeValidator<TValue, TPathKind>>): void;
 
 // @public
-export abstract class ValidationError {
-    [BRAND]: undefined;
-    constructor(options?: ValidationErrorOptions);
+export interface ValidationError {
     readonly field: Field<unknown>;
     readonly kind: string;
     readonly message?: string;
@@ -565,7 +567,7 @@ export type WithField<T> = T & {
 };
 
 // @public
-export type WithOptionalField<T> = T & {
+export type WithOptionalField<T> = Omit<T, 'field'> & {
     field?: Field<unknown>;
 };
 

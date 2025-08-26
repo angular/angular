@@ -8,7 +8,7 @@
 
 import {InputSignal, ModelSignal, OutputRef} from '@angular/core';
 import type {DisabledReason} from './types';
-import {ValidationError} from './validation_errors';
+import {ValidationError, type WithOptionalField} from './validation_errors';
 
 /** The base set of properties shared by all form control contracts. */
 export interface FormUiControl {
@@ -20,7 +20,7 @@ export interface FormUiControl {
    * An input to receive the errors for the field. If implemented, the `Control` directive will
    * automatically bind errors from the bound field to this input.
    */
-  readonly errors?: InputSignal<readonly ValidationError[]>;
+  readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]>;
   /**
    * An input to receive the disabled status for the field. If implemented, the `Control` directive
    * will automatically bind the disabled status from the bound field to this input.
@@ -30,7 +30,7 @@ export interface FormUiControl {
    * An input to receive the reasons for the disablement of the field. If implemented, the `Control`
    * directive will automatically bind the disabled reason from the bound field to this input.
    */
-  readonly disabledReasons?: InputSignal<readonly DisabledReason[]>;
+  readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]>;
   /**
    * An input to receive the readonly status for the field. If implemented, the `Control` directive
    * will automatically bind the readonly status from the bound field to this input.

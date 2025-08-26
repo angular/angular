@@ -9,9 +9,6 @@
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {Field} from './types';
 
-/** Internal symbol used for class branding. */
-const BRAND = Symbol();
-
 /**
  * Options used to create a `ValidationError`.
  */
@@ -30,7 +27,7 @@ export type WithField<T> = T & {field: Field<unknown>};
  * A type that allows the given type `T` to optionally have a `field` property.
  * @template T The type to optionally add a `field` to.
  */
-export type WithOptionalField<T> = T & {field?: Field<unknown>};
+export type WithOptionalField<T> = Omit<T, 'field'> & {field?: Field<unknown>};
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
@@ -226,17 +223,17 @@ export function standardSchemaError(
  * Create a custom error associated with the target field
  * @param obj The object to create an error from
  */
-export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+export function customError<E extends Partial<ValidationError>>(
   obj: WithField<E>,
 ): CustomValidationError;
 /**
  * Create a custom error
  * @param obj The object to create an error from
  */
-export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+export function customError<E extends Partial<ValidationError>>(
   obj?: E,
 ): WithoutField<CustomValidationError>;
-export function customError<E extends Omit<Partial<ValidationError>, typeof BRAND>>(
+export function customError<E extends Partial<ValidationError>>(
   obj?: E,
 ): WithOptionalField<CustomValidationError> {
   return new CustomValidationError(obj);
@@ -247,9 +244,26 @@ export function customError<E extends Omit<Partial<ValidationError>, typeof BRAN
  *
  * Use the creation functions to create an instance (e.g. `requiredError`, `minError`, etc.).
  */
-export abstract class ValidationError {
+export interface ValidationError {
+  /** Identifies the kind of error. */
+  readonly kind: string;
+  /** The field associated with this error. */
+  readonly field: Field<unknown>;
+  /** Human readable error message. */
+  readonly message?: string;
+}
+
+/**
+ * A custom error that may contain additional properties
+ */
+export class CustomValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
-  [BRAND] = undefined;
+  private __brand = undefined;
+
+  /**
+   * Allow the user to attach arbitrary other properties.
+   */
+  [key: PropertyKey]: unknown;
 
   /** Identifies the kind of error. */
   readonly kind: string = '';
@@ -268,20 +282,28 @@ export abstract class ValidationError {
 }
 
 /**
- * A custom error that may contain additional properties
- */
-export class CustomValidationError extends ValidationError {
-  /**
-   * Allow the user to attach arbitrary other properties.
-   */
-  [key: PropertyKey]: unknown;
-}
-
-/**
  * Internal version of `NgValidationError`, we create this separately so we can change its type on
  * the exported version to a type union of the possible sub-classes.
  */
-abstract class _NgValidationError extends ValidationError {}
+abstract class _NgValidationError implements ValidationError {
+  /** Brand the class to avoid Typescript structural matching */
+  private __brand = undefined;
+
+  /** Identifies the kind of error. */
+  readonly kind: string = '';
+
+  /** The field associated with this error. */
+  readonly field!: Field<unknown>;
+
+  /** Human readable error message. */
+  readonly message?: string;
+
+  constructor(options?: ValidationErrorOptions) {
+    if (options) {
+      Object.assign(this, options);
+    }
+  }
+}
 
 /**
  * An error used to indicate that a required field is empty.
