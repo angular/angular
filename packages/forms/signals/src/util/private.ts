@@ -11,7 +11,7 @@ import {isObject} from './type_guards';
 
 // TODO: These utilities to be replaced with proper integration into framework.
 
-export function illegallyGetComponentInstance(injector: Injector): unknown {
+export function privateGetComponentInstance(injector: Injector): unknown {
   assertIsNodeInjector(injector);
   if (injector._tNode.directiveStart === 0 || injector._tNode.componentOffset === -1) {
     return undefined;
@@ -20,19 +20,19 @@ export function illegallyGetComponentInstance(injector: Injector): unknown {
   return injector._lView[injector._tNode.directiveStart + injector._tNode.componentOffset];
 }
 
-export function illegallySetComponentInput<T>(inputSignal: InputSignal<T>, value: T): void {
+export function privateSetComponentInput<T>(inputSignal: InputSignal<T>, value: T): void {
   inputSignal[SIGNAL].applyValueToInputSignal(inputSignal[SIGNAL], value);
 }
 
-export function illegallyIsSignalInput(value: unknown): value is InputSignal<unknown> {
+export function privateIsSignalInput(value: unknown): value is InputSignal<unknown> {
   return isInputSignal(value);
 }
 
-export function illegallyIsModelInput<T>(value: unknown): value is ModelSignal<T> {
+export function privateIsModelInput<T>(value: unknown): value is ModelSignal<T> {
   return isInputSignal(value) && isObject(value) && 'subscribe' in value;
 }
 
-export function illegallyRunEffect(ref: EffectRef): void {
+export function privateRunEffect(ref: EffectRef): void {
   (ref as EffectRefImpl)[SIGNAL].run();
 }
 

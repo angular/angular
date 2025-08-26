@@ -41,12 +41,12 @@ import {
 import type {Field} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {
-  illegallyGetComponentInstance,
-  illegallyIsModelInput,
-  illegallyIsSignalInput,
-  illegallyRunEffect,
-  illegallySetComponentInput as illegallySetInputSignal,
-} from '../util/illegal';
+  privateGetComponentInstance,
+  privateIsModelInput,
+  privateIsSignalInput,
+  privateRunEffect,
+  privateSetComponentInput as privateSetInputSignal,
+} from '../util/private';
 import {InteropNgControl} from './interop_ng_control';
 
 /**
@@ -129,7 +129,7 @@ export class Control<T> {
   private initialize() {
     this.initialized = true;
     const injector = this.injector;
-    const cmp = illegallyGetComponentInstance(injector);
+    const cmp = privateGetComponentInstance(injector);
 
     // If component has a `control` input, we assume that it will handle binding the field to the
     // appropriate native/custom control in its template, so we do not attempt to bind any inputs on
@@ -308,7 +308,7 @@ export class Control<T> {
     this.maybeSynchronize(() => this.state().readonly(), withInput(cmp.readonly));
     this.maybeSynchronize(() => this.state().hidden(), withInput(cmp.hidden));
     this.maybeSynchronize(() => this.state().errors(), withInput(cmp.errors));
-    if (illegallyIsModelInput(cmp.touched) || illegallyIsSignalInput(cmp.touched)) {
+    if (privateIsModelInput(cmp.touched) || privateIsSignalInput(cmp.touched)) {
       this.maybeSynchronize(() => this.state().touched(), withInput(cmp.touched));
     }
     this.maybeSynchronize(() => this.state().dirty(), withInput(cmp.dirty));
@@ -324,7 +324,7 @@ export class Control<T> {
 
     let cleanupTouch: OutputRefSubscription | undefined;
     let cleanupDefaultTouch: (() => void) | undefined;
-    if (illegallyIsModelInput(cmp.touched) || isOutputRef(cmp.touched)) {
+    if (privateIsModelInput(cmp.touched) || isOutputRef(cmp.touched)) {
       cleanupTouch = cmp.touched.subscribe(() => this.state().markAsTouched());
     } else {
       // If the component did not give us a touch event stream, use the standard touch logic,
@@ -361,7 +361,7 @@ export class Control<T> {
     );
     // Run the effect immediately to ensure sinks which are required inputs are set before they can
     // be observed. See the note on `_field` for more details.
-    illegallyRunEffect(ref);
+    privateRunEffect(ref);
   }
 
   /** Creates a reactive value source by reading the given AggregateProperty from the field. */
@@ -400,7 +400,7 @@ export class Control<T> {
 
 /** Creates a value sync from an input signal. */
 function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) | undefined {
-  return input ? (value: T) => illegallySetInputSignal(input, value) : undefined;
+  return input ? (value: T) => privateSetInputSignal(input, value) : undefined;
 }
 
 /**
@@ -411,33 +411,33 @@ function isFormUiControl(cmp: unknown): cmp is FormUiControl {
   const castCmp = cmp as FormUiControl;
   return (
     (isFormValueControl(castCmp) || isFormCheckboxControl(castCmp)) &&
-    (castCmp.readonly === undefined || illegallyIsSignalInput(castCmp.readonly)) &&
-    (castCmp.disabled === undefined || illegallyIsSignalInput(castCmp.disabled)) &&
-    (castCmp.disabledReasons === undefined || illegallyIsSignalInput(castCmp.disabledReasons)) &&
-    (castCmp.errors === undefined || illegallyIsSignalInput(castCmp.errors)) &&
-    (castCmp.invalid === undefined || illegallyIsSignalInput(castCmp.invalid)) &&
-    (castCmp.pending === undefined || illegallyIsSignalInput(castCmp.pending)) &&
+    (castCmp.readonly === undefined || privateIsSignalInput(castCmp.readonly)) &&
+    (castCmp.disabled === undefined || privateIsSignalInput(castCmp.disabled)) &&
+    (castCmp.disabledReasons === undefined || privateIsSignalInput(castCmp.disabledReasons)) &&
+    (castCmp.errors === undefined || privateIsSignalInput(castCmp.errors)) &&
+    (castCmp.invalid === undefined || privateIsSignalInput(castCmp.invalid)) &&
+    (castCmp.pending === undefined || privateIsSignalInput(castCmp.pending)) &&
     (castCmp.touched === undefined ||
-      illegallyIsModelInput(castCmp.touched) ||
-      illegallyIsSignalInput(castCmp.touched) ||
+      privateIsModelInput(castCmp.touched) ||
+      privateIsSignalInput(castCmp.touched) ||
       isOutputRef(castCmp.touched)) &&
-    (castCmp.dirty === undefined || illegallyIsSignalInput(castCmp.dirty)) &&
-    (castCmp.min === undefined || illegallyIsSignalInput(castCmp.min)) &&
-    (castCmp.minLength === undefined || illegallyIsSignalInput(castCmp.minLength)) &&
-    (castCmp.max === undefined || illegallyIsSignalInput(castCmp.max)) &&
-    (castCmp.maxLength === undefined || illegallyIsSignalInput(castCmp.maxLength))
+    (castCmp.dirty === undefined || privateIsSignalInput(castCmp.dirty)) &&
+    (castCmp.min === undefined || privateIsSignalInput(castCmp.min)) &&
+    (castCmp.minLength === undefined || privateIsSignalInput(castCmp.minLength)) &&
+    (castCmp.max === undefined || privateIsSignalInput(castCmp.max)) &&
+    (castCmp.maxLength === undefined || privateIsSignalInput(castCmp.maxLength))
   );
 }
 
 /** Checks whether the given FormUiControl is a FormValueControl. */
 function isFormValueControl(cmp: FormUiControl): cmp is FormValueControl<unknown> {
-  return illegallyIsModelInput((cmp as FormValueControl<unknown>).value);
+  return privateIsModelInput((cmp as FormValueControl<unknown>).value);
 }
 
 /** Checks whether the given FormUiControl is a FormCheckboxControl. */
 function isFormCheckboxControl(cmp: FormUiControl): cmp is FormCheckboxControl {
   return (
-    illegallyIsModelInput((cmp as FormCheckboxControl).checked) &&
+    privateIsModelInput((cmp as FormCheckboxControl).checked) &&
     (cmp as FormCheckboxControl).value === undefined
   );
 }
