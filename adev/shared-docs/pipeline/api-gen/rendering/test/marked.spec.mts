@@ -8,12 +8,12 @@
 
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
-import {configureMarkedGlobally} from '../marked/configuration.mjs';
 import {getRenderable} from '../processing.mjs';
 import {renderEntry} from '../rendering.mjs';
-import {initHighlighter} from '../shiki/shiki.mjs';
 import {setSymbols} from '../symbol-context.mjs';
 import {resolve} from 'path';
+import {initHighlighter} from '../../../shared/shiki.mjs';
+import {setHighlighterInstance} from '../shiki/shiki.mjs';
 
 // Note: The tests will probably break if the schema of the api extraction changes.
 // All entries in the fake-entries are extracted from Angular's api.
@@ -24,14 +24,13 @@ describe('markdown to html', () => {
   const entries2 = new Map<string, string>();
 
   beforeAll(async () => {
-    await initHighlighter();
-    await configureMarkedGlobally();
+    setHighlighterInstance(await initHighlighter());
 
     const entryContent = await readFile(resolve('./fake-entries.json'), {
       encoding: 'utf-8',
     });
     const entryJson = JSON.parse(entryContent) as any;
-    const symbols = new Map<string, string>([
+    const symbols = Object.fromEntries([
       ['AfterRenderPhase', 'core'],
       ['afterRender', 'core'],
       ['EmbeddedViewRef', 'core'],

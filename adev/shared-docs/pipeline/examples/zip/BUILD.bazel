@@ -18,7 +18,7 @@ ts_project(
         "//adev:node_modules/tinyglobby",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/pipeline/examples/shared",
-        "//adev/shared-docs/pipeline/guides:guides_lib",
+        "//adev/shared-docs/pipeline/shared/regions",
     ],
 )
 

@@ -11,12 +11,12 @@ import path from 'path';
 import {CliCommand} from './cli-entities.mjs';
 import {DocEntry} from './entities.mjs';
 import {isCliEntry, isHiddenEntry} from './entities/categorization.mjs';
-import {configureMarkedGlobally} from './marked/configuration.mjs';
 import {getRenderable} from './processing.mjs';
 import {renderEntry} from './rendering.mjs';
-import {initHighlighter} from './shiki/shiki.mjs';
 import {setCurrentSymbol, setSymbols} from './symbol-context.mjs';
 import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
+import {initHighlighter} from '../../shared/shiki.mjs';
+import {setHighlighterInstance} from './shiki/shiki.mjs';
 
 /** The JSON data file format for extracted API reference info. */
 interface EntryCollection {
@@ -25,7 +25,7 @@ interface EntryCollection {
   moduleLabel?: string;
   normalizedModuleName: string;
   entries: DocEntry[] | CliCommand[];
-  symbols: Map<string, string>;
+  symbols: Record<string, string>;
 }
 
 /** Parse all JSON data source files into an array of collections. */
@@ -34,10 +34,15 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
     const fileContent = readFileSync(jsonDataFilePath, {encoding: 'utf8'});
     const fileContentJson = JSON.parse(fileContent) as unknown;
     if ((fileContentJson as EntryCollection).entries) {
-      return {
-        ...(fileContentJson as EntryCollection),
-        symbols: new Map((fileContentJson as any).symbols ?? []),
-      };
+      const symbols = Object.fromEntries(
+        // TODO: refactor that, it's dirty and we can probably do better than this.
+        // We're removing the leading `@angular/` from module names.
+        (((fileContentJson as any).symbols ?? []) as [string, string][]).map(
+          ([symbol, moduleName]) => [symbol, moduleName.slice(9)],
+        ),
+      );
+
+      return {...(fileContentJson as EntryCollection), symbols};
     }
 
     // CLI subcommands should generate a separate file for each subcommand.
@@ -50,7 +55,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
           moduleName: 'unknown',
           normalizedModuleName: 'unknown',
           entries: [fileContentJson as DocEntry],
-          symbols: new Map(),
+          symbols: {},
         },
         ...command.subcommands!.map((subCommand) => {
           return {
@@ -58,7 +63,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
             moduleName: 'unknown',
             normalizedModuleName: 'unknown',
             entries: [{...subCommand, parentCommand: command} as any],
-            symbols: new Map(),
+            symbols: {},
           };
         }),
       ];
@@ -69,7 +74,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
       moduleName: 'unknown',
       normalizedModuleName: 'unknown',
       entries: [fileContentJson as DocEntry], // TODO: fix the typing cli entries aren't DocEntry
-      symbols: new Map(),
+      symbols: {},
     };
   });
 }
@@ -90,10 +95,8 @@ function getNormalizedFilename(normalizedModuleName: string, entry: DocEntry | C
 }
 
 async function main() {
-  configureMarkedGlobally();
-
   // Shiki highlighter needs to be setup in an async context
-  await initHighlighter();
+  setHighlighterInstance(await initHighlighter());
 
   const [paramFilePath] = process.argv.slice(2);
   const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
