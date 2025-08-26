@@ -5,8 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {PlatformLocation} from '@angular/common';
-import {MockPlatformLocation} from '@angular/common/testing';
+import {ɵprovideFakePlatformNavigation} from '@angular/common/testing';
 import {
   APP_ID,
   createPlatformFactory,
@@ -40,7 +39,7 @@ export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => Plat
     {provide: APP_ID, useValue: 'a'},
     internalProvideZoneChangeDetection({}),
     {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-    {provide: PlatformLocation, useClass: MockPlatformLocation},
+    ɵprovideFakePlatformNavigation(),
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],
 })

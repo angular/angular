@@ -11,4 +11,3 @@ export {
   getDOM as ɵgetDOM,
   setRootDomAdapter as ɵsetRootDomAdapter,
 } from './dom_adapter';
-export {PlatformNavigation as ɵPlatformNavigation} from './navigation/platform_navigation';
