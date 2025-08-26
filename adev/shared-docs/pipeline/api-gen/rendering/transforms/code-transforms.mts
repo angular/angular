@@ -34,16 +34,16 @@ import {
 } from '../entities/categorization.mjs';
 import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {HasModuleName, HasRenderableToc} from '../entities/traits.mjs';
-import {getModuleName} from '../symbol-context.mjs';
+import {getSymbolUrl} from '../symbol-context.mjs';
 import {
-  codeToHtml,
+  getHighlighterInstance,
   insertParenthesesForDecoratorInShikiHtml,
   replaceKeywordFromShikiHtml,
 } from '../shiki/shiki.mjs';
 
 import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
-import {getLinkToModule} from './url-transforms.mjs';
 import {formatJs} from './format-code.mjs';
+import {codeToHtml} from '../../../shared/shiki.mjs';
 
 const INDENT = '  ';
 const SPACE = ' ';
@@ -85,7 +85,11 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
     formattedCode = await formatJs(metadata.contents);
   }
 
-  let codeWithSyntaxHighlighting = codeToHtml(formattedCode ?? metadata?.contents, 'typescript');
+  let codeWithSyntaxHighlighting = codeToHtml(
+    getHighlighterInstance(),
+    formattedCode ?? metadata?.contents,
+    'typescript',
+  );
 
   if (isDecoratorEntry(entry)) {
     // Shiki requires a keyword for correct formating of Decorators
@@ -525,14 +529,9 @@ export function addApiLinksToHtml(htmlString: string): string {
     //                                         The captured content ==>  vvvvvvvv
     /(?<!<a[^>]*>)(<(?:(?:span)|(?:code))(?!\sdata-skip-anchor)[^>]*>\s*)([^<]*?)(\s*<\/(?:span|code)>)/g,
     (type: string, span1: string, potentialSymbolName: string, span2: string) => {
-      const [symbol, subSymbol] = potentialSymbolName.split(/(?:#|\.)/) as [string, string?];
-
-      // mySymbol() => mySymbol
-      const symbolWithoutInvocation = symbol.replace(/\([^)]*\);?/g, '');
-      const moduleName = getModuleName(symbolWithoutInvocation);
-
-      if (moduleName) {
-        return `${span1}<a href="${getLinkToModule(moduleName, symbol, subSymbol)}">${potentialSymbolName}</a>${span2}`;
+      const url = getSymbolUrl(potentialSymbolName);
+      if (url) {
+        return `${span1}<a href="${url}">${potentialSymbolName}</a>${span2}`;
       }
 
       return type;

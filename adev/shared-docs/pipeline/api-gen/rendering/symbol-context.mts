@@ -6,36 +6,31 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {getSymbolUrl as sharedGetSymbolUrl} from '../../shared/linking.mjs';
+
 /**
  * API pages are generated each package at a time.
- * This allows to use a global context to store the symbols and their corresponding module names.
+ * This allows us to use a global context to store the symbols and their corresponding module names.
  */
 
-let symbols = new Map<string, string>();
+let symbols: Record<string, string> = {};
 
 // This is used to store the currently processed symbol (usually a class or an interface)
 let currentSymbol: string | undefined;
-
-export function setSymbols(newSymbols: Map<string, string>): void {
-  symbols = newSymbols;
-}
-
-/**
- * Returns the module name of a symbol.
- * eg: 'ApplicationRef' => 'core', 'FormControl' => 'forms'
- * Also supports class.member, 'NgZone.runOutsideAngular => 'core'
- */
-export function getModuleName(symbol: string): string | undefined {
-  const moduleName = symbols.get(symbol);
-  return moduleName?.replace('@angular/', '');
-}
-
 export function setCurrentSymbol(symbol: string): void {
   currentSymbol = symbol;
 }
 
 export function getCurrentSymbol(): string | undefined {
   return currentSymbol;
+}
+
+export function setSymbols(newSymbols: Record<string, string>): void {
+  symbols = newSymbols;
+}
+
+export function getSymbolUrl(symbol: string): string | undefined {
+  return sharedGetSymbolUrl(symbol, symbols);
 }
 
 export function unknownSymbolMessage(link: string, symbol: string): string {
