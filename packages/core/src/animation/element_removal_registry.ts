@@ -65,6 +65,7 @@ export class ElementRegistry {
     const details = this.outElements.get(el) ?? {
       classes: null,
       animateFn: () => {},
+      isEventBinding: true,
     };
     details.animateFn = animateWrapperFn(el, value);
     this.outElements.set(el, details);
@@ -75,6 +76,7 @@ export class ElementRegistry {
     const details = this.outElements.get(el) ?? {
       classes: new Set<string>(),
       animateFn: (): void => {},
+      isEventBinding: false,
     };
     if (typeof value === 'function') {
       this.trackResolver(details, value);
@@ -109,8 +111,11 @@ export class ElementRegistry {
     };
     // this timeout is used to ensure elements actually get removed in the case
     // that the user forgot to call the remove callback. The timeout is cleared
-    // in the DOM renderer during the remove child process.
-    timeoutId = setTimeout(remove, maxAnimationTimeout);
+    // in the DOM renderer during the remove child process. It only applies
+    // to the event binding use case.
+    if (details.isEventBinding) {
+      timeoutId = setTimeout(remove, maxAnimationTimeout);
+    }
     details.animateFn(remove);
   }
 }
