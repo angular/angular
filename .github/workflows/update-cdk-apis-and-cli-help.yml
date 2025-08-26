@@ -37,7 +37,7 @@ jobs:
         env:
           ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR CDK apis (if necessary)
-        uses: peter-evans/create-pull-request@v7.0.8 # v7.0.8
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
           push-to-fork: 'angular-robot/angular'
@@ -66,7 +66,7 @@ jobs:
         env:
           ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
       - name: Create a PR CLI help (if necessary)
-        uses: peter-evans/create-pull-request@v7.0.8 # v7.0.8
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
           push-to-fork: 'angular-robot/angular'
