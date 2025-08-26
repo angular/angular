@@ -33,6 +33,57 @@ export declare class MyComponent {
 }
 
 /****************************************************************************************************
+ * PARTIAL FILE: animate_enter_with_structural_directive.js
+ ****************************************************************************************************/
+import { Component, Directive } from '@angular/core';
+import * as i0 from "@angular/core";
+export class AnyStructuralDirective {
+}
+AnyStructuralDirective.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AnyStructuralDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+AnyStructuralDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: AnyStructuralDirective, isStandalone: true, selector: "[any-structural-directive]", ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: AnyStructuralDirective, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: '[any-structural-directive]',
+                    standalone: true,
+                }]
+        }] });
+export class MyComponent {
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "my-component", ngImport: i0, template: `
+    <div>
+      <p *any-structural-directive animate.enter="slide">Sliding Content</p>
+    </div>
+  `, isInline: true, dependencies: [{ kind: "directive", type: AnyStructuralDirective, selector: "[any-structural-directive]" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    imports: [AnyStructuralDirective],
+                    standalone: true,
+                    template: `
+    <div>
+      <p *any-structural-directive animate.enter="slide">Sliding Content</p>
+    </div>
+  `,
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: animate_enter_with_structural_directive.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class AnyStructuralDirective {
+    static ɵfac: i0.ɵɵFactoryDeclaration<AnyStructuralDirective, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<AnyStructuralDirective, "[any-structural-directive]", never, {}, {}, never, never, true, never>;
+}
+export declare class MyComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never, true, never>;
+}
+
+/****************************************************************************************************
  * PARTIAL FILE: animate_enter_with_string_host_bindings.js
  ****************************************************************************************************/
 import { Component } from '@angular/core';

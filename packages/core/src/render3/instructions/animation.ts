@@ -166,6 +166,9 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+
+  ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
   const renderer = lView[RENDERER];
   const ngZone = lView[INJECTOR]!.get(NgZone);
 
@@ -270,6 +273,8 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
+  ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
   cancelLeavingNodes(tNode, lView);
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
@@ -305,6 +310,8 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
+
+  ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
   // This instruction is called in the update pass.
   const renderer = lView[RENDERER];
@@ -374,9 +381,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tView = getTView();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
-  if ((nativeElement as Node).nodeType !== Node.ELEMENT_NODE) {
-    return ɵɵanimateLeaveListener;
-  }
+  ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
   const elementRegistry = getAnimationElementRemovalRegistry();
   ngDevMode &&
@@ -520,6 +525,15 @@ function assertAnimationTypes(value: string | Function, instruction: string) {
     throw new RuntimeError(
       RuntimeErrorCode.ANIMATE_INVALID_VALUE,
       `'${instruction}' value must be a string of CSS classes or an animation function, got ${stringify(value)}`,
+    );
+  }
+}
+
+function assertElementNodes(nativeElement: Element, instruction: string) {
+  if ((nativeElement as Node).nodeType !== Node.ELEMENT_NODE) {
+    throw new RuntimeError(
+      RuntimeErrorCode.ANIMATE_INVALID_VALUE,
+      `'${instruction}' can only be used on an element node, got ${stringify((nativeElement as Node).nodeType)}`,
     );
   }
 }
