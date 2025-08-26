@@ -22,6 +22,7 @@ import {
   OutputRef,
   OutputRefSubscription,
   reflectComponentType,
+  Renderer2,
   signal,
   Type,
   untracked,
@@ -37,7 +38,7 @@ import {
   PATTERN,
   REQUIRED,
 } from '../api/property';
-import {Field} from '../api/types';
+import type {Field} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {
   illegallyGetComponentInstance,
@@ -75,6 +76,7 @@ import {InteropNgControl} from './interop_ng_control';
 export class Control<T> {
   /** The injector for this component. */
   private readonly injector = inject(Injector);
+  private readonly renderer = inject(Renderer2);
 
   /** Whether state synchronization with the field has been setup yet. */
   private initialized = false;
@@ -202,16 +204,31 @@ export class Control<T> {
     });
     input.addEventListener('blur', () => this.state().markAsTouched());
 
-    this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
+    this.maybeSynchronize(
+      () => this.state().readonly(),
+      withBooleanAttribute(this.renderer, input, 'readonly'),
+    );
     // TODO: consider making a global configuration option for using aria-disabled instead.
-    this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
-    this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
+    this.maybeSynchronize(
+      () => this.state().disabled(),
+      withBooleanAttribute(this.renderer, input, 'disabled'),
+    );
+    this.maybeSynchronize(() => this.state().name(), withAttribute(this.renderer, input, 'name'));
 
-    this.maybeSynchronize(this.propertySource(REQUIRED), withBooleanAttribute(input, 'required'));
-    this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
-    this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
-    this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
-    this.maybeSynchronize(this.propertySource(MAX_LENGTH), withAttribute(input, 'maxLength'));
+    this.maybeSynchronize(
+      this.propertySource(REQUIRED),
+      withBooleanAttribute(this.renderer, input, 'required'),
+    );
+    this.maybeSynchronize(this.propertySource(MIN), withAttribute(this.renderer, input, 'min'));
+    this.maybeSynchronize(
+      this.propertySource(MIN_LENGTH),
+      withAttribute(this.renderer, input, 'minLength'),
+    );
+    this.maybeSynchronize(this.propertySource(MAX), withAttribute(this.renderer, input, 'max'));
+    this.maybeSynchronize(
+      this.propertySource(MAX_LENGTH),
+      withAttribute(this.renderer, input, 'maxLength'),
+    );
 
     switch (inputType) {
       case 'checkbox':
@@ -368,26 +385,31 @@ function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) |
 }
 
 /** Creates a boolean value sync that writes the given attribute of the given element. */
-function withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
+function withBooleanAttribute(
+  renderer: Renderer2,
+  element: HTMLElement,
+  attribute: string,
+): (value: boolean) => void {
   return (value) => {
     if (value) {
-      element.setAttribute(attribute, '');
+      renderer.setAttribute(element, attribute, '');
     } else {
-      element.removeAttribute(attribute);
+      renderer.removeAttribute(element, attribute);
     }
   };
 }
 
 /** Creates a (non-boolean) value sync that writes the given attribute of the given element. */
 function withAttribute(
+  renderer: Renderer2,
   element: HTMLElement,
   attribute: string,
 ): (value: {toString(): string} | undefined) => void {
   return (value) => {
     if (value !== undefined) {
-      element.setAttribute(attribute, value.toString());
+      renderer.setAttribute(element, attribute, value.toString());
     } else {
-      element.removeAttribute(attribute);
+      renderer.removeAttribute(element, attribute);
     }
   };
 }

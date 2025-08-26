@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+let boundPathDepth = 0;
+
 /**
  * The depth of the current path when evaluating a logic function.
  * Do not set this directly, it is a context variable managed by `setBoundPathDepthForResolution`.
  */
-export let boundPathDepth = 0;
+export function getBoundPathDepth() {
+  return boundPathDepth;
+}
 
 /**
  * Sets the bound path depth for the duration of the given logic function.
