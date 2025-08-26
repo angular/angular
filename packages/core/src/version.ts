@@ -27,4 +27,4 @@ export class Version {
 /**
  * @publicApi
  */
-export const VERSION = new Version('0.0.0-PLACEHOLDER');
+export const VERSION = /* @__PURE__ */ new Version('0.0.0-PLACEHOLDER');
