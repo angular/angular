@@ -1,0 +1,28 @@
+load("//tools:defaults.bzl", "api_golden_test", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "signals",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/@standard-schema/spec",
+        "//packages/core",
+        "//packages/forms",
+    ],
+)
+
+api_golden_test(
+    name = "forms_signals_api",
+    data = [
+        "//goldens:public-api",
+        "//packages/forms/signals",
+    ],
+    entry_point = "index.d.ts",
+    golden = "goldens/public-api/forms/signals/index.api.md",
+)
