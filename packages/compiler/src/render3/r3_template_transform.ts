@@ -961,6 +961,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     return directives;
   }
 
+  private filterAnimationAttributes(attributes: t.TextAttribute[]): t.TextAttribute[] {
+    return attributes.filter((a) => !a.name.startsWith('animate.'));
+  }
+
+  private filterAnimationInputs(attributes: t.BoundAttribute[]): t.BoundAttribute[] {
+    return attributes.filter((a) => a.type !== BindingType.Animation);
+  }
+
   private wrapInTemplate(
     node: t.Element | t.Component | t.Content | t.Template,
     templateProperties: ParsedProperty[],
@@ -986,8 +994,8 @@ class HtmlAstToIvyAst implements html.Visitor {
     };
 
     if (node instanceof t.Element || node instanceof t.Component) {
-      hoistedAttrs.attributes.push(...node.attributes);
-      hoistedAttrs.inputs.push(...node.inputs);
+      hoistedAttrs.attributes.push(...this.filterAnimationAttributes(node.attributes));
+      hoistedAttrs.inputs.push(...this.filterAnimationInputs(node.inputs));
       hoistedAttrs.outputs.push(...node.outputs);
     }
 
