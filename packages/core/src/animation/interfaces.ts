@@ -67,4 +67,5 @@ export interface AnimationDetails {
   classes: Set<string> | null;
   classFns?: Function[];
   animateFn: AnimationRemoveFunction;
+  isEventBinding: boolean;
 }
