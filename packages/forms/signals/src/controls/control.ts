@@ -22,6 +22,7 @@ import {
   OutputRef,
   OutputRefSubscription,
   reflectComponentType,
+  Renderer2,
   signal,
   Type,
   untracked,
@@ -37,7 +38,7 @@ import {
   PATTERN,
   REQUIRED,
 } from '../api/property';
-import {Field} from '../api/types';
+import type {Field} from '../api/types';
 import type {FieldNode} from '../field/node';
 import {
   illegallyGetComponentInstance,
@@ -75,6 +76,7 @@ import {InteropNgControl} from './interop_ng_control';
 export class Control<T> {
   /** The injector for this component. */
   private readonly injector = inject(Injector);
+  private readonly renderer = inject(Renderer2);
 
   /** Whether state synchronization with the field has been setup yet. */
   private initialized = false;
@@ -202,16 +204,25 @@ export class Control<T> {
     });
     input.addEventListener('blur', () => this.state().markAsTouched());
 
-    this.maybeSynchronize(() => this.state().readonly(), withBooleanAttribute(input, 'readonly'));
+    this.maybeSynchronize(
+      () => this.state().readonly(),
+      this.withBooleanAttribute(input, 'readonly'),
+    );
     // TODO: consider making a global configuration option for using aria-disabled instead.
-    this.maybeSynchronize(() => this.state().disabled(), withBooleanAttribute(input, 'disabled'));
-    this.maybeSynchronize(() => this.state().name(), withAttribute(input, 'name'));
+    this.maybeSynchronize(
+      () => this.state().disabled(),
+      this.withBooleanAttribute(input, 'disabled'),
+    );
+    this.maybeSynchronize(() => this.state().name(), this.withAttribute(input, 'name'));
 
-    this.maybeSynchronize(this.propertySource(REQUIRED), withBooleanAttribute(input, 'required'));
-    this.maybeSynchronize(this.propertySource(MIN), withAttribute(input, 'min'));
-    this.maybeSynchronize(this.propertySource(MIN_LENGTH), withAttribute(input, 'minLength'));
-    this.maybeSynchronize(this.propertySource(MAX), withAttribute(input, 'max'));
-    this.maybeSynchronize(this.propertySource(MAX_LENGTH), withAttribute(input, 'maxLength'));
+    this.maybeSynchronize(
+      this.propertySource(REQUIRED),
+      this.withBooleanAttribute(input, 'required'),
+    );
+    this.maybeSynchronize(this.propertySource(MIN), this.withAttribute(input, 'min'));
+    this.maybeSynchronize(this.propertySource(MIN_LENGTH), this.withAttribute(input, 'minLength'));
+    this.maybeSynchronize(this.propertySource(MAX), this.withAttribute(input, 'max'));
+    this.maybeSynchronize(this.propertySource(MAX_LENGTH), this.withAttribute(input, 'maxLength'));
 
     switch (inputType) {
       case 'checkbox':
@@ -360,36 +371,36 @@ export class Control<T> {
     );
     return () => metaSource()?.();
   }
+
+  /** Creates a (non-boolean) value sync that writes the given attribute of the given element. */
+  private withAttribute(
+    element: HTMLElement,
+    attribute: string,
+  ): (value: {toString(): string} | undefined) => void {
+    return (value) => {
+      if (value !== undefined) {
+        this.renderer.setAttribute(element, attribute, value.toString());
+      } else {
+        this.renderer.removeAttribute(element, attribute);
+      }
+    };
+  }
+
+  /** Creates a boolean value sync that writes the given attribute of the given element. */
+  private withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
+    return (value) => {
+      if (value) {
+        this.renderer.setAttribute(element, attribute, '');
+      } else {
+        this.renderer.removeAttribute(element, attribute);
+      }
+    };
+  }
 }
 
 /** Creates a value sync from an input signal. */
 function withInput<T>(input: InputSignal<T> | undefined): ((value: T) => void) | undefined {
   return input ? (value: T) => illegallySetInputSignal(input, value) : undefined;
-}
-
-/** Creates a boolean value sync that writes the given attribute of the given element. */
-function withBooleanAttribute(element: HTMLElement, attribute: string): (value: boolean) => void {
-  return (value) => {
-    if (value) {
-      element.setAttribute(attribute, '');
-    } else {
-      element.removeAttribute(attribute);
-    }
-  };
-}
-
-/** Creates a (non-boolean) value sync that writes the given attribute of the given element. */
-function withAttribute(
-  element: HTMLElement,
-  attribute: string,
-): (value: {toString(): string} | undefined) => void {
-  return (value) => {
-    if (value !== undefined) {
-      element.setAttribute(attribute, value.toString());
-    } else {
-      element.removeAttribute(attribute);
-    }
-  };
 }
 
 /**

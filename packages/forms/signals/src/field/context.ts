@@ -11,7 +11,7 @@ import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
 import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
-import {boundPathDepth} from './resolution';
+import {getBoundPathDepth} from './resolution';
 
 /**
  * `FieldContext` implementation, backed by a `FieldNode`.
@@ -49,7 +49,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
         // This ensures that we do not accidentally match on the wrong application of a recursively
         // applied schema.
         let field: FieldNode | undefined = this.node;
-        let stepsRemaining = boundPathDepth;
+        let stepsRemaining = getBoundPathDepth();
         while (stepsRemaining > 0 || !field.structure.logic.hasLogic(targetPathNode.root.logic)) {
           stepsRemaining--;
           field = field.structure.parent;
