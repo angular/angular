@@ -8,14 +8,11 @@
 
 import {computed, resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
+import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
 import {property, validateTree} from '../logic';
 import {Field, FieldPath} from '../types';
-import {
-  addDefaultField,
-  standardSchemaError,
-  StandardSchemaValidationError,
-} from '../validation_errors';
+import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
 /**
  * Utility type that removes a string index key when its value is `unknown`,

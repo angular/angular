@@ -7,39 +7,10 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {isArray} from '../util/type_guards';
-import {Field, Mutable, TreeValidationResult, ValidationResult} from './types';
+import {Field} from './types';
 
 /** Internal symbol used for class branding. */
 const BRAND = Symbol();
-
-/**
- * Sets the given field on the given error(s) if it does not already have a field.
- * @param errors The error(s) to add the field to
- * @param field The default field to add
- * @returns The passed in error(s), with its field set.
- */
-export function addDefaultField<E extends ValidationError>(
-  error: WithOptionalField<E>,
-  field: Field<unknown>,
-): E;
-export function addDefaultField<E extends ValidationError>(
-  errors: TreeValidationResult<E>,
-  field: Field<unknown>,
-): ValidationResult<E>;
-export function addDefaultField<E extends ValidationError>(
-  errors: TreeValidationResult<E>,
-  field: Field<unknown>,
-): ValidationResult<E> {
-  if (isArray(errors)) {
-    for (const error of errors) {
-      (error as Mutable<ValidationError>).field ??= field;
-    }
-  } else if (errors) {
-    (errors as Mutable<ValidationError>).field ??= field;
-  }
-  return errors as ValidationResult<E>;
-}
 
 /**
  * Options used to create a `ValidationError`.
