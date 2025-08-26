@@ -25,9 +25,8 @@ import {
   HasStableFlag,
 } from '../entities/traits.mjs';
 
-import {getLinkToModule} from './url-transforms.mjs';
 import {addApiLinksToHtml} from './code-transforms.mjs';
-import {getCurrentSymbol, getModuleName, unknownSymbolMessage} from '../symbol-context.mjs';
+import {getCurrentSymbol, getSymbolUrl, unknownSymbolMessage} from '../symbol-context.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
@@ -141,7 +140,11 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
 
       if (linkMatch) {
         const link = linkMatch[1];
-        const {url, label} = parseAtLink(link);
+        const parsed = parseAtLink(link);
+        if (!parsed) {
+          return undefined;
+        }
+        const {url, label} = parsed;
         return {label, url};
       }
 
@@ -168,13 +171,17 @@ function wrapExampleHtmlElementsWithCode(text: string) {
  */
 function convertLinks(text: string) {
   return text.replace(jsDoclinkRegexGlobal, (_, link) => {
-    const {label, url} = parseAtLink(link);
+    const parsed = parseAtLink(link);
+    if (!parsed) {
+      return `<code>${link}</code>`; // leave the link as-is if we can't parse it
+    }
+    const {label, url} = parsed;
 
     return `<a href="${url}"><code>${label}</code></a>`;
   });
 }
 
-function parseAtLink(link: string): {label: string; url: string} {
+function parseAtLink(link: string): {label: string; url: string} | undefined {
   // Because of microsoft/TypeScript/issues/59679
   // getTextOfJSDocComment introduces an extra space between the symbol and a trailing ()
   link = link.replace(/ \(\)$/, '');
@@ -195,24 +202,18 @@ function parseAtLink(link: string): {label: string; url: string} {
     };
   }
 
-  let [symbol, subSymbol] = rawSymbol.replace(/\(\)$/, '').split(/(?:#|\.)/);
-
-  let moduleName = getModuleName(symbol);
+  let url = getSymbolUrl(rawSymbol);
   const label = description ?? rawSymbol;
 
-  const currentSymbol = getCurrentSymbol();
+  if (!url) {
+    const currentSymbol = getCurrentSymbol();
+    // 2nd attempt, try to get the module name in the context of the current symbol
+    url = getSymbolUrl(`${currentSymbol}.${rawSymbol}`);
 
-  if (!moduleName) {
-    // 2nd attemp, try to get the module name in the context of the current symbol
-    moduleName = getModuleName(`${currentSymbol}.${symbol}`);
-
-    if (!moduleName || !currentSymbol) {
-      throw unknownSymbolMessage(link, symbol);
+    if (!url || !currentSymbol) {
+      throw unknownSymbolMessage(link, rawSymbol);
     }
-
-    subSymbol = symbol;
-    symbol = currentSymbol;
   }
 
-  return {label, url: getLinkToModule(moduleName, symbol, subSymbol)};
+  return {label, url};
 }

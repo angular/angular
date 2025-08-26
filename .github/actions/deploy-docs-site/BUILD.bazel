@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "esbuild_checked_in", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "esbuild_checked_in", "ts_config", "ts_project")
 
 package(default_visibility = ["//.github/actions/deploy-docs-site:__subpackages__"])
 
