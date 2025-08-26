@@ -22,7 +22,6 @@ import {PropertyViewComponent} from './property-view.component';
 })
 export class PropertyTabBodyComponent {
   readonly currentSelectedElement = input.required<IndexedNode>();
-  readonly signalGraphEnabled = input.required<boolean>();
 
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<string>();

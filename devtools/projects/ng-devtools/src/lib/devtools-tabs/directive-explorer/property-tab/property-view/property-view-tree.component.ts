@@ -20,6 +20,7 @@ import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular
 import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
 import {SignalGraphManager} from '../../signal-graph/signal-graph-manager';
 import {DebugSignalGraphNode} from '../../../../../../../protocol';
+import {Settings} from '../../../../application-services/settings';
 
 @Component({
   selector: 'ng-property-view-tree',
@@ -41,13 +42,15 @@ import {DebugSignalGraphNode} from '../../../../../../../protocol';
 export class PropertyViewTreeComponent {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
   private readonly signalGraph = inject(SignalGraphManager);
+  private readonly settings = inject(Settings);
 
   readonly dataSource = input.required<PropertyDataSource>();
   readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
-  readonly signalGraphEnabled = input.required<boolean>();
   readonly updateValue = output<any>();
   readonly inspect = output<any>();
   readonly showSignalGraph = output<DebugSignalGraphNode>();
+
+  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
