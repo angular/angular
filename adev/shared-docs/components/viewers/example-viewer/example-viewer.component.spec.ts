@@ -35,7 +35,6 @@ describe('ExampleViewer', () => {
     await TestBed.configureTestingModule({
       imports: [ExampleViewer],
       providers: [
-        // TODO: Find why tests warn that zone.js is still loaded
         provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},

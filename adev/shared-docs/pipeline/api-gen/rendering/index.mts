@@ -103,13 +103,6 @@ async function main() {
 
   const [srcs, outputFilenameExecRootRelativePath] = rawParamLines;
 
-  // TODO: Remove when we are using Bazel v6+
-  // On RBE, the output directory is not created properly due to a bug.
-  // https://github.com/bazelbuild/bazel/commit/4310aeb36c134e5fc61ed5cdfdf683f3e95f19b7.
-  if (!existsSync(outputFilenameExecRootRelativePath)) {
-    mkdirSync(outputFilenameExecRootRelativePath, {recursive: true});
-  }
-
   // Docs rendering happens in three phases that occur here:
   // 1) Aggregate all the raw extracted doc info.
   // 2) Transform the raw data to a renderable state.
