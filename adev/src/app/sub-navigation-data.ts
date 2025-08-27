@@ -396,6 +396,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Customizing route behavior',
+            path: 'guide/routing/customizing-route-behavior',
+            contentPath: 'guide/routing/customizing-route-behavior',
+            status: 'new',
+          },
+          {
             label: 'Router reference',
             path: 'guide/routing/router-reference',
             contentPath: 'guide/routing/router-reference',
