@@ -13,7 +13,6 @@ ts_project(
         "//adev:node_modules/@types/node",
         "//adev:node_modules/diff",
         "//adev:node_modules/emoji-regex",
-        "//adev:node_modules/html-entities",
         "//adev:node_modules/jsdom",
         "//adev:node_modules/marked",
         "//adev:node_modules/mermaid",

@@ -307,7 +307,7 @@ If you use the Angular CLI, configure this flag in `src/test.ts`.
 
 <docs-code language="typescript">
 
-[window as any]('&lowbar;&lowbar;zone&lowbar;symbol__fakeAsyncPatchLock') = true;
+[window as any]('__zone_symbol__fakeAsyncPatchLock') = true;
 import 'zone.js/testing';
 
 </docs-code>

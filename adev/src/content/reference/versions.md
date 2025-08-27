@@ -146,14 +146,14 @@ For example:
    * asynchronous activities to improve startup performance - use these options only
    * if you know what you are doing as it could result in hard to trace down bugs.
    */
-  // &lowbar;&lowbar;Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
-  // &lowbar;&lowbar;Zone_disable_on_property = true; // disable patch onProperty such as onclick
-  // &lowbar;&lowbar;zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+  // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+  // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
+  // __zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
   /*
    * in Edge developer tools, the addEventListener will also be wrapped by zone.js
    * with the following flag, it will bypass `zone.js` patch for Edge.
    */
-  // &lowbar;&lowbar;Zone_enable_cross_context_check = true;
+  // __Zone_enable_cross_context_check = true;
 </script>
 <!-- zone.js required by Angular -->
 <script src="node_modules/zone.js/bundles/zone.umd.js"></script>

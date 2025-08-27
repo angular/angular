@@ -45,7 +45,6 @@
     "diff": "8.0.2",
     "emoji-regex": "10.4.0",
     "fflate": "0.8.2",
-    "html-entities": "2.6.0",
     "jasmine-core": "5.9.0",
     "jsdom": "26.1.0",
     "karma-chrome-launcher": "3.2.0",

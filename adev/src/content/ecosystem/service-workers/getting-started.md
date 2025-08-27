@@ -50,7 +50,7 @@ npm, which supports service worker applications. Run it without installation usi
 
 <docs-code language="shell">
 
-npx http-server -p 8080 -c-1 dist/&lt;project-name&gt;/browser
+npx http-server -p 8080 -c-1 dist/<project-name>/browser
 
 </docs-code>
 
