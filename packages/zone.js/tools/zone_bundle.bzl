@@ -35,13 +35,13 @@ def zone_bundle(
     esbuild(
         name = name + ".esm",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:esm",
+        config = "//packages/zone.js/tools:esm",
         deps = deps,
     )
     esbuild(
         name = name + ".min.esm",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:esm",
+        config = "//packages/zone.js/tools:esm",
         deps = deps,
         minify = True,
     )
@@ -50,14 +50,14 @@ def zone_bundle(
     esbuild(
         name = name + ".es2015",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:iife",
+        config = "//packages/zone.js/tools:iife",
         target = "es2015",
         deps = deps,
     )
     esbuild(
         name = name + ".min.es2015",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:iife",
+        config = "//packages/zone.js/tools:iife",
         target = "es2015",
         deps = deps,
         minify = True,
@@ -65,7 +65,7 @@ def zone_bundle(
     esbuild(
         name = name + ".min_debug.es2015",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:iife",
+        config = "//packages/zone.js/tools:iife",
         target = "es2015",
         deps = deps,
         minify = True,
@@ -96,7 +96,7 @@ def zone_bundle(
     esbuild(
         name = name + ".min",
         entry_point = name + ".js",
-        config = "//tools/bazel/esbuild/zone-config:iife",
+        config = "//packages/zone.js/tools:iife",
         target = "es5",
         srcs = [
             name + ".js",
@@ -106,7 +106,7 @@ def zone_bundle(
     esbuild(
         name = name + ".min_debug",
         entry_point = name + ".js",
-        config = "//tools/bazel/esbuild/zone-config:iife",
+        config = "//packages/zone.js/tools:iife",
         target = "es5",
         srcs = [
             name + ".js",
@@ -119,13 +119,13 @@ def zone_bundle(
     esbuild(
         name = name + ".umd",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:umd",
+        config = "//packages/zone.js/tools:umd",
         deps = deps,
     )
     esbuild(
         name = name + ".min.umd",
         entry_point = entry_point,
-        config = "//tools/bazel/esbuild/zone-config:umd",
+        config = "//packages/zone.js/tools:umd",
         deps = deps,
         minify = True,
     )
@@ -155,7 +155,7 @@ def zone_bundle(
     esbuild(
         name = name + ".min.es5umd",
         entry_point = name + ".es5umd.js",
-        config = "//tools/bazel/esbuild/zone-config:umd",
+        config = "//packages/zone.js/tools:umd",
         target = "es5",
         srcs = [
             name + ".es5umd.js",
