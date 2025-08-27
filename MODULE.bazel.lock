@@ -545,10 +545,9 @@
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
         "bzlTransitiveDigest": "9IJp6IlB/FMHFBJe4MX/DQM4zi3oArC8yqYE/+NyPwk=",
-        "usagesDigest": "1rX5zKEA5AF0V7MwOa4Uu00O9/xtmOXAgV3jUGUxeQk=",
+        "usagesDigest": "VEukiyPNBCfwTk3eLa/G6XI3Kv7diVRz/46ULqKcb78=",
         "recordedFileInputs": {
-          "@@//package.json": "2964eea91eba1dcc21b0c13f08629967216bfb42908a23e2c7610c192c28fac0",
-          "@@devinfra~//bazel/package.json": "960bcecf963a211f96a3967c7cfb5d3e1cea08d94b27056a3e8dbf2fad1e2dd3",
+          "@@//package.json": "7a8ed6138f9c4c4139c2689a3c0f994ef755251f9d04467a7a582f15ab4c8bbc",
           "@@rules_browsers~//package.json": "45572077938c7a4916e4aaedf7db7ce8425854ab92f35348cff02a2134023bb8"
         },
         "recordedDirentsInputs": {},
@@ -581,8 +580,7 @@
             "bzlFile": "@@aspect_rules_ts~//ts/private:npm_repositories.bzl",
             "ruleClassName": "http_archive_version",
             "attributes": {
-              "version": "",
-              "version_from": "@@devinfra~//bazel:package.json",
+              "version": "5.9.2",
               "integrity": "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==",
               "urls": [
                 "https://registry.npmjs.org/typescript/-/typescript-{}.tgz"
