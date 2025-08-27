@@ -13,6 +13,8 @@ import {
   Component,
   Directive,
   ElementRef,
+  input,
+  InputSignal,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -933,7 +935,7 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     }));
 
-    it('should support multple classes as a single string separated by a space', fakeAsync(() => {
+    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -988,7 +990,7 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     }));
 
-    it('should support multple classes as a single string separated by a space', fakeAsync(() => {
+    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -1243,6 +1245,41 @@ describe('Animation', () => {
       expect(childCmp.nativeElement.className).not.toContain('slide-in fade-in');
     }));
 
+    xit('should support signal inputs', fakeAsync(() => {
+      @Component({
+        selector: 'child-cmp',
+        styles: styles,
+        template: '<p [animate.enter]="enterAnim()">I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {
+        public enterAnim: InputSignal<string | string[]> = input.required<string | string[]>();
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        template: '<child-cmp enterAnim="fade-in" />',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {}
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const childCmp = fixture.debugElement.query(By.css('child-cmp'));
+
+      expect(childCmp.nativeElement.className).toContain('fade-in');
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      fixture.detectChanges();
+      expect(childCmp.nativeElement.className).not.toContain('fade-in');
+    }));
+
     it('should reset leave animation and not duplicate node when toggled quickly', fakeAsync(() => {
       const animateStyles = `
         .slide-in {
@@ -1297,6 +1334,8 @@ describe('Animation', () => {
       fixture.detectChanges();
       tickAnimationFrames(1);
       expect(cmp.show()).toBeTruthy();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
     }));
