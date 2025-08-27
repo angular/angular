@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+load("//packages/zone.js:tools.bzl", "copy_to_bin", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -65,8 +65,8 @@ ts_project(
     ),
     deps = [
         ":zone_d_ts",
-        "//:node_modules/@types/jasmine",
-        "//:node_modules/@types/node",
-        "//:node_modules/rxjs",
+        "//packages/zone.js:node_modules/@types/jasmine",
+        "//packages/zone.js:node_modules/@types/node",
+        "//packages/zone.js:node_modules/rxjs",
     ],
 )

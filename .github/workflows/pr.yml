@@ -157,8 +157,6 @@ jobs:
           cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/
           cp dist/bin/packages/zone.js/test/closure/zone.closure.js ./packages/zone.js/build/test/zone.closure.mjs
 
-        # Install
-      - run: pnpm -C packages/zone.js install --frozen-lockfile
         # Run zone.js tools tests
       - run: pnpm -C packages/zone.js promisefinallytest
       - run: pnpm -C packages/zone.js jest:test
