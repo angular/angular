@@ -1,3 +1,36 @@
+<a name="21.0.0-next.1"></a>
+# 21.0.0-next.1 (2025-08-27)
+## Breaking Changes
+### common
+- NgModuleFactory has been removed, use NgModule instead.
+### forms
+- This new directive will conflict with existing FormArray directives or formArray inputs on the same element.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [25f593ce2a](https://github.com/angular/angular/commit/25f593ce2a623add0cbd4ab3bb0d4987793e4f34) | refactor | remove`ngModuleFactory` input of `NgComponentOutlet` ([#62838](https://github.com/angular/angular/pull/62838)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a0388409e3](https://github.com/angular/angular/commit/a0388409e3d241193ab78920704dbef03b107c03) | fix | fixes animations on elements with structural directives ([#63390](https://github.com/angular/angular/pull/63390)) |
+| [827c3c15f4](https://github.com/angular/angular/commit/827c3c15f40d1ac8106e2c26a0bafb1bcded4a18) | fix | Keep paraenthesis in Nullish + Boolean expression. ([#63292](https://github.com/angular/angular/pull/63292)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [37ead5ffb5](https://github.com/angular/angular/commit/37ead5ffb5137b8c8fed14d061d2e942ed6e4936) | fix | Ensures `@for` loop animations never get cancelled ([#63328](https://github.com/angular/angular/pull/63328)) |
+| [18c9352d21](https://github.com/angular/angular/commit/18c9352d2118a83126037b8fb757db749bd6bec8) | fix | fix memory leak with leaving nodes tracking ([#63328](https://github.com/angular/angular/pull/63328)) |
+| [9139fe0d95](https://github.com/angular/angular/commit/9139fe0d9507736ce437663d7054cf1d1caedf63) | fix | Fixes `animate.leave` binding to a string with spaces ([#63366](https://github.com/angular/angular/pull/63366)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0dd95c503f](https://github.com/angular/angular/commit/0dd95c503f4b07b478e505b99aaa63419a340095) | feat | Add FormArrayDirective ([#55880](https://github.com/angular/angular/pull/55880)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6ddb250391](https://github.com/angular/angular/commit/6ddb2503913fa8698a0e07e88ce49598cc7af481) | feat | add migration to convert ngClass to use class ([#62983](https://github.com/angular/angular/pull/62983)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.2"></a>
 # 20.2.2 (2025-08-27)
 ### compiler
