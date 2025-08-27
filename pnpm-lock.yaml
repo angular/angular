@@ -460,9 +460,6 @@ importers:
       gulp-conventional-changelog:
         specifier: ^5.0.0
         version: 5.0.0(conventional-commits-filter@5.0.0)
-      html-entities:
-        specifier: ^2.5.2
-        version: 2.6.0
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -682,9 +679,6 @@ importers:
       fflate:
         specifier: 0.8.2
         version: 0.8.2
-      html-entities:
-        specifier: 2.6.0
-        version: 2.6.0
       jasmine-core:
         specifier: 5.9.0
         version: 5.9.0
@@ -784,9 +778,6 @@ importers:
       fflate:
         specifier: ^0.8.2
         version: 0.8.2
-      html-entities:
-        specifier: ~2.6.0
-        version: 2.6.0
       jsdom:
         specifier: ~26.1.0
         version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)

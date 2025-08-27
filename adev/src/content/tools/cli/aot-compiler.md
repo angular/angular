@@ -498,7 +498,7 @@ In this example it is recommended to include the checking of `address` in the `*
 
 @Component({
   selector: 'my-component',
-  template: '<span *ngIf="person &amp;&amp; address"> {{person.name}} lives on {{address.street}} </span>'
+  template: '<span *ngIf="person && address"> {{person.name}} lives on {{address.street}} </span>'
 })
 class MyComponent {
   person?: Person;

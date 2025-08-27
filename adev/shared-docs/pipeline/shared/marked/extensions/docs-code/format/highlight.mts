@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {decode} from 'html-entities';
 import {CodeToken} from './index.mjs';
 import {expandRangeStringValues} from './range.mjs';
 import {JSDOM} from 'jsdom';
@@ -25,10 +24,9 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   // TODO(josephperrott): Handle mermaid usages i.e. language == mermaidClassName
   if (token.language !== 'none' && token.language !== 'file') {
     // Decode the code content to replace HTML entities to characters
-    const decodedCode = decode(token.code);
     const language = token.language ?? guessLanguageFromPath(token.path);
 
-    const codeAsHtml = codeToHtml(highlighter, decodedCode, language);
+    const codeAsHtml = codeToHtml(highlighter, token.code, language);
     token.code = codeAsHtml;
   }
 

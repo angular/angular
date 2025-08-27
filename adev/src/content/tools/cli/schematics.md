@@ -96,7 +96,7 @@ ng update
 We analyzed your package.json, there are some packages to update:
 
     Name                                      Version                     Command to update
-    &hyphen;-------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------
     @angular/cdk                       7.2.2 -> 7.3.1           ng update @angular/cdk
     @angular/cli                       7.2.3 -> 7.3.0           ng update @angular/cli
     @angular/core                      7.2.2 -> 7.2.3           ng update @angular/core

@@ -18,7 +18,6 @@
     "diff": "~8.0.0",
     "emoji-regex": "~10.4.0",
     "fflate": "^0.8.2",
-    "html-entities": "~2.6.0",
     "jsdom": "~26.1.0",
     "marked": "~16.2.0",
     "mermaid": "^11.0.0",

@@ -196,7 +196,6 @@
     "get-tsconfig": "^4.10.1",
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
-    "html-entities": "^2.5.2",
     "husky": "9.1.7",
     "jsdom": "^26.0.0",
     "karma-coverage": "^2.2.1",
