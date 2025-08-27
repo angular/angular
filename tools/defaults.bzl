@@ -3,7 +3,9 @@ load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
 load("@devinfra//bazel:extract_types.bzl", _extract_types = "extract_types")
 load("@devinfra//bazel/http-server:index.bzl", _http_server = "http_server")
+load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")
 load("@rules_angular//src/ng_project:index.bzl", _ng_project = "ng_project")
+load("@rules_angular//src/ts_project:index.bzl", _ts_project = "ts_project")
 load("@rules_sass//src:index.bzl", _npm_sass_library = "npm_sass_library", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("//adev/shared-docs/pipeline/api-gen:generate_api_docs.bzl", _generate_api_docs = "generate_api_docs")
 load("//tools/bazel:api_golden_test.bzl", _api_golden_test = "api_golden_test", _api_golden_test_npm_package = "api_golden_test_npm_package")
@@ -12,7 +14,6 @@ load("//tools/bazel:jasmine_test.bzl", _angular_jasmine_test = "angular_jasmine_
 load("//tools/bazel:js_defs.bzl", _js_binary = "js_binary", _js_run_binary = "js_run_binary", _js_test = "js_test")
 load("//tools/bazel:npm_packages.bzl", _ng_package = "ng_package", _npm_package = "npm_package")
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
-load("//tools/bazel:ts_project_interop.bzl", _ts_project = "ts_project")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
 load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
@@ -86,6 +87,8 @@ def _determine_tsconfig(testonly):
 
 def ts_project(
         name,
+        deps = [],
+        srcs = [],
         source_map = True,
         testonly = False,
         tsconfig = None,
@@ -95,14 +98,26 @@ def ts_project(
 
     _ts_project(
         name,
+        srcs = srcs,
+        deps = deps,
+        declaration = True,
         source_map = source_map,
         testonly = testonly,
         tsconfig = tsconfig,
         **kwargs
     )
 
+    strict_deps_test(
+        name = "%s_deps" % name,
+        srcs = srcs,
+        tsconfig = tsconfig,
+        deps = deps,
+    )
+
 def ng_project(
         name,
+        deps = [],
+        srcs = [],
         source_map = True,
         testonly = False,
         tsconfig = None,
@@ -110,13 +125,22 @@ def ng_project(
     if tsconfig == None:
         tsconfig = _determine_tsconfig(testonly)
 
-    _ts_project(
+    _ng_project(
         name,
+        srcs = srcs,
+        deps = deps,
+        declaration = True,
         source_map = source_map,
-        rule_impl = _ng_project,
         testonly = testonly,
         tsconfig = tsconfig,
         **kwargs
+    )
+
+    strict_deps_test(
+        name = "%s_deps" % name,
+        srcs = srcs,
+        tsconfig = tsconfig,
+        deps = deps,
     )
 
 def generate_api_docs(**kwargs):
