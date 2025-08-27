@@ -16,11 +16,9 @@ load("//tools/bazel:npm_packages.bzl", _ng_package = "ng_package", _npm_package 
 load("//tools/bazel:protractor_test.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("//tools/bazel:tsec.bzl", _tsec_test = "tsec_test")
 load("//tools/bazel:web_test.bzl", _ng_web_test_suite = "ng_web_test_suite", _web_test = "web_test", _zoneless_web_test_suite = "zoneless_web_test_suite")
-load("//tools/bazel/esbuild:zone_bundle.bzl", _zone_bundle = "zone_bundle")
 
 extract_types = _extract_types
 esbuild = _esbuild
-zone_bundle = _zone_bundle
 js_binary = _js_binary
 js_run_binary = _js_run_binary
 js_test = _js_test

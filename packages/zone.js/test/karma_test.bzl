@@ -12,7 +12,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         entry_point = env_entry_point,
         testonly = True,
         output = name + "_env.js",
-        config = "//tools/bazel/esbuild/zone-config:umd",
+        config = "//packages/zone.js/tools:umd",
         deps = [
             ":" + name + "_env_lib",
         ],
@@ -30,7 +30,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         entry_point = test_entry_point,
         testonly = True,
         output = name + "_env.spec.js",
-        config = "//tools/bazel/esbuild/zone-config:umd",
+        config = "//packages/zone.js/tools:umd",
         deps = [
             ":" + name + "_env_spec_lib",
         ],
