@@ -72,9 +72,6 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("packages/examples"):
         return "//packages/examples:tsconfig_test" if testonly else "//packages/examples:tsconfig_build"
 
-    if native.package_name().startswith("packages/zone.js"):
-        return "//packages/zone.js:tsconfig_test" if testonly else "//packages/zone.js:tsconfig_build"
-
     if native.package_name().startswith("packages"):
         return "//packages:tsconfig_test" if testonly else "//packages:tsconfig_build"
 

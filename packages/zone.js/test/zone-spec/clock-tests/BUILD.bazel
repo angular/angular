@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+load("//packages/zone.js:tools.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "patched_init",
