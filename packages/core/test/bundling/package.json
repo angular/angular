@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@angular/animations": "workspace:*",
-    "@angular/build": "20.2.0",
+    "@angular/build": "20.2.1",
     "@angular/common": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
     "@angular/compiler": "workspace:*",
