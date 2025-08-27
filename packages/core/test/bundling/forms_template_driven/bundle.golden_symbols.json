@@ -697,6 +697,7 @@
       "invokeDirectivesHostBindings",
       "invokeHostBindingsInCreationMode",
       "isAngularZoneProperty",
+      "isAnimationEventType",
       "isAnimationProp",
       "isApplicationBootstrapConfig",
       "isArrayLike",

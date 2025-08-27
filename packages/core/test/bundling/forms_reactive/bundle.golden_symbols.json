@@ -696,6 +696,7 @@
       "invokeHostBindingsInCreationMode",
       "isAbstractControlOptions",
       "isAngularZoneProperty",
+      "isAnimationEventType",
       "isAnimationProp",
       "isApplicationBootstrapConfig",
       "isArrayLike",
