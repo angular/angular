@@ -1,6 +1,6 @@
 """Provides the rollup and dist file generation macro."""
 
-load("//tools:defaults.bzl", "zone_bundle")
+load("//packages/zone.js/tools:zone_bundle.bzl", "zone_bundle")
 
 def copy_dist(module_name, module_format, output_module_name, suffix, umd):
     umd_output = umd
