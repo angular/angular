@@ -61,7 +61,6 @@ export interface DirectiveWithBindings<T> {
 // These are constant between all the bindings so we can reuse the objects.
 const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
 const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
-
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
 // - take an index of a directive on TNode (as matched), review all the index mappings that we need to do
 // - move more logic to the first creation pass

@@ -15,6 +15,7 @@ import {ComponentFactory} from './component_ref';
 import {getComponentDef} from './def_getters';
 import {Binding, DirectiveWithBindings} from './dynamic_bindings';
 import {assertComponentDef} from './errors';
+import {HostSelector} from './host_selector';
 
 /**
  * Creates a `ComponentRef` instance based on provided component type and a set of options.
@@ -60,7 +61,7 @@ import {assertComponentDef} from './errors';
  * applicationRef.attachView(componentRef.hostView);
  * componentRef.changeDetectorRef.detectChanges();
  * ```
- * 
+ *
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
@@ -76,6 +77,7 @@ import {assertComponentDef} from './errors';
  * and `element3` into a separate `<ng-content>`.
  *  * `directives` (optional): Directives that should be applied to the component.
  *  * `binding` (optional): Bindings to apply to the root component.
+ *  * `selector` (optional): Selector from the component that will be used to locate the host element.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
@@ -89,6 +91,7 @@ export function createComponent<C>(
     projectableNodes?: Node[][];
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
     bindings?: Binding[];
+    selector?: HostSelector;
   },
 ): ComponentRef<C> {
   ngDevMode && assertComponentDef(component);
@@ -102,6 +105,7 @@ export function createComponent<C>(
     options.environmentInjector,
     options.directives,
     options.bindings,
+    options.selector,
   );
 }
 

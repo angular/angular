@@ -78,6 +78,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
 import {addLViewToLContainer, createLContainer, detachView} from '../render3/view/container';
 import {addToEndOfViewTree} from '../render3/view/construction';
 import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
+import {HostSelector} from '../render3/host_selector';
 
 /**
  * Represents a container where one or more views can be attached to a component.
@@ -241,6 +242,7 @@ export abstract class ViewContainerRef {
       projectableNodes?: Node[][];
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      selector?: HostSelector;
     },
   ): ComponentRef<C>;
 
@@ -257,6 +259,7 @@ export abstract class ViewContainerRef {
    * This information is used to retrieve corresponding NgModule injector.
    * @param directives Directives that should be applied to the component.
    * @param bindings Bindings that should be applied to the component.
+   * @param selector The host selector for the component previously assigned in decorator `@Component`.
    *
    * @returns The new `ComponentRef` which contains the component instance and the host view.
    *
@@ -272,6 +275,7 @@ export abstract class ViewContainerRef {
     environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     bindings?: Binding[],
+    selector?: HostSelector,
   ): ComponentRef<C>;
 
   /**
@@ -437,6 +441,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       ngModuleRef?: NgModuleRef<unknown>;
       directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
       bindings?: Binding[];
+      selector?: HostSelector;
     },
   ): ComponentRef<C>;
   /**
@@ -452,6 +457,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
     environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     bindings?: Binding[],
+    selector?: HostSelector,
   ): ComponentRef<C>;
   override createComponent<C>(
     componentFactoryOrType: ComponentFactory<C> | Type<C>,
@@ -466,12 +472,14 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
           projectableNodes?: Node[][];
           directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
           bindings?: Binding[];
+          selector?: HostSelector;
         },
     injector?: Injector | undefined,
     projectableNodes?: any[][] | undefined,
     environmentInjector?: EnvironmentInjector | NgModuleRef<any> | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     bindings?: Binding[],
+    selector?: HostSelector,
   ): ComponentRef<C> {
     const isComponentFactory = componentFactoryOrType && !isType(componentFactoryOrType);
     let index: number | undefined;
@@ -518,6 +526,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
         projectableNodes?: Node[][];
         directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
         bindings?: Binding[];
+        selector?: HostSelector;
       };
       if (ngDevMode && options.environmentInjector && options.ngModuleRef) {
         throwError(
@@ -530,6 +539,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       environmentInjector = options.environmentInjector || options.ngModuleRef;
       directives = options.directives;
       bindings = options.bindings;
+      selector = options.selector;
     }
 
     const componentFactory: ComponentFactory<C> = isComponentFactory
@@ -576,6 +586,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       environmentInjector,
       directives,
       bindings,
+      selector,
     );
     this.insertImpl(
       componentRef.hostView,

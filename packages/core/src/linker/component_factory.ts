@@ -11,6 +11,7 @@ import type {Injector} from '../di/injector';
 import type {EnvironmentInjector} from '../di/r3_injector';
 import type {Type} from '../interface/type';
 import type {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
+import type {HostSelector} from '../render3/host_selector';
 
 import type {ElementRef} from './element_ref';
 import type {NgModuleRef} from './ng_module_factory';
@@ -125,5 +126,6 @@ export abstract class ComponentFactory<C> {
     environmentInjector?: EnvironmentInjector | NgModuleRef<any>,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     bindings?: Binding[],
+    selector?: HostSelector,
   ): ComponentRef<C>;
 }
