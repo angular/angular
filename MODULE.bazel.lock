@@ -545,9 +545,8 @@
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
         "bzlTransitiveDigest": "9IJp6IlB/FMHFBJe4MX/DQM4zi3oArC8yqYE/+NyPwk=",
-        "usagesDigest": "VEukiyPNBCfwTk3eLa/G6XI3Kv7diVRz/46ULqKcb78=",
+        "usagesDigest": "dQksgKjptt43p6K/aEOYjcWKS47HbtBzBSMhEYqUYts=",
         "recordedFileInputs": {
-          "@@//package.json": "7a8ed6138f9c4c4139c2689a3c0f994ef755251f9d04467a7a582f15ab4c8bbc",
           "@@rules_browsers~//package.json": "45572077938c7a4916e4aaedf7db7ce8425854ab92f35348cff02a2134023bb8"
         },
         "recordedDirentsInputs": {},
@@ -557,8 +556,7 @@
             "bzlFile": "@@aspect_rules_ts~//ts/private:npm_repositories.bzl",
             "ruleClassName": "http_archive_version",
             "attributes": {
-              "version": "",
-              "version_from": "@@//:package.json",
+              "version": "5.9.2",
               "integrity": "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==",
               "urls": [
                 "https://registry.npmjs.org/typescript/-/typescript-{}.tgz"
