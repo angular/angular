@@ -1,3 +1,18 @@
+<a name="20.2.2"></a>
+# 20.2.2 (2025-08-27)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d7b6045d61](https://github.com/angular/angular/commit/d7b6045d61582d20a17802e769dc1441984988f0) | fix | fixes animations on elements with structural directives ([#63390](https://github.com/angular/angular/pull/63390)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6c421ed65d](https://github.com/angular/angular/commit/6c421ed65d050765a18eafc51fe7257abc5682ce) | fix | Ensures `@for` loop animations never get cancelled ([#63328](https://github.com/angular/angular/pull/63328)) |
+| [9093e0e132](https://github.com/angular/angular/commit/9093e0e132f99c2b590c31b299871bcd493b7de0) | fix | fix memory leak with leaving nodes tracking ([#63328](https://github.com/angular/angular/pull/63328)) |
+| [c8f07daf8f](https://github.com/angular/angular/commit/c8f07daf8f2c7e8c6641eb4368379a3f5f1d1f52) | fix | Fixes `animate.leave` binding to a string with spaces ([#63366](https://github.com/angular/angular/pull/63366)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.1"></a>
 # 20.2.1 (2025-08-21)
 ### compiler
