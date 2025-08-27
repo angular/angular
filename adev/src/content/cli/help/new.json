@@ -187,7 +187,8 @@
         "css",
         "less",
         "sass",
-        "scss"
+        "scss",
+        "tailwind"
       ],
       "description": "The type of stylesheet files to be created for components in the initial project."
     },

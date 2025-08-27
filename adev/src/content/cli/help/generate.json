@@ -55,7 +55,9 @@
         {
           "name": "tool",
           "type": "array",
-          "default": "none",
+          "default": [
+            "none"
+          ],
           "enum": [
             "claude",
             "copilot",
@@ -185,7 +187,8 @@
             "css",
             "less",
             "sass",
-            "scss"
+            "scss",
+            "tailwind"
           ],
           "description": "The type of stylesheet files to be created for components in the application."
         },
@@ -571,6 +574,9 @@
           "type": "array",
           "aliases": [
             "guardType"
+          ],
+          "default": [
+            "CanActivate"
           ],
           "enum": [
             "CanActivate",
