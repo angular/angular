@@ -29,6 +29,8 @@ import {
   LView,
   TView,
   DECLARATION_LCONTAINER,
+  ENTER_ANIMATIONS,
+  LEAVE_ANIMATIONS,
 } from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
@@ -121,7 +123,9 @@ function cancelLeavingNodes(tNode: TNode, lView: LView): void {
     // this is the insertion point for the new TNode element.
     // it will be inserted before the declaring containers anchor.
     const beforeNode = getBeforeNodeForView(tNode.index, lContainer);
-    // here we need to check the previous sibling of that anchor
+    // here we need to check the previous sibling of that anchor. The first
+    // previousSibling node will be the new element added. The second
+    // previousSibling will be the one that's being removed.
     const previousNode = beforeNode?.previousSibling;
     // We really only want to cancel animations if the leaving node is the
     // same as the node before where the new node will be inserted. This is
@@ -142,6 +146,20 @@ function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
     leavingNodes.set(tNode, [el]);
   }
 }
+
+function getLViewEnterAnimations(lView: LView): Function[] {
+  if (lView[ENTER_ANIMATIONS] === null) {
+    lView[ENTER_ANIMATIONS] = [];
+  }
+  return lView[ENTER_ANIMATIONS];
+}
+
+// function getLViewLeaveAnimations(lView: LView): Function[] {
+//   if (lView[LEAVE_ANIMATIONS] === null) {
+//     lView[LEAVE_ANIMATIONS] = [];
+//   }
+//   return lView[LEAVE_ANIMATIONS];
+// }
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -165,6 +183,15 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   }
 
   const tNode = getCurrentTNode()!;
+
+  cancelLeavingNodes(tNode, lView);
+
+  getLViewEnterAnimations(lView).push(() => runEnterAnimation(lView, tNode, value));
+
+  return ɵɵanimateEnter; // For chaining
+}
+
+export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Function): void {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
@@ -200,8 +227,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       cleanupFns.push(renderer.listen(nativeElement, 'transitionstart', handleAnimationStart));
     });
 
-    cancelLeavingNodes(tNode, lView);
-
     trackEnterClasses(nativeElement, activeClasses, cleanupFns);
 
     for (const klass of activeClasses) {
@@ -222,8 +247,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
       });
     });
   }
-
-  return ɵɵanimateEnter; // For chaining
 }
 
 /**
@@ -268,15 +291,17 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   if (areAnimationsDisabled(lView)) {
     return ɵɵanimateEnterListener;
   }
-
   const tNode = getCurrentTNode()!;
-  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-
-  ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
 
   cancelLeavingNodes(tNode, lView);
 
-  value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
+  getLViewEnterAnimations(lView).push(() => {
+    const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+
+    ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+    value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
+  });
 
   return ɵɵanimateEnterListener;
 }
