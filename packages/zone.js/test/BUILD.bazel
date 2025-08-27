@@ -1,5 +1,5 @@
+load("//packages/zone.js:tools.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
 load("//packages/zone.js/test:karma_test.bzl", "karma_test")
-load("//tools:defaults.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -38,7 +38,7 @@ ts_project(
     ),
     deps = [
         ":common_spec_util",
-        "//:node_modules/rxjs",
+        "//packages/zone.js:node_modules/rxjs",
         "//packages/zone.js/lib",
     ],
 )
@@ -69,12 +69,12 @@ ts_project(
     testonly = True,
     srcs = glob(["node/*.ts"]),
     deps = [
-        "//:node_modules/@types/node",
-        "//:node_modules/@types/shelljs",
-        "//:node_modules/@types/systemjs",
-        "//:node_modules/rxjs",
-        "//:node_modules/shelljs",
-        "//:node_modules/systemjs",
+        "//packages/zone.js:node_modules/@types/node",
+        "//packages/zone.js:node_modules/@types/shelljs",
+        "//packages/zone.js:node_modules/@types/systemjs",
+        "//packages/zone.js:node_modules/rxjs",
+        "//packages/zone.js:node_modules/shelljs",
+        "//packages/zone.js:node_modules/systemjs",
         "//packages/zone.js/lib",
     ],
 )
@@ -88,11 +88,11 @@ ts_project(
     ],
     deps = [
         ":common_spec_env",
-        "//:node_modules/@types/shelljs",
-        "//:node_modules/@types/systemjs",
-        "//:node_modules/rxjs",
-        "//:node_modules/shelljs",
-        "//:node_modules/systemjs",
+        "//packages/zone.js:node_modules/@types/shelljs",
+        "//packages/zone.js:node_modules/@types/systemjs",
+        "//packages/zone.js:node_modules/rxjs",
+        "//packages/zone.js:node_modules/shelljs",
+        "//packages/zone.js:node_modules/systemjs",
         "//packages/zone.js/lib",
     ],
 )
@@ -104,7 +104,7 @@ ts_project(
         "extra/bluebird.spec.ts",
     ],
     deps = [
-        "//:node_modules/bluebird",
+        "//packages/zone.js:node_modules/bluebird",
         "//packages/zone.js/lib",
     ],
 )
@@ -115,7 +115,7 @@ ts_project(
     srcs = ["node_bluebird_entry_point.init.ts"],
     deps = [
         ":common_spec_env",
-        "//:node_modules/bluebird",
+        "//packages/zone.js:node_modules/bluebird",
         "//packages/zone.js/lib",
         "//packages/zone.js/lib:zone_d_ts",
     ],
@@ -201,7 +201,7 @@ ts_project(
     testonly = True,
     srcs = ["npm_package/npm_package.spec.ts"],
     deps = [
-        "//:node_modules/@types/shelljs",
+        "//packages/zone.js:node_modules/@types/shelljs",
     ],
 )
 
@@ -209,7 +209,7 @@ jasmine_test(
     name = "test_npm_package",
     data = [
         ":npm_package_spec_lib",
-        "//:node_modules/shelljs",
+        "//packages/zone.js:node_modules/shelljs",
         "//packages/zone.js:npm_package",
     ],
 )
@@ -225,11 +225,11 @@ env_deps = [
     ":common_spec_util",
     ":error_spec_srcs",
     "//packages/zone.js/lib:lib",
-    "//:node_modules/@types/shelljs",
-    "//:node_modules/@types/systemjs",
-    "//:node_modules/rxjs",
-    "//:node_modules/shelljs",
-    "//:node_modules/systemjs",
+    "//packages/zone.js:node_modules/@types/shelljs",
+    "//packages/zone.js:node_modules/@types/systemjs",
+    "//packages/zone.js:node_modules/rxjs",
+    "//packages/zone.js:node_modules/shelljs",
+    "//packages/zone.js:node_modules/systemjs",
 ]
 
 env_entry_point = ":browser-env-setup.ts"
@@ -254,11 +254,11 @@ test_deps = [
     ":common_spec_util",
     ":error_spec_srcs",
     "//packages/zone.js/lib:lib",
-    "//:node_modules/@types/shelljs",
-    "//:node_modules/@types/systemjs",
-    "//:node_modules/rxjs",
-    "//:node_modules/shelljs",
-    "//:node_modules/systemjs",
+    "//packages/zone.js:node_modules/@types/shelljs",
+    "//packages/zone.js:node_modules/@types/systemjs",
+    "//packages/zone.js:node_modules/rxjs",
+    "//packages/zone.js:node_modules/shelljs",
+    "//packages/zone.js:node_modules/systemjs",
 ]
 
 test_entry_point = ":browser_entry_point.ts"
