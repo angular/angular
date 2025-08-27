@@ -29,6 +29,7 @@
     {
       "name": "code-coverage-exclude",
       "type": "array",
+      "default": [],
       "description": "Globs to exclude from code coverage."
     },
     {
@@ -47,11 +48,13 @@
     {
       "name": "exclude",
       "type": "array",
+      "default": [],
       "description": "Globs of files to exclude, relative to the project root."
     },
     {
       "name": "external-dependencies",
       "type": "array",
+      "default": [],
       "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
     },
     {
@@ -62,6 +65,9 @@
     {
       "name": "include",
       "type": "array",
+      "default": [
+        "**/*.spec.ts"
+      ],
       "description": "Globs of files to include, relative to project root. \nThere are 2 special cases:\n - when a path to directory is provided, all spec files ending \".spec.@(ts|tsx)\" will be included\n - when a path to a file is provided, and a matching spec file exists it will be included instead."
     },
     {
@@ -94,6 +100,7 @@
     {
       "name": "polyfills",
       "type": "array",
+      "default": [],
       "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'."
     },
     {
