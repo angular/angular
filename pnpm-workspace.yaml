@@ -4,7 +4,7 @@ packages:
   - adev/shared-docs
   - adev/shared-docs/pipeline/api-gen
   - modules
-  - integration
+  - 'integration/**'
   - packages/animations/
   - packages/common/
   - packages/compiler-cli/

@@ -7,7 +7,7 @@
     "build": "ng build --configuration production",
     "postinstall": "node ./copy-event-dispatch-contract.mjs",
     "pretest": "ng version",
-    "test": "yarn e2e",
+    "test": "pnpm e2e",
     "lint": "ng lint",
     "e2e": "ng e2e --configuration=production"
   },
@@ -32,9 +32,12 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/node": "file:../../node_modules/@types/node",
+    "@types/express": "4.17.17",
+    "@types/selenium-webdriver": "file:../../node_modules/@types/selenium-webdriver",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
     "protractor": "file:../../node_modules/protractor",
+    "selenium-webdriver": "file:../../node_modules/selenium-webdriver",
     "ts-node": "8.3.0",
     "typescript": "file:../../node_modules/typescript"
   }

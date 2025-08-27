@@ -24,6 +24,7 @@ NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
     "terser",
     "rollup",
     "rollup-plugin-sourcemaps",
+    "selenium-webdriver",
     "@angular/ssr",
     "@angular/build",
     "@angular/cli",
@@ -32,6 +33,7 @@ NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
     "@types/jasmine",
     "@types/jasminewd2",
     "@types/node",
+    "@types/selenium-webdriver",
     "zone.js",
 ]
 
@@ -50,11 +52,11 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
             "CHROME_BIN": "$(CHROME-HEADLESS-SHELL)",
         })
 
-    # By default run `yarn install` followed by `yarn test` using the tools linked
+    # By default run `pnpm install` followed by `pnpm test` using the tools linked
     # into the integration tests (using the `tool_mappings` attribute).
     commands = kwargs.pop("commands", [
-        "yarn install --cache-folder ./.yarn_local_cache",
-        "yarn test",
+        "pnpm install --cache-dir ./.pnpm_local_cache",
+        "pnpm test",
     ])
 
     # Complete list of npm packages to override in the test's package.json file mapped to
@@ -82,7 +84,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         toolchains = toolchains,
         tool_mappings = {
             "@pnpm//:pnpm": "pnpm",
-            "//:yarn_vendored": "yarn",
             "@nodejs_toolchains//:resolved_toolchain": "node",
         },
         # 15-minute timeout
@@ -102,7 +103,7 @@ def ng_integration_test(name, **kwargs):
             include = ["**/*"],
             exclude = [
                 "node_modules/**",
-                ".yarn_local_cache/**",
+                ".pnpm_local_cache/**",
             ],
         ),
     )

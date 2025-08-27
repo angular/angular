@@ -8,11 +8,11 @@
     "#comment-2": "The below is used is for integration tests",
     "build:ngmodule": "ng run ngmodule:build:development",
     "serve:ngmodule": "node ./dist/ngmodule/server/server.mjs",
-    "test:ngmodule": "yarn build:ngmodule && concurrently \"yarn serve:ngmodule\" \"yarn ng e2e ngmodule\" --kill-others --success first",
+    "test:ngmodule": "pnpm build:ngmodule && concurrently \"pnpm serve:ngmodule\" \"pnpm ng e2e ngmodule\" --kill-others --success first",
     "build:standalone": "ng run standalone:build:development",
     "serve:standalone": "node ./dist/standalone/server/server.mjs",
-    "test:standalone": "yarn build:standalone && concurrently \"yarn serve:standalone\" \"yarn ng e2e standalone\" --kill-others --success first",
-    "test": "ng version && yarn test:standalone && yarn test:ngmodule"
+    "test:standalone": "pnpm build:standalone && concurrently \"pnpm serve:standalone\" \"pnpm ng e2e standalone\" --kill-others --success first",
+    "test": "ng version && pnpm test:standalone && pnpm test:ngmodule"
   },
   "private": true,
   "dependencies": {
@@ -38,6 +38,8 @@
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "@types/node": "file:../../node_modules/@types/node",
+    "@types/express": "4.17.17",
+    "@types/selenium-webdriver": "file:../../node_modules/@types/selenium-webdriver",
     "concurrently": "3.1.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -47,6 +49,7 @@
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.2",
     "protractor": "file:../../node_modules/protractor",
+    "selenium-webdriver": "file:../../node_modules/selenium-webdriver",
     "ts-node": "8.3.0",
     "typescript": "file:../../node_modules/typescript"
   }

@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng add @angular/localize && yarn ng build"
+    "test": "ng add @angular/localize && pnpm ng build"
   },
   "private": true,
   "dependencies": {

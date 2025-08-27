@@ -19,11 +19,9 @@ echo ${RUN_TESTS}
 
 # Build the packages-dist directory.
 # This should be fast on incremental re-build.
-yarn build
+pnpm build
 
-# Workaround https://github.com/yarnpkg/yarn/issues/2165
-# Yarn will cache file://dist URIs and not update Angular code
-export readonly cache=.yarn_local_cache
+export readonly cache=.pnpm_local_cache
 function rm_cache {
   rm -rf $cache
 }
@@ -43,13 +41,8 @@ for testDir in ${RUN_TESTS}; do
     cd $testDir
     rm -rf dist
 
-    # Ensure the versions of (non-local) dependencies are exact versions (not version ranges) and
-    # in-sync between `package.json` and the lockfile.
-    # (NOTE: This must be run before `yarn install`, which updates the lockfile.)
-    node ../check-dependencies .
-
-    yarn install --cache-folder ../$cache
-    yarn test || exit 1
+    pnpm install --cache-dir ../$cache
+    pnpm test || exit 1
 
     # remove the temporary node modules directory to keep the source folder clean.
     rm -rf node_modules

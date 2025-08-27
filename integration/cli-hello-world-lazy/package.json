@@ -4,7 +4,7 @@
   "scripts": {
     "build": "ng build --configuration production",
     "e2e": "echo 'No e2e tests specified'",
-    "test": "yarn build && node check-output-for-ngdevmode.js"
+    "test": "pnpm build && node check-output-for-ngdevmode.js"
   },
   "private": true,
   "dependencies": {

@@ -26,10 +26,9 @@
     "rollup": "file:../../node_modules/rollup"
   },
   "scripts": {
-    "build": "yarn ngc && yarn rollup -c rollup.config.mjs",
-    "test": "yarn build && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first",
+    "build": "pnpm ngc && pnpm rollup -c rollup.config.mjs && tsc -p e2e",
+    "test": "pnpm build && concurrently \"pnpm run serve\" \"pnpm run protractor\" --kill-others --success first",
     "serve": "lite-server -c e2e/browser.config.json",
-    "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
   },
   "private": true

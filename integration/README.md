@@ -4,7 +4,7 @@ This directory contains end-to-end tests for Angular. Each directory is a self-c
 that exactly mimics how a user might expect Angular to work, so they allow high-fidelity
 reproductions of real-world issues.
 
-For this to work, we first build the Angular distribution via `yarn build`, then
+For this to work, we first build the Angular distribution via `pnpm build`, then
 install the distribution into each app.
 
 To test Angular CLI applications, we use the `cli-hello-world-*` integration tests.
@@ -13,10 +13,10 @@ When a significant change is released in the CLI, the applications should be upd
 
 ```bash
 $ cd integration/cli-hello-world[-*]
-$ yarn install
-$ yarn ng update @angular/cli @angular-devkit/build-angular
-$ yarn build
-$ yarn test
+$ pnpm install
+$ pnpm ng update @angular/cli @angular-devkit/build-angular
+$ pnpm build
+$ pnpm test
 ```
 
 Afterwards the `@angular/cli` and `@angular-devkit/build-angular` should be reverted to the `file:../` urls
@@ -35,7 +35,7 @@ The API for each test is:
 
 - Each sub-directory here is an integration test
 - Each test should have a `package.json` file
-- The test runner will run `yarn` and `yarn test` on the package
+- The test runner will run `pnpm` and `pnpm test` on the package
 
 This means that the test should be started by test script, like
 ```

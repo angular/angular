@@ -9,7 +9,7 @@
     "ng": "ng",
     "start": "ng serve",
     "pretest": "ng version",
-    "test": "ng e2e --port 0 --configuration production && ng extract-i18n && yarn translate && ng e2e --port 0 --configuration fr && ng e2e --port 0 --configuration de",
+    "test": "ng e2e --port 0 --configuration production && ng extract-i18n && pnpm translate && ng e2e --port 0 --configuration fr && ng e2e --port 0 --configuration de",
     "translate": "cp src/locale/messages.xlf src/locale/messages.fr.xlf && cp src/locale/messages.xlf src/locale/messages.de.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Bonjour/' src/locale/messages.fr.xlf && sed -i.bak -e 's/source>/target>/g' -e 's/Hello/Hallo/' src/locale/messages.de.xlf",
     "serve": "serve --no-clipboard --listen 4200"
   },

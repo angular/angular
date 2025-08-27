@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "pretest": "ng version",
-    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
+    "test": "ng test && pnpm e2e --configuration=ci && pnpm e2e --configuration=ci-production",
     "lint": "ng lint",
     "e2e": "ng e2e --port 0"
   },
