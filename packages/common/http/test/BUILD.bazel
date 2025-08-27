@@ -25,12 +25,10 @@ angular_jasmine_test(
     data = [
         ":test_lib",
     ],
-    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
 )
 
 ng_web_test_suite(
     name = "test_web",
-    flaky = True,  # TODO: figure out why one of the transferCache tests is flaky
     deps = [
         ":test_lib",
     ],
