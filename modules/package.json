@@ -2,7 +2,7 @@
   "dependencies": {
     "@angular/animations": "workspace:*",
     "@angular/benchpress": "workspace:*",
-    "@angular/build": "21.0.0-next.0",
+    "@angular/build": "21.0.0-next.1",
     "@angular/common": "workspace:*",
     "@angular/compiler": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
