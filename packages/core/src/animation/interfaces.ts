@@ -69,3 +69,7 @@ export interface AnimationDetails {
   animateFn: AnimationRemoveFunction;
   isEventBinding: boolean;
 }
+export interface LeaveAnimation {
+  index: number;
+  animateFn: Function;
+}
