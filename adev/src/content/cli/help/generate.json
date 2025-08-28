@@ -55,7 +55,9 @@
         {
           "name": "tool",
           "type": "array",
-          "default": "none",
+          "default": [
+            "none"
+          ],
           "enum": [
             "claude",
             "copilot",
@@ -571,6 +573,9 @@
           "type": "array",
           "aliases": [
             "guardType"
+          ],
+          "default": [
+            "CanActivate"
           ],
           "enum": [
             "CanActivate",
