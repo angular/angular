@@ -12,7 +12,6 @@ import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_featur
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ɵɵExternalStylesFeature} from './features/external_styles_feature';
-import {ɵɵAnimationsFeature} from './features/animations_feature';
 import {
   ComponentDef,
   ComponentTemplate,
@@ -249,5 +248,4 @@ export {
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
   ɵɵExternalStylesFeature,
-  ɵɵAnimationsFeature,
 };

@@ -69,7 +69,20 @@ export interface AnimationDetails {
   animateFn: AnimationRemoveFunction;
   isEventBinding: boolean;
 }
-export interface LeaveAnimation {
-  index: number;
-  animateFn: Function;
+
+export interface LongestAnimation {
+  animationName: string | undefined;
+  propertyName: string | undefined;
+  duration: number;
+}
+
+export interface AnimationLViewData {
+  // Enter animations that apply to nodes in this view
+  enter?: Function[];
+
+  // Leave animations that apply to nodes in this view
+  leave?: (() => Promise<void>)[];
+
+  // Leave animations that apply to nodes in this view
+  running?: Promise<PromiseSettledResult<void>[]>;
 }

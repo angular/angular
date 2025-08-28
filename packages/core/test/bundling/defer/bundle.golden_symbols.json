@@ -67,10 +67,8 @@
       "shimStylesContent"
     ],
     "lazy": [
-      "DeferComponent",
-      "_DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
-      "ANIMATIONS_DISABLED",
+      "ANIMATIONS",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
       "APP_INITIALIZER",
@@ -163,8 +161,6 @@
       "MATH_ML_NAMESPACE",
       "MAXIMUM_REFRESH_RERUNS",
       "MAXIMUM_REFRESH_RERUNS",
-      "MAX_ANIMATION_TIMEOUT",
-      "MAX_ANIMATION_TIMEOUT_DEFAULT",
       "MINIMUM_SLOT",
       "MONKEY_PATCH_KEY_NAME",
       "MOVED_VIEWS",
@@ -350,6 +346,7 @@
       "addToArray",
       "addToEndOfViewTree",
       "addViewToDOM",
+      "allLeavingAnimations",
       "allocExpando",
       "allocLFrame",
       "angularZoneInstanceIdProperty",
@@ -482,7 +479,6 @@
       "forwardRef",
       "freeConsumers",
       "getActiveConsumer",
-      "getAnimationElementRemovalRegistry",
       "getBeforeNodeForView",
       "getBindingsEnabled",
       "getCleanupFnKeyByType",
@@ -711,7 +707,6 @@
       "registerLView",
       "registerPostOrderHooks",
       "registerPreOrderHooks",
-      "registry",
       "rememberChangeHistoryAndInvokeOnChangesHook",
       "remove",
       "removeFromArray",
@@ -731,8 +726,11 @@
       "resolveDirectives",
       "resolveForwardRef",
       "retrieveHydrationInfo",
+      "runAfterLeaveAnimations",
       "runEffectsInView",
+      "runEnterAnimations",
       "runInInjectionContext",
+      "runLeaveAnimationsWithCallback",
       "runPlatformInitializers",
       "saveNameToExportMap",
       "saveResolvedLocalsInData",
@@ -802,7 +800,9 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput"
+      "writeToDirectiveInput",
+      "DeferComponent",
+      "_DeferComponent"
     ]
   }
 }

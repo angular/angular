@@ -26,10 +26,7 @@ import {
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
   Optional,
-  ɵAnimationRemovalRegistry as AnimationRemovalRegistry,
-  ɵgetAnimationElementRemovalRegistry as getAnimationElementRemovalRegistry,
-  ɵANIMATIONS_DISABLED as ANIMATIONS_DISABLED,
-  MAX_ANIMATION_TIMEOUT,
+  ɵallLeavingAnimations as allLeavingAnimations,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -140,7 +137,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
   >();
   private readonly defaultRenderer: Renderer2;
   private readonly platformIsServer: boolean;
-  private registry: AnimationRemovalRegistry;
 
   constructor(
     private readonly eventManager: EventManager,
@@ -151,8 +147,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     @Inject(PLATFORM_ID) readonly platformId: Object,
     readonly ngZone: NgZone,
     @Inject(CSP_NONCE) private readonly nonce: string | null = null,
-    @Inject(ANIMATIONS_DISABLED) private readonly animationDisabled: boolean,
-    @Inject(MAX_ANIMATION_TIMEOUT) private readonly maxAnimationTimeout: number,
     @Inject(TracingService)
     @Optional()
     private readonly tracingService: TracingService<TracingSnapshot> | null = null,
@@ -164,8 +158,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
       ngZone,
       this.platformIsServer,
       this.tracingService,
-      (this.registry = getAnimationElementRemovalRegistry()),
-      this.maxAnimationTimeout,
     );
   }
 
@@ -220,9 +212,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
-            this.registry,
-            this.animationDisabled,
-            this.maxAnimationTimeout,
           );
           break;
         case ViewEncapsulation.ShadowDom:
@@ -236,8 +225,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             this.nonce,
             platformIsServer,
             tracingService,
-            this.registry,
-            this.maxAnimationTimeout,
           );
         default:
           renderer = new NoneEncapsulationDomRenderer(
@@ -249,9 +236,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             ngZone,
             platformIsServer,
             tracingService,
-            this.registry,
-            this.animationDisabled,
-            this.maxAnimationTimeout,
           );
           break;
       }
@@ -290,8 +274,6 @@ class DefaultDomRenderer2 implements Renderer2 {
     protected readonly ngZone: NgZone,
     private readonly platformIsServer: boolean,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
-    protected readonly registry: AnimationRemovalRegistry,
-    protected readonly maxAnimationTimeout: number,
   ) {}
 
   destroy(): void {}
@@ -336,11 +318,6 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   removeChild(_parent: any, oldChild: any): void {
-    const {elements} = this.registry;
-    if (elements) {
-      elements.animate(oldChild, () => oldChild.remove(), this.maxAnimationTimeout);
-      return;
-    }
     // child was removed
     oldChild.remove();
   }
@@ -529,18 +506,8 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     nonce: string | null,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
-    registry: AnimationRemovalRegistry,
-    maxAnimationTimeout: number,
   ) {
-    super(
-      eventManager,
-      doc,
-      ngZone,
-      platformIsServer,
-      tracingService,
-      registry,
-      maxAnimationTimeout,
-    );
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
     this.sharedStylesHost.addHost(this.shadowRoot);
     let styles = component.styles;
@@ -606,7 +573,6 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
   private readonly styles: string[];
   private readonly styleUrls?: string[];
-  private readonly _animationDisabled: boolean;
 
   constructor(
     eventManager: EventManager,
@@ -617,21 +583,9 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
-    registry: AnimationRemovalRegistry,
-    animationDisabled: boolean,
-    maxAnimationTimeout: number,
     compId?: string,
   ) {
-    super(
-      eventManager,
-      doc,
-      ngZone,
-      platformIsServer,
-      tracingService,
-      registry,
-      maxAnimationTimeout,
-    );
-    this._animationDisabled = animationDisabled;
+    super(eventManager, doc, ngZone, platformIsServer, tracingService);
     let styles = component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
@@ -651,32 +605,9 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     if (!this.removeStylesOnCompDestroy) {
       return;
     }
-
-    // In the case that animate.leave animations are used, depending on
-    // app structure, a race condition happens with the destroy call and
-    // the animation being added to the element. Either the DOM node is
-    // immediately removed or the animate instruction is called right
-    // as the styles are pruned, causing the animated element to sit
-    // until the timeout removes it. This delays the pruning of style
-    // sheets for a few seconds to avoid this problem.
-    //
-    // TODO(thePunderWoman): replace this with a more targeted delay on only
-    // cases where we know there's a leave animation, that the leave animation
-    // is actually running, and to instead use the longest animation value
-    // for the timeout duration.
-    if (
-      (typeof ngServerMode === 'undefined' || !ngServerMode) &&
-      !this._animationDisabled &&
-      this.registry.elements
-    ) {
-      this.ngZone.runOutsideAngular(() => {
-        setTimeout(() => {
-          this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
-        }, this.maxAnimationTimeout);
-      });
-      return;
+    if (allLeavingAnimations.size === 0) {
+      this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
     }
-    this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
   }
 }
 
@@ -694,9 +625,6 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     ngZone: NgZone,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
-    registry: AnimationRemovalRegistry,
-    animationDisabled: boolean,
-    maxAnimationTimeout: number,
   ) {
     const compId = appId + '-' + component.id;
     super(
@@ -708,9 +636,6 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
       ngZone,
       platformIsServer,
       tracingService,
-      registry,
-      animationDisabled,
-      maxAnimationTimeout,
       compId,
     );
     this.contentAttr = shimContentAttribute(compId);
