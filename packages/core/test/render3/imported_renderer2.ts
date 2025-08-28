@@ -63,9 +63,6 @@ export function getRendererFactory2(document: any): RendererFactory2 {
     isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
     fakeNgZone,
     null,
-    true,
-    0,
-    null,
   );
   const origCreateRenderer = rendererFactory.createRenderer;
   rendererFactory.createRenderer = function (element: any, type: RendererType2 | null) {

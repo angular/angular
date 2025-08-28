@@ -21,7 +21,8 @@
     "useDefineForClassFields": false,
     "lib": [
       "ES2022",
-      "dom"
+      "dom",
+      "ES2020.Promise"
     ]
   },
   "angularCompilerOptions": {

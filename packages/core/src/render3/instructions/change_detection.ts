@@ -25,7 +25,7 @@ import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interface
 import {
   CONTEXT,
   EFFECTS_TO_SCHEDULE,
-  ENTER_ANIMATIONS,
+  ANIMATIONS,
   ENVIRONMENT,
   FLAGS,
   InitPhaseState,
@@ -232,6 +232,7 @@ export function refreshView<T>(
     if (templateFn !== null) {
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
     }
+    runEnterAnimations(lView);
 
     const hooksInitPhaseCompleted =
       (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
@@ -261,7 +262,6 @@ export function refreshView<T>(
       // `LView` but its declaration appears after the insertion component.
       markTransplantedViewsForRefresh(lView);
     }
-    runEnterAnimations(lView);
     runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 
@@ -375,11 +375,12 @@ export function refreshView<T>(
 }
 
 function runEnterAnimations(lView: LView) {
-  if (lView[ENTER_ANIMATIONS]) {
-    for (let animateFn of lView[ENTER_ANIMATIONS]) {
+  const animationData = lView[ANIMATIONS];
+  if (animationData?.enter) {
+    for (const animateFn of animationData.enter) {
       animateFn();
     }
-    lView[ENTER_ANIMATIONS] = null;
+    animationData.enter = undefined;
   }
 }
 

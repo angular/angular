@@ -11,11 +11,9 @@
     "rootDir": ".",
     "target": "ES2020",
     "lib": [
-      "es5",
+      "ES2020",
       "dom",
-      "es2015.collection",
-      "es2015.iterable",
-      "es2015.promise"
+      "ES2020.promise"
     ],
     "types": [],
   },
