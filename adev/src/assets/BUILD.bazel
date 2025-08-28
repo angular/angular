@@ -61,6 +61,7 @@ copy_to_directory(
         "//packages/core/testing:core_testing_docs",
         "//packages/elements:elements_docs",
         "//packages/forms:forms_docs",
+        "//packages/forms/signals:forms_signals_docs",
         "//packages/localize:localize_docs",
         "//packages/localize/src/localize:localize_init_docs",
         "//packages/platform-browser:platform-browser_docs",
