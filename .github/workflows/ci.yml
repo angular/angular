@@ -22,8 +22,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
-        with:
-          cache-node-modules: true
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Check code lint
@@ -42,8 +40,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
-        with:
-          cache-node-modules: true
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@7e2eefa1375195fa7616f78a76f538a188852067
       - name: Setup Bazel RBE
@@ -69,8 +65,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
-        with:
-          cache-node-modules: true
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@7e2eefa1375195fa7616f78a76f538a188852067
       - name: Setup Bazel Remote Caching
@@ -87,8 +81,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
-        with:
-          cache-node-modules: true
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@7e2eefa1375195fa7616f78a76f538a188852067
       - name: Setup Bazel Remote Caching
@@ -143,12 +135,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
-        with:
-          cache-node-modules: true
-          node-module-directories: |
-            ./node_modules
-            ./packages/zone.js/node_modules
-            ./packages/zone.js/test/typings/node_modules
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@7e2eefa1375195fa7616f78a76f538a188852067
       - name: Setup Bazel RBE
@@ -192,8 +178,6 @@ jobs:
   #   steps:
   #     - name: Initialize environment
   #       uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@b5a3609f89c06eb4037dce22a93641213a5d1508
-  #       with:
-  #         cache-node-modules: true
   #     - name: Install node modules
   #       run: pnpm install --frozen-lockfile
   #     - uses: ./.github/actions/saucelabs-legacy
