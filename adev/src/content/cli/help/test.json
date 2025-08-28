@@ -29,7 +29,6 @@
     {
       "name": "code-coverage-exclude",
       "type": "array",
-      "default": [],
       "description": "Globs to exclude from code coverage."
     },
     {
@@ -48,13 +47,11 @@
     {
       "name": "exclude",
       "type": "array",
-      "default": [],
       "description": "Globs of files to exclude, relative to the project root."
     },
     {
       "name": "external-dependencies",
       "type": "array",
-      "default": [],
       "description": "Exclude the listed external dependencies from being bundled into the bundle. Instead, the created bundle relies on these dependencies to be available during runtime."
     },
     {
@@ -100,7 +97,6 @@
     {
       "name": "polyfills",
       "type": "array",
-      "default": [],
       "description": "A list of polyfills to include in the build. Can be a full path for a file, relative to the current workspace or module specifier. Example: 'zone.js'."
     },
     {
