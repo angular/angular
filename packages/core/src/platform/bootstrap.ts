@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs';
 import {PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
 import {R3Injector} from '../di/r3_injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {DEFAULT_LOCALE_ID} from '../i18n/localization';
 import {LOCALE_ID} from '../i18n/tokens';
 import {ImagePerformanceWarning} from '../image_performance_warning';
@@ -96,10 +96,12 @@ export function bootstrap<M>(
     const exceptionHandler = envInjector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
-        throw new RuntimeError(
-          RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
-          'Invalid change detection configuration: ' +
-            'provideZoneChangeDetection and provideZonelessChangeDetection cannot be used together.',
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+            'Both provideZoneChangeDetection and provideZonelessChangeDetection are provided. ' +
+              'This is likely a mistake. Update the application providers to use only one of the two.',
+          ),
         );
       }
       if (REQUIRE_ONE_CD_PROVIDER) {
