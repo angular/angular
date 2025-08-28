@@ -12,6 +12,7 @@ ng_project(
     ),
     deps = [
         "//:node_modules/@standard-schema/spec",
+        "//packages/common/http",
         "//packages/core",
         "//packages/forms",
     ],
