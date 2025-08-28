@@ -617,6 +617,28 @@ function addProvidersToBootstrapOption(
           }),
         ),
       );
+    } else {
+      const newProviders = `[${providersText}, ...`;
+      replacements.push(
+        new Replacement(
+          projectFile,
+          new TextUpdate({
+            position: providersProp.initializer.getStart(),
+            end: providersProp.initializer.getStart(),
+            toInsert: newProviders,
+          }),
+        ),
+      );
+      replacements.push(
+        new Replacement(
+          projectFile,
+          new TextUpdate({
+            position: providersProp.initializer.getEnd(),
+            end: providersProp.initializer.getEnd(),
+            toInsert: ']',
+          }),
+        ),
+      );
     }
   } else {
     const text = `providers: [${providersText}]`;
