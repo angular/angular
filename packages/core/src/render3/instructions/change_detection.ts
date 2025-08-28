@@ -232,6 +232,7 @@ export function refreshView<T>(
     if (templateFn !== null) {
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
     }
+    runEnterAnimations(lView);
 
     const hooksInitPhaseCompleted =
       (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
@@ -261,7 +262,6 @@ export function refreshView<T>(
       // `LView` but its declaration appears after the insertion component.
       markTransplantedViewsForRefresh(lView);
     }
-    runEnterAnimations(lView);
     runEffectsInView(lView);
     detectChangesInEmbeddedViews(lView, ChangeDetectionMode.Global);
 

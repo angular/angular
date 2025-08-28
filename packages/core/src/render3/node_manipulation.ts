@@ -62,6 +62,7 @@ import {
   HookData,
   HookFn,
   HOST,
+  LEAVE_ANIMATIONS,
   LView,
   LViewFlags,
   NEXT,
@@ -70,6 +71,7 @@ import {
   QUERIES,
   REACTIVE_TEMPLATE_CONSUMER,
   RENDERER,
+  RUNNING_ANIMATIONS,
   T_HOST,
   TVIEW,
   TView,
@@ -79,6 +81,7 @@ import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
+import {allLeavingAnimations} from '../animation/interfaces';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -157,9 +160,12 @@ function applyToElementOrContainer(
  * @param lView The view from which elements should be added or removed
  */
 export function removeViewFromDOM(tView: TView, lView: LView): void {
-  detachViewFromDOM(tView, lView);
-  lView[HOST] = null;
-  lView[T_HOST] = null;
+  runLeaveAnimations(lView);
+  runAfterLeaveAnimations(lView, () => {
+    detachViewFromDOM(tView, lView);
+    lView[HOST] = null;
+    lView[T_HOST] = null;
+  });
 }
 
 /**
@@ -278,14 +284,14 @@ export function destroyLView(tView: TView, lView: LView) {
   if (isDestroyed(lView)) {
     return;
   }
-
   const renderer = lView[RENDERER];
 
-  if (renderer.destroyNode) {
-    applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
-  }
-
-  destroyViewTree(lView);
+  runAfterLeaveAnimations(lView, () => {
+    if (renderer.destroyNode) {
+      applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
+    }
+    destroyViewTree(lView);
+  });
 }
 
 /**
@@ -317,11 +323,9 @@ function cleanUpView(tView: TView, lView: LView): void {
     lView[REACTIVE_TEMPLATE_CONSUMER] && consumerDestroy(lView[REACTIVE_TEMPLATE_CONSUMER]);
 
     executeOnDestroys(tView, lView);
-    processCleanups(tView, lView);
-    // For component views only, the local renderer is destroyed at clean up time.
-    if (lView[TVIEW].type === TViewType.Component) {
-      lView[RENDERER].destroy();
-    }
+    runAfterLeaveAnimations(lView, () => {
+      processCleanupsAndDestroy(lView, tView);
+    });
 
     const declarationContainer = lView[DECLARATION_LCONTAINER];
     // we are dealing with an embedded view that is still inserted into a container
@@ -343,6 +347,36 @@ function cleanUpView(tView: TView, lView: LView): void {
   } finally {
     setActiveConsumer(prevConsumer);
   }
+}
+
+function processCleanupsAndDestroy(lView: LView, tView: TView) {
+  processCleanups(tView, lView);
+  // For component views only, the local renderer is destroyed at clean up time.
+  if (lView[TVIEW].type === TViewType.Component) {
+    lView[RENDERER].destroy();
+  }
+}
+
+function runLeaveAnimations(lView: LView): void {
+  if (lView[LEAVE_ANIMATIONS]) {
+    lView[RUNNING_ANIMATIONS] = [];
+    for (let animateFn of lView[LEAVE_ANIMATIONS]) {
+      lView[RUNNING_ANIMATIONS].push(animateFn());
+    }
+    lView[LEAVE_ANIMATIONS] = null;
+  }
+}
+
+function runAfterLeaveAnimations(lView: LView, callback: Function) {
+  if (lView[RUNNING_ANIMATIONS]) {
+    Promise.allSettled(lView[RUNNING_ANIMATIONS]).then(() => {
+      lView[RUNNING_ANIMATIONS] = null;
+      allLeavingAnimations.delete(lView);
+      callback();
+    });
+    return;
+  }
+  callback();
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */

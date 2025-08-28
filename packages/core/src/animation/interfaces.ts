@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {InjectionToken} from '../di/injection_token';
+import {LView} from '../render3/interfaces/view';
 
 /**
  * A [DI token](api/core/InjectionToken) that enables or disables all enter and leave animations.
@@ -69,7 +70,4 @@ export interface AnimationDetails {
   animateFn: AnimationRemoveFunction;
   isEventBinding: boolean;
 }
-export interface LeaveAnimation {
-  index: number;
-  animateFn: Function;
-}
+export const allLeavingAnimations = new Set<LView>();

@@ -174,7 +174,6 @@ export {DEHYDRATED_BLOCK_REGISTRY as ɵDEHYDRATED_BLOCK_REGISTRY} from './defer/
 export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
 export {ɵassertType} from './type_checking';
 export {
-  ElementRegistry as ɵElementRegistry,
-  AnimationRemovalRegistry as ɵAnimationRemovalRegistry,
-} from './animation/element_removal_registry';
-export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
+  ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED,
+  allLeavingAnimations as ɵallLeavingAnimations,
+} from './animation/interfaces';
