@@ -34,7 +34,8 @@ ng_package(
         "//packages/language-service/test:__pkg__",
     ],
     deps = [
-        ":forms",
+        "//packages/forms",
+        "//packages/forms/signals",
     ],
 )
 
