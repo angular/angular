@@ -32,7 +32,6 @@ import {getTemplateSourceLocationsEnabled} from './config';
 import {createContentQueriesFunction, createViewQueriesFunction} from './query_generation';
 import {makeBindingParser} from './template';
 import {asLiteral, conditionallyCreateDirectiveBindingLiteral, DefinitionMap} from './util';
-import {analyzeTemplateForAnimations} from '../../template_parser/animation_analyzer';
 
 const COMPONENT_VARIABLE = '%COMP%';
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
@@ -157,12 +156,6 @@ function addFeatures(
     features.push(
       o.importExpr(R3.ExternalStylesFeature).callFn([o.literalArr(externalStyleNodes)]),
     );
-  }
-  const template = (meta as R3ComponentMetadata<R3TemplateDependency>).template;
-  if (hasAnimationHostBinding(meta) || (template && template.nodes.length > 0)) {
-    if (hasAnimationHostBinding(meta) || analyzeTemplateForAnimations(template.nodes)) {
-      features.push(o.importExpr(R3.AnimationsFeature).callFn([]));
-    }
   }
 
   if (features.length) {

@@ -9,39 +9,30 @@
 import {stringify} from '../../util/stringify'; // Adjust imports as per actual location
 import {
   AnimationCallbackEvent,
-  AnimationClassFunction,
-  AnimationEventFunction,
   AnimationFunction,
-  AnimationRemoveFunction,
   ANIMATIONS_DISABLED,
+  MAX_ANIMATION_TIMEOUT,
+  LongestAnimation,
 } from '../../animation/interfaces';
-import {
-  AnimationRemovalRegistry,
-  getClassListFromValue,
-} from '../../animation/element_removal_registry';
-import {getLView, getCurrentTNode, getTView, getAnimationElementRemovalRegistry} from '../state';
+import {getLView, getCurrentTNode} from '../state';
 import {
   RENDERER,
   INJECTOR,
   CONTEXT,
-  FLAGS,
-  LViewFlags,
   LView,
-  TView,
   DECLARATION_LCONTAINER,
-  ENTER_ANIMATIONS,
-  LEAVE_ANIMATIONS,
+  ANIMATIONS,
 } from '../interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
-import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
+import {getNativeByTNode} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
 import {NgZone} from '../../zone';
-import {assertDefined} from '../../util/assert';
-import {determineLongestAnimation, LongestAnimation} from '../../animation/longest_animation';
+import {determineLongestAnimation, allLeavingAnimations} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
 import {getBeforeNodeForView} from '../node_manipulation';
+import type {PromiseConstructor} from '../../util/promise_with_resolvers';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
 const areAnimationSupported =
@@ -56,22 +47,6 @@ const areAnimationSupported =
 function areAnimationsDisabled(lView: LView): boolean {
   const injector = lView[INJECTOR]!;
   return injector.get(ANIMATIONS_DISABLED, DEFAULT_ANIMATIONS_DISABLED);
-}
-
-/**
- * Helper function to setup element registry cleanup when LView is destroyed
- */
-function setupElementRegistryCleanup(
-  elementRegistry: AnimationRemovalRegistry,
-  lView: LView,
-  tView: TView,
-  nativeElement: Element,
-): void {
-  if (lView[FLAGS] & LViewFlags.FirstLViewPass) {
-    storeCleanupWithContext(tView, lView, nativeElement, (elToClean: Element) => {
-      elementRegistry.elements!.remove(elToClean);
-    });
-  }
 }
 
 /**
@@ -148,18 +123,26 @@ function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 }
 
 function getLViewEnterAnimations(lView: LView): Function[] {
-  if (lView[ENTER_ANIMATIONS] === null) {
-    lView[ENTER_ANIMATIONS] = [];
-  }
-  return lView[ENTER_ANIMATIONS];
+  const animationData = (lView[ANIMATIONS] ??= {});
+  return (animationData.enter ??= []);
 }
 
-// function getLViewLeaveAnimations(lView: LView): Function[] {
-//   if (lView[LEAVE_ANIMATIONS] === null) {
-//     lView[LEAVE_ANIMATIONS] = [];
-//   }
-//   return lView[LEAVE_ANIMATIONS];
-// }
+function getLViewLeaveAnimations(lView: LView): Function[] {
+  const animationData = (lView[ANIMATIONS] ??= {});
+  return (animationData.leave ??= []);
+}
+
+function getClassListFromValue(value: string | Function | string[]): string[] | null {
+  const classes = typeof value === 'function' ? value() : value;
+  let classList: string[] | null = Array.isArray(classes) ? classes : null;
+  if (typeof classes === 'string') {
+    classList = classes
+      .trim()
+      .split(/\s+/)
+      .filter((k) => k);
+  }
+  return classList;
+}
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -295,21 +278,25 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   cancelLeavingNodes(tNode, lView);
 
-  getLViewEnterAnimations(lView).push(() => {
-    const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
-
-    ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
-
-    value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
-  });
+  getLViewEnterAnimations(lView).push(() => runEnterAnimationFunction(lView, tNode, value));
 
   return ɵɵanimateEnterListener;
 }
 
 /**
+ * runs enter animations when a custom function is provided
+ */
+function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationFunction) {
+  const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
+  ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+  value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
+}
+
+/**
  * Instruction to handle the `animate.leave` behavior for class animations.
- * It registers an animation with the ElementRegistry to be run when the element
- * is scheduled for removal from the DOM.
+ * It creates a leave animation function that's tracked in the LView to
+ * be run before DOM node removal and cleanup.
  *
  * @param value The value bound to `animate.leave`, which can be a string or a function.
  * @returns This function returns itself so that it may be chained.
@@ -331,56 +318,53 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
     return ɵɵanimateLeave;
   }
 
-  const tView = getTView();
   const tNode = getCurrentTNode()!;
+
+  getLViewLeaveAnimations(lView).push(() =>
+    runLeaveAnimations(lView, tNode, value, animationsDisabled),
+  );
+
+  return ɵɵanimateLeave; // For chaining
+}
+
+function runLeaveAnimations(
+  lView: LView,
+  tNode: TNode,
+  value: string | Function,
+  animationsDisabled: boolean,
+): Promise<void> {
+  const {promise, resolve} = (Promise as unknown as PromiseConstructor).withResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
-  // This instruction is called in the update pass.
   const renderer = lView[RENDERER];
-  const elementRegistry = getAnimationElementRemovalRegistry();
-  ngDevMode &&
-    assertDefined(
-      elementRegistry.elements,
-      'Expected `ElementRegistry` to be present in animations subsystem',
+  const ngZone = lView[INJECTOR].get(NgZone);
+  allLeavingAnimations.add(lView);
+
+  const activeClasses = getClassListFromValue(value);
+  if (activeClasses && activeClasses.length > 0) {
+    animateLeaveClassRunner(
+      nativeElement as HTMLElement,
+      tNode,
+      activeClasses,
+      renderer,
+      animationsDisabled,
+      ngZone,
+      resolve,
     );
-  const ngZone = lView[INJECTOR]!.get(NgZone);
+  } else {
+    resolve();
+  }
 
-  // This function gets stashed in the registry to be used once the element removal process
-  // begins. We pass in the values and resolvers so as to evaluate the resolved classes
-  // at the latest possible time, meaning we evaluate them right before the animation
-  // begins.
-  const animate: AnimationClassFunction = (
-    el: Element,
-    value: Set<string> | null,
-    resolvers: Function[] | undefined,
-  ): AnimationRemoveFunction => {
-    return (removalFn: VoidFunction) => {
-      animateLeaveClassRunner(
-        el as HTMLElement,
-        tNode,
-        getClassList(value, resolvers),
-        removalFn,
-        renderer,
-        animationsDisabled,
-        ngZone,
-      );
-    };
-  };
-
-  // Ensure cleanup if the LView is destroyed before the animation runs.
-  setupElementRegistryCleanup(elementRegistry, lView, tView, nativeElement);
-  elementRegistry.elements!.add(nativeElement, value, animate);
-
-  return ɵɵanimateLeave; // For chaining
+  return promise;
 }
 
 /**
  * Instruction to handle the `(animate.leave)` behavior for event bindings, aka when
  * a user wants to use a custom animation function rather than a class. It registers
- * an animation with the ElementRegistry to be run when the element is scheduled for
- * removal from the DOM.
+ * a leave animation function in the LView to be run at right before removal from the
+ * DOM.
  *
  * @param value The value bound to `(animate.leave)`, an AnimationFunction.
  * @returns This function returns itself so that it may be chained.
@@ -402,72 +386,64 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-  const tView = getTView();
-  const nativeElement = getNativeByTNode(tNode, lView) as Element;
+  allLeavingAnimations.add(lView);
 
-  ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
-
-  const elementRegistry = getAnimationElementRemovalRegistry();
-  ngDevMode &&
-    assertDefined(
-      elementRegistry.elements,
-      'Expected `ElementRegistry` to be present in animations subsystem',
-    );
-
-  const renderer = lView[RENDERER];
-  const animationsDisabled = areAnimationsDisabled(lView);
-  const ngZone = lView[INJECTOR]!.get(NgZone);
-
-  const animate: AnimationEventFunction = (
-    _el: Element,
-    value: AnimationFunction,
-  ): AnimationRemoveFunction => {
-    return (removeFn: VoidFunction): void => {
-      if (animationsDisabled) {
-        removeFn();
-      } else {
-        const event: AnimationCallbackEvent = {
-          target: nativeElement,
-          animationComplete: () => {
-            clearLeavingNodes(tNode, _el as HTMLElement);
-            removeFn();
-          },
-        };
-        trackLeavingNodes(tNode, _el as HTMLElement);
-
-        ngZone.runOutsideAngular(() => {
-          renderer.listen(_el, 'animationend', () => removeFn(), {once: true});
-        });
-        value.call(lView[CONTEXT], event);
-      }
-    };
-  };
-
-  // Ensure cleanup if the LView is destroyed before the animation runs.
-  setupElementRegistryCleanup(elementRegistry, lView, tView, nativeElement);
-  elementRegistry.elements!.addCallback(nativeElement, value, animate);
+  getLViewLeaveAnimations(lView).push(() => runLeaveAnimationFunction(lView, tNode, value));
 
   return ɵɵanimateLeaveListener; // For chaining
 }
 
 /**
- * Builds the list of classes to apply to an element based on either the passed in list of strings
- * or the set of resolver functions that are coming from bindings. Those resolver functions should
- * resolve into either a string or a string array. There may be multiple to support composition.
+ * runs leave animations when a custom function is provided
  */
-function getClassList(value: Set<string> | null, resolvers: Function[] | undefined): Set<string> {
-  const classList = new Set<string>(value);
-  if (resolvers && resolvers.length) {
-    for (const resolverFn of resolvers) {
-      const resolvedValue = getClassListFromValue(resolverFn);
-      if (resolvedValue) {
-        for (const rv of resolvedValue) {
-          classList.add(rv);
-        }
-      }
-    }
+function runLeaveAnimationFunction(
+  lView: LView,
+  tNode: TNode,
+  value: AnimationFunction,
+): Promise<void> {
+  const {promise, resolve} = (Promise as unknown as PromiseConstructor).withResolvers<void>();
+  const nativeElement = getNativeByTNode(tNode, lView) as Element;
+
+  ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
+
+  const renderer = lView[RENDERER];
+  const animationsDisabled = areAnimationsDisabled(lView);
+  const ngZone = lView[INJECTOR]!.get(NgZone);
+  const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
+
+  if (animationsDisabled) {
+    resolve();
+  } else {
+    const timeoutId = setTimeout(() => {
+      clearLeavingNodes(tNode, nativeElement as HTMLElement);
+      resolve();
+    }, maxAnimationTimeout);
+
+    const event: AnimationCallbackEvent = {
+      target: nativeElement,
+      animationComplete: () => {
+        clearLeavingNodes(tNode, nativeElement as HTMLElement);
+        clearTimeout(timeoutId);
+        resolve();
+      },
+    };
+    trackLeavingNodes(tNode, nativeElement as HTMLElement);
+
+    ngZone.runOutsideAngular(() => {
+      renderer.listen(
+        nativeElement,
+        'animationend',
+        () => {
+          resolve();
+        },
+        {once: true},
+      );
+    });
+    value.call(lView[CONTEXT], event);
   }
-  return classList;
+
+  // Ensure cleanup if the LView is destroyed before the animation runs.
+  return promise;
 }
 
 function cancelAnimationsIfRunning(element: HTMLElement, renderer: Renderer): void {
@@ -553,15 +529,15 @@ function assertElementNodes(nativeElement: Element, instruction: string) {
 function animateLeaveClassRunner(
   el: HTMLElement,
   tNode: TNode,
-  classList: Set<string>,
-  finalRemoveFn: VoidFunction,
+  classList: string[],
   renderer: Renderer,
   animationsDisabled: boolean,
   ngZone: NgZone,
+  resolver: VoidFunction,
 ) {
   if (animationsDisabled) {
     longestAnimations.delete(el);
-    finalRemoveFn();
+    resolver();
     return;
   }
 
@@ -576,8 +552,17 @@ function animateLeaveClassRunner(
       event.stopImmediatePropagation();
       longestAnimations.delete(el);
       clearLeavingNodes(tNode, el);
-      finalRemoveFn();
+
+      if (Array.isArray(tNode.projection)) {
+        // in the content projection case, the element is not destroyed.
+        // So we need to remove the class at the end so that it isn't left
+        // behind for whenever the item shows up again.
+        for (const item of classList) {
+          renderer.removeClass(el, item);
+        }
+      }
     }
+    resolver();
   };
 
   ngZone.runOutsideAngular(() => {
@@ -596,7 +581,7 @@ function animateLeaveClassRunner(
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
         clearLeavingNodes(tNode, el);
-        finalRemoveFn();
+        resolver();
       }
     });
   });

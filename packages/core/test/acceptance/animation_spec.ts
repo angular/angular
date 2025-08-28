@@ -13,25 +13,41 @@ import {
   Component,
   Directive,
   ElementRef,
-  input,
-  InputSignal,
+  NgModule,
+  provideZonelessChangeDetection,
   signal,
   ViewChild,
 } from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
+import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 
-/** Ticks the specified amount of `requestAnimationFrame`-s. */
-export function tickAnimationFrames(amount: number) {
-  tick(16.6 * amount); // Angular turns rAF calls into 16.6ms timeouts in tests.
-}
+@NgModule({
+  providers: [provideZonelessChangeDetection()],
+})
+export class TestModule {}
 
 describe('Animation', () => {
   if (isNode) {
     it('should pass', () => expect(true).toBe(true));
     return;
   }
+
+  beforeAll(() => {
+    TestBed.resetTestEnvironment();
+    TestBed.initTestEnvironment([BrowserTestingModule, TestModule], platformBrowserTesting());
+  });
+
+  afterAll(() => {
+    TestBed.resetTestEnvironment();
+    TestBed.initTestEnvironment(
+      [BrowserTestingModule, NoopAnimationsModule, TestModule],
+      platformBrowserTesting(),
+    );
+  });
 
   describe('animate.leave', () => {
     const styles = `
@@ -83,6 +99,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       expect(logSpy).toHaveBeenCalled();
     }));
@@ -191,6 +208,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -251,6 +269,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -312,6 +331,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -379,6 +399,7 @@ describe('Animation', () => {
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     }));
 
@@ -421,6 +442,7 @@ describe('Animation', () => {
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     }));
 
@@ -493,12 +515,12 @@ describe('Animation', () => {
       @Component({
         selector: 'child-cmp',
         styles: multiple,
-        host: {'[animate.leave]': 'clazz'},
+        host: {'[animate.leave]': 'slide()'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
       })
       class ChildComponent {
-        clazz = 'slide-out';
+        slide = signal('slide-out');
       }
 
       @Component({
@@ -525,10 +547,8 @@ describe('Animation', () => {
       fixture.detectChanges();
       tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
       expect(childCmp.nativeElement.className).toContain('fade');
       expect(childCmp.nativeElement.className).toContain('slide-out');
-      fixture.detectChanges();
 
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
@@ -536,6 +556,7 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
 
       expect(fixture.nativeElement.outerHTML).not.toContain('fade');
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
@@ -612,7 +633,7 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
     }));
@@ -1243,41 +1264,6 @@ describe('Animation', () => {
       );
       fixture.detectChanges();
       expect(childCmp.nativeElement.className).not.toContain('slide-in fade-in');
-    }));
-
-    xit('should support signal inputs', fakeAsync(() => {
-      @Component({
-        selector: 'child-cmp',
-        styles: styles,
-        template: '<p [animate.enter]="enterAnim()">I should fade</p>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class ChildComponent {
-        public enterAnim: InputSignal<string | string[]> = input.required<string | string[]>();
-      }
-
-      @Component({
-        selector: 'test-cmp',
-        styles: styles,
-        imports: [ChildComponent],
-        template: '<child-cmp enterAnim="fade-in" />',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {}
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      fixture.detectChanges();
-      tickAnimationFrames(1);
-      const childCmp = fixture.debugElement.query(By.css('child-cmp'));
-
-      expect(childCmp.nativeElement.className).toContain('fade-in');
-      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
-      childCmp.nativeElement.dispatchEvent(
-        new AnimationEvent('animationend', {animationName: 'fade-in'}),
-      );
-      fixture.detectChanges();
-      expect(childCmp.nativeElement.className).not.toContain('fade-in');
     }));
 
     it('should reset leave animation and not duplicate node when toggled quickly', fakeAsync(() => {

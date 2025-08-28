@@ -2076,7 +2076,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content');
           expect(content.innerHTML).toBe(
-            'Start  Inner Start  Hello <span>World</span>! <!--ICU 27:0--> Inner End  Middle <span>Span</span> End',
+            'Start  Inner Start  Hello <span>World</span>! <!--ICU 28:0--> Inner End  Middle <span>Span</span> End',
           );
         });
 
@@ -2130,7 +2130,7 @@ describe('platform-server full application hydration integration', () => {
 
           const content = clientRootNode.querySelector('app-content-outer');
           expect(content.innerHTML).toBe(
-            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 27:0--> Outer End  Middle  End</app-content-inner>',
+            '<app-content-inner>Start  Outer Start <span>Span</span> Hello <span>World</span>! <!--ICU 28:0--> Outer End  Middle  End</app-content-inner>',
           );
         });
 
@@ -2371,7 +2371,7 @@ describe('platform-server full application hydration integration', () => {
           verifyClientAndSSRContentsMatch(ssrContents, clientRootNode);
 
           const div = clientRootNode.querySelector('div');
-          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 27:0--> content/);
+          expect(div.innerHTML).toMatch(/Some <strong>strong<\/strong><!--ICU 28:0--> content/);
         });
 
         it('should support translations that remove elements', async () => {

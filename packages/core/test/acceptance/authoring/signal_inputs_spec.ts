@@ -17,7 +17,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import {SIGNAL} from '../../../primitives/signals';
-import {TestBed} from '../../../testing';
+import {fakeAsync, TestBed, tick} from '../../../testing';
+import {ViewEncapsulation} from '@angular/compiler';
+import {By} from '@angular/platform-browser';
+import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
+import {isNode} from '@angular/private/testing';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -313,5 +317,75 @@ describe('signal inputs', () => {
     fixture.detectChanges();
 
     expect(host.dir.value[SIGNAL].debugName).toBe('TEST_DEBUG_NAME');
+  });
+
+  describe('animation API', () => {
+    if (isNode) {
+      it('should pass', () => expect(true).toBe(true));
+      return;
+    }
+
+    it('should support signal inputs', fakeAsync(() => {
+      const styles = `
+        .slide-in {
+          animation: slide-in 1ms;
+        }
+        .fade-in {
+          animation: fade-in 2ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `;
+      @Component({
+        selector: 'child-cmp',
+        styles: styles,
+        template: '<p [animate.enter]="enterAnim()">I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {
+        enterAnim = input.required<string | string[]>();
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        template: '<child-cmp [enterAnim]="fade" />',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        fade = 'fade-in';
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const childCmp = fixture.debugElement.query(By.css('p'));
+
+      expect(childCmp.nativeElement.className).toContain('fade-in');
+      childCmp.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      childCmp.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-in'}),
+      );
+      fixture.detectChanges();
+      tick();
+      expect(childCmp.nativeElement.className).not.toContain('fade-in');
+    }));
   });
 });
