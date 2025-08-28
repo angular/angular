@@ -53,6 +53,21 @@ describe('pattern validator', () => {
     ]);
   });
 
+  it('should treat empty value as valid', () => {
+    const model = signal('');
+    const f = form(
+      model,
+      (p) => {
+        pattern(p, /^hi$/);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('sets the PATTERN property', () => {
       const cat = signal({name: 'pelmeni-the-cat'});

@@ -180,4 +180,19 @@ describe('standard schema integration', () => {
     // Just expect schema to be defined, really just interested in testing the typing.
     expect(s).toBeDefined();
   });
+
+  it('should treat empty value as subject to the given standard schema', () => {
+    const model = signal('');
+    const f = form(
+      model,
+      (p) => {
+        validateStandardSchema(p, z.string().min(10));
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors().length).toBe(1);
+  });
 });

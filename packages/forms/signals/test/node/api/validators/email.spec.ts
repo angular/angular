@@ -30,7 +30,7 @@ describe('email validator', () => {
   });
 
   it('supports custom errors', () => {
-    const cat = signal({name: 'pirojok-the-cat', email: ''});
+    const cat = signal({name: 'pirojok-the-cat', email: 'error'});
     const f = form(
       cat,
       (p) => {
@@ -52,7 +52,7 @@ describe('email validator', () => {
   });
 
   it('supports custom error message', () => {
-    const cat = signal({name: 'pirojok-the-cat', email: ''});
+    const cat = signal({name: 'pirojok-the-cat', email: 'error'});
     const f = form(
       cat,
       (p) => {
@@ -71,5 +71,20 @@ describe('email validator', () => {
         field: f.email,
       }),
     ]);
+  });
+
+  it('should treat empty value as valid', () => {
+    const model = signal('');
+    const f = form(
+      model,
+      (p) => {
+        email(p);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
   });
 });

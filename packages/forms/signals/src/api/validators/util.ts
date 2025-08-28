@@ -50,3 +50,13 @@ export function getOption<TOption, TValue, TPathKind extends PathKind = PathKind
 ): TOption | undefined {
   return opt instanceof Function ? opt(ctx) : opt;
 }
+
+/**
+ * Checks if the given value is considered empty. Empty values are: null, undefined, '', false, NaN.
+ */
+export function isEmpty(value: unknown): boolean {
+  if (typeof value === 'number' && isNaN(value)) {
+    return true;
+  }
+  return value === '' || value === false || value == null;
+}

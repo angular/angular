@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {minError} from '../validation_errors';
-import {BaseValidatorConfig, getOption} from './util';
+import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
@@ -36,6 +36,9 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   );
   aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());
   validate(path, (ctx) => {
+    if (isEmpty(ctx.value())) {
+      return undefined;
+    }
     const min = ctx.state.property(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;

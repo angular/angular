@@ -67,27 +67,6 @@ describe('required validator', () => {
     expect(f.name().errors()).toEqual([]);
   });
 
-  it('supports custom emptyPredicate', () => {
-    const cat = signal({name: ''});
-    const f = form(
-      cat,
-      (p) => {
-        required(p.name, {
-          emptyPredicate(value) {
-            return value === 'empty';
-          },
-        });
-      },
-      {
-        injector: TestBed.inject(Injector),
-      },
-    );
-
-    expect(f.name().errors()).toEqual([]);
-    f.name().value.set('empty');
-    expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
-  });
-
   it('supports custom condition', () => {
     const cat = signal({name: '', age: 5});
     const f = form(
