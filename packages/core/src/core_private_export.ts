@@ -173,8 +173,5 @@ export {getComponentDef as ɵgetComponentDef} from './render3/def_getters';
 export {DEHYDRATED_BLOCK_REGISTRY as ɵDEHYDRATED_BLOCK_REGISTRY} from './defer/registry';
 export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
 export {ɵassertType} from './type_checking';
-export {
-  ElementRegistry as ɵElementRegistry,
-  AnimationRemovalRegistry as ɵAnimationRemovalRegistry,
-} from './animation/element_removal_registry';
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
+export {allLeavingAnimations as ɵallLeavingAnimations} from './animation/longest_animation';
