@@ -29,22 +29,22 @@ export class SearchHistory {
   private readonly localStorage = inject(LOCAL_STORAGE);
   private readonly history = signal<Map<string, HistoryItem>>(new Map());
 
-  private allItems = computed(() =>
+  private readonly allItems = computed(() =>
     Array.from(this.history().values()).sort((a, b) => b.createdAt - a.createdAt),
   );
 
-  items = computed<{recent: HistoryItem[]; favorite: HistoryItem[]}>(() => ({
+  readonly items = computed<{recent: HistoryItem[]; favorite: HistoryItem[]}>(() => ({
     recent: this.allItems().filter((v) => !v.isFavorite),
     favorite: this.allItems().filter((v) => v.isFavorite),
   }));
 
-  hasItems = computed(() => this.allItems().length > 0);
+  readonly hasItems = computed(() => this.allItems().length > 0);
 
   constructor() {
     this.loadHistory();
   }
 
-  addItem(item: SearchResultItem | HistoryItem) {
+  addItem(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
       const labelHtml = (item.labelHtml || '').replace(/<\/?mark>/g, '');
 
@@ -64,13 +64,13 @@ export class SearchHistory {
     });
   }
 
-  removeItem(item: SearchResultItem | HistoryItem) {
+  removeItem(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
       map.delete(item.id);
     });
   }
 
-  makeFavorite(item: SearchResultItem | HistoryItem) {
+  makeFavorite(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
       const updated = map.get(item.id);
       if (updated) {
@@ -83,7 +83,7 @@ export class SearchHistory {
     });
   }
 
-  private loadHistory() {
+  private loadHistory(): void {
     let parsedData: HistoryItem[];
 
     try {
@@ -100,7 +100,7 @@ export class SearchHistory {
     this.history.set(history);
   }
 
-  private updateHistory(updateFn: (map: Map<string, HistoryItem>) => void) {
+  private updateHistory(updateFn: (map: Map<string, HistoryItem>) => void): void {
     const history = new Map(this.history());
     updateFn(history);
     this.history.set(history);

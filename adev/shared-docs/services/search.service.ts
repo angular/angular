@@ -48,7 +48,7 @@ export class Search {
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
-  resultsResource = resource({
+  readonly resultsResource = resource({
     params: () => this.searchQuery() || undefined, // coerces empty string to undefined
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
@@ -97,7 +97,7 @@ export class Search {
     },
   });
 
-  searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
+  readonly searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
     source: this.resultsResource.value,
     computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
   });
@@ -219,7 +219,7 @@ function matched(snippet: SnippetResult | undefined): boolean {
 /**
  * Temporary helper to implement the debounce functionality on the search resource
  */
-function wait(ms: number, signal: AbortSignal) {
+function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => resolve(), ms);
 
