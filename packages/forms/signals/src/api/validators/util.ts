@@ -55,8 +55,8 @@ export function getOption<TOption, TValue, TPathKind extends PathKind = PathKind
  * Checks if the given value is considered empty. Empty values are: null, undefined, '', false, NaN.
  */
 export function isEmpty(value: unknown): boolean {
-  if (typeof value === 'number' && isNaN(value)) {
-    return true;
+  if (typeof value === 'number') {
+    return isNaN(value);
   }
   return value === '' || value === false || value == null;
 }
