@@ -43,13 +43,18 @@ jobs:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@7e2eefa1375195fa7616f78a76f538a188852067
         with:
-          cache-node-modules: true
+          disable-package-manager-cache: true
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@7e2eefa1375195fa7616f78a76f538a188852067
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@7e2eefa1375195fa7616f78a76f538a188852067
         with:
           google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
+      - name: Cache downloaded Cypress binary
+        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        with:
+          path: '~/.cache/Cypress'
+          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run unit tests
@@ -63,6 +68,7 @@ jobs:
           start: pnpm bazel run //devtools/src:devserver
           wait-on: 'http://localhost:4200'
           wait-on-timeout: 300
+          install: false
 
   test:
     runs-on: ubuntu-latest-4core
