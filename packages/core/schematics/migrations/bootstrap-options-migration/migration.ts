@@ -438,20 +438,6 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
       requestedFile: sourceFile,
     });
 
-    if (!ts.isArrayLiteralExpression(ngModules)) {
-      // In case the param is a single Module
-      replacements.push(
-        new Replacement(
-          projectFile(sourceFile, info),
-          new TextUpdate({
-            position: ngModules.getStart(),
-            end: ngModules.getEnd() - 1,
-            toInsert: ``,
-          }),
-        ),
-      );
-    }
-
     let tmpNode: ts.Node = callExpr;
     let insertPosition = 0;
     while (tmpNode.parent.kind !== ts.SyntaxKind.SourceFile) {
@@ -459,6 +445,11 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
       tmpNode = tmpNode.parent!;
     }
 
+    importManager.addImport({
+      exportModuleSpecifier: CORE_PACKAGE,
+      exportSymbolName: 'NgModule',
+      requestedFile: sourceFile,
+    });
     addZoneCDModule(ZONE_CD_PROVIDER, moduleProjectFile, insertPosition, replacements);
     insertZoneCDModule(ngModules, moduleProjectFile, replacements);
   }

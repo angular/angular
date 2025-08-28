@@ -2023,7 +2023,7 @@ describe('bootstrap options migration', () => {
 
       const actual = fs.readFile(absoluteFrom('/test.ts'));
       const expected = `
-          import { provideZoneChangeDetection } from "@angular/core";
+          import { provideZoneChangeDetection, NgModule } from "@angular/core";
           import { TestBed } from '@angular/core/testing';
           import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
@@ -2061,7 +2061,7 @@ describe('bootstrap options migration', () => {
 
       const actual = fs.readFile(absoluteFrom('/test.ts'));
       const expected = `
-          import { provideZoneChangeDetection } from "@angular/core";
+          import { provideZoneChangeDetection, NgModule } from "@angular/core";
           import { TestBed } from '@angular/core/testing';
           import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
@@ -2087,7 +2087,7 @@ describe('bootstrap options migration', () => {
           name: absoluteFrom('/test.ts'),
           isProgramRootFile: true,
           contents: `
-          import { TestBed, provideZoneChangeDetection } from '@angular/core';
+          import { TestBed, provideZoneChangeDetection, NgModule } from '@angular/core';
           import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
           @NgModule({ providers: [provideZoneChangeDetection()]})
@@ -2103,7 +2103,7 @@ describe('bootstrap options migration', () => {
 
       const actual = fs.readFile(absoluteFrom('/test.ts'));
       const expected = `
-          import { TestBed, provideZoneChangeDetection } from '@angular/core';
+          import { TestBed, provideZoneChangeDetection, NgModule } from '@angular/core';
           import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
           @NgModule({ providers: [provideZoneChangeDetection()]})
@@ -2147,7 +2147,7 @@ describe('bootstrap options migration', () => {
 
       const actual = fs.readFile(absoluteFrom('/test.ts'));
       const expected = `
-          import { provideZoneChangeDetection } from "@angular/core";
+          import { provideZoneChangeDetection, NgModule } from "@angular/core";
           import { TestBed } from '@angular/core/testing';
           import { platformBrowserTesting } from '@angular/platform-browser/testing';
           import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
@@ -2195,7 +2195,7 @@ describe('bootstrap options migration', () => {
 
       const actual = fs.readFile(absoluteFrom('/test.ts'));
       const expected = `
-          import { provideZoneChangeDetection } from "@angular/core";
+          import { provideZoneChangeDetection, NgModule } from "@angular/core";
           import { TestBed } from '@angular/core/testing';
           import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
