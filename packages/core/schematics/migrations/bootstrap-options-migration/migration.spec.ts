@@ -546,6 +546,53 @@ describe('bootstrap options migration', () => {
         .withContext(diffText(actualServerConfig, expectedServerConfig))
         .toEqual(expectedServerConfig.replace(/\s+/g, ''));
     });
+
+    it('should migrate bootstrapApplication with concatenated providers', () => {
+      return runTsurgeMigration(new BootstrapOptionsMigration(), [
+        ...typeFiles,
+        {
+          name: absoluteFrom('/main.ts'),
+          isProgramRootFile: true,
+          contents: `
+          import { EnvironmentProviders } from '@angular/core';
+          import { bootstrapApplication } from '@angular/platform-browser';
+          import { App } from './app/app.component';
+
+          const providers: EnvironmentProviders[] = [];
+          const other: EnvironmentProviders = {};
+
+          bootstrapApplication(App, {providers: providers.concat([other])});
+        `,
+        },
+        {
+          name: absoluteFrom('/app/app.component.ts'),
+          contents: `
+          import { Component } from '@angular/core';
+
+          @Component({
+            selector: 'app-root',
+            template: '',
+          })
+          export class App {}
+        `,
+        },
+      ]).then(({fs}) => {
+        const actual = fs.readFile(absoluteFrom('/main.ts'));
+        const expected = `
+          import { EnvironmentProviders, provideZoneChangeDetection } from '@angular/core';
+          import { bootstrapApplication } from '@angular/platform-browser';
+          import { App } from './app/app.component';
+
+          const providers: EnvironmentProviders[] = [];
+          const other: EnvironmentProviders = {};
+
+          bootstrapApplication(App, {providers: [provideZoneChangeDetection(), ...providers.concat([other])]});
+        `;
+        expect(actual.replace(/\s+/g, ''))
+          .withContext(diffText(expected, actual))
+          .toEqual(expected.replace(/\s+/g, ''));
+      });
+    });
   });
 
   describe('bootstrapModule', () => {
