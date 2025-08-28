@@ -182,7 +182,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleAnimationStart = (event: AnimationEvent | TransitionEvent) => {
-    setupAnimationCancel(event, renderer);
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleInAnimationEnd));
@@ -449,40 +448,24 @@ function getClassList(value: Set<string> | null, resolvers: Function[] | undefin
 function cancelAnimationsIfRunning(element: HTMLElement, renderer: Renderer): void {
   if (!areAnimationSupported) return;
   const elementData = enterClassMap.get(element);
-  if (element.getAnimations().length > 0) {
-    for (const animation of element.getAnimations()) {
-      if (animation.playState === 'running') {
-        animation.cancel();
-      }
-    }
-  } else {
-    if (elementData) {
-      for (const klass of elementData.classList) {
-        renderer.removeClass(element as unknown as RElement, klass);
-      }
+  if (
+    elementData &&
+    elementData.classList.length > 0 &&
+    elementHasClassList(element, elementData.classList)
+  ) {
+    for (const klass of elementData.classList) {
+      renderer.removeClass(element as unknown as RElement, klass);
     }
   }
   // We need to prevent any enter animation listeners from firing if they exist.
   cleanupEnterClassData(element);
 }
 
-function setupAnimationCancel(event: Event, renderer: Renderer) {
-  if (!(event.target instanceof Element)) return;
-  const nativeElement = event.target;
-  if (areAnimationSupported) {
-    const elementData = enterClassMap.get(nativeElement as HTMLElement);
-    const animations = nativeElement.getAnimations();
-    if (animations.length === 0) return;
-    for (let animation of animations) {
-      animation.addEventListener('cancel', (event: Event) => {
-        if (nativeElement === event.target && elementData?.classList) {
-          for (const klass of elementData.classList) {
-            renderer.removeClass(nativeElement as unknown as RElement, klass);
-          }
-        }
-      });
-    }
+function elementHasClassList(element: HTMLElement, classList: string[]): boolean {
+  for (const className of classList) {
+    if (element.classList.contains(className)) return true;
   }
+  return false;
 }
 
 function isLongestAnimation(
