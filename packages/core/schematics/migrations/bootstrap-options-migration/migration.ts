@@ -640,6 +640,18 @@ function addProvidersToBootstrapOption(
         ),
       );
     }
+  } else if (providersProp && ts.isShorthandPropertyAssignment(providersProp)) {
+    const newProviders = `providers: [${providersText}, ...${providersProp.name.text}]`;
+    replacements.push(
+      new Replacement(
+        projectFile,
+        new TextUpdate({
+          position: providersProp.getStart(),
+          end: providersProp.getEnd(),
+          toInsert: newProviders,
+        }),
+      ),
+    );
   } else {
     const text = `providers: [${providersText}]`;
     let toInsert: string;
