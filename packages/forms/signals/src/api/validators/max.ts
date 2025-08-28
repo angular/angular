@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MAX} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {maxError} from '../validation_errors';
-import {BaseValidatorConfig, getOption} from './util';
+import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be less than or equal to the
@@ -36,6 +36,9 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   );
   aggregateProperty(path, MAX, ({state}) => state.property(MAX_MEMO)!());
   validate(path, (ctx) => {
+    if (isEmpty(ctx.value())) {
+      return undefined;
+    }
     const max = ctx.state.property(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;

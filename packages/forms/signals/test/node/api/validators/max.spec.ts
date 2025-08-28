@@ -107,6 +107,21 @@ describe('max validator', () => {
     expect(f.age().errors()).toEqual([]);
   });
 
+  it('should treat empty value as valid', () => {
+    const model = signal(NaN);
+    const f = form(
+      model,
+      (p) => {
+        max(p, -1);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('stores the MAX property on max', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 6});

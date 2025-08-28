@@ -123,6 +123,21 @@ describe('minLength validator', () => {
     expect(f().errors()).toEqual([minLengthError(5, {field: f})]);
   });
 
+  it('should treat empty value as valid', () => {
+    const model = signal('');
+    const f = form(
+      model,
+      (p) => {
+        minLength(p, 10);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('stores the MIN_LENGTH property on minLength', () => {
       const data = signal({text: 'ab'});

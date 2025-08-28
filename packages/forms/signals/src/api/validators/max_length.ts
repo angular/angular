@@ -11,7 +11,13 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MAX_LENGTH} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {maxLengthError} from '../validation_errors';
-import {BaseValidatorConfig, getLengthOrSize, getOption, ValueWithLengthOrSize} from './util';
+import {
+  BaseValidatorConfig,
+  getLengthOrSize,
+  getOption,
+  isEmpty,
+  ValueWithLengthOrSize,
+} from './util';
 
 /**
  * Binds a validator to the given path that requires the length of the value to be less than or
@@ -40,6 +46,9 @@ export function maxLength<
   );
   aggregateProperty(path, MAX_LENGTH, ({state}) => state.property(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
+    if (isEmpty(ctx.value())) {
+      return undefined;
+    }
     const maxLength = ctx.state.property(MAX_LENGTH_MEMO)!();
     if (maxLength === undefined) {
       return undefined;

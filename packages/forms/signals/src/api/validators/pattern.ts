@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {PATTERN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {patternError} from '../validation_errors';
-import {BaseValidatorConfig, getOption} from './util';
+import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to match a specific regex pattern.
@@ -35,14 +35,13 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   );
   aggregateProperty(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!());
   validate(path, (ctx) => {
-    const pattern = ctx.state.property(PATTERN_MEMO)!();
-
-    // A pattern validator should not fail on an empty value. This matches the behavior of HTML's
-    // built in `pattern` attribute.
-    if (pattern === undefined || ctx.value() == null || ctx.value() === '') {
+    if (isEmpty(ctx.value())) {
       return undefined;
     }
-
+    const pattern = ctx.state.property(PATTERN_MEMO)!();
+    if (pattern === undefined) {
+      return undefined;
+    }
     if (!pattern.test(ctx.value())) {
       if (config?.error) {
         return getOption(config.error, ctx);

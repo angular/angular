@@ -107,6 +107,21 @@ describe('min validator', () => {
     expect(f.age().errors()).toEqual([]);
   });
 
+  it('should treat empty value as valid', () => {
+    const model = signal(NaN);
+    const f = form(
+      model,
+      (p) => {
+        min(p, 10);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('stores the MIN property on min', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});

@@ -458,7 +458,6 @@ export const REQUIRED: AggregateProperty<boolean, boolean>;
 
 // @public
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind> & {
-    emptyPredicate?: (value: TValue) => boolean;
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
 }): void;
 

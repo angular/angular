@@ -123,6 +123,21 @@ describe('maxLength validator', () => {
     expect(f().errors()).toEqual([maxLengthError(3, {field: f})]);
   });
 
+  it('should treat empty value as valid', () => {
+    const model = signal('');
+    const f = form(
+      model,
+      (p) => {
+        maxLength(p, -1);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('stores the MAX_LENGTH property on maxLength', () => {
       const data = signal({text: 'abcdef'});

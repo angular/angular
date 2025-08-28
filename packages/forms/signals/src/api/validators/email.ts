@@ -9,7 +9,7 @@
 import {validate} from '../logic';
 import {FieldPath, PathKind} from '../types';
 import {emailError} from '../validation_errors';
-import {BaseValidatorConfig, getOption} from './util';
+import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
 /**
  * A regular expression that matches valid e-mail addresses.
@@ -59,6 +59,9 @@ export function email<TPathKind extends PathKind = PathKind.Root>(
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   validate(path, (ctx) => {
+    if (isEmpty(ctx.value())) {
+      return undefined;
+    }
     if (!EMAIL_REGEXP.test(ctx.value())) {
       if (config?.error) {
         return getOption(config.error, ctx);

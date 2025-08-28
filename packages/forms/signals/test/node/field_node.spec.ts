@@ -651,24 +651,6 @@ describe('FieldNode', () => {
       expect(f.first().property(REQUIRED)()).toBe(true);
     });
 
-    it('should support custom empty predicate', () => {
-      const data = signal({name: '', quantity: 0});
-      const f = form(
-        data,
-        (item) => {
-          required(item.quantity, {emptyPredicate: (value) => value === 0});
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f.quantity().property(REQUIRED)()).toBe(true);
-      expect(f.quantity().errors()).toEqual([requiredError({field: f.quantity})]);
-
-      f.quantity().value.set(1);
-      expect(f.quantity().property(REQUIRED)()).toBe(true);
-      expect(f.quantity().errors()).toEqual([]);
-    });
-
     it('should link required error messages to their predicate', () => {
       const data = signal({country: '', amount: 0, name: ''});
       const f = form(
