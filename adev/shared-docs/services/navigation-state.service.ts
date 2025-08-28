@@ -119,7 +119,7 @@ export class NavigationState {
   /**
    * return the actual navigation items, that is to say the one that match the current level
    */
-  private actualExpandedItems() {
+  private actualExpandedItems(): NavigationItem[] {
     return this.expandedItems().slice(0, this.level());
   }
 
