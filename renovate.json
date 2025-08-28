@@ -1,29 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>angular/dev-infra//renovate-presets/default.json5"
-  ],
-  "baseBranchPatterns": [
-    "main",
-    "20.2.x"
-  ],
-  "postUpgradeTasks": {
-    "commands": [
-      "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
-      "pnpm install --frozen-lockfile",
-      "pnpm bazel mod deps --lockfile_mode=update",
-      "pnpm bazel run //.github/actions/deploy-docs-site:main",
-      "pnpm bazel run //packages/common:base_currencies_file",
-      "pnpm bazel run //packages/common/locales:closure_locale_file",
-      "pnpm bazel run //packages/core:base_locale_file"
-    ],
-    "fileFilters": [
-      ".github/actions/deploy-docs-site/**/*",
-      "packages/**/*",
-      "MODULE.bazel.lock"
-    ],
-    "executionMode": "branch"
-  },
+  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
+  "baseBranchPatterns": ["main", "20.2.x"],
   "ignoreDeps": [
     "@types/selenium-webdriver",
     "angular-1.5",
@@ -40,20 +18,12 @@
   ],
   "packageRules": [
     {
-      "matchBaseBranches": [
-        "main"
-      ],
-      "addLabels": [
-        "target: minor"
-      ]
+      "matchBaseBranches": ["main"],
+      "addLabels": ["target: minor"]
     },
     {
-      "matchBaseBranches": [
-        "!main"
-      ],
-      "addLabels": [
-        "target: patch"
-      ]
+      "matchBaseBranches": ["!main"],
+      "addLabels": ["target: patch"]
     },
     {
       "matchFileNames": [
@@ -63,6 +33,26 @@
         "packages/zone.js/test/typings/package.json"
       ],
       "enabled": false
+    },
+    {
+      "matchManagers": ["bazel", "bazel-module", "bazelisk", "npm"],
+      "postUpgradeTasks": {
+        "commands": [
+          "git restore .yarn/releases/yarn-1.22.22.cjs .npmrc",
+          "pnpm install --frozen-lockfile",
+          "pnpm bazel mod deps --lockfile_mode=update",
+          "pnpm bazel run //.github/actions/deploy-docs-site:main",
+          "pnpm bazel run //packages/common:base_currencies_file",
+          "pnpm bazel run //packages/common/locales:closure_locale_file",
+          "pnpm bazel run //packages/core:base_locale_file"
+        ],
+        "fileFilters": [
+          ".github/actions/deploy-docs-site/**/*",
+          "packages/**/*",
+          "MODULE.bazel.lock"
+        ],
+        "executionMode": "branch"
+      }
     }
   ]
 }
