@@ -386,8 +386,8 @@ importers:
         specifier: ^8.0.0
         version: 8.2.1
       '@bazel/ibazel':
-        specifier: 0.25.0
-        version: 0.25.0
+        specifier: 0.26.10
+        version: 0.26.10
       '@inquirer/prompts':
         specifier: ^7.0.0
         version: 7.8.1(@types/node@18.19.122)
@@ -1966,8 +1966,8 @@ packages:
     resolution: {integrity: sha512-eZ/Aq+2r4PcJa6LbPCT6ffgIJfTU/gYilqIzoX2OLM4nNkbQC6tTMPZNn7aHHjhGPxbNLv41zm4Xqt1olCLgXw==}
     hasBin: true
 
-  '@bazel/ibazel@0.25.0':
-    resolution: {integrity: sha512-dtosfsuZCSaqlUe5EyxNdaN7Gow0Y+ZJixdlciytcSieUcB/1lXPFTx6OihxhjgtTHkeFovlQ/QbvArRPnk+nQ==}
+  '@bazel/ibazel@0.26.10':
+    resolution: {integrity: sha512-+Is7qK/NKz70t1HlrJqLZmDeys6Tg1KaUPF3JB3Xjlm64xA4rX2FeojcYjvdlaZko717lXY29DGsX/B4HSnaqw==}
     hasBin: true
 
   '@bazel/runfiles@6.3.1':
@@ -12832,7 +12832,7 @@ snapshots:
 
   '@bazel/buildifier@8.2.1': {}
 
-  '@bazel/ibazel@0.25.0': {}
+  '@bazel/ibazel@0.26.10': {}
 
   '@bazel/runfiles@6.3.1': {}
 
