@@ -1,8 +1,12 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//packages/zone.js:bundles.bzl", "BUNDLES_ENTRY_POINTS")
-load("//packages/zone.js:tools.bzl", "generate_rollup_bundle")
-load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
+load("//packages/zone.js:tools.bzl", "generate_rollup_bundle", "npm_package", "ts_config", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
 
 ts_config(
     name = "tsconfig_build",
@@ -14,8 +18,8 @@ ts_config(
     src = "tsconfig-test.json",
     deps = [
         ":tsconfig_build",
-        "//:node_modules/@types/jasmine",
-        "//:node_modules/@types/node",
+        "//packages/zone.js:node_modules/@types/jasmine",
+        "//packages/zone.js:node_modules/@types/node",
     ],
 )
 
@@ -49,6 +53,7 @@ generate_rollup_bundle(
 )
 
 npm_package(
+    name = "npm_package",
     srcs = [
         "CHANGELOG.md",
         "README.md",
@@ -73,4 +78,9 @@ npm_package(
     ],
     package = "zone.js",
     visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "pkg",
+    actual = ":npm_package",
 )
