@@ -3,7 +3,7 @@
   "short_name": "Angular DevTools",
   "name": "Angular DevTools",
   "description": "Angular DevTools extends Firefox DevTools adding Angular specific debugging and profiling capabilities.",
-  "version": "1.0.43",
+  "version": "1.0.44",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "icons": {
     "16": "assets/icon16.png",
