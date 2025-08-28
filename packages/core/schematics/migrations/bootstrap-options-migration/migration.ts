@@ -702,28 +702,15 @@ function hasChangeDetectionProvider(
 
   const found = ts.forEachChild(literal, function walk(node: ts.Node): boolean | undefined {
     if (ts.isCallExpression(node)) {
-      const expressionType = typeChecker.getTypeAtLocation(node.expression);
-      const expressionSymbol = expressionType.getSymbol();
-      if (!expressionSymbol) {
-        return false;
+      if (
+        provideZonelessCdSpecifier &&
+        node.getText().includes(provideZonelessCdSpecifier.getText())
+      ) {
+        return true;
       }
-
-      const declarations = expressionSymbol.getDeclarations() ?? [];
-
-      for (const declaration of declarations) {
-        if (
-          (provideZoneCdSpecifier &&
-            isReferenceToImport(typeChecker, declaration, provideZoneCdSpecifier)) ||
-          (provideZonelessCdSpecifier &&
-            isReferenceToImport(typeChecker, declaration, provideZonelessCdSpecifier))
-        ) {
-          return true;
-        }
+      if (provideZoneCdSpecifier && node.getText().includes(provideZoneCdSpecifier.getText())) {
+        return true;
       }
-
-      return declarations.some(
-        (decl) => decl === provideZoneCdSpecifier || decl === provideZonelessCdSpecifier,
-      );
     }
     return ts.forEachChild(node, walk);
   });
