@@ -45,7 +45,7 @@ jobs:
       # identity federation. This allows us to request short lived credentials on demand, rather than storing
       # credentials in secrets long term. More information can be found at:
       # https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
-      - uses: 'google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed' # v2
+      - uses: 'google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093' # v3
         with:
           project_id: 'internal-200822'
           workload_identity_provider: 'projects/823469418460/locations/global/workloadIdentityPools/measurables-tracking/providers/angular'
