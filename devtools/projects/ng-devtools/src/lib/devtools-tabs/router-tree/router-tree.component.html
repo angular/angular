@@ -1,117 +1,162 @@
-<div class="filter">
-  <input
-    #searchInput
-    (input)="searchRoutes($event.target.value)"
-    placeholder="Search routes"
-    class="ng-input filter-input"
-  />
-  <div class="show-full-path">
-    <input id="show-full-path" type="checkbox" (change)="togglePathSettings()" />
-    <label for="show-full-path">Show full path</label>
+@if (routerDebugApiSupport()) {
+  <div class="filter">
+    <input
+      #searchInput
+      (input)="searchRoutes($event.target.value)"
+      placeholder="Search routes"
+      class="ng-input filter-input"
+    />
+    <div class="show-full-path">
+      <input id="show-full-path" type="checkbox" (change)="togglePathSettings()" />
+      <label for="show-full-path">Show full path</label>
+    </div>
   </div>
-</div>
-<as-split unit="percent" direction="horizontal" [gutterSize]="9" class="visualization">
-  <aside class="legend" aria-hidden="true">
-    <ul>
-      <li class="eager">Eager-loaded route</li>
-      <li class="lazy">Lazy-loaded route</li>
-      <li class="active">Active route</li>
-    </ul>
-  </aside>
-  <as-split-area size="70">
-    <as-split unit="percent" direction="vertical" [gutterSize]="9">
-      <as-split-area size="100">
-        <ng-tree-visualizer-host #routerTree a11yTitle="Router tree visualization" />
-      </as-split-area>
-    </as-split>
-  </as-split-area>
 
-  @let route = selectedRoute();
-
-  @if (route && route.data) {
-    <as-split-area size="30" minSize="20">
-      <div class="side-pane">
-        <h2 class="router-title">Routes Details</h2>
-        <button ng-button btnType="icon" class="close-btn" (click)="selectedRoute.set(null)">
-          <mat-icon>close</mat-icon>
-        </button>
-
-        <!-- TODO: Convert to a description list (<dl>) -->
-        <table class="ng-table">
-          <tr
-            ng-route-details-row
-            label="Path"
-            type="chip"
-            [data]="route.data.path"
-            (btnClick)="navigateRoute(route)"
-          ></tr>
-          <tr
-            ng-route-details-row
-            label="Component"
-            type="chip"
-            [data]="route.data.component"
-            (btnClick)="viewComponentSource(route.data.component)"
-          ></tr>
-          @if (route.data.pathMatch) {
-            <tr ng-route-details-row label="Path Match" [data]="route.data.pathMatch"></tr>
-          }
-          @if (route?.data?.data?.length > 0) {
-            <tr ng-route-details-row label="Data" [data]="route.data.data | json"></tr>
-          }
-          @if (route.data.canActivateGuards && route.data.canActivateGuards.length > 0) {
-            <tr
-              ng-route-details-row
-              label="Can Activate Guards"
-              type="list"
-              [data]="route.data.canActivateGuards"
-              (btnClick)="viewSourceFromRouter($event, 'canActivate')"
-            ></tr>
-          }
-          @if (route.data.canActivateChildGuards && route.data.canActivateChildGuards.length > 0) {
-            <tr
-              ng-route-details-row
-              label="Can Activate Child Guards"
-              type="list"
-              [data]="route.data.canActivateChildGuards"
-              (btnClick)="viewSourceFromRouter($event, 'canActivateChild')"
-            ></tr>
-          }
-          @if (route.data.canDeactivateGuards && route.data.canDeactivateGuards.length > 0) {
-            <tr
-              ng-route-details-row
-              label="Can DeActivate Guards"
-              type="list"
-              [data]="route.data.canDeactivateGuards"
-              (btnClick)="viewSourceFromRouter($event, 'canDeactivate')"
-            ></tr>
-          }
-          @if (route.data.canMatchGuards && route.data.canMatchGuards.length > 0) {
-            <tr
-              ng-route-details-row
-              label="Can Match Guards"
-              type="list"
-              [data]="route.data.canMatchGuards"
-              (btnClick)="viewSourceFromRouter($event, 'canMatch')"
-            ></tr>
-          }
-
-          @if (route.data.providers && route.data.providers.length > 0) {
-            <tr
-              ng-route-details-row
-              label="Providers"
-              type="list"
-              [data]="route.data.providers"
-              (btnClick)="viewSourceFromRouter($event, 'providers')"
-            ></tr>
-          }
-          @if (route.data.title) {
-            <tr ng-route-details-row label="Title" [data]="route.data.title"></tr>
-          }
-          <tr ng-route-details-row label="Active" type="flag" [data]="route.data.isActive"></tr>
-          <tr ng-route-details-row label="Auxiliary" type="flag" [data]="route.data.isAux"></tr>
-          <tr ng-route-details-row label="Lazy" type="flag" [data]="route.data.isLazy"></tr>
-        </table>
-      </div>
+  <as-split unit="percent" direction="horizontal" [gutterSize]="9" class="visualization">
+    <aside class="legend" aria-hidden="true">
+      <ul>
+        <li class="eager">Eager-loaded route</li>
+        <li class="lazy">Lazy-loaded route</li>
+        <li class="active">Active route</li>
+      </ul>
+    </aside>
+    <as-split-area size="70">
+      <as-split unit="percent" direction="vertical" [gutterSize]="9">
+        <as-split-area size="100">
+          <ng-tree-visualizer-host #routerTree a11yTitle="Router tree visualization" />
+        </as-split-area>
+      </as-split>
     </as-split-area>
-  }
-</as-split>
+
+    @let route = selectedRoute();
+    @let data = routeData();
+
+    @if (route && data) {
+      <as-split-area size="30" minSize="20">
+        <div class="side-pane">
+          <h2 class="router-title">Routes Details</h2>
+          <button ng-button btnType="icon" class="close-btn" (click)="selectedRoute.set(null)">
+            <mat-icon>close</mat-icon>
+          </button>
+
+          <!-- TODO: Convert to a description list (<dl>) -->
+          <table class="ng-table">
+            <tr
+              ng-route-details-row
+              label="Path"
+              type="chip"
+              dataKey="path"
+              [data]="data"
+              (btnClick)="navigateRoute(route)"
+            ></tr>
+
+            <tr
+              ng-route-details-row
+              label="Component"
+              type="chip"
+              dataKey="component"
+              [data]="data"
+              (btnClick)="viewComponentSource(data.component)"
+            ></tr>
+            @if (data.pathMatch) {
+              <tr ng-route-details-row label="Path Match" dataKey="pathMatch" [data]="data"></tr>
+            }
+            @if (route?.data?.data?.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Data"
+                [renderValueAsJson]="true"
+                dataKey="data"
+                [data]="data"
+              ></tr>
+            }
+            @if (data.canActivateGuards && data.canActivateGuards.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Can Activate Guards"
+                type="list"
+                dataKey="canActivateGuards"
+                [data]="data"
+                (btnClick)="viewSourceFromRouter($event, 'canActivate')"
+              ></tr>
+            }
+            @if (data.canActivateChildGuards && data.canActivateChildGuards.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Can Activate Child Guards"
+                type="list"
+                dataKey="canActivateChildGuards"
+                [data]="data"
+                (btnClick)="viewSourceFromRouter($event, 'canActivateChild')"
+              ></tr>
+            }
+            @if (data.canDeactivateGuards && data.canDeactivateGuards.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Can DeActivate Guards"
+                type="list"
+                dataKey="canDeactivateGuards"
+                [data]="data"
+                (btnClick)="viewSourceFromRouter($event, 'canDeactivate')"
+              ></tr>
+            }
+            @if (data.canMatchGuards && data.canMatchGuards.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Can Match Guards"
+                type="list"
+                dataKey="canMatchGuards"
+                [data]="data"
+                (btnClick)="viewSourceFromRouter($event, 'canMatch')"
+              ></tr>
+            }
+
+            @if (data.providers && data.providers.length > 0) {
+              <tr
+                ng-route-details-row
+                label="Providers"
+                type="list"
+                dataKey="providers"
+                [data]="data"
+                (btnClick)="viewSourceFromRouter($event, 'providers')"
+              ></tr>
+            }
+            @if (data.title) {
+              <tr ng-route-details-row label="Title" dataKey="title" [data]="data"></tr>
+            }
+            <tr
+              ng-route-details-row
+              label="Active"
+              type="flag"
+              dataKey="isActive"
+              [data]="data"
+            ></tr>
+            <tr
+              ng-route-details-row
+              label="Auxiliary"
+              type="flag"
+              dataKey="isAux"
+              [data]="data"
+            ></tr>
+            <tr ng-route-details-row label="Lazy" type="flag" dataKey="isLazy" [data]="data"></tr>
+            <tr
+              ng-route-details-row
+              label="Redirecting"
+              type="flag"
+              dataKey="isRedirect"
+              [data]="data"
+            ></tr>
+          </table>
+        </div>
+      </as-split-area>
+    }
+  </as-split>
+} @else {
+  <div class="unsupported-version">
+    <p>
+      Router tree visualization is available for Angular applications using the latest Angular
+      20.2.x release and above. Please upgrade your application to Angular 20.2.x or newer to use
+      this feature.
+    </p>
+  </div>
+}

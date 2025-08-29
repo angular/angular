@@ -104,7 +104,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.dependencyInjection) {
       tabs.push('Injector Tree');
     }
-    if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
+    if (this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
     if (supportedApis.transferState && this.transferStateEnabled()) {
