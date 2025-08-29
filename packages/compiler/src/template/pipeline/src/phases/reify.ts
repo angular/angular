@@ -601,6 +601,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
             : reifyProperty(op),
         );
         break;
+      case ir.OpKind.Control:
+        ir.OpList.replace(op, reifyControl(op));
+        break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
           op,
@@ -749,6 +752,10 @@ function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
   return isAriaProperty(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
     : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
+}
+
+function reifyControl(op: ir.ControlOp): ir.UpdateOp {
+  return ng.control(op.expression, op.sanitizer, op.sourceSpan);
 }
 
 function reifyIrExpression(expr: o.Expression): o.Expression {

@@ -599,6 +599,23 @@ export function property(
   return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
 }
 
+export function control(
+  expression: o.Expression | ir.Interpolation,
+  sanitizer: o.Expression | null,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  const args = [];
+  if (expression instanceof ir.Interpolation) {
+    args.push(interpolationToExpression(expression, sourceSpan));
+  } else {
+    args.push(expression);
+  }
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.control, args, sourceSpan);
+}
+
 export function twoWayProperty(
   name: string,
   expression: o.Expression,

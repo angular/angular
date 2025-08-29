@@ -1103,6 +1103,7 @@ export function transformExpressionsInOp(
     case OpKind.Property:
     case OpKind.DomProperty:
     case OpKind.Attribute:
+    case OpKind.Control:
       if (op.expression instanceof Interpolation) {
         transformExpressionsInInterpolation(op.expression, transform, flags);
       } else {

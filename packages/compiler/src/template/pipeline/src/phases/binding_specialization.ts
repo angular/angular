@@ -107,6 +107,8 @@ export function specializeBindings(job: CompilationJob): void {
                 op.sourceSpan,
               ),
             );
+          } else if (op.name === 'control') {
+            ir.OpList.replace<ir.UpdateOp>(op, ir.createControlOp(op));
           } else {
             ir.OpList.replace<ir.UpdateOp>(
               op,
