@@ -8,13 +8,7 @@
 
 import {EnvironmentInjector, Type, ɵRuntimeError as RuntimeError} from '@angular/core';
 
-import {
-  ABSOLUTE_REDIRECT_ERROR_NAME,
-  NO_MATCH_ERROR_NAME,
-  ApplyRedirects,
-  canLoadFails,
-  NoMatch,
-} from './apply_redirects';
+import {AbsoluteRedirect, ApplyRedirects, canLoadFails, NoMatch} from './apply_redirects';
 import {createUrlTreeFromSnapshot} from './create_url_tree';
 import {RuntimeErrorCode} from './errors';
 import {Data, LoadedRouterConfig, ResolveData, Route, Routes} from './models';
@@ -145,11 +139,11 @@ export class Recognizer {
       );
       return {children, rootSnapshot};
     } catch (e: any) {
-      if (e?.name === ABSOLUTE_REDIRECT_ERROR_NAME) {
+      if (e instanceof AbsoluteRedirect) {
         this.urlTree = e.urlTree;
         return this.match(e.urlTree.root);
       }
-      if (e?.name === NO_MATCH_ERROR_NAME) {
+      if (e instanceof NoMatch) {
         throw this.noMatchError(e);
       }
 
@@ -257,7 +251,7 @@ export class Recognizer {
           parentRoute,
         );
       } catch (e: any) {
-        if (e?.name === NO_MATCH_ERROR_NAME) {
+        if (e instanceof NoMatch) {
           continue;
         }
         throw e;
