@@ -299,6 +299,11 @@ export enum OpKind {
    * An operation to bind animation events to an element.
    */
   AnimationListener,
+
+  /**
+   * An operation to bind a signal form field to a control directive.
+   */
+  Control,
 }
 
 /**

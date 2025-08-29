@@ -248,7 +248,7 @@ export function compileComponentFromMetadata(
     getTemplateSourceLocationsEnabled(),
   );
 
-  // Then the IR is transformed to prepare it for cod egeneration.
+  // Then the IR is transformed to prepare it for code generation.
   transform(tpl, CompilationJobKind.Tmpl);
 
   // Finally we emit the template function:
