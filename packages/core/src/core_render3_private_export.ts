@@ -93,6 +93,7 @@ export {
   ɵɵconditionalBranchCreate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
+  ɵɵcontrol,
   ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
