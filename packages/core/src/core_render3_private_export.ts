@@ -94,7 +94,6 @@ export {
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
-  ɵɵcontrolCreate,
   ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
