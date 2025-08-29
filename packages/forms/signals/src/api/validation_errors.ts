@@ -27,7 +27,7 @@ export type WithField<T> = T & {field: Field<unknown>};
  * A type that allows the given type `T` to optionally have a `field` property.
  * @template T The type to optionally add a `field` to.
  */
-export type WithOptionalField<T> = T & {field?: Field<unknown>};
+export type WithOptionalField<T> = Omit<T, 'field'> & {field?: Field<unknown>};
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.

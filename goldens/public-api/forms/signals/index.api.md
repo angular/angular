@@ -568,7 +568,7 @@ export type WithField<T> = T & {
 };
 
 // @public
-export type WithOptionalField<T> = T & {
+export type WithOptionalField<T> = Omit<T, 'field'> & {
     field?: Field<unknown>;
 };
 

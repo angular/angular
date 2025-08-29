@@ -34,6 +34,8 @@ import {
   type Field,
   type FormCheckboxControl,
   type FormValueControl,
+  type ValidationError,
+  type WithOptionalField,
 } from '../../public_api';
 
 @Component({
@@ -459,7 +461,7 @@ describe('control directive', () => {
     })
     class CustomInput implements FormValueControl<string> {
       value = model('');
-      disabledReasons = input<readonly DisabledReason[]>([]);
+      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
     }
 
     @Component({
@@ -522,6 +524,53 @@ describe('control directive', () => {
     // Model -> View
     act(() => field().reset());
     expect(myInput.touched()).toBe(false);
+  });
+
+  it('should allow binding error and disabled messages through control or manually', () => {
+    @Component({
+      selector: 'my-input',
+      template: `
+        <input #i [value]="value()" (input)="value.set(i.value)" />
+        @for (reason of disabledReasons(); track $index) {
+          <p class="disabled-reason">{{reason.message}}</p>
+        }
+        @for (error of errors(); track $index) {
+          <p class="error">{{error.message}}</p>
+        }
+      `,
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
+      errors = input<readonly WithOptionalField<ValidationError>[]>([]);
+    }
+
+    @Component({
+      imports: [Control, CustomInput],
+      template: `
+        <my-input [(value)]="model" [disabledReasons]="disabledReasons" [errors]="errors" />
+        <my-input [control]="f" />
+      `,
+    })
+    class TestCmp {
+      model = signal('');
+      f = form(this.model, (p) => {
+        required(p, {message: 'schema error'});
+        disabled(p, ({value}) => (value() === 'disabled' ? 'schema disabled' : false));
+      });
+      disabledReasons = [{message: 'manual disabled'}];
+      errors = [{kind: 'error', message: 'manual error'}];
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    expect([...fix.nativeElement.querySelectorAll('.error')].map((e) => e.textContent)).toEqual([
+      'manual error',
+      'schema error',
+    ]);
+    act(() => fix.componentInstance.model.set('disabled'));
+    expect(
+      [...fix.nativeElement.querySelectorAll('.disabled-reason')].map((e) => e.textContent),
+    ).toEqual(['manual disabled', 'schema disabled']);
   });
 });
 
