@@ -610,6 +610,36 @@ describe('property bindings', () => {
       expect(idDir.idNumber).toBe('four');
       expect(otherDir.id).toBe(3);
     });
+
+    it('should support input bindings named "control"', () => {
+      // Angular has specialized support for binding to form controls (e.g. `[control]="field"`).
+      // This test ensures that `[control]` property bindings can still target other inputs bearing
+      // the same name.
+
+      @Directive({selector: '[control]'})
+      class Control {
+        @Input() control = 'Default control value';
+      }
+
+      @Component({
+        template: `
+          <div [control]="value"></div>
+        `,
+        imports: [Control],
+      })
+      class App {
+        value?: string;
+      }
+
+      const fixture = TestBed.createComponent(App);
+      const control = fixture.debugElement.query(By.directive(Control)).injector.get(Control);
+      expect(control.control).toBe('Default control value');
+
+      fixture.componentInstance.value = 'Bound control value';
+      fixture.detectChanges();
+
+      expect(control.control).toBe('Bound control value');
+    });
   });
 
   describe('attributes and input properties', () => {

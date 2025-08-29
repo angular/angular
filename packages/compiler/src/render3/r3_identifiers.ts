@@ -254,6 +254,7 @@ export class Identifiers {
 
   static ariaProperty: o.ExternalReference = {name: 'ɵɵariaProperty', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
+  static control: o.ExternalReference = {name: 'ɵɵcontrol', moduleName: CORE};
 
   static animationEnterListener: o.ExternalReference = {
     name: 'ɵɵanimateEnterListener',

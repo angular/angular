@@ -56,7 +56,8 @@ export type UpdateOp =
   | RepeaterOp
   | DeferWhenOp
   | AnimationBindingOp
-  | StoreLetOp;
+  | StoreLetOp
+  | ControlOp;
 
 /**
  * A logical operation to perform string interpolation on a text node.
@@ -1057,6 +1058,33 @@ export function createStoreLetOp(
     declaredName,
     value,
     sourceSpan,
+    ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
+    ...TRAIT_CONSUMES_VARS,
+    ...NEW_OP,
+  };
+}
+
+/**
+ * A specialized {@link PropertyOp} that may bind a form field to a control.
+ */
+export interface ControlOp extends Omit<PropertyOp, 'kind' | 'name'> {
+  kind: OpKind.Control;
+}
+
+/** Creates a {@link ControlOp}. */
+export function createControlOp(op: BindingOp): ControlOp {
+  return {
+    kind: OpKind.Control,
+    target: op.target,
+    expression: op.expression,
+    bindingKind: op.bindingKind,
+    securityContext: op.securityContext,
+    sanitizer: null,
+    isStructuralTemplateAttribute: op.isStructuralTemplateAttribute,
+    templateKind: op.templateKind,
+    i18nContext: op.i18nContext,
+    i18nMessage: op.i18nMessage,
+    sourceSpan: op.sourceSpan,
     ...TRAIT_DEPENDS_ON_SLOT_CONTEXT,
     ...TRAIT_CONSUMES_VARS,
     ...NEW_OP,
