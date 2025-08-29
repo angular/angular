@@ -762,6 +762,7 @@
       "increaseElementDepthCount",
       "incrementInitPhaseFlags",
       "inferTagNameFromDefinition",
+      "inferTagNameFromSelector",
       "initDomAdapter",
       "initFeatures",
       "initTNodeFlags",

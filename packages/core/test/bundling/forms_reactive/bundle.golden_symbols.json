@@ -667,6 +667,7 @@
       "incrementInitPhaseFlags",
       "indexOf",
       "inferTagNameFromDefinition",
+      "inferTagNameFromSelector",
       "inheritContentQueries",
       "inheritHostBindings",
       "inheritViewQuery",

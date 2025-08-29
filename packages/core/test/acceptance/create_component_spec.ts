@@ -27,6 +27,7 @@ import {
   OnDestroy,
   Output,
   outputBinding,
+  hostSelector,
   signal,
   SimpleChange,
   SimpleChanges,
@@ -239,6 +240,257 @@ describe('createComponent', () => {
       componentRef.destroy();
     },
   );
+
+  describe('hostSelector', () => {
+    it('should create a host element based on custom selector when provided', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'Button content',
+      })
+      class MultiSelectorComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(MultiSelectorComponent, {
+        environmentInjector,
+        selector: hostSelector('app-icon-button'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<MultiSelectorComponent>)
+        .rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('app-icon-button');
+      expect(hostElement.textContent).toBe('Button content');
+      componentRef.destroy();
+    });
+
+    it('should create host element with custom complex selector', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'Complex selector',
+      })
+      class ComplexSelectorComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(ComplexSelectorComponent, {
+        environmentInjector,
+        selector: hostSelector('button.appIconButton'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<ComplexSelectorComponent>)
+        .rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('button');
+      expect(hostElement.className).toBe('appiconbutton');
+      componentRef.destroy();
+    });
+
+    it('should create host element with attribute selector', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'Attribute selector',
+      })
+      class AttributeSelectorComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(AttributeSelectorComponent, {
+        environmentInjector,
+        selector: hostSelector('[appIconButton]'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<AttributeSelectorComponent>)
+        .rootNodes[0];
+
+      // Should fall back to first selector in list since attribute selector doesn't specify tag
+      expect(hostElement.tagName.toLowerCase()).toBe('button');
+      expect(hostElement.hasAttribute('appiconbutton')).toBe(true);
+      componentRef.destroy();
+    });
+
+    it('should fall back to use a `div` as host element when class-only selector is provided', () => {
+      @Component({
+        selector: '.appIconButton',
+        template: 'Class only',
+      })
+      class ClassOnlyComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(ClassOnlyComponent, {environmentInjector});
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<ClassOnlyComponent>)
+        .rootNodes[0];
+
+      // A host element has the `div` tag name, since component's selector doesn't contain
+      // tag name information (only a class name).
+      expect(hostElement.tagName.toLowerCase()).toBe('div');
+    });
+
+    it('should create host element with custom tag selector', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'Custom tag',
+      })
+      class CustomTagComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(CustomTagComponent, {
+        environmentInjector,
+        selector: hostSelector('app-icon-button'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<CustomTagComponent>)
+        .rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('app-icon-button');
+      componentRef.destroy();
+    });
+
+    it('should use provided hostElement when selector is also provided', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'With host element',
+      })
+      class WithHostElementComponent {}
+
+      const hostElement = document.createElement('section');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(WithHostElementComponent, {
+        hostElement,
+        environmentInjector,
+        selector: hostSelector('button.appIconButton'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      // Should use the provided hostElement, not create new one based on selector
+      expect(componentRef.location.nativeElement).toBe(hostElement);
+      expect(hostElement.tagName.toLowerCase()).toBe('section');
+      expect(hostElement.textContent).toBe('With host element');
+      componentRef.destroy();
+    });
+
+    it('should throw error when selector does not match component selectors', () => {
+      @Component({
+        selector: 'app-specific-component , button[appSpecificComponent]',
+        template: 'Specific component',
+      })
+      class SpecificComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(SpecificComponent, {
+          environmentInjector,
+          selector: hostSelector('invalid-selector'),
+        });
+      }).toThrowError(/Invalid selector for component SpecificComponent/);
+    });
+
+    it('should throw error when selector is empty fallback', () => {
+      @Component({
+        selector: '',
+        template: 'Test',
+      })
+      class TestComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(TestComponent, {
+          environmentInjector,
+          selector: hostSelector(''),
+        });
+      }).toThrowError(
+        /Invalid selector for component TestComponent. The selector must not be empty./,
+      );
+    });
+
+    it('should throw error when selector contains multiple selectors', () => {
+      @Component({
+        selector: 'button.appIconButton, [appIconButton], app-icon-button',
+        template: 'Test',
+      })
+      class MultipleErrorSelectorComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+
+      expect(() => {
+        createComponent(MultipleErrorSelectorComponent, {
+          environmentInjector,
+          selector: hostSelector('app-icon-button , button.appIconButton'),
+        });
+      }).toThrowError(
+        /Invalid selector for component MultipleErrorSelectorComponent. The selector must contain only one element. Received: app-icon-button,button.appiconbutton/,
+      );
+    });
+
+    it('should work with :not() selectors', () => {
+      @Component({
+        selector: 'button:not(.signUp):not(.menu)',
+        template: 'Button with :not()',
+      })
+      class NotSelectorComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(NotSelectorComponent, {
+        environmentInjector,
+        selector: hostSelector('button:not(.signUp):not(.menu)'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<NotSelectorComponent>)
+        .rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('button');
+      componentRef.destroy();
+    });
+
+    it('should handle SVG elements when selector specifies svg tag', () => {
+      @Component({
+        selector: 'svg, div',
+        template: 'SVG content',
+      })
+      class SvgComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(SvgComponent, {
+        environmentInjector,
+        selector: hostSelector('svg'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<SvgComponent>).rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('svg');
+      componentRef.destroy();
+    });
+
+    it('should work with complex multi-part selectors', () => {
+      @Component({
+        selector: 'button.primary[type="button"], input.form-control, custom-element',
+        template: 'Multi-part selector',
+      })
+      class MultiPartComponent {}
+
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const componentRef = createComponent(MultiPartComponent, {
+        environmentInjector,
+        selector: hostSelector('button.primary[type="button"]'),
+      });
+      componentRef.changeDetectorRef.detectChanges();
+
+      const hostElement = (componentRef.hostView as EmbeddedViewRef<MultiPartComponent>)
+        .rootNodes[0];
+
+      expect(hostElement.tagName.toLowerCase()).toBe('button');
+      expect(hostElement.className).toBe('primary');
+      expect(hostElement.getAttribute('type')).toBe('button');
+      componentRef.destroy();
+    });
+  });
 
   describe('attaching directives to root component', () => {
     it('should be able to attach directives when creating a component', () => {

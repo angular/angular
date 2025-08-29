@@ -530,6 +530,7 @@
       "increaseElementDepthCount",
       "incrementInitPhaseFlags",
       "inferTagNameFromDefinition",
+      "inferTagNameFromSelector",
       "initFeatures",
       "initTNodeFlags",
       "initializeDirectives",
