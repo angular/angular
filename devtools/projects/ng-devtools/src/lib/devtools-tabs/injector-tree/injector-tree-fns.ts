@@ -12,8 +12,8 @@ import {
   SvgD3Node,
   TreeD3Node,
   TreeNode,
-  TreeVisualizer,
-} from '../../shared/tree-visualizer-host/tree-visualizer';
+} from '../../shared/tree-visualizer/tree-visualizer';
+import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 
 // Types
 
@@ -22,7 +22,7 @@ export interface InjectorPath {
   path: SerializedInjector[];
 }
 
-export type InjectorTreeVisualizer = TreeVisualizer<InjectorTreeNode>;
+export type InjectorTreeVisualizer = TreeVisualizerComponent<InjectorTreeNode>;
 
 export interface InjectorTreeNode extends TreeNode {
   injector: SerializedInjector;

@@ -3,20 +3,20 @@ load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
 package(default_visibility = ["//:__subpackages__"])
 
 sass_binary(
-    name = "tree_visualizer_host_styles",
-    src = "tree-visualizer-host.component.scss",
+    name = "tree_visualizer_styles",
+    src = "tree-visualizer.component.scss",
     deps = ["//devtools/projects/ng-devtools/src/styles:typography"],
 )
 
 ng_project(
-    name = "tree-visualizer-host",
+    name = "tree-visualizer",
     srcs = [
         "graph-renderer.ts",
+        "tree-visualizer.component.ts",
         "tree-visualizer.ts",
-        "tree-visualizer-host.component.ts",
     ],
     angular_assets = [
-        ":tree_visualizer_host_styles",
+        ":tree_visualizer_styles",
     ],
     deps = [
         "//:node_modules/@angular/core",

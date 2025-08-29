@@ -92,8 +92,6 @@ export class DevToolsTabsComponent {
   readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
 
-  readonly snapToRoot = signal(false);
-
   readonly tabs = computed<Tab[]>(() => {
     const supportedApis = this.supportedApis();
     const tabs: Tab[] = ['Components'];
@@ -169,7 +167,6 @@ export class DevToolsTabsComponent {
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
       this.messageBus.emit('getRoutes');
-      this.snapToRoot.set(true);
     }
   }
 

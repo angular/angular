@@ -23,7 +23,16 @@
     <as-split-area size="70">
       <as-split unit="percent" direction="vertical" [gutterSize]="9">
         <as-split-area size="100">
-          <ng-tree-visualizer-host #routerTree a11yTitle="Router tree visualization" />
+          @if (d3RootNode(); as d3RootNode) {
+            <ng-tree-visualizer
+              #routerTree
+              a11yTitle="Router tree visualization"
+              [root]="d3RootNode"
+              [config]="routerTreeConfig"
+              (render)="onRouterTreeRender($event)"
+              (nodeClick)="nodeClick($event)"
+            />
+          }
         </as-split-area>
       </as-split>
     </as-split-area>

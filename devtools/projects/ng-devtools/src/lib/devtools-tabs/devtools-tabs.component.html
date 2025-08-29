@@ -78,7 +78,6 @@
       @defer (when routerTreeVisible; prefetch on idle) {
         <ng-router-tree
           [hidden]="!routerTreeVisible"
-          [snapToRoot]="snapToRoot()"
           [routes]="routes()"
           [routerDebugApiSupport]="supportedApis().routes"
         />
