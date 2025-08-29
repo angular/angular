@@ -10,11 +10,6 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
-import {provideHttpClient} from '@angular/common/http';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, resource, signal} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
-import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -213,8 +208,6 @@ describe('resources', () => {
       });
     };
 
-    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
-    const f = form(cats, s, {injector});
     const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
     const f = form(cats, s, {injector});
 
