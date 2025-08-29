@@ -28,6 +28,8 @@ import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
 import {PendingTasksInternal} from '../pending_tasks';
 
+const REQUIRE_ONE_CD_PROVIDER = false;
+
 /**
  * InjectionToken to control root component bootstrap behavior.
  *
@@ -99,6 +101,15 @@ export function bootstrap<M>(
           'Invalid change detection configuration: ' +
             'provideZoneChangeDetection and provideZonelessChangeDetection cannot be used together.',
         );
+      }
+      if (REQUIRE_ONE_CD_PROVIDER) {
+        if (!envInjector.get(PROVIDED_ZONELESS) && !envInjector.get(PROVIDED_NG_ZONE)) {
+          throw new Error(
+            'Missing change detection configuration: ' +
+              'please add either `provideZoneChangeDetection()` or `provideZonelessChangeDetection()` ' +
+              "to the list of root providers in your application's bootstrap code.",
+          );
+        }
       }
     }
 
