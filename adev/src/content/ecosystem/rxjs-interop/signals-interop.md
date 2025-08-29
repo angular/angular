@@ -125,7 +125,7 @@ export class UserProfile {
 
     // The `stream` property expects a factory function that returns
     // a data stream as an RxJS Observable.
-    stream: ({userId}) => this.userData.load(userId),
+    stream: ({params}) => this.userData.load(params.userId),
   });
 }
 ```
