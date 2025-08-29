@@ -272,8 +272,6 @@ export interface Component extends Directive {
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
     imports?: (Type<any> | ReadonlyArray<any>)[];
-    // @deprecated
-    interpolation?: [string, string];
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
     standalone?: boolean;

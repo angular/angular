@@ -3,149 +3,88 @@
   "cases": [
     {
       "description": "should not produce instructions for empty content",
-      "inputFiles": [
-        "empty_content.ts"
-      ],
+      "inputFiles": ["empty_content.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should ignore HTML comments within translated text",
-      "inputFiles": [
-        "comments_in_translated_text.ts"
-      ],
+      "inputFiles": ["comments_in_translated_text.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should properly escape quotes in content",
-      "inputFiles": [
-        "escape_quotes.ts"
-      ],
+      "inputFiles": ["escape_quotes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle interpolations wrapped in backticks",
-      "inputFiles": [
-        "backtick_quotes.ts"
-      ],
+      "inputFiles": ["backtick_quotes.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attributes with plain-text content",
-      "inputFiles": [
-        "plain_text_messages.ts"
-      ],
+      "inputFiles": ["plain_text_messages.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support named interpolations",
-      "inputFiles": [
-        "named_interpolations.ts"
-      ],
+      "inputFiles": ["named_interpolations.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
-        }
-      ]
-    },
-    {
-      "description": "should support interpolation with custom interpolation config",
-      "inputFiles": [
-        "interpolation_custom_config.ts"
-      ],
-      "expectations": [
-        {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should support interpolations with complex expressions",
-      "inputFiles": [
-        "interpolation_complex_expressions.ts"
-      ],
+      "inputFiles": ["interpolation_complex_expressions.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attributes with bindings in content",
-      "inputFiles": [
-        "bindings_in_content.ts"
-      ],
+      "inputFiles": ["bindings_in_content.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attributes with bindings and nested elements in content",
-      "inputFiles": [
-        "nested_elements.ts"
-      ],
+      "inputFiles": ["nested_elements.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attributes with bindings in content and element attributes",
-      "inputFiles": [
-        "nested_elements_with_i18n_attributes.ts"
-      ],
+      "inputFiles": ["nested_elements_with_i18n_attributes.ts"],
       "expectations": [
         {
           "files": [
@@ -154,18 +93,13 @@
               "expected": "nested_elements_with_i18n_attributes_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attributes in nested templates",
-      "inputFiles": [
-        "nested_templates.ts"
-      ],
+      "inputFiles": ["nested_templates.ts"],
       "expectations": [
         {
           "files": [
@@ -174,18 +108,13 @@
               "expected": "nested_templates.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should ignore i18n attributes on self-closing tags",
-      "inputFiles": [
-        "self_closing.ts"
-      ],
+      "inputFiles": ["self_closing.ts"],
       "expectations": [
         {
           "files": [
@@ -194,32 +123,22 @@
               "expected": "self_closing_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n context in nested templates",
-      "inputFiles": [
-        "nested_templates_context.ts"
-      ],
+      "inputFiles": ["nested_templates_context.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle i18n attribute with directives",
-      "inputFiles": [
-        "directives.ts"
-      ],
+      "inputFiles": ["directives.ts"],
       "expectations": [
         {
           "files": [
@@ -228,18 +147,13 @@
               "expected": "directives.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should generate event listeners instructions before i18n ones",
-      "inputFiles": [
-        "event_listeners.ts"
-      ],
+      "inputFiles": ["event_listeners.ts"],
       "expectations": [
         {
           "files": [
@@ -248,66 +162,43 @@
               "expected": "event_listeners_template.js"
             }
           ],
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle ng-content in i18n block",
-      "inputFiles": [
-        "nested_ng-content.ts"
-      ],
+      "inputFiles": ["nested_ng-content.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle ng-content in i18n block",
-      "inputFiles": [
-        "i18n_after_binding.ts"
-      ],
+      "inputFiles": ["i18n_after_binding.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "should handle ng-content with i18n children",
-      "inputFiles": [
-        "ng_content_with_i18n_children.ts"
-      ],
+      "inputFiles": ["ng_content_with_i18n_children.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"]
         }
       ]
     },
     {
       "description": "when the last element inside an i18n block has i18n attributes",
-      "inputFiles": [
-        "last_elem_inside_i18n_block.ts"
-      ],
+      "inputFiles": ["last_elem_inside_i18n_block.ts"],
       "expectations": [
         {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
+          "extraChecks": ["verifyPlaceholdersIntegrity", "verifyUniqueConsts"],
           "files": [
             {
               "expected": "last_elem_inside_i18n_block_template.js",

@@ -64,20 +64,6 @@
       ]
     },
     {
-      "description": "should support interpolation with custom interpolation config",
-      "inputFiles": [
-        "custom_interpolation.ts"
-      ],
-      "expectations": [
-        {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ]
-        }
-      ]
-    },
-    {
       "description": "should handle icus with html",
       "inputFiles": [
         "html_content.ts"
