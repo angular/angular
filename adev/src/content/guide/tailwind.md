@@ -64,6 +64,27 @@ For example, you can add the following to your `app.html` file:
 
 Run your build process with `ng serve` and you should see the styled heading.
 
+## Troubleshooting
+
+If Tailwindv4 is not loading any css classes when you run `ng serve`, ensure that your `angular.json` has the following:
+
+```
+{
+  "projects": {
+    "my-project": {
+      "architect": {
+          "build-client": {
+            "builder": "@angular-devkit/build-angular:application",
+            "options": {
+              "styles": ["src/styles.css"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ## Additional Resources
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
