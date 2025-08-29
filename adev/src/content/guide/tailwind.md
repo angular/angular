@@ -78,7 +78,7 @@ Switch to the `@angular-devkit/build-angular:application` builder in your `angul
   "projects": {
     "my-project": {
       "architect": {
-        "build-client": {
+        "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "styles": ["src/styles.css"]
