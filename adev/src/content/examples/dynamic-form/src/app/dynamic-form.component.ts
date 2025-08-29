@@ -16,8 +16,8 @@ import {QuestionControlService} from './question-control.service';
 export class DynamicFormComponent {
   private readonly qcs = inject(QuestionControlService);
 
-  questions = input<QuestionBase<string>[] | null>([]);
-  form = computed<FormGroup>(() =>
+  readonly questions = input<QuestionBase<string>[] | null>([]);
+  readonly form = computed<FormGroup>(() =>
     this.qcs.toFormGroup(this.questions() as QuestionBase<string>[]),
   );
   payLoad = '';

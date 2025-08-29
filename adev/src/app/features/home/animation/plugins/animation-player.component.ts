@@ -99,11 +99,11 @@ export type ComponentAlignment = 'left' | 'center' | 'right';
   `,
 })
 export class AnimationPlayerComponent {
-  animation = signal<Animation | null>(null);
-  alignment = signal<ComponentAlignment>('center');
+  readonly animation = signal<Animation | null>(null);
+  readonly alignment = signal<ComponentAlignment>('center');
   TIMESTEP = TIMESTEP;
 
-  progressPerc = computed(() => this.animation()!.progress() * 100 + '%');
+  readonly progressPerc = computed(() => this.animation()!.progress() * 100 + '%');
 
   playPause() {
     const anim = this.animation()!;

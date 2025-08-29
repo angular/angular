@@ -27,7 +27,7 @@ export class CookiePopup {
   private readonly localStorage = inject(LOCAL_STORAGE);
 
   /** Whether the user has accepted the cookie disclaimer. */
-  hasAccepted = signal<boolean>(false);
+  readonly hasAccepted = signal<boolean>(false);
 
   constructor() {
     // Needs to be in a try/catch, because some browsers will
