@@ -21,7 +21,7 @@ export class SearchItem implements Highlightable {
   // We can't migrate them to signals yet
   @Input() disabled = false;
 
-  item = input<SearchResultItem | undefined>();
+  readonly item = input<SearchResultItem | undefined>();
 
   private readonly elementRef = inject(ElementRef<HTMLLIElement>);
 

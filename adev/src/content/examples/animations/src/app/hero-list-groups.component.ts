@@ -69,9 +69,9 @@ import {Hero} from './hero';
   // #enddocregion animationdef
 })
 export class HeroListGroupsComponent {
-  heroes = input<Hero[]>([]);
+  readonly heroes = input<Hero[]>([]);
 
-  remove = output<number>();
+  readonly remove = output<number>();
 
   removeHero(id: number) {
     this.remove.emit(id);

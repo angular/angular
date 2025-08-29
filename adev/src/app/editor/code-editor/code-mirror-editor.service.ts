@@ -65,9 +65,9 @@ const INITIAL_STATES = {
 @Injectable({providedIn: 'root'})
 export class CodeMirrorEditor {
   // TODO: handle files created by the user, e.g. after running `ng generate component`
-  files = signal<EditorFile[]>(INITIAL_STATES.files);
-  openFiles = signal<EditorFile[]>(INITIAL_STATES.files);
-  currentFile = signal<EditorFile>(INITIAL_STATES.currentFile);
+  readonly files = signal<EditorFile[]>(INITIAL_STATES.files);
+  readonly openFiles = signal<EditorFile[]>(INITIAL_STATES.files);
+  readonly currentFile = signal<EditorFile>(INITIAL_STATES.currentFile);
 
   // An instance of web worker used to run virtual TypeScript environment in the browser.
   // It allows to enrich CodeMirror UX for TypeScript files.

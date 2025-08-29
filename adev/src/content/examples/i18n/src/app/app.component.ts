@@ -11,8 +11,8 @@ export class AppComponent {
   gender = 'female';
   fly = true;
   logo = '${this.baseUrl}/angular.svg';
-  toggle = signal(false);
-  toggleAriaLabel = computed(() => {
+  readonly toggle = signal(false);
+  readonly toggleAriaLabel = computed(() => {
     return this.toggle()
       ? $localize`:Toggle Button|A button to toggle status:Show`
       : $localize`:Toggle Button|A button to toggle status:Hide`;

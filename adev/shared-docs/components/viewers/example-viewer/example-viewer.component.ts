@@ -72,17 +72,17 @@ export class ExampleViewer {
   CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
-  expandable = signal<boolean>(false);
-  expanded = signal<boolean>(false);
-  snippetCode = signal<Snippet | undefined>(undefined);
-  tabs = computed(() =>
+  readonly expandable = signal<boolean>(false);
+  readonly expanded = signal<boolean>(false);
+  readonly snippetCode = signal<Snippet | undefined>(undefined);
+  readonly tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
       name:
         file.title ?? (this.shouldDisplayFullName() ? file.name : this.getFileExtension(file.name)),
       code: file.sanitizedContent,
     })),
   );
-  view = computed(() =>
+  readonly view = computed(() =>
     this.exampleMetadata()?.files.length === 1
       ? CodeExampleViewMode.SNIPPET
       : CodeExampleViewMode.MULTI_FILE,

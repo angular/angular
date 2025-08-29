@@ -58,7 +58,7 @@ export class SecondaryNavigation {
 
   navigationItems: NavigationItem[] | undefined;
 
-  translateX = computed(() => {
+  readonly translateX = computed(() => {
     const level = this.navigationState.level();
     return `translateX(${-level * 100}%)`;
   });

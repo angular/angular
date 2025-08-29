@@ -53,7 +53,7 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 })
 export class EmbeddedEditor {
   // Prevents from adding, removing or renaming files
-  restrictedMode = input<boolean>(false);
+  readonly restrictedMode = input<boolean>(false);
 
   readonly editorContainer = viewChild<ElementRef<HTMLDivElement>>('editorContainer');
   readonly matTabGroup = viewChild(MatTabGroup);
@@ -66,7 +66,7 @@ export class EmbeddedEditor {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
   private readonly nodeRuntimeSandbox = inject(NodeRuntimeSandbox);
 
-  protected splitDirection = signal<'horizontal' | 'vertical'>('vertical');
+  protected readonly splitDirection = signal<'horizontal' | 'vertical'>('vertical');
 
   readonly MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES;
 

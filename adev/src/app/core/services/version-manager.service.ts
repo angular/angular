@@ -53,7 +53,7 @@ export class VersionManager {
   });
 
   // This handle the fallback if the resource fails.
-  versions = computed(() => {
+  readonly versions = computed(() => {
     return this.remoteVersions.hasValue() ? this.remoteVersions.value() : this.localVersions;
   });
 
@@ -93,7 +93,7 @@ export class VersionManager {
     },
   );
 
-  currentDocsVersion = computed(() => {
+  readonly currentDocsVersion = computed(() => {
     // In devmode the version is 0, so we'll target next (which is first on the list)
     if (VERSION.major === '0') {
       return this.versions()[0];

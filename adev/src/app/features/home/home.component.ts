@@ -43,8 +43,8 @@ export default class Home {
 
   private scrollProgress = signal<number>(0);
 
-  prefetchEditor = computed(() => this.scrollProgress() > 0.25);
-  showEditor = computed(() => this.scrollProgress() > 0.35);
+  readonly prefetchEditor = computed(() => this.scrollProgress() > 0.25);
+  readonly showEditor = computed(() => this.scrollProgress() > 0.35);
 
   animationReady = signal<boolean>(false);
 

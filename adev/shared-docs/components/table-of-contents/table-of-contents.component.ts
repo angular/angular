@@ -38,7 +38,7 @@ export class TableOfContents {
 
   tableOfContentItems = this.tableOfContentsLoader.tableOfContentItems;
 
-  activeItemId = signal<string | null>(null);
+  readonly activeItemId = signal<string | null>(null);
   TableOfContentsLevel = TableOfContentsLevel;
 
   constructor() {

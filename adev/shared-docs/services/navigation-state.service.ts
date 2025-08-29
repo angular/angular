@@ -21,7 +21,7 @@ export class NavigationState {
   private readonly _isMobileNavVisible = signal<boolean>(false);
   private readonly _level = linkedSignal(() => this._expandedItems().length);
 
-  primaryActiveRouteItem = signal<string | null>(null);
+  readonly primaryActiveRouteItem = signal<string | null>(null);
   activeNavigationItem = this._activeNavigationItem.asReadonly();
   expandedItems = this._expandedItems.asReadonly();
   isMobileNavVisible = this._isMobileNavVisible.asReadonly();

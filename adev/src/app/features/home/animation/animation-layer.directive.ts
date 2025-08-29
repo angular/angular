@@ -17,5 +17,5 @@ import {Directive, ElementRef, inject, input} from '@angular/core';
 export class AnimationLayerDirective {
   readonly elementRef = inject(ElementRef);
 
-  id = input.required<string>({alias: 'layerId'});
+  readonly id = input.required<string>({alias: 'layerId'});
 }

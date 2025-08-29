@@ -31,8 +31,8 @@ export class Preview {
   loadingProgressValue = this.nodeRuntimeState.loadingStep;
   loadingEnum = LoadingStep;
 
-  previewUrl = toSignal(this.nodeRuntimeSandbox.previewUrl$, {initialValue: null});
-  previewUrlForIFrame = computed(() => {
+  readonly previewUrl = toSignal(this.nodeRuntimeSandbox.previewUrl$, {initialValue: null});
+  readonly previewUrlForIFrame = computed(() => {
     const url = this.previewUrl();
     return url !== null ? this.domSanitizer.bypassSecurityTrustResourceUrl(url) : null;
   });

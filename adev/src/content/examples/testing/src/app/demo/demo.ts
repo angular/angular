@@ -183,8 +183,8 @@ export class ParentComponent {}
     '<button type="button" class="hero" (click)="click()">Original {{hero().name}}</button>',
 })
 export class IoComponent {
-  hero = input.required<Hero>();
-  selected = output<Hero>();
+  readonly hero = input.required<Hero>();
+  readonly selected = output<Hero>();
 
   click() {
     this.selected.emit(this.hero);
