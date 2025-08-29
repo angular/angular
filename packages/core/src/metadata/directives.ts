@@ -607,13 +607,6 @@ export interface Component extends Directive {
   encapsulation?: ViewEncapsulation;
 
   /**
-   * Overrides the default interpolation start and end delimiters (`{{` and `}}`).
-   *
-   * @deprecated use Angular's default interpolation delimiters instead.
-   */
-  interpolation?: [string, string];
-
-  /**
    * True to preserve or false to remove potentially superfluous whitespace characters
    * from the compiled template. Whitespace characters are those matching the `\s`
    * character class in JavaScript regular expressions. Default is false, unless

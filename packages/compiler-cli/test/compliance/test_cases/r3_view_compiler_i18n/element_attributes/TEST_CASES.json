@@ -172,26 +172,6 @@
       ]
     },
     {
-      "description": "should support interpolation with custom interpolation config",
-      "inputFiles": [
-        "interpolation_custom_config.ts"
-      ],
-      "expectations": [
-        {
-          "extraChecks": [
-            "verifyPlaceholdersIntegrity",
-            "verifyUniqueConsts"
-          ],
-          "files": [
-            {
-              "expected": "interpolation_custom_config_template.js",
-              "generated": "interpolation_custom_config.js"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "description": "should correctly bind to context in nested template",
       "inputFiles": [
         "interpolation_nested_context.ts"

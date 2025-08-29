@@ -5822,27 +5822,6 @@ runInEachFileSystem((os: string) => {
       );
     });
 
-    it("@Component's `interpolation` should override default interpolation config", () => {
-      env.write(
-        `test.ts`,
-        `
-      import {Component} from '@angular/core';
-      @Component({
-        selector: 'cmp-with-custom-interpolation-a',
-        template: \`<div>{%text%}</div>\`,
-        interpolation: ['{%', '%}']
-      })
-      class ComponentWithCustomInterpolationA {
-        text = 'Custom Interpolation A';
-      }
-    `,
-      );
-
-      env.driveMain();
-      const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('ɵɵtextInterpolate(ctx.text)');
-    });
-
     it('should handle `encapsulation` field', () => {
       env.write(
         `test.ts`,
