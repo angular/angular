@@ -39,6 +39,17 @@ describe('RouterTreeComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(RouterTreeComponent);
+    fixture.componentRef.setInput('routes', [
+      {
+        'component': 'test-cmp',
+        'path': '/',
+        'children': [],
+        'isAux': false,
+        'isLazy': false,
+        'data': [],
+        'isActive': false,
+      },
+    ]);
     component = fixture.componentInstance;
   });
 

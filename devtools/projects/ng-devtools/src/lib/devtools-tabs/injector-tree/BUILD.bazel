@@ -31,7 +31,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/shared/docs-ref-button",
         "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/ng-devtools/src/lib/shared/split:responsive-split",
-        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer",
         "//devtools/projects/protocol",
     ],
 )
@@ -58,7 +58,7 @@ ts_project(
     name = "injector_tree_fns",
     srcs = ["injector-tree-fns.ts"],
     deps = [
-        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer-host",
+        "//devtools/projects/ng-devtools/src/lib/shared/tree-visualizer",
         "//devtools/projects/protocol",
     ],
 )
