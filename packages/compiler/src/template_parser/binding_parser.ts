@@ -403,7 +403,7 @@ export class BindingParser {
         targetMatchableAttrs,
         targetProps,
       );
-    } else if (name.startsWith(ANIMATE_PREFIX)) {
+    } else if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
       this._parseAnimation(
         name,
         this.parseBinding(expression, isHost, valueSpan || sourceSpan, absoluteOffset),
@@ -780,7 +780,7 @@ export class BindingParser {
     if (isAssignmentEvent) {
       eventType = ParsedEventType.TwoWay;
     }
-    if (name.startsWith(ANIMATE_PREFIX)) {
+    if (name.startsWith(`${ANIMATE_PREFIX}${PROPERTY_PARTS_SEPARATOR}`)) {
       eventType = ParsedEventType.Animation;
     }
 
