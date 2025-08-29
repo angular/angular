@@ -145,6 +145,7 @@ export const enum StylingRange {
    * have previous duplicate set. The implication is that if `width` binding becomes `null`, it is
    * necessary to defer the value to `map.width`. (Because `width` overwrites `map.width`.)
    */
+  /* tslint:disable-next-line:no-duplicate-enum-values */
   PREV_DUPLICATE = 0x02,
 
   /**
