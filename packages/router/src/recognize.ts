@@ -38,6 +38,7 @@ import {
   split,
 } from './utils/config_matching';
 import {TreeNode} from './utils/tree';
+import {firstValueFrom} from './utils/first_value_from';
 
 /**
  * Class used to indicate there were no additional route config matches but that all segments of
@@ -400,14 +401,9 @@ export class Recognizer {
     if (this.abortSignal.aborted) {
       throw new Error(this.abortSignal.reason);
     }
-    const result = await matchWithChecks(
-      rawSegment,
-      route,
-      segments,
-      injector,
-      this.urlSerializer,
-      this.abortSignal,
-    ).toPromise();
+    const result = await firstValueFrom(
+      matchWithChecks(rawSegment, route, segments, injector, this.urlSerializer, this.abortSignal),
+    );
     if (route.path === '**') {
       // Prior versions of the route matching algorithm would stop matching at the wildcard route.
       // We should investigate a better strategy for any existing children. Otherwise, these
@@ -500,15 +496,11 @@ export class Recognizer {
       if (this.abortSignal.aborted) {
         throw new Error(this.abortSignal.reason);
       }
-      const shouldLoadResult = await runCanLoadGuards(
-        injector,
-        route,
-        segments,
-        this.urlSerializer,
-        this.abortSignal,
-      ).toPromise();
+      const shouldLoadResult = await firstValueFrom(
+        runCanLoadGuards(injector, route, segments, this.urlSerializer, this.abortSignal),
+      );
       if (shouldLoadResult) {
-        const cfg = await this.configLoader.loadChildren(injector, route).toPromise();
+        const cfg = await firstValueFrom(this.configLoader.loadChildren(injector, route));
         if (!cfg) {
           throw canLoadFails(route);
         }

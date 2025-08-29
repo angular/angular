@@ -621,6 +621,7 @@
       "fireActivationStart",
       "fireChildActivationStart",
       "first",
+      "firstValueFrom",
       "flatten",
       "flattenRouteTree",
       "forEachSingleProvider",
