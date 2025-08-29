@@ -200,8 +200,6 @@ export function booleanAttribute(value: unknown): boolean;
 // @public @deprecated
 export interface BootstrapOptions {
     // @deprecated
-    ignoreChangesOutsideZone?: boolean;
-    // @deprecated
     ngZone?: NgZone | 'zone.js' | 'noop';
     // @deprecated
     ngZoneEventCoalescing?: boolean;
@@ -1300,8 +1298,6 @@ export class NgZone {
 // @public
 export interface NgZoneOptions {
     eventCoalescing?: boolean;
-    // @deprecated
-    ignoreChangesOutsideZone?: boolean;
     runCoalescing?: boolean;
 }
 
