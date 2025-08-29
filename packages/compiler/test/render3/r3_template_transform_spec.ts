@@ -424,6 +424,11 @@ describe('R3 template transform', () => {
         ['Element', 'div'],
         ['BoundEvent', 3, 'animate.leave', null, 'animateFn($event)'],
       ]);
+
+      expectFromHtml(`<div (animateXYZ)="animateFn()"></div>`).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', 0, 'animateXYZ', null, 'animateFn()'],
+      ]);
     });
   });
 

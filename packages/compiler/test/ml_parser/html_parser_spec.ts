@@ -435,6 +435,13 @@ describe('HtmlParser', () => {
           ]);
         });
 
+        it('should not parse any other animate prefix binding as animate.leave', () => {
+          expect(humanizeDom(parser.parse(`<div animateAbc="bar"></div>`, 'TestComp'))).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, 'animateAbc', 'bar', ['bar']],
+          ]);
+        });
+
         it('should parse both animate.enter and animate.leave as static attributes', () => {
           expect(
             humanizeDom(
@@ -484,6 +491,15 @@ describe('HtmlParser', () => {
           ).toEqual([
             [html.Element, 'div', 0],
             [html.Attribute, '(animate.leave)', 'onAnimation($event)', ['onAnimation($event)']],
+          ]);
+        });
+
+        it('should not parse other animate prefixes as animate.leave', () => {
+          expect(
+            humanizeDom(parser.parse(`<div (animateXYZ)="onAnimation()"></div>`, 'TestComp')),
+          ).toEqual([
+            [html.Element, 'div', 0],
+            [html.Attribute, '(animateXYZ)', 'onAnimation()', ['onAnimation()']],
           ]);
         });
 
