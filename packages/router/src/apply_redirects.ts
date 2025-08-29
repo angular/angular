@@ -16,6 +16,7 @@ import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup, UrlSerializer, UrlTree} from './url_tree';
 import {wrapIntoObservable} from './utils/collection';
+import {firstValueFrom} from './utils/first_value_from';
 
 export const NO_MATCH_ERROR_NAME = 'ɵNoMatch';
 export class NoMatch extends Error {
@@ -195,9 +196,11 @@ function getRedirectResult(
   }
   const redirectToFn = redirectTo;
   const {queryParams, fragment, routeConfig, url, outlet, params, data, title} = currentSnapshot;
-  return wrapIntoObservable(
-    runInInjectionContext(injector, () =>
-      redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+  return firstValueFrom(
+    wrapIntoObservable(
+      runInInjectionContext(injector, () =>
+        redirectToFn({params, data, queryParams, fragment, routeConfig, url, outlet, title}),
+      ),
     ),
-  ).toPromise() as Promise<string | UrlTree>;
+  );
 }

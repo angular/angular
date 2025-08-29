@@ -8,8 +8,8 @@
 
 import {EnvironmentInjector, inject, Injectable, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {firstValueFrom, Observable, of} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
+import {firstValueFrom, interval, Observable, of} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 
 import {Route, Routes} from '../src/models';
 import {recognize} from '../src/recognize';
@@ -1816,6 +1816,27 @@ describe('redirects', () => {
         '/a;k1=v1;k2=v2/b;k3=v3;k4=v4',
         (t: UrlTree) => {
           expectTreeToBe(t, 'redirect?k1=v1&k2=v2&k3=v3&k4=v4');
+        },
+      );
+    });
+
+    it('works when the returned redirect observable does not complete', async () => {
+      await checkRedirect(
+        [
+          {
+            path: 'a',
+            children: [
+              {
+                path: 'b',
+                redirectTo: () => interval(100).pipe(map(() => '/redirected')),
+              },
+            ],
+          },
+          {path: '**', component: ComponentC},
+        ],
+        '/a;k1=v1;k2=v2/b;k3=v3;k4=v4',
+        (t: UrlTree) => {
+          expectTreeToBe(t, 'redirected');
         },
       );
     });
