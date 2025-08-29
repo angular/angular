@@ -1,3 +1,18 @@
+<a name="20.2.3"></a>
+# 20.2.3 (2025-08-29)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [479a919f42](https://github.com/angular/angular/commit/479a919f42517193653384220adab5b89dd74e3d) | fix | fixes regression with event parsing and animate prefix ([#63470](https://github.com/angular/angular/pull/63470)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f87fad3fff](https://github.com/angular/angular/commit/f87fad3fff62cebf2868e06cba48e0f27b719d24) | fix | avoid injecting internal error handler from a destroyed injector ([#62275](https://github.com/angular/angular/pull/62275)) |
+| [114906d2d6](https://github.com/angular/angular/commit/114906d2d68d98c98961d858abd3ae714d4809a3) | fix | Fix cancellation of animation enter classes ([#63442](https://github.com/angular/angular/pull/63442)) |
+| [596b545130](https://github.com/angular/angular/commit/596b5451309b8ce4f08a1cd36e6b3610507d52f9) | fix | Prevent an error on cleanup when an `rxResource` `stream` threw before returning an `Observable` ([#63342](https://github.com/angular/angular/pull/63342)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.1"></a>
 # 21.0.0-next.1 (2025-08-27)
 ## Breaking Changes
