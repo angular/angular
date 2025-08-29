@@ -66,17 +66,23 @@ Run your build process with `ng serve` and you should see the styled heading.
 
 ## Troubleshooting
 
-If Tailwindv4 is not loading any css classes when you run `ng serve`, ensure that your `angular.json` has the following:
+### Tailwind CSS classes not applying in Angular 19
 
-```
+If Tailwind classes aren't being applied when you run `ng serve`, this is likely due to a CSS processing issue with the `@angular-devkit/build-angular:browser` builder in Angular 19.
+
+**Solution:**
+Switch to the `@angular-devkit/build-angular:application` builder in your `angular.json`:
+
+```json
 {
   "projects": {
     "my-project": {
       "architect": {
-          "build-client": {
-            "builder": "@angular-devkit/build-angular:application",
-            "options": {
-              "styles": ["src/styles.css"]
+        "build-client": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "styles": ["src/styles.css"]
+            // ... other options
           }
         }
       }
