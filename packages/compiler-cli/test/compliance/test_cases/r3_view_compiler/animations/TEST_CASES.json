@@ -187,6 +187,23 @@
           "failureMessage": "Incorrect ɵɵanimateLeave() call"
         }
       ]
+    },
+    {
+      "description": "should not generate animate leave when using 'animate' as a binding prefix",
+      "inputFiles": [
+        "animate_prefix_with_event_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_prefix_with_event_listener_template.js",
+              "generated": "animate_prefix_with_event_listener.js"
+            }
+          ],
+          "failureMessage": "ɵɵanimateLeave() present when it should not be"
+        }
+      ]
     }
   ]
 }
