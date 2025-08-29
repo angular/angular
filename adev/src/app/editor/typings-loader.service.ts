@@ -29,7 +29,7 @@ export class TypingsLoader {
 
   private webContainer: WebContainer | undefined;
 
-  private _typings = signal<Typing[]>([]);
+  private readonly _typings = signal<Typing[]>([]);
   readonly typings = this._typings.asReadonly();
   readonly typings$ = toObservable(this._typings);
 

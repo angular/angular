@@ -86,7 +86,7 @@ export default class ApiReferenceList {
     [STATUSES.deprecated]: 'Deprecated',
   };
 
-  filteredGroups = computed((): ApiItemsGroup[] => {
+  readonly filteredGroups = computed((): ApiItemsGroup[] => {
     const query = this.query().toLocaleLowerCase();
     const status = this.status();
     const type = this.type();
