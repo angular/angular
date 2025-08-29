@@ -724,7 +724,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     animationDisabled: boolean,
     maxAnimationTimeout: number,
   ) {
-    const compId = appId + '-' + component.id;
+    const compId = CSS.escape(appId) + '-' + component.id;
     super(
       eventManager,
       sharedStylesHost,
