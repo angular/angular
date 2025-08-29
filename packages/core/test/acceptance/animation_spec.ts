@@ -19,11 +19,7 @@ import {
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
-
-/** Ticks the specified amount of `requestAnimationFrame`-s. */
-export function tickAnimationFrames(amount: number) {
-  tick(16.6 * amount); // Angular turns rAF calls into 16.6ms timeouts in tests.
-}
+import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
 
 describe('Animation', () => {
   if (isNode) {
@@ -75,6 +71,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     }));
 
@@ -182,6 +179,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -242,6 +240,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -303,6 +302,7 @@ describe('Animation', () => {
       paragragh.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="slide-out fade"');
     }));
 
@@ -370,6 +370,7 @@ describe('Animation', () => {
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     }));
 
@@ -412,6 +413,7 @@ describe('Animation', () => {
       fadeCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
     }));
 
@@ -484,12 +486,12 @@ describe('Animation', () => {
       @Component({
         selector: 'child-cmp',
         styles: multiple,
-        host: {'[animate.leave]': 'clazz'},
+        host: {'[animate.leave]': 'slide()'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
       })
       class ChildComponent {
-        clazz = 'slide-out';
+        slide = signal('slide-out');
       }
 
       @Component({
@@ -516,10 +518,8 @@ describe('Animation', () => {
       fixture.detectChanges();
       tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
-      fixture.detectChanges();
       expect(childCmp.nativeElement.className).toContain('fade');
       expect(childCmp.nativeElement.className).toContain('slide-out');
-      fixture.detectChanges();
 
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
@@ -527,6 +527,7 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
+      tick();
 
       expect(fixture.nativeElement.outerHTML).not.toContain('fade');
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
@@ -603,7 +604,7 @@ describe('Animation', () => {
       childCmp.nativeElement.dispatchEvent(
         new AnimationEvent('animationend', {animationName: 'slide-out'}),
       );
-
+      tick();
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
     }));
@@ -926,7 +927,7 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     }));
 
-    it('should support multple classes as a single string separated by a space', fakeAsync(() => {
+    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -981,7 +982,7 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).not.toContain('class="slide-in fade-in"');
     }));
 
-    it('should support multple classes as a single string separated by a space', fakeAsync(() => {
+    it('should support multiple classes as a single string separated by a space', fakeAsync(() => {
       const multiple = `
       .slide-in {
         animation: slide-in 1ms;
@@ -1290,6 +1291,8 @@ describe('Animation', () => {
       fixture.detectChanges();
       tickAnimationFrames(1);
       expect(cmp.show()).toBeTruthy();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
     }));

@@ -25,6 +25,7 @@ import {ComponentTemplate, HostBindingsFunction, RenderFlags} from '../interface
 import {
   CONTEXT,
   EFFECTS_TO_SCHEDULE,
+  ENTER_ANIMATIONS,
   ENVIRONMENT,
   FLAGS,
   InitPhaseState,
@@ -231,6 +232,7 @@ export function refreshView<T>(
     if (templateFn !== null) {
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
     }
+    runEnterAnimations(lView);
 
     const hooksInitPhaseCompleted =
       (flags & LViewFlags.InitPhaseStateMask) === InitPhaseState.InitPhaseCompleted;
@@ -369,6 +371,15 @@ export function refreshView<T>(
       }
     }
     leaveView();
+  }
+}
+
+function runEnterAnimations(lView: LView) {
+  if (lView[ENTER_ANIMATIONS]) {
+    for (let animateFn of lView[ENTER_ANIMATIONS]) {
+      animateFn();
+    }
+    lView[ENTER_ANIMATIONS] = null;
   }
 }
 
