@@ -122,24 +122,32 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 
   abstract set(value: T): void;
 
-  private readonly isError = computed(() => this.status() === 'error');
+  private readonly isError = computed(() => this.status() === 'error', {
+    debugName: 'Resource.isError',
+  });
 
   update(updateFn: (value: T) => T): void {
     this.set(updateFn(untracked(this.value)));
   }
 
-  readonly isLoading = computed(() => this.status() === 'loading' || this.status() === 'reloading');
+  readonly isLoading = computed(
+    () => this.status() === 'loading' || this.status() === 'reloading',
+    {debugName: 'Resource.isLoading'},
+  );
 
   // Use a computed here to avoid triggering reactive consumers if the value changes while staying
   // either defined or undefined.
-  private readonly isValueDefined = computed(() => {
-    // Check if it's in an error state first to prevent the error from bubbling up.
-    if (this.isError()) {
-      return false;
-    }
+  private readonly isValueDefined = computed(
+    () => {
+      // Check if it's in an error state first to prevent the error from bubbling up.
+      if (this.isError()) {
+        return false;
+      }
 
-    return this.value() !== undefined;
-  });
+      return this.value() !== undefined;
+    },
+    {debugName: 'Resource.isValueDefined'},
+  );
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
     return this.isValueDefined();
@@ -207,7 +215,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
           return streamValue.value;
         },
-        {equal},
+        {equal, debugName: 'Resource.value'},
       ),
     );
 
@@ -215,6 +223,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.extRequest = linkedSignal({
       source: request,
       computation: (request) => ({request, reload: 0}),
+      debugName: 'Resource.extRequest',
     });
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
@@ -245,11 +254,13 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
           };
         }
       },
+      debugName: 'Resource.state',
     });
 
     this.effectRef = effect(this.loadEffect.bind(this), {
       injector,
       manualCleanup: true,
+      debugName: 'Resource.effect',
     });
 
     this.pendingTasks = injector.get(PendingTasks);
@@ -258,12 +269,17 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.unregisterOnDestroy = injector.get(DestroyRef).onDestroy(() => this.destroy());
   }
 
-  override readonly status = computed(() => projectStatusOfState(this.state()));
-
-  override readonly error = computed(() => {
-    const stream = this.state().stream?.();
-    return stream && !isResolved(stream) ? stream.error : undefined;
+  override readonly status = computed(() => projectStatusOfState(this.state()), {
+    debugName: 'Resource.status',
   });
+
+  override readonly error = computed(
+    () => {
+      const stream = this.state().stream?.();
+      return stream && !isResolved(stream) ? stream.error : undefined;
+    },
+    {debugName: 'Resource.error'},
+  );
 
   /**
    * Called either directly via `WritableResource.set` or via `.value.set()`.
@@ -291,7 +307,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       extRequest: state.extRequest,
       status: 'local',
       previousStatus: 'local',
-      stream: signal({value}),
+      stream: signal({value}, {debugName: 'Resource.localValue'}),
     });
 
     // We're departing from whatever state the resource was in previously, so cancel any in-progress
@@ -395,7 +411,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         extRequest,
         status: 'resolved',
         previousStatus: 'error',
-        stream: signal({error: encapsulateResourceError(err)}),
+        stream: signal({error: encapsulateResourceError(err)}, {debugName: 'Resource.errorStream'}),
       });
     } finally {
       // Resolve the pending task now that the resource has a value.
@@ -428,9 +444,9 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
 
   return async (params) => {
     try {
-      return signal({value: await options.loader(params)});
+      return signal({value: await options.loader(params)}, {debugName: 'Resource.loaderValue'});
     } catch (err) {
-      return signal({error: encapsulateResourceError(err)});
+      return signal({error: encapsulateResourceError(err)}, {debugName: 'Resource.loaderError'});
     }
   };
 }
