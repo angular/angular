@@ -275,8 +275,6 @@ export interface Component extends Directive {
     encapsulation?: ViewEncapsulation;
     imports?: (Type<any> | ReadonlyArray<any>)[];
     // @deprecated
-    interpolation?: [string, string];
-    // @deprecated
     moduleId?: string;
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
