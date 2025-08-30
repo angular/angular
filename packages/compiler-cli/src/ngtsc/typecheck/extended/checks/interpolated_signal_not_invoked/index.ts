@@ -14,7 +14,9 @@ import {
   PrefixNot,
   PropertyRead,
   TmplAstBoundAttribute,
+  TmplAstIfBlock,
   TmplAstNode,
+  TmplAstSwitchBlock,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -80,6 +82,29 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
         return buildDiagnosticForSignal(ctx, nodeAst, component);
       }
     }
+    // if blocks like `@if(mySignal) { ... }`
+    else if (node instanceof TmplAstIfBlock) {
+      return node.branches
+        .map((branch) => branch.expression)
+        .filter((expr): expr is ASTWithSource => expr instanceof ASTWithSource)
+        .map((expr) => {
+          const ast = expr.ast;
+          return ast instanceof PrefixNot ? ast.expression : ast;
+        })
+        .filter((ast): ast is PropertyRead => ast instanceof PropertyRead)
+        .flatMap((item) => buildDiagnosticForSignal(ctx, item, component));
+    }
+    // switch blocks like `@switch(mySignal) { ... }`
+    else if (node instanceof TmplAstSwitchBlock && node.expression instanceof ASTWithSource) {
+      const expression =
+        node.expression.ast instanceof PrefixNot
+          ? node.expression.ast.expression
+          : node.expression.ast;
+      if (expression instanceof PropertyRead) {
+        return buildDiagnosticForSignal(ctx, expression, component);
+      }
+    }
+
     return [];
   }
 }
