@@ -1,0 +1,81 @@
+/* CustomCheckbox Component Styles */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-checkbox input[type='checkbox'] {
+  margin: 0;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ddd;
+  border-radius: 3px;
+  display: inline-block;
+  position: relative;
+}
+
+.custom-checkbox input[type='checkbox']:checked + .checkmark {
+  background-color: #4caf50;
+  border-color: #4caf50;
+}
+
+.custom-checkbox input[type='checkbox']:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  top: -2px;
+  left: 2px;
+}
+
+/* App Component Styles */
+.shopping-app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.demo-section {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.controls {
+  margin: 20px 0;
+  padding: 16px;
+  background: #f0f8ff;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+}
+
+.controls p {
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+button {
+  margin-right: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #1976d2;
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background: #1565c0;
+}
