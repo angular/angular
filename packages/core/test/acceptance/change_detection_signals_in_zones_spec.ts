@@ -17,6 +17,7 @@ import {
   ElementRef,
   inject,
   Input,
+  provideZoneChangeDetection,
   signal,
   TemplateRef,
   ViewChild,
@@ -26,6 +27,11 @@ import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 import {TestBed} from '../../testing';
 
 describe('CheckAlways components', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('can read a signal', () => {
     @Component({
       template: `{{value()}}`,

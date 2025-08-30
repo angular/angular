@@ -21,7 +21,8 @@ import {
   getParentBlockHydrationQueue,
   isIncrementalHydrationEnabled,
 } from '../hydration/utils';
-import {PendingTasks, PendingTasksInternal} from '../pending_tasks';
+import {PendingTasks} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 import {assertLContainer} from '../render3/assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from '../render3/def_getters';
 import {getTemplateLocationDetails} from '../render3/instructions/element_validation';

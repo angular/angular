@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, provideZoneChangeDetection} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 import * as animationDslExample from './animation/ts/dsl/module';
@@ -45,5 +45,6 @@ export class TestsAppComponent {}
   ],
   declarations: [TestsAppComponent],
   bootstrap: [TestsAppComponent],
+  providers: [provideZoneChangeDetection()],
 })
 export class TestsAppModule {}

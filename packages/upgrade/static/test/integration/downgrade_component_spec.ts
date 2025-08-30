@@ -22,6 +22,7 @@ import {
   OnChanges,
   OnDestroy,
   Output,
+  provideZoneChangeDetection,
   SimpleChanges,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
@@ -462,6 +463,7 @@ withEachNg1Version(() => {
       @NgModule({
         imports: [BrowserModule, UpgradeModule],
         declarations: [Ng2Component],
+        providers: [provideZoneChangeDetection()],
       })
       class Ng2Module {
         ngDoBootstrap() {}

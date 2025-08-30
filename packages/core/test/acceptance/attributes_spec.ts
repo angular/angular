@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component} from '../../src/core';
+import {Component, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
 import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
 
@@ -55,6 +55,11 @@ describe('attribute creation', () => {
 });
 
 describe('attribute binding', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should set attribute values', () => {
     @Component({
       template: `<a [attr.href]="url"></a>`,

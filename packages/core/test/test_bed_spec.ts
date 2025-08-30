@@ -11,6 +11,7 @@ import {
   APP_INITIALIZER,
   ChangeDetectorRef,
   Compiler,
+  provideZoneChangeDetection,
   Component,
   Directive,
   ElementRef,
@@ -726,6 +727,7 @@ describe('TestBed', () => {
   });
 
   it('should give the ability to trigger the change detection', () => {
+    TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
     const hello = TestBed.createComponent(HelloWorld);
 
     hello.detectChanges();
@@ -2360,7 +2362,10 @@ describe('TestBed', () => {
     describe('with zone change detection', () => {
       it('should update fixtures with autoDetect', () => {
         TestBed.configureTestingModule({
-          providers: [{provide: ComponentFixtureAutoDetect, useValue: true}],
+          providers: [
+            {provide: ComponentFixtureAutoDetect, useValue: true},
+            provideZoneChangeDetection(),
+          ],
         });
         const {nativeElement, componentInstance} = TestBed.createComponent(Thing1);
         expect(nativeElement.textContent).toBe('1');

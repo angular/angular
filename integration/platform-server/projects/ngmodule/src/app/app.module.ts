@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {NgModule, provideZoneChangeDetection} from '@angular/core';
 import {
   BrowserModule,
   provideClientHydration,
@@ -11,7 +11,7 @@ import {AppComponent} from './app.component';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule],
-  providers: [provideClientHydration(withIncrementalHydration())],
+  providers: [provideZoneChangeDetection(), provideClientHydration(withIncrementalHydration())],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

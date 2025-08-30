@@ -23,6 +23,7 @@ import {
   ViewChildren,
   ViewContainerRef,
   ElementRef,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {ComponentFixture, TestBed, waitForAsync} from '../../testing';
 import {expect} from '@angular/private/testing/matchers';
@@ -33,6 +34,7 @@ import {stringify} from '../../src/util/stringify';
 describe('Query API', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         MyComp0,
         NeedsQuery,
@@ -189,6 +191,7 @@ describe('Query API', () => {
       q.shouldShow = false;
       q.shouldShow2 = true;
       q.logs = [];
+      view.changeDetectorRef.markForCheck();
       view.detectChanges();
       expect(q.logs).toEqual([
         ['setter', 'bar'],
@@ -198,6 +201,7 @@ describe('Query API', () => {
       q.shouldShow = false;
       q.shouldShow2 = false;
       q.logs = [];
+      view.changeDetectorRef.markForCheck();
       view.detectChanges();
       expect(q.logs).toEqual([
         ['setter', null],

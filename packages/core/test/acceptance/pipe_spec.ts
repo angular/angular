@@ -21,6 +21,7 @@ import {
   OnDestroy,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   SimpleChanges,
   ViewChild,
   ɵɵdefineInjectable,
@@ -328,6 +329,7 @@ describe('pipe', () => {
     expect(fixture.nativeElement).toHaveText('b');
 
     fixture.componentInstance.condition = true;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('a');
   });
@@ -398,22 +400,27 @@ describe('pipe', () => {
 
       // change from undefined -> null
       fixture.componentInstance.person.name = null;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('null state:0');
 
       // change from null -> some value
       fixture.componentInstance.person.name = 'bob';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('bob state:1');
 
       // change from some value -> some other value
       fixture.componentInstance.person.name = 'bart';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toEqual('bart state:2');
 
@@ -452,7 +459,10 @@ describe('pipe', () => {
         person = {name: 'bob'};
       }
 
-      TestBed.configureTestingModule({declarations: [App, CountingImpurePipe]});
+      TestBed.configureTestingModule({
+        declarations: [App, CountingImpurePipe],
+        providers: [provideZoneChangeDetection()],
+      });
       const fixture = TestBed.createComponent(App);
       const pipe = impurePipeInstances[0];
 
@@ -742,6 +752,11 @@ describe('pipe', () => {
   });
 
   describe('pure pipe error handling', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     it('should not re-invoke pure pipes if it fails initially', () => {
       @Pipe({
         name: 'throwPipe',

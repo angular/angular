@@ -26,7 +26,7 @@ import {
   ɵChangeDetectionScheduler,
   ɵNotificationSource,
 } from '../../src/core';
-import {PendingTasksInternal} from '../../src/pending_tasks';
+import {PendingTasksInternal} from '../../src/pending_tasks_internal';
 
 import {TestBedApplicationErrorHandler} from './application_error_handler';
 import {DeferBlockFixture} from './defer';

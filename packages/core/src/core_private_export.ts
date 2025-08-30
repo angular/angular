@@ -41,7 +41,7 @@ export {
   internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection,
   PROVIDED_NG_ZONE as ɵPROVIDED_NG_ZONE,
 } from './change_detection/scheduling/ng_zone_scheduling';
-export {ChangeDetectionSchedulerImpl as ɵChangeDetectionSchedulerImpl} from './change_detection/scheduling/zoneless_scheduling_impl';
+export {provideZonelessChangeDetectionInternal as ɵprovideZonelessChangeDetectionInternal} from './change_detection/scheduling/zoneless_scheduling_impl';
 export {
   ChangeDetectionScheduler as ɵChangeDetectionScheduler,
   NotificationSource as ɵNotificationSource,
@@ -121,7 +121,7 @@ export {
   resolveComponentResources as ɵresolveComponentResources,
   restoreComponentResolutionQueue as ɵrestoreComponentResolutionQueue,
 } from './metadata/resource_loading';
-export {PendingTasksInternal as ɵPendingTasksInternal} from './pending_tasks';
+export {PendingTasksInternal as ɵPendingTasksInternal} from './pending_tasks_internal';
 export {ALLOW_MULTIPLE_PLATFORMS as ɵALLOW_MULTIPLE_PLATFORMS} from './platform/platform';
 export {ENABLE_ROOT_COMPONENT_BOOTSTRAP as ɵENABLE_ROOT_COMPONENT_BOOTSTRAP} from './platform/bootstrap';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';

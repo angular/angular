@@ -21,6 +21,7 @@ import {
   SimpleChanges,
   createComponent,
   inject,
+  provideZoneChangeDetection,
 } from '@angular/core';
 
 import {TestBed} from '@angular/core/testing';
@@ -39,7 +40,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injector: Injector;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
     injector = TestBed.inject(Injector);
     const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent, injector);
     strategy = strategyFactory.create(injector);

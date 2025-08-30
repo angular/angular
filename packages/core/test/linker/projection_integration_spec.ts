@@ -300,10 +300,12 @@ describe('projection', () => {
     expect(fixture.nativeElement).toHaveText('BB()');
 
     fixture.componentInstance.showing = true;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('BB(AA)');
 
     fixture.componentInstance.showing = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('BB()');
   });

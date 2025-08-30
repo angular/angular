@@ -17,6 +17,7 @@ import {
   inject,
   Input,
   OnDestroy,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -26,6 +27,11 @@ import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
 
 describe('projection', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   function getElementHtml(element: HTMLElement) {
     return element.innerHTML
       .replace(/<!--(\W|\w)*?-->/g, '')

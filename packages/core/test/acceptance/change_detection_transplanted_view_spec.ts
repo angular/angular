@@ -22,6 +22,7 @@ import {
   ErrorHandler,
   inject,
   Input,
+  provideZoneChangeDetection,
   signal,
   TemplateRef,
   Type,
@@ -34,6 +35,11 @@ import {expect} from '@angular/private/testing/matchers';
 import {of} from 'rxjs';
 
 describe('change detection for transplanted views', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('when declaration appears before insertion', () => {
     @Component({
       selector: 'onpush-insert-comp',
