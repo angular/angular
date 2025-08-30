@@ -157,11 +157,16 @@ export class RouterTreeComponent {
 
   private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
     d3Node.attr('class', (node: RouterTreeD3Node) => {
-      // Since `node-faded` could pre-exist, drop it if the node is a match.
       const classNames = d3Node.attr('class').replace('node-faded', '');
       const nodeClasses = [classNames];
 
-      if (node.data.isActive) {
+      // Don't show root as active if it has active children (it's just a container)
+      const isContainerOnly =
+        node.depth === 0 &&
+        node.data.component === 'no-name' &&
+        node.children?.some((child) => child.data.isActive);
+
+      if (node.data.isActive && !isContainerOnly) {
         nodeClasses.push('node-element');
       } else if (node.data.isLazy) {
         nodeClasses.push('node-lazy');
