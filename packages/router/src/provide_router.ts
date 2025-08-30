@@ -11,6 +11,8 @@ import {
   LOCATION_INITIALIZED,
   LocationStrategy,
   ViewportScroller,
+  Location,
+  ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
   APP_BOOTSTRAP_LISTENER,
@@ -26,9 +28,10 @@ import {
   provideAppInitializer,
   Provider,
   runInInjectionContext,
-  Type,
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
+  provideEnvironmentInitializer,
+  Type,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -50,6 +53,8 @@ import {
   VIEW_TRANSITION_OPTIONS,
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
+import {StateManager} from './statemanager/state_manager';
+import {NavigationStateManager} from './statemanager/navigation_state_manager';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -220,6 +225,28 @@ export function withInMemoryScrolling(
         return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
       },
     },
+  ];
+  return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
+}
+
+export function withDomNavigation() {
+  const providers = [
+    {provide: StateManager, useExisting: NavigationStateManager},
+    {provide: Location, useClass: ɵNavigationAdapterForLocation},
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? [
+          provideEnvironmentInitializer(() => {
+            const locationInstance = inject(Location);
+            if (!(locationInstance instanceof ɵNavigationAdapterForLocation)) {
+              // TODO(atscott): add specific checks for SpyLocation and mention not to use RouterTestingModule or provideLocationMocks
+              throw new Error(
+                `'withDomNavigation' provides a 'Location' implementation that ensures navigation APIs are consistently used.` +
+                  `An instance of ${(locationInstance as any).constructor.name} was found instead`,
+              );
+            }
+          }),
+        ]
+      : [],
   ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }
