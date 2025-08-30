@@ -102,6 +102,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/signals/resource',
             contentPath: 'guide/signals/resource',
           },
+          {
+            label: 'Code Examples',
+            path: 'guide/signals/code-examples',
+            contentPath: 'guide/signals/code-examples',
+          },
         ],
       },
       {

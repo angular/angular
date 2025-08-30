@@ -1,0 +1,116 @@
+:host {
+  display: block;
+  font-family: sans-serif;
+}
+
+.container {
+  background-color: #ffffff;
+  color: #1e1e1e;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: auto;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.container.dark-theme {
+  background-color: #2c2c2c;
+  color: #e0e0e0;
+}
+
+.container h2 {
+  margin-top: 0;
+  font-size: 1.3em;
+}
+
+.container.dark-theme h2,
+.container.dark-theme p,
+.container.dark-theme code {
+  color: #ffffff;
+}
+
+.container p {
+  color: #333;
+  font-size: 0.9em;
+  line-height: 1.6;
+  max-width: 90%;
+}
+
+code {
+  background-color: #e0e0e0;
+  color: #1e1e1e;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.container.dark-theme code {
+  background-color: #444;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  font-size: 1.1em;
+}
+
+.theme-value {
+  font-family: monospace;
+  font-weight: bold;
+}
+
+button {
+  border: none;
+  border-radius: 5px;
+  padding: 10px 18px;
+  font-size: 0.9em;
+  font-weight: bold;
+  color: white;
+  background-color: #c82333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #dc3545;
+}
+
+.result-box {
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  transition: background-color 0.3s;
+  background-color: #f0f2f5;
+}
+
+.container.dark-theme .result-box {
+  background-color: #1e1e1e;
+}
+
+.result-box span {
+  font-size: 0.9em;
+  color: #555;
+}
+
+.container.dark-theme .result-box span {
+  color: #aaa;
+}
+
+pre {
+  background-color: #e9ecef;
+  padding: 16px;
+  border-radius: 6px;
+  margin: 10px 0 0 0;
+  color: #1e1e1e;
+  font-family: monospace;
+  font-size: 1.1em;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.container.dark-theme pre {
+  background-color: #3a3a3a;
+  color: #e0e0e0;
+}
