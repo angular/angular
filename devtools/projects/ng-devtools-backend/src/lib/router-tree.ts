@@ -65,7 +65,8 @@ function assignChildrenToParent(
     const isLazy = Boolean(child.loadChildren || child.loadComponent);
 
     const pathWithoutParams = routePath.split('/:')[0];
-    const isActive = currentUrl?.startsWith(pathWithoutParams);
+    const isActive =
+      routePath === '/' ? currentUrl === '/' : currentUrl?.startsWith(pathWithoutParams);
 
     const routeConfig: Route = {
       title: typeof child.title === 'string' ? child.title : '[Function]',
