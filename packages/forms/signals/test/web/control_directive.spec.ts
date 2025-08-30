@@ -572,6 +572,36 @@ describe('control directive', () => {
       [...fix.nativeElement.querySelectorAll('.disabled-reason')].map((e) => e.textContent),
     ).toEqual(['manual disabled', 'schema disabled']);
   });
+
+  it('should work when checked is defined on FormValueControl', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      checked = input(false);
+    }
+
+    @Component({
+      imports: [Control, CustomInput],
+      template: `<my-input [control]="f" [checked]="true" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal('test'));
+      myInput = viewChild.required(CustomInput);
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const inputEl = fix.nativeElement.querySelector('input');
+    expect(inputEl.value).toEqual('test');
+
+    act(() => {
+      inputEl.value = 'new';
+      inputEl.dispatchEvent(new Event('input'));
+    });
+    expect(fix.componentInstance.f().value()).toEqual('new');
+  });
 });
 
 function setupRadioGroup() {

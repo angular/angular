@@ -12,10 +12,6 @@ import {ValidationError, type WithOptionalField} from './validation_errors';
 
 /** The base set of properties shared by all form control contracts. */
 export interface FormUiControl {
-  // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
-  // They don't make sense when using a ccontrol separately from the forms system and setting the
-  // inputs individually. Givn that, should they still be part of this interface?
-
   /**
    * An input to receive the errors for the field. If implemented, the `Control` directive will
    * automatically bind errors from the bound field to this input.
@@ -115,15 +111,6 @@ export interface FormValueControl<TValue> extends FormUiControl {
    * sync with the value of the bound `Field`.
    */
   readonly value: ModelSignal<TValue>;
-  // TODO: We currently require that a `checked` input not be present, as we may want to introduce a
-  // third kind of form control for radio buttons that defines both a `value` and `checked` input.
-  // We are still evaluating whether this makes sense, but if we decide not to persue this we can
-  // remove this restriction.
-  /**
-   * The implementing component *must not* define a `checked` property. This is reserved for
-   * components that want to integrate with the `Control` directive as a checkbox.
-   */
-  readonly checked?: undefined;
 }
 
 /**
