@@ -197,6 +197,43 @@ export function authRedirectInterceptor(req: HttpRequest<unknown>, next: HttpHan
 }
 </docs-code>
 
+## Working with response types
+
+When using `HttpClient` with the `withFetch` provider, responses include a `type` property that indicates how the browser handled the response based on CORS policies and request mode. This property aligns with the native Fetch API specification and provides valuable insights for debugging CORS issues and understanding response accessibility.
+
+The response `type` property can have the following values:
+- `'basic'` - Same-origin response with all headers accessible
+- `'cors'` - Cross-origin response with CORS headers properly configured  
+- `'opaque'` - Cross-origin response without CORS, headers and body may be limited
+- `'opaqueredirect'` - Response from a redirected request in no-cors mode
+- `'error'` - Network error occurred
+
+An interceptor can use response type information for CORS debugging and error handling:
+
+<docs-code language="ts">
+export function responseTypeInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  return next(req).pipe(map(event => {
+    if (event.type === HttpEventType.Response) {
+      // Handle different response types appropriately
+      switch (event.responseType) {
+        case 'opaque':
+          // Limited access to response data
+          console.warn('Limited response data due to CORS policy');
+          break;
+        case 'cors':
+        case 'basic':
+          // Full access to response data
+          break;
+        case 'error':
+          // Handle network errors
+          console.error('Network error in response');
+          break;
+      }
+    }
+  }));
+}
+</docs-code>
+
 ## DI-based interceptors
 
 `HttpClient` also supports interceptors which are defined as injectable classes and configured through the DI system. The capabilities of DI-based interceptors are identical to those of functional interceptors, but the configuration mechanism is different.
