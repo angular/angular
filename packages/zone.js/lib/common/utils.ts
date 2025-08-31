@@ -542,25 +542,6 @@ export function attachOriginToPatched(patched: Function, original: any) {
   (patched as any)[zoneSymbol('OriginalDelegate')] = original;
 }
 
-let isDetectedIEOrEdge = false;
-let ieOrEdge = false;
-
-export function isIEOrEdge() {
-  if (isDetectedIEOrEdge) {
-    return ieOrEdge;
-  }
-
-  isDetectedIEOrEdge = true;
-
-  try {
-    const ua = internalWindow.navigator.userAgent;
-    if (ua.indexOf('MSIE ') !== -1 || ua.indexOf('Trident/') !== -1 || ua.indexOf('Edge/') !== -1) {
-      ieOrEdge = true;
-    }
-  } catch (error) {}
-  return ieOrEdge;
-}
-
 export function isFunction(value: unknown): value is Function {
   return typeof value === 'function';
 }

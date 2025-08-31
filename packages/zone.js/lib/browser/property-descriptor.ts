@@ -86,15 +86,10 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
       'HTMLMarqueeElement',
       'Worker',
     ]);
-    const ignoreErrorProperties: IgnoreProperty[] = [];
-    // In older browsers like IE or Edge, event handler properties (e.g., `onclick`)
-    // may not be defined directly on the `window` object but on its prototype (`WindowPrototype`).
-    // To ensure complete coverage, we use the prototype when checking
-    // for and patching these properties.
     patchFilteredProperties(
       internalWindow,
       getOnEventNames(internalWindow),
-      ignoreProperties ? ignoreProperties.concat(ignoreErrorProperties) : ignoreProperties,
+      ignoreProperties,
       ObjectGetPrototypeOf(internalWindow),
     );
   }
