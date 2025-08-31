@@ -51,13 +51,13 @@ export class Navigation {
 
   protected PAGE_PREFIX = PAGE_PREFIX;
   protected ngLinks = ANGULAR_LINKS;
-  readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
-  readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
+  protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
 
   // We can't use the ActivatedRouter queryParams as we're outside the router outlet
-  readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
+  protected readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
 
-  miniMenuPositions = [
+  protected miniMenuPositions = [
     new ConnectionPositionPair(
       {originX: 'end', originY: 'center'},
       {overlayX: 'start', overlayY: 'center'},
@@ -72,26 +72,26 @@ export class Navigation {
   readonly DEFAULT_SEARCH_LABEL = `ctrl`;
 
   activeRouteItem = this.navigationState.primaryActiveRouteItem;
-  theme = this.themeManager.theme;
-  openedMenu: MenuType | null = null;
+  protected theme = this.themeManager.theme;
+  protected openedMenu: MenuType | null = null;
 
-  currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
+  protected currentDocsVersion = this.versionManager.currentDocsVersion;
+  protected currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
-  searchLabel = this.isBrowser
+  protected searchLabel = this.isBrowser
     ? isApple
       ? this.APPLE_SEARCH_LABEL
       : this.DEFAULT_SEARCH_LABEL
     : '';
-  searchTitle = this.isBrowser
+  protected searchTitle = this.isBrowser
     ? isApple
       ? `${COMMAND} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
       : `${CONTROL} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
     : '';
-  versions = this.versionManager.versions;
+  protected versions = this.versionManager.versions;
 
-  isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
+  protected isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
   isMobileNavigationOpened$ = toObservable(this.isMobileNavigationOpened);
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
@@ -101,35 +101,35 @@ export class Navigation {
     this.closeMobileNavOnPrimaryRouteChange();
   }
 
-  setTheme(theme: Theme): void {
+  protected setTheme(theme: Theme): void {
     this.themeManager.setTheme(theme);
   }
 
-  openVersionMenu($event: MouseEvent): void {
+  protected openVersionMenu($event: MouseEvent): void {
     // It's required to avoid redirection to `home`
     $event.stopImmediatePropagation();
     $event.preventDefault();
     this.openMenu('version-picker');
   }
 
-  openMenu(menuType: MenuType): void {
+  protected openMenu(menuType: MenuType): void {
     this.openedMenu = menuType;
   }
 
-  closeMenu(): void {
+  protected closeMenu(): void {
     this.openedMenu = null;
   }
 
-  openMobileNav($event: MouseEvent): void {
+  protected openMobileNav($event: MouseEvent): void {
     $event.stopPropagation();
     this.navigationState.setMobileNavigationListVisibility(true);
   }
 
-  closeMobileNav(): void {
+  protected closeMobileNav(): void {
     this.navigationState.setMobileNavigationListVisibility(false);
   }
 
-  toggleSearchDialog(event: MouseEvent): void {
+  protected toggleSearchDialog(event: MouseEvent): void {
     event.stopPropagation();
     this.isSearchDialogOpen.update((isOpen) => !isOpen);
   }
