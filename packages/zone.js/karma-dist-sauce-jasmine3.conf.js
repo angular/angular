@@ -18,7 +18,6 @@ module.exports = function (config) {
     'SL_IOS8',
     'SL_IOS9',
     'SL_IOS10',
-    'SL_MSEDGE15',
     'SL_ANDROID4.4',
     'SL_ANDROID5.1',
   ]);

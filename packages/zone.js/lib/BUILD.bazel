@@ -9,7 +9,6 @@ exports_files(glob([
 copy_to_bin(
     name = "files",
     srcs = [
-        "browser/rollup-browser-legacy.ts",
         "browser/rollup-canvas.ts",
         "browser/rollup-message-port.ts",
         "browser/rollup-shadydom.ts",
