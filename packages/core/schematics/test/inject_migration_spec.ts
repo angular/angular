@@ -529,6 +529,37 @@ describe('inject migration', () => {
     ]);
   });
 
+  it('should migrate destructuring property', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, ElementRef } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor({nativeElement}: ElementRef) {`,
+        `    console.log(nativeElement);`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, ElementRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  nativeElement = inject(ElementRef).nativeElement;`,
+      ``,
+      `  constructor() {`,
+      `    console.log(this.nativeElement);`,
+      `  }`,
+      `}`,
+    ]);
+  });
+
   it('should preserve the constructor if it has other expressions', async () => {
     writeFile(
       '/dir.ts',
