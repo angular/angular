@@ -103,9 +103,9 @@ export class AnimationPlayerComponent {
   readonly alignment = signal<ComponentAlignment>('center');
   TIMESTEP = TIMESTEP;
 
-  readonly progressPerc = computed(() => this.animation()!.progress() * 100 + '%');
+  protected readonly progressPerc = computed(() => this.animation()!.progress() * 100 + '%');
 
-  playPause() {
+  protected playPause() {
     const anim = this.animation()!;
 
     if (!anim.isPlaying()) {
@@ -115,7 +115,7 @@ export class AnimationPlayerComponent {
     }
   }
 
-  seek(e: MouseEvent) {
+  protected seek(e: MouseEvent) {
     const target = e.target as HTMLElement;
     const progress = e.offsetX / target.clientWidth;
     this.animation()!.seek(progress);

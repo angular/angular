@@ -99,11 +99,11 @@ export class CodeEditor {
 
   readonly TerminalType = TerminalType;
 
-  readonly displayErrorsBox = signal<boolean>(false);
-  readonly errors = signal<DiagnosticWithLocation[]>([]);
-  readonly files = this.codeMirrorEditor.openFiles;
-  readonly isCreatingFile = signal<boolean>(false);
-  readonly isRenamingFile = signal<boolean>(false);
+  protected readonly displayErrorsBox = signal<boolean>(false);
+  protected readonly errors = signal<DiagnosticWithLocation[]>([]);
+  protected readonly files = this.codeMirrorEditor.openFiles;
+  protected readonly isCreatingFile = signal<boolean>(false);
+  protected readonly isRenamingFile = signal<boolean>(false);
 
   constructor() {
     afterRenderEffect(() => {
@@ -131,10 +131,11 @@ export class CodeEditor {
     });
   }
 
-  openCurrentSolutionInFirebaseStudio(): void {
+  protected openCurrentSolutionInFirebaseStudio(): void {
     this.firebaseStudioLauncher.openCurrentSolutionInFirebaseStudio();
   }
-  async openCurrentCodeInStackBlitz(): Promise<void> {
+
+  protected async openCurrentCodeInStackBlitz(): Promise<void> {
     const title = this.title.getTitle();
 
     const path = this.location.path();
@@ -144,43 +145,43 @@ export class CodeEditor {
     await this.stackblitzOpener.openCurrentSolutionInStackBlitz({title, description});
   }
 
-  async downloadCurrentCodeEditorState(): Promise<void> {
+  protected async downloadCurrentCodeEditorState(): Promise<void> {
     const embeddedTutorialManager = await injectEmbeddedTutorialManager(this.environmentInjector);
     const name = embeddedTutorialManager.tutorialId();
     await this.downloadManager.downloadCurrentStateOfTheSolution(name);
   }
 
-  closeErrorsBox(): void {
+  protected closeErrorsBox(): void {
     this.displayErrorsBox.set(false);
   }
 
-  closeRenameFile(): void {
+  protected closeRenameFile(): void {
     this.isRenamingFile.set(false);
   }
 
-  canRenameFile = (filename: string) => this.canDeleteFile(filename);
+  protected canRenameFile = (filename: string) => this.canDeleteFile(filename);
 
-  canDeleteFile(filename: string) {
+  protected canDeleteFile(filename: string) {
     return !REQUIRED_FILES.has(filename) && !this.restrictedMode();
   }
 
-  canCreateFile = () => !this.restrictedMode();
+  protected canCreateFile = () => !this.restrictedMode();
 
-  async deleteFile(filename: string) {
+  protected async deleteFile(filename: string) {
     await this.codeMirrorEditor.deleteFile(filename);
     this.matTabGroup().selectedIndex = 0;
   }
 
-  onAddButtonClick() {
+  protected onAddButtonClick() {
     this.isCreatingFile.set(true);
     this.matTabGroup().selectedIndex = this.files().length;
   }
 
-  onRenameButtonClick() {
+  protected onRenameButtonClick() {
     this.isRenamingFile.set(true);
   }
 
-  async renameFile(event: SubmitEvent, oldPath: string) {
+  protected async renameFile(event: SubmitEvent, oldPath: string) {
     const renameFileInput = this.renameFileInputRef();
     if (!renameFileInput) return;
 
@@ -208,7 +209,7 @@ export class CodeEditor {
     this.isRenamingFile.set(false);
   }
 
-  async createFile(event: SubmitEvent) {
+  protected async createFile(event: SubmitEvent) {
     const fileInput = this.createFileInputRef();
     if (!fileInput) return;
 

@@ -20,9 +20,9 @@ import {ErrorType, NodeRuntimeState} from '../node-runtime-state.service';
 export class PreviewError {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
 
-  readonly isIos = isIos;
+  protected readonly isIos = isIos;
   readonly isFirefox = isFirefox;
 
-  readonly error = this.nodeRuntimeState.error;
-  readonly ErrorType = ErrorType;
+  protected readonly error = this.nodeRuntimeState.error;
+  protected readonly ErrorType = ErrorType;
 }
