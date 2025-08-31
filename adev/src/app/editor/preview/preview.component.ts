@@ -9,11 +9,9 @@
 import {ChangeDetectionStrategy, Component, inject, computed} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 import {toSignal} from '@angular/core/rxjs-interop';
-
 import {LoadingStep} from '../enums/loading-steps';
 import {NodeRuntimeSandbox} from '../node-runtime-sandbox.service';
 import {NodeRuntimeState} from '../node-runtime-state.service';
-
 import {PreviewError} from './preview-error.component';
 
 @Component({
@@ -29,10 +27,10 @@ export class Preview {
   private readonly nodeRuntimeState = inject(NodeRuntimeState);
 
   loadingProgressValue = this.nodeRuntimeState.loadingStep;
-  loadingEnum = LoadingStep;
+  protected loadingEnum = LoadingStep;
 
   readonly previewUrl = toSignal(this.nodeRuntimeSandbox.previewUrl$, {initialValue: null});
-  readonly previewUrlForIFrame = computed(() => {
+  protected readonly previewUrlForIFrame = computed(() => {
     const url = this.previewUrl();
     return url !== null ? this.domSanitizer.bypassSecurityTrustResourceUrl(url) : null;
   });

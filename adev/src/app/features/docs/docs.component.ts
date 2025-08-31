@@ -21,5 +21,5 @@ export default class DocsComponent {
   // In case when exists example-viewer placeholders, then ExampleViewer
   // components are going to be rendered.
 
-  readonly docContent = input<DocContent>();
+  protected readonly docContent = input<DocContent>();
 }

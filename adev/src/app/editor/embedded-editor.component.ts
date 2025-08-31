@@ -70,17 +70,17 @@ export class EmbeddedEditor {
 
   readonly MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES = MAX_RECOMMENDED_WEBCONTAINERS_INSTANCES;
 
-  readonly TerminalType = TerminalType;
-  readonly displayOnlyTerminal = computed(
+  protected readonly TerminalType = TerminalType;
+  protected readonly displayOnlyTerminal = computed(
     () => this.editorUiState.tutorialType() === TutorialType.CLI,
   );
-  readonly displayPreviewInMatTabGroup = signal<boolean>(true);
-  readonly selectedTabIndex = linkedSignal({
+  protected readonly displayPreviewInMatTabGroup = signal<boolean>(true);
+  protected readonly selectedTabIndex = linkedSignal({
     source: () => this.displayPreviewInMatTabGroup(),
     computation: () => 0,
   });
 
-  readonly shouldEnableReset = computed(
+  protected readonly shouldEnableReset = computed(
     () =>
       this.nodeRuntimeState.loadingStep() > LoadingStep.BOOT &&
       !this.nodeRuntimeState.isResetting(),
@@ -89,7 +89,7 @@ export class EmbeddedEditor {
   private readonly errorsCount$ = this.diagnosticsState.diagnostics$.pipe(
     map((diagnosticsItem) => diagnosticsItem.filter((item) => item.severity === 'error').length),
   );
-  readonly errorsCount = toSignal(this.errorsCount$, {initialValue: 0});
+  protected readonly errorsCount = toSignal(this.errorsCount$, {initialValue: 0});
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -108,7 +108,7 @@ export class EmbeddedEditor {
     });
   }
 
-  async reset(): Promise<void> {
+  protected async reset(): Promise<void> {
     await this.nodeRuntimeSandbox.reset();
   }
 
