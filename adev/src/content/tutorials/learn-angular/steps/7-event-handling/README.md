@@ -15,7 +15,7 @@ In Angular you bind to events with the parentheses syntax `()`. On a given eleme
   ...
   template: `<button (click)="greet()">`
 })
-class App {
+export class App {
   greet() {
     console.log('Hello, there 👋');
   }
