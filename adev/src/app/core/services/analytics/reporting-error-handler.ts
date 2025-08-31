@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorHandler, Injectable, VERSION} from '@angular/core';
+import {ErrorHandler, Injectable, VERSION, inject} from '@angular/core';
 import {formatErrorForAnalytics} from './analytics-format-error';
 import {AnalyticsService} from './analytics.service';
 
@@ -17,7 +17,9 @@ import {AnalyticsService} from './analytics.service';
  */
 @Injectable()
 export class ReportingErrorHandler extends ErrorHandler {
-  constructor(private _analytics: AnalyticsService) {
+  private _analytics = inject(AnalyticsService);
+
+  constructor() {
     super();
   }
 

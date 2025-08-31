@@ -145,7 +145,7 @@
       <h3>Before you update</h3>
       @for (r  of beforeRecommendations; track $index) {
         <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }
@@ -164,7 +164,7 @@
 
       @for (r of duringRecommendations; track $index) {
         <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }
@@ -177,7 +177,7 @@
       <h3>After you update</h3>
       @for (r of afterRecommendations; track $index) {
         <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }
