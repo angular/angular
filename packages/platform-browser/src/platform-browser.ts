@@ -7,7 +7,6 @@
  */
 
 export {
-  ApplicationConfig,
   bootstrapApplication,
   BrowserModule,
   createApplication,

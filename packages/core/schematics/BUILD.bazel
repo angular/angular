@@ -110,6 +110,10 @@ bundle_entrypoints = [
         "router-last-successful-navigation",
         "packages/core/schematics/migrations/router-last-successful-navigation/index.js",
     ],
+    [
+        "application-config-core",
+        "packages/core/schematics/migrations/application-config-core/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -121,6 +125,7 @@ rollup.rollup(
         "//:node_modules/magic-string",
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/application-config-core",
         "//packages/core/schematics/migrations/control-flow-migration",
         "//packages/core/schematics/migrations/ngclass-to-class-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
