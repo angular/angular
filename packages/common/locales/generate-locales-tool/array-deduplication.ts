@@ -21,8 +21,11 @@
  * For further size improvements, "undefined" values will be replaced by a constant in the arrays
  * as the last step of the file generation (in generateLocale and generateLocaleExtra).
  * e.g.: [x, y, undefined, z, undefined, undefined] will be [x, y, u, z, u, u]
+ *
+ * In some cases, we also trim the trailing `undefined` values in the array, as they
+ * don't add any information. We don't always want to do it as sometimes returned array is destructured.
  */
-export function removeDuplicates(data: unknown[]) {
+export function removeDuplicates(data: unknown[], shouldTrim = false): unknown[] {
   const dedup = [data[0]];
   let prevStringified = JSON.stringify(data[0]);
   let nextStringified;
@@ -37,5 +40,13 @@ export function removeDuplicates(data: unknown[]) {
     }
   }
 
-  return dedup;
+  return shouldTrim ? trimTrailingUndefined(dedup) : dedup;
+}
+
+function trimTrailingUndefined(arr: unknown[]): unknown[] {
+  let i = arr.length - 1;
+  while (i >= 0 && arr[i] === undefined) {
+    i--;
+  }
+  return arr.slice(0, i + 1);
 }
