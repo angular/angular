@@ -21,6 +21,10 @@ export function setCurrentSymbol(symbol: string): void {
   currentSymbol = symbol;
 }
 
+export function getSymbols() {
+  return symbols;
+}
+
 export function getCurrentSymbol(): string | undefined {
   return currentSymbol;
 }

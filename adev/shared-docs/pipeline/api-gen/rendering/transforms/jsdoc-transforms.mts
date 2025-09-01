@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {marked} from 'marked';
 import {JsDocTagEntry} from '../entities.mjs';
 
 import {getDeprecatedEntry, getTagSinceVersion} from '../entities/categorization.mjs';
@@ -26,7 +25,14 @@ import {
 } from '../entities/traits.mjs';
 
 import {addApiLinksToHtml} from './code-transforms.mjs';
-import {getCurrentSymbol, getSymbolUrl, unknownSymbolMessage} from '../symbol-context.mjs';
+import {
+  getCurrentSymbol,
+  getSymbols,
+  getSymbolUrl,
+  unknownSymbolMessage,
+} from '../symbol-context.mjs';
+import {parseMarkdown} from '../../../shared/marked/parse.mjs';
+import {getHighlighterInstance} from '../shiki/shiki.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';
@@ -99,7 +105,11 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
 
 /** Given a markdown JsDoc text, gets the rendered HTML. */
 function getHtmlForJsDocText(text: string): string {
-  const parsed = marked.parse(convertLinks(wrapExampleHtmlElementsWithCode(text))) as string;
+  const mdToParse = convertLinks(wrapExampleHtmlElementsWithCode(text));
+  const parsed = parseMarkdown(mdToParse, {
+    apiEntries: getSymbols(),
+    highlighter: getHighlighterInstance(),
+  });
   return addApiLinksToHtml(parsed);
 }
 

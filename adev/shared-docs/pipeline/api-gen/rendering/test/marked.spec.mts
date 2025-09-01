@@ -79,12 +79,14 @@ describe('markdown to html', () => {
 
     // In the description
     const descriptionItem = entry.querySelector('.docs-reference-description')!;
-    expect(descriptionItem.innerHTML).toContain('<a href="/api/core/afterRender">afterRender</a>');
+    expect(descriptionItem.innerHTML).toContain(
+      '<a href="/api/core/afterRender"><code>afterRender</code></a>',
+    );
 
     // In the card
     const cardItem = entry.querySelectorAll('.docs-reference-card-item')[1];
     expect(cardItem.innerHTML).toContain(
-      '<a href="/api/core/AfterRenderPhase#MixedReadWrite">AfterRenderPhase.MixedReadWrite</a>',
+      '<a href="/api/core/AfterRenderPhase#MixedReadWrite"><code>AfterRenderPhase.MixedReadWrite</code></a>',
     );
   });
 });

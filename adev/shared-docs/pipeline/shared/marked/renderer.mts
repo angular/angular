@@ -13,12 +13,12 @@ import {listRender} from './transformations/list.mjs';
 import {imageRender} from './transformations/image.mjs';
 import {textRender} from './transformations/text.mjs';
 import {headingRender} from './transformations/heading.mjs';
-import {codespanRender} from './transformations/code.mjs';
+import {codeRender, codespanRender} from './transformations/code.mjs';
 import {HighlighterGeneric} from 'shiki';
 
 export interface RendererContext {
-  markdownFilePath: string;
-  apiEntries: Record<string, string>;
+  markdownFilePath?: string;
+  apiEntries?: Record<string, string>;
   highlighter: HighlighterGeneric<any, any>;
 }
 
@@ -40,4 +40,5 @@ export class AdevDocsRenderer extends Renderer {
   override text = textRender;
   override heading = headingRender;
   override codespan = codespanRender;
+  override code = codeRender;
 }

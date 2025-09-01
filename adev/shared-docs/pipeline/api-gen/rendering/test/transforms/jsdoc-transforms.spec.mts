@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {initHighlighter} from '../../../../shared/shiki.mjs';
+import {setHighlighterInstance} from '../../shiki/shiki.mjs';
 import {setCurrentSymbol, setSymbols} from '../../symbol-context.mjs';
-import {addHtmlAdditionalLinks} from '../../transforms/jsdoc-transforms.mjs';
+import {addHtmlAdditionalLinks, addHtmlDescription} from '../../transforms/jsdoc-transforms.mjs';
 
 // @ts-ignore This compiles fine, but Webstorm doesn't like the ESM import in a CJS context.
 describe('jsdoc transforms', () => {
@@ -150,5 +152,41 @@ describe('jsdoc transforms', () => {
       });
 
     expect(entryFn).toThrowError(/Forbidden relative link: cli\/build ng build/);
+  });
+
+  it('should parse markdown in descriptions', async () => {
+    setHighlighterInstance(await initHighlighter());
+
+    setSymbols(
+      Object.fromEntries([
+        ['Route', 'test'],
+        ['Router', 'angular/router'],
+        ['Router.someMethod', 'test'],
+        ['Router.someMethodWithParenthesis', 'test'],
+        ['FormGroup', 'test'],
+        ['FormGroup.someMethod', 'test'],
+      ]),
+    );
+
+    const entry = addHtmlDescription({
+      description: `
+\`\`\`angular-ts
+import { Router } from '@angular/router';
+
+function setupRouter() {
+  const router = inject(Router);
+}
+\`\`\`
+      `,
+      moduleName: 'test',
+    });
+
+    // Should have some shiki variables (meaning the description was highlighted).
+    expect(entry.htmlDescription).toContain('--shiki');
+
+    // Having docs-code means that the description was parsed and formatted correctly (by the shared marked renderer)
+    expect(entry.htmlDescription).toContain('class="docs-code"');
+
+    expect(entry.htmlDescription).toContain('/api/angular/router/Router');
   });
 });
