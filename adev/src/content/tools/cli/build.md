@@ -144,6 +144,6 @@ HELPFUL: Use [browsersl.ist](https://browsersl.ist) to display compatible browse
 
 ## Configuring Tailwind
 
-Angular supports [Tailwind](https://tailwindcss.com/), a utility-first CSS framework.
+Angular supports [Tailwind CSS](https://tailwindcss.com/), a utility-first CSS framework.
 
-Follow the [Tailwind documentation](https://tailwindcss.com/docs/installation/framework-guides/angular) for integrating with Angular CLI.
+To integrate Tailwind CSS with Angular CLI, see [Using Tailwind CSS with Angular](guide/tailwind)
