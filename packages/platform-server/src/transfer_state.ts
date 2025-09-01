@@ -24,7 +24,7 @@ import {BEFORE_APP_SERIALIZED} from './tokens';
 export const TRANSFER_STATE_SERIALIZED_FOR_APPID = new InjectionToken<Set<string>>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'TRANSFER_STATE_SERIALIZED_FOR_APPID' : '',
   {
-    providedIn: 'platform',
+    providedIn: 'root',
     factory: () => new Set(),
   },
 );
@@ -52,7 +52,7 @@ export function createScript(
   return script;
 }
 
-export function warnIfStateTransferHappened(injector: Injector): void {
+function warnIfStateTransferHappened(injector: Injector): void {
   const appId = injector.get(APP_ID);
   const appIdsWithTransferStateSerialized = injector.get(TRANSFER_STATE_SERIALIZED_FOR_APPID);
 
