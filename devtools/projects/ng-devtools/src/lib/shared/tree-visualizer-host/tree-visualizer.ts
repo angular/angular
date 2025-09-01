@@ -313,7 +313,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     const debouncer = new Debouncer();
     const resizeObserver = new ResizeObserver(
       debouncer.debounce(([entry]) => {
-        if (!entry || !this.snappedNode) {
+        if (!entry || !entry.contentRect.width || !entry.contentRect.height || !this.snappedNode) {
           return;
         }
         // Avoid executing the code on observer init.
