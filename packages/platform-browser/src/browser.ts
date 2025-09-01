@@ -13,7 +13,7 @@ import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
 import {
-  ApplicationConfig as ApplicationConfigFromCore,
+  ApplicationConfig,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
@@ -50,18 +50,6 @@ import {EVENT_MANAGER_PLUGINS, EventManager} from './dom/events/event_manager';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
-
-/**
- * Set of config options available during the application bootstrap operation.
- *
- * @publicApi
- *
- * @deprecated
- * `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
- */
-// The below is a workaround to add a deprecated message.
-type ApplicationConfig = ApplicationConfigFromCore;
-export {ApplicationConfig};
 
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
