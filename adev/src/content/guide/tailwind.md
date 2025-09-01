@@ -23,7 +23,7 @@ npm install tailwindcss @tailwindcss/postcss postcss
 
 ### 3. Configure PostCSS Plugins
 
-Next, add a `.postcssrc.json` file in the file root of the project. 
+Next, add a `.postcssrc.json` file in the file root of the project.
 Add the `@tailwindcss/postcss` plugin into your PostCSS configuration.
 
 <docs-code language="json" header=".postcssrc.json">
@@ -42,9 +42,9 @@ Add an `@import` to `./src/styles.css` that imports Tailwind CSS.
 @import "tailwindcss";
 </docs-code>
 
-If you're using SCSS, add `@use` to `./src/styles.scss`. 
+If you're using SCSS, add `@use` to `./src/styles.scss`.
 
-<docs-code language="scss" header="src/styles.css">
+<docs-code language="scss" header="src/styles.scss">
 @use "tailwindcss";
 </docs-code>
 
