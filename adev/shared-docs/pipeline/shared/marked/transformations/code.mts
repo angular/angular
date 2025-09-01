@@ -9,9 +9,10 @@
 import {Tokens} from 'marked';
 import {AdevDocsRenderer} from '../renderer.mjs';
 import {getSymbolUrl} from '../../linking.mjs';
+import {codeToHtml} from '../../shiki.mjs';
 
 export function codespanRender(this: AdevDocsRenderer, token: Tokens.Codespan) {
-  const apiLink = getSymbolUrl(token.text, this.context.apiEntries);
+  const apiLink = getSymbolUrl(token.text, this.context.apiEntries ?? {});
   if (apiLink) {
     const htmlToken: Tokens.HTML = {
       type: 'html',
@@ -30,4 +31,16 @@ export function codespanRender(this: AdevDocsRenderer, token: Tokens.Codespan) {
     return this.link(linkToken);
   }
   return this.defaultRenderer.codespan(token);
+}
+
+export function codeRender(this: AdevDocsRenderer, {text, lang}: Tokens.Code): string {
+  const highlightResult = codeToHtml(this.context.highlighter, text, lang)
+    // remove spaces/line-breaks between elements to not mess-up `pre` style
+    .replace(/>\s+</g, '><');
+
+  return `
+      <div class="docs-code" role="group">
+        ${highlightResult}
+      </div>
+    `;
 }
