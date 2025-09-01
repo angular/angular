@@ -17,6 +17,7 @@ ts_project(
     # Disabled to remove doubling of runtime files as we are approaching the 70k limit when
     # CLDR files are also included in the binary action.
     deps = [
+        "//:node_modules/@types/cldr",
         "//:node_modules/@types/cldrjs",
         "//:node_modules/cldr",
         "//:node_modules/cldrjs",
