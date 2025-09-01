@@ -5,6 +5,10 @@ package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages
 esbuild(
     name = "bin",
     entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
     format = "esm",
     output = "bin.mjs",
     platform = "node",

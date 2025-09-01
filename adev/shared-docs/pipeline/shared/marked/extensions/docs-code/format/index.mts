@@ -63,7 +63,7 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
   `).firstElementChild!;
 
   applyContainerAttributesAndClasses(containerEl, token);
-  processForApiLinks(containerEl, context.apiEntries);
+  processForApiLinks(containerEl, context.apiEntries ?? {});
 
   return containerEl.outerHTML;
 }
