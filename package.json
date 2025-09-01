@@ -176,6 +176,7 @@
     "@nginfra/angular-linking": "^1.0.10",
     "@octokit/graphql": "^9.0.0",
     "@types/adm-zip": "^0.5.0",
+    "@types/cldr": "^7.1.4",
     "@types/cldrjs": "^0.4.22",
     "@types/d3": "^7.4.3",
     "@types/jsdom": "^21.1.5",
