@@ -1357,6 +1357,15 @@ class TransformIncompatibleTypes {
   //  cast. This worked previously because Angular was unable to check transforms.
   readonly disabled = input<boolean, unknown>(undefined, { transform: ((v: unknown) => (v === null ? undefined : !!v)) as any });
 }
+@@@@@@ transform_no_explicit_types.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TransformFunctions {
+  readonly untypedTransform = input<number>(0);
+}
 @@@@@@ with_getters.ts @@@@@@
 
 // tslint:disable
