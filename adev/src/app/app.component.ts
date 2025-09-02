@@ -57,9 +57,9 @@ export class AppComponent {
 
   protected isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
-  protected displaySecondaryNav = signal(false);
-  protected displayFooter = signal(false);
-  protected displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
+  protected readonly displaySecondaryNav = signal(false);
+  protected readonly displayFooter = signal(false);
+  protected readonly displaySearchDialog = inject(IS_SEARCH_DIALOG_OPEN);
 
   constructor() {
     this.closeSearchDialogOnNavigationSkipped();
