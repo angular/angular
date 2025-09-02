@@ -39,6 +39,7 @@ import {
 } from './utils/config_matching';
 import {TreeNode} from './utils/tree';
 import {firstValueFrom} from './utils/first_value_from';
+import {isEmptyError} from './utils/type_guards';
 
 /**
  * Class used to indicate there were no additional route config matches but that all segments of
@@ -257,7 +258,7 @@ export class Recognizer {
           parentRoute,
         );
       } catch (e: any) {
-        if (e?.name === NO_MATCH_ERROR_NAME) {
+        if (e?.name === NO_MATCH_ERROR_NAME || isEmptyError(e)) {
           continue;
         }
         throw e;
