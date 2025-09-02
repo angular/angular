@@ -123,6 +123,10 @@ const API_REFERENCE_ROUTES: Route[] = mapApiManifestToRoutes();
 
 const REDIRECT_ROUTES: Route[] = [
   {
+    path: 'guide/drag-drop',
+    redirectTo: '/guide/animations/drag-and-drop',
+  },
+  {
     path: 'guide/defer',
     redirectTo: '/guide/templates/defer',
   },

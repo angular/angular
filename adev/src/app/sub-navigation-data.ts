@@ -660,6 +660,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             status: 'new',
           },
           {
+            label: 'Drag and drop',
+            path: 'guide/animations/drag-and-drop',
+            contentPath: 'guide/animations/drag-and-drop',
+          },
+          {
             label: 'Complex Animations with CSS',
             path: 'guide/animations/css',
             contentPath: 'guide/animations/css',
@@ -670,11 +675,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/routing/route-transition-animations',
           },
         ],
-      },
-      {
-        label: 'Drag and drop',
-        path: 'guide/drag-drop',
-        contentPath: 'guide/drag-drop',
       },
     ],
   },
