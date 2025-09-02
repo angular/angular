@@ -64,6 +64,16 @@
       "description": "Run through and reports activity without writing out results."
     },
     {
+      "name": "file-name-style-guide",
+      "type": "string",
+      "default": "2025",
+      "enum": [
+        "2016",
+        "2025"
+      ],
+      "description": "The file naming convention to use for generated files. The '2025' style guide (default) uses a concise format (e.g., `app.ts` for the root component), while the '2016' style guide includes the type in the file name (e.g., `app.component.ts`). For more information, see the Angular Style Guide (https://angular.dev/style-guide)."
+    },
+    {
       "name": "force",
       "type": "boolean",
       "default": false,

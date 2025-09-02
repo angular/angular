@@ -93,6 +93,16 @@
       "shortDescription": "Generates a new Angular application within your workspace. This schematic sets up the foundational structure of your project, including the root component, module, and configuration files. You can customize various aspects of the application, such as routing, styling, and testing.",
       "options": [
         {
+          "name": "file-name-style-guide",
+          "type": "string",
+          "default": "2025",
+          "enum": [
+            "2016",
+            "2025"
+          ],
+          "description": "The file naming convention to use for generated files. The '2025' style guide (default) uses a concise format (e.g., `app.ts` for the root component), while the '2016' style guide includes the type in the file name (e.g., `app.component.ts`). For more information, see the Angular Style Guide (https://angular.dev/style-guide)."
+        },
+        {
           "name": "inline-style",
           "type": "boolean",
           "aliases": [
@@ -252,6 +262,12 @@
       "command": "component [name]",
       "shortDescription": "Creates a new Angular component. Components are the basic building blocks of Angular applications. Each component consists of a TypeScript class, an HTML template, and an optional CSS stylesheet. Use this schematic to generate a new component in your project.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "change-detection",
           "type": "string",
@@ -438,6 +454,12 @@
       "command": "directive [name]",
       "shortDescription": "Creates a new directive in your project. Directives are used to extend the behavior or appearance of HTML elements and components. They allow you to manipulate the DOM, add custom attributes, and respond to events. This schematic generates the necessary files and boilerplate code for a new directive.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "export",
           "type": "boolean",
@@ -953,6 +975,12 @@
       "command": "service [name]",
       "shortDescription": "Creates a new service in your project. Services are used to encapsulate reusable logic, such as data access, API calls, or utility functions. This schematic simplifies the process of generating a new service with the necessary files and boilerplate code.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "flat",
           "type": "boolean",
