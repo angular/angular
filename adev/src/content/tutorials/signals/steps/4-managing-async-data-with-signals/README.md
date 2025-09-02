@@ -15,7 +15,7 @@ Add `resource` to your existing imports and import the fake API function.
 
 ```ts
 // Add resource to existing imports
-import {Component, signal, computed, resource} from '@angular/core';
+import {Component, signal, computed, resource, ChangeDetectionStrategy} from '@angular/core';
 // Import mock API function
 import {loadUser} from './user-api';
 ```
@@ -103,4 +103,4 @@ Excellent! You've now learned how to use the Resource API with signals. Key conc
 - **Automatic cleanup**: Resources handle request cancellation and cleanup automatically
 - **Manual control**: You can manually reload or abort requests when needed
 
-In the next lesson, you'll learn [how to use signals for communication between components](/tutorials/signals/5-component-communication-with-signals)!
+In the next lesson, you'll learn [how to pass data to components with input signals](/tutorials/signals/5-component-communication-with-signals)!

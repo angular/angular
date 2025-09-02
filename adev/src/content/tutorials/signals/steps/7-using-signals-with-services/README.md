@@ -1,6 +1,6 @@
 # Using signals with services
 
-Now that you've learned [component communication with signals](/tutorials/signals/5-component-communication-with-signals), let's explore how to use signals with Angular services. Services are perfect for sharing reactive state across multiple components, and signals make this even more powerful by providing automatic change detection and clean reactive patterns.
+Now that you've learned [two-way binding with model signals](/tutorials/signals/6-two-way-binding-with-model-signals), let's explore how to use signals with Angular services. Services are perfect for sharing reactive state across multiple components, and signals make this even more powerful by providing automatic change detection and clean reactive patterns.
 
 In this activity, you'll learn how to create a cart store that uses signals to manage shopping cart state and share it across components.
 
@@ -151,7 +151,7 @@ import {CartDisplay} from './cart-display';
       </main>
     </div>
   `,
-  styleUrls: ['./app.css'],
+  styleUrl: './app.css',
 })
 export class App {
   cartStore = inject(CartStore);
@@ -170,4 +170,4 @@ Excellent! You've now learned how to use signals with services. Key concepts to 
 - **Computed signals in services**: Create derived state that updates automatically
 - **Readonly signals**: Expose read-only versions of signals to prevent external mutations
 
-In the next lesson, you'll learn about [how to use signals with directives](/tutorials/signals/7-using-signals-with-directives)!
+In the next lesson, you'll learn about [how to use signals with directives](/tutorials/signals/8-using-signals-with-directives)!

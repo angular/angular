@@ -1,6 +1,6 @@
 # Using signals with directives
 
-Now that you've learned [using signals with services](/tutorials/signals/6-using-signals-with-services), let's explore how directives can use signals to create reactive behavior that automatically responds to changes. This makes directives more powerful and easier to manage.
+Now that you've learned [using signals with services](/tutorials/signals/7-using-signals-with-services), let's explore how directives can use signals to create reactive behavior that automatically responds to changes. This makes directives more powerful and easier to manage.
 
 In this activity, you'll learn how to use signals in directives for reactive styling and user interactions.
 

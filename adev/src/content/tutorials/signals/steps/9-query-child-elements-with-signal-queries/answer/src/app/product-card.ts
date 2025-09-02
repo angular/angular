@@ -9,7 +9,11 @@ import {Component, input, signal, ChangeDetectionStrategy} from '@angular/core';
       <p class="description">{{ description() }}</p>
       <div class="actions">
         <button (click)="toggleDetails()">
-          {{ showDetails() ? 'Hide' : 'Show' }} Details
+          @if (showDetails()) {
+            Hide
+          } @else {
+            Show
+          } Details
         </button>
       </div>
       @if (showDetails()) {

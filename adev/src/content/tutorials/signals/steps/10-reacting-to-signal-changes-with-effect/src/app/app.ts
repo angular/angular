@@ -10,7 +10,12 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
       
       <div class="controls">
         <button (click)="toggleTheme()">
-          Switch to {{ theme() === 'light' ? 'Dark' : 'Light' }} Theme
+          Switch to 
+          @if (theme() === 'light') {
+            Dark
+          } @else {
+            Light
+          } Theme
         </button>
         
         @if (!isLoggedIn()) {
@@ -23,7 +28,13 @@ import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/cor
       <div class="info">
         <p>Current theme: {{ theme() }}</p>
         <p>User: {{ username() }}</p>
-        <p>Status: {{ isLoggedIn() ? 'Logged in' : 'Logged out' }}</p>
+        <p>Status: 
+          @if (isLoggedIn()) {
+            Logged in
+          } @else {
+            Logged out
+          }
+        </p>
       </div>
       
       <div class="demo">
