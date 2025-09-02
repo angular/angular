@@ -158,7 +158,14 @@ function extractSourceCodeInput(
         isRequired = !!evaluatedInputOpts.get('required');
       }
       if (evaluatedInputOpts.has('transform') && evaluatedInputOpts.get('transform') != null) {
-        transformResult = parseTransformOfInput(evaluatedInputOpts, node, reflector);
+        const result = parseTransformOfInput(evaluatedInputOpts, node, reflector);
+        if (result === 'parsingError') {
+          if (!host.config.bestEffortMode) {
+            return null;
+          }
+        } else {
+          transformResult = result;
+        }
       }
     }
   }
@@ -183,7 +190,7 @@ function parseTransformOfInput(
   evaluatedInputOpts: ResolvedValueMap,
   node: InputNode,
   reflector: ReflectionHost,
-): DecoratorInputTransform | null {
+): DecoratorInputTransform | 'parsingError' | null {
   const transformValue = evaluatedInputOpts.get('transform');
   if (!(transformValue instanceof DynamicValue) && !(transformValue instanceof Reference)) {
     return null;
@@ -220,6 +227,6 @@ function parseTransformOfInput(
     // TODO: implement error handling.
     // See failing case: e.g. inherit_definition_feature_spec.ts
     console.error(`${e.node.getSourceFile().fileName}: ${e.toString()}`);
-    return null;
+    return 'parsingError';
   }
 }
