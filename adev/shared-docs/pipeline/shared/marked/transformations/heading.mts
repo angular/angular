@@ -51,7 +51,7 @@ export function formatHeading(
 
 // TODO(josephperrott): Set edit content url based on the owner, repo and branch.
 
-/** The base url for edting the a file in the repository. */
+/** The base url for editing the a file in the repository. */
 const GITHUB_EDIT_CONTENT_URL = 'https://github.com/angular/angular/edit/main';
 
 /** Get the page title with edit button to modify the page source. */
