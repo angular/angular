@@ -216,7 +216,6 @@ export interface FormUiControl {
 
 // @public
 export interface FormValueControl<TValue> extends FormUiControl {
-    readonly checked?: undefined;
     readonly value: ModelSignal<TValue>;
 }
 
