@@ -1,3 +1,16 @@
+<a name="20.2.4"></a>
+# 20.2.4 (2025-09-03)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [dc64f3e478](https://github.com/angular/angular/commit/dc64f3e478c5cc1e354a0ff7cf5965b817b345d6) | fix | Fixed inject migration schematics for migrate destructured properties ([#62832](https://github.com/angular/angular/pull/62832)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d1d32db972](https://github.com/angular/angular/commit/d1d32db97260c1e57c2937588002feb4271c7774) | fix | prevent false warning for duplicate state serialization ([#63525](https://github.com/angular/angular/pull/63525)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.3"></a>
 # 20.2.3 (2025-08-29)
 ### compiler
