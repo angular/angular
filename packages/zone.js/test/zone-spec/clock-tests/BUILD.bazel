@@ -48,11 +48,12 @@ ts_project(
 jasmine_test(
     name = "test_patched",
     data = [
+        ":patched.init.js",
         ":patched_init",
         ":test_patched_lib",
     ],
     fixed_args = [
-        "--require={root}/packages/zone.js/test/zone-spec/clock-tests/patched.init.js",
+        "--require=$$JS_BINARY__RUNFILES/$(rlocationpath :patched.init.js)",
     ],
 )
 
@@ -60,9 +61,10 @@ jasmine_test(
     name = "test_unpatched",
     data = [
         ":test_unpatched_lib",
+        ":unpatched.init.js",
         ":unpatched_init",
     ],
     fixed_args = [
-        "--require={root}/packages/zone.js/test/zone-spec/clock-tests/unpatched.init.js",
+        "--require=$$JS_BINARY__RUNFILES/$(rlocationpath :unpatched.init.js)",
     ],
 )
