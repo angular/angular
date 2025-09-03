@@ -72,7 +72,7 @@ function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
     return `
     <a href="${token.href}" ${anchorTarget(token.href)} class="docs-card">
       <div>
-        <h3>${token.title}</h3>
+        ${token.title ? `<h3>${token.title}</h3>` : ''}
         ${parseWithoutCreatingLinks(renderer, token)}
       </div>
       <span>${token.link ? token.link : 'Learn more'}</span>
@@ -82,7 +82,7 @@ function getStandardCard(renderer: RendererThis, token: DocsCardToken) {
   return `
   <div class="docs-card">
     <div>
-      <h3>${token.title}</h3>
+      ${token.title ? `<h3>${token.title}</h3>` : ''}
       ${renderer.parser.parse(token.tokens)}
     </div>
     ${token.link ? `<span>${token.link}</span>` : ''}
@@ -111,7 +111,7 @@ function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken
         ${illustration}
         <div class="docs-card-text-content">
           <div>
-            <h3>${token.title}</h3>
+            ${token.title ? `<h3>${token.title}</h3>` : ''}
             ${renderer.parser.parse(token.tokens)}
           </div>
           <span>${token.link ? token.link : 'Learn more'}</span>
@@ -123,7 +123,7 @@ function getCardWithSvgIllustration(renderer: RendererThis, token: DocsCardToken
     <div class="docs-card docs-card-with-svg">
       ${illustration}
       <div class="docs-card-text-content">
-      <h3>${token.title}</h3>
+      ${token.title ? `<h3>${token.title}</h3>` : ''}
       ${renderer.parser.parse(token.tokens)}
       </div>
     </div>
