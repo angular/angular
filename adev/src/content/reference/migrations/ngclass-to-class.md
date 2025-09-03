@@ -29,7 +29,7 @@ The migration supports a few options for fine tuning the migration to your speci
 
 ### `--migrate-space-separated-key`
 
-By default, the migration avoids migrating usages of `NgClass` in which object literal keys contain space-separated class names."
+By default, the migration avoids migrating usages of `NgClass` in which object literal keys contain space-separated class names.
 When the --migrate-space-separated-key flag is enabled, a binding is created for each individual key.
 
 

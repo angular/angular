@@ -10,7 +10,7 @@ import {ProjectFile} from '../../utils/tsurge';
 
 export interface MigrationConfig {
   /**
-   * Whether to migrate this component template to self-closing tags.
+   * Whether to migrate this component template to ngClass.
    */
   shouldMigrate?: (containingFile: ProjectFile) => boolean;
 
