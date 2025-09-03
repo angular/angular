@@ -38,4 +38,6 @@ export interface ExampleMetadata {
   files: Snippet[];
   /** True when ExampleViewer should have preview */
   preview: boolean;
+  /** Whether to hide code example by default. */
+  hideCode: boolean;
 }

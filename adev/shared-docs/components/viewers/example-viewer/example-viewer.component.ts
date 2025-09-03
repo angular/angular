@@ -25,6 +25,7 @@ import {CommonModule, DOCUMENT} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {IconComponent} from '../../icon/icon.component';
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
@@ -42,7 +43,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, CopySourceCodeButton, MatTabsModule, MatTooltipModule],
+  imports: [CommonModule, CopySourceCodeButton, MatTabsModule, MatTooltipModule, IconComponent],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,6 +76,7 @@ export class ExampleViewer {
   readonly expandable = signal<boolean>(false);
   readonly expanded = signal<boolean>(false);
   readonly snippetCode = signal<Snippet | undefined>(undefined);
+  readonly showCode = signal<boolean>(true);
   readonly tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
       name:
@@ -97,6 +99,10 @@ export class ExampleViewer {
     }
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
+
+    if (this.exampleMetadata()?.hideCode) {
+      this.showCode.set(false);
+    }
 
     afterNextRender(
       () => {

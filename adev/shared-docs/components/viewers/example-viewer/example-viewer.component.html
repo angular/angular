@@ -1,18 +1,35 @@
 <div class="docs-example-viewer" role="group">
   <header class="docs-example-viewer-actions">
-    @if (view() === CodeExampleViewMode.SNIPPET) {
-      <span>{{ exampleMetadata()?.title }}</span>
-    }
+    @if (showCode()) {
+      @if (view() === CodeExampleViewMode.SNIPPET) {
+        <span>{{ exampleMetadata()?.title }}</span>
+      }
 
-    @if (view() === CodeExampleViewMode.MULTI_FILE) {
-      <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
-        @for (tab of tabs(); track tab) {
-          <mat-tab [label]="tab.name" />
-        }
-      </mat-tab-group>
+      @if (view() === CodeExampleViewMode.MULTI_FILE) {
+        <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
+          @for (tab of tabs(); track tab) {
+            <mat-tab [label]="tab.name" />
+          }
+        </mat-tab-group>
+      }
+    } @else {
+      <!-- Title placeholder -->
+      <span aria-hidden="true">&nbsp;</span>
     }
 
     <div class="docs-example-viewer-icons">
+      <button
+        type="button"
+        role="switch"
+        class="docs-example-code-toggle"
+        [attr.aria-checked]="showCode()"
+        [attr.aria-label]="showCode() ? 'Hide code' : 'Show code'"
+        (click)="showCode.set(!showCode())"
+        [matTooltip]="showCode() ? 'Hide code' : 'Show code'"
+        matTooltipPosition="above"
+      >
+        <docs-icon>{{showCode() ? 'code_off' : 'code'}}</docs-icon>
+      </button>
       <button
         type="button"
         class="docs-example-copy-link"
@@ -80,16 +97,18 @@
     </div>
   </header>
 
-  <div
-    class="docs-example-viewer-code-wrapper"
-    [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
-    [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
-  >
-    <button docs-copy-source-code></button>
-    @if (snippetCode()?.sanitizedContent; as content) {
-      <div [innerHTML]="content"></div>
-    }
-  </div>
+  @if (showCode()) {
+    <div
+      class="docs-example-viewer-code-wrapper"
+      [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
+      [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
+    >
+      <button docs-copy-source-code></button>
+      @if (snippetCode()?.sanitizedContent; as content) {
+        <div [innerHTML]="content"></div>
+      }
+    </div>
+  }
 
   @if (exampleComponent) {
     <div class="docs-example-viewer-preview">
