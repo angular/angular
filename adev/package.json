@@ -78,5 +78,10 @@
     "crelt": "1.0.6",
     "style-mod": "4.1.2",
     "w3c-keyname": "2.2.8"
+  },
+  "devDependencies": {
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17"
   }
 }

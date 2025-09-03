@@ -25,6 +25,7 @@ APPLICATION_FILES = [
     "//adev/src/assets:content",
     "//adev/src/assets:context",
     "//adev/src/content/examples:embeddable",
+    "tailwind.config.js",
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
@@ -58,6 +59,7 @@ APPLICATION_DEPS = [
     "//adev:node_modules/marked",
     "//adev:node_modules/ngx-progressbar",
     "//adev:node_modules/open-in-idx",
+    "//adev:node_modules/tailwindcss",
     "//adev:node_modules/typescript",
     "//adev:node_modules/xhr2",
     "//adev:node_modules/@types/node",
