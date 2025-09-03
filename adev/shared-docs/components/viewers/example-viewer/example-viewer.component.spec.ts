@@ -272,6 +272,50 @@ describe('ExampleViewer', () => {
     button.click();
     expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
   });
+
+  it('should hide code content when `hideCode` is true', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        hideCode: true,
+      }),
+    );
+
+    await component.renderExample();
+    fixture.detectChanges();
+
+    // Initially, the code should be hidden.
+    expect(component.showCode()).toBeFalse();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+  });
+
+  it('should expand/collapse code content with toggle button.', async () => {
+    componentRef.setInput('metadata', getMetadata());
+
+    await component.renderExample();
+    fixture.detectChanges();
+
+    // Initially, the code should be visible.
+    expect(component.showCode()).toBeTrue();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+
+    const codeToggleButton = fixture.debugElement.query(By.css('.docs-example-code-toggle'));
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+
+    expect(component.showCode()).toBeFalse();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+
+    expect(component.showCode()).toBeTrue();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+  });
 });
 
 const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
@@ -282,6 +326,7 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
       {name: 'example.css', sanitizedContent: ''},
     ],
     preview: false,
+    hideCode: false,
     ...value,
   };
 };
