@@ -93,22 +93,4 @@ describe('RouterTreeComponent', () => {
       expect(messageBus.emit).toHaveBeenCalledWith('navigateRoute', ['/home']);
     });
   });
-
-  describe('router tree apis not supported', () => {
-    beforeEach(async () => {
-      fixture.componentRef.setInput('routerDebugApiSupport', false);
-      fixture.detectChanges();
-    });
-
-    it('should show unsupported version message when routerDebugApiSupport is false', () => {
-      fixture.componentRef.setInput('routerDebugApiSupport', false);
-      fixture.detectChanges();
-
-      const unsupportedMsg = fixture.nativeElement.querySelector('.unsupported-version');
-      expect(unsupportedMsg).toBeTruthy();
-      expect(unsupportedMsg.textContent).toContain(
-        'Router tree visualization is available for Angular applications using the latest Angular 20.2.x release and above.',
-      );
-    });
-  });
 });
