@@ -68,7 +68,7 @@ placeholder that tells Angular where to render content. Angular's compiler proce
 all `<ng-content>` elements at build-time. You cannot insert, remove, or modify `<ng-content>` at
 run time. You cannot add directives, styles, or arbitrary attributes to `<ng-content>`.
 
-You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
+IMPORTANT: You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
 instantiates and creates DOM nodes for content rendered to a `<ng-content>` placeholder, even if
 that `<ng-content>` placeholder is hidden. For conditional rendering of component content,
 see [Template fragments](api/core/ng-template).
