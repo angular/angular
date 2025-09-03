@@ -7,10 +7,10 @@
  */
 
 import {Rule, Tree} from '@angular-devkit/schematics';
+import {applyToUpdateRecorder} from '@schematics/angular/utility/change';
 import {insertImport} from '@schematics/angular/utility/ast-utils';
 import ts from 'typescript';
 import {getImportSpecifier, removeSymbolFromNamedImports} from '../../utils/typescript/imports';
-import {applyToUpdateRecorder} from '@schematics/angular/utility/change';
 
 function findBootstrapApplicationCall(sourceFile: ts.SourceFile): ts.CallExpression | null {
   let call: ts.CallExpression | null = null;
@@ -58,6 +58,7 @@ export function migrate(): Rule {
 
       const parent = bootstrapAppCall.parent;
       let arrowFunc: ts.ArrowFunction | undefined;
+      let isComplex = false;
 
       if (ts.isArrowFunction(parent) && parent.body === bootstrapAppCall) {
         arrowFunc = parent;
@@ -65,18 +66,39 @@ export function migrate(): Rule {
         const block = parent.parent;
         if (ts.isBlock(block) && ts.isArrowFunction(block.parent)) {
           arrowFunc = block.parent;
+          isComplex = block.statements.length > 1;
         }
       }
 
       if (arrowFunc && ts.isVariableDeclaration(arrowFunc.parent)) {
         const varDeclaration = arrowFunc.parent;
         if (varDeclaration.initializer === arrowFunc) {
-          const argsText = bootstrapAppCall.arguments
-            .map((arg) => arg.getText(sourceFile))
-            .join(', ');
-          const newCallText = `bootstrapServerApplication(${argsText})`;
-          recorder.remove(arrowFunc.getStart(), arrowFunc.getWidth());
-          recorder.insertRight(arrowFunc.getStart(), newCallText);
+          if (isComplex) {
+            const injectorImportChange = insertImport(
+              sourceFile,
+              path,
+              'Injector',
+              '@angular/core',
+            );
+            applyToUpdateRecorder(recorder, [injectorImportChange]);
+            recorder.insertRight(arrowFunc.parameters.pos, 'platformInjector: Injector');
+            recorder.remove(
+              bootstrapAppCall.expression.getStart(),
+              bootstrapAppCall.expression.getWidth(),
+            );
+            recorder.insertRight(
+              bootstrapAppCall.expression.getStart(),
+              'bootstrapServerApplication',
+            );
+            recorder.insertRight(bootstrapAppCall.getEnd(), `(platformInjector)`);
+          } else {
+            const argsText = bootstrapAppCall.arguments
+              .map((arg) => arg.getText(sourceFile))
+              .join(', ');
+            const newCallText = `bootstrapServerApplication(${argsText})`;
+            recorder.remove(arrowFunc.getStart(), arrowFunc.getWidth());
+            recorder.insertRight(arrowFunc.getStart(), newCallText);
+          }
         }
       } else {
         recorder.remove(

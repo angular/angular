@@ -42,7 +42,7 @@ describe('bootstrapApplication to bootstrapServerApplication migration', () => {
     );
   });
 
-  it('should replace bootstrapApplication and remove arrow function for simple cases', async () => {
+  it('should unwrap simple arrow function', async () => {
     const inputContent = `
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
@@ -67,7 +67,34 @@ export default bootstrap;
     expect(newContent).toEqual(expectedContent);
   });
 
-  it('should replace arrow function with block body containing a return statement', async () => {
+  it('should unwrap arrow function with block body containing only a return statement', async () => {
+    const inputContent = `
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { config } from './app/app.config.server';
+
+const bootstrap = () => {
+  return bootstrapApplication(AppComponent, config);
+};
+
+export default bootstrap;
+`;
+    const expectedContent = `
+import { AppComponent } from './app/app.component';
+import { config } from './app/app.config.server';
+import { bootstrapServerApplication } from '@angular/platform-server';
+
+const bootstrap = bootstrapServerApplication(AppComponent, config);
+
+export default bootstrap;
+`;
+    writeFile('/main.server.ts', inputContent);
+    await runMigration();
+    const newContent = tree.readContent('/main.server.ts');
+    expect(newContent).toEqual(expectedContent);
+  });
+
+  it('should preserve other statements in arrow function with block body', async () => {
     const inputContent = `
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
@@ -83,9 +110,13 @@ export default bootstrap;
     const expectedContent = `
 import { AppComponent } from './app/app.component';
 import { config } from './app/app.config.server';
+import { Injector } from '@angular/core';
 import { bootstrapServerApplication } from '@angular/platform-server';
 
-const bootstrap = bootstrapServerApplication(AppComponent, config);
+const bootstrap = (platformInjector: Injector) => {
+  console.log('bootstrapping');
+  return bootstrapServerApplication(AppComponent, config)(platformInjector);
+};
 
 export default bootstrap;
 `;
