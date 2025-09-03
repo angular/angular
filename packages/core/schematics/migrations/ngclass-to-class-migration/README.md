@@ -16,7 +16,7 @@ ng generate @angular/core:ngclass-to-class --path src/app/sub-component
 ```
 
 ### How does it work?
-The schematic will attempt to find all the places in the templates where the component selectors are used. And check if they can be converted to self-closing tags.
+The schematic will attempt to find all the places in the templates where the directive is used and check if it can be converted to `[class]`.
 
 Example:
 

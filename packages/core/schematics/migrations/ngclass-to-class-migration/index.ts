@@ -38,7 +38,7 @@ export function migrate(options: Options): Rule {
         }
       },
       beforeUnitAnalysis: (tsconfigPath: string) => {
-        context.logger.info(`Scanning for component tags: ${tsconfigPath}...`);
+        context.logger.info(`Scanning for ngClass bindings: ${tsconfigPath}...`);
       },
       afterAllAnalyzed: () => {
         context.logger.info(``);
