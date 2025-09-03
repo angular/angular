@@ -108,13 +108,16 @@ rules_ts_ext.deps(
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 
+# TODO: Figure out how to make ng_project update whenever the packages/core::pkg target changes.
 rules_angular = use_extension("@rules_angular//setup:extensions.bzl", "rules_angular")
-rules_angular.setup(
-    name = "components_rules_angular_configurable_deps",
-    angular_compiler_cli = "//:node_modules/@angular/compiler-cli",
-    typescript = "//:node_modules/typescript",
+
+use_repo_rule("@rules_angular//setup:repositories.bzl", "configurable_deps_repo")(
+    name = "rules_angular_configurable_deps",
+    angular_compiler_cli = "@angular//:node_modules/@angular/compiler-cli",
+    typescript = "@angular//:node_modules/typescript",
 )
-use_repo(rules_angular, **{"rules_angular_configurable_deps": "components_rules_angular_configurable_deps"})
+
+override_repo(rules_angular, "rules_angular_configurable_deps")
 
 register_toolchains(
     "@devinfra//bazel/git-toolchain:git_linux_toolchain",
