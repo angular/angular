@@ -61,6 +61,7 @@ packages/platform-server/node_modules
 packages/platform-browser-dynamic/node_modules
 packages/router/node_modules
 packages/zone.js/node_modules
+packages/zone.js/test/typings/node_modules
 packages/upgrade/node_modules
 packages/benchpress/node_modules
 packages/service-worker/node_modules
