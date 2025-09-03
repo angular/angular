@@ -4,11 +4,13 @@
 
 ```ts
 
+import { ApplicationConfig } from '@angular/core';
 import { ApplicationRef } from '@angular/core';
 import { EnvironmentProviders } from '@angular/core';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/platform-browser';
 import { InjectionToken } from '@angular/core';
+import { Injector } from '@angular/core';
 import { PlatformRef } from '@angular/core';
 import { Provider } from '@angular/core';
 import { StaticProvider } from '@angular/core';
@@ -17,6 +19,9 @@ import { Version } from '@angular/core';
 
 // @public
 export const BEFORE_APP_SERIALIZED: InjectionToken<readonly (() => void | Promise<void>)[]>;
+
+// @public
+export function bootstrapServerApplication(rootComponent: Type<unknown>, options: ApplicationConfig): (platformInjector: Injector) => Promise<ApplicationRef>;
 
 // @public
 export const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
@@ -45,7 +50,7 @@ export class PlatformState {
 export function provideServerRendering(): EnvironmentProviders;
 
 // @public
-export function renderApplication<T>(bootstrap: () => Promise<ApplicationRef>, options: {
+export function renderApplication<T>(bootstrap: ReturnType<typeof bootstrapServerApplication> | (() => Promise<ApplicationRef>), options: {
     document?: string | Document;
     url?: string;
     platformProviders?: Provider[];

@@ -39,6 +39,7 @@ import {
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
   inject,
   ɵresolveComponentResources as resolveComponentResources,
+  Injector,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -106,6 +107,7 @@ import {RuntimeErrorCode} from './errors';
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
+ * @param platformInjector The parent `Injector`.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
@@ -113,8 +115,9 @@ import {RuntimeErrorCode} from './errors';
 export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
+  platformInjector?: Injector,
 ): Promise<ApplicationRef> {
-  const config = {rootComponent, ...createProvidersConfig(options)};
+  const config = {rootComponent, platformInjector, ...createProvidersConfig(options)};
 
   // Attempt to resolve component resources before bootstrapping in JIT mode,
   // however don't interrupt the bootstrapping process.

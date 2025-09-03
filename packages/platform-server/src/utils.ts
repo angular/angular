@@ -23,8 +23,8 @@ import {
   ɵstopMeasuring as stopMeasuring,
 } from '@angular/core';
 
+import {platformServer, bootstrapServerApplication} from './server';
 import {PlatformState} from './platform_state';
-import {platformServer} from './server';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
 
@@ -291,14 +291,23 @@ export async function renderModule<T>(
 
 /**
  * Bootstraps an instance of an Angular application and renders it to a string.
-
+ *
+ * @usageNotes
+ *
  * ```ts
- * const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
- * const output: string = await renderApplication(bootstrap);
+ * import { renderApplication } from '@angular/platform-server';
+ * import { bootstrapServerApplication } from '@angular/platform-server';
+ * import { ApplicationConfig } from '@angular/core';
+ * import { RootComponent } from './app.component';
+ *
+ * const appConfig: ApplicationConfig = { providers: [...] };
+ * const bootstrap = bootstrapServerApplication(RootComponent, appConfig);
+ * const output = await renderApplication(bootstrap);
  * ```
  *
  * @param bootstrap A method that when invoked returns a promise that returns an `ApplicationRef`
- *     instance once resolved.
+ *     instance once resolved. The method is invoked with an `Injector` instance that
+ *     provides access to the platform-level dependency injection context.
  * @param options Additional configuration for the render operation:
  *  - `document` - the document of the page to render, either as an HTML string or
  *                 as a reference to the `document` instance.
@@ -310,7 +319,7 @@ export async function renderModule<T>(
  * @publicApi
  */
 export async function renderApplication<T>(
-  bootstrap: () => Promise<ApplicationRef>,
+  bootstrap: ReturnType<typeof bootstrapServerApplication> | (() => Promise<ApplicationRef>),
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
   const renderAppLabel = 'renderApplication';
@@ -321,7 +330,7 @@ export async function renderApplication<T>(
   const platformRef = createServerPlatform(options);
   try {
     startMeasuring(bootstrapLabel);
-    const applicationRef = await bootstrap();
+    const applicationRef = await bootstrap(platformRef.injector);
     stopMeasuring(bootstrapLabel);
 
     startMeasuring(_renderLabel);

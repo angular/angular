@@ -21,6 +21,8 @@ import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {Injector} from '../di';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -38,16 +40,20 @@ export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>;
   appProviders?: Array<Provider | EnvironmentProviders>;
   platformProviders?: Provider[];
+  platformInjector?: Injector;
 }): Promise<ApplicationRef> {
   profiler(ProfilerEvent.BootstrapApplicationStart);
   try {
-    const {rootComponent, appProviders, platformProviders} = config;
+    const {
+      rootComponent,
+      appProviders,
+      platformProviders,
+      platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]),
+    } = config;
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
       assertStandaloneComponentType(rootComponent);
     }
-
-    const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
