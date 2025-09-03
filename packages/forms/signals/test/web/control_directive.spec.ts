@@ -572,6 +572,148 @@ describe('control directive', () => {
       [...fix.nativeElement.querySelectorAll('.disabled-reason')].map((e) => e.textContent),
     ).toEqual(['manual disabled', 'schema disabled']);
   });
+
+  describe('should work with different input types', () => {
+    it('should sync string field with number type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="number" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal('123'));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('123');
+
+      // Model -> View
+      act(() => cmp.f().value.set('456'));
+      expect(input.value).toBe('456');
+
+      // View -> Model
+      act(() => {
+        input.value = '789';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('789');
+    });
+
+    it('should sync number field with number type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="number" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(123));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('123');
+
+      // Model -> View
+      act(() => cmp.f().value.set(456));
+      expect(input.value).toBe('456');
+
+      // View -> Model
+      act(() => {
+        input.value = '789';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(789);
+    });
+
+    it('should sync string field with date type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="date" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal('2024-01-01'));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('2024-01-01');
+
+      // Model -> View
+      act(() => cmp.f().value.set('2025-02-02'));
+      expect(input.value).toBe('2025-02-02');
+
+      // View -> Model
+      act(() => {
+        input.value = '2026-03-03';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('2026-03-03');
+    });
+
+    it('should sync date field with date type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="date" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(new Date('2024-01-01T12:00:00Z')));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('2024-01-01');
+
+      // Model -> View
+      act(() => cmp.f().value.set(new Date('2025-02-02T12:00:00Z')));
+      expect(input.value).toBe('2025-02-02');
+
+      // View -> Model
+      act(() => {
+        input.value = '2026-03-03';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toEqual(new Date('2026-03-03T00:00:00.000Z'));
+    });
+
+    it('should sync string field with color type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="color" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal('#ff0000'));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('#ff0000');
+
+      // Model -> View
+      act(() => cmp.f().value.set('#00ff00'));
+      expect(input.value).toBe('#00ff00');
+
+      // View -> Model
+      act(() => {
+        input.value = '#0000ff';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('#0000ff');
+    });
+  });
 });
 
 function setupRadioGroup() {

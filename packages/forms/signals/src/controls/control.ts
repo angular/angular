@@ -196,6 +196,28 @@ export class Control<T> {
           // into the state.
           this.state().value.set((input as HTMLInputElement).value as T);
           break;
+        case 'number':
+        case 'range':
+          // We can read a `number` or a `string` from this input type.
+          // Prefer whichever is consistent with the current type.
+          if (typeof this.state().value() === 'number') {
+            this.state().value.set((input as HTMLInputElement).valueAsNumber as T);
+          } else {
+            this.state().value.set(input.value as T);
+          }
+          break;
+        case 'date':
+        case 'month':
+        case 'week':
+        case 'time':
+          // We can read a `Date | null` or a `string` from this input type.
+          // Prefer whichever is consistent with the current type.
+          if (isDateOrNull(this.state().value())) {
+            this.state().value.set((input as HTMLInputElement).valueAsDate as T);
+          } else {
+            this.state().value.set(input.value as T);
+          }
+          break;
         default:
           this.state().value.set(input.value as T);
           break;
@@ -247,6 +269,36 @@ export class Control<T> {
           (value) => {
             // A select will not take a value unil the value's option has rendered.
             afterNextRender(() => (input.value = value as string), {injector: this.injector});
+          },
+        );
+        break;
+      case 'number':
+      case 'range':
+        // This input typr can receive a `number` or a `string`.
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => {
+            if (typeof value === 'number') {
+              (input as HTMLInputElement).valueAsNumber = value;
+            } else {
+              input.value = value as string;
+            }
+          },
+        );
+        break;
+      case 'date':
+      case 'month':
+      case 'week':
+      case 'time':
+        // This input typr can receive a `Date | null` or a `string`.
+        this.maybeSynchronize(
+          () => this.state().value(),
+          (value) => {
+            if (isDateOrNull(value)) {
+              (input as HTMLInputElement).valueAsDate = value;
+            } else {
+              input.value = value as string;
+            }
           },
         );
         break;
@@ -451,4 +503,9 @@ function isShadowedControlComponent(cmp: unknown): boolean {
 /** Checks whether the given object is an output ref. */
 function isOutputRef(value: unknown): value is OutputRef<unknown> {
   return value instanceof OutputEmitterRef || value instanceof EventEmitter;
+}
+
+/** Checks if a given value is a Date or null */
+function isDateOrNull(value: unknown): value is Date | null {
+  return value === null || value instanceof Date;
 }
