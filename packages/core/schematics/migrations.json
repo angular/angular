@@ -21,6 +21,11 @@
       "version": "21.0.0",
       "description": "Moves imports of `ApplicationConfig` from `@angular/platform-browser` to `@angular/core`",
       "factory": "./bundles/application-config-core.cjs#migrate"
+    },
+    "bootstrap-application-to-server-application": {
+      "version": "21.0.0",
+      "description": "Migrates `bootstrapApplication` to `bootstrapServerApplication` in `main.server.ts`.",
+      "factory": "./bundles/bootstrap-application-to-server-application.cjs#migrate"
     }
   }
 }

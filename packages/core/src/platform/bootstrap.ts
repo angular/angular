@@ -157,11 +157,11 @@ export function bootstrap<M>(
           const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
-          const enableRootComponentBoostrap = envInjector.get(
+          const enableRootComponentbootstrap = envInjector.get(
             ENABLE_ROOT_COMPONENT_BOOTSTRAP,
             true,
           );
-          if (!enableRootComponentBoostrap) {
+          if (!enableRootComponentbootstrap) {
             if (isApplicationBootstrapConfig(config)) {
               return envInjector.get(ApplicationRef);
             }
@@ -192,8 +192,8 @@ export function bootstrap<M>(
 }
 
 /**
- * Having a separate symbol for the module boostrap implementation allows us to
- * tree shake the module based boostrap implementation in standalone apps.
+ * Having a separate symbol for the module bootstrap implementation allows us to
+ * tree shake the module based bootstrap implementation in standalone apps.
  */
 let moduleBootstrapImpl: undefined | typeof _moduleDoBootstrap;
 

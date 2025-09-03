@@ -68,6 +68,7 @@ import {Observable} from 'rxjs';
 
 import {renderApplication, SERVER_CONTEXT} from '../src/utils';
 import {BrowserAnimationsModule, provideAnimations} from '@angular/platform-browser/animations';
+import {bootstrapServerApplication} from '../src/server';
 
 const APP_CONFIG: ApplicationConfig = {
   providers: [provideServerRendering()],
@@ -76,12 +77,11 @@ const APP_CONFIG: ApplicationConfig = {
 function getStandaloneBootstrapFn(
   component: Type<unknown>,
   providers: Array<Provider | EnvironmentProviders> = [],
-): () => Promise<ApplicationRef> {
-  return () =>
-    bootstrapApplication(
-      component,
-      mergeApplicationConfig(APP_CONFIG, {providers: [...providers, provideNgReflectAttributes()]}),
-    );
+) {
+  return bootstrapServerApplication(
+    component,
+    mergeApplicationConfig(APP_CONFIG, {providers: [...providers, provideNgReflectAttributes()]}),
+  );
 }
 
 function createMyServerApp(standalone: boolean) {

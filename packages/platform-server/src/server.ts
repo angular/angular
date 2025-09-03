@@ -15,6 +15,8 @@ import {
   ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID,
 } from '@angular/common';
 import {
+  ApplicationConfig,
+  ApplicationRef,
   createPlatformFactory,
   Injector,
   NgModule,
@@ -26,7 +28,7 @@ import {
   Provider,
   StaticProvider,
   Testability,
-  ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS,
+  Type,
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
 } from '@angular/core';
@@ -34,6 +36,7 @@ import {
   BrowserModule,
   EVENT_MANAGER_PLUGINS,
   ɵBrowserDomAdapter as BrowserDomAdapter,
+  bootstrapApplication,
 } from '@angular/platform-browser';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
@@ -54,8 +57,6 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
     deps: [DOCUMENT, [Optional, INITIAL_CONFIG]],
   },
   {provide: PlatformState, deps: [DOCUMENT]},
-  // Add special provider that allows multiple instances of platformServer* to be created.
-  {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true},
 ];
 
 function initDominoAdapter(injector: Injector) {
@@ -134,4 +135,38 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
   }
 
   return platform;
+}
+
+/**
+ * Bootstraps an instance of an Angular application for the server platform.
+ *
+ * @usageNotes
+ * The root component passed into this function *must* be a standalone.
+ *
+ * ```ts
+ * @Component({
+ *   template: 'Hello world!'
+ * })
+ * class RootComponent {}
+ *
+ * const bootstrap = bootstrapServerApplication(RootComponent, {
+ *   providers: [
+ *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
+ *   ]
+ * });
+ * ```
+ *
+ * @param rootComponent A reference to a standalone component that should be rendered.
+ * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
+ *     additional info.
+ * @returns A function that returns a promise that returns an `ApplicationRef` instance once resolved.
+ *
+ * @publicApi
+ */
+export function bootstrapServerApplication(
+  rootComponent: Type<unknown>,
+  options: ApplicationConfig,
+): (platformInjector: Injector) => Promise<ApplicationRef> {
+  return (platformInjector: Injector) =>
+    bootstrapApplication(rootComponent, options, platformInjector);
 }

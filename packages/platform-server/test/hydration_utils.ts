@@ -19,7 +19,6 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
 } from '@angular/core';
 import {
-  bootstrapApplication,
   HydrationFeature,
   provideClientHydration,
   HydrationFeatureKind,
@@ -29,6 +28,7 @@ import {provideServerRendering} from '../public_api';
 import {EVENT_DISPATCH_SCRIPT_ID, renderApplication} from '../src/utils';
 
 import {getAppContents, stripUtilAttributes} from './dom_utils';
+import {bootstrapServerApplication} from '../src/server';
 
 /**
  * The name of the attribute that contains a slot index
@@ -263,7 +263,7 @@ export async function ssr(
       enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
     ];
 
-    const bootstrap = () => bootstrapApplication(component, {providers});
+    const bootstrap = bootstrapServerApplication(component, {providers});
 
     return await renderApplication(bootstrap, {
       document: options?.doc ?? defaultHtml,

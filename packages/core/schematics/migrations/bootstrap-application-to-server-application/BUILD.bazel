@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+ts_project(
+    name = "bootstrap-application-to-server-application",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@schematics/angular",
+        "//:node_modules/typescript",
+        "//packages/core/schematics/utils",
+    ],
+)
