@@ -1,3 +1,84 @@
+<a name="21.0.0-next.2"></a>
+# 21.0.0-next.2 (2025-09-03)
+## Breaking Changes
+### common
+- (test only) - `TestBed` now provides a fake `PlatformLocation`
+  implementation that supports the Navigation API. This may break some
+  tests, though we have not observed any failures internally. You can revert to the
+  old default for `TestBed` by providing the `MockPlatformLocation` from
+  `@angular/common/testing` in your providers:
+  `{provide: PlatformLocation, useClass: MockPlatformLocation}`
+### core
+- (test only) - Using `provideZoneChangeDetection` in the
+  TestBed providers would previously prevent `TestBed` from rethrowing
+  errors as it should. Errors in the test will now be rethrown, regardless
+  of the usage of `provideZoneChangeDetection`. Tests should be adjusted to
+  prevent or account for these errors. As in previous major versions,
+  this behavior can be disabled with `rethrowApplicationErrors: false` in
+  `configureTestingModule` as a last resort.
+- `ignoreChangesOutsideZone` is no longer available as an
+  option for configuring ZoneJS change detection behavior.
+### platform-browser
+- The deprecated `ApplicationConfig` export from `@angular/platform-browser` has been removed.
+  Please import `ApplicationConfig` from `@angular/core` instead.
+### router
+- Router navigations may take several additional
+  microtasks to complete. Tests have been found to often be highly
+  dependent on the exact timing of navigation completions with respect to
+  the microtask queue. The most common fix for tests is to ensure all
+  navigations have been completed before making assertions. On rare
+  occasions, this can also affect production applications. This can be
+  caused by multiple subscriptions to router state throughout the application,
+  both of which trigger navigations that happened to not conflict with the
+  previous timing.
+### upgrade
+- `UpgradeAdapter` is no longer available. Use
+  `upgrade/static` instead
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c795960ada](https://github.com/angular/angular/commit/c795960ada1a7e21b8bee411e20a08c700b6e385) | feat | Add experimental support for the Navigation API ([#63406](https://github.com/angular/angular/pull/63406)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0a82138d4b](https://github.com/angular/angular/commit/0a82138d4bc32a0deeb03c087547ea68a32ac38e) | fix | fixes regression with event parsing and animate prefix ([#63470](https://github.com/angular/angular/pull/63470)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [538de86a72](https://github.com/angular/angular/commit/538de86a725635127216bd9b9d37479227dde6ef) | fix | avoid injecting internal error handler from a destroyed injector ([#62275](https://github.com/angular/angular/pull/62275)) |
+| [d399d7d02b](https://github.com/angular/angular/commit/d399d7d02b66c485cc5479dabd349d017a002692) | fix | Explicit Zone CD in TestBed providers should not override TestBed error handler ([#63404](https://github.com/angular/angular/pull/63404)) |
+| [ed3d1f246b](https://github.com/angular/angular/commit/ed3d1f246b185145567d0ce7abfe93e0ddb24c9f) | fix | Fix cancellation of animation enter classes ([#63442](https://github.com/angular/angular/pull/63442)) |
+| [06f4fd4456](https://github.com/angular/angular/commit/06f4fd44563d1651d05e528c7d3e3b2f301b1f33) | fix | Fixed inject migration schematics for migrate destructured properties ([#62832](https://github.com/angular/angular/pull/62832)) |
+| [9ae9875384](https://github.com/angular/angular/commit/9ae987538495981258fc17915b36745b7061f7f5) | fix | Prevent an error on cleanup when an `rxResource` `stream` threw before returning an `Observable` ([#63342](https://github.com/angular/angular/pull/63342)) |
+| [92e09adc0a](https://github.com/angular/angular/commit/92e09adc0a191ec599915e20b0835bf455bc572b) | fix | Remove ignoreChangesOutsideZone option ([#62700](https://github.com/angular/angular/pull/62700)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b8314bd340](https://github.com/angular/angular/commit/b8314bd3409500b8540d1ce00a330fdb2f0fc83a) | feat | add experimental signal-based forms ([#63408](https://github.com/angular/angular/pull/63408)) |
+| [10ef96adb3](https://github.com/angular/angular/commit/10ef96adb3d989781c7ec5116a70b6518866ee27) | fix | consistent treatment of empty ([#63456](https://github.com/angular/angular/pull/63456)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [07e678872f](https://github.com/angular/angular/commit/07e678872f91236f5c258f98a7aea536b5a200ac) | feat | Add reponseType property to HttpResponse and HttpErrorResponse ([#63043](https://github.com/angular/angular/pull/63043)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ce8db665f9](https://github.com/angular/angular/commit/ce8db665f984005264de0eb8b452370972823c17) | refactor | remove deprecated `ApplicationConfig` export ([#63529](https://github.com/angular/angular/pull/63529)) |
+### platform-server
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ee73dc9553](https://github.com/angular/angular/commit/ee73dc95531fcab96286c337648a5b2d80d5caee) | fix | prevent false warning for duplicate state serialization ([#63525](https://github.com/angular/angular/pull/63525)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5b53535dd1](https://github.com/angular/angular/commit/5b53535dd16af7d3ea7b0216984560fd2223d76c) | fix | Update recognize stage to use internally async/await ([#62994](https://github.com/angular/angular/pull/62994)) |
+### upgrade
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f86846555b](https://github.com/angular/angular/commit/f86846555bba44b2fb71d012fe4eebf82a0f5d00) | fix | Remove deprecated UpgradeAdapter ([#61659](https://github.com/angular/angular/pull/61659)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.4"></a>
 # 20.2.4 (2025-09-03)
 ### core
