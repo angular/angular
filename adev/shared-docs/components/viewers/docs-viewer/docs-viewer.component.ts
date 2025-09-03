@@ -188,6 +188,7 @@ export class DocViewer {
     path: string,
   ): Promise<void> {
     const preview = Boolean(placeholder.getAttribute('preview'));
+    const hideCode = Boolean(placeholder.getAttribute('hideCode'));
     const title = placeholder.getAttribute('header') ?? undefined;
     const firstCodeSnippetTitle =
       snippets.length > 0 ? (snippets[0].title ?? snippets[0].name) : undefined;
@@ -199,6 +200,7 @@ export class DocViewer {
       path,
       files: snippets,
       preview,
+      hideCode,
       id: this.countOfExamples,
     });
 

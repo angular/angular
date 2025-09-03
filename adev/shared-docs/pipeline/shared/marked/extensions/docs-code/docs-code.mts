@@ -32,6 +32,7 @@ const languageRule = /language="([^"]*)"/;
 const visibleLinesRule = /visibleLines="([^"]*)"/;
 const visibleRegionRule = /visibleRegion="([^"]*)"/;
 const previewRule = /preview/;
+const hideCodeRule = /hideCode/;
 
 export const docsCodeExtension = {
   name: 'docs-code',
@@ -53,6 +54,7 @@ export const docsCodeExtension = {
       const visibleLines = visibleLinesRule.exec(attr);
       const visibleRegion = visibleRegionRule.exec(attr);
       const preview = previewRule.exec(attr) ? true : false;
+      const hideCode = hideCodeRule.exec(attr) ? true : false;
       const classes = classRule.exec(attr);
 
       let code = match[2]?.trim() ?? '';
@@ -76,6 +78,7 @@ export const docsCodeExtension = {
         visibleLines: visibleLines?.[1],
         visibleRegion: visibleRegion?.[1],
         preview: preview,
+        hideCode,
         classes: classes?.[1]?.split(' '),
       };
       return token;

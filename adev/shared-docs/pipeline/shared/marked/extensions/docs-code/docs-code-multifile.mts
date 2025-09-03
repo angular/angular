@@ -20,6 +20,8 @@ export interface DocsCodeMultifileToken extends Tokens.Generic {
   paneTokens: Token[];
   // True if we should display preview
   preview: boolean;
+  /** Whether to hide code example by default. */
+  hideCode: boolean;
 }
 
 // Capture group 1: all attributes on the opening tag
@@ -28,6 +30,7 @@ const multiFileCodeRule = /^\s*<docs-code-multifile(.*?)>(.*?)<\/docs-code-multi
 
 const pathRule = /path="([^"]*)"/;
 const previewRule = /preview/;
+const hideCodeRule = /hideCode/;
 
 export const docsCodeMultifileExtension = {
   name: 'docs-code-multifile',
@@ -42,6 +45,7 @@ export const docsCodeMultifileExtension = {
       const attr = match[1].trim();
       const path = pathRule.exec(attr);
       const preview = previewRule.exec(attr) ? true : false;
+      const hideCode = hideCodeRule.exec(attr) ? true : false;
 
       const token: DocsCodeMultifileToken = {
         type: 'docs-code-multifile',
@@ -50,6 +54,7 @@ export const docsCodeMultifileExtension = {
         panes: match[2].trim(),
         paneTokens: [],
         preview: preview,
+        hideCode,
       };
       this.lexer.blockTokens(token.panes, token.paneTokens);
       return token;
@@ -68,6 +73,9 @@ export const docsCodeMultifileExtension = {
     }
     if (token.preview) {
       el.setAttribute('preview', `${token.preview}`);
+    }
+    if (token.hideCode) {
+      el.setAttribute('hideCode', 'true');
     }
 
     return el.outerHTML;
