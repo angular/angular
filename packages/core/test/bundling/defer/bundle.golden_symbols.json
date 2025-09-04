@@ -41,6 +41,7 @@
       "addServerStyles",
       "baseElement",
       "bootstrapApplication",
+      "bootstrapApplicationInternal",
       "createLinkElement",
       "createProvidersConfig",
       "createStyleElement",
@@ -58,7 +59,6 @@
       "shimStylesContent"
     ],
     "lazy": [
-      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS_DISABLED",
       "APP_BOOTSTRAP_LISTENER",
@@ -754,7 +754,8 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput"
+      "writeToDirectiveInput",
+      "DeferComponent"
     ]
   }
 }
