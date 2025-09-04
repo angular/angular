@@ -140,11 +140,11 @@
     beforeRecommendations.length > 0 || duringRecommendations.length > 0 || afterRecommendations.length > 0
   ) {
     <div class="recommendations">
-      <h2>{{title}}</h2>
+      <h2>{{title()}}</h2>
 
       <h3>Before you update</h3>
       @for (r  of beforeRecommendations; track $index) {
-        <div class="adev-recommentation-item">
+        <div class="adev-recommendation-item">
           <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
@@ -163,7 +163,7 @@
       }
 
       @for (r of duringRecommendations; track $index) {
-        <div class="adev-recommentation-item">
+        <div class="adev-recommendation-item">
           <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
@@ -176,7 +176,7 @@
 
       <h3>After you update</h3>
       @for (r of afterRecommendations; track $index) {
-        <div class="adev-recommentation-item">
+        <div class="adev-recommendation-item">
           <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>

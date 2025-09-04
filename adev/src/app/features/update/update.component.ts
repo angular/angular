@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, HostListener, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostListener, inject, signal} from '@angular/core';
 import {Step, RECOMMENDATIONS} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CdkMenuModule} from '@angular/cdk/menu';
@@ -18,6 +18,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {IconComponent} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 interface Option {
   id: keyof Step;
@@ -40,8 +41,10 @@ interface Option {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class AppComponent {
-  protected title = '';
+export default class UpdateComponent {
+  private readonly snackBar = inject(MatSnackBar);
+
+  protected title = signal('');
 
   protected level = 1;
   protected options: Record<string, boolean> = {
@@ -128,8 +131,8 @@ export default class AppComponent {
   @HostListener('click', ['$event.target'])
   copyCode({tagName, textContent}: Element) {
     if (tagName === 'CODE') {
-      // TODO: add a toast notification
       this.clipboard.copy(textContent!);
+      this.snackBar.open('Copied to clipboard', '', {duration: 2000});
     }
   }
 
@@ -149,9 +152,9 @@ export default class AppComponent {
     const labelMedium = 'medium applications';
     const labelAdvanced = 'advanced applications';
 
-    this.title = `${labelTitle} v${this.from.name} -> v${this.to.name}
+    this.title.set(`${labelTitle} v${this.from.name} -> v${this.to.name}
     for
-    ${this.level < 2 ? labelBasic : this.level < 3 ? labelMedium : labelAdvanced}`;
+    ${this.level < 2 ? labelBasic : this.level < 3 ? labelMedium : labelAdvanced}`);
 
     // Find applicable steps and organize them into before, during, and after upgrade
     for (const step of this.steps) {
