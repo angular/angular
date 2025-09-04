@@ -198,6 +198,7 @@ export class Control<T> {
           break;
         case 'number':
         case 'range':
+        case 'datetime-local':
           // We can read a `number` or a `string` from this input type.
           // Prefer whichever is consistent with the current type.
           if (typeof this.state().value() === 'number') {
@@ -210,10 +211,12 @@ export class Control<T> {
         case 'month':
         case 'week':
         case 'time':
-          // We can read a `Date | null` or a `string` from this input type.
+          // We can read a `Date | null` or a `number` or a `string` from this input type.
           // Prefer whichever is consistent with the current type.
           if (isDateOrNull(this.state().value())) {
             this.state().value.set((input as HTMLInputElement).valueAsDate as T);
+          } else if (typeof this.state().value() === 'number') {
+            this.state().value.set((input as HTMLInputElement).valueAsNumber as T);
           } else {
             this.state().value.set(input.value as T);
           }
@@ -274,7 +277,8 @@ export class Control<T> {
         break;
       case 'number':
       case 'range':
-        // This input typr can receive a `number` or a `string`.
+      case 'datetime-local':
+        // This input type can receive a `number` or a `string`.
         this.maybeSynchronize(
           () => this.state().value(),
           (value) => {
@@ -290,12 +294,14 @@ export class Control<T> {
       case 'month':
       case 'week':
       case 'time':
-        // This input typr can receive a `Date | null` or a `string`.
+        // This input type can receive a `Date | null` or a `number` or a `string`.
         this.maybeSynchronize(
           () => this.state().value(),
           (value) => {
             if (isDateOrNull(value)) {
               (input as HTMLInputElement).valueAsDate = value;
+            } else if (typeof value === 'number') {
+              (input as HTMLInputElement).valueAsNumber = value;
             } else {
               input.value = value as string;
             }

@@ -686,6 +686,62 @@ describe('control directive', () => {
       expect(cmp.f().value()).toEqual(new Date('2026-03-03T00:00:00.000Z'));
     });
 
+    it('should sync number field with date type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="date" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(new Date('2024-01-01T12:00:00Z').valueOf()));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('2024-01-01');
+
+      // Model -> View
+      act(() => cmp.f().value.set(new Date('2025-02-02T12:00:00Z').valueOf()));
+      expect(input.value).toBe('2025-02-02');
+
+      // View -> Model
+      act(() => {
+        input.value = '2026-03-03';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(new Date('2026-03-03T00:00:00.000Z').valueOf());
+    });
+
+    it('should sync number field with datetime-local type input', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="datetime-local" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(new Date('2024-01-01T12:30:00Z').valueOf()));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.value).toBe('2024-01-01T12:30');
+
+      // Model -> View
+      act(() => cmp.f().value.set(new Date('2025-02-02T18:45:00Z').valueOf()));
+      expect(input.value).toBe('2025-02-02T18:45');
+
+      // View -> Model
+      act(() => {
+        input.value = '2026-03-03T09:15';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe(new Date('2026-03-03T09:15:00.000Z').valueOf());
+    });
+
     it('should sync string field with color type input', () => {
       @Component({
         imports: [Control],
