@@ -129,10 +129,11 @@ For example, to run the server in read-only mode in VS Code, you would update yo
 The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
 
 | Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+|:-----------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| :----------: | :---------: |
 | `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
 | `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
 | `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
+| `modernize`            | Provides instructions and commands for modernizing Angular code to align with the latest best practices and syntax.                                                                                |      ✅      |      ✅     |
 
 ## Feedback and New Ideas
 
