@@ -107,12 +107,18 @@ import {RuntimeErrorCode} from './errors';
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
- * @param platformInjector The parent `Injector`.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
  */
 export function bootstrapApplication(
+  rootComponent: Type<unknown>,
+  options?: ApplicationConfig,
+): Promise<ApplicationRef> {
+  return bootstrapApplicationInternal(rootComponent, options);
+}
+
+export function bootstrapApplicationInternal(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
   platformInjector?: Injector,

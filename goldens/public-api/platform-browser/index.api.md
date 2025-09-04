@@ -14,7 +14,6 @@ import { HttpTransferCacheOptions } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 import { InjectionToken } from '@angular/core';
-import { Injector } from '@angular/core';
 import { ListenerOptions } from '@angular/core';
 import { NgZone } from '@angular/core';
 import { PlatformRef } from '@angular/core';
@@ -27,7 +26,7 @@ import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig, platformInjector?: Injector): Promise<ApplicationRef>;
+export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef>;
 
 // @public
 export class BrowserModule {

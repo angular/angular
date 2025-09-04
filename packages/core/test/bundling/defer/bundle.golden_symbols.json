@@ -41,6 +41,7 @@
       "addServerStyles",
       "baseElement",
       "bootstrapApplication",
+      "bootstrapApplicationInternal",
       "createLinkElement",
       "createProvidersConfig",
       "createStyleElement",

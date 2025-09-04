@@ -1464,11 +1464,8 @@ class HiddenModule {}
           const output = await bootstrap;
           expect(output).toEqual(expectedOutput);
           expect(consoleSpy).toHaveBeenCalledWith(
-            jasmine.stringMatching('Angular detected an incompatible configuration'),
-          );
-          expect(consoleSpy).toHaveBeenCalledWith(
             jasmine.stringMatching(
-              `This can happen if the server providers have been provided more than once using different mechanisms.`,
+              'Angular detected an incompatible configuration, which causes duplicate serialization of the server-side application state.',
             ),
           );
         });
