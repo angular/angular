@@ -17,6 +17,7 @@ export class SettingsMock extends Settings {
   signalGraphEnabled = signal(false);
   timingAPIEnabled = signal(false);
   theme = signal<ThemePreference>('system');
+  activeTab = signal('Components');
 }
 
 export const SETTINGS_MOCK: Provider[] = [
