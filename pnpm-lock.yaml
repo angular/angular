@@ -13,9 +13,6 @@ packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 pnpmfileChecksum: sha256-+7KlkWdGv7+7wb/qym+KoHN4eBGq9TNblo2Ln6HTxz0=
 
 patchedDependencies:
-  '@angular/build':
-    hash: b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e
-    path: tools/pnpm-patches/@angular__build.patch
   dagre-d3-es@7.0.11:
     hash: 08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd
     path: tools/pnpm-patches/dagre-d3-es+7.0.11.patch
@@ -41,7 +38,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.0.0-next.1
-        version: 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+        version: 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-next.2
         version: 21.0.0-next.2(rxjs@7.8.2)
@@ -531,7 +528,7 @@ importers:
         version: link:../packages/animations
       '@angular/build':
         specifier: 21.0.0-next.1
-        version: 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+        version: 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-next.2
         version: 21.0.0-next.2(rxjs@7.8.2)
@@ -819,7 +816,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.0.0-next.1
-        version: 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+        version: 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -990,7 +987,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.0.0-next.1
-        version: 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+        version: 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -11017,7 +11014,7 @@ snapshots:
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-next.1(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.3(esbuild@0.25.9)))(webpack@5.101.3(esbuild@0.25.9))
       '@angular-devkit/core': 21.0.0-next.1(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11107,7 +11104,7 @@ snapshots:
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-next.1(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.3(esbuild@0.25.9)))(webpack@5.101.3(esbuild@0.25.9))
       '@angular-devkit/core': 21.0.0-next.1(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
+      '@angular/build': 21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -11228,7 +11225,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
@@ -11284,7 +11281,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
@@ -11340,7 +11337,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.43.1)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
@@ -11396,7 +11393,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-next.1(patch_hash=b8e52088ccbe9b635571913e01d7ec761946ddc95d048d0f1218fb1b71e7007e)(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.1(@angular/ssr@21.0.0-next.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.1(chokidar@4.0.3)
