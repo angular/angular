@@ -79,7 +79,6 @@ export class DevToolsTabsComponent {
   readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
-  readonly activeTab = signal<Tab>('Components');
   readonly inspectorRunning = signal(false);
 
   protected readonly showCommentNodes = this.settings.showCommentNodes;
@@ -87,6 +86,7 @@ export class DevToolsTabsComponent {
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
   protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
+  protected readonly activeTab = this.settings.activeTab;
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);
