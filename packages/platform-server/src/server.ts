@@ -36,7 +36,7 @@ import {
   BrowserModule,
   EVENT_MANAGER_PLUGINS,
   ɵBrowserDomAdapter as BrowserDomAdapter,
-  bootstrapApplication,
+  ɵbootstrapApplicationInternal as bootstrapApplicationInternal,
 } from '@angular/platform-browser';
 
 import {DominoAdapter, parseDocument} from './domino_adapter';
@@ -159,7 +159,7 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
- * @returns A function that returns a promise that returns an `ApplicationRef` instance once resolved.
+ * @returns A function that initiates the bootstrap process once called.
  *
  * @publicApi
  */
@@ -168,5 +168,5 @@ export function bootstrapServerApplication(
   options: ApplicationConfig,
 ): (platformInjector: Injector) => Promise<ApplicationRef> {
   return (platformInjector: Injector) =>
-    bootstrapApplication(rootComponent, options, platformInjector);
+    bootstrapApplicationInternal(rootComponent, options, platformInjector);
 }

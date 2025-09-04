@@ -16,3 +16,4 @@ export {KeyEventsPlugin as ɵKeyEventsPlugin} from './dom/events/key_events';
 export {SharedStylesHost as ɵSharedStylesHost} from './dom/shared_styles_host';
 export {RuntimeErrorCode as ɵRuntimeErrorCode} from './errors';
 export {DomSanitizerImpl as ɵDomSanitizerImpl} from './security/dom_sanitization_service';
+export {bootstrapApplicationInternal as ɵbootstrapApplicationInternal} from './browser';
