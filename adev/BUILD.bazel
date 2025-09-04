@@ -28,7 +28,9 @@ APPLICATION_FILES = [
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
-)
+) + [
+    "tailwind.config.js",
+]
 
 APPLICATION_DEPS = [
     "//adev:node_modules/@angular-devkit/build-angular",
@@ -147,9 +149,6 @@ ng_application(
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
-    deps = [
-        "tailwind.config.js",
-    ],
 )
 
 ng_test(
