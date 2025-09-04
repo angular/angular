@@ -728,18 +728,20 @@ describe('control directive', () => {
       const cmp = fix.componentInstance as TestCmp;
 
       // Initial state
-      expect(input.value).toBe('2024-01-01T12:30');
+      expect(input.valueAsNumber).toBe(new Date('2024-01-01T12:30:00Z').valueOf());
 
       // Model -> View
-      act(() => cmp.f().value.set(new Date('2025-02-02T18:45:00Z').valueOf()));
-      expect(input.value).toBe('2025-02-02T18:45');
+      let newDateTimestamp = new Date('2025-02-02T18:45:00Z').valueOf();
+      act(() => cmp.f().value.set(newDateTimestamp));
+      expect(input.valueAsNumber).toBe(newDateTimestamp);
 
       // View -> Model
+      newDateTimestamp = new Date('2026-03-03T09:15:00Z').valueOf();
       act(() => {
-        input.value = '2026-03-03T09:15';
+        input.valueAsNumber = newDateTimestamp;
         input.dispatchEvent(new Event('input'));
       });
-      expect(cmp.f().value()).toBe(new Date('2026-03-03T09:15:00.000Z').valueOf());
+      expect(cmp.f().value()).toBe(newDateTimestamp);
     });
 
     it('should sync string field with color type input', () => {
