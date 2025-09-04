@@ -142,10 +142,6 @@ export class TransferStateComponent {
     }
   }
 
-  refresh(): void {
-    this.loadTransferState();
-  }
-
   isValueLong(element: HTMLElement, isExpanded: boolean = false): boolean {
     if (isExpanded) return true;
 
