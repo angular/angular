@@ -25,12 +25,11 @@ APPLICATION_FILES = [
     "//adev/src/assets:content",
     "//adev/src/assets:context",
     "//adev/src/content/examples:embeddable",
+    "tailwind.config.js",
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
-) + [
-    "tailwind.config.js",
-]
+)
 
 APPLICATION_DEPS = [
     "//adev:node_modules/@angular-devkit/build-angular",
