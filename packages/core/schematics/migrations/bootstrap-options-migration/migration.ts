@@ -592,6 +592,8 @@ function addProvidersToBootstrapOption(
 ) {
   const providersProp = findLiteralProperty(optionsNode, 'providers');
   if (providersProp && ts.isPropertyAssignment(providersProp)) {
+    // Can be bootstrap(App, {providers: [...]}), bootstrap(App, {providers}), bootstrap(App, {...appConfig, providers}) etc.
+
     if (ts.isArrayLiteralExpression(providersProp.initializer)) {
       const initializer = providersProp.initializer;
       const text = `${providersText},`;
@@ -648,6 +650,22 @@ function addProvidersToBootstrapOption(
         new TextUpdate({
           position: providersProp.getStart(),
           end: providersProp.getEnd(),
+          toInsert: newProviders,
+        }),
+      ),
+    );
+  } else if (
+    optionsNode.properties.length === 1 &&
+    ts.isSpreadAssignment(optionsNode.properties[0])
+  ) {
+    const spread = optionsNode.properties[0];
+    const newProviders = `, providers: [${providersText}, ...${spread.expression.getText()}.providers]`;
+    replacements.push(
+      new Replacement(
+        projectFile,
+        new TextUpdate({
+          position: spread.getEnd(),
+          end: spread.getEnd(),
           toInsert: newProviders,
         }),
       ),
