@@ -2,7 +2,7 @@
 
 Now that you've learned [querying child elements with signal queries](/tutorials/signals/9-query-child-elements-with-signal-queries), let's explore how to react to signal changes with effects. Effects are functions that run automatically when their dependencies change, making them perfect for side effects like logging, DOM manipulation, or API calls.
 
-**Important: Effects should be your last resort.** Always prefer `computed()` for derived values and `linkedSignal()` for values that can be both derived and manually set. If you find yourself copying data from one signal to another with an effect, it's a sign you should move your source-of-truth higher up and use `computed()` or `linkedSignal()` instead. Effects are best for syncing signal state to imperative, non-signal APIs.
+**Important: Effects should be the last API you reach for.** Always prefer `computed()` for derived values and `linkedSignal()` for values that can be both derived and manually set. If you find yourself copying data from one signal to another with an effect, it's a sign you should move your source-of-truth higher up and use `computed()` or `linkedSignal()` instead. Effects are best for syncing signal state to imperative, non-signal APIs.
 
 In this activity, you'll learn how to use the `effect()` function appropriately for legitimate side effects that respond to signal changes.
 
