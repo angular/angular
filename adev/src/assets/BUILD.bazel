@@ -17,6 +17,7 @@ copy_to_directory(
         "//adev/src/content/ecosystem/service-workers",
         "//adev/src/content/guide",
         "//adev/src/content/guide/animations",
+        "//adev/src/content/guide/aria",
         "//adev/src/content/guide/components",
         "//adev/src/content/guide/di",
         "//adev/src/content/guide/directives",

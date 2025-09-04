@@ -17,6 +17,7 @@ copy_to_bin(
     name = "guide_files",
     srcs = [
         "//adev/src/content/guide/animations:guide_files",
+        "//adev/src/content/guide/aria:guide_files",
         "//adev/src/content/guide/components:guide_files",
         "//adev/src/content/guide/di:guide_files",
         "//adev/src/content/guide/directives:guide_files",
