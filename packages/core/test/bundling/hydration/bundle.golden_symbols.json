@@ -320,6 +320,7 @@
       "bloomHashBitOrFactory",
       "bootstrap",
       "bootstrapApplication",
+      "bootstrapApplicationInternal",
       "borrowReactiveLViewConsumer",
       "cacheMatchingLocalNames",
       "calcSerializedContainerSize",

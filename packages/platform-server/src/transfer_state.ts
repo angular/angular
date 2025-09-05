@@ -58,10 +58,12 @@ function warnIfStateTransferHappened(injector: Injector): void {
   if (transferStateStatus.serialized) {
     console.warn(
       `Angular detected an incompatible configuration, which causes duplicate serialization of the server-side application state.\n\n` +
-        `This can happen if the server providers have been provided more than once using different mechanisms. For example:\n\n` +
-        `  imports: [ServerModule], // Registers server providers\n` +
-        `  providers: [provideServerRendering()] // Also registers server providers\n\n` +
-        `To fix this, ensure that the \`provideServerRendering()\` function is the only provider used and remove the other(s).`,
+        `This can happen if server providers are included more than once. Common causes are:\n` +
+        `  - Using \`bootstrapApplication\` instead of \`bootstrapServerApplication\` to bootstrap the server application.\n` +
+        `  - Mixing module-based and provider-based setups, for example:\n` +
+        `    imports: [ServerModule], // Registers server providers\n` +
+        `    providers: [provideServerRendering()] // Also registers server providers\n\n` +
+        `To fix this, ensure that you use \`bootstrapServerApplication\` for your server application and that server providers are only included once.`,
     );
   }
 
