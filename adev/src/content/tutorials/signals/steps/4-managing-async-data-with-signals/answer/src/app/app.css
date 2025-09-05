@@ -1,0 +1,36 @@
+:host {
+  color: #333;
+  font-family: Arial, sans-serif;
+  display: block;
+  padding: 20px;
+}
+
+button {
+  margin: 0 5px 10px 0;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.status {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+.user-info {
+  color: #2e7d32;
+}
+
+.user-info h3 {
+  margin: 0 0 10px 0;
+}
+
+.user-info p {
+  margin: 0;
+}
