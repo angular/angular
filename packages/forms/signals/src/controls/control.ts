@@ -314,9 +314,7 @@ export class Control<T> {
           // manually check the mutation records after every render.
           // TODO: good/bad idea?
           afterEveryRender(
-            () => {
-              this.maybeResyncSelect(select, observer.takeRecords());
-            },
+            {read: () => this.maybeResyncSelect(select, observer.takeRecords())},
             {injector: this.injector},
           );
         }
@@ -332,6 +330,7 @@ export class Control<T> {
     const observer = new MutationObserver((mutations) => this.maybeResyncSelect(select, mutations));
     observer.observe(select, {
       attributes: true,
+      attributeFilter: ['value'],
       characterData: true,
       childList: true,
       subtree: true,
@@ -574,11 +573,7 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
     return false;
   }
   // If the value attribute of an option changed, its relevant.
-  if (
-    mutation.type === 'attributes' &&
-    mutation.attributeName === 'value' &&
-    mutation.target instanceof HTMLOptionElement
-  ) {
+  if (mutation.type === 'attributes' && mutation.target instanceof HTMLOptionElement) {
     return true;
   }
   // Everything else is not relevant.
