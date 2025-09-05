@@ -19,7 +19,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_ROUTE_CONFIG = 4014,
     // (undocumented)
-    INVALID_ROUTER_LINK_INPUTS = 4016,
+    INVALID_ROUTER_LINK_INPUTS = 4017,
     // (undocumented)
     MISPLACED_OUTLETS_COMMAND = 4004,
     // (undocumented)

@@ -43,6 +43,8 @@ export interface I18nRemoveOpCodes extends Array<number> {
  * See: `I18nCreateOpCodes` for example of usage.
  */
 export const enum IcuCreateOpCode {
+  /* tslint:disable:no-duplicate-enum-values */
+
   /**
    * Stores shift amount for bits 17-3 that contain reference index.
    */
@@ -72,6 +74,7 @@ export const enum IcuCreateOpCode {
    * Instruction to set the attribute of a node.
    */
   Attr = 0b1,
+  /* tslint:enable:no-duplicate-enum-values */
 }
 
 /**
@@ -126,6 +129,7 @@ export interface IcuCreateOpCodes
 }
 
 export const enum I18nUpdateOpCode {
+  /* tslint:disable:no-duplicate-enum-values */
   /**
    * Stores shift amount for bits 17-2 that contain reference index.
    */
@@ -151,6 +155,7 @@ export const enum I18nUpdateOpCode {
    * Instruction to update the current ICU case.
    */
   IcuUpdate = 0b11,
+  /* tslint:enable:no-duplicate-enum-values */
 }
 
 /**
@@ -230,6 +235,7 @@ export interface I18nCreateOpCodes extends Array<number | string>, I18nDebug {
  * See `I18nCreateOpCodes`
  */
 export enum I18nCreateOpCode {
+  /* tslint:disable:no-duplicate-enum-values */
   /**
    * Number of bits to shift index so that it can be combined with the `APPEND_EAGERLY` and
    * `COMMENT`.
@@ -245,6 +251,7 @@ export enum I18nCreateOpCode {
    * If set the node should be comment (rather than a text) node.
    */
   COMMENT = 0b10,
+  /* tslint:enable:no-duplicate-enum-values */
 }
 
 /**

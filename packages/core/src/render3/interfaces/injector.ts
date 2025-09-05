@@ -52,9 +52,11 @@ import {LView, TData} from './view';
  * ```
  */
 export const enum NodeInjectorOffset {
+  /* tslint:disable:no-duplicate-enum-values */
   TNODE = 8,
   PARENT = 8,
   BLOOM_SIZE = 8,
+  /* tslint:enable: no-duplicate-enum-values */
   SIZE = 9,
 }
 

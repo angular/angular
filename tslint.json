@@ -11,6 +11,7 @@
     "ts-node-loader": true,
     // Custom rules written in TypeScript.
     "no-exported-inferred-call-type": true,
+    "no-duplicate-enum-values": true,
     "require-internal-with-underscore": true,
     "no-implicit-override-abstract": true,
     "validate-import-for-esm-cjs-interop": [
