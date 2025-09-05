@@ -274,5 +274,133 @@ runInEachFileSystem(() => {
         'Unsupported call to the input function. This function can only be used as the initializer of a property on a @Component or @Directive class.',
       );
     });
+
+    it('should report required input being used as property initialized', () => {
+      env.write(
+        'test.ts',
+        `
+        import {input, Component} from '@angular/core';
+
+        function foobar(x:any) {}
+
+        @Component({template: \`\`})
+        export class Test {
+          reqInp = input.required<string>();
+          reqInp2 = input.required<boolean>();
+          smthg = this.reqInp();
+          smthg2 = foobar(this.reqInp2());
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toContain('`reqInp` is a required input');
+      expect(diags[1].messageText).toContain('`reqInp2` is a required input');
+    });
+
+    it('should report required input being invoked inside a constructor', () => {
+      env.write(
+        'test.ts',
+        `
+        import {input, Component} from '@angular/core';
+
+        function foobar(x:any) {}
+
+        @Component({template: \`\`})
+        export class Test {
+          reqInp = input.required<string>();
+          reqInp2 = input.required<boolean>();
+
+          constructor() {
+            const smthg = this.reqInp();
+            const smthg2 = foobar(this.reqInp2());
+          }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(2);
+      expect(diags[0].messageText).toContain('`reqInp` is a required input');
+      expect(diags[1].messageText).toContain('`reqInp2` is a required input');
+    });
+
+    it('should not report required input being invoked inside an effect or a computed', () => {
+      env.write(
+        'test.ts',
+        `
+        import {input, Component, effect, computed} from '@angular/core';
+
+        function foobar(x:any) {}
+
+        @Component({template: \`\`})
+        export class Test {
+          reqInp = input.required<string>();
+          reqInp2 = input.required<boolean>();
+          _ = effect(() => { this.reqInp(); foobar(this.reqInp2()); });
+          comp = computed(() => this.reqInp());
+
+          constructor() {
+            effect(() => { this.reqInp(); foobar(this.reqInp2()); });
+          }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not report non-required input being invoked in contructrors or in property initialization', () => {
+      env.write(
+        'test.ts',
+        `
+        import {input, Component, effect, computed} from '@angular/core';
+
+        function foobar(x:any) {}
+
+        @Component({template: \`\`})
+        export class Test {
+          reqInp = input<string>('');
+          reqInp2 = input<boolean>(true);
+          smthg = this.reqInp();
+          smthg2 = foobar(this.reqInp2());
+
+          constructor() {
+            const smthg = this.reqInp();
+            const smthg2 = foobar(this.reqInp2());
+          }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not report non-invokations of required inputs', () => {
+      env.write(
+        'test.ts',
+        `
+        import {input, Component, effect, computed} from '@angular/core';
+        import {toObservable} from '@angular/core/rxjs-interop';
+
+
+        @Component({template: \`\`})
+        export class Test {
+          reqInp = input.required<string>();
+          obs$ = toObservable(this.reqInp);
+
+          constructor() {
+            const obs$ = toObservable(this.reqInp);
+          }
+        }
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
   });
 });
