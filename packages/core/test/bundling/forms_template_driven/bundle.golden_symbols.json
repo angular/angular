@@ -2,7 +2,6 @@
   "chunks": {
     "main": [
       "AFTER_RENDER_SEQUENCES_TO_ADD",
-      "ALLOW_MULTIPLE_PLATFORMS",
       "ANIMATIONS_DISABLED",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",

@@ -439,6 +439,7 @@
       "booleanAttribute",
       "bootstrap",
       "bootstrapApplication",
+      "bootstrapApplicationInternal",
       "borrowReactiveLViewConsumer",
       "cacheMatchingLocalNames",
       "callHook",

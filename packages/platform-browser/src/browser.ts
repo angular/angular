@@ -39,6 +39,7 @@ import {
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
   inject,
   ɵresolveComponentResources as resolveComponentResources,
+  Injector,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -114,7 +115,15 @@ export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
 ): Promise<ApplicationRef> {
-  const config = {rootComponent, ...createProvidersConfig(options)};
+  return bootstrapApplicationInternal(rootComponent, options);
+}
+
+export function bootstrapApplicationInternal(
+  rootComponent: Type<unknown>,
+  options?: ApplicationConfig,
+  platformInjector?: Injector,
+): Promise<ApplicationRef> {
+  const config = {rootComponent, platformInjector, ...createProvidersConfig(options)};
 
   // Attempt to resolve component resources before bootstrapping in JIT mode,
   // however don't interrupt the bootstrapping process.
@@ -142,7 +151,7 @@ export function bootstrapApplication(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
   return internalCreateApplication(createProvidersConfig(options));
 }
 

@@ -360,6 +360,7 @@
       "bloomHashBitOrFactory",
       "bootstrap",
       "bootstrapApplication",
+      "bootstrapApplicationInternal",
       "borrowReactiveLViewConsumer",
       "buildAnimationAst",
       "buildAnimationTimelines",
