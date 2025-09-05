@@ -2,9 +2,9 @@
 
 load("@aspect_bazel_lib//lib:copy_to_bin.bzl", _copy_to_bin = "copy_to_bin")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
-load("@aspect_rules_jasmine//jasmine:defs.bzl", _jasmine_test = "jasmine_test")
 load("@aspect_rules_js//npm:defs.bzl", _npm_package = "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", _ts_config = "ts_config")
+load("@devinfra//bazel/jasmine:jasmine.bzl", _jasmine_test = "jasmine_test")
 load("@devinfra//bazel/spec-bundling:index.bzl", "spec_bundle")
 load("@devinfra//bazel/ts_project:index.bzl", "strict_deps_test")
 load("@rules_angular//src/ts_project:index.bzl", _ts_project = "ts_project")
@@ -153,35 +153,20 @@ def web_test(name, tags = [], deps = [], bootstrap = [], tsconfig = "//packages/
         **kwargs
     )
 
-def jasmine_test(name, data = [], fixed_args = [], **kwargs):
-    # Create relative path to root, from current package dir. Necessary as
-    # we change the `chdir` below to the package directory.
-    relative_to_root = "/".join([".."] * len(native.package_name().split("/")))
-
+def jasmine_test(name, fixed_args = [], **kwargs):
     all_fixed_args = [
-        "--require={root}/packages/zone.js/node_modules/source-map-support/register.js",
         # Escape so that the `js_binary` launcher triggers Bash expansion.
         "'**/*+(.|_)spec.js'",
         "'**/*+(.|_)spec.mjs'",
         "'**/*+(.|_)spec.cjs'",
     ] + fixed_args
 
-    all_fixed_args = [arg.format(root = relative_to_root) for arg in all_fixed_args]
-
-    size = kwargs.pop("size", "medium")
-
     _jasmine_test(
         name = name,
         node_modules = "//packages/zone.js:node_modules",
         chdir = native.package_name(),
         fixed_args = all_fixed_args,
-        data = data + [
-            "//packages:tsconfig_build",
-            "//tools/bazel/node_loader",
-            "//packages/zone.js:node_modules/source-map-support",
-        ],
-        node_options = ["--import", "%s/tools/bazel/node_loader/index.mjs" % relative_to_root],
-        size = size,
+        size = kwargs.pop("size", "medium"),
         **kwargs
     )
 
