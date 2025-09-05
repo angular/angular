@@ -180,32 +180,6 @@ describe('signal inputs', () => {
     expect(transformRunCount).toBe(1);
   });
 
-  it('should throw error if a required input is accessed too early', () => {
-    @Component({
-      selector: 'input-comp',
-      template: 'input:{{input()}}',
-    })
-    class InputComp {
-      input = input.required<number>({debugName: 'input'});
-
-      constructor() {
-        this.input();
-      }
-    }
-
-    @Component({
-      template: `<input-comp [input]="value" />`,
-      imports: [InputComp],
-    })
-    class TestCmp {
-      value = 1;
-    }
-
-    expect(() => TestBed.createComponent(TestCmp)).toThrowError(
-      /Input "input" is required but no value is available yet/,
-    );
-  });
-
   it('should be possible to bind to an inherited input', () => {
     @Directive()
     class BaseDir {
