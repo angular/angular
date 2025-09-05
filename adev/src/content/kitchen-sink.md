@@ -212,6 +212,17 @@ Adding the `preview` flag builds a running example of the code below the code sn
 
 NOTE: `preview` only works with standalone.
 
+### Styling example previews with Tailwind CSS 
+
+Tailwind utility classes can be used within code examples.
+
+<docs-code-multifile
+  path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts"
+  preview>
+  <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.html" />
+  <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
+</docs-code-multifile>
+
 ## Workflow
 
 Style numbered steps using `<docs-step>`. Numbering is created using CSS (handy!).
