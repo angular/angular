@@ -1,0 +1,8 @@
+<section class="card" [class]="theme()">
+  @if (user()) {
+      <div>
+        <h2>{{ user().name }}</h2>
+        <p>{{ user().email }}</p>
+      </div>
+  }
+</section>
