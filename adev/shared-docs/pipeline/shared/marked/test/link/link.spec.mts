@@ -31,4 +31,10 @@ describe('markdown to html', () => {
   it('should render internal links that are relative paths', () => {
     expect(parsedMarkdown).toContain('<a href="../other/page">same site</a>');
   });
+
+  it('should render links with title attributes properly quoted', () => {
+    expect(parsedMarkdown).toContain(
+      '<a href="https://docs.npmjs.com/getting-started/what-is-npm" title="What is npm?" target="_blank">npm packages</a>',
+    );
+  });
 });

@@ -24,6 +24,6 @@ export function linkRender(this: Renderer, {href, title, tokens}: Tokens.Link) {
     return this.parser.parseInline(tokens);
   }
 
-  const titleAttribute = title ? ` title=${title}` : '';
+  const titleAttribute = title ? ` title="${title}"` : '';
   return `<a href="${href}"${titleAttribute}${anchorTarget(href)}>${this.parser.parseInline(tokens)}</a>`;
 }
