@@ -67,7 +67,7 @@ export class CustomSlider {
 You can alternatively bind to the host element by applying the `@HostBinding` and `@HostListener`
 decorator to class members.
 
-`@HostBinding` lets you bind host properties and attributes to properties and methods:
+`@HostBinding` lets you bind host properties and attributes to properties and getters:
 
 ```angular-ts
 @Component({
@@ -78,7 +78,7 @@ export class CustomSlider {
   value: number = 0;
 
   @HostBinding('tabIndex')
-  getTabIndex() {
+  get tabIndex() {
     return this.disabled ? -1 : 0;
   }
 
