@@ -28,6 +28,8 @@ import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
  * @template TValue The type of value stored in the field being validated.
  * @template TResult The type of result returned by the async operation
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind.Root> = (
   result: TResult,
@@ -42,6 +44,8 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
  * @template TParams The type of parameters to the resource.
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export interface AsyncValidatorOptions<
   TValue,
@@ -88,6 +92,8 @@ export interface AsyncValidatorOptions<
  * @template TValue The type of value stored in the field being validated.
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
   /**
@@ -130,6 +136,8 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TParams The type of parameters to the resource.
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -181,6 +189,8 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
  * @template TValue The type of value stored in the field being validated.
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,

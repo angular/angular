@@ -63,6 +63,8 @@ import {InteropNgControl} from './interop_ng_control';
  * 4. Provides a fake `NgControl` that implements a subset of the features available on the reactive
  *    forms `NgControl`. This is provided to improve interoperability with controls designed to work
  *    with reactive forms. It should not be used by controls written for signal forms.
+ *
+ * @experimental 21.0.0
  */
 @Directive({
   selector: '[control]',
