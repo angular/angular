@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector, Type, isSignal} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
@@ -237,10 +237,11 @@ export function createCustomElement<P>(
   }
 
   // Add getters and setters to the prototype for each property input.
-  inputs.forEach(({propName, transform}) => {
+  inputs.forEach(({propName, transform, isSignal: _isSignal}) => {
     Object.defineProperty(NgElementImpl.prototype, propName, {
       get(): any {
-        return this.ngElementStrategy.getInputValue(propName);
+        const inputValue = this.ngElementStrategy.getInputValue(propName);
+        return _isSignal && isSignal(inputValue) ? inputValue() : inputValue;
       },
       set(newValue: any): void {
         this.ngElementStrategy.setInputValue(propName, newValue, transform);
