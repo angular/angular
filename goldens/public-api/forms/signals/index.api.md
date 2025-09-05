@@ -4,11 +4,9 @@
 
 ```ts
 
-import { AbstractControl } from '@angular/forms';
 import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
 import { ElementRef } from '@angular/core';
-import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -20,8 +18,6 @@ import { OutputRef } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
-import { ValidationErrors } from '@angular/forms';
-import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 
 // @public
@@ -229,48 +225,6 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
     readonly options?: HttpResourceOptions<TResult, unknown>;
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 }
-
-// @public
-export class InteropNgControl implements Pick<NgControl, InteropSharedKeys | 'control' | 'valueAccessor'>, Pick<AbstractControl<unknown>, InteropSharedKeys | 'hasValidator'> {
-    constructor(field: () => FieldState<unknown>);
-    // (undocumented)
-    readonly control: AbstractControl<any, any>;
-    // (undocumented)
-    get dirty(): boolean;
-    // (undocumented)
-    get disabled(): boolean;
-    // (undocumented)
-    get enabled(): boolean;
-    // (undocumented)
-    get errors(): ValidationErrors | null;
-    // (undocumented)
-    protected field: () => FieldState<unknown>;
-    // (undocumented)
-    hasValidator(validator: ValidatorFn): boolean;
-    // (undocumented)
-    get invalid(): boolean;
-    // (undocumented)
-    get pending(): boolean | null;
-    // (undocumented)
-    get pristine(): boolean;
-    // (undocumented)
-    get status(): FormControlStatus;
-    // (undocumented)
-    get touched(): boolean;
-    // (undocumented)
-    get untouched(): boolean;
-    // (undocumented)
-    updateValueAndValidity(): void;
-    // (undocumented)
-    get valid(): boolean;
-    // (undocumented)
-    get value(): any;
-    // (undocumented)
-    valueAccessor: ControlValueAccessor | null;
-}
-
-// @public
-export type InteropSharedKeys = 'value' | 'valid' | 'invalid' | 'touched' | 'untouched' | 'disabled' | 'enabled' | 'errors' | 'pristine' | 'dirty' | 'status';
 
 // @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
