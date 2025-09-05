@@ -151,7 +151,7 @@ export function bootstrapApplicationInternal(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
   return internalCreateApplication(createProvidersConfig(options));
 }
 

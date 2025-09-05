@@ -23,7 +23,7 @@ import {
   ɵstopMeasuring as stopMeasuring,
 } from '@angular/core';
 
-import {platformServer, bootstrapServerApplication} from './server';
+import {bootstrapServerApplication, platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
@@ -298,10 +298,10 @@ export async function renderModule<T>(
  * import { renderApplication } from '@angular/platform-server';
  * import { bootstrapServerApplication } from '@angular/platform-server';
  * import { ApplicationConfig } from '@angular/core';
- * import { RootComponent } from './app.component';
+ * import { AppComponent } from './app.component';
  *
  * const appConfig: ApplicationConfig = { providers: [...] };
- * const bootstrap = bootstrapServerApplication(RootComponent, appConfig);
+ * const bootstrap = bootstrapServerApplication(AppComponent, appConfig);
  * const output = await renderApplication(bootstrap);
  * ```
  *

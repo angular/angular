@@ -144,12 +144,11 @@ export function platformServer(extraProviders?: StaticProvider[] | undefined): P
  * The root component passed into this function *must* be a standalone.
  *
  * ```ts
- * @Component({
- *   template: 'Hello world!'
- * })
- * class RootComponent {}
+ * import { bootstrapServerApplication } from '@angular/platform-server';
+ * import { ApplicationConfig } from '@angular/core';
+ * import { AppComponent } from './app.component';
  *
- * const bootstrap = bootstrapServerApplication(RootComponent, {
+ * const bootstrap = bootstrapServerApplication(AppComponent, {
  *   providers: [
  *     {provide: BACKEND_URL, useValue: 'https://yourdomain.com/api'}
  *   ]
