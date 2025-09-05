@@ -12,7 +12,7 @@
     "@csstools/css-color-parser": "3.1.0",
     "@externs/nodejs": "1.5.0",
     "@types/jasmine": "5.1.9",
-    "@types/node": "24.3.0",
+    "@types/node": "^24.3.0",
     "@types/shelljs": "0.8.17",
     "@types/systemjs": "6.15.3",
     "bluebird": "3.7.2",
