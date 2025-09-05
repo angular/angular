@@ -550,16 +550,6 @@ export interface Component extends Directive {
   viewProviders?: Provider[];
 
   /**
-   * The module ID of the module that contains the component.
-   * The component must be able to resolve relative URLs for templates and styles.
-   * SystemJS exposes the `__moduleName` variable within each module.
-   * In CommonJS, this can  be set to `module.id`.
-   *
-   * @deprecated This option does not have any effect. Will be removed in Angular v17.
-   */
-  moduleId?: string;
-
-  /**
    * The relative path or absolute URL of a template file for an Angular component.
    * If provided, do not supply an inline template using `template`.
    *
