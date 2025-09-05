@@ -27,7 +27,7 @@ describe('markdown to html', () => {
     expect(cardEl.tagName).not.toBe('A');
   });
 
-  it('creates cards withs links', () => {
+  it('creates cards with links', () => {
     const cardEl = markdownDocument.querySelectorAll('.docs-card')[1];
 
     expect(cardEl.querySelector('h3')?.textContent?.trim()).toBe('Link Card');
@@ -47,5 +47,13 @@ describe('markdown to html', () => {
 
     expect(cardEl.querySelector('h3')?.textContent?.trim()).toBe('Image Card');
     expect(cardEl.querySelector('svg')).toBeTruthy();
+  });
+
+  it('does not create empty h3 tags when title is empty', () => {
+    const cardEl = markdownDocument.querySelectorAll('.docs-card')[3];
+
+    expect(cardEl.querySelector('h3')).toBeNull();
+    expect(cardEl.tagName).toBe('A');
+    expect(cardEl.getAttribute('href')).toBe('/playground');
   });
 });
