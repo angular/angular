@@ -13,11 +13,10 @@
  */
 export * from './src/api/async';
 export * from './src/api/control';
+export * from './src/api/control_directive';
 export * from './src/api/logic';
 export * from './src/api/property';
 export * from './src/api/structure';
 export * from './src/api/types';
-export * from './src/api/validators';
-export * from './src/controls/control';
-export * from './src/controls/interop_ng_control';
 export * from './src/api/validation_errors';
+export * from './src/api/validators';

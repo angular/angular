@@ -7,8 +7,8 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
+import type {Control} from '../api/control_directive';
 import type {DisabledReason} from '../api/types';
-import type {Control} from '../controls/control';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
 
