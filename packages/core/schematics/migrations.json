@@ -21,6 +21,11 @@
       "version": "21.0.0",
       "description": "Moves imports of `ApplicationConfig` from `@angular/platform-browser` to `@angular/core`",
       "factory": "./bundles/application-config-core.cjs#migrate"
+    },
+    "bootstrap-options-migration": {
+      "version": "21.0.0",
+      "description": "Migrates deprecated bootstrap options to providers.",
+      "factory": "./bundles/bootstrap-options-migration.cjs#migrate"
     }
   }
 }

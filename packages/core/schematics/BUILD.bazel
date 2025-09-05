@@ -114,6 +114,10 @@ bundle_entrypoints = [
         "application-config-core",
         "packages/core/schematics/migrations/application-config-core/index.js",
     ],
+    [
+        "bootstrap-options-migration",
+        "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -126,6 +130,7 @@ rollup.rollup(
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
         "//packages/core/schematics/migrations/application-config-core",
+        "//packages/core/schematics/migrations/bootstrap-options-migration",
         "//packages/core/schematics/migrations/control-flow-migration",
         "//packages/core/schematics/migrations/ngclass-to-class-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
