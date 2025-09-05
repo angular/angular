@@ -254,9 +254,26 @@ function migrateRoute(
     return routeMigrationResults;
   }
 
-  const componentImport = route.routeFileImports.find((importDecl) =>
-    importDecl.importClause?.getText().includes(componentClassName),
-  )!;
+  // Resolve the import that provides this component by exact specifier match
+  // Handles default imports, named imports, and aliases (e.g., `import { Foo as Bar }`).
+  const componentImport = route.routeFileImports.find((importDecl) => {
+    const clause = importDecl.importClause;
+    if (!clause) return false;
+    // Default import: import FooComponent from '...'
+    if (clause.name && ts.isIdentifier(clause.name) && clause.name.text === componentClassName) {
+      return true;
+    }
+    // Named imports: import { FooComponent } from '...'
+    const named = clause.namedBindings;
+    if (named && ts.isNamedImports(named)) {
+      return named.elements.some((el: ts.ImportSpecifier) => {
+        // Support alias: import { Foo as Bar }
+        const importedName = el.propertyName ? el.propertyName.text : el.name.text;
+        return importedName === componentClassName;
+      });
+    }
+    return false;
+  })!;
 
   // remove single and double quotes from the import path
   let componentImportPath = ts.isStringLiteral(componentImport?.moduleSpecifier)
