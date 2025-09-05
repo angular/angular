@@ -32,6 +32,8 @@ import {
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function minLength<
   TValue extends ValueWithLengthOrSize,

@@ -26,6 +26,8 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  *  - `when`: A function that receives the `FieldContext` and returns true if the field is required
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,

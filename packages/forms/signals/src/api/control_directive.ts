@@ -28,17 +28,7 @@ import {
   untracked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {FormCheckboxControl, FormUiControl, FormValueControl} from '../api/control';
-import {
-  AggregateProperty,
-  MAX,
-  MAX_LENGTH,
-  MIN,
-  MIN_LENGTH,
-  PATTERN,
-  REQUIRED,
-} from '../api/property';
-import type {Field} from '../api/types';
+import {InteropNgControl} from '../controls/interop_ng_control';
 import type {FieldNode} from '../field/node';
 import {
   privateGetComponentInstance,
@@ -47,7 +37,9 @@ import {
   privateRunEffect,
   privateSetComponentInput as privateSetInputSignal,
 } from '../util/private';
-import {InteropNgControl} from './interop_ng_control';
+import {FormCheckboxControl, FormUiControl, FormValueControl} from './control';
+import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} from './property';
+import type {Field} from './types';
 
 /**
  * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
@@ -63,6 +55,8 @@ import {InteropNgControl} from './interop_ng_control';
  * 4. Provides a fake `NgControl` that implements a subset of the features available on the reactive
  *    forms `NgControl`. This is provided to improve interoperability with controls designed to work
  *    with reactive forms. It should not be used by controls written for signal forms.
+ *
+ * @experimental 21.0.0
  */
 @Directive({
   selector: '[control]',

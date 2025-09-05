@@ -7,13 +7,14 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
+import type {Control} from '../api/control_directive';
 import {AggregateProperty, Property} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
-import type {Control} from '../controls/control';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
+import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
 import {FieldPropertyState} from './property';
 import {FIELD_PROXY_HANDLER} from './proxy';
@@ -27,7 +28,6 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
-import type {FieldAdapter} from './field_adapter';
 /**
  * Internal node in the form tree for a given field.
  *

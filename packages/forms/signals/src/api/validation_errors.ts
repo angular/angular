@@ -20,29 +20,39 @@ interface ValidationErrorOptions {
 /**
  * A type that requires the given type `T` to have a `field` property.
  * @template T The type to add a `field` to.
+ *
+ * @experimental 21.0.0
  */
 export type WithField<T> = T & {field: Field<unknown>};
 
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
  * @template T The type to optionally add a `field` to.
+ *
+ * @experimental 21.0.0
  */
 export type WithOptionalField<T> = Omit<T, 'field'> & {field?: Field<unknown>};
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
  * @template T The type to remove the `field` from.
+ *
+ * @experimental 21.0.0
  */
 export type WithoutField<T> = T & {field: never};
 
 /**
  * Create a required error associated with the target field
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function requiredError(options: WithField<ValidationErrorOptions>): RequiredValidationError;
 /**
  * Create a required error
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function requiredError(
   options?: ValidationErrorOptions,
@@ -57,6 +67,8 @@ export function requiredError(
  * Create a min value error associated with the target field
  * @param min The min value constraint
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function minError(
   min: number,
@@ -66,6 +78,8 @@ export function minError(
  * Create a min value error
  * @param min The min value constraint
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function minError(
   min: number,
@@ -82,6 +96,8 @@ export function minError(
  * Create a max value error associated with the target field
  * @param max The max value constraint
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function maxError(
   max: number,
@@ -91,6 +107,8 @@ export function maxError(
  * Create a max value error
  * @param max The max value constraint
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function maxError(
   max: number,
@@ -107,6 +125,8 @@ export function maxError(
  * Create a minLength error associated with the target field
  * @param minLength The minLength constraint
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function minLengthError(
   minLength: number,
@@ -116,6 +136,8 @@ export function minLengthError(
  * Create a minLength error
  * @param minLength The minLength constraint
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function minLengthError(
   minLength: number,
@@ -132,6 +154,8 @@ export function minLengthError(
  * Create a maxLength error associated with the target field
  * @param maxLength The maxLength constraint
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function maxLengthError(
   maxLength: number,
@@ -141,6 +165,8 @@ export function maxLengthError(
  * Create a maxLength error
  * @param maxLength The maxLength constraint
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function maxLengthError(
   maxLength: number,
@@ -157,6 +183,8 @@ export function maxLengthError(
  * Create a pattern matching error associated with the target field
  * @param pattern The violated pattern
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function patternError(
   pattern: RegExp,
@@ -166,6 +194,8 @@ export function patternError(
  * Create a pattern matching error
  * @param pattern The violated pattern
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function patternError(
   pattern: RegExp,
@@ -181,11 +211,15 @@ export function patternError(
 /**
  * Create an email format error associated with the target field
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function emailError(options: WithField<ValidationErrorOptions>): EmailValidationError;
 /**
  * Create an email format error
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function emailError(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
 export function emailError(
@@ -198,6 +232,8 @@ export function emailError(
  * Create a standard schema issue error associated with the target field
  * @param issue The standard schema issue
  * @param options The validation error options
+ *
+ * @experimental 21.0.0
  */
 export function standardSchemaError(
   issue: StandardSchemaV1.Issue,
@@ -207,6 +243,8 @@ export function standardSchemaError(
  * Create a standard schema issue error
  * @param issue The standard schema issue
  * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
  */
 export function standardSchemaError(
   issue: StandardSchemaV1.Issue,
@@ -222,6 +260,8 @@ export function standardSchemaError(
 /**
  * Create a custom error associated with the target field
  * @param obj The object to create an error from
+ *
+ * @experimental 21.0.0
  */
 export function customError<E extends Partial<ValidationError>>(
   obj: WithField<E>,
@@ -229,6 +269,8 @@ export function customError<E extends Partial<ValidationError>>(
 /**
  * Create a custom error
  * @param obj The object to create an error from
+ *
+ * @experimental 21.0.0
  */
 export function customError<E extends Partial<ValidationError>>(
   obj?: E,
@@ -243,6 +285,8 @@ export function customError<E extends Partial<ValidationError>>(
  * Common interface for all validation errors.
  *
  * Use the creation functions to create an instance (e.g. `requiredError`, `minError`, etc.).
+ *
+ * @experimental 21.0.0
  */
 export interface ValidationError {
   /** Identifies the kind of error. */
@@ -255,6 +299,8 @@ export interface ValidationError {
 
 /**
  * A custom error that may contain additional properties
+ *
+ * @experimental 21.0.0
  */
 export class CustomValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
@@ -284,6 +330,8 @@ export class CustomValidationError implements ValidationError {
 /**
  * Internal version of `NgValidationError`, we create this separately so we can change its type on
  * the exported version to a type union of the possible sub-classes.
+ *
+ * @experimental 21.0.0
  */
 abstract class _NgValidationError implements ValidationError {
   /** Brand the class to avoid Typescript structural matching */
@@ -307,6 +355,8 @@ abstract class _NgValidationError implements ValidationError {
 
 /**
  * An error used to indicate that a required field is empty.
+ *
+ * @experimental 21.0.0
  */
 export class RequiredValidationError extends _NgValidationError {
   override readonly kind = 'required';
@@ -314,6 +364,8 @@ export class RequiredValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value is lower than the minimum allowed.
+ *
+ * @experimental 21.0.0
  */
 export class MinValidationError extends _NgValidationError {
   override readonly kind = 'min';
@@ -328,6 +380,8 @@ export class MinValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value is higher than the maximum allowed.
+ *
+ * @experimental 21.0.0
  */
 export class MaxValidationError extends _NgValidationError {
   override readonly kind = 'max';
@@ -342,6 +396,8 @@ export class MaxValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value is shorter than the minimum allowed length.
+ *
+ * @experimental 21.0.0
  */
 export class MinLengthValidationError extends _NgValidationError {
   override readonly kind = 'minLength';
@@ -356,6 +412,8 @@ export class MinLengthValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value is longer than the maximum allowed length.
+ *
+ * @experimental 21.0.0
  */
 export class MaxLengthValidationError extends _NgValidationError {
   override readonly kind = 'maxLength';
@@ -370,6 +428,8 @@ export class MaxLengthValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value does not match the required pattern.
+ *
+ * @experimental 21.0.0
  */
 export class PatternValidationError extends _NgValidationError {
   override readonly kind = 'pattern';
@@ -384,6 +444,8 @@ export class PatternValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate that a value is not a valid email.
+ *
+ * @experimental 21.0.0
  */
 export class EmailValidationError extends _NgValidationError {
   override readonly kind = 'email';
@@ -391,6 +453,8 @@ export class EmailValidationError extends _NgValidationError {
 
 /**
  * An error used to indicate an issue validating against a standard schema.
+ *
+ * @experimental 21.0.0
  */
 export class StandardSchemaValidationError extends _NgValidationError {
   override readonly kind = 'standardSchema';
@@ -424,6 +488,8 @@ export class StandardSchemaValidationError extends _NgValidationError {
  *   }
  * }
  * ```
+ *
+ * @experimental 21.0.0
  */
 export const NgValidationError: abstract new () => NgValidationError = _NgValidationError as any;
 export type NgValidationError =

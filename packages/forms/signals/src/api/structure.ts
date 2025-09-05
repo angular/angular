@@ -28,7 +28,11 @@ import type {
 } from './types';
 import {ValidationError, WithOptionalField} from './validation_errors';
 
-/** Options that may be specified when creating a form. */
+/**
+ * Options that may be specified when creating a form.
+ *
+ * @experimental 21.0.0
+ */
 export interface FormOptions {
   /**
    * The injector to use for dependency injection. If this is not provided, the injector for the
@@ -89,6 +93,8 @@ function normalizeFormArgs<TValue>(
  * the model.
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
+ *
+ * @experimental 21.0.0
  */
 export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
 
@@ -133,6 +139,8 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
  *   2. The form options
  * @return A `Field` representing a form around the data model
  * @template TValue The type of the data model.
+ *
+ * @experimental 21.0.0
  */
 export function form<TValue>(
   model: WritableSignal<TValue>,
@@ -178,6 +186,8 @@ export function form<TValue>(
  * @param options The form options
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
+ *
+ * @experimental 21.0.0
  */
 export function form<TValue>(
   model: WritableSignal<TValue>,
@@ -231,6 +241,8 @@ export function form<TValue>(...args: any[]): Field<TValue> {
  * @param schema A schema for an element of the array, or function that binds logic to an
  * element of the array.
  * @template TValue The data type of the item field to apply the schema to.
+ *
+ * @experimental 21.0.0
  */
 export function applyEach<TValue>(
   path: FieldPath<TValue[]>,
@@ -259,6 +271,8 @@ export function applyEach<TValue>(
  * @param path The target path to apply the schema to.
  * @param schema The schema to apply to the property
  * @template TValue The data type of the field to apply the schema to.
+ *
+ * @experimental 21.0.0
  */
 export function apply<TValue>(
   path: FieldPath<TValue>,
@@ -277,6 +291,8 @@ export function apply<TValue>(
  * @param logic A `LogicFn<T, boolean>` that returns `true` when the schema should be applied.
  * @param schema The schema to apply to the field when the `logic` function returns `true`.
  * @template TValue The data type of the field to apply the schema to.
+ *
+ * @experimental 21.0.0
  */
 export function applyWhen<TValue>(
   path: FieldPath<TValue>,
@@ -298,6 +314,8 @@ export function applyWhen<TValue>(
  * @param schema The schema to apply to the field when `predicate` returns `true`.
  * @template TValue The data type of the field to apply the schema to.
  * @template TNarrowed The data type of the schema (a narrowed type of TValue).
+ *
+ * @experimental 21.0.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
   path: FieldPath<TValue>,
@@ -313,6 +331,8 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  *   should be applied.
  * @param schema The schema to apply to the field when `predicate` returns `true`.
  * @template TValue The data type of the field to apply the schema to.
+ *
+ * @experimental 21.0.0
  */
 export function applyWhenValue<TValue>(
   path: FieldPath<TValue>,
@@ -358,6 +378,8 @@ export function applyWhenValue(
  * @param action An asynchronous action used to submit the field. The action may return server
  * errors.
  * @template TValue The data type of the field being submitted.
+ *
+ * @experimental 21.0.0
  */
 export async function submit<TValue>(
   form: Field<TValue>,
@@ -414,6 +436,8 @@ function setServerErrors(
  * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
  * @returns A schema object that implements the given logic.
  * @template TValue The value type of a `Field` that this schema binds to.
+ *
+ * @experimental 21.0.0
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
   return SchemaImpl.create(fn) as unknown as Schema<TValue>;
