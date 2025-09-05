@@ -89,7 +89,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: [`./split.component.scss`],
   template: `<ng-content></ng-content>
-    @for (_ of displayedAreas; track $index) { 
+    @for (_ of displayedAreas; track $index) {
       @if ($last === false) {
         <div
           #gutterEls
@@ -103,7 +103,7 @@ import {
         >
           <div class="as-split-gutter-icon"></div>
         </div>
-      } 
+      }
     }`,
   host: {
     '[class.as-disabled]': 'disabled()',
