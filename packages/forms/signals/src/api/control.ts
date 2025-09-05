@@ -10,7 +10,11 @@ import {InputSignal, ModelSignal, OutputRef} from '@angular/core';
 import type {DisabledReason} from './types';
 import {ValidationError, type WithOptionalField} from './validation_errors';
 
-/** The base set of properties shared by all form control contracts. */
+/**
+ * The base set of properties shared by all form control contracts.
+ *
+ * @experimental 21.0.0
+ */
 export interface FormUiControl {
   // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
   // They don't make sense when using a ccontrol separately from the forms system and setting the
@@ -107,6 +111,8 @@ export interface FormUiControl {
  * `Control` directive.
  *
  * @template TValue The type of `Field` that the implementing component can edit.
+ *
+ * @experimental 21.0.0
  */
 export interface FormValueControl<TValue> extends FormUiControl {
   /**
@@ -133,6 +139,8 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * Many of the properties declared on this contract are optional. They do not need to be
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Control` directive.
+ *
+ * @experimental 21.0.0
  */
 export interface FormCheckboxControl extends FormUiControl {
   /**

@@ -28,6 +28,8 @@ import type {
  *   and `false` when it is not disabled.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -58,6 +60,8 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @param logic A reactive function that returns `true` when the field is readonly.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -85,6 +89,8 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @param logic A reactive function that returns `true` when the field is hidden.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -103,6 +109,8 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @param logic A `Validator` that returns the current validation errors.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -124,6 +132,8 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
  *   Errors returned by the validator may specify a target field to indicate an error on a child field.
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -146,6 +156,8 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPropItem The type of value the property aggregates over.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -165,6 +177,8 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
  * @param factory A factory function that creates the value for the property.
  *   This function is **not** reactive. It is run once when the field is created.
  * @returns The newly created property
+ *
+ * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
@@ -179,6 +193,8 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
  * @param factory A factory function that creates the value for the property.
  *   This function is **not** reactive. It is run once when the field is created.
  * @returns The given property
+ *
+ * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,

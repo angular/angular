@@ -19,6 +19,8 @@ declare const ɵɵTYPE: unique symbol;
 /**
  * Creates a type based on the given type T, but with all readonly properties made writable.
  * @template T The type to create a mutable version of.
+ *
+ * @experimental 21.0.0
  */
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -27,11 +29,15 @@ export type Mutable<T> = {
 /**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
  * @template T The type of the value(s).
+ *
+ * @experimental 21.0.0
  */
 export type OneOrMany<T> = T | readonly T[];
 
 /**
  * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
+ *
+ * @experimental 21.0.0
  */
 export declare namespace PathKind {
   /**
@@ -63,11 +69,15 @@ export declare namespace PathKind {
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
+ *
+ * @experimental 21.0.0
  */
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
 /**
  * A reason for a field's disablement.
+ *
+ * @experimental 21.0.0
  */
 export interface DisabledReason {
   /** The field that is disabled. */
@@ -76,7 +86,11 @@ export interface DisabledReason {
   readonly message?: string;
 }
 
-/** The absence of an error which indicates a successful validation result. */
+/**
+ * The absence of an error which indicates a successful validation result.
+ *
+ * @experimental 21.0.0
+ */
 export type ValidationSuccess = null | undefined | void;
 
 /**
@@ -89,6 +103,8 @@ export type ValidationSuccess = null | undefined | void;
  *    being validated.
  *
  * @template E the type of error (defaults to {@link ValidationError}).
+ *
+ * @experimental 21.0.0
  */
 export type FieldValidationResult<E extends ValidationError = ValidationError> =
   | ValidationSuccess
@@ -104,6 +120,8 @@ export type FieldValidationResult<E extends ValidationError = ValidationError> =
  * 4. A list of {@link ValidationError} with or without fields to indicate multiple errors.
  *
  * @template E the type of error (defaults to {@link ValidationError}).
+ *
+ * @experimental 21.0.0
  */
 export type TreeValidationResult<E extends ValidationError = ValidationError> =
   | ValidationSuccess
@@ -118,6 +136,8 @@ export type TreeValidationResult<E extends ValidationError = ValidationError> =
  * 3. A list of {@link ValidationError} with fields to indicate multiple errors.
  *
  * @template E the type of error (defaults to {@link ValidationError}).
+ *
+ * @experimental 21.0.0
  */
 export type ValidationResult<E extends ValidationError = ValidationError> =
   | ValidationSuccess
@@ -131,6 +151,8 @@ export type ValidationResult<E extends ValidationError = ValidationError> =
  * 5. 'pending' if the validation is not yet resolved.
  *
  * @template E the type of error (defaults to {@link ValidationError}).
+ *
+ * @experimental 21.0.0
  */
 export type AsyncValidationResult<E extends ValidationError = ValidationError> =
   | ValidationResult<E>
@@ -145,6 +167,8 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
+ *
+ * @experimental 21.0.0
  */
 export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<
   TValue,
@@ -160,6 +184,8 @@ export type Field<TValue, TKey extends string | number = string | number> = (() 
  * The sub-fields that a user can navigate to from a `Field<TValue>`.
  *
  * @template TValue The type of the data which the parent field is wrapped around.
+ *
+ * @experimental 21.0.0
  */
 export type Subfields<TValue> = {
   readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<
@@ -172,6 +198,8 @@ export type Subfields<TValue> = {
  * An iterable object with the same shape as a readonly array.
  *
  * @template T The array item type.
+ *
+ * @experimental 21.0.0
  */
 export type ReadonlyArrayLike<T> = Pick<
   ReadonlyArray<T>,
@@ -187,6 +215,8 @@ export type ReadonlyArrayLike<T> = Pick<
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
+ *
+ * @experimental 21.0.0
  */
 export type MaybeField<TValue, TKey extends string | number = string | number> =
   | (TValue & undefined)
@@ -195,6 +225,8 @@ export type MaybeField<TValue, TKey extends string | number = string | number> =
 /**
  * Contains all of the state (e.g. value, statuses, etc.) associated with a `Field`, exposed as
  * signals.
+ *
+ * @experimental 21.0.0
  */
 export interface FieldState<TValue, TKey extends string | number = string | number> {
   /**
@@ -334,6 +366,8 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  *
  * @template TValue The type of the data which the form is wrapped around.
  * @template TPathKind The kind of path (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
   [ɵɵTYPE]: [TValue, TPathKind];
@@ -352,6 +386,8 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TPathKind The kind of path (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
   | (TValue & undefined)
@@ -361,6 +397,8 @@ export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
  * Defines logic for a form.
  *
  * @template TValue The type of data stored in the form that this schema is attached to.
+ *
+ * @experimental 21.0.0
  */
 export type Schema<in TValue> = {
   [ɵɵTYPE]: SchemaFn<TValue, PathKind.Root>;
@@ -371,6 +409,8 @@ export type Schema<in TValue> = {
  *
  * @template TValue The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
+ *
+ * @experimental 21.0.0
  */
 export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
   p: FieldPath<TValue, TPathKind>,
@@ -381,6 +421,8 @@ export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
  *
  * @template TValue The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
+ *
+ * @experimental 21.0.0
  */
 export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> =
   | Schema<TValue>
@@ -393,6 +435,8 @@ export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TValue The data type for the field the logic is bound to.
  * @template TReturn The type of the result returned by the logic function.
  * @template TPathKind The kind of path the logic is applied to (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (
   ctx: FieldContext<TValue, TPathKind>,
@@ -404,6 +448,8 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  *
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
@@ -417,6 +463,8 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
  *
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
@@ -431,6 +479,8 @@ export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = 
  *
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
+ *
+ * @experimental 21.0.0
  */
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
@@ -441,6 +491,8 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
 /**
  * Provides access to the state of the current field as well as functions that can be used to look
  * up state of other fields based on a `FieldPath`.
+ *
+ * @experimental 21.0.0
  */
 export type FieldContext<
   TValue,
@@ -453,6 +505,8 @@ export type FieldContext<
 
 /**
  * The base field context that is available for all fields.
+ *
+ * @experimental 21.0.0
  */
 export interface RootFieldContext<TValue> {
   /** A signal containing the value of the current field. */
@@ -471,6 +525,8 @@ export interface RootFieldContext<TValue> {
 
 /**
  * Field context that is available for all fields that are a child of another field.
+ *
+ * @experimental 21.0.0
  */
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
   /** The key of the current field in its parent field. */
@@ -479,6 +535,8 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 
 /**
  * Field context that is available for all fields that are an item in an array field.
+ *
+ * @experimental 21.0.0
  */
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   /** The index of the current field in its parent field. */
