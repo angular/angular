@@ -47,14 +47,20 @@ describe('Animation', () => {
     `;
 
     it('should delay element removal when an animation is specified', fakeAsync(() => {
+      const logSpy = jasmine.createSpy('logSpy');
       @Component({
         selector: 'test-cmp',
         styles: styles,
-        template: '<div>@if (show()) {<p animate.leave="fade">I should fade</p>}</div>',
+        template:
+          '<div>@if (show()) {<p animate.leave="fade" (animationend)="logMe($event)">I should fade</p>}</div>',
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
         show = signal(true);
+
+        logMe(event: AnimationEvent) {
+          logSpy();
+        }
       }
 
       TestBed.configureTestingModule({animationsEnabled: true});
@@ -76,6 +82,7 @@ describe('Animation', () => {
         new AnimationEvent('animationend', {animationName: 'fade-out'}),
       );
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+      expect(logSpy).toHaveBeenCalled();
     }));
 
     it('should remove right away when animations are disabled', fakeAsync(() => {
