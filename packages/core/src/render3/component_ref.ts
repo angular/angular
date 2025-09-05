@@ -69,6 +69,7 @@ import {unregisterLView} from './interfaces/lview_tracking';
 import {Renderer} from './interfaces/renderer';
 import {
   extractAttrsAndClassesFromSelector,
+  isSelectorInSelectorList,
   stringifyCSSSelectorList,
 } from './node_selector_matcher';
 import {profiler} from './profiler';
@@ -82,6 +83,8 @@ import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
+import {CssSelector, CssSelectorList} from './interfaces/projection';
+import {HostSelector} from './host_selector';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -134,6 +137,42 @@ function verifyNotAnOrphanComponent(componentDef: ComponentDef<unknown>) {
   }
 }
 
+function verifyIsAllowedSelector(componentDef: ComponentDef<unknown>, selector?: CssSelectorList) {
+  if (!Array.isArray(selector)) {
+    return;
+  }
+
+  if (selector.length === 0) {
+    throw new RuntimeError(
+      RuntimeErrorCode.RUNTIME_DEPS_INVALID_SELECTOR,
+      `Invalid selector for component ${debugStringifyTypeForError(
+        componentDef.type,
+      )}. The selector must not be empty.`,
+    );
+  }
+
+  if (selector.length > 1) {
+    throw new RuntimeError(
+      RuntimeErrorCode.RUNTIME_DEPS_INVALID_SELECTOR,
+      `Invalid selector for component ${debugStringifyTypeForError(
+        componentDef.type,
+      )}. The selector must contain only one element. Received: ${stringifyCSSSelectorList(selector)}.`,
+    );
+  }
+
+  const isAllowedSelector = isSelectorInSelectorList(selector[0], componentDef.selectors);
+
+  if (!isAllowedSelector) {
+    const stringifySelector = stringifyCSSSelectorList([selector[0]]);
+    throw new RuntimeError(
+      RuntimeErrorCode.RUNTIME_DEPS_INVALID_SELECTOR,
+      `Invalid selector for component ${debugStringifyTypeForError(
+        componentDef.type,
+      )}. The selector ${stringifySelector} is not allowed.`,
+    );
+  }
+}
+
 function createRootViewInjector(
   componentDef: ComponentDef<unknown>,
   environmentInjector: EnvironmentInjector | NgModuleRef<any> | undefined,
@@ -183,14 +222,25 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
   };
 }
 
-function createHostElement(componentDef: ComponentDef<unknown>, renderer: Renderer): RElement {
-  // Determine a tag name used for creating host elements when this component is created
-  // dynamically. Default to 'div' if this component did not specify any tag name in its
-  // selector.
-  const tagName = inferTagNameFromDefinition(componentDef);
+function createHostElement(
+  componentDef: ComponentDef<unknown>,
+  renderer: Renderer,
+  selector?: CssSelector,
+): RElement {
+  // Determine a tag name from the selector for creating host elements when this component is created
+  // dynamically. If no valid tag name is found in the selector, fall back to the component's
+  // definition selectors or default to 'div'.
+  const tagName = inferTagNameFromSelector(selector) ?? inferTagNameFromDefinition(componentDef);
+
   const namespace =
     tagName === 'svg' ? SVG_NAMESPACE : tagName === 'math' ? MATH_ML_NAMESPACE : null;
+
   return createElementNode(renderer, tagName, namespace);
+}
+
+function inferTagNameFromSelector(selector: CssSelector = []) {
+  const tagName = (selector[0] as string)?.trim();
+  return tagName ? tagName.toLowerCase() : null;
 }
 
 /**
@@ -258,15 +308,30 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     environmentInjector?: NgModuleRef<any> | EnvironmentInjector | undefined,
     directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
     componentBindings?: Binding[],
+    selector?: HostSelector,
   ): AbstractComponentRef<T> {
     profiler(ProfilerEvent.DynamicComponentStart);
 
     const prevConsumer = setActiveConsumer(null);
     try {
       const cmpDef = this.componentDef;
+
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
 
-      const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
+      let cssSelectorList: CssSelectorList | undefined;
+
+      if (selector?.parse) {
+        cssSelectorList = selector.parse();
+        ngDevMode && verifyIsAllowedSelector(cmpDef, cssSelectorList);
+      }
+
+      const rootTView = createRootTView(
+        rootSelectorOrNode,
+        cmpDef,
+        componentBindings,
+        directives,
+        cssSelectorList?.[0],
+      );
       const rootViewInjector = createRootViewInjector(
         cmpDef,
         environmentInjector || this.ngModule,
@@ -282,7 +347,7 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
             cmpDef.encapsulation,
             rootViewInjector,
           )
-        : createHostElement(cmpDef, hostRenderer);
+        : createHostElement(cmpDef, hostRenderer, cssSelectorList?.[0]);
       const hasInputBindings =
         componentBindings?.some(isInputBinding) ||
         directives?.some((d) => typeof d !== 'function' && d.bindings.some(isInputBinding));
@@ -373,11 +438,13 @@ function createRootTView(
   componentDef: ComponentDef<unknown>,
   componentBindings: Binding[] | undefined,
   directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+  selector?: CssSelector,
 ): TView {
   const tAttributes = rootSelectorOrNode
     ? ['ng-version', '0.0.0-PLACEHOLDER']
     : // Extract attributes and classes from the first selector only to match VE behavior.
-      extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
+      extractAttrsAndClassesFromSelector(selector ?? componentDef.selectors[0]);
+
   let creationBindings: Binding[] | null = null;
   let updateBindings: Binding[] | null = null;
   let varsToAllocate = 0;
