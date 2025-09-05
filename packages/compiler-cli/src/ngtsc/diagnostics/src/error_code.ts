@@ -612,6 +612,22 @@ export enum ErrorCode {
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 8117,
 
   /**
+   * A required initializer is being invoked in a forbidden context such as a property initializer
+   * or a constructor.
+   *
+   * For example:
+   * ```ts
+   * class MyComponent {
+   *  myInput = input.required();
+   *  somValue = this.myInput(); // Error
+   *
+   *  constructor() {
+   *    this.myInput(); // Error
+   *  }
+   */
+  FORBIDDEN_REQUIRED_INITIALIZER_INVOCATION = 8118,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */

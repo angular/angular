@@ -359,29 +359,6 @@ describe('model inputs', () => {
     expect(emittedValues).toEqual([2]);
   });
 
-  it('should throw if a required model input is accessed too early', () => {
-    @Directive({selector: '[dir]'})
-    class Dir {
-      value = model.required<number>();
-
-      constructor() {
-        this.value();
-      }
-    }
-
-    @Component({
-      template: '<div [(value)]="value" dir></div>',
-      imports: [Dir],
-    })
-    class App {
-      value = 1;
-    }
-
-    expect(() => TestBed.createComponent(App)).toThrowError(
-      /Model is required but no value is available yet/,
-    );
-  });
-
   it('should throw if a required model input is updated too early', () => {
     @Directive({selector: '[dir]'})
     class Dir {
