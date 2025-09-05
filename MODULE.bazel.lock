@@ -690,19 +690,11 @@
     "@@rules_angular~//setup:extensions.bzl%rules_angular": {
       "general": {
         "bzlTransitiveDigest": "fkaH7HMicL3g7/NDaFzlq39kcLopMyQ3KdbDn+5CRzA=",
-        "usagesDigest": "1oeycgV+w0mSegt2ycKii5zoBkwEZzF4+hcp4rOX7sg=",
+        "usagesDigest": "c/HgGZ21I+QxW0XkaMGJK0N3nV5rdEiNEcPkToa4i9M=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
         "generatedRepoSpecs": {
-          "components_rules_angular_configurable_deps": {
-            "bzlFile": "@@rules_angular~//setup:repositories.bzl",
-            "ruleClassName": "configurable_deps_repo",
-            "attributes": {
-              "angular_compiler_cli": "@@rules_angular~//:node_modules/@angular/compiler-cli",
-              "typescript": "@@rules_angular~//:node_modules/typescript"
-            }
-          },
           "rules_angular_configurable_deps": {
             "bzlFile": "@@rules_angular~//setup:repositories.bzl",
             "ruleClassName": "configurable_deps_repo",
