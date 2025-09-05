@@ -34,6 +34,8 @@ import {
   Injector,
   ElementRef,
   ViewChild,
+  IdleService,
+  provideIdleServiceWith,
 } from '../../src/core';
 import {getComponentDef} from '../../src/render3/def_getters';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
@@ -1820,6 +1822,105 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(0);
 
       triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered.
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary block content.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML).toContain(
+        '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>',
+      );
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should use a custom `IdleService` for `prefetch on idle` condition', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when deferCond; prefetch on idle) {
+            <nested-cmp [block]="'primary'" />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      @Injectable({providedIn: 'root'})
+      class CustomIdleService implements IdleService {
+        private callbacks: Array<(() => void) | undefined> = [];
+
+        requestOnIdle(callback: () => void): number {
+          return this.callbacks.push(callback) - 1;
+        }
+
+        cancelOnIdle(id: number): void {
+          this.callbacks[id] = undefined;
+        }
+
+        trigger(): void {
+          for (const callback of this.callbacks) {
+            callback?.();
+          }
+          this.callbacks.length = 0;
+        }
+      }
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          provideIdleServiceWith(CustomIdleService),
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      TestBed.inject(CustomIdleService).trigger();
+
       await allPendingDynamicImports();
       fixture.detectChanges();
 
