@@ -146,49 +146,70 @@ function getDateTimeTranslations(localeData: CldrLocaleData) {
   const erasNames = localeData.main(`dates/calendars/gregorian/eras`);
   const dayPeriods = getDayPeriodsAmPm(localeData);
 
-  const dayPeriodsFormat = removeDuplicates([
-    Object.values(dayPeriods.format.narrow),
-    Object.values(dayPeriods.format.abbreviated),
-    Object.values(dayPeriods.format.wide),
-  ]);
+  const dayPeriodsFormat = removeDuplicates(
+    [
+      Object.values(dayPeriods.format.narrow),
+      Object.values(dayPeriods.format.abbreviated),
+      Object.values(dayPeriods.format.wide),
+    ],
+    true,
+  );
 
-  const dayPeriodsStandalone = removeDuplicates([
-    Object.values(dayPeriods['stand-alone'].narrow),
-    Object.values(dayPeriods['stand-alone'].abbreviated),
-    Object.values(dayPeriods['stand-alone'].wide),
-  ]);
+  const dayPeriodsStandalone = removeDuplicates(
+    [
+      Object.values(dayPeriods['stand-alone'].narrow),
+      Object.values(dayPeriods['stand-alone'].abbreviated),
+      Object.values(dayPeriods['stand-alone'].wide),
+    ],
+    true,
+  );
 
-  const daysFormat = removeDuplicates([
-    Object.values(dayNames.format.narrow),
-    Object.values(dayNames.format.abbreviated),
-    Object.values(dayNames.format.wide),
-    Object.values(dayNames.format.short),
-  ]);
+  const daysFormat = removeDuplicates(
+    [
+      Object.values(dayNames.format.narrow),
+      Object.values(dayNames.format.abbreviated),
+      Object.values(dayNames.format.wide),
+      Object.values(dayNames.format.short),
+    ],
+    true,
+  );
 
-  const daysStandalone = removeDuplicates([
-    Object.values(dayNames['stand-alone'].narrow),
-    Object.values(dayNames['stand-alone'].abbreviated),
-    Object.values(dayNames['stand-alone'].wide),
-    Object.values(dayNames['stand-alone'].short),
-  ]);
+  const daysStandalone = removeDuplicates(
+    [
+      Object.values(dayNames['stand-alone'].narrow),
+      Object.values(dayNames['stand-alone'].abbreviated),
+      Object.values(dayNames['stand-alone'].wide),
+      Object.values(dayNames['stand-alone'].short),
+    ],
+    true,
+  );
 
-  const monthsFormat = removeDuplicates([
-    Object.values(monthNames.format.narrow),
-    Object.values(monthNames.format.abbreviated),
-    Object.values(monthNames.format.wide),
-  ]);
+  const monthsFormat = removeDuplicates(
+    [
+      Object.values(monthNames.format.narrow),
+      Object.values(monthNames.format.abbreviated),
+      Object.values(monthNames.format.wide),
+    ],
+    true,
+  );
 
-  const monthsStandalone = removeDuplicates([
-    Object.values(monthNames['stand-alone'].narrow),
-    Object.values(monthNames['stand-alone'].abbreviated),
-    Object.values(monthNames['stand-alone'].wide),
-  ]);
+  const monthsStandalone = removeDuplicates(
+    [
+      Object.values(monthNames['stand-alone'].narrow),
+      Object.values(monthNames['stand-alone'].abbreviated),
+      Object.values(monthNames['stand-alone'].wide),
+    ],
+    true,
+  );
 
-  const eras = removeDuplicates([
-    [erasNames.eraNarrow['0'], erasNames.eraNarrow['1']],
-    [erasNames.eraAbbr['0'], erasNames.eraAbbr['1']],
-    [erasNames.eraNames['0'], erasNames.eraNames['1']],
-  ]);
+  const eras = removeDuplicates(
+    [
+      [erasNames.eraNarrow['0'], erasNames.eraNarrow['1']],
+      [erasNames.eraAbbr['0'], erasNames.eraAbbr['1']],
+      [erasNames.eraNames['0'], erasNames.eraNames['1']],
+    ],
+    true,
+  );
 
   const dateTimeTranslations = [
     ...removeDuplicates([dayPeriodsFormat, dayPeriodsStandalone]),
