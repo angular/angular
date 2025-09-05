@@ -92,8 +92,6 @@ export class DevToolsTabsComponent {
   readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
 
-  readonly snapToRoot = signal(false);
-
   readonly tabs = computed<Tab[]>(() => {
     const supportedApis = this.supportedApis();
     const tabs: Tab[] = ['Components'];
@@ -104,7 +102,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.dependencyInjection) {
       tabs.push('Injector Tree');
     }
-    if (this.routerGraphEnabled() && this.routes().length > 0) {
+    if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
     if (supportedApis.transferState && this.transferStateEnabled()) {
@@ -169,7 +167,6 @@ export class DevToolsTabsComponent {
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
       this.messageBus.emit('getRoutes');
-      this.snapToRoot.set(true);
     }
   }
 

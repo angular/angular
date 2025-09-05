@@ -73,7 +73,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
 
   constructor(
     private readonly containerElement: HTMLElement,
-    public readonly graphElement: HTMLElement,
+    private readonly graphElement: HTMLElement,
     config: Partial<TreeVisualizerConfig<T>> = {},
   ) {
     super();
@@ -97,26 +97,18 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
 
   override snapToRoot(scale = 1): void {
     if (this.root) {
-      this.snapToNode(this.root, scale);
+      this.snapToD3Node(this.root, scale);
     }
   }
 
-  override snapToNode(node: TreeD3Node<T>, scale = 1): void {
-    const svg = d3.select(this.containerElement);
-    const contHalfWidth = this.containerElement.clientWidth / 2;
-    const contHalfHeight = this.containerElement.clientHeight / 2;
-    const {x, y} = this.getNodeCoor(node);
-
-    const t = d3.zoomIdentity
-      .translate(contHalfWidth, contHalfHeight)
-      .scale(scale)
-      .translate(-x, -y);
-    svg.transition().duration(500).call(this.zoomController!.transform, t);
-
-    this.snappedNode = {node, scale};
+  override snapToNode(node: T, scale = 1): void {
+    const d3Node = this.findD3NodeByDataNode(node);
+    if (d3Node) {
+      this.snapToD3Node(d3Node, scale);
+    }
   }
 
-  override getNodeById(id: string): TreeD3Node<T> | null {
+  override getInternalNodeById(id: string): TreeD3Node<T> | null {
     const selection = d3
       .select<HTMLElement, TreeD3Node<T>>(this.containerElement)
       .select(`.node[data-id="${id}"]`);
@@ -137,11 +129,11 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     this.snappedNodeListenersDisposeFn?.();
   }
 
-  override render(graph: T): void {
+  override render(root: T): void {
     // cleanup old graph
     this.cleanup();
 
-    const data = d3.hierarchy(graph, (node: T) => node.children as Array<T>);
+    const data = d3.hierarchy(root, (node: T) => node.children as Array<T>);
     const tree = d3.tree<T>();
     const svg = d3.select(this.containerElement);
     const g = d3.select<HTMLElement, TreeD3Node<T>>(this.graphElement);
@@ -324,7 +316,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
         }
 
         const {node, scale} = this.snappedNode;
-        this.snapToNode(node, scale);
+        this.snapToD3Node(node, scale);
       }, RESIZE_OBSERVER_DEBOUNCE),
     );
 
@@ -341,5 +333,43 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     svg.on('mousedown wheel', () => {
       this.snappedNode = null;
     });
+  }
+
+  private snapToD3Node(node: TreeD3Node<T>, scale = 1): void {
+    const svg = d3.select(this.containerElement);
+    const contHalfWidth = this.containerElement.clientWidth / 2;
+    const contHalfHeight = this.containerElement.clientHeight / 2;
+    const {x, y} = this.getNodeCoor(node);
+
+    const t = d3.zoomIdentity
+      .translate(contHalfWidth, contHalfHeight)
+      .scale(scale)
+      .translate(-x, -y);
+    svg.transition().duration(500).call(this.zoomController!.transform, t);
+
+    this.snappedNode = {node, scale};
+  }
+
+  private findD3NodeByDataNode(node: T): TreeD3Node<T> | null {
+    if (!this.root) {
+      return null;
+    }
+
+    let curr: TreeD3Node<T> | undefined;
+    const stack: TreeD3Node<T>[] = [this.root];
+
+    while (stack.length) {
+      curr = stack.pop();
+
+      if (curr?.data === node) {
+        return curr;
+      } else if (curr?.children) {
+        for (const child of curr.children) {
+          stack.push(child);
+        }
+      }
+    }
+
+    return null;
   }
 }

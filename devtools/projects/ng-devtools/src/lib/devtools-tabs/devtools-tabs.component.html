@@ -76,12 +76,7 @@
 
       @let routerTreeVisible = activeTab() === 'Router Tree';
       @defer (when routerTreeVisible; prefetch on idle) {
-        <ng-router-tree
-          [hidden]="!routerTreeVisible"
-          [snapToRoot]="snapToRoot()"
-          [routes]="routes()"
-          [routerDebugApiSupport]="supportedApis().routes"
-        />
+        <ng-router-tree [hidden]="!routerTreeVisible" [routes]="routes()" />
       }
 
       @let injectorTreeVisible = activeTab() === 'Injector Tree';
