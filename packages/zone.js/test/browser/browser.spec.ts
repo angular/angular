@@ -8,14 +8,8 @@
 
 import {patchFilteredProperties} from '../../lib/browser/property-descriptor';
 import {patchEventTarget} from '../../lib/common/events';
-import {isIEOrEdge, zoneSymbol} from '../../lib/common/utils';
-import {
-  getEdgeVersion,
-  getIEVersion,
-  ifEnvSupports,
-  ifEnvSupportsWithDone,
-  isEdge,
-} from '../test-util';
+import {zoneSymbol} from '../../lib/common/utils';
+import {ifEnvSupports, ifEnvSupportsWithDone} from '../test-util';
 
 import Spy = jasmine.Spy;
 declare const global: any;
@@ -75,12 +69,6 @@ function supportCanvasTest() {
 }
 
 (supportCanvasTest as any).message = 'supportCanvasTest';
-
-function ieOrEdge() {
-  return isIEOrEdge();
-}
-
-(ieOrEdge as any).message = 'IE/Edge Test';
 
 class TestEventListener {
   logs: any[] = [];
@@ -329,63 +317,6 @@ describe('Zone', function () {
           'mozinterruptbegin',
           'mozinterruptend',
         ];
-        const ieElementEventNames = [
-          'activate',
-          'afterupdate',
-          'ariarequest',
-          'beforeactivate',
-          'beforedeactivate',
-          'beforeeditfocus',
-          'beforeupdate',
-          'cellchange',
-          'controlselect',
-          'dataavailable',
-          'datasetchanged',
-          'datasetcomplete',
-          'errorupdate',
-          'filterchange',
-          'layoutcomplete',
-          'losecapture',
-          'move',
-          'moveend',
-          'movestart',
-          'propertychange',
-          'resizeend',
-          'resizestart',
-          'rowenter',
-          'rowexit',
-          'rowsdelete',
-          'rowsinserted',
-          'command',
-          'compassneedscalibration',
-          'deactivate',
-          'help',
-          'mscontentzoom',
-          'msmanipulationstatechanged',
-          'msgesturechange',
-          'msgesturedoubletap',
-          'msgestureend',
-          'msgesturehold',
-          'msgesturestart',
-          'msgesturetap',
-          'msgotpointercapture',
-          'msinertiastart',
-          'mslostpointercapture',
-          'mspointercancel',
-          'mspointerdown',
-          'mspointerenter',
-          'mspointerhover',
-          'mspointerleave',
-          'mspointermove',
-          'mspointerout',
-          'mspointerover',
-          'mspointerup',
-          'pointerout',
-          'mssitemodejumplistitemremoved',
-          'msthumbnailclick',
-          'stop',
-          'storagecommit',
-        ];
         const webglEventNames = [
           'webglcontextrestored',
           'webglcontextlost',
@@ -436,7 +367,6 @@ describe('Zone', function () {
           documentEventNames,
           windowEventNames,
           htmlElementEventNames,
-          ieElementEventNames,
         );
 
         function checkIsOnPropertiesPatched(
@@ -988,10 +918,7 @@ describe('Zone', function () {
               error?: any,
             ) {
               expect(message).toContain('testError');
-              if (getEdgeVersion() !== 14) {
-                // Edge 14, error will be undefined.
-                expect(error).toBe(testError);
-              }
+              expect(error).toBe(testError);
               (window as any).onerror = oriOnError;
               setTimeout(done);
               return true;
@@ -3495,61 +3422,6 @@ describe('Zone', function () {
         expect(logs).toEqual(['listener2', 'listener4']);
       });
 
-      it(
-        'should bypass addEventListener of FunctionWrapper and __BROWSERTOOLS_CONSOLE_SAFEFUNC of IE/Edge',
-        ifEnvSupports(ieOrEdge, function () {
-          const hookSpy = jasmine.createSpy('hook');
-          const zone = rootZone.fork({
-            name: 'spy',
-            onScheduleTask: (
-              parentZoneDelegate: ZoneDelegate,
-              currentZone: Zone,
-              targetZone: Zone,
-              task: Task,
-            ): any => {
-              hookSpy();
-              return parentZoneDelegate.scheduleTask(targetZone, task);
-            },
-          });
-          let logs: string[] = [];
-
-          const listener1 = function () {
-            logs.push(Zone.current.name);
-          };
-
-          (listener1 as any).toString = function () {
-            return '[object FunctionWrapper]';
-          };
-
-          const listener2 = function () {
-            logs.push(Zone.current.name);
-          };
-
-          (listener2 as any).toString = function () {
-            return 'function __BROWSERTOOLS_CONSOLE_SAFEFUNC() { [native code] }';
-          };
-
-          zone.run(() => {
-            button.addEventListener('click', listener1);
-            button.addEventListener('click', listener2);
-          });
-
-          button.dispatchEvent(clickEvent);
-
-          expect(hookSpy).not.toHaveBeenCalled();
-          expect(logs).toEqual(['ProxyZone', 'ProxyZone']);
-          logs = [];
-
-          button.removeEventListener('click', listener1);
-          button.removeEventListener('click', listener2);
-
-          button.dispatchEvent(clickEvent);
-
-          expect(hookSpy).not.toHaveBeenCalled();
-          expect(logs).toEqual([]);
-        }),
-      );
-
       xit('should re-throw the error when the only listener throw error', function (done: DoneFn) {
         // override global.onerror to prevent jasmine report error
         let oriWindowOnError = window.onerror;
@@ -3999,7 +3871,6 @@ describe('Zone', function () {
         ifEnvSupportsWithDone(
           () => {
             return (
-              !isEdge() &&
               navigator &&
               navigator.mediaDevices &&
               typeof navigator.mediaDevices.getUserMedia === 'function'
@@ -4033,7 +3904,7 @@ describe('Zone', function () {
         'navigator.getUserMedia should in zone',
         ifEnvSupportsWithDone(
           () => {
-            return !isEdge() && navigator && typeof (navigator as any).getUserMedia === 'function';
+            return navigator && typeof (navigator as any).getUserMedia === 'function';
           },
           (done: Function) => {
             const zone = Zone.current.fork({name: 'media'});
@@ -4056,138 +3927,4 @@ describe('Zone', function () {
       );
     });
   });
-
-  if (getIEVersion() === 11) {
-    describe('pointer event in IE', () => {
-      const pointerEventsMap: {[key: string]: string} = {
-        'MSPointerCancel': 'pointercancel',
-        'MSPointerDown': 'pointerdown',
-        'MSPointerEnter': 'pointerenter',
-        'MSPointerHover': 'pointerhover',
-        'MSPointerLeave': 'pointerleave',
-        'MSPointerMove': 'pointermove',
-        'MSPointerOut': 'pointerout',
-        'MSPointerOver': 'pointerover',
-        'MSPointerUp': 'pointerup',
-      };
-
-      let div: HTMLDivElement;
-      beforeEach(() => {
-        div = document.createElement('div');
-        document.body.appendChild(div);
-      });
-      afterEach(() => {
-        document.body.removeChild(div);
-      });
-      Object.keys(pointerEventsMap).forEach((key) => {
-        it(`${key} and ${pointerEventsMap[key]} should both be triggered`, (done: DoneFn) => {
-          const logs: string[] = [];
-          div.addEventListener(key, (event: any) => {
-            expect(event.type).toEqual(pointerEventsMap[key]);
-            logs.push(`${key} triggered`);
-          });
-          div.addEventListener(pointerEventsMap[key], (event: any) => {
-            expect(event.type).toEqual(pointerEventsMap[key]);
-            logs.push(`${pointerEventsMap[key]} triggered`);
-          });
-          const evt1 = document.createEvent('Event');
-          evt1.initEvent(key, true, true);
-          div.dispatchEvent(evt1);
-
-          setTimeout(() => {
-            expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
-          });
-
-          const evt2 = document.createEvent('Event');
-          evt2.initEvent(pointerEventsMap[key], true, true);
-          div.dispatchEvent(evt2);
-
-          setTimeout(() => {
-            expect(logs).toEqual([`${key} triggered`, `${pointerEventsMap[key]} triggered`]);
-          });
-
-          setTimeout(done);
-        });
-
-        it(`${key} and ${pointerEventsMap[key]} with same listener should not be triggered twice`, (done: DoneFn) => {
-          const logs: string[] = [];
-          const listener = function (event: any) {
-            expect(event.type).toEqual(pointerEventsMap[key]);
-            logs.push(`${key} triggered`);
-          };
-          div.addEventListener(key, listener);
-          div.addEventListener(pointerEventsMap[key], listener);
-
-          const evt1 = document.createEvent('Event');
-          evt1.initEvent(key, true, true);
-          div.dispatchEvent(evt1);
-
-          setTimeout(() => {
-            expect(logs).toEqual([`${key} triggered`]);
-          });
-
-          const evt2 = document.createEvent('Event');
-          evt2.initEvent(pointerEventsMap[key], true, true);
-          div.dispatchEvent(evt2);
-
-          setTimeout(() => {
-            expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]);
-          });
-
-          setTimeout(done);
-        });
-
-        it(`${key} and ${pointerEventsMap[key]} should be able to be removed with removeEventListener`, (done: DoneFn) => {
-          const logs: string[] = [];
-          const listener1 = function (event: any) {
-            logs.push(`${key} triggered`);
-          };
-          const listener2 = function (event: any) {
-            logs.push(`${pointerEventsMap[key]} triggered`);
-          };
-          div.addEventListener(key, listener1);
-          div.addEventListener(pointerEventsMap[key], listener2);
-
-          div.removeEventListener(key, listener1);
-          div.removeEventListener(key, listener2);
-
-          const evt1 = document.createEvent('Event');
-          evt1.initEvent(key, true, true);
-          div.dispatchEvent(evt1);
-
-          setTimeout(() => {
-            expect(logs).toEqual([]);
-          });
-
-          const evt2 = document.createEvent('Event');
-          evt2.initEvent(pointerEventsMap[key], true, true);
-          div.dispatchEvent(evt2);
-
-          setTimeout(() => {
-            expect(logs).toEqual([]);
-          });
-
-          div.addEventListener(key, listener1);
-          div.addEventListener(pointerEventsMap[key], listener2);
-
-          div.removeEventListener(pointerEventsMap[key], listener1);
-          div.removeEventListener(pointerEventsMap[key], listener2);
-
-          div.dispatchEvent(evt1);
-
-          setTimeout(() => {
-            expect(logs).toEqual([]);
-          });
-
-          div.dispatchEvent(evt2);
-
-          setTimeout(() => {
-            expect(logs).toEqual([]);
-          });
-
-          setTimeout(done);
-        });
-      });
-    });
-  }
 });
