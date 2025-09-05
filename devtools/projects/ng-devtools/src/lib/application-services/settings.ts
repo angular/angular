@@ -50,4 +50,10 @@ export class Settings {
     category: 'general',
     initialValue: 'system',
   });
+
+  readonly activeTab = this.settingsStore.create({
+    key: 'activeTab',
+    category: 'general',
+    initialValue: 'Components',
+  });
 }
