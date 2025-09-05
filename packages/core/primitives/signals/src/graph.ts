@@ -18,7 +18,7 @@ declare const ngDevMode: boolean | undefined;
 let activeConsumer: ReactiveNode | null = null;
 let inNotificationPhase = false;
 
-type Version = number & {__brand: 'Version'};
+export type Version = number & {__brand: 'Version'};
 
 /**
  * Global epoch counter. Incremented whenever a source signal is set.
