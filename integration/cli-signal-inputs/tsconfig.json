@@ -13,7 +13,7 @@
     "importHelpers": true,
     "target": "es2022",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom", "ES2020.Promise"]
   },
   "angularCompilerOptions": {
     "strictTemplates": true

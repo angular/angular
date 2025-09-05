@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export interface LongestAnimation {
-  animationName: string | undefined;
-  propertyName: string | undefined;
-  duration: number;
-}
+import {LView} from '../render3/interfaces/view';
+import {LongestAnimation} from './interfaces';
 
 /** Parses a CSS time value to milliseconds. */
 function parseCssTimeUnitsToMs(value: string): number {
@@ -148,3 +145,5 @@ function determineLongestAnimationFromElementAnimations(
     animationsMap.set(el, longest);
   }
 }
+
+export const allLeavingAnimations = new Set<LView>();

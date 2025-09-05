@@ -17,7 +17,8 @@
     ],
     "lib": [
       "es2018",
-      "dom"
+      "dom",
+      "ES2020.Promise"
     ]
   },
   "angularCompilerOptions": {
