@@ -98,7 +98,7 @@ The server routing configuration lets you specify how each route in your applica
 
 Each rendering mode has different benefits and drawbacks. You can choose rendering modes based on the specific needs of your application.
 
-##### Client-side rendering
+##### Client-side rendering (CSR)
 
 Client-side rendering has the simplest development model, as you can write code that assumes it always runs in a web browser. This lets you use a wide range of client-side libraries that also assume they run in a browser.
 
@@ -110,7 +110,7 @@ When client-side rendering, the server does not need to do any work to render a 
 
 Applications that support installable, offline experiences with [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) can rely on client-side rendering without needing to communicate with a server.
 
-##### Server-side rendering
+##### Server-side rendering (SSR)
 
 Server-side rendering offers faster page loads than client-side rendering. Instead of waiting for JavaScript to download and run, the server directly renders an HTML document upon receiving a request from the browser. The user experiences only the latency necessary for the server to fetch data and render the requested page. This mode also eliminates the need for additional network requests from the browser, as your code can fetch data during rendering on the server.
 
