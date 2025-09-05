@@ -93,7 +93,7 @@
     "@types/hammerjs": "2.0.46",
     "@types/jasmine": "^5.0.0",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "^18.11.18",
+    "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
     "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.1.28",
     "@types/semver": "^7.3.4",
