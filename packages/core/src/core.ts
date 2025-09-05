@@ -112,7 +112,7 @@ export {
   afterNextRender,
   ɵFirstAvailable,
 } from './render3/after_render/hooks';
-export {Binding, inputBinding, outputBinding, twoWayBinding} from './render3/dynamic_bindings';
+export {Binding, DirectiveWithBindings, inputBinding, outputBinding, twoWayBinding} from './render3/dynamic_bindings';
 export {ApplicationConfig, mergeApplicationConfig} from './application/application_config';
 export {makeStateKey, StateKey, TransferState} from './transfer_state';
 export {booleanAttribute, numberAttribute} from './util/coercion';
