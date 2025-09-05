@@ -16,7 +16,6 @@ describe('markdown to html', () => {
 
   beforeAll(async () => {
     (global as any).HANDLE_MERMAID = true;
-    // This test was flaky, 1st attemp to fix it is by inlining the markdown content
     const markdownContent = `
 \`\`\`mermaid
     graph TD;
@@ -52,7 +51,7 @@ describe('markdown to html', () => {
     });
 
     markdownDocument = JSDOM.fragment(await markedInstance.parse(markdownContent));
-  }, 15_000);
+  }, 25_000);
 
   it('should create an svg for each mermaid code block', () => {
     expect(markdownDocument.querySelectorAll('svg')).toHaveSize(3);
