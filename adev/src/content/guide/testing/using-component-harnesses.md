@@ -71,6 +71,12 @@ const myComponentHarness = await loader.getHarness(MyComponent);
 const myComponentHarnesses = await loader.getHarnesses(MyComponent);
 </docs-code>
 
+In addition to `getHarness` and `getAllHarnesses`, `HarnessLoader` has several other useful methods for querying for harnesses:
+
+- `getHarnessAtIndex(...)`: Gets the harness for a component that matches the given criteria at a specific index.
+- `countHarnesses(...)`: Counts the number of component instances that match the given criteria.
+- `hasHarness(...)`: Checks if at least one component instance matches the given criteria.
+
 As an example, consider a reusable dialog-button component that opens a dialog on click. It contains the following components, each with a corresponding harness:
 
 - `MyDialogButton` (composes the `MyButton` and `MyDialog` with a convenient API)
