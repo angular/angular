@@ -55,7 +55,7 @@ js_library(
     srcs = ["umd.mjs"],
     deps = [
         ":base",
-        "//:node_modules/esbuild-plugin-umd-wrapper",
+        "//packages/zone.js:node_modules/esbuild-plugin-umd-wrapper",
     ],
 )
 

@@ -23,6 +23,8 @@ packages:
   - packages/benchpress/
   - packages/service-worker/
   - packages/upgrade/
+  - packages/zone.js/
+  - packages/zone.js/test/typings/
   - tools/bazel/rules_angular_store/
 
 allowedDeprecatedVersions:

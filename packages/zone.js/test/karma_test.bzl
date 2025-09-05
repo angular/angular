@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "esbuild", "ts_project", "web_test")
+load("//packages/zone.js:tools.bzl", "esbuild", "ts_project", "web_test")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
     ts_project(
