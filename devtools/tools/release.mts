@@ -22,11 +22,8 @@ const execOptions = {maxBuffer: 10 * 1024 * 1024};
 /** The repository root path */
 const rootPath = join(import.meta.dirname, '../../');
 
-/** The remote pointing to the official angular/angular repository. */
-const angularRepoRemote = 'upstream';
-
-/** The default branch of the official angular/angular repository. */
-const defaultBranch = 'main';
+/** The remote pointing to the angular/angular repository. */
+const angularRepoRemote = 'https://github.com/angular/angular.git';
 
 /**
  * The commit message scope for all commits created by this script.
@@ -119,7 +116,7 @@ https://github.com/angular/angular/tree/RELEASE_COMMIT/.
  * It performs the following steps:
  * 1. Sets the working directory to the root of the repository.
  * 2. Ensures the working directory is clean.
- * 3. Fetches the latest changes from the official remote.
+ * 3. Fetches the latest changes from the remote.
  * 4. Checks for new commits since the last release.
  * 5. Prompts the user for a new version number.
  * 6. Creates an output directory for the release artifacts.
@@ -136,7 +133,7 @@ async function main(): Promise<void> {
   // Ensure the user has a clean working directory before starting the release process.
   await checkCleanWorkingDirectory();
 
-  // Fetch the latest changes from the official remote.
+  // Fetch the latest changes from the remote.
   console.log(chalk.blue('Fetching latest changes from upstream...'));
   await exec(`git fetch ${angularRepoRemote}`);
   console.log(chalk.green('Successfully fetched latest changes.'));
@@ -210,10 +207,9 @@ async function checkCleanWorkingDirectory(): Promise<void> {
  */
 async function getLastReleaseSha(): Promise<string> {
   const {stdout} = await exec(
-    `git log ${angularRepoRemote}/${defaultBranch} --grep="${releaseCommitPrefix}" --format=format:%H -n 1`,
+    `git log --remotes=${angularRepoRemote} --grep="${releaseCommitPrefix}" --format=format:%H -n 1`,
   );
 
-  return 'c9b215bb5c83aeba99a0a2a581ae7dcc0f503020';
   return stdout.trim();
 }
 
@@ -299,7 +295,7 @@ async function updateManifests(newVersion: string): Promise<void> {
     const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
     manifest.version = newVersion;
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
-    console.log(`Updated ${manifestPath}`);
+    console.log(`Updated version for manifest in: ${manifestPath}`);
   }
   console.log(chalk.green('Manifest files updated successfully.'));
 }
@@ -313,10 +309,11 @@ async function updateManifests(newVersion: string): Promise<void> {
 async function createReleaseCommit(newVersion: string): Promise<void> {
   console.log(chalk.blue('Creating release commit...'));
   const releaseBranch = `devtools-release-${newVersion}`;
+  await exec(`git branch -D ${releaseBranch}`).catch(() => void 0);
   await exec(`git checkout -b ${releaseBranch}`);
   await exec(`git add ${manifestPaths.join(' ')}`);
   await exec(`git commit -m "${releaseCommitPrefix} ${newVersion}"`);
-  await exec(`git push -u origin ${releaseBranch} --force-with-lease`);
+  await exec(`git push origin ${releaseBranch} --force-with-lease`);
   console.log(chalk.green('Release branch pushed to your fork.'));
   console.log(chalk.yellow('Please create a pull request and merge it.'));
 }
@@ -349,6 +346,7 @@ async function checkoutMergedCommitAndInstallDependencies(mergedCommitSha: strin
   console.log(
     chalk.blue(`Checking out merged commit ${mergedCommitSha} and installing dependencies...`),
   );
+  await exec(`git fetch ${angularRepoRemote}`);
   await exec(`git checkout ${mergedCommitSha}`);
   await exec(`pnpm install --frozen-lockfile`);
   console.log(chalk.green('Successfully checked out merged commit and installed dependencies.'));
@@ -400,7 +398,7 @@ async function publishFirefoxExtension(
   console.log(chalk.green(`Source code packaged at ${sourceZipPath}`));
   console.log('');
 
-  const changelog = await generateChangelog(commits);
+  const changelog = generateChangelog(commits);
   console.log(chalk.blue('Changelog:'));
   console.log(changelog);
   console.log('');
@@ -424,9 +422,9 @@ async function publishFirefoxExtension(
  * Generates the changelog for the release.
  * This function gets the commits since the last release and formats them into a changelog.
  * @param commits A list of commit messages since the last release.
- * @returns A promise that resolves to the changelog for the release.
+ * @returns The changelog for the release.
  */
-async function generateChangelog(commits: string[]): Promise<string> {
+function generateChangelog(commits: string[]): string {
   return commits
     .map(
       (commit) =>
