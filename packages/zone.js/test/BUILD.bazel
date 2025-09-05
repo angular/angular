@@ -1,7 +1,7 @@
 load("//packages/zone.js:tools.bzl", "jasmine_test", "ts_project", "zone_compatible_jasmine_test")
 load("//packages/zone.js/test:karma_test.bzl", "karma_test")
 
-package(default_visibility = ["//:__subpackages__"])
+package(default_visibility = ["//packages/zone.js:__subpackages__"])
 
 exports_files([
     "assets/sample.json",
