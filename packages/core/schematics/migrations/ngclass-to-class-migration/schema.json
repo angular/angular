@@ -14,7 +14,7 @@
       "type": "boolean",
       "description": "Enables the migration of object literals with space-separated keys",
       "x-prompt": "Should the migration also migrate space-separated keys?",
-      "default": "false"
+      "default": false
     }
   }
 }

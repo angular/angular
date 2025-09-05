@@ -229,6 +229,28 @@ describe('NgClass migration', () => {
       const content = tree.readContent('/app.component.ts');
       expect(content).toContain('<div [class]=""></div>');
     });
+
+    it('should not split and migrate multiple classes in one key without option', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgClass} from '@angular/common';
+        @Component({
+        imports: [NgClass],
+        template: \`
+          <div [ngClass]="{'class1 class2': condition}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`<div [ngClass]="{'class1 class2': condition}"></div>`);
+    });
   });
 
   describe('Simple ngClass object migrations', () => {
