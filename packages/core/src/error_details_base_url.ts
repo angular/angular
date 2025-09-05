@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {VERSION} from './version';
+
 /**
  * Base URL for the error details page.
  *
@@ -13,7 +15,10 @@
  *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
  *  - packages/core/src/error_details_base_url.ts
  */
-export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.dev/errors';
+export const ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
+  const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
+  return `https://${versionSubDomain}angular.dev/errors`;
+})();
 
 /**
  * URL for the XSS security documentation.
