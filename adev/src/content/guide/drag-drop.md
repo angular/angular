@@ -312,6 +312,14 @@ There are cases where draggable elements can be dragged out of one `cdkDropList`
 
 Alternatively, you can modify the `CDK_DRAG_CONFIG` injection token to update sortingDisabled within the config. For more information see the [dependency injection guide](https://angular.dev/guide/di), [drag config injection token API](api/cdk/drag-drop/CDK_DRAG_CONFIG), and the [drag drop config API](api/cdk/drag-drop/DragDropConfig).
 
+### Copying items between lists
+
+By default, when an item is dragged from one list to another, it is moved out of its original list. However, you can configure the directives to copy the item, leaving the original item in the source list.
+
+To enable copying, you can set the `cdkDropListHasAnchor` input. This tells the `cdkDropList` to create an "anchor" element that stays in the original container and doesn't move with the item. If the user moves the item back into the original container, the anchor is removed automatically. The anchor element can be styled by targeting the `.cdk-drag-anchor` CSS class.
+
+Combining `cdkDropListHasAnchor` with `cdkDropListSortingDisabled` makes it possible to construct a list from which a user can copy items without being able to reorder the source list (e.g. a product list and a shopping cart).
+
 ## Customize animations
 
 Drag and drop supports animations for both:
@@ -341,3 +349,12 @@ Both `cdkDrag` and `cdkDropList` directives only apply essential styles needed f
 | .cdk-drop-list-dragging   | Selector for `cdkDropList` container element that has a draggable element currently being dragged.                                                                                                                                                                                                      |
 | .cdk-drop-list-disabled   | Selector for `cdkDropList` container elements that are disabled.                                                                                                                                                                                                                                        |
 | .cdk-drop-list-receiving  | Selector for `cdkDropList` container element that has a draggable element it can receive from a connected drop list that is currently being dragged.                                                                                                                                                    |
+| .cdk-drag-anchor          | Selector for the anchor element that is created when `cdkDropListHasAnchor` is enabled. This element indicates the position from which the dragged item started.                                                                                                                                         |
+
+## Dragging in a scrollable container
+
+If your draggable items are inside a scrollable container (e.g., a `div` with `overflow: auto`), automatic scrolling will not work unless the scrollable container has the `cdkScrollable` directive. Without it, the CDK cannot detect or control the scroll behavior of the container during drag operations.
+
+## Integrations with other components
+
+The CDK's drag-and-drop functionality can be integrated with different components. Common use cases include sortable `MatTable` components and sortable `MatTabGroup` components.
