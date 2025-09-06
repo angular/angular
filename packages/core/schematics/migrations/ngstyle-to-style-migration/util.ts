@@ -240,16 +240,14 @@ function replaceTemplate(
  */
 export class NgStyleCollector extends RecursiveVisitor {
   readonly replacements: {start: number; end: number; replacement: string}[] = [];
-  private originalTemplate: string;
   private isNgStyleImported: boolean = true; // Default to true (permissive)
 
   constructor(
-    template: string,
+    private originalTemplate: string,
     private componentNode?: ts.ClassDeclaration,
     private typeChecker?: ts.TypeChecker,
   ) {
     super();
-    this.originalTemplate = template;
 
     // If we have enough information, check if NgStyle is actually imported.
     // If not, we can confidently disable the migration for this component.
@@ -272,6 +270,9 @@ export class NgStyleCollector extends RecursiveVisitor {
     }
 
     for (const attr of element.attrs) {
+      if (attr.name !== '[ngStyle]' && attr.name !== 'ngStyle') {
+        continue;
+      }
       if (attr.name === '[ngStyle]' && attr.valueSpan) {
         const expr = this.originalTemplate.slice(
           attr.valueSpan.start.offset,
@@ -298,7 +299,7 @@ export class NgStyleCollector extends RecursiveVisitor {
         let replacement: string;
 
         if (staticMatch.length === 0) {
-          replacement = '[style]=""';
+          replacement = '';
         } else if (staticMatch.length === 1) {
           const {key, value} = staticMatch[0];
           // Special case: If the key is an empty string, use [style]=""
@@ -398,11 +399,7 @@ function extractStyleBindings(
 
   for (const property of objectLiteral.properties) {
     if (ts.isShorthandPropertyAssignment(property)) {
-      const key = property.name.getText();
-      if (key.includes(' ')) {
-        return null;
-      }
-      result.push({key, value: key});
+      return null;
     } else if (ts.isPropertyAssignment(property)) {
       const keyText = extractPropertyKey(property.name);
       const valueText = extractPropertyValue(property.initializer);
@@ -431,19 +428,11 @@ function extractStyleBindings(
  * Extracts text from property key (name)
  */
 function extractPropertyKey(name: ts.PropertyName): string | null {
-  if (ts.isIdentifier(name)) {
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) {
     return name.text;
+  } else {
+    return null;
   }
-
-  if (ts.isStringLiteral(name)) {
-    return name.text;
-  }
-
-  if (ts.isNumericLiteral(name)) {
-    return name.text;
-  }
-
-  return null;
 }
 
 /**

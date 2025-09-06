@@ -136,7 +136,7 @@ describe('NgStyle migration', () => {
       await runMigration();
 
       const content = tree.readContent('/app.component.ts');
-      expect(content).toContain('<div [style]=""></div>');
+      expect(content).toContain('<div ></div>');
     });
 
     it('should not change ngStyle with empty string key', async () => {
@@ -180,6 +180,28 @@ describe('NgStyle migration', () => {
       const content = tree.readContent('/app.component.ts');
 
       expect(content).toContain(`<div [ngStyle]="customObject"></div>`);
+    });
+
+    it('should not migrate a shorthand assignment', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgStyle} from '@angular/common';
+        @Component({
+        imports: [NgStyle],
+        template: \`
+          <div [ngStyle]="{background}"></div>
+        \` })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`<div [ngStyle]="{background}"></div>`);
     });
   });
 
