@@ -15,7 +15,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatCardModule} from '@angular/material/card';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {IconComponent} from '@angular/docs';
+import {IconComponent, isWindows} from '@angular/docs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {marked} from 'marked';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -296,14 +296,4 @@ export default class UpdateComponent {
     newAction = newAction.replace('${packageManagerInstall}', this.packageManager);
     return newAction;
   }
-}
-
-/** Whether or not the user is running on a Windows OS. */
-function isWindows(): boolean {
-  if (typeof navigator === 'undefined') {
-    return false;
-  }
-
-  const platform = navigator.platform.toLowerCase();
-  return platform.includes('windows') || platform.includes('win32');
 }
