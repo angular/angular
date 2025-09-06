@@ -23,3 +23,15 @@ export const isIos = (isMobile && isApple) || isIpad;
 
 export const isFirefox =
   typeof window !== 'undefined' && window.navigator.userAgent.includes('Firefox/');
+
+/** Whether or not the user is running on a Windows OS. */
+export const isWindows = (): boolean => {
+  if (typeof navigator === 'undefined') return false;
+
+  const uaData = (navigator as Navigator & {userAgentData?: {platform?: string}}).userAgentData;
+  if (uaData?.platform) {
+    return uaData.platform.toLowerCase().includes('windows');
+  }
+
+  return /windows|win32/i.test(navigator.userAgent);
+};
