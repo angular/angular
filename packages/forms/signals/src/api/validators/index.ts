@@ -13,3 +13,4 @@ export {min} from './min';
 export {minLength} from './min_length';
 export {pattern} from './pattern';
 export {required} from './required';
+export {validateStandardSchema} from './standard_schema';
