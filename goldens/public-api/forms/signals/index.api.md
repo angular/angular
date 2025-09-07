@@ -227,6 +227,11 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
 }
 
 // @public
+export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> ? {
+    [K in keyof T as RemoveStringIndexUnknownKey<K, T[K]>]: IgnoreUnknownProperties<T[K]>;
+} : T;
+
+// @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
     readonly index: Signal<number>;
 }
@@ -412,6 +417,9 @@ export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | ty
 export function reducedProperty<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: () => TAcc): AggregateProperty<TAcc, TItem>;
 
 // @public
+export type RemoveStringIndexUnknownKey<K, V> = string extends K ? unknown extends V ? never : K : K;
+
+// @public
 export const REQUIRED: AggregateProperty<boolean, boolean>;
 
 // @public
@@ -495,6 +503,9 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 
 // @public
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, opts: HttpValidatorOptions<TValue, TResult, TPathKind>): void;
+
+// @public
+export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProperties<TSchema>>(path: FieldPath<TValue>, schema: StandardSchemaV1<TSchema>): void;
 
 // @public
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, logic: NoInfer<TreeValidator<TValue, TPathKind>>): void;
