@@ -1,0 +1,21 @@
+load("//tools:defaults2.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+ts_project(
+    name = "add-bootstrap-context-to-server-main",
+    srcs = glob(["**/*.ts"]),
+    interop_deps = [
+        "//packages/compiler-cli/private",
+        "//packages/core/schematics/utils",
+    ],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+    ],
+)

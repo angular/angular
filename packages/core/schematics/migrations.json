@@ -15,6 +15,11 @@
       "description": "Replaces `APP_INITIALIZER`, `ENVIRONMENT_INITIALIZER` & `PLATFORM_INITIALIZER` respectively with `provideAppInitializer`, `provideEnvironmentInitializer` & `providePlatformInitializer`.",
       "factory": "./bundles/provide-initializer.cjs#migrate",
       "optional": true
+    },
+    "add-bootstrap-context-to-server-main": {
+      "version": "19.2.15",
+      "description": "Adds `BootstrapContext` to `bootstrapApplication` calls in `main.server.ts` to support server rendering.",
+      "factory": "./bundles/add-bootstrap-context-to-server-main.cjs#migrate"
     }
   }
 }

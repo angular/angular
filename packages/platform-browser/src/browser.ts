@@ -63,6 +63,19 @@ type ApplicationConfig = ApplicationConfigFromCore;
 export {ApplicationConfig};
 
 /**
+ * A context object that can be passed to `bootstrapApplication` to provide a pre-existing platform
+ * injector.
+ *
+ * @publicApi
+ */
+export interface BootstrapContext {
+  /**
+   * A reference to a platform.
+   */
+  platformRef: PlatformRef;
+}
+
+/**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
  * application's root component. More information about standalone components can be found in [this
  * guide](guide/components/importing).
@@ -117,6 +130,9 @@ export {ApplicationConfig};
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
+ * @param bootstrapContext Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
@@ -124,8 +140,13 @@ export {ApplicationConfig};
 export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
+  bootstrapContext?: BootstrapContext,
 ): Promise<ApplicationRef> {
-  return internalCreateApplication({rootComponent, ...createProvidersConfig(options)});
+  return internalCreateApplication({
+    rootComponent,
+    platformRef: bootstrapContext?.platformRef,
+    ...createProvidersConfig(options),
+  });
 }
 
 /**
@@ -140,7 +161,7 @@ export function bootstrapApplication(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
   return internalCreateApplication(createProvidersConfig(options));
 }
 

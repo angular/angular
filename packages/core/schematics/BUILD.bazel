@@ -67,6 +67,7 @@ rollup_bundle(
         "//packages/core/schematics/migrations/explicit-standalone-flag:index.ts": "explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks:index.ts": "pending-tasks",
         "//packages/core/schematics/migrations/provide-initializer:index.ts": "provide-initializer",
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main:index.ts": "add-bootstrap-context-to-server-main",
     },
     format = "cjs",
     link_workspace_root = True,
@@ -76,6 +77,7 @@ rollup_bundle(
         "//packages/core/schematics/test:__pkg__",
     ],
     deps = [
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
         "//packages/core/schematics/migrations/explicit-standalone-flag",
         "//packages/core/schematics/migrations/pending-tasks",
         "//packages/core/schematics/migrations/provide-initializer",

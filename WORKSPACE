@@ -83,6 +83,7 @@ yarn_install(
         YARN_LABEL,
         "//:.yarnrc",
         "//:tools/npm-patches/@angular+ng-dev+0.0.0-a6dcd24107d12114198251ee5d20cda814a1986a.patch",
+        "//:tools/npm-patches/@angular+ssr+19.2.0-next.2.patch",
         "//:tools/npm-patches/@bazel+jasmine+5.8.1.patch",
         "//tools:postinstall-patches.js",
         "//tools/esm-interop:patches/npm/@angular+build-tooling+0.0.0-2670abf637fa155971cdd1f7e570a7f234922a65.patch",
