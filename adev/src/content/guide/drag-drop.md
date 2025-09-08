@@ -320,6 +320,12 @@ To enable copying, you can set the `cdkDropListHasAnchor` input. This tells the 
 
 Combining `cdkDropListHasAnchor` with `cdkDropListSortingDisabled` makes it possible to construct a list from which a user can copy items without being able to reorder the source list (e.g. a product list and a shopping cart).
 
+<docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.ts">
+  <docs-code header="app/app.component.html" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.html"/>
+  <docs-code header="app/app.component.ts" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.ts"/>
+  <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/copy-list/app/app.component.css"/>
+</docs-code-multifile>
+
 ## Customize animations
 
 Drag and drop supports animations for both:
