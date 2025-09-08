@@ -27,9 +27,18 @@
   color: white;
 }
 
-.product-card button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.status {
+  margin: 8px 0;
+}
+
+.available {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.unavailable {
+  color: #f44336;
+  font-weight: bold;
 }
 
 /* QuantitySelector Component Styles */

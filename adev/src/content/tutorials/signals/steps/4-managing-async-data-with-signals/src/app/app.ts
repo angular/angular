@@ -8,16 +8,21 @@ import {loadUser} from './user-api';
     <div>
       <h2>User Profile Loader</h2>
 
-      <!-- TODO: Attach the appropriate methods for each button -->
       <div>
+        <!-- TODO: Add (click) handlers to call loadUser() with appropriate IDs -->
         <button>Load User 1</button>
         <button>Load User 2</button>
         <button>Load Invalid User</button>
+        <!-- TODO: Add (click) handler to call reloadUser() -->
         <button>Reload</button>
       </div>
 
       <div class="status">
-        <!-- TODO: Add conditional rendering for different resource states -->
+        <!-- TODO: Replace with @if blocks for loading, error, and success states -->
+        <!-- Use isLoading(), hasError(), and userResource.hasValue() -->
+        <!-- For loading: show "Loading user..." -->
+        <!-- For error: show error message with userResource.error()?.message -->
+        <!-- For success: show user name and email from userResource.value() -->
         <p>Click a button to load user data</p>
       </div>
     </div>
