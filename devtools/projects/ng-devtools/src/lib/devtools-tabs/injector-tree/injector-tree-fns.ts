@@ -149,8 +149,11 @@ export function transformInjectorResolutionPathsIntoTree(
         continue;
       }
 
+      const providerText = injector.providers === 1 ? 'Provider' : 'Providers';
+
       const next: InjectorTreeNode = {
         label: injector.name || '',
+        subLabel: `${injector.providers} ${providerText}`,
         injector,
         children: [],
       };
