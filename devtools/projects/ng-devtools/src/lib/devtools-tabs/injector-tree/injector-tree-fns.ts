@@ -154,6 +154,12 @@ export function transformInjectorResolutionPathsIntoTree(
         injector,
         children: [],
       };
+
+      if (injector.providers !== undefined) {
+        const providerText = injector.providers === 1 ? 'Provider' : 'Providers';
+        next.subLabel = `${injector.providers} ${providerText}`;
+      }
+
       next.injector.node = injectorIdToNode.get(next.injector.id);
       currentLevel.push(next);
       currentLevel = next.children;
