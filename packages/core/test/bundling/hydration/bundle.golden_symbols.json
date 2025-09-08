@@ -3,6 +3,9 @@
     "name": "ALLOWED_METHODS"
   },
   {
+    "name": "ALLOW_MULTIPLE_PLATFORMS"
+  },
+  {
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {

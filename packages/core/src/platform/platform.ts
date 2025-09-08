@@ -35,15 +35,23 @@ export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>(
  * @publicApi
  */
 export function createPlatform(injector: Injector): PlatformRef {
-  if (_platformInjector && !_platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false)) {
+  if (getPlatform()) {
     throw new RuntimeError(
       RuntimeErrorCode.MULTIPLE_PLATFORMS,
-      ngDevMode && 'There can be only one platform. Destroy the previous one to create a new one.',
+      ngDevMode &&
+        ngDevMode &&
+        'There can be only one platform. Destroy the previous one to create a new one.',
     );
   }
+
   publishDefaultGlobalUtils();
   publishSignalConfiguration();
-  _platformInjector = injector;
+
+  const isServer = injector.get(ALLOW_MULTIPLE_PLATFORMS, false);
+  // During SSR, using this setting and using an injector from the global can cause the
+  // injector to be used for a different requjest due to concurrency.
+  _platformInjector = !isServer ? injector : null;
+
   const platform = injector.get(PlatformRef);
   runPlatformInitializers(injector);
   return platform;
@@ -75,13 +83,14 @@ export function createPlatformFactory(
         ...extraProviders,
         {provide: marker, useValue: true},
       ];
-      if (parentPlatformFactory) {
-        parentPlatformFactory(platformProviders);
-      } else {
+
+      platform =
+        parentPlatformFactory?.(platformProviders) ??
         createPlatform(createPlatformInjector(platformProviders, desc));
-      }
     }
-    return assertPlatform(marker);
+    const isServer = platform.injector.get(ALLOW_MULTIPLE_PLATFORMS, false);
+
+    return isServer ? platform : assertPlatform(marker);
   };
 }
 
@@ -107,7 +116,6 @@ function createPlatformInjector(providers: StaticProvider[] = [], name?: string)
  */
 export function assertPlatform(requiredToken: any): PlatformRef {
   const platform = getPlatform();
-
   if (!platform) {
     throw new RuntimeError(RuntimeErrorCode.PLATFORM_NOT_FOUND, ngDevMode && 'No platform exists!');
   }
@@ -128,15 +136,26 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 /**
  * Returns the current platform.
  *
+ * @remarks
+ * This function should not be used when multiple platforms are enabled (e.g., SSR) as it will also return `null`.
+ *
  * @publicApi
  */
 export function getPlatform(): PlatformRef | null {
+  const isServer = _platformInjector && _platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false);
+  if (isServer) {
+    return null;
+  }
+
   return _platformInjector?.get(PlatformRef) ?? null;
 }
 
 /**
  * Destroys the current Angular platform and all Angular applications on the page.
  * Destroys all modules and listeners registered with the platform.
+ *
+ * @remarks
+ * This function should not be used when multiple platforms are enabled (e.g., SSR), as it will be a no-op.
  *
  * @publicApi
  */
@@ -155,9 +174,17 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
   if (_platformInjector) return _platformInjector;
 
   publishDefaultGlobalUtils();
+
   // Otherwise, setup a new platform injector and run platform initializers.
   const injector = createPlatformInjector(providers);
-  _platformInjector = injector;
+
+  // During SSR, using this setting and using an injector from the global can cause the
+  // injector to be used for a different request due to concurrency.
+  const isServer = injector.get(ALLOW_MULTIPLE_PLATFORMS, false);
+  if (!isServer) {
+    _platformInjector = injector;
+  }
+
   publishSignalConfiguration();
   runPlatformInitializers(injector);
   return injector;

@@ -62,6 +62,7 @@ import {TestBed} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {
   bootstrapApplication,
+  BootstrapContext,
   HydrationFeature,
   provideClientHydration,
   withI18nSupport,
@@ -302,7 +303,8 @@ describe('platform-server hydration integration', () => {
         enableHydration ? provideClientHydration(...hydrationFeatures) : [],
       ];
 
-      const bootstrap = () => bootstrapApplication(component, {providers});
+      const bootstrap = (context: BootstrapContext) =>
+        bootstrapApplication(component, {providers}, context);
 
       return renderApplication(bootstrap, {
         document: options?.doc ?? defaultHtml,

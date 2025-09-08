@@ -1,5 +1,8 @@
 [
   {
+    "name": "ALLOW_MULTIPLE_PLATFORMS"
+  },
+  {
     "name": "APP_BASE_HREF"
   },
   {

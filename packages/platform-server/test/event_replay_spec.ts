@@ -20,6 +20,7 @@ import {
   withEventReplay,
   bootstrapApplication,
   provideClientHydration,
+  BootstrapContext,
 } from '@angular/platform-browser';
 
 import {provideServerRendering} from '../public_api';
@@ -115,10 +116,14 @@ describe('event replay', () => {
         ? provideClientHydration(withEventReplay())
         : provideClientHydration();
 
-    const bootstrap = () =>
-      bootstrapApplication(component, {
-        providers: [provideServerRendering(), hydrationProviders],
-      });
+    const bootstrap = (context: BootstrapContext) =>
+      bootstrapApplication(
+        component,
+        {
+          providers: [provideServerRendering(), hydrationProviders],
+        },
+        context,
+      );
 
     return renderApplication(bootstrap, {
       document: doc,
@@ -171,7 +176,7 @@ describe('event replay', () => {
       template: `
         <div class="card">
           <button id="inner-button" (click)="onClick()"></button>
-          <ng-content></ng-content> 
+          <ng-content></ng-content>
         </div>
       `,
     })

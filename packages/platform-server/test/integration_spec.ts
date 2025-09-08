@@ -50,6 +50,7 @@ import {SSR_CONTENT_INTEGRITY_MARKER} from '@angular/core/src/hydration/utils';
 import {TestBed} from '@angular/core/testing';
 import {
   bootstrapApplication,
+  BootstrapContext,
   BrowserModule,
   provideClientHydration,
   Title,
@@ -75,8 +76,9 @@ const APP_CONFIG: ApplicationConfig = {
 function getStandaloneBootstrapFn(
   component: Type<unknown>,
   providers: Array<Provider | EnvironmentProviders> = [],
-): () => Promise<ApplicationRef> {
-  return () => bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}));
+): (context: BootstrapContext) => Promise<ApplicationRef> {
+  return (context: BootstrapContext) =>
+    bootstrapApplication(component, mergeApplicationConfig(APP_CONFIG, {providers}), context);
 }
 
 function createMyServerApp(standalone: boolean) {
