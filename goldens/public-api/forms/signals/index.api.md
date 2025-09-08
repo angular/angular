@@ -227,6 +227,11 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
 }
 
 // @public
+export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> ? {
+    [K in keyof T as RemoveStringIndexUnknownKey<K, T[K]>]: IgnoreUnknownProperties<T[K]>;
+} : T;
+
+// @public
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
     readonly index: Signal<number>;
 }
@@ -410,6 +415,9 @@ export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | ty
 
 // @public
 export function reducedProperty<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: () => TAcc): AggregateProperty<TAcc, TItem>;
+
+// @public
+export type RemoveStringIndexUnknownKey<K, V> = string extends K ? unknown extends V ? never : K : K;
 
 // @public
 export const REQUIRED: AggregateProperty<boolean, boolean>;

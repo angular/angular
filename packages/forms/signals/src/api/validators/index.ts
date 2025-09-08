@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {email} from './email';
-export {max} from './max';
-export {maxLength} from './max_length';
-export {min} from './min';
-export {minLength} from './min_length';
-export {pattern} from './pattern';
-export {required} from './required';
-export {validateStandardSchema} from './standard_schema';
+export * from './email';
+export * from './max';
+export * from './max_length';
+export * from './min';
+export * from './min_length';
+export * from './pattern';
+export * from './required';
+export * from './standard_schema';
