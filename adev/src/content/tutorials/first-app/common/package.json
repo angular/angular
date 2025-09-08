@@ -24,7 +24,6 @@
     "@angular/cli": "^21.0.0-next",
     "@angular/compiler-cli": "^21.0.0-next",
     "@types/node": "^16.11.35",
-    "ts-node": "~10.9.0",
     "typescript": "~5.9.2"
   }
 }
