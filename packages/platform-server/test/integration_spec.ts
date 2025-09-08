@@ -50,6 +50,7 @@ import {
 import {TestBed} from '@angular/core/testing';
 import {
   bootstrapApplication,
+  BootstrapContext,
   BrowserModule,
   provideClientHydration,
   Title,
@@ -76,11 +77,12 @@ const APP_CONFIG: ApplicationConfig = {
 function getStandaloneBootstrapFn(
   component: Type<unknown>,
   providers: Array<Provider | EnvironmentProviders> = [],
-): () => Promise<ApplicationRef> {
-  return () =>
+): (context: BootstrapContext) => Promise<ApplicationRef> {
+  return (context: BootstrapContext) =>
     bootstrapApplication(
       component,
       mergeApplicationConfig(APP_CONFIG, {providers: [...providers, provideNgReflectAttributes()]}),
+      context,
     );
 }
 

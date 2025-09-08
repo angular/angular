@@ -26,6 +26,11 @@
       "description": "Replaces usages of the deprecated Router.getCurrentNavigation method with the Router.currentNavigation signal",
       "factory": "./bundles/router-current-navigation.cjs#migrate",
       "optional": true
+    },
+    "add-bootstrap-context-to-server-main": {
+      "version": "20.3.0",
+      "description": "Adds `BootstrapContext` to `bootstrapApplication` calls in `main.server.ts` to support server rendering.",
+      "factory": "./bundles/add-bootstrap-context-to-server-main.cjs#migrate"
     }
   }
 }

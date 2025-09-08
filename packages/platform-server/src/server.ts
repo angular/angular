@@ -26,7 +26,6 @@ import {
   Provider,
   StaticProvider,
   Testability,
-  ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS,
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
 } from '@angular/core';
@@ -54,8 +53,6 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
     deps: [DOCUMENT, [Optional, INITIAL_CONFIG]],
   },
   {provide: PlatformState, deps: [DOCUMENT]},
-  // Add special provider that allows multiple instances of platformServer* to be created.
-  {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true},
 ];
 
 function initDominoAdapter(injector: Injector) {
@@ -113,6 +110,13 @@ function _document(injector: Injector) {
 }
 
 /**
+ * Creates a server-side instance of an Angular platform.
+ *
+ * This platform should be used when performing server-side rendering of an Angular application.
+ * Standalone applications can be bootstrapped on the server using the `bootstrapApplication`
+ * function from `@angular/platform-browser`. When using `bootstrapApplication`, the `platformServer`
+ * should be created first and passed to the bootstrap function using the `BootstrapContext`.
+ *
  * @publicApi
  */
 export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef {
