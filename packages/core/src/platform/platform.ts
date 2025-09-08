@@ -38,9 +38,7 @@ export function createPlatform(injector: Injector): PlatformRef {
   if (getPlatform()) {
     throw new RuntimeError(
       RuntimeErrorCode.MULTIPLE_PLATFORMS,
-      ngDevMode &&
-        ngDevMode &&
-        'There can be only one platform. Destroy the previous one to create a new one.',
+      ngDevMode && 'There can be only one platform. Destroy the previous one to create a new one.',
     );
   }
 
@@ -134,10 +132,8 @@ export function assertPlatform(requiredToken: any): PlatformRef {
 }
 
 /**
- * Returns the current platform.
- *
- * @remarks
- * This function should not be used when multiple platforms are enabled (e.g., SSR) as it will also return `null`.
+ * Returns the current platform in the browser environment. In the server environment,
+ * returns `null`. If you need access to the platform information, inject `PlatformRef` in your application.
  *
  * @publicApi
  */
@@ -154,8 +150,7 @@ export function getPlatform(): PlatformRef | null {
  * Destroys the current Angular platform and all Angular applications on the page.
  * Destroys all modules and listeners registered with the platform.
  *
- * @remarks
- * This function should not be used when multiple platforms are enabled (e.g., SSR), as it will be a no-op.
+ * This function should not be used in a server environment, as it will be a no-op.
  *
  * @publicApi
  */
