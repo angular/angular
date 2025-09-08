@@ -20,6 +20,7 @@ pkg_npm(
     validate = False,
     visibility = ["//packages/core:__pkg__"],
     deps = [
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main:bundle",
         "//packages/core/schematics/migrations/after-render-phase:bundle",
         "//packages/core/schematics/migrations/http-providers:bundle",
         "//packages/core/schematics/migrations/invalid-two-way-bindings:bundle",

@@ -9,6 +9,7 @@
 export {
   ApplicationConfig,
   bootstrapApplication,
+  BootstrapContext,
   BrowserModule,
   createApplication,
   platformBrowser,

@@ -10,15 +10,16 @@ import {internalProvideZoneChangeDetection} from '../change_detection/scheduling
 import {EnvironmentProviders, Provider, StaticProvider} from '../di/interface/provider';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
-import {createOrReusePlatformInjector} from '../platform/platform';
+import {ALLOW_MULTIPLE_PLATFORMS, createOrReusePlatformInjector} from '../platform/platform';
 import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
-import {NgZone} from '../zone/ng_zone';
 
 import {_callAndReportToErrorHandler, ApplicationRef} from './application_ref';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
+import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {PlatformRef} from '../platform/platform_ref';
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -36,15 +37,25 @@ export function internalCreateApplication(config: {
   rootComponent?: Type<unknown>;
   appProviders?: Array<Provider | EnvironmentProviders>;
   platformProviders?: Provider[];
+  platformRef?: PlatformRef;
 }): Promise<ApplicationRef> {
+  const {rootComponent, appProviders, platformProviders, platformRef} = config;
   try {
-    const {rootComponent, appProviders, platformProviders} = config;
+    const platformInjector =
+      platformRef?.injector ?? createOrReusePlatformInjector(platformProviders as StaticProvider[]);
+
+    if (platformInjector.get(ALLOW_MULTIPLE_PLATFORMS, false) === true && !config.platformRef) {
+      throw new RuntimeError(
+        RuntimeErrorCode.PLATFORM_NOT_FOUND,
+        ngDevMode &&
+          'Missing Platform: This may be due to using `bootstrapApplication` on the server without passing a `BootstrapContext`. ' +
+            'Please make sure that `bootstrapApplication` is called with a `BootstrapContext.',
+      );
+    }
 
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && rootComponent !== undefined) {
       assertStandaloneComponentType(rootComponent);
     }
-
-    const platformInjector = createOrReusePlatformInjector(platformProviders as StaticProvider[]);
 
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.

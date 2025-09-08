@@ -19,6 +19,8 @@ jasmine_node_test(
     data = [
         "//packages/core/schematics:collection.json",
         "//packages/core/schematics:migrations.json",
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main:bundle",
         "//packages/core/schematics/migrations/after-render-phase",
         "//packages/core/schematics/migrations/after-render-phase:bundle",
         "//packages/core/schematics/migrations/http-providers",

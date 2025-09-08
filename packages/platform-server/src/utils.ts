@@ -21,9 +21,10 @@ import {
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   ɵwhenStable as whenStable,
 } from '@angular/core';
+import {BootstrapContext} from '@angular/platform-browser';
 
-import {PlatformState} from './platform_state';
 import {platformServer} from './server';
+import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
 import {createScript} from './transfer_state';
 import {runAndMeasurePerf} from './profiler';
@@ -262,14 +263,24 @@ export async function renderModule<T>(
 
 /**
  * Bootstraps an instance of an Angular application and renders it to a string.
-
- * ```typescript
- * const bootstrap = () => bootstrapApplication(RootComponent, appConfig);
- * const output: string = await renderApplication(bootstrap);
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * import { BootstrapContext, bootstrapApplication } from '@angular/platform-browser';
+ * import { renderApplication } from '@angular/platform-server';
+ * import { ApplicationConfig } from '@angular/core';
+ * import { AppComponent } from './app.component';
+ *
+ * const appConfig: ApplicationConfig = { providers: [...] };
+ * const bootstrap = (context: BootstrapContext) =>
+ *   bootstrapApplication(AppComponent, config, context);
+ * const output = await renderApplication(bootstrap);
  * ```
  *
  * @param bootstrap A method that when invoked returns a promise that returns an `ApplicationRef`
- *     instance once resolved.
+ *     instance once resolved. The method is invoked with an `Injector` instance that
+ *     provides access to the platform-level dependency injection context.
  * @param options Additional configuration for the render operation:
  *  - `document` - the document of the page to render, either as an HTML string or
  *                 as a reference to the `document` instance.
@@ -280,15 +291,15 @@ export async function renderModule<T>(
  *
  * @publicApi
  */
-export async function renderApplication<T>(
-  bootstrap: () => Promise<ApplicationRef>,
+export async function renderApplication(
+  bootstrap: (context: BootstrapContext) => Promise<ApplicationRef>,
   options: {document?: string | Document; url?: string; platformProviders?: Provider[]},
 ): Promise<string> {
   return runAndMeasurePerf('renderApplication', async () => {
     const platformRef = createServerPlatform(options);
 
     try {
-      const applicationRef = await bootstrap();
+      const applicationRef = await bootstrap({platformRef});
       return await _render(platformRef, applicationRef);
     } finally {
       await asyncDestroyPlatform(platformRef);

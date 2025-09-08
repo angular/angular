@@ -14,6 +14,11 @@
       "version": "18.1.0",
       "description": "Updates calls to afterRender with an explicit phase to the new API",
       "factory": "./migrations/after-render-phase/bundle"
+    },
+    "add-bootstrap-context-to-server-main": {
+      "version": "18.2.14",
+      "description": "Adds `BootstrapContext` to `bootstrapApplication` calls in `main.server.ts` to support server rendering.",
+      "factory": "./migrations/add-bootstrap-context-to-server-main/bundle"
     }
   }
 }
