@@ -29,6 +29,7 @@ import {TsVfsWorkerActions} from './workers/enums/actions';
 import {CodeChangeRequest} from './workers/interfaces/code-change-request';
 import {ActionMessage} from './workers/interfaces/message';
 import {NodeRuntimeState} from '../node-runtime-state.service';
+import {shikiHighlighter} from '../shiki-plugin';
 
 export interface EditorFile {
   filename: string;
@@ -95,7 +96,7 @@ export class CodeMirrorEditor {
 
   private createdFileListener$: Subscription | undefined = INITIAL_STATES.createdFile$;
 
-  init(parentElement: HTMLElement): void {
+  async init(parentElement: HTMLElement): Promise<void> {
     if (this._editorView) return;
 
     if (!this.nodeRuntimeState.error()) {
@@ -103,9 +104,12 @@ export class CodeMirrorEditor {
       this.saveLibrariesTypes();
     }
 
+    const shikiPlugin = await shikiHighlighter();
+
     this._editorView = new EditorView({
       parent: parentElement,
       state: this.createEditorState(),
+      extensions: [shikiPlugin],
       dispatchTransactions: (transactions, view) => {
         view.update(transactions);
 
