@@ -4,9 +4,9 @@ Now that you've learned [how to create and update signals](/tutorials/signals/1-
 
 In this activity, you'll learn how to use the `computed()` function to create derived state that updates automatically when the underlying signals change.
 
-<hr />
+Let's enhance our user status system by adding computed values that derive information from our user status signal. The starter code now includes three status options: `'online'`, `'away'`, and `'offline'`.
 
-Let's enhance our user status system by adding computed values that derive information from our user status signal.
+<hr />
 
 <docs-workflow>
 
@@ -15,7 +15,7 @@ Add `computed` to your existing imports.
 
 ```ts
 // Add computed to existing imports
-import {Component, signal, computed} from '@angular/core';
+import {Component, signal, computed, ChangeDetectionStrategy} from '@angular/core';
 ```
 
 </docs-step>
@@ -64,41 +64,35 @@ This demonstrates how computed signals can perform calculations and combine mult
 </docs-step>
 
 <docs-step title="Display the computed values in the template">
-Update your template to use the computed signals.
+The template already has placeholders showing "Loading...". Replace them with your computed signals:
+
+1. For notifications, replace `Loading...` with an @if block:
 
 ```html
-<!-- Update the status indicator with the current status -->
-<div class="status-indicator" [class]="userStatus()">
-  <span class="status-dot"></span>
-  Status: {{ userStatus() }}
-</div>
-
-<!-- Add new section to display computed values -->
-<div class="status-info">
-  <div class="notifications">
-    <strong>Notifications:</strong> 
-    @if (notificationsEnabled()) {
-      Enabled
-    } @else {
-      Disabled
-    }
-  </div>
-  <div class="message">
-    <strong>Message:</strong> {{ statusMessage() }}
-  </div>
-  <div class="working-hours">
-    <strong>Within Working Hours:</strong> 
-    @if (isWithinWorkingHours()) {
-      Yes
-    } @else {
-      No
-    }
-  </div>
-</div>
-
-<!-- Existing status controls remain unchanged -->
+@if (notificationsEnabled()) {
+  Enabled
+} @else {
+  Disabled
+}
 ```
 
+2. For the message, replace `Loading...` with:
+
+```html
+{{ statusMessage() }}
+```
+
+3. For working hours, replace `Loading...` with an @if block:
+
+```html
+@if (isWithinWorkingHours()) {
+  Yes
+} @else {
+  No
+}
+```
+
+Notice how computed signals are called just like regular signals - with parentheses!
 </docs-step>
 
 </docs-workflow>

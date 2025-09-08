@@ -103,17 +103,17 @@ export class App {
   }
 
   toggleStatus() {
-    this.userStatus.update((current: 'online' | 'offline' | 'away') => {
-      switch (current) {
-        case 'offline':
-          return 'online';
-        case 'online':
-          return 'away';
-        case 'away':
-          return 'offline';
-        default:
-          return 'offline';
-      }
-    });
+    const current = this.userStatus();
+    switch (current) {
+      case 'offline':
+        this.userStatus.set('online');
+        break;
+      case 'online':
+        this.userStatus.set('away');
+        break;
+      case 'away':
+        this.userStatus.set('offline');
+        break;
+    }
   }
 }

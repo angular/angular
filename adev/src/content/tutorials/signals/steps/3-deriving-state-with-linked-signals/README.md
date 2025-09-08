@@ -1,14 +1,12 @@
 # Deriving state with linked signals
 
-In the [previous lesson](/tutorials/signals/2-deriving-state-with-computed-signals), you created a computed signal for `notificationsEnabled` that automatically followed your user status. But what if users want to manually disable notifications even when they're online? That's where linked signals come in.
+Now that you've learned [how to derive state with computed signals](/tutorials/signals/2-deriving-state-with-computed-signals), you created a computed signal for `notificationsEnabled` that automatically followed your user status. But what if users want to manually disable notifications even when they're online? That's where linked signals come in.
 
 Linked signals are writable signals that maintain a reactive connection to their source signals. They're perfect for creating state that normally follows a computation but can be overridden when needed.
 
-In this activity, you'll learn how `linkedSignal()` differs from `computed()` by converting your notifications example.
+In this activity, you'll learn how `linkedSignal()` differs from `computed()` by enhancing the previous user status system's computed `notificationsEnabled` to a writable linked signal.
 
 <hr />
-
-Let's enhance our user status system by converting the read-only computed `notificationsEnabled` to a writable linked signal.
 
 <docs-workflow>
 
@@ -16,8 +14,8 @@ Let's enhance our user status system by converting the read-only computed `notif
 Add `linkedSignal` to your existing imports.
 
 ```ts
-// Add linkedSignal to existing imports  
-import {Component, signal, computed, linkedSignal} from '@angular/core';
+// Add linkedSignal to existing imports
+import {Component, signal, computed, linkedSignal, ChangeDetectionStrategy} from '@angular/core';
 ```
 
 </docs-step>
@@ -49,13 +47,13 @@ toggleNotifications() {
 This is the key difference: computed signals are read-only, but linked signals can be updated manually while still maintaining their reactive connection.
 </docs-step>
 
-<docs-step title="Update the template to show manual control">
+<docs-step title="Update the template to add manual notification control">
 Update your template to add a toggle button for notifications:
 
 ```html
 <div class="status-info">
   <div class="notifications">
-    <strong>Notifications:</strong> 
+    <strong>Notifications:</strong>
     @if (notificationsEnabled()) {
       Enabled
     } @else {

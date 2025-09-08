@@ -23,6 +23,18 @@
   display: inline-block;
 }
 
+.status-indicator.online .status-dot {
+  background: #4caf50;
+}
+
+.status-indicator.away .status-dot {
+  background: #ff9800;
+}
+
+.status-indicator.offline .status-dot {
+  background: #f44336;
+}
+
 .status-info {
   margin: 20px 0;
   padding: 16px;
@@ -32,7 +44,7 @@
   border-left-color: var(--status-color);
 }
 
-.availability, .message {
+.notifications, .message, .working-hours {
   margin: 8px 0;
 }
 
@@ -95,4 +107,12 @@ button:disabled {
 
 .status-controls .toggle-btn {
   background-color: #28a745;
+}
+
+.notifications .override-btn {
+  background-color: #ffc107;
+  color: #212529;
+  margin-left: 8px;
+  font-size: 0.8em;
+  padding: 4px 8px;
 }
