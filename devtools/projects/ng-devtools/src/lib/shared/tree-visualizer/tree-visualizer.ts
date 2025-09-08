@@ -18,6 +18,7 @@ const RESIZE_OBSERVER_DEBOUNCE = 250;
 
 export interface TreeNode {
   label: string;
+  subLabel?: string;
   children: TreeNode[];
 }
 
@@ -270,12 +271,20 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .attr('y', -halfLabelHeight)
       .append('xhtml:div')
       .attr('class', 'node')
+      .style('position', 'relative')
       .text((node: TreeD3Node<T>) => {
         const label = node.data.label;
         return label.length > MAX_NODE_LABEL_LENGTH
           ? label.slice(0, MAX_NODE_LABEL_LENGTH - '...'.length) + '...'
           : label;
       });
+
+    d3Node.each(function (node: TreeD3Node<T>) {
+      const subLabel = node.data.subLabel;
+      if (subLabel) {
+        d3.select(this).append('div').attr('class', 'sub-label').text(subLabel);
+      }
+    });
 
     this.config.d3NodeModifier(d3Node);
 

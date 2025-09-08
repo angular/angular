@@ -17,6 +17,18 @@
         background: var(--primary-contrast);
       }
 
+      .sub-label {
+        background-color: #fff;
+        padding: 1px 4px;
+        bottom: -8px;
+        right: -2px;
+        font-size: 14px;
+        position: absolute;
+        border-radius: 50px;
+        color: #000;
+        outline: 1px solid #000;
+      }
+
       .arrow {
         fill: var(--full-contrast);
       }
