@@ -7,7 +7,7 @@
  */
 
 import {
-  afterNextRender,
+  afterEveryRender,
   computed,
   DestroyRef,
   Directive,
@@ -266,15 +266,6 @@ export class Control<T> {
           },
         );
         break;
-      case 'select':
-        this.maybeSynchronize(
-          () => this.state().value(),
-          (value) => {
-            // A select will not take a value unil the value's option has rendered.
-            afterNextRender(() => (input.value = value as string), {injector: this.injector});
-          },
-        );
-        break;
       case 'number':
       case 'range':
       case 'datetime-local':
@@ -315,7 +306,44 @@ export class Control<T> {
             input.value = value as string;
           },
         );
+        if (inputType === 'select') {
+          const select = input as HTMLSelectElement;
+          const observer = this.observeSelectMutations(select);
+          this.injector.get(DestroyRef).onDestroy(() => observer.disconnect());
+          // To make testing easier and avoid the need to make all tests async,
+          // manually check the mutation records after every render.
+          // TODO: good/bad idea?
+          afterEveryRender(
+            {read: () => this.maybeResyncSelect(select, observer.takeRecords())},
+            {injector: this.injector},
+          );
+        }
         break;
+    }
+  }
+
+  /**
+   * Sets up a MutationObserver to resync the value to the given select element when the select has
+   * relevant mutations.
+   */
+  private observeSelectMutations(select: HTMLSelectElement) {
+    const observer = new MutationObserver((mutations) => this.maybeResyncSelect(select, mutations));
+    observer.observe(select, {
+      attributes: true,
+      attributeFilter: ['value'],
+      characterData: true,
+      childList: true,
+      subtree: true,
+    });
+    return observer;
+  }
+
+  /**
+   * Resyncs the value to the select if there are any relevant mutations.
+   */
+  private maybeResyncSelect(select: HTMLSelectElement, mutations: MutationRecord[]) {
+    if (mutations.some((m) => isRelevantSelectMutation(m))) {
+      select.value = this.state().value() as string;
     }
   }
 
@@ -514,4 +542,40 @@ function isOutputRef(value: unknown): value is OutputRef<unknown> {
 /** Checks if a given value is a Date or null */
 function isDateOrNull(value: unknown): value is Date | null {
   return value === null || value instanceof Date;
+}
+
+/**
+ * Checks if a given mutation record is relevant for resyncing a <select>.
+ * In general its relevant if:
+ * - Non comment content of the select changed
+ * - The value attribute of an option changed.
+ */
+function isRelevantSelectMutation(mutation: MutationRecord) {
+  // Consider changes that may add / remove options, or change their text content.
+  if (mutation.type === 'childList' || mutation.type === 'characterData') {
+    // If the target element is a comment its not relevant.
+    if (mutation.target instanceof Comment) {
+      return false;
+    }
+    // Otherwise if any non-comment nodes were added / removed it is relevant.
+    // TODO: worth it? or just return true?
+    for (const node of mutation.addedNodes) {
+      if (!(node instanceof Comment)) {
+        return true;
+      }
+    }
+    for (const node of mutation.removedNodes) {
+      if (!(node instanceof Comment)) {
+        return true;
+      }
+    }
+    // Otherwise its not relevant.
+    return false;
+  }
+  // If the value attribute of an option changed, its relevant.
+  if (mutation.type === 'attributes' && mutation.target instanceof HTMLOptionElement) {
+    return true;
+  }
+  // Everything else is not relevant.
+  return false;
 }
