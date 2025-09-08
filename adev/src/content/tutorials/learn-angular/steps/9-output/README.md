@@ -10,7 +10,7 @@ In this activity, you'll learn how to use the `output()` function to communicate
 
 <hr />
 
-To create the communication path from child to parent components, use the `output` function to initiaize a class property.
+To create the communication path from child to parent components, use the `output` function to initialize a class property.
 
 <docs-code header="child.ts" language="ts">
 @Component({...})
