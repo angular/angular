@@ -8,9 +8,9 @@ In this activity, you'll learn how to:
 - Display its value in a template
 - Update the signal value using `set()` and `update()` methods
 
-<hr />
+Let's build an interactive user status system with signals!
 
-Let's build an interactive user status system with signals.
+<hr />
 
 <docs-workflow>
 
@@ -38,18 +38,25 @@ export class App {
 </docs-step>
 
 <docs-step title="Display the signal value in the template">
-Update the template to display the current user status by calling the signal `userStatus()` with parentheses.
+Update the status indicator to display the current user status by:
+1. Binding the signal to the class attribute with `[class]="userStatus()"`
+2. Displaying the status text by replacing `???` with `{{ userStatus() }}`
 
 ```html
-<div class="user-profile">
-  <h1>User Dashboard</h1>
-  <div class="status-indicator" [class]="userStatus()">
-    <span class="status-dot"></span>
-    Status: {{ userStatus() }}
-  </div>
+<!-- Update from: -->
+<div class="status-indicator offline">
+  <span class="status-dot"></span>
+  Status: ???
+</div>
+
+<!-- To: -->
+<div class="status-indicator" [class]="userStatus()">
+  <span class="status-dot"></span>
+  Status: {{ userStatus() }}
 </div>
 ```
 
+Notice how we call the signal `userStatus()` with parentheses to read its value.
 </docs-step>
 
 <docs-step title="Add methods to update the signal">
@@ -69,25 +76,19 @@ The `set()` method replaces the signal's value entirely with a new value.
 
 </docs-step>
 
-<docs-step title="Add buttons to control the status">
-Add control buttons to the template for changing the user's status.
+<docs-step title="Wire up the control buttons">
+The buttons are already in the template. Now connect them to your methods by adding:
+1. Click handlers with `(click)`
+2. Disabled states with `[disabled]` when already in that status
 
 ```html
-<div class="user-profile">
-  <h1>User Dashboard</h1>
-  <div class="status-indicator" [class]="userStatus()">
-    <!-- Status indicator content omitted -->
-  </div>
-
-  <div class="status-controls">
-    <button (click)="goOnline()" [disabled]="userStatus() === 'online'">
-      Go Online
-    </button>
-    <button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
-      Go Offline
-    </button>
-  </div>
-</div>
+<!-- Add bindings to the existing buttons: -->
+<button (click)="goOnline()" [disabled]="userStatus() === 'online'">
+  Go Online
+</button>
+<button (click)="goOffline()" [disabled]="userStatus() === 'offline'">
+  Go Offline
+</button>
 ```
 
 </docs-step>
@@ -105,17 +106,13 @@ The `update()` method takes a function that receives the current value and retur
 
 </docs-step>
 
-<docs-step title="Add the toggle button">
-Add the toggle button to your status controls.
+<docs-step title="Add the toggle button handler">
+The toggle button is already in the template. Connect it to your `toggleStatus()` method:
 
 ```html
-<div class="status-controls">
-  <!-- "Go Online" button -->
-  <!-- "Go Offline" button -->
-  <button (click)="toggleStatus()" class="toggle-btn">
-    Toggle Status
-  </button>
-</div>
+<button (click)="toggleStatus()" class="toggle-btn">
+  Toggle Status
+</button>
 ```
 
 </docs-step>
