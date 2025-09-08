@@ -116,11 +116,11 @@ export class CodeEditor {
       renameFileInput?.nativeElement.focus();
     });
 
-    effect((cleanupFn) => {
+    effect(async (cleanupFn) => {
       const parent = this.codeEditorWrapperRef().nativeElement;
 
-      untracked(() => {
-        this.codeMirrorEditor.init(parent);
+      await untracked(async () => {
+        await this.codeMirrorEditor.init(parent);
         this.listenToDiagnosticsChange();
 
         this.listenToTabChange();
