@@ -8,16 +8,22 @@
 
 // tslint:disable:no-console
 import {input} from '@inquirer/prompts';
-import semver from 'semver';
 import chalk from 'chalk';
 import {writeFile, mkdir, rm, readFile} from 'node:fs/promises';
-import {exec as nodeExec} from 'node:child_process';
+import {exec as nodeExec, spawn, SpawnOptions} from 'node:child_process';
 import {promisify} from 'node:util';
 import {join} from 'node:path';
 
 const exec = promisify(nodeExec);
 
-const execOptions = {maxBuffer: 10 * 1024 * 1024};
+/**
+ * Bazel arguments for release builds, ensuring colored output and progress display.
+ */
+const additionBazelReleaseArgs = [
+  '--color=yes',
+  '--curses=yes',
+  '--show_progress_rate_limit=5',
+] as const;
 
 /** The repository root path */
 const rootPath = join(import.meta.dirname, '../../');
@@ -26,16 +32,10 @@ const rootPath = join(import.meta.dirname, '../../');
 const angularRepoRemote = 'https://github.com/angular/angular.git';
 
 /**
- * The commit message scope for all commits created by this script.
- * This is used to filter commits when generating the changelog.
- */
-const commitScope = 'devtools';
-
-/**
  * The prefix for all release commits created by this script.
  * This is used to filter commits when determining the last release.
  */
-const releaseCommitPrefix = `release(${commitScope}):`;
+const releaseCommitPrefix = 'release: bump Angular DevTools version to ';
 
 /**
  * The path to the manifest files for the Chrome and Firefox extensions.
@@ -74,12 +74,6 @@ const googleAuthenticatorUrl =
   'https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2';
 
 /**
- * A regular expression that matches the commits that should be included in the changelog.
- * This is used to filter commits when generating the changelog.
- */
-const commitRegex = new RegExp(`^(fix|feat|perf)\\(${commitScope}\\):`);
-
-/**
  * The URL to the Google Group that manages publishing rights for the Chrome extension.
  * This is displayed to the user if they do not have permission to publish the extension.
  */
@@ -98,19 +92,6 @@ const firefoxCredentialsUrl = 'http://valentine/#/show/1651707871496288';
 const firefox2faUrl = 'http://valentine/#/show/1651792043556329';
 
 /**
- * The template for the reviewer note that is submitted with the Firefox extension.
- * This is displayed to the user to help them write the reviewer note.
- */
-const firefoxReviewerNoteTemplate = `
-This is a monorepo and includes much more code than just the DevTools extension. The relevant
-code is under \`devtools/...\` and \`devtools/README.md\` contains instructions for compiling
-release builds locally.
-
-The uploaded source is equivalent to:
-https://github.com/angular/angular/tree/RELEASE_COMMIT/.
-`;
-
-/**
  * The main function for the release script.
  * This function orchestrates the release process, from checking for new commits to publishing the extension.
  * It performs the following steps:
@@ -121,7 +102,7 @@ https://github.com/angular/angular/tree/RELEASE_COMMIT/.
  * 5. Prompts the user for a new version number.
  * 6. Creates an output directory for the release artifacts.
  * 7. Updates the manifest files with the new version number.
- * 8. Creates a new branch and commits the version bump.
+ * 8. Prepares the release pull request.
  * 9. Waits for the user to merge the release PR and get the SHA of the merged commit.
  * 10. Publishes the Chrome extension.
  * 11. Publishes the Firefox extension.
@@ -152,12 +133,11 @@ async function main(): Promise<void> {
   for (const commit of commits) {
     console.log(`- ${commit}`);
   }
-  console.log('');
 
-  // Get the new version number from the user.
-  const newVersion = await getNewVersion(commits);
-
+  const newVersion = await getNewVersion();
   const outputDir = `dist/devtools-release-v${newVersion}`;
+
+  console.log('');
   console.log(chalk.blue(`Creating output directory: ${outputDir}`));
   await rm(outputDir, {force: true, recursive: true});
   await mkdir(outputDir, {recursive: true});
@@ -170,11 +150,11 @@ async function main(): Promise<void> {
   // Update the manifest files with the new version number.
   await updateManifests(newVersion);
 
-  // Create a new branch and commit the version bump.
-  await createReleaseCommit(newVersion);
+  // Prepare the release pull request.
+  await prepareReleasePullRequest(newVersion);
 
   // Wait for the user to merge the release PR and get the SHA of the merged commit.
-  const mergedCommitSha = await promptForMergedCommitSha();
+  const mergedCommitSha = await getMergedCommitSha(newVersion);
   await checkoutMergedCommitAndInstallDependencies(mergedCommitSha);
 
   // Publish the Chrome extension.
@@ -203,14 +183,21 @@ async function checkCleanWorkingDirectory(): Promise<void> {
 /**
  * Gets the SHA of the last release commit.
  * This is used to determine which commits to include in the changelog.
+ * @param version Optional. The version string to search for in the commit message.
  * @returns A promise that resolves to the SHA of the last release commit.
  */
-async function getLastReleaseSha(): Promise<string> {
-  const {stdout} = await exec(
-    `git log --remotes=${angularRepoRemote} --grep="${releaseCommitPrefix}" --format=format:%H -n 1`,
+async function getLastReleaseSha(version = ''): Promise<string> {
+  const commitMessagePattern = releaseCommitPrefix + version;
+  let {stdout: sha} = await exec(
+    `git log HEAD --grep="${commitMessagePattern}" --format=format:%H -n 1`,
   );
 
-  return stdout.trim();
+  sha = sha.trim();
+  if (!sha) {
+    throw new Error(`Could not find commit that matches pattern: "${commitMessagePattern}"`);
+  }
+
+  return sha;
 }
 
 /**
@@ -221,40 +208,45 @@ async function getLastReleaseSha(): Promise<string> {
  */
 async function getCommitsSince(since: string): Promise<string[]> {
   const {stdout} = await exec(
-    `git log HEAD...${since} --grep="${commitScope}" --format=format:%s`,
-    execOptions,
+    `git log HEAD...${since} -E --grep="^(feat|fix|perf)\\(devtools\\):" --format=format:%s`,
   );
 
   return stdout
     .trim()
     .split('\n')
-    .filter((line) => line.length > 0 && commitRegex.test(line));
+    .filter((line) => line.length > 0);
 }
 
 /**
  * Gets the new version number from the user.
- * This function reads the current version from the manifest files, determines the next version based on the commits since the last release, and then prompts the user to confirm the new version.
- * @param commits A list of commit messages since the last release.
- * @returns A promise that resolves to the new version number.
+ * This function reads the current version from the manifest files, determines the next version and then prompts the user to confirm the new version.
+ * @returns A promise that resolves to the new version number entered by the user.
  */
-async function getNewVersion(commits: string[]): Promise<string> {
+async function getNewVersion(): Promise<string> {
+  console.log('');
   console.log(chalk.blue('Determining new version...'));
   const currentVersion = await getCurrentVersion();
-  const releaseType = determineReleaseType(commits);
-  const suggestedVersion = semver.inc(currentVersion, releaseType) ?? currentVersion;
+  const [currentMajor] = currentVersion.split('.');
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const builtTime = today.getTime();
+  const suggestedVersion = `${currentMajor}.${year}.${month}.${builtTime}`;
 
   const newVersion = await input({
     message: 'Enter the new version number',
     default: suggestedVersion,
     validate: (value) => {
-      if (!semver.valid(value)) {
-        return chalk.red('Please enter a valid version number.');
-      }
-      if (semver.lte(value, currentVersion)) {
+      if (value === currentVersion) {
         return chalk.red(
           `Please enter a version number greater than the current version (${currentVersion}).`,
         );
       }
+
+      if (!/^\d\.\d{4}\.\d{1,2}\.\d+$/.test(value)) {
+        return chalk.red('Please enter a valid version number.');
+      }
+
       return true;
     },
   });
@@ -266,7 +258,7 @@ async function getNewVersion(commits: string[]): Promise<string> {
 /**
  * Gets the current version number from the manifest files.
  * This function reads the version from the first manifest file and assumes that all manifest files have the same version.
- * @returns A promise that resolves to the current version number.
+ * @returns A promise that resolves to the current version number read from the manifest files.
  */
 async function getCurrentVersion(): Promise<string> {
   const manifest = JSON.parse(await readFile(manifestPaths[0], 'utf-8'));
@@ -274,67 +266,66 @@ async function getCurrentVersion(): Promise<string> {
 }
 
 /**
- * Determines the release type based on the commits since the last release.
- * This function looks for "feat" and "fix" commits to determine whether the release should be a minor or patch release.
- * @param commits A list of commit messages since the last release.
- * @returns The release type ('patch' or 'minor').
- */
-function determineReleaseType(commits: string[]): 'patch' | 'minor' {
-  return commits.some((commit) => commit.startsWith('feat')) ? 'minor' : 'patch';
-}
-
-/**
  * Updates the manifest files with the new version number.
  * This function reads each manifest file, updates the version number, and then writes the file back to disk.
- * @param newVersion The new version number.
+ * @param newVersion The new version number to set in the manifest files.
  * @returns A promise that resolves when all manifest files have been updated.
  */
 async function updateManifests(newVersion: string): Promise<void> {
+  console.log('');
   console.log(chalk.blue(`Updating manifest files to version ${newVersion}...`));
   for (const manifestPath of manifestPaths) {
     const manifest = JSON.parse(await readFile(manifestPath, 'utf-8'));
     manifest.version = newVersion;
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
-    console.log(`Updated version for manifest in: ${manifestPath}`);
+    console.log(`- Updated version for manifest in: ${manifestPath}`);
   }
   console.log(chalk.green('Manifest files updated successfully.'));
 }
 
 /**
- * Creates a new branch and commits the version bump.
+ * Prepares the release pull request.
  * This function creates a new branch, stages the changes to the manifest files, commits the changes, and then pushes the branch to the user's fork.
- * @param newVersion The new version number.
- * @returns A promise that resolves when the release commit has been created and pushed.
+ * @param newVersion The new version number for which the release PR is being prepared.
+ * @returns A promise that resolves when the release branch has been created and pushed.
  */
-async function createReleaseCommit(newVersion: string): Promise<void> {
+async function prepareReleasePullRequest(newVersion: string): Promise<void> {
+  console.log('');
   console.log(chalk.blue('Creating release commit...'));
   const releaseBranch = `devtools-release-${newVersion}`;
-  await exec(`git branch -D ${releaseBranch}`).catch(() => void 0);
+  await exec(`git branch -D ${releaseBranch}`).catch(() => {});
   await exec(`git checkout -b ${releaseBranch}`);
-  await exec(`git add ${manifestPaths.join(' ')}`);
-  await exec(`git commit -m "${releaseCommitPrefix} ${newVersion}"`);
+  await exec(`git commit -m "${releaseCommitPrefix}${newVersion}" "${manifestPaths.join('" "')}"`);
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
   console.log(chalk.green('Release branch pushed to your fork.'));
-  console.log(chalk.yellow('Please create a pull request and merge it.'));
+  console.log(
+    chalk.yellow(
+      `Please create a pull request by visiting: https://github.com/angular/angular/compare/${releaseBranch}`,
+    ),
+  );
 }
 
 /**
- * Prompts the user to enter the SHA of the merged release commit and validates it.
+ * Gets the SHA of the merged release commit by searching for it on the remote.
+ * @param newVersion The new version number associated with the merged release commit.
  * @returns A promise that resolves to the SHA of the merged commit.
  */
-async function promptForMergedCommitSha(): Promise<string> {
+async function getMergedCommitSha(newVersion: string): Promise<string> {
+  console.log('');
   console.log('Waiting for release PR to be merged...');
-  const mergedCommitSha = await input({
-    message: 'Enter the SHA of the merged release commit',
-    validate: async (value) => {
-      try {
-        await exec(`git show --quiet ${value}`);
-        return true;
-      } catch {
-        return chalk.red('Please enter a valid commit SHA.');
-      }
-    },
+  await input({
+    message: 'Press Enter once the release PR has been merged.',
   });
+
+  console.log(chalk.blue('Fetching latest changes from upstream...'));
+  await exec(`git fetch ${angularRepoRemote} main`);
+  console.log(chalk.green('Successfully fetched latest changes.'));
+
+  console.log(chalk.blue('Finding merged release commit...'));
+  const commitMessage = `${releaseCommitPrefix}${newVersion}`;
+  const mergedCommitSha = await getLastReleaseSha(newVersion);
+
+  console.log(chalk.green(`Found merged release commit: ${mergedCommitSha}`));
   return mergedCommitSha;
 }
 
@@ -343,12 +334,13 @@ async function promptForMergedCommitSha(): Promise<string> {
  * @param mergedCommitSha The SHA of the merged release commit.
  */
 async function checkoutMergedCommitAndInstallDependencies(mergedCommitSha: string): Promise<void> {
+  console.log('');
   console.log(
     chalk.blue(`Checking out merged commit ${mergedCommitSha} and installing dependencies...`),
   );
   await exec(`git fetch ${angularRepoRemote}`);
   await exec(`git checkout ${mergedCommitSha}`);
-  await exec(`pnpm install --frozen-lockfile`);
+  await execAndStream('pnpm', ['install', '--frozen-lockfile']);
   console.log(chalk.green('Successfully checked out merged commit and installed dependencies.'));
 }
 
@@ -359,8 +351,9 @@ async function checkoutMergedCommitAndInstallDependencies(mergedCommitSha: strin
  * @returns A promise that resolves when the Chrome extension has been built and packaged.
  */
 async function publishChromeExtension(chromeZipPath: string): Promise<void> {
-  console.log(chalk.blue('\nBuilding Chrome extension...'));
-  await exec('pnpm devtools:build:chrome:release');
+  console.log('');
+  console.log(chalk.blue('Building Chrome extension...'));
+  await execAndStream('pnpm', ['devtools:build:chrome:release', ...additionBazelReleaseArgs]);
   await exec(`zip -r ${join(rootPath, chromeZipPath)} *`, {
     cwd: extensionPath,
   });
@@ -386,15 +379,16 @@ async function publishFirefoxExtension(
   sourceZipPath: string,
   commits: string[],
 ): Promise<void> {
-  console.log(chalk.blue('\nBuilding Firefox extension...'));
-  await exec('pnpm devtools:build:firefox:release');
+  console.log('');
+  console.log(chalk.blue('Building Firefox extension...'));
+  await execAndStream('pnpm', ['devtools:build:firefox:release', ...additionBazelReleaseArgs]);
   await exec(`zip -r ${join(rootPath, firefoxZipPath)} *`, {
     cwd: extensionPath,
   });
   console.log(chalk.green(`Firefox extension packaged at ${firefoxZipPath}`));
 
   console.log(chalk.blue('Packaging source code...'));
-  await exec(`git archive HEAD -o ${sourceZipPath}`);
+  await exec(`git archive HEAD -o "${sourceZipPath}"`);
   console.log(chalk.green(`Source code packaged at ${sourceZipPath}`));
   console.log('');
 
@@ -403,7 +397,7 @@ async function publishFirefoxExtension(
   console.log(changelog);
   console.log('');
 
-  const reviewerNote = firefoxReviewerNoteTemplate.replace('RELEASE_COMMIT', mergedCommitSha);
+  const reviewerNote = getFirefoxReviewerNote(mergedCommitSha);
   console.log(chalk.blue('Reviewer note:'));
   console.log(reviewerNote);
   console.log('');
@@ -431,6 +425,51 @@ function generateChangelog(commits: string[]): string {
         `* ${commit.replace(/\(#(\d+)\)/, '([#$1](https://github.com/angular/angular/pull/$1))')}`,
     )
     .join('\n');
+}
+
+/**
+ * Generates the reviewer note that is submitted with the Firefox extension.
+ * This is displayed to the user to help them write the reviewer note.
+ * @param commitSha The SHA of the release commit.
+ * @returns The reviewer note.
+ */
+function getFirefoxReviewerNote(commitSha: string): string {
+  return `There is a field to provide a note to the reviewer, copy this template and make sure to replace
+${commitSha} with the SHA of the release commit to create a valid link.
+
+This is a monorepo and includes much more code than just the DevTools extension. The relevant
+code is under \`devtools/...\` and \`devtools/README.md\` contains instructions for compiling
+release builds locally.
+
+The uploaded source is equivalent to:
+https://github.com/angular/angular/tree/${commitSha}/.
+`;
+}
+
+/**
+ * Executes a command and streams its stdout and stderr.
+ * @param command The command to execute.
+ * @param args The arguments to pass to the command.
+ * @param options The options to pass to spawn.
+ * @returns A promise that resolves when the command has finished.
+ */
+function execAndStream(command: string, args: string[], options: SpawnOptions = {}): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(`${command} ${args.join(' ')}`, [], {
+      ...options,
+      stdio: 'inherit',
+      shell: true,
+    });
+
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Command "${command} ${args.join(' ')}" failed with exit code ${code}`));
+      }
+    });
+    child.on('error', reject);
+  });
 }
 
 // Start the release process.
