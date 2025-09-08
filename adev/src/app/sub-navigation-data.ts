@@ -1046,6 +1046,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'ecosystem/service-workers/getting-started',
           },
           {
+            label: 'Custom service worker scripts',
+            path: 'ecosystem/service-workers/custom-service-worker-scripts',
+            contentPath: 'ecosystem/service-workers/custom-service-worker-scripts',
+          },
+          {
             label: 'Configuration file',
             path: 'ecosystem/service-workers/config',
             contentPath: 'ecosystem/service-workers/config',
