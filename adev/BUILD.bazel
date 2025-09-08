@@ -63,7 +63,12 @@ APPLICATION_DEPS = [
     "//adev:node_modules/@types/node",
     "//adev:node_modules/@types/dom-navigation",
 
-    # Deep imports
+    # The imports below are packages that our code does not directly import, but our upstream deps import from
+    # these locations directly. By design, rather than hoisting these packages into the "root" node_modules the
+    # dependency is found in (i.e. ./adev/node_modules), rules_js places all of each package's dependencies in
+    # a "hoisted" location within the `.aspect_rules_js/` directories in the node_modules directory. This prevents
+    # the bundler from being able to find it as expected. We instead specifically provide it as a dep within bazel
+    # as a mechanism of "hoisting" the package for our usage by this target.
     "//adev:node_modules/@algolia/client-common",
     "//adev:node_modules/@algolia/requester-browser-xhr",
     "//adev:node_modules/@algolia/requester-node-http",
