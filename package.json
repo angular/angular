@@ -220,7 +220,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "dagre-d3-es@7.0.11": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch"
+      "dagre-d3-es@7.0.11": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
+      "@angular/ssr": "tools/pnpm-patches/@angular__ssr.patch"
     },
     "packageExtensions": {
       "grpc-gcp": {

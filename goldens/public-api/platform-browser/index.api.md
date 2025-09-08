@@ -26,7 +26,12 @@ import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
 // @public
-export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef>;
+export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig, bootstrapContext?: BootstrapContext): Promise<ApplicationRef>;
+
+// @public
+export interface BootstrapContext {
+    platformRef: PlatformRef;
+}
 
 // @public
 export class BrowserModule {

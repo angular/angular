@@ -52,6 +52,19 @@ import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
 
 /**
+ * A context object that can be passed to `bootstrapApplication` to provide a pre-existing platform
+ * injector.
+ *
+ * @publicApi
+ */
+export interface BootstrapContext {
+  /**
+   * A reference to a platform.
+   */
+  platformRef: PlatformRef;
+}
+
+/**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
  * application's root component. More information about standalone components can be found in [this
  * guide](guide/components/importing).
@@ -106,6 +119,9 @@ import {RuntimeErrorCode} from './errors';
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
+ * @param bootstrapContext Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
@@ -113,8 +129,13 @@ import {RuntimeErrorCode} from './errors';
 export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
+  bootstrapContext?: BootstrapContext,
 ): Promise<ApplicationRef> {
-  const config = {rootComponent, ...createProvidersConfig(options)};
+  const config = {
+    rootComponent,
+    platformRef: bootstrapContext?.platformRef,
+    ...createProvidersConfig(options),
+  };
 
   // Attempt to resolve component resources before bootstrapping in JIT mode,
   // however don't interrupt the bootstrapping process.
@@ -142,7 +163,7 @@ export function bootstrapApplication(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
   return internalCreateApplication(createProvidersConfig(options));
 }
 
