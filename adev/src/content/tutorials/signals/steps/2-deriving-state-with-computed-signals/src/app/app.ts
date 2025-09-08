@@ -13,13 +13,19 @@ import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
 
       <div class="status-info">
         <div class="notifications">
-          <strong>Notifications:</strong> Loading...
+          <strong>Notifications:</strong>
+          <!-- TODO: Replace 'Loading...' with @if block using notificationsEnabled() -->
+          Loading...
         </div>
         <div class="message">
-          <strong>Message:</strong> Loading...
+          <strong>Message:</strong>
+          <!-- TODO: Replace 'Loading...' with {{ statusMessage() }} -->
+          Loading...
         </div>
         <div class="working-hours">
-          <strong>Within Working Hours:</strong> Loading...
+          <strong>Within Working Hours:</strong>
+          <!-- TODO: Replace 'Loading...' with @if block using isWithinWorkingHours() -->
+          Loading...
         </div>
       </div>
 

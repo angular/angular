@@ -1,0 +1,11 @@
+{
+  "openFiles": [
+    "src/app/app.ts",
+    "src/app/cart-store.ts",
+    "src/app/cart-display.ts",
+    "src/app/cart-types.ts",
+    "src/app/app.css"
+  ],
+  "type": "editor",
+  "title": "Using signals with services"
+}
