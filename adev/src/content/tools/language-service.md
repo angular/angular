@@ -56,7 +56,7 @@ You can then click "Go to definition" or press F12 to go directly to the definit
 
 ## Angular Language Service in your editor
 
-Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com) and [Eclipse IDE](https://www.eclipse.org/eclipseide).
+Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com), [WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com), [Zed](https://zed.dev), [Neovim](https://neovim.io), and [Eclipse IDE](https://www.eclipse.org/eclipseide).
 
 ### Visual Studio Code
 
@@ -174,7 +174,7 @@ Angular Language Service can be used with Neovim by using the [nvim-lspconfig](h
 
 ### Zed
 
-In [Zed](https://zed.dev), install the extension from [Extensions: Marketplace](https://zed.dev/extensions?query=angular).
+In [Zed](https://zed.dev), install the extension from [Extensions: Marketplace](https://zed.dev/extensions/angular).
 
 ## How the Language Service works
 
