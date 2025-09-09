@@ -2,6 +2,18 @@
 
 The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) enabling AI assistants in your development environment to interact with the Angular CLI. We've included support for CLI powered code generation, adding packages, and more.
 
+## Available Tools
+
+The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
+
+| Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
+| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
+| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
+| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
+
+## Get Started
+
 To get started, run the following command in your terminal:
 
 ```bash
@@ -123,16 +135,6 @@ For example, to run the server in read-only mode in VS Code, you would update yo
   }
 }
 ```
-
-## Available Tools
-
-The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
-
-| Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
-| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
-| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
 
 ## Feedback and New Ideas
 
