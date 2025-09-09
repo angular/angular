@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Input, NgModule} from '@angular/core';
+import {Component, Input, NgModule, provideZoneChangeDetection} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 import {emptyTree, TreeNode} from '../util';
@@ -29,5 +29,6 @@ export class TreeComponent {
   imports: [BrowserModule],
   bootstrap: [TreeComponent],
   declarations: [TreeComponent],
+  providers: [provideZoneChangeDetection()],
 })
 export class AppModule {}

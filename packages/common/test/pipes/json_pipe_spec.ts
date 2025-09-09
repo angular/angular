@@ -71,10 +71,12 @@ describe('JsonPipe', () => {
       const fixture = TestBed.createComponent(TestComp);
       const mutable: number[] = [1];
       fixture.componentInstance.data = mutable;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('[\n  1\n]');
 
       mutable.push(2);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('[\n  1,\n  2\n]');
     }));

@@ -22,6 +22,7 @@ import {
   NO_ERRORS_SCHEMA,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   Renderer2,
   TemplateRef,
   ViewChild,
@@ -341,7 +342,7 @@ describe('debug element', () => {
         TestCmptWithRenderer,
         WithTitleDir,
       ],
-      providers: [Logger],
+      providers: [Logger, provideZoneChangeDetection()],
       schemas: [NO_ERRORS_SCHEMA],
     });
   }));

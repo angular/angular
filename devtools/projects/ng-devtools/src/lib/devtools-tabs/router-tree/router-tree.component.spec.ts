@@ -13,6 +13,7 @@ import SpyObj = jasmine.SpyObj;
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus} from '../../../../../protocol';
 import {ApplicationOperations} from '../../application-operations';
+import {provideZoneChangeDetection} from '@angular/core';
 
 describe('RouterTreeComponent', () => {
   let messageBus: MessageBus<Events>;
@@ -32,6 +33,7 @@ describe('RouterTreeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTreeComponent],
       providers: [
+        provideZoneChangeDetection(),
         {provide: ApplicationOperations, useValue: applicationOperationsSpy},
         {provide: MessageBus, useValue: messageBus},
         {provide: FrameManager, useValue: frameManager},

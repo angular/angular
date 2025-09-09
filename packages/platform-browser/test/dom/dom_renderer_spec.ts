@@ -171,12 +171,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is still in DOM
@@ -194,12 +196,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is still in DOM
@@ -218,12 +222,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.emulated')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is not in DOM
@@ -241,12 +247,14 @@ describe('DefaultDomRendererV2', () => {
 
       // Remove a single instance of the component.
       compInstance.componentOneInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // Verify style is still in DOM
       expect(await styleCount(fixture, '.none')).toBe(1);
 
       // Hide all instances of the component
       compInstance.componentTwoInstanceHidden = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       // Verify style is not in DOM

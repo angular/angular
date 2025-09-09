@@ -15,6 +15,7 @@ import {
   Input,
   NgModule,
   NgZone,
+  provideZoneChangeDetection,
   SimpleChanges,
 } from '@angular/core';
 import {waitForAsync} from '@angular/core/testing';
@@ -42,7 +43,11 @@ withEachNg1Version(() => {
       })
       class AppComponent {}
 
-      @NgModule({declarations: [AppComponent], imports: [BrowserModule, UpgradeModule]})
+      @NgModule({
+        declarations: [AppComponent],
+        imports: [BrowserModule, UpgradeModule],
+        providers: [provideZoneChangeDetection()],
+      })
       class Ng2Module {
         ngDoBootstrap() {}
       }
@@ -195,6 +200,7 @@ withEachNg1Version(() => {
       @NgModule({
         declarations: [AppComponent, ChildComponent],
         imports: [BrowserModule, UpgradeModule],
+        providers: [provideZoneChangeDetection()],
       })
       class Ng2Module {
         ngDoBootstrap() {}

@@ -25,6 +25,7 @@ import {
   Injectable,
   NgModule,
   NgZone,
+  provideZoneChangeDetection,
   RendererFactory2,
   RendererType2,
   ViewChild,
@@ -220,7 +221,10 @@ import {withBody, isNode, el} from '@angular/private/testing';
         }
 
         TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+          providers: [
+            {provide: AnimationEngine, useClass: InjectableAnimationEngine},
+            provideZoneChangeDetection(),
+          ],
           declarations: [Cmp],
         });
 
@@ -269,7 +273,10 @@ import {withBody, isNode, el} from '@angular/private/testing';
         }
 
         TestBed.configureTestingModule({
-          providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+          providers: [
+            {provide: AnimationEngine, useClass: InjectableAnimationEngine},
+            provideZoneChangeDetection(),
+          ],
           declarations: [Cmp],
         });
 

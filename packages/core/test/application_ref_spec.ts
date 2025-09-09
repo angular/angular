@@ -172,7 +172,10 @@ describe('bootstrap', () => {
 
   describe('ApplicationRef', () => {
     beforeEach(async () => {
-      TestBed.configureTestingModule({imports: [await createModule()]});
+      TestBed.configureTestingModule({
+        imports: [await createModule()],
+        providers: [provideZoneChangeDetection()],
+      });
     });
 
     it('should throw when reentering tick', () => {
@@ -743,7 +746,10 @@ describe('bootstrap', () => {
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [MyComp, ContainerComp, EmbeddedViewComp],
-        providers: [{provide: ComponentFixtureNoNgZone, useValue: true}],
+        providers: [
+          {provide: ComponentFixtureNoNgZone, useValue: true},
+          provideZoneChangeDetection(),
+        ],
       });
     });
 
@@ -940,7 +946,7 @@ describe('AppRef', () => {
     beforeEach(() => {
       stableCalled = false;
       TestBed.configureTestingModule({
-        providers: [provideZoneChangeDetection({ignoreChangesOutsideZone: true})],
+        providers: [provideZoneChangeDetection()],
         declarations: [
           SyncComp,
           MicroTaskComp,
@@ -966,7 +972,7 @@ describe('AppRef', () => {
       let i = 0;
       appRef.isStable.subscribe({
         next: (stable: boolean) => {
-          if (stable) {
+          if (stable && !appRef.injector.destroyed) {
             expect(i).toBeLessThan(expected.length);
             expect(fixture.nativeElement).toHaveText(expected[i++]);
             stableCalled = true;
