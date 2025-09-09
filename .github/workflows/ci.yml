@@ -212,3 +212,7 @@ jobs:
           githubReleaseTrainReadToken: ${{ secrets.DOCS_DEPLOY_GITHUB_RELEASE_TRAIN_TOKEN }}
           configPath: 'adev/firebase.json'
           distDir: 'dist/bin/adev/dist/browser'
+      - name: Update Algolia synonym record
+        run: pnpm tsx adev/scripts/synonyms/update-synonyms.mts
+        env:
+          ALGOLIA_KEY: ${{ secrets.ALGOLIA_SYNONYM_MANAGER }}

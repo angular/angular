@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@algolia/client-search": "5.37.0",
     "@angular-devkit/build-angular": "21.0.0-next.1",
     "@angular/animations": "workspace:*",
     "@angular/build": "21.0.0-next.1",
@@ -40,7 +41,7 @@
     "@webcontainer/api": "1.6.1",
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
-    "algoliasearch": "5.36.0",
+    "algoliasearch": "5.37.0",
     "angular-split": "20.0.0",
     "diff": "8.0.2",
     "emoji-regex": "10.5.0",
