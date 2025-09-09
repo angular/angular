@@ -70,13 +70,13 @@ withEachNg1Version(() => {
               const digestSpy = spyOn($rootScope, '$digest').and.callThrough();
 
               // Step 1: Ensure `$digest` is run on `onMicrotaskEmpty`.
-              ngZone.onMicrotaskEmpty.emit(null);
+              ngZone.onMicrotaskEmpty.next(null);
               expect(digestSpy).toHaveBeenCalledTimes(1);
 
               digestSpy.calls.reset();
 
               // Step 2: Cause the issue.
-              $rootScope.$apply(() => ngZone.onMicrotaskEmpty.emit(null));
+              $rootScope.$apply(() => ngZone.onMicrotaskEmpty.next(null));
 
               // With the fix, `$digest` will only be run once (for `$apply()`).
               // Without the fix, `$digest()` would have been run an extra time
@@ -86,7 +86,7 @@ withEachNg1Version(() => {
               digestSpy.calls.reset();
 
               // Step 3: Ensure that `$digest()` is still executed on `onMicrotaskEmpty`.
-              ngZone.onMicrotaskEmpty.emit(null);
+              ngZone.onMicrotaskEmpty.next(null);
               expect(digestSpy).toHaveBeenCalledTimes(1);
             }),
           0,

@@ -1285,10 +1285,10 @@ export class NgZone {
     readonly hasPendingMicrotasks: boolean;
     static isInAngularZone(): boolean;
     readonly isStable: boolean;
-    readonly onError: EventEmitter<any>;
-    readonly onMicrotaskEmpty: EventEmitter<any>;
-    readonly onStable: EventEmitter<any>;
-    readonly onUnstable: EventEmitter<any>;
+    readonly onError: Subject<any>;
+    readonly onMicrotaskEmpty: Subject<any>;
+    readonly onStable: Subject<any>;
+    readonly onUnstable: Subject<any>;
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runOutsideAngular<T>(fn: (...args: any[]) => T): T;

@@ -16,6 +16,7 @@ import {scheduleCallbackWithRafRace} from '../util/callback_scheduler';
 import {noop} from '../util/noop';
 
 import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
+import {Subject} from 'rxjs';
 
 // The below is needed as otherwise a number of targets fail in G3 due to:
 // ERROR - [JSC_UNDEFINED_VARIABLE] variable Zone is undeclared
@@ -113,26 +114,26 @@ export class NgZone {
   /**
    * Notifies when code enters Angular Zone. This gets fired first on VM Turn.
    */
-  readonly onUnstable: EventEmitter<any> = new EventEmitter(false);
+  readonly onUnstable: Subject<any> = new Subject();
 
   /**
    * Notifies when there is no more microtasks enqueued in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
-  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter(false);
+  readonly onMicrotaskEmpty: Subject<any> = new Subject();
 
   /**
    * Notifies when the last `onMicrotaskEmpty` has run and there are no more microtasks, which
    * implies we are about to relinquish VM turn.
    * This event gets called just once.
    */
-  readonly onStable: EventEmitter<any> = new EventEmitter(false);
+  readonly onStable: Subject<any> = new Subject();
 
   /**
    * Notifies that an error has been delivered.
    */
-  readonly onError: EventEmitter<any> = new EventEmitter(false);
+  readonly onError: Subject<any> = new Subject();
 
   constructor(options: {
     enableLongStackTrace?: boolean;
@@ -368,12 +369,12 @@ function checkStable(zone: NgZonePrivate) {
   if (zone._nesting == 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
     try {
       zone._nesting++;
-      zone.onMicrotaskEmpty.emit(null);
+      zone.onMicrotaskEmpty.next(null);
     } finally {
       zone._nesting--;
       if (!zone.hasPendingMicrotasks) {
         try {
-          zone.runOutsideAngular(() => zone.onStable.emit(null));
+          zone.runOutsideAngular(() => zone.onStable.next(null));
         } finally {
           zone.isStable = true;
         }
@@ -515,7 +516,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
     onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any): boolean => {
       delegate.handleError(target, error);
-      zone.runOutsideAngular(() => zone.onError.emit(error));
+      zone.runOutsideAngular(() => zone.onError.next(error));
       return false;
     },
   });
@@ -537,7 +538,7 @@ function onEnter(zone: NgZonePrivate) {
   zone._nesting++;
   if (zone.isStable) {
     zone.isStable = false;
-    zone.onUnstable.emit(null);
+    zone.onUnstable.next(null);
   }
 }
 

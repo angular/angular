@@ -6,7 +6,6 @@
 
 import { Observable } from 'rxjs';
 import { Subject } from 'rxjs';
-import { Subscription } from 'rxjs';
 
 // @public
 export class ComponentFixture<T> {
