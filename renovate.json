@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
-  "baseBranchPatterns": ["main", "20.2.x"],
+  "baseBranchPatterns": ["main", "20.3.x"],
   "ignoreDeps": [
     "@types/selenium-webdriver",
     "angular-1.5",
