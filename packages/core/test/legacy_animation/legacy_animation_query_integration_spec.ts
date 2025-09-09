@@ -30,7 +30,7 @@ import {
 } from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
-import {Component, HostBinding, ViewChild} from '../../src/core';
+import {Component, HostBinding, ViewChild, provideZoneChangeDetection} from '../../src/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
@@ -53,7 +53,10 @@ import {HostListener} from '../../src/metadata/directives';
     beforeEach(() => {
       resetLog();
       TestBed.configureTestingModule({
-        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+        providers: [
+          {provide: AnimationDriver, useClass: MockAnimationDriver},
+          provideZoneChangeDetection(),
+        ],
         imports: [BrowserAnimationsModule, CommonModule],
       });
     });

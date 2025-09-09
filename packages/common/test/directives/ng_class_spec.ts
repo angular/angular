@@ -18,6 +18,7 @@ describe('binding to CSS class list', () => {
   }
 
   function detectChangesAndExpectClassName(classes: string): void {
+    fixture?.changeDetectorRef.markForCheck();
     fixture!.detectChanges();
     let nonNormalizedClassName = fixture!.debugElement.children[0].nativeElement.className;
     expect(normalizeClassNames(nonNormalizedClassName)).toEqual(normalizeClassNames(classes));
@@ -395,8 +396,10 @@ describe('binding to CSS class list', () => {
       detectChangesAndExpectClassName('');
 
       fixture.componentInstance.condition = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       fixture.componentInstance.condition = true;
+      fixture.changeDetectorRef.markForCheck();
       detectChangesAndExpectClassName('color-red');
     });
 
@@ -478,6 +481,7 @@ describe('binding to CSS class list', () => {
       expect(fixture.nativeElement.firstChild.className).toBe('option-1');
 
       fixture.componentInstance.level = 5;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.firstChild.className).toBe('option-5');
     });

@@ -22,6 +22,7 @@ import {
   NgModule,
   OnChanges,
   OnInit,
+  provideZoneChangeDetection,
   QueryList,
   ViewChild,
   ViewChildren,
@@ -37,6 +38,11 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('host bindings', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should render host bindings on the root component', () => {
     @Component({
       template: '...',

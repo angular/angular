@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, NgIf} from '../../index';
-import {Component} from '@angular/core';
+import {Component, provideZoneChangeDetection} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
@@ -27,6 +27,7 @@ describe('ngIf directive', () => {
     TestBed.configureTestingModule({
       declarations: [TestComponent],
       imports: [CommonModule],
+      providers: [provideZoneChangeDetection()],
     });
   });
 

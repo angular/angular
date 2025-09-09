@@ -138,10 +138,12 @@ describe('security integration tests', function () {
       const e = fixture.debugElement.children[0].nativeElement;
       const ci = fixture.componentInstance;
       ci.ctxProp = 'hello';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.getAttribute('href')).toMatch(/.*\/?hello$/);
 
       ci.ctxProp = 'javascript:alert(1)';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
     }
@@ -215,18 +217,22 @@ describe('security integration tests', function () {
       const ci = fixture.componentInstance;
       // Make sure binding harmless values works.
       ci.ctxProp = 'some <p>text</p>';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.innerHTML).toEqual('some <p>text</p>');
 
       ci.ctxProp = 'ha <script>evil()</script>';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.innerHTML).toEqual('ha ');
 
       ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.innerHTML).toEqual('also <img src="x"> evil');
 
       ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(e.innerHTML).toEqual('also  evil');
     });

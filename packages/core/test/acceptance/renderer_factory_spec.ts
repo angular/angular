@@ -30,6 +30,7 @@ import {
   Component,
   DoCheck,
   NgZone,
+  provideZoneChangeDetection,
   Renderer2,
   RendererFactory2,
   RendererStyleFlags2,
@@ -41,6 +42,11 @@ import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
 
 describe('renderer factory lifecycle', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let logs: string[] = [];
   let lastCapturedType: RendererType2 | null = null;
 
@@ -358,6 +364,7 @@ describe('animation renderer factory', () => {
       );
 
       fixture.componentInstance.exp = 'on';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       const [player] = getAnimationLog();
@@ -517,6 +524,7 @@ describe('Renderer2 destruction hooks', () => {
     expect(fixture.nativeElement.textContent).toBe('ABC');
 
     fixture.componentInstance.isContentVisible = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');
@@ -529,6 +537,7 @@ describe('Renderer2 destruction hooks', () => {
     expect(fixture.nativeElement.textContent).toBe('comp(A)comp(B)comp(C)');
 
     fixture.componentInstance.isContentVisible = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('');

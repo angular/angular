@@ -7,7 +7,7 @@
  */
 
 import {HttpClientModule} from '@angular/common/http';
-import {NgModule} from '@angular/core';
+import {NgModule, provideZoneChangeDetection} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 import {HttpCmp} from './app/http_comp';
@@ -16,6 +16,7 @@ import {HttpCmp} from './app/http_comp';
   declarations: [HttpCmp],
   bootstrap: [HttpCmp],
   imports: [BrowserModule, HttpClientModule],
+  providers: [provideZoneChangeDetection()],
 })
 export class ExampleModule {}
 

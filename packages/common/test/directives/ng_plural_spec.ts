@@ -19,6 +19,7 @@ describe('ngPlural', () => {
   }
 
   function detectChangesAndExpectText<T>(text: string): void {
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText(text);
   }

@@ -32,6 +32,7 @@ describe('NgTemplateOutlet', () => {
   }
 
   function detectChangesAndExpectText(text: string): void {
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.debugElement.nativeElement).toHaveText(text);
   }
@@ -313,6 +314,7 @@ describe('NgTemplateOutlet', () => {
     const temp = componentInstance.context1;
     componentInstance.context1 = componentInstance.context2;
     componentInstance.context2 = temp;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(nativeElement.textContent.trim()).toBe('two | one');
@@ -393,6 +395,7 @@ describe('NgTemplateOutlet', () => {
     expect(fixture.nativeElement.textContent).toBe('Name:');
 
     fixture.componentInstance.ctx = {$implicit: 'Angular'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('Name:Angular');

@@ -162,6 +162,7 @@ describe('model inputs', () => {
 
     // Changing the value from the outside.
     host.value = 3;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);

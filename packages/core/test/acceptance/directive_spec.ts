@@ -16,6 +16,7 @@ import {
   NgModule,
   OnChanges,
   Output,
+  provideZoneChangeDetection,
   SimpleChange,
   SimpleChanges,
   TemplateRef,
@@ -26,6 +27,11 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('matching', () => {
     @Directive({
       selector: 'ng-template[test]',

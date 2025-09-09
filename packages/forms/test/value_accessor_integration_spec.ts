@@ -20,6 +20,7 @@ import {
   NgZone,
   Output,
   PLATFORM_ID,
+  provideZoneChangeDetection,
   RendererFactory2,
   Type,
   ViewChild,
@@ -48,7 +49,7 @@ describe('value accessors', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
-      providers: [{provide: PLATFORM_ID, useValue: 'browser'}],
+      providers: [{provide: PLATFORM_ID, useValue: 'browser'}, provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }
@@ -356,6 +357,7 @@ describe('value accessors', () => {
         expect(select.nativeElement.value).toEqual('1: Object');
 
         comp.cities.pop();
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -940,10 +942,12 @@ describe('value accessors', () => {
       it('should support setting value to null and undefined', fakeAsync(() => {
         const fixture = initTest(NgModelRadioForm);
         fixture.componentInstance.food = 'chicken';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
         fixture.componentInstance.food = null!;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
@@ -952,10 +956,12 @@ describe('value accessors', () => {
         expect(inputs[1].nativeElement.checked).toEqual(false);
 
         fixture.componentInstance.food = 'chicken';
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
 
         fixture.componentInstance.food = undefined!;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         tick();
         expect(inputs[0].nativeElement.checked).toEqual(false);
@@ -1315,6 +1321,7 @@ describe('value accessors', () => {
           const comp = fixture.componentInstance;
           comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
           comp.selectedCity = comp.cities[1];
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 
@@ -1322,6 +1329,7 @@ describe('value accessors', () => {
           expect(select.nativeElement.value).toEqual('1: Object');
 
           comp.cities.pop();
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
           tick();
 

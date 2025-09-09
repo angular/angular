@@ -14,6 +14,7 @@ import {
   forwardRef,
   Input,
   OnDestroy,
+  provideZoneChangeDetection,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -143,6 +144,7 @@ describe('reactive forms integration tests', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
+      providers: [provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }

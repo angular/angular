@@ -35,6 +35,7 @@ import {
   RendererFactory2,
   ViewChild,
   ViewContainerRef,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '../../testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
@@ -64,7 +65,10 @@ const DEFAULT_COMPONENT_ID = '1';
     beforeEach(() => {
       resetLog();
       TestBed.configureTestingModule({
-        providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}],
+        providers: [
+          {provide: AnimationDriver, useClass: MockAnimationDriver},
+          provideZoneChangeDetection(),
+        ],
         imports: [BrowserAnimationsModule],
       });
     });

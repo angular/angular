@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectorRef, Component, inject, Pipe, PipeTransform} from '../../src/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Pipe,
+  PipeTransform,
+  provideZoneChangeDetection,
+} from '../../src/core';
 import {TestBed} from '../../testing';
 
 // Basic shared pipe used during testing.
@@ -18,6 +25,11 @@ class MultiplyPipe implements PipeTransform {
 }
 
 describe('control flow - switch', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should show a template based on a matching case', () => {
     @Component({
       template: `
