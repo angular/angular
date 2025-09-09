@@ -15,6 +15,7 @@ import {
   Input,
   NgZone,
   createComponent,
+  provideZoneChangeDetection,
   provideZonelessChangeDetection,
   signal,
 } from '../src/core';
@@ -165,6 +166,7 @@ describe('ComponentFixture', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         AutoDetectComp,
         AsyncComp,
@@ -413,42 +415,6 @@ describe('ComponentFixture', () => {
     }
   }));
 
-  describe('errors during ApplicationRef.tick', () => {
-    @Component({
-      template: '',
-    })
-    class ThrowingThing {
-      ngOnInit() {
-        throw new Error();
-      }
-    }
-    @Component({
-      template: '',
-    })
-    class Blank {}
-
-    it('rejects whenStable promise when errors happen during appRef.tick', async () => {
-      const fixture = TestBed.createComponent(Blank);
-      const throwingThing = createComponent(ThrowingThing, {
-        environmentInjector: TestBed.inject(EnvironmentInjector),
-      });
-
-      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
-      await expectAsync(fixture.whenStable()).toBeRejected();
-    });
-
-    it('can opt-out of rethrowing application errors and rejecting whenStable promises', async () => {
-      TestBed.configureTestingModule({rethrowApplicationErrors: false});
-      const fixture = TestBed.createComponent(Blank);
-      const throwingThing = createComponent(ThrowingThing, {
-        environmentInjector: TestBed.inject(EnvironmentInjector),
-      });
-
-      TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
-      await expectAsync(fixture.whenStable()).toBeResolved();
-    });
-  });
-
   describe('defer', () => {
     it('should return all defer blocks in the component', async () => {
       @Component({
@@ -652,5 +618,41 @@ describe('ComponentFixture with zoneless', () => {
 
     const fixture = TestBed.createComponent(App);
     expect(() => fixture.autoDetectChanges(false)).toThrow();
+  });
+});
+
+describe('errors during ApplicationRef.tick', () => {
+  @Component({
+    template: '',
+  })
+  class ThrowingThing {
+    ngOnInit() {
+      throw new Error();
+    }
+  }
+  @Component({
+    template: '',
+  })
+  class Blank {}
+
+  it('rejects whenStable promise when errors happen during appRef.tick', async () => {
+    const fixture = TestBed.createComponent(Blank);
+    const throwingThing = createComponent(ThrowingThing, {
+      environmentInjector: TestBed.inject(EnvironmentInjector),
+    });
+
+    TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
+    await expectAsync(fixture.whenStable()).toBeRejected();
+  });
+
+  it('can opt-out of rethrowing application errors and rejecting whenStable promises', async () => {
+    TestBed.configureTestingModule({rethrowApplicationErrors: false});
+    const fixture = TestBed.createComponent(Blank);
+    const throwingThing = createComponent(ThrowingThing, {
+      environmentInjector: TestBed.inject(EnvironmentInjector),
+    });
+
+    TestBed.inject(ApplicationRef).attachView(throwingThing.hostView);
+    await expectAsync(fixture.whenStable()).toBeResolved();
   });
 });

@@ -14,6 +14,7 @@ import {
   Directive,
   EnvironmentInjector,
   inject,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
@@ -77,6 +78,11 @@ describe('DestroyRef', () => {
   });
 
   describe('for node injector', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     it('should inject cleanup context in components', () => {
       let destroyed = false;
 

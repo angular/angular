@@ -7,7 +7,16 @@
  */
 
 import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, ElementRef, forwardRef, Input, Type, ViewChild} from '@angular/core';
+import {
+  Component,
+  Directive,
+  ElementRef,
+  forwardRef,
+  Input,
+  provideZoneChangeDetection,
+  Type,
+  ViewChild,
+} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {
   AbstractControl,
@@ -36,6 +45,7 @@ describe('template-driven forms integration tests', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, CommonModule],
+      providers: [provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, provideZoneChangeDetection} from '@angular/core';
 import {BrowserModule, DomSanitizer, SafeStyle} from '@angular/platform-browser';
 
 import {emptyTree, TreeNode} from '../util';
@@ -29,7 +29,12 @@ export class TreeComponent {
   }
 }
 
-@NgModule({imports: [BrowserModule], bootstrap: [TreeComponent], declarations: [TreeComponent]})
+@NgModule({
+  imports: [BrowserModule],
+  providers: [provideZoneChangeDetection()],
+  bootstrap: [TreeComponent],
+  declarations: [TreeComponent],
+})
 export class AppModule {
   constructor(sanitizer: DomSanitizer) {
     trustedEmptyColor = sanitizer.bypassSecurityTrustStyle('');

@@ -848,6 +848,7 @@ describe('reactivity', () => {
 
         // Toggle the @if, which should create and run the effect.
         fixture.componentInstance.cond = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
         expect(log).toEqual(['init', 'effect']);
       });

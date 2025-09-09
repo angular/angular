@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Directive, HostBinding} from '../../src/core';
+import {Component, Directive, HostBinding, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
 
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
@@ -585,6 +585,7 @@ describe('sanitization', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideZoneChangeDetection(),
         {
           provide: Sanitizer,
           useValue: sanitizer,
@@ -631,6 +632,7 @@ describe('sanitization', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideZoneChangeDetection(),
         {
           provide: Sanitizer,
           useValue: sanitizer,

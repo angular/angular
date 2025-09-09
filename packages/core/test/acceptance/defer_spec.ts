@@ -34,6 +34,7 @@ import {
   Injector,
   ElementRef,
   ViewChild,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {getComponentDef} from '../../src/render3/def_getters';
 import {ComponentFixture, DeferBlockBehavior, fakeAsync, flush, TestBed, tick} from '../../testing';
@@ -221,6 +222,11 @@ const COMMON_PROVIDERS = [
 ];
 
 describe('@defer', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   beforeEach(() => {
     TestBed.configureTestingModule({providers: COMMON_PROVIDERS});
   });

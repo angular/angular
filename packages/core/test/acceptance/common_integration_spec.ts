@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, Directive} from '../../src/core';
+import {Component, Directive, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('@angular/common integration', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('NgForOf', () => {
     @Directive({
       selector: '[dir]',

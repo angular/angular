@@ -26,6 +26,7 @@ import {
   NO_ERRORS_SCHEMA,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   Type,
@@ -46,7 +47,7 @@ describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
-      providers: [provideNgReflectAttributes()],
+      providers: [provideZoneChangeDetection(), provideNgReflectAttributes()],
       // In some of the tests we use made-up tag names for better readability, however
       // they'll cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have
       // to declare dummy components for each one of them.
