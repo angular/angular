@@ -108,7 +108,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
-  @Input() ngComponentOutletContent?: any[][];
+  @Input() ngComponentOutletContent?: Node[][];
 
   @Input() ngComponentOutletNgModule?: Type<any>;
 
