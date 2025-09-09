@@ -130,7 +130,7 @@ export interface BootstrapContext {
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
- * @param bootstrapContext Optional context object that can be used to provide a pre-existing
+ * @param context Optional context object that can be used to provide a pre-existing
  *     platform injector. This is useful for advanced use-cases, for example, server-side
  *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
@@ -140,11 +140,11 @@ export interface BootstrapContext {
 export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
-  bootstrapContext?: BootstrapContext,
+  context?: BootstrapContext,
 ): Promise<ApplicationRef> {
   return internalCreateApplication({
     rootComponent,
-    platformRef: bootstrapContext?.platformRef,
+    platformRef: context?.platformRef,
     ...createProvidersConfig(options),
   });
 }
