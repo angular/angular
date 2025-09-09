@@ -1,0 +1,13 @@
+diff --git a/node_modules/@angular/ssr/fesm2022/ssr.mjs b/node_modules/@angular/ssr/fesm2022/ssr.mjs
+index 3267e86..1b628be 100755
+--- a/node_modules/@angular/ssr/fesm2022/ssr.mjs
++++ b/node_modules/@angular/ssr/fesm2022/ssr.mjs
+@@ -1093,7 +1093,7 @@ async function getRoutesFromAngularRouterConfig(bootstrap, document, url, invoke
+             applicationRef = moduleRef.injector.get(ApplicationRef);
+         }
+         else {
+-            applicationRef = await bootstrap();
++            applicationRef = await bootstrap({platformRef});
+         }
+         const injector = applicationRef.injector;
+         const router = injector.get(Router);
