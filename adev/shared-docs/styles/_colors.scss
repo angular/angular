@@ -13,6 +13,7 @@
   --electric-violet: oklch(53.18% 0.28 296.97); // #8514f5
   --french-violet: oklch(47.66% 0.246 305.88); // #8001c6
   --vivid-pink: oklch(69.02% 0.277 332.77); // #f637e3
+  --always-pink: oklch(69.02% 0.277 332.77); // #f637e3
   --hot-pink: oklch(59.91% 0.239 8.14); // #e90464
   --hot-red: oklch(61.42% 0.238 15.34); // #f11653
   --orange-red: oklch(63.32% 0.24 31.68); // #fa2c04
@@ -22,7 +23,7 @@
   --deprecated-docs-bg: var(--deprecated-light); // Alias specifically for deprecated docs
 
   // subtle-purple is used for inline-code bg, docs-card hover bg & docs-code header bg
-  --subtle-purple: color-mix(in srgb, var(--bright-blue) 5%, white 10%);
+  --subtle-purple: color-mix(in srgb, var(--bright-blue) 8%, white 92%);
   --light-blue: color-mix(in srgb, var(--bright-blue), white 50%);
   --light-violet: color-mix(in srgb, var(--electric-violet), white 65%);
   --light-orange: color-mix(in srgb, var(--orange-red), white 50%);
@@ -211,6 +212,7 @@
   --electric-violet: color-mix(in srgb, oklch(53.18% 0.28 296.97), var(--full-contrast) 70%);
   --french-violet: color-mix(in srgb, oklch(47.66% 0.246 305.88), var(--full-contrast) 70%);
   --vivid-pink: color-mix(in srgb, oklch(69.02% 0.277 332.77), var(--full-contrast) 70%);
+  // --always-pink we keep the same in light mode
   --hot-pink: color-mix(in srgb, oklch(59.91% 0.239 8.14), var(--full-contrast) 70%);
   --hot-red: color-mix(in srgb, oklch(61.42% 0.238 15.34), var(--full-contrast) 70%);
   --orange-red: color-mix(in srgb, oklch(63.32% 0.24 31.68), var(--full-contrast) 60%);
@@ -220,6 +222,7 @@
   --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
 
   --light-pink: color-mix(in srgb, var(--vivid-pink) 5%, var(--page-background) 75%);
+  --subtle-purple: color-mix(in srgb, var(--bright-blue) 5%, var(--page-background) 85%);
 
   --symbolic-purple: color-mix(in srgb, oklch(42.86% 0.29 266.4), var(--full-contrast) 65%);
   --symbolic-gray: color-mix(in srgb, oklch(66.98% 0 0), var(--full-contrast) 65%);
