@@ -5340,13 +5340,13 @@ runInEachFileSystem((os: string) => {
         })
         class FooCmp {
           @HostListener('click')
-          onClick(event: any): void {}
+          onClick(): void {}
 
           @HostListener('document:click', ['$event.target'])
-          onDocumentClick(eventTarget: HTMLElement): void {}
+          onDocumentClick(eventTarget: EventTarget | null): void {}
 
           @HostListener('window:scroll')
-          onWindowScroll(event: any): void {}
+          onWindowScroll(): void {}
         }
     `,
       );
@@ -5375,7 +5375,7 @@ runInEachFileSystem((os: string) => {
         })
         class FooCmp {
           @HostListener('UnknownTarget:click')
-          onClick(event: any): void {}
+          onClick(): void {}
         }
     `,
       );
@@ -5466,17 +5466,24 @@ runInEachFileSystem((os: string) => {
             '[attr.hello]': 'foo',
             '(click)': 'onClick($event)',
             '(body:click)': 'onBodyClick($event)',
-            '[prop]': 'bar',
+            '[id]': 'bar',
           },
         })
         class FooCmp {
+          arg1: any;
+          arg2: any;
+          arg3: any;
+          foo: any;
+          bar: any;
+
           onClick(event: any): void {}
+          onBodyClick(event: any): void {}
 
           @HostBinding('class.someclass')
           get someClass(): boolean { return false; }
 
-          @HostListener('change', ['arg1', 'arg2', 'arg3'])
-          onChange(event: any, arg: any): void {}
+          @HostListener('change', ['$event', 'arg1', 'arg2', 'arg3'])
+          onChange(event: any, arg1: any, arg2: any, arg3: any): void {}
         }
     `,
       );
@@ -5487,10 +5494,10 @@ runInEachFileSystem((os: string) => {
       hostVars: 4,
       hostBindings: function FooCmp_HostBindings(rf, ctx) {
         if (rf & 1) {
-          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler() { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
+          i0.ɵɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); })("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, i0.ɵɵresolveBody)("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange($event, ctx.arg1, ctx.arg2, ctx.arg3); });
         }
         if (rf & 2) {
-          i0.ɵɵdomProperty("prop", ctx.bar);
+          i0.ɵɵdomProperty("id", ctx.bar);
           i0.ɵɵattribute("hello", ctx.foo);
           i0.ɵɵclassProp("someclass", ctx.someClass);
         }
@@ -5608,6 +5615,8 @@ runInEachFileSystem((os: string) => {
           selector: '[test]',
         })
         class Dir {
+          arg: any;
+
           @HostListener('change', ['$event', 'arg'])
           onChange(event: any, arg: any): void {}
         }
@@ -8471,28 +8480,18 @@ runInEachFileSystem((os: string) => {
         expect(trim(jsContents)).toContain(trim(hostBindingsFn));
       });
 
-      it('should generate sanitizers for unsafe properties in hostBindings fn in Directives', () => {
+      it('should generate sanitizers for unsafe properties in hostBindings function in Directives', () => {
         env.write(
           `test.ts`,
           `
-        import {Component, Directive, HostBinding, Input, NgModule} from '@angular/core';
+        import {Component, Directive, HostBinding, Input} from '@angular/core';
 
         @Directive({
-          selector: '[unsafeProps]',
-          standalone: false,
+          selector: 'a[unsafeProps]',
         })
         class UnsafePropsDirective {
           @HostBinding('href')
           propHref: string;
-
-          @HostBinding('src')
-          propSrc: string;
-
-          @HostBinding('action')
-          propAction: string;
-
-          @HostBinding('profile')
-          propProfile: string;
 
           @HostBinding('innerHTML')
           propInnerHTML: string;
@@ -8506,24 +8505,21 @@ runInEachFileSystem((os: string) => {
         @Component({
           selector: 'foo',
           template: '<a [unsafeProps]="ctxProp">Link Title</a>',
-          standalone: false,
+          imports: [UnsafePropsDirective]
         })
         class FooCmp {
           ctxProp = '';
         }
-
-        @NgModule({declarations: [FooCmp, UnsafePropsDirective]})
-        class MyModule {}
       `,
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         const hostBindingsFn = `
-        hostVars: 6,
+        hostVars: 3,
         hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrlOrResourceUrl)("src", ctx.propSrc, i0.ɵɵsanitizeUrlOrResourceUrl)("action", ctx.propAction, i0.ɵɵsanitizeUrl)("profile", ctx.propProfile, i0.ɵɵsanitizeResourceUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
+            i0.ɵɵdomProperty("href", ctx.propHref, i0.ɵɵsanitizeUrl)("innerHTML", ctx.propInnerHTML, i0.ɵɵsanitizeHtml)("title", ctx.propSafeTitle);
           }
         }
       `;
@@ -8537,10 +8533,9 @@ runInEachFileSystem((os: string) => {
         import {Component} from '@angular/core';
 
         @Component({
-          selector: 'foo',
+          selector: 'a[foo]',
           template: '<a href="example.com">Link Title</a>',
           host: {
-            '[src]': 'srcProp',
             '[href]': 'hrefProp',
             '[title]': 'titleProp',
             '[attr.src]': 'srcAttr',
@@ -8548,18 +8543,24 @@ runInEachFileSystem((os: string) => {
             '[attr.title]': 'titleAttr',
           }
         })
-        class FooCmp {}
+        class FooCmp {
+          hrefProp: any;
+          titleProp: any;
+          srcAttr: any;
+          hrefAttr: any;
+          titleAttr: any;
+        }
       `,
         );
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
         const hostBindingsFn = `
-        hostVars: 6,
+        hostVars: 5,
         hostBindings: function FooCmp_HostBindings(rf, ctx) {
           if (rf & 2) {
-            i0.ɵɵdomProperty("src", ctx.srcProp)("href", ctx.hrefProp)("title", ctx.titleProp);
-            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr)("title", ctx.titleAttr);
+            i0.ɵɵdomProperty("href", ctx.hrefProp, i0.ɵɵsanitizeUrl)("title", ctx.titleProp);
+            i0.ɵɵattribute("src", ctx.srcAttr)("href", ctx.hrefAttr, i0.ɵɵsanitizeUrl)("title", ctx.titleAttr);
           }
         }
       `;
@@ -9759,6 +9760,7 @@ runInEachFileSystem((os: string) => {
               import {Directive} from '@angular/core';
 
               @Directive({
+                selector: 'iframe[someDir]',
                 host: {
                   '[sandbox]': "''",
                   '[attr.allow]': "''",

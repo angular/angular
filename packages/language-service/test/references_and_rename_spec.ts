@@ -1540,9 +1540,7 @@ describe('find references and rename locations', () => {
         `,
       };
       env = LanguageServiceTestEnv.setup();
-      const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-        typeCheckHostBindings: true,
-      });
+      const project = createModuleAndProjectWithDeclarations(env, 'test', files);
       appFile = project.openFile('app.ts');
     });
 

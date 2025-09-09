@@ -1461,7 +1461,7 @@ export class NgCompiler {
     const supportJitMode = this.options['supportJitMode'] ?? true;
     const supportTestBed = this.options['supportTestBed'] ?? true;
     const externalRuntimeStyles = this.options['externalRuntimeStyles'] ?? false;
-    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? false;
+    const typeCheckHostBindings = this.options.typeCheckHostBindings ?? true;
 
     // Libraries compiled in partial mode could potentially be used with TestBed within an
     // application. Since this is not known at library compilation time, support is required to

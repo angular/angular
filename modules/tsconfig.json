@@ -29,7 +29,6 @@
   ],
   "angularCompilerOptions": {
     "strictTemplates": true,
-    "skipTemplateCodegen": true,
-    "typeCheckHostBindings": true
+    "skipTemplateCodegen": true
   }
 }

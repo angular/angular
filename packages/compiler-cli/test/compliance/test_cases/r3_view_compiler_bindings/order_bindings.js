@@ -5,7 +5,7 @@ function MyCmp_HostBindings(rf, ctx) {
 		$r3$.ɵɵlistener("event1", function MyCmp_event1_HostBindingHandler() { return ctx.foo(); });
 	}
 	if (rf & 2) {
-		$r3$.ɵɵdomProperty("prop1", ctx.foo);
+		$r3$.ɵɵdomProperty("id", ctx.foo);
 		$r3$.ɵɵattribute("attr1", ctx.foo);
 		$r3$.ɵɵstyleMap(ctx.foo);
         $r3$.ɵɵclassMap(ctx.foo);
