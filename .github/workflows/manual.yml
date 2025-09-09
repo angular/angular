@@ -8,7 +8,7 @@ jobs:
   # Bazel saucelabs job resides in `manual.yml` because it's currently unstable, but
   # kept as "runnable" for debugging/stabilization effort purposes.
   bazel-saucelabs:
-    runs-on: ubuntu-latest-4core
+    runs-on: ubuntu-latest
     env:
       JOBS: 2
     steps:
