@@ -15,7 +15,7 @@
     "@angular/upgrade": "workspace:*",
     "@types/jasmine": "5.1.9",
     "@types/jasminewd2": "2.0.13",
-    "@types/node": "24.3.0",
+    "@types/node": "24.3.1",
     "@types/selenium-webdriver": "3.0.7",
     "angular-1.8": "npm:angular@1.8",
     "protractor": "7.0.0",
