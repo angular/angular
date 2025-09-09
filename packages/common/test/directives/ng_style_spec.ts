@@ -47,11 +47,13 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     let expr = getComponent().expr;
     expr['max-width'] = '30%';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '30%'});
   }));
@@ -61,10 +63,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     getComponent().expr = null;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
   }));
@@ -74,10 +78,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     getComponent().expr = undefined;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
   }));
@@ -88,10 +94,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = '40';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     getComponent().expr = null;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
   }));
@@ -101,10 +109,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(`<div [ngStyle]="{'color': expr}"></div>`);
 
     getComponent().expr = 'green';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'color': 'green'});
 
     getComponent().expr = null;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('color');
   }));
@@ -115,10 +125,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width.px': '40'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     getComponent().expr = {'max-width.em': '40'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40em'});
   }));
@@ -135,6 +147,7 @@ describe('NgStyle', () => {
       width: '10px',
     };
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'height': '10px', 'width': '10px'});
 
@@ -144,6 +157,7 @@ describe('NgStyle', () => {
       height: '5px',
     };
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'height': '5px', 'width': '5px'});
   }));
@@ -154,10 +168,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px'});
 
     delete getComponent().expr['max-width'];
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
   }));
@@ -168,10 +184,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px', 'font-size': '12px'});
 
     delete getComponent().expr['max-width'];
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
     expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
@@ -183,10 +201,12 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
 
     getComponent().expr = {'max-width': '40px'};
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'max-width': '40px', 'font-size': '12px'});
 
     delete getComponent().expr['max-width'];
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).not.toHaveCssStyle('max-width');
     expectNativeEl(fixture).toHaveCssStyle({'font-size': '12px'});
@@ -198,17 +218,20 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
     fixture.componentInstance.expr = 'red';
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'color': 'red'});
 
     // Overwrite native styles so that we can check if ngStyle has performed DOM manupulation to
     // update it.
     fixture.debugElement.children[0].nativeElement.style.color = 'blue';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     // Assert that the style hasn't been updated
     expectNativeEl(fixture).toHaveCssStyle({'color': 'blue'});
 
     fixture.componentInstance.expr = 'yellow';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     // Assert that the style has changed now that the model has changed
     expectNativeEl(fixture).toHaveCssStyle({'color': 'yellow'});
@@ -219,6 +242,7 @@ describe('NgStyle', () => {
     fixture = createTestComponent(template);
     fixture.componentInstance.expr = 400;
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expectNativeEl(fixture).toHaveCssStyle({'width': '400px'});
   });
@@ -231,6 +255,7 @@ describe('NgStyle', () => {
     const template = `<div style="width: var(--width)" [ngStyle]="{'--width': expr}"></div>`;
     fixture = createTestComponent(template);
     fixture.componentInstance.expr = '100px';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     const target: HTMLElement = fixture.nativeElement.querySelector('div');

@@ -7,7 +7,7 @@
  */
 
 import '@angular/compiler';
-import {Component, importProvidersFrom} from '../../../src/core';
+import {Component, importProvidersFrom, provideZoneChangeDetection} from '../../../src/core';
 import {bootstrapApplication, provideProtractorTestingSupport} from '@angular/platform-browser';
 import {RouterModule} from '@angular/router';
 
@@ -57,6 +57,7 @@ const ROUTES = [
 
 bootstrapApplication(RootComponent, {
   providers: [
+    provideZoneChangeDetection(),
     provideProtractorTestingSupport(), //
     importProvidersFrom(RouterModule.forRoot(ROUTES)),
   ],

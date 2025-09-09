@@ -1073,6 +1073,7 @@ Did you run and wait for 'resolveComponentResources()'?`);
       expect(componentFixture.nativeElement).toHaveText('MyIf()');
 
       componentFixture.componentInstance.showMore = true;
+      componentFixture.changeDetectorRef.markForCheck();
       componentFixture.detectChanges();
       expect(componentFixture.nativeElement).toHaveText('MyIf(More)');
     }));

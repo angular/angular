@@ -171,7 +171,7 @@ function bootstrap(
     imports: [BrowserModule, ...imports],
     declarations: [cmpType],
     bootstrap: [cmpType],
-    providers: providers,
+    providers: [provideZoneChangeDetection(), ...providers],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
   })
   class TestModule {}
@@ -289,8 +289,12 @@ describe('bootstrap factory method', () => {
     });
 
     it('should keep change detection isolated for separately bootstrapped apps', async () => {
-      const appRef1 = await bootstrapApplication(SimpleComp);
-      const appRef2 = await bootstrapApplication(SimpleComp2);
+      const appRef1 = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
+      const appRef2 = await bootstrapApplication(SimpleComp2, {
+        providers: [provideZoneChangeDetection()],
+      });
 
       expect(el.innerText).toBe('Hello from SimpleComp!');
       expect(el2.innerText).toBe('Hello from SimpleComp2!');
@@ -315,7 +319,9 @@ describe('bootstrap factory method', () => {
     });
 
     it('should allow bootstrapping multiple standalone components within the same app', async () => {
-      const appRef = await bootstrapApplication(SimpleComp);
+      const appRef = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
       appRef.bootstrap(SimpleComp2);
 
       expect(el.innerText).toBe('Hello from SimpleComp!');
@@ -334,7 +340,9 @@ describe('bootstrap factory method', () => {
     });
 
     it('should allow bootstrapping non-standalone components within the same app', async () => {
-      const appRef = await bootstrapApplication(SimpleComp);
+      const appRef = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
 
       // ApplicationRef should still allow bootstrapping non-standalone
       // components into the same application.
@@ -838,6 +846,7 @@ describe('bootstrap factory method', () => {
         declarations: [CompA, CompB],
         bootstrap: [CompA, CompB],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        providers: [provideZoneChangeDetection()],
       })
       class TestModuleA {}
       platformBrowser()

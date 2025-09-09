@@ -13,13 +13,26 @@ import {
 } from '../src/animations';
 import {AnimationDriver} from '../browser';
 import {MockAnimationDriver} from '../browser/testing';
-import {Component, NgZone, RendererFactory2, ViewChild, DOCUMENT} from '@angular/core';
+import {
+  Component,
+  NgZone,
+  RendererFactory2,
+  ViewChild,
+  DOCUMENT,
+  NgModule,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {ɵAsyncAnimationRendererFactory as AsyncAnimationRendererFactory} from '@angular/platform-browser/animations/async';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {isNode} from '@angular/private/testing';
+
+@NgModule({
+  providers: [provideZonelessChangeDetection()],
+})
+class TestModule {}
 
 describe('BrowserAnimationBuilder', () => {
   if (isNode) {
@@ -233,7 +246,7 @@ describe('BrowserAnimationBuilder', () => {
       // We need to reset the test environment because
       // browser_tests.init.ts inits the environment with the NoopAnimationsModule
       TestBed.resetTestEnvironment();
-      TestBed.initTestEnvironment([BrowserTestingModule], platformBrowserTesting());
+      TestBed.initTestEnvironment([BrowserTestingModule, TestModule], platformBrowserTesting());
     });
 
     it('should throw an error when injecting AnimationBuilder without animation providers set', () => {
@@ -246,7 +259,7 @@ describe('BrowserAnimationBuilder', () => {
       // We're reset the test environment to their default values, cf browser_tests.init.ts
       TestBed.resetTestEnvironment();
       TestBed.initTestEnvironment(
-        [BrowserTestingModule, NoopAnimationsModule],
+        [BrowserTestingModule, NoopAnimationsModule, TestModule],
         platformBrowserTesting(),
       );
     });

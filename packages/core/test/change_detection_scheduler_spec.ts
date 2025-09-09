@@ -756,6 +756,7 @@ describe('Angular with scheduler and ZoneJS', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideZoneChangeDetection(),
         {provide: ComponentFixtureAutoDetect, useValue: true},
         {provide: PLATFORM_ID, useValue: PLATFORM_BROWSER_ID},
       ],

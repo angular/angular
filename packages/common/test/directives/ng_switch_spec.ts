@@ -19,6 +19,7 @@ describe('NgSwitch', () => {
   }
 
   function detectChangesAndExpectText(text: string): void {
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText(text);
   }
@@ -160,10 +161,12 @@ describe('NgSwitch', () => {
     expect(fixture.nativeElement).toHaveText('when a');
 
     fixture.componentInstance.switchValue = 'b';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('when default');
 
     fixture.componentInstance.switchValue = 'c';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('when default');
   });

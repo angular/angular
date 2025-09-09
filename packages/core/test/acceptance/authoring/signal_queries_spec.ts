@@ -127,10 +127,12 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.foundEl()).toBe(1);
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(2);
 
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.foundEl()).toBe(1);
     });
@@ -197,6 +199,7 @@ describe('queries as signals', () => {
       // subsequent reads should return the same result instance and _not_ trigger downstream
       // computed re-evaluation
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.divEl()).toBe(divEl);
       expect(fixture.componentInstance.isThere()).toBe(1);
@@ -223,6 +226,7 @@ describe('queries as signals', () => {
       expect(result1.length).toBe(1);
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       // subsequent reads should return the same result instance since the query results didn't
       // change
@@ -322,10 +326,12 @@ describe('queries as signals', () => {
       expect(fixture.nativeElement.textContent).toBe('3');
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('4');
 
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
@@ -368,10 +374,12 @@ describe('queries as signals', () => {
       expect(fixture.nativeElement.textContent).toBe('3');
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('4');
 
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.nativeElement.textContent).toBe('3');
     });
@@ -509,8 +517,10 @@ describe('queries as signals', () => {
 
       // trigger view manipulation that should dirty queries but not change the results
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.foundElCount()).toBe(1);
@@ -545,8 +555,10 @@ describe('queries as signals', () => {
 
       // trigger view manipulation that should dirty queries but not change the results
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.componentInstance.foundElCount()).toBe(1);
@@ -610,11 +622,13 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
@@ -652,11 +666,13 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
 
       fixture.componentInstance.show = true;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(2);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(2);
 
       fixture.componentInstance.show = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(fixture.componentInstance.divElsSignal().length).toBe(1);
       expect(fixture.componentInstance.divElsDecorator.length).toBe(1);
