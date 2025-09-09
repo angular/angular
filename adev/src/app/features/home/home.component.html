@@ -1,17 +1,477 @@
-<adev-home-animation [isUwu]="isUwu" (ready)="onAnimationReady($event)" />
+<section class="logo-section">
+  @if (!isUwu) {
+    <!-- Angular logo -->
+    <div class="logo-layer">
+      <svg class="svg" viewBox="0 0 1280 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Do not remove `gradientTransform` attribute. Safari needs it in order to start the animation. -->
+          <linearGradient
+            id="gradient"
+            gradientUnits="userSpaceOnUse"
+            gradientTransform="rotate(0 640 125)"
+          >
+            <stop offset="0" stop-color="#ed0100" />
+            <stop offset="0.25" stop-color="#e449b4" />
+            <stop offset="0.5" stop-color="#ae3bfc" />
+            <stop offset="1" stop-color="#7f15fd" />
+            <animateTransform
+              attributeName="gradientTransform"
+              type="rotate"
+              from="0 640 125"
+              to="360 640 125"
+              dur="6.5s"
+              repeatCount="indefinite"
+            />
+          </linearGradient>
+        </defs>
+        <g class="wrapper" fill="url(#gradient)">
+          <g class="logo">
+            <g class="shield">
+              <path
+                class="shield-base"
+                d="M311.8,101.7L302,255.6L208.3,53.8L311.8,101.7ZM246.9,300.7L176.1,341.1L105.3,300.7L246.9,300.7ZM50.1,255.6L40.4,101.7L143.9,53.8L50.1,255.6Z"
+              />
+              <path class="shield-middle" d="M176.1,130.4L213.2,220.6L139,220.6L176.1,130.4Z" />
+              <path
+                class="shield-bottom-a-arc"
+                d="M106.419,301.339L105.3,300.7L119.7,265.8L232.5,265.8L246.9,300.7L245.781,301.339L106.419,301.339Z"
+              />
+            </g>
+            <path
+              class="capt-a-letter letter"
+              d="M515.4,288L553.1,288L484.4,92.7L440.7,92.7L372,288L409.7,288L425.8,239.9L499.2,239.9L515.4,288ZM435.4,211.4L461.8,132.8L463.3,132.8L489.7,211.4L435.4,211.4Z"
+            />
+            <path
+              class="n-letter letter"
+              d="M590.4,202.2L590.4,288L555.9,288L555.9,141.6L588.9,141.6L588.9,166.5L590.6,166.5C594,158.3 599.4,151.8 606.8,147C614.2,142.2 623.4,139.8 634.3,139.8C644.4,139.8 653.2,142 660.8,146.3C668.3,150.6 674.2,156.9 678.3,165.1C682.5,173.3 684.5,183.2 684.4,194.9L684.4,288L649.9,288L649.9,200.1C649.9,190.3 647.4,182.7 642.3,177.1C637.2,171.6 630.3,168.8 621.4,168.8C615.4,168.8 610,170.1 605.3,172.8C600.6,175.4 597,179.2 594.3,184.2C591.8,189.1 590.4,195.1 590.4,202.2Z"
+            />
+            <path
+              class="g-letter letter"
+              d="M760.5,345.9C748.1,345.9 737.5,344.2 728.6,340.9C719.7,337.6 712.6,333.1 707.2,327.5C701.8,321.9 698,315.7 696,308.9L727.1,301.4C728.5,304.3 730.5,307.1 733.2,309.9C735.9,312.7 739.5,315.1 744,317C748.5,318.9 754.3,319.8 761.2,319.8C771,319.8 779.1,317.4 785.5,312.7C791.9,308 795.1,300.2 795.1,289.4L795.1,261.7L793.4,261.7C791.6,265.3 789,268.9 785.6,272.7C782.2,276.5 777.7,279.6 772.2,282.1C766.6,284.6 759.7,285.9 751.3,285.9C740.1,285.9 729.9,283.2 720.7,277.9C711.6,272.6 704.3,264.6 699,254.1C693.6,243.5 690.9,230.3 690.9,214.3C690.9,198.2 693.6,184.6 699,173.5C704.4,162.4 711.6,154 720.8,148.2C730,142.4 740.2,139.6 751.4,139.6C760,139.6 767.1,141 772.6,143.9C778.2,146.8 782.6,150.3 785.9,154.3C789.2,158.3 791.7,162.1 793.4,165.7L795.3,165.7L795.3,141.5L829.3,141.5L829.3,290.3C829.3,302.8 826.3,313.2 820.3,321.4C814.3,329.6 806.2,335.7 795.8,339.8C785.4,343.9 773.6,345.9 760.5,345.9ZM760.8,258.8C768.1,258.8 774.3,257 779.5,253.5C784.6,249.9 788.6,244.8 791.2,238.2C793.9,231.5 795.2,223.5 795.2,214.2C795.2,205 793.9,196.9 791.2,190C788.6,183.1 784.7,177.7 779.6,173.8C774.5,170 768.2,168 760.8,168C753.1,168 746.7,170 741.5,174C736.4,178 732.5,183.5 729.9,190.4C727.3,197.4 726,205.3 726,214.1C726,223.1 727.3,230.9 730,237.6C732.6,244.3 736.5,249.5 741.7,253.2C746.8,256.9 753.2,258.8 760.8,258.8Z"
+            />
+            <path
+              class="u-letter letter"
+              d="M933.8,226.4L933.8,141.6L968.3,141.6L968.3,288L934.8,288L934.8,262L933.3,262C930,270.2 924.6,276.9 917,282.1C909.5,287.3 900.2,289.9 889.2,289.9C879.6,289.9 871.1,287.8 863.8,283.5C856.5,279.2 850.7,273 846.6,264.7C842.5,256.5 840.4,246.5 840.4,234.8L840.4,141.6L875,141.6L875,229.5C875,238.8 877.5,246.2 882.6,251.6C887.7,257.1 894.4,259.8 902.6,259.8C907.7,259.8 912.6,258.6 917.4,256.1C922.2,253.6 926.1,249.9 929.2,245C932.3,240 933.8,233.8 933.8,226.4Z"
+            />
+            <rect class="l-letter letter" x="979.6" y="92.7" width="34.5" height="195.3" />
+            <path
+              class="a-letter letter"
+              d="M1068.9,290.9C1059.6,290.9 1051.3,289.2 1043.9,285.9C1036.5,282.6 1030.6,277.6 1026.4,271.1C1022.1,264.6 1020,256.5 1020,246.9C1020,238.6 1021.5,231.8 1024.6,226.4C1027.7,221 1031.8,216.7 1037.1,213.4C1042.4,210.2 1048.3,207.7 1055,206C1061.6,204.3 1068.5,203.1 1075.6,202.3C1084.2,201.4 1091.1,200.6 1096.5,199.9C1101.8,199.2 1105.7,198 1108.2,196.5C1110.6,194.9 1111.9,192.5 1111.9,189.2L1111.9,188.6C1111.9,181.4 1109.8,175.9 1105.5,171.9C1101.2,168 1095.1,166 1087.1,166C1078.6,166 1072,167.8 1067,171.5C1062.1,175.2 1058.8,179.5 1057,184.6L1024.8,180C1027.3,171.1 1031.5,163.7 1037.4,157.6C1043.2,151.6 1050.4,147.1 1058.8,144.1C1067.3,141.1 1076.6,139.6 1086.8,139.6C1093.9,139.6 1100.9,140.4 1107.9,142.1C1114.9,143.8 1121.3,146.5 1127.1,150.3C1132.9,154.1 1137.5,159.2 1141.1,165.7C1144.6,172.2 1146.4,180.3 1146.4,190L1146.4,288L1113.2,288L1113.2,267.9L1112.1,267.9C1110,272 1107.1,275.8 1103.3,279.3C1099.5,282.8 1094.8,285.7 1089.1,287.8C1083.2,289.9 1076.6,290.9 1068.9,290.9ZM1077.9,265.6C1084.8,265.6 1090.8,264.2 1095.9,261.5C1101,258.7 1104.9,255.1 1107.7,250.5C1110.5,245.9 1111.8,240.9 1111.8,235.5L1111.8,218.2C1110.7,219.1 1108.9,219.9 1106.3,220.7C1103.7,221.5 1100.9,222.1 1097.7,222.7C1094.5,223.3 1091.4,223.8 1088.3,224.2C1085.2,224.6 1082.5,225 1080.2,225.3C1075.1,226 1070.4,227.1 1066.4,228.7C1062.3,230.3 1059.1,232.5 1056.8,235.3C1054.4,238.1 1053.3,241.8 1053.3,246.2C1053.3,252.6 1055.6,257.4 1060.3,260.6C1064.8,264 1070.7,265.6 1077.9,265.6Z"
+            />
+            <path
+              class="r-letter letter"
+              d="M1156.9,288L1156.9,141.6L1190.4,141.6L1190.4,166L1191.9,166C1194.6,157.5 1199.2,151 1205.7,146.4C1212.2,141.8 1219.7,139.5 1228.1,139.5C1230,139.5 1232.2,139.6 1234.5,139.7C1236.9,139.9 1238.9,140.1 1240.5,140.4L1240.5,172.1C1239,171.6 1236.7,171.1 1233.6,170.7C1230.5,170.3 1227.4,170.1 1224.5,170.1C1218.2,170.1 1212.6,171.5 1207.6,174.2C1202.6,176.9 1198.7,180.6 1195.8,185.4C1192.9,190.2 1191.5,195.7 1191.5,201.9L1191.5,288L1156.9,288Z"
+            />
+          </g>
+        </g>
+      </svg>
+      <h2>The framework for building scalable web apps with confidence</h2>
+    </div>
+  } @else {
+    <!-- UwU logo -->
+    <div adevAnimationLayer layerId="uwu" class="uwu-layer">
+      <img src="assets/images/uwu.png" alt="Angular logo" />
+    </div>
+  }
 
-<!-- This spacer is purely added to keep Lighthouse rating high by maintaining 0
-  cumulative layout shift until the animation renders it's own spacer. -->
-@if (!animationReady()) {
-  <div class="spacer"></div>
-}
-
-<div class="adev-editor-scroll-container">
-  <div class="adev-code-editor">
-    @defer (when showEditor(); prefetch when prefetchEditor()) {
-      <adev-code-editor [tutorialFiles]="tutorialFiles" />
-    } @loading {
-      <img alt="Code editor" />
-    }
+  <div class="learn-angular">
+    <a href="#learn-more" class="adev-cta">
+      <button class="docs-primary-btn" [attr.text]="'Get Started'" aria-label="Get Started">
+        Get Started
+      </button>
+    </a>
+    <div class="adev-arrow"></div>
   </div>
-</div>
+</section>
+
+<section class="features">
+  <h2>Productivity meets scalability</h2>
+  <div class="features-grid">
+    <div class="feature">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <g><rect fill="none" height="24" width="24" x="0" /></g>
+        <g>
+          <g>
+            <polygon points="19,9 20.25,6.25 23,5 20.25,3.75 19,1 17.75,3.75 15,5 17.75,6.25" />
+            <polygon
+              points="19,15 17.75,17.75 15,19 17.75,20.25 19,23 20.25,20.25 23,19 20.25,17.75"
+            />
+            <path
+              d="M11.5,9.5L9,4L6.5,9.5L1,12l5.5,2.5L9,20l2.5-5.5L17,12L11.5,9.5z M9.99,12.99L9,15.17l-0.99-2.18L5.83,12l2.18-0.99 L9,8.83l0.99,2.18L12.17,12L9.99,12.99z"
+            />
+          </g>
+        </g>
+      </svg>
+      <h3>AI-forward</h3>
+      <p>Resources and integrations to supercharge your development with AI</p>
+    </div>
+    <div class="feature">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <path
+          d="m480-400-80-80 80-80 80 80-80 80Zm-85-235L295-735l185-185 185 185-100 100-85-85-85 85ZM225-295 40-480l185-185 100 100-85 85 85 85-100 100Zm510 0L635-395l85-85-85-85 100-100 185 185-185 185ZM480-40 295-225l100-100 85 85 85-85 100 100L480-40Z"
+        />
+      </svg>
+      <h3>Opinionated & versatile</h3>
+      <p>Organized yet modular thanks to Angular components and dependency injection</p>
+    </div>
+    <div class="feature">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <path
+          d="M197-197q-54-55-85.5-127.5T80-480q0-84 31.5-156.5T197-763l57 57q-44 44-69 102t-25 124q0 67 25 125t69 101l-57 57Zm113-113q-32-33-51-76.5T240-480q0-51 19-94.5t51-75.5l57 57q-22 22-34.5 51T320-480q0 33 12.5 62t34.5 51l-57 57Zm170-90q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm170 90-57-57q22-22 34.5-51t12.5-62q0-33-12.5-62T593-593l57-57q32 32 51 75.5t19 94.5q0 50-19 93.5T650-310Zm113 113-57-57q44-44 69-102t25-124q0-67-25-125t-69-101l57-57q54 54 85.5 126.5T880-480q0 83-31.5 155.5T763-197Z"
+        />
+      </svg>
+      <h3>Reactive</h3>
+      <p>Fast state updates with fine-gained reactivity based on Angular Signals</p>
+    </div>
+    <div class="feature">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <path
+          d="M220-260q-92 0-156-64T0-480q0-92 64-156t156-64q37 0 71 13t61 37l68 62-60 54-62-56q-16-14-36-22t-42-8q-58 0-99 41t-41 99q0 58 41 99t99 41q22 0 42-8t36-22l310-280q27-24 61-37t71-13q92 0 156 64t64 156q0 92-64 156t-156 64q-37 0-71-13t-61-37l-68-62 60-54 62 56q16 14 36 22t42 8q58 0 99-41t41-99q0-58-41-99t-99-41q-22 0-42 8t-36 22L352-310q-27 24-61 37t-71 13Z"
+        />
+      </svg>
+      <h3>Fully featured</h3>
+      <p>
+        Everything works together with Angular's first-party modules for forms, routing, and more
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- -->
+
+<section class="performance">
+  <div class="section-content">
+    <div class="performance-half">
+      <h2>When performance matters</h2>
+      <p class="secondary">
+        Trusted by millions to build fast, relaible applications that scale with the size of your
+        team
+      </p>
+      <div class="docs-card-grid">
+        <a routerLink="/guide/signals" class="docs-card">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+            height="24px"
+            width="24px"
+          >
+            <path
+              d="M197-197q-54-55-85.5-127.5T80-480q0-84 31.5-156.5T197-763l57 57q-44 44-69 102t-25 124q0 67 25 125t69 101l-57 57Zm113-113q-32-33-51-76.5T240-480q0-51 19-94.5t51-75.5l57 57q-22 22-34.5 51T320-480q0 33 12.5 62t34.5 51l-57 57Zm170-90q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm170 90-57-57q22-22 34.5-51t12.5-62q0-33-12.5-62T593-593l57-57q32 32 51 75.5t19 94.5q0 50-19 93.5T650-310Zm113 113-57-57q44-44 69-102t25-124q0-67-25-125t-69-101l57-57q54 54 85.5 126.5T880-480q0 83-31.5 155.5T763-197Z"
+            />
+          </svg>
+          <div class="card-content">
+            <p>Reactivity with signals makes it a breeze to manage your state</p>
+          </div>
+          <span>Explore signals</span>
+        </a>
+        <a routerLink="/guide/routing/rendering-strategies" class="docs-card">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+          >
+            <path
+              d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-507h560v-133H200v133Zm0 214h560v-134H200v134Zm0 213h560v-133H200v133Zm40-454v-80h80v80h-80Zm0 214v-80h80v80h-80Zm0 214v-80h80v80h-80Z"
+            />
+          </svg>
+          <div class="card-content">
+            <p>
+              Meet your performance targets with SSR, SSG, hydration, and next generation deferred
+              loading
+            </p>
+          </div>
+          <span>Learn about rendering strategies</span>
+        </a>
+      </div>
+    </div>
+    <div class="performance-half">
+      <svg
+        width="558"
+        height="365"
+        viewBox="0 0 558 365"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M228.166 59.3864L234.455 85.9391C241.018 84.5704 247.58 83.2017 254.143 82.3805L250.588 55.2803C242.932 56.3752 235.549 57.7439 228.166 59.3864Z"
+          fill="url(#paint0_linear_194_759)"
+        />
+        <path
+          d="M98.2778 145.614L120.427 161.765C124.255 156.29 128.631 151.089 133.006 146.162L112.771 127.821C107.575 133.57 102.653 139.592 98.2778 145.614Z"
+          fill="url(#paint1_linear_194_759)"
+        />
+        <path
+          d="M63.8232 217.06L90.0743 224.451C91.715 218.155 93.9026 211.585 96.3636 205.563L70.9329 195.435C68.1984 202.552 66.0108 209.669 63.8232 217.06Z"
+          fill="url(#paint2_linear_194_759)"
+        />
+        <path
+          d="M155.429 90.8662L170.468 113.587C175.937 110.028 181.68 106.469 187.696 103.458L174.844 79.3691C168.281 82.654 161.718 86.7601 155.429 90.8662Z"
+          fill="url(#paint3_linear_194_759)"
+        />
+        <path
+          d="M424.502 146.435C428.877 151.363 433.252 156.564 437.081 162.038L459.23 145.888C454.855 139.866 449.933 133.843 445.011 128.095L424.502 146.435Z"
+          fill="url(#paint4_linear_194_759)"
+        />
+        <path
+          d="M382.391 79.3691L369.539 103.458C375.281 106.469 381.023 110.028 386.766 113.587L401.806 90.8662C395.79 86.7601 389.227 82.9278 382.391 79.3691Z"
+          fill="url(#paint5_linear_194_759)"
+        />
+        <path
+          d="M486.301 195.435L460.871 205.289C463.332 211.585 465.519 217.881 467.16 224.177L493.411 216.786C491.497 209.943 489.036 202.552 486.301 195.435Z"
+          fill="url(#paint6_linear_194_759)"
+        />
+        <path
+          d="M363.523 13.6719L353.952 39.4034C454.581 71.1572 527.865 164.502 529.779 275.093H333.99L306.919 302.467H556.304L556.851 288.507C556.851 285.495 557.124 282.484 557.124 279.199C556.851 154.922 475.637 49.5318 363.523 13.6719Z"
+          fill="url(#paint7_linear_194_759)"
+        />
+        <path
+          d="M227.892 274.82H27.7281C29.9157 138.224 141.483 27.6328 278.754 27.6328C285.317 27.6328 291.879 27.9065 298.169 28.454L322.506 3.81741C308.286 1.6275 293.52 0.258789 278.48 0.258789C125.349 0.258789 0.383301 125.358 0.383301 278.926C0.383301 281.937 0.383301 284.948 0.656749 288.233L1.20365 302.194H217.501L227.892 274.82Z"
+          fill="url(#paint8_linear_194_759)"
+        />
+        <path
+          d="M341.373 13.9453L162.265 194.614L268.363 224.999L215.861 364.606L394.969 183.938L288.871 153.553L341.373 13.9453Z"
+          fill="url(#paint9_linear_194_759)"
+        />
+        <defs>
+          <linearGradient
+            id="paint0_linear_194_759"
+            x1="224.18"
+            y1="87.8605"
+            x2="263.436"
+            y2="48.6467"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear_194_759"
+            x1="102.734"
+            y1="158.687"
+            x2="131.291"
+            y2="130.162"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint2_linear_194_759"
+            x1="63.1336"
+            y1="227.404"
+            x2="100.224"
+            y2="190.353"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint3_linear_194_759"
+            x1="157.935"
+            y1="110.828"
+            x2="190.444"
+            y2="78.3545"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint4_linear_194_759"
+            x1="426.244"
+            y1="161.616"
+            x2="461.128"
+            y2="126.768"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint5_linear_194_759"
+            x1="368.074"
+            y1="113.184"
+            x2="405.694"
+            y2="75.6042"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint6_linear_194_759"
+            x1="459.571"
+            y1="228.959"
+            x2="499.852"
+            y2="188.721"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint7_linear_194_759"
+            x1="311.154"
+            y1="306.775"
+            x2="505.716"
+            y2="112.419"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint8_linear_194_759"
+            x1="20.4484"
+            y1="321.544"
+            x2="330.571"
+            y2="11.7518"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+          <linearGradient
+            id="paint9_linear_194_759"
+            x1="223.592"
+            y1="-19.7554"
+            x2="484.225"
+            y2="256.555"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F941EA" />
+            <stop offset="1" stop-color="#9138FF" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- -->
+
+<section class="learn-more">
+  <div class="section-content">
+    <h2 id="learn-more">Want to learn more?</h2>
+    <div class="docs-card-grid">
+      <a routerLink="/tutorials/learn-angular" class="docs-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+          <path
+            d="m188.15-529.46 108.7 46.15q19.15-38.3 41.57-75.42 22.43-37.11 48.5-71.04l-75.53-14.84q-3.08-.77-5.97.19-2.88.96-5.19 3.27L188.15-529.46Zm144.77 73.69 127.62 127.62q55.46-26 104.88-59 49.42-33 84.66-68.23 75.23-75.23 111.11-154.27 35.89-79.04 41.19-188.35-109.69 5.31-188.34 41-78.66 35.69-153.89 110.92-35.23 35.24-68.23 84.85-33 49.62-59 105.46Zm229.77-102.92q-18.08-17.69-18.08-43.92t18.08-44.31Q580.77-665 607.19-665t44.5 18.08q18.08 18.08 18.08 44.31 0 26.23-18.08 43.92-18.08 18.08-44.5 18.08t-44.5-18.08Zm-29.23 374.92 112.08-111.69q2.3-2.31 3.07-5.39.77-3.07.39-5.77l-15.23-75.53q-33.93 25.69-70.85 48.11-36.92 22.42-75.61 41.96l46.15 108.31Zm314.08-659q5.53 126.39-34.97 228.19-40.5 101.81-129.11 190.04-2.54 2.54-4.88 5.08-2.35 2.54-4.89 4.69l19.69 98.85q2.62 14.61-1.69 28.03-4.31 13.43-14.54 23.66L518.08-104.54l-75.77-177.61-156.16-155.77-177.22-76.54 159.3-158.69q10.62-10.23 24.04-14.73t28.04-1.5l99.23 19.69q2.54-2.15 4.69-4.39 2.16-2.23 4.69-4.38 88.62-88.61 190.23-129.23 101.62-40.61 228.39-35.08ZM175.16-320q29.23-29.61 71.07-29.54 41.85.08 71.46 29.31 29.23 29.23 28.92 71.08-.3 41.84-29.53 71.46-23.7 23.3-72.43 38.96-48.73 15.65-134.26 26.04 10.38-85.54 25.73-134.77 15.34-49.23 39.04-72.54Zm31.61 33q-13.61 14.61-24.42 44.88-10.81 30.27-17.27 74.5 44.23-6.84 74.5-17.65 30.27-10.81 44.88-24.81 17.08-15.46 17.39-38.46.3-23-16.16-40.08-17.07-16.46-40.07-15.96T206.77-287Z"
+          />
+        </svg>
+        <div class="card-content">
+          <h3>New to Angular?</h3>
+          <p>
+            Try our completely in browser tutorial lessons designed to give you hands on experience
+            with Angular.
+          </p>
+          <p class="secondary">
+            Recommended for developers new to Angular looking to dive right into the code
+          </p>
+          <span>Start coding</span>
+        </div>
+      </a>
+      <a routerLink="/essentials" class="docs-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+          <path
+            d="M557.69-577.46v-38q32.62-15.15 68.27-22.73 35.66-7.58 74.04-7.58 24.08 0 46.77 3.42 22.69 3.43 45.54 9.04v35.54q-22.46-7.85-44.66-11.38-22.19-3.54-47.65-3.54-38.38 0-74.35 9.11-35.96 9.12-67.96 26.12Zm0 219.23v-39.38q31.85-14.85 68.08-22.27 36.23-7.43 74.23-7.43 24.08 0 46.77 3.43 22.69 3.42 45.54 9.03v35.54q-22.46-7.84-44.66-11.38-22.19-3.54-47.65-3.54-38.38 0-74.35 9.19-35.96 9.19-67.96 26.81Zm0-109.23v-38.77q32.62-15.15 68.27-22.73 35.66-7.58 74.04-7.58 24.08 0 46.77 3.42 22.69 3.43 45.54 9.04v35.54q-22.46-7.85-44.66-11.38-22.19-3.54-47.65-3.54-38.38 0-74.35 9.5-35.96 9.5-67.96 26.5ZM251.08-304.62q54.53 0 106.11 12.89 51.58 12.88 101.73 39.42v-417.38q-45-31.92-99.04-48.81-54.04-16.88-108.8-16.88-37.61 0-69.5 7.38t-67.73 20.23q-4.62 1.54-6.54 4.42-1.92 2.89-1.92 6.35v406.31q0 5 3.84 7.5 3.85 2.5 8.46.96 25.62-11.31 60.7-16.85 35.07-5.54 72.69-5.54Zm253.23 52.31q50.38-26.54 99.92-39.42 49.54-12.89 104.69-12.89 37.62 0 73.5 5.23 35.89 5.24 59.89 13.31 4.61 1.93 8.46-.57 3.84-2.5 3.84-7.89V-697q0-3.46-1.92-6.15-1.92-2.7-6.54-4.62-33.61-14.69-66.43-21.15-32.83-6.46-70.8-6.46-55.15 0-107.57 16.88-52.43 16.89-97.04 48.81v417.38Zm-22.89 67.69q-50.8-35.69-109.65-54.84-58.85-19.16-120.69-19.16-32.47 0-63.77 6.7-31.31 6.69-62.85 17.38-23.1 10.23-43.78-4.34T60-279.46v-420.31q0-15.77 7.77-29t22.54-19.92q37.77-16.54 78.34-24.31t82.43-7.77q62.19 0 120.75 17.39Q430.38-746 481.62-711q50.23-35 108.15-52.38 57.92-17.39 119.15-17.39 41.65 0 82.02 7.77t78.14 24.31q14.76 6.61 22.84 19.88t8.08 29.04v420.31q0 27.12-22.31 41.67-22.31 14.56-45.08 2.48-30.15-10.92-61.15-17.11-31-6.2-62.54-6.2-61.94 0-119.32 19.46-57.37 19.47-108.18 54.54ZM282.15-493.23Z"
+          />
+        </svg>
+        <div class="card-content">
+          <h3>More of a reader?</h3>
+          <p>
+            Our essentials guides are designed to help you understand Angular fundamentals in the
+            time it would take to finish a cup of coffee (or tea).
+          </p>
+          <p class="secondary">
+            Recommended for developers with framework experience but want quick overview of concepts
+          </p>
+          <span>Angular concepts</span>
+        </div>
+      </a>
+      <a routerLink="/overview" class="docs-card">
+        <svg class="angular-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 223 236">
+          <g clip-path="url(#a)">
+            <path
+              fill="url(#b)"
+              d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+            />
+            <path
+              fill="url(#c)"
+              d="m222.077 39.192-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+            />
+          </g>
+          <defs>
+            <linearGradient
+              id="b"
+              x1="49.009"
+              x2="225.829"
+              y1="213.75"
+              y2="129.722"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#E40035" />
+              <stop offset=".24" stop-color="#F60A48" />
+              <stop offset=".352" stop-color="#F20755" />
+              <stop offset=".494" stop-color="#DC087D" />
+              <stop offset=".745" stop-color="#9717E7" />
+              <stop offset="1" stop-color="#6C00F5" />
+            </linearGradient>
+            <linearGradient
+              id="c"
+              x1="41.025"
+              x2="156.741"
+              y1="28.344"
+              y2="160.344"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#FF31D9" />
+              <stop offset="1" stop-color="#FF5BE1" stop-opacity="0" />
+            </linearGradient>
+            <clipPath id="a">
+              <path fill="#fff" d="M0 0h223v236H0z" />
+            </clipPath>
+          </defs>
+        </svg>
+        <div class="card-content">
+          <h3>Why Angular?</h3>
+          <p>Learn about Angular, its benefits, and if it's right for you.</p>
+          <p class="secondary">
+            Recommended for developers seeking to learn more about the Angular framework
+          </p>
+          <span>About Angular</span>
+        </div>
+      </a>
+      <a routerLink="/ai" class="docs-card">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g>
+            <polygon points="19,9 20.25,6.25 23,5 20.25,3.75 19,1 17.75,3.75 15,5 17.75,6.25" />
+            <polygon
+              points="19,15 17.75,17.75 15,19 17.75,20.25 19,23 20.25,20.25 23,19 20.25,17.75"
+            />
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.2"
+              d="M 11.5 9.5 L 9 4 L 6.5 9.5 L 1 12 l 5.5 2.5 L 9 20 l 2.5 -5.5 L 17 12 L 11.5 9.5 z z"
+            />
+          </g>
+        </svg>
+        <div class="card-content">
+          <h3>Are you an LLM or curious about AI in Angular?</h3>
+          <p>
+            Head over to our AI section to find prompts, strategies, best practices, examples, and
+            more.
+          </p>
+          <p class="secondary">
+            Recommended for robots... and developers who want to get the most out of Angular and AI
+          </p>
+          <span>Angular + AI</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
