@@ -241,11 +241,11 @@ importers:
         specifier: ^14.0.0
         version: 14.1.1
       jasmine:
-        specifier: ~5.10.0
+        specifier: 5.10.0
         version: 5.10.0
       jasmine-core:
-        specifier: ^5.0.0
-        version: 5.9.0
+        specifier: 5.10.0
+        version: 5.10.0
       jasmine-reporters:
         specifier: ^2.5.2
         version: 2.5.2
@@ -468,7 +468,7 @@ importers:
         version: 2.2.1
       karma-jasmine-html-reporter:
         specifier: ^2.1.0
-        version: 2.1.0(jasmine-core@5.9.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)))(karma@6.4.4(bufferutil@4.0.9))
+        version: 2.1.0(jasmine-core@5.10.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)))(karma@6.4.4(bufferutil@4.0.9))
       karma-sauce-launcher:
         specifier: ^4.3.6
         version: 4.3.6(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.2)
@@ -696,7 +696,7 @@ importers:
         version: 5.1.0(karma@6.4.4(bufferutil@4.0.9))
       karma-jasmine-html-reporter:
         specifier: 2.1.0
-        version: 2.1.0(jasmine-core@5.10.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)))(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))
+        version: 2.1.0(jasmine-core@5.10.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)))(karma@6.4.4(bufferutil@4.0.9))
       marked:
         specifier: 16.2.1
         version: 16.2.1
@@ -7923,9 +7923,6 @@ packages:
 
   jasmine-core@5.10.0:
     resolution: {integrity: sha512-MrChbWV5LBo+EaeKwTM1eZ6oYSz1brvFExnRafraEkJkbJ9evbUxABhnIgGQimhpMxhg+BD6QmOvb/e3NXsNdg==}
-
-  jasmine-core@5.9.0:
-    resolution: {integrity: sha512-OMUvF1iI6+gSRYOhMrH4QYothVLN9C3EJ6wm4g7zLJlnaTl8zbaPOr0bTw70l7QxkoM7sVFOWo83u9B2Fe2Zng==}
 
   jasmine-reporters@2.5.2:
     resolution: {integrity: sha512-qdewRUuFOSiWhiyWZX8Yx3YNQ9JG51ntBEO4ekLQRpktxFTwUHy24a86zD/Oi2BRTKksEdfWQZcQFqzjqIkPig==}
@@ -20214,8 +20211,6 @@ snapshots:
 
   jasmine-core@5.10.0: {}
 
-  jasmine-core@5.9.0: {}
-
   jasmine-reporters@2.5.2:
     dependencies:
       '@xmldom/xmldom': 0.8.11
@@ -20779,15 +20774,9 @@ snapshots:
       is-wsl: 2.2.0
       which: 3.0.1
 
-  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.10.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)))(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)):
+  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.10.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)))(karma@6.4.4(bufferutil@4.0.9)):
     dependencies:
       jasmine-core: 5.10.0
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.0.9))
-
-  karma-jasmine-html-reporter@2.1.0(jasmine-core@5.9.0)(karma-jasmine@5.1.0(karma@6.4.4(bufferutil@4.0.9)))(karma@6.4.4(bufferutil@4.0.9)):
-    dependencies:
-      jasmine-core: 5.9.0
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       karma-jasmine: 5.1.0(karma@6.4.4(bufferutil@4.0.9))
 
