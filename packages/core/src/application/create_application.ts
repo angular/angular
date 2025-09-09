@@ -50,7 +50,7 @@ export function internalCreateApplication(config: {
       RuntimeErrorCode.PLATFORM_NOT_FOUND,
       ngDevMode &&
         'Missing Platform: This may be due to using `bootstrapApplication` on the server without passing a `BootstrapContext`. ' +
-          'Please make sure that `bootstrapApplication` is called with a `BootstrapContext.',
+          'Please make sure that `bootstrapApplication` is called with a `context` argument.',
     );
   }
 
