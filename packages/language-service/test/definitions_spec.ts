@@ -834,9 +834,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const appFile = project.openFile('app.ts');
     project.expectNoSourceDiagnostics();
 
@@ -868,9 +866,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const appFile = project.openFile('app.ts');
     project.expectNoSourceDiagnostics();
 
@@ -901,9 +897,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const dirFile = project.openFile('dir.ts');
     project.expectNoSourceDiagnostics();
 

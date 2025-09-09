@@ -1,13 +1,13 @@
 import {Component, HostBinding, NgModule} from '@angular/core';
 
 @Component({
-    selector: 'my-component',
-    template: `
+  selector: 'my-component',
+  template: `
     <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `,
-    host: { '[style!important]': 'myStyleExp', '[class!important]': 'myClassExp' },
-    standalone: false
+  host: {'[style.width!important]': 'myStyleExp', '[class.baz!important]': 'myClassExp'},
+  standalone: false,
 })
 export class MyComponent {
   myStyleExp = '';
@@ -22,5 +22,4 @@ export class MyComponent {
 }
 
 @NgModule({declarations: [MyComponent]})
-export class MyModule {
-}
+export class MyModule {}

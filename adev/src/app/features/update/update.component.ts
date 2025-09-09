@@ -128,8 +128,10 @@ export default class UpdateComponent {
     }
   }
 
-  @HostListener('click', ['$event.target'])
-  copyCode({tagName, textContent}: Element) {
+  @HostListener('click', ['$event'])
+  copyCode(event: Event) {
+    const {tagName, textContent} = event.target as Element;
+
     if (tagName === 'CODE') {
       this.clipboard.copy(textContent!);
       this.snackBar.open('Copied to clipboard', '', {duration: 2000});

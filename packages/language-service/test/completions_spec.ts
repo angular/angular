@@ -2157,9 +2157,6 @@ describe('completions', () => {
         `title!: string; hero!: number;`,
         undefined,
         `host: {'[title]': 'ti'},`,
-        {
-          typeCheckHostBindings: true,
-        },
       );
       appFile.moveCursorToText(`'ti¦'`);
       const completions = appFile.getCompletionsAtPosition();
@@ -2172,9 +2169,6 @@ describe('completions', () => {
         `title!: string; hero!: number;`,
         undefined,
         `host: {'(click)': 't'},`,
-        {
-          typeCheckHostBindings: true,
-        },
       );
       appFile.moveCursorToText(`'(click)': 't¦'`);
       const completions = appFile.getCompletionsAtPosition();
@@ -2182,11 +2176,8 @@ describe('completions', () => {
     });
 
     it('should be able to complete inside `host` of a directive', () => {
-      const {appFile} = setupInlineTemplate(
-        '',
-        '',
-        {
-          'Dir': `
+      const {appFile} = setupInlineTemplate('', '', {
+        'Dir': `
             @Directive({
               host: {'[title]': 'ti'},
             })
@@ -2195,12 +2186,7 @@ describe('completions', () => {
               hero!: number;
             }
           `,
-        },
-        undefined,
-        {
-          typeCheckHostBindings: true,
-        },
-      );
+      });
       appFile.moveCursorToText(`'ti¦'`);
       const completions = appFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
