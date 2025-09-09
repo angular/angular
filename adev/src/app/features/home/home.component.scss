@@ -74,3 +74,250 @@
     }
   }
 }
+
+.logo-layer {
+  $transition: 200ms linear;
+
+  user-select: none;
+  pointer-events: none;
+
+  .svg {
+    fill-rule: evenodd;
+    clip-rule: evenodd;
+    stroke-linejoin: round;
+    stroke-miterlimit: 2;
+    color: var(--primary-contrast);
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .wrapper {
+    transform: scale(0.55);
+    transform-origin: 50% 50%;
+
+    @include mq.for-tablet-down {
+      & {
+        transform: scale(0.8);
+      }
+    }
+
+    @include mq.for-extra-large-desktop-up {
+      & {
+        transform: scale(0.5);
+      }
+    }
+
+    .logo {
+      transition: transform $transition;
+
+      .shield {
+        /* `transform-origin` values are calculated based on the 1280x400 SVG view box */
+
+        &,
+        .shield-middle {
+          transform-origin: 177px 200px;
+          transition: transform $transition;
+        }
+
+        .shield-bottom-a-arc {
+          transform-origin: 0 302px;
+          transition: transform $transition;
+        }
+
+        .shield-bottom-extension {
+          transform-origin: 177px 340px;
+          transition: transform $transition;
+          transform: scale(0);
+        }
+      }
+
+      .letter {
+        transition: opacity $transition;
+      }
+    }
+  }
+}
+
+.logo-section {
+  text-align: center;
+  background: linear-gradient(169deg, var(--page-background) 50%, rgba(241, 75, 227, 1) 100%);
+  padding-bottom: 36px;
+
+  button {
+    font-size: 1.2rem;
+  }
+}
+
+section {
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  svg {
+    fill: var(--always-pink);
+    color: var(--always-pink);
+  }
+
+  .section-content {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+.features {
+  padding: 2rem;
+  text-align: center;
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1200px;
+    margin: 0 auto;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mq.for-phone-only {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .feature {
+    padding: 2rem;
+    border-left: 1px solid var(--senary-contrast);
+
+    &:first-child {
+      border-left: none;
+    }
+
+    @include mq.for-tablet-down {
+      border-top: 1px solid var(--senary-contrast);
+
+      &:first {
+        border-top: none;
+      }
+
+      &:nth-child(odd) {
+        border-left: none;
+      }
+    }
+
+    @include mq.for-phone-only {
+      &:nth-child(n) {
+        border-left: none;
+      }
+
+      &:nth-child(-n + 1) {
+        border-top: none;
+      }
+    }
+
+    svg {
+      width: 3rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: var(--quaternary-contrast);
+      font-weight: 300;
+    }
+  }
+}
+
+.performance {
+  background: linear-gradient(350deg, var(--page-background) 50%, #9337f5 100%);
+
+  .section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .performance-half {
+    flex: 1 0 200px;
+    padding: 3rem 0;
+  }
+
+  p {
+    &.secondary {
+      font-size: 1.2rem;
+    }
+  }
+
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.learn-more {
+  background: linear-gradient(169deg, var(--page-background) 50%, #9337f5 100%);
+  padding: 5rem 2rem;
+  text-align: left;
+
+  h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+
+  svg {
+    max-width: 64px;
+    margin: 0 1rem;
+  }
+
+  p {
+    font-size: 1rem;
+    font-weight: 300;
+
+    &.secondary {
+      color: var(--quaternary-contrast);
+    }
+  }
+
+  .card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .docs-card {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .docs-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @include mq.for-tablet-down {
+      grid-template-columns: 1fr;
+    }
+  }
+}
