@@ -73,7 +73,7 @@ jobs:
           install: false
 
   test:
-    runs-on: ubuntu-latest-8core
+    runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@4b4659eabe75a67cebf4692c3c88a98275c67200
@@ -97,7 +97,7 @@ jobs:
           retention-days: 1
 
   integration-tests:
-    runs-on: ubuntu-latest-4core
+    runs-on: ubuntu-latest
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@4b4659eabe75a67cebf4692c3c88a98275c67200
@@ -112,7 +112,7 @@ jobs:
 
   adev:
     runs-on:
-      labels: ubuntu-latest-8core
+      labels: ubuntu-latest
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@4b4659eabe75a67cebf4692c3c88a98275c67200
@@ -129,7 +129,7 @@ jobs:
 
   zone-js:
     runs-on:
-      labels: ubuntu-latest-4core
+      labels: ubuntu-latest
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@4b4659eabe75a67cebf4692c3c88a98275c67200
@@ -166,7 +166,7 @@ jobs:
       - run: pnpm -C packages/zone.js/test/typings test
 
   # saucelabs:
-  #   runs-on: ubuntu-latest-4core
+  #   runs-on: ubuntu-latest
   #   env:
   #     SAUCE_TUNNEL_IDENTIFIER: angular-framework-${{ github.run_number }}
   #   steps:
