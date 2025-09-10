@@ -371,8 +371,8 @@ importers:
         specifier: 0.2100.0-next.2
         version: 0.2100.0-next.2(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#472b13c749d3436957c26d86e296545c4d208589
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/472b13c749d3436957c26d86e296545c4d208589(@modelcontextprotocol/sdk@1.17.5)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#8b2b7d2cb47b7192ecb4e0e3e6b26a42f028c8af
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8b2b7d2cb47b7192ecb4e0e3e6b26a42f028c8af(@modelcontextprotocol/sdk@1.17.5)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -1466,9 +1466,9 @@ packages:
       '@angular/cdk': 21.0.0-next.2
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/472b13c749d3436957c26d86e296545c4d208589':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/472b13c749d3436957c26d86e296545c4d208589}
-    version: 0.0.0-238d775bf817ed92f2ee2e570eada7c4d23ee2be
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8b2b7d2cb47b7192ecb4e0e3e6b26a42f028c8af':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8b2b7d2cb47b7192ecb4e0e3e6b26a42f028c8af}
+    version: 0.0.0-ed31a415fcf0ffe88185a6480c7f5b8e6d42ec0b
     hasBin: true
 
   '@angular/ssr@21.0.0-next.2':
@@ -2699,8 +2699,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.18.0':
-    resolution: {integrity: sha512-G1RTmr2nUud9zPfPgNOGGALgvncSMwtH90wgZdaKHULq+p4TY8E85krPbTfLrx7LgythCzWneH9/+bODM/PAZg==}
+  '@google/genai@1.19.0':
+    resolution: {integrity: sha512-mIMV3M/KfzzFA//0fziK472wKBJ1TdJLhozIUJKTPLyTDN1NotU+hyoHW/N0cfrcEWUK20YA0GxCeHC4z0SbMA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.11.4
@@ -12377,11 +12377,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/472b13c749d3436957c26d86e296545c4d208589(@modelcontextprotocol/sdk@1.17.5)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/8b2b7d2cb47b7192ecb4e0e3e6b26a42f028c8af(@modelcontextprotocol/sdk@1.17.5)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.18.0(@modelcontextprotocol/sdk@1.17.5)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
+      '@google/genai': 1.19.0(@modelcontextprotocol/sdk@1.17.5)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
       '@inquirer/prompts': 7.8.4(@types/node@24.3.1)
       '@inquirer/type': 3.0.8(@types/node@24.3.1)
       '@octokit/auth-app': 8.1.0
@@ -14059,7 +14059,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.18.0(@modelcontextprotocol/sdk@1.17.5)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
+  '@google/genai@1.19.0(@modelcontextprotocol/sdk@1.17.5)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)(supports-color@10.2.2)
       ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
