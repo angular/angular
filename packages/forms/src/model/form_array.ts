@@ -424,10 +424,11 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     options: {
       onlySelf?: boolean;
       emitEvent?: boolean;
+      overwriteDefaultValue?: boolean;
     } = {},
   ): void {
     this._forEachChild((control: AbstractControl, index: number) => {
-      control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
+      control.reset(value[index], {...options, onlySelf: true});
     });
     this._updatePristine(options, this);
     this._updateTouched(options, this);
