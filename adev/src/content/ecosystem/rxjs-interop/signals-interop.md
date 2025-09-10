@@ -1,6 +1,6 @@
 # RxJS interop with Angular signals
 
-The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
+The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
 ## Create a signal from an RxJs Observable with `toSignal`
 
