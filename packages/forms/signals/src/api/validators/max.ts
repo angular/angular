@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {MAX} from '../property';
-import {FieldPath, LogicFn, PathKind} from '../types';
+import {LogicFn, PathKind, RulesFieldPath} from '../types';
 import {maxError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -29,7 +29,7 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @experimental 21.0.0
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<number, TPathKind>,
+  path: RulesFieldPath<number, TPathKind>,
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldPath, SchemaFn, SchemaOrSchemaFn} from '../api/types';
+import {RulesFieldPath, SchemaFn, SchemaOrSchemaFn} from '../api/types';
 import {FieldPathNode} from './path_node';
 
 /**
@@ -103,7 +103,7 @@ export function isSchemaOrSchemaFn(value: unknown): value is SchemaOrSchemaFn<un
 }
 
 /** Checks that a path node belongs to the schema function currently being compiled. */
-export function assertPathIsCurrent(path: FieldPath<unknown>): void {
+export function assertPathIsCurrent(path: RulesFieldPath<unknown>): void {
   if (currentCompilingNode !== FieldPathNode.unwrapFieldPath(path).root) {
     throw new Error(
       `A FieldPath can only be used directly within the Schema that owns it,` +

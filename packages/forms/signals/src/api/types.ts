@@ -10,11 +10,12 @@ import {Signal, WritableSignal} from '@angular/core';
 import type {Control} from './control_directive';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
+import {UnwrapControl} from '../field/compat/compat_types';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
-declare const ɵɵTYPE: unique symbol;
+export declare const ɵɵTYPE: unique symbol;
 
 /**
  * Creates a type based on the given type T, but with all readonly properties made writable.
@@ -369,14 +370,21 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  *
  * @experimental 21.0.0
  */
-export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
-  [ɵɵTYPE]: [TValue, TPathKind];
+export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root, TSupportsRules extends boolean = boolean> = {
+  [ɵɵTYPE]: [TValue, TPathKind, TSupportsRules];
 } & (TValue extends Array<unknown>
   ? unknown
   : TValue extends Record<string, any>
-    ? {[K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child>}
+    ? {[K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child, TSupportsRules>}
     : unknown);
 
+export type RulesFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
+  [ɵɵTYPE]: [TValue, TPathKind, true];
+};
+
+export type BothFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
+  [ɵɵTYPE]: [TValue, TPathKind, boolean];
+};
 /**
  * Helper type for defining `FieldPath`. Given a type `TValue` that may include `undefined`, it
  * extracts the `undefined` outside the `FieldPath` type.
@@ -389,9 +397,9 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
  *
  * @experimental 21.0.0
  */
-export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
+export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root, TSupportsRules extends boolean = boolean> =
   | (TValue & undefined)
-  | FieldPath<Exclude<TValue, undefined>, TPathKind>;
+  | FieldPath<Exclude<TValue, undefined>, TPathKind, TSupportsRules>;
 
 /**
  * Defines logic for a form.
@@ -413,7 +421,7 @@ export type Schema<in TValue> = {
  * @experimental 21.0.0
  */
 export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
-  p: FieldPath<TValue, TPathKind>,
+  p: FieldPath<TValue, TPathKind, true>,
 ) => void;
 
 /**
@@ -516,11 +524,11 @@ export interface RootFieldContext<TValue> {
   /** The current field. */
   readonly field: Field<TValue>;
   /** Gets the value of the field represented by the given path. */
-  readonly valueOf: <P>(p: FieldPath<P>) => P;
+  readonly valueOf: <P>(p: BothFieldPath<P>) => UnwrapControl<P>;
   /** Gets the state of the field represented by the given path. */
-  readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
+  readonly stateOf: <P>(p: BothFieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */
-  readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+  readonly fieldOf: <P>(p: BothFieldPath<P>) => Field<P>;
 }
 
 /**

@@ -13,7 +13,7 @@ import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
 import {property} from './logic';
-import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
+import {FieldContext, PathKind, RulesFieldPath, TreeValidationResult} from './types';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -140,7 +140,7 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @experimental 21.0.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   opts: AsyncValidatorOptions<TValue, TParams, TResult, TPathKind>,
 ): void {
   assertPathIsCurrent(path);
@@ -193,7 +193,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
  * @experimental 21.0.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   opts: HttpValidatorOptions<TValue, TResult, TPathKind>,
 ) {
   validateAsync(path, {

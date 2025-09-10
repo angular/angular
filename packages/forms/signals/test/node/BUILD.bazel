@@ -9,6 +9,7 @@ ts_project(
         "//packages/common/http",
         "//packages/common/http/testing",
         "//packages/core",
+        "//packages/core/rxjs-interop",
         "//packages/core/testing",
         "//packages/forms",
         "//packages/forms/signals",

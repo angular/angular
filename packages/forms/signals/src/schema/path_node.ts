@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {FieldPath} from '../api/types';
+import {FieldPath, RulesFieldPath} from '../api/types';
 import {DYNAMIC, Predicate} from './logic';
 import {LogicNodeBuilder} from './logic_node';
 import type {SchemaImpl} from './schema';
@@ -32,10 +32,10 @@ export class FieldPathNode {
   /**
    * A proxy that wraps the path node, allowing navigation to its child paths via property access.
    */
-  readonly fieldPathProxy: FieldPath<any> = new Proxy(
+  readonly fieldPathProxy: RulesFieldPath<any> = new Proxy(
     this,
     FIELD_PATH_PROXY_HANDLER,
-  ) as unknown as FieldPath<any>;
+  ) as unknown as RulesFieldPath<any>;
 
   protected constructor(
     /** The property keys used to navigate from the root path to this path. */
