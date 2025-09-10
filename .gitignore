@@ -4,7 +4,7 @@
 /bazel-out
 /integration/bazel/bazel-*
 *.log
-/node_modules/
+node_modules/
 
 # CircleCI temporary file for cache key computation.
 # See `save_month_to_file` in `.circleci/config.yml`.
@@ -61,6 +61,6 @@ baseline.json
 # Ignore cache created with the Angular CLI.
 .angular/
 
-# Ignore AIO files, useful when changing branches 
+# Ignore AIO files, useful when changing branches
 aio/node_modules
 aio/out-tsc
