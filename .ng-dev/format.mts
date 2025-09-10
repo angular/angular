@@ -25,6 +25,9 @@ export const format: FormatConfig = {
 
       // Ignore generated javascript file(s)
       '!.github/actions/deploy-docs-site/main.js',
+
+      // Ignore testing data files for language service
+      '!vscode-ng-language-service/syntaxes/test/data/*.ts',
     ],
   },
   'buildifier': true,

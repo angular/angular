@@ -1,0 +1,31 @@
+@let basicLet = 123 + 456;
+
+@let noSpaceAfterEquals =true;
+
+@let noSpaceBeforeEquals= true;
+
+@let noSpaceAroundEquals=true;
+
+@let                    lotOfSpaceAroundEquals      =            true;
+
+@let #invalid = true;
+@let invalidIn#TheMiddle = true;
+@letinvalid = true;
+
+@let stringContainingSemicolon = 'hello ;' + 'world';
+
+@let complexExpression = something ? 123 : {prop: 'hello' + true + 'world'};
+
+@let usingPipes = 123 + foo | async | multiply: 2 | separator: ';';
+
+@if (someExpr | async) {
+  @let inBlock = true;
+
+  @for (foo of bar; track foo) {
+    @let inNestedBlock = 123;
+  }
+}
+
+@let noEquals
+
+@let noValue =

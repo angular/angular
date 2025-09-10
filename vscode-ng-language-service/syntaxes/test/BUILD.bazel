@@ -1,0 +1,48 @@
+load("@aspect_rules_jasmine//jasmine:defs.bzl", "jasmine_test")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config", "ts_project")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = ["//vscode-ng-language-service/syntaxes:__subpackages__"],
+    deps = ["//vscode-ng-language-service:tsconfig"],
+)
+
+ts_project(
+    name = "tests",
+    srcs = glob(["*.ts"]),
+    declaration = True,
+    resolve_json_module = True,
+    source_map = True,
+    tsconfig = ":tsconfig",
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/node",
+    ],
+)
+
+filegroup(
+    name = "dummy",
+    srcs = glob(["dummy/**"]),
+)
+
+filegroup(
+    name = "data",
+    srcs = glob(["data/**"]),
+)
+
+jasmine_test(
+    name = "test",
+    args = ["syntaxes/test/driver.js"],
+    chdir = "vscode-ng-language-service",
+    data = [
+        ":data",
+        ":dummy",
+        ":tests",
+        "//vscode-ng-language-service:node_modules/vscode-tmgrammar-test",
+        "//vscode-ng-language-service:package_json",
+        "//vscode-ng-language-service/syntaxes:json",
+    ],
+    node_modules = "//vscode-ng-language-service:node_modules",
+    tags = ["unit_test"],
+)

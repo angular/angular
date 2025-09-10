@@ -25,6 +25,7 @@ export const commitMessage: CommitMessageConfig = {
     'forms',
     'http',
     'language-service',
+    'language-server',
     'localize',
     'migrations',
     'packaging',
@@ -34,6 +35,7 @@ export const commitMessage: CommitMessageConfig = {
     'router',
     'service-worker',
     'upgrade',
+    'vscode-extension',
     'zone.js',
   ],
 };

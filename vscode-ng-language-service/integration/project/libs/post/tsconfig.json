@@ -1,0 +1,16 @@
+{
+	"extends": "../../tsconfig.json",
+	"files": [],
+	"include": [
+		"**/*.ts"
+	],
+	"compilerOptions": {
+		"outDir": "../../tsc-dist/post",
+		"rootDir": ".",
+		"declaration": true,
+		"declarationMap": true,
+		"inlineSources": true,
+		"sourceMap": true,
+		"types": []
+	},
+}

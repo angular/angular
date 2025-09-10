@@ -1,0 +1,94 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "Launch Dev Client",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/client/src/*.js"
+      ],
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "vscode:watch"
+      }
+    },
+    {
+      "type": "extensionHost",
+      "request": "launch",
+      "name": "Launch Prod Client",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm"
+      ],
+      "sourceMaps": false,
+      "preLaunchTask": "build vsix"
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Server",
+      "port": 6009,
+      "restart": true,
+      "outFiles": [
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/server/src/*.js"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Jasmine",
+      "port": 9229,
+      "restart": true,
+      "outFiles": [
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/**/*.js"
+      ],
+    },
+    {
+      "name": "Integration test: Attach to server",
+      "port": 9330,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/lsp/*.js"
+      ],
+      "type": "node"
+    },
+    {
+      "name": "E2E Test",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm",
+        "--extensionTestsPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/e2e/jasmine",
+        "${workspaceFolder}/vscode-ng-language-service/integration/project"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/e2e/*.js"
+      ],
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "compile:integration"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Dev Client + Server",
+      "configurations": [
+        "Launch Dev Client",
+        "Attach to Server"
+      ]
+    }
+  ]
+}
