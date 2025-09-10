@@ -113,8 +113,6 @@ build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
 build:remote --remote_upload_local_results=false
 
-build:remote --remote_grpc_log=/tmp/rbe-grpc.log
-
 # See: https://docs.google.com/document/d/1NgDPsCIwprDdqC1zj0qQrh5KGK2hQTSTux1DAvi4rSc/edit?tab=t.0.
 build:remote --experimental_remote_execution_keepalive
 
@@ -159,8 +157,8 @@ test:saucelabs --flaky_test_attempts=1
 
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
-# --full_build_adev will run adev build/serve in a full mode, performing prerendering and DCE.
-build --flag_alias=full_build_adev=//adev:full_build_adev
+# --prerender_adev will run adev build/serve in a full mode, performing prerendering
+build --flag_alias=prerender_adev=//adev:prerender_adev
 
 ####################################################
 # User bazel configuration
