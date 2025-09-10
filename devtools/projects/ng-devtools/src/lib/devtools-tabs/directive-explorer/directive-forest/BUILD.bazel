@@ -27,6 +27,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/tree-node",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
+        "//devtools/projects/ng-devtools/src/lib/shared/utils",
         "//devtools/projects/protocol",
     ],
 )
