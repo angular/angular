@@ -37,7 +37,6 @@ export class FieldNodeState {
    * Marks this specific field as touched.
    */
   markAsTouched(): void {
-    // TODO: should this be noop for fields that are hidden/disabled/readonly
     this.selfTouched.set(true);
   }
 
@@ -45,7 +44,6 @@ export class FieldNodeState {
    * Marks this specific field as dirty.
    */
   markAsDirty(): void {
-    // TODO: should this be noop for fields that are hidden/disabled/readonly
     this.selfDirty.set(true);
   }
 
@@ -72,13 +70,14 @@ export class FieldNodeState {
    * Whether this field is considered dirty.
    *
    * A field is considered dirty if one of the following is true:
-   *  - It was directly dirtied
+   *  - It was directly dirtied and is interactive
    *  - One of its children is considered dirty
    */
   readonly dirty: Signal<boolean> = computed(() => {
+    const selfDirtyValue = this.selfDirty() && !this.isNonInteractive();
     return reduceChildren(
       this.node,
-      this.selfDirty(),
+      selfDirtyValue,
       (child, value) => value || child.nodeState.dirty(),
       shortCircuitTrue,
     );
@@ -88,17 +87,18 @@ export class FieldNodeState {
    * Whether this field is considered touched.
    *
    * A field is considered touched if one of the following is true:
-   *  - It was directly touched
+   *  - It was directly touched and is interactive
    *  - One of its children is considered touched
    */
-  readonly touched: Signal<boolean> = computed(() =>
-    reduceChildren(
+  readonly touched: Signal<boolean> = computed(() => {
+    const selfTouchedValue = this.selfTouched() && !this.isNonInteractive();
+    return reduceChildren(
       this.node,
-      this.selfTouched(),
+      selfTouchedValue,
       (child, value) => value || child.nodeState.touched(),
       shortCircuitTrue,
-    ),
-  );
+    );
+  });
 
   /**
    * The reasons for this field's disablement. This includes disabled reasons for any parent field
@@ -156,4 +156,15 @@ export class FieldNodeState {
 
     return `${parent.name()}.${this.node.structure.keyInParent()}`;
   });
+
+  /** Whether this field is considered non-interactive.
+   *
+   * A field is considered non-interactive if one of the following is true:
+   * - It is hidden
+   * - It is disabled
+   * - It is readonly
+   */
+  private readonly isNonInteractive = computed(
+    () => this.hidden() || this.disabled() || this.readonly(),
+  );
 }
