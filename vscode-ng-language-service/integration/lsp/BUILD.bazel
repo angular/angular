@@ -1,0 +1,33 @@
+load("@aspect_bazel_lib//lib:copy_to_bin.bzl", "copy_to_bin")
+load("@aspect_rules_jasmine//jasmine:defs.bzl", "jasmine_test")
+
+jasmine_test(
+    name = "test",
+    args = ["*_spec.js"],
+    chdir = package_name(),
+    data = [
+        "//vscode-ng-language-service/integration",
+        "//vscode-ng-language-service/integration/pre_standalone_project",
+        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
+        "//vscode-ng-language-service/integration/project",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
+        "//vscode-ng-language-service/server:index",
+    ],
+    node_modules = "//vscode-ng-language-service:node_modules",
+    shard_count = 2,
+    tags = [
+        "e2e",
+        "no-remote",
+        "no-sandbox",
+    ],
+)
+
+copy_to_bin(
+    name = "srcs",
+    srcs = glob(["*.ts"]),
+    # NB: there is an import cycle between integration/lsp/*.ts and integration/test_constants.ts so
+    # they cannot be broken up into separate ts_project targets
+    visibility = ["//vscode-ng-language-service/integration:__subpackages__"],
+)

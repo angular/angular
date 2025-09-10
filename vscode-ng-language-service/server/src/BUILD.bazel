@@ -1,0 +1,28 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+
+ts_project(
+    name = "src",
+    srcs = glob(["*.ts"]),
+    declaration = True,
+    source_map = True,
+    tags = [
+        # Because the testing intentionally reaches into the output directories and crosses the sandbox
+        # boundaries, we need to explicitly make sure that this target is built locally so the testing
+        # can find expected files.
+        "no-remote-exec",
+    ],
+    tsconfig = "//vscode-ng-language-service/server:tsconfig",
+    visibility = [
+        "//vscode-ng-language-service/server:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/@angular/language-service",
+        "//:node_modules/typescript",
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/vscode-html-languageservice",
+        "//vscode-ng-language-service:node_modules/vscode-languageserver",
+        "//vscode-ng-language-service:node_modules/vscode-languageserver-textdocument",
+        "//vscode-ng-language-service:node_modules/vscode-uri",
+        "//vscode-ng-language-service/common",
+    ],
+)

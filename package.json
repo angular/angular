@@ -21,7 +21,7 @@
     "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build": "tsx --tsconfig scripts/tsconfig.json scripts/build/build-packages-dist.mts",
     "test": "bazelisk test",
-    "test:ci": "bazelisk test -- //... -//integration/... -//adev/... -//devtools/... -//modules/ssr-benchmarks/...",
+    "test:ci": "bazelisk test -- //... -//integration/... -//adev/... -//vscode-ng-language-service/... -//devtools/... -//modules/ssr-benchmarks/...",
     "integration-tests:ci": "bazelisk test -- //integration/...",
     "test-tsec": "bazelisk test //... --build_tag_filters=tsec --test_tag_filters=tsec",
     "lint": "pnpm --silent tslint && pnpm --silent ng-dev format changed --check",

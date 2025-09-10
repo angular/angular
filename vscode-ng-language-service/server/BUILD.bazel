@@ -1,0 +1,91 @@
+load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+        "//vscode-ng-language-service/server:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:tsconfig",
+    ],
+)
+
+esbuild(
+    name = "banner",
+    config = {
+        # This is described in more detail in the `server/banner.ts` but this line actually overrides
+        # the built-in `require` function by adding a line at the bottom of the generated banner code
+        # to assign the override function to the `require` name.
+        "footer": {"js": "require = requireOverride;"},
+        # Workaround for https://github.com/aspect-build/rules_esbuild/issues/58
+        "resolveExtensions": [".js"],
+    },
+    entry_point = "//vscode-ng-language-service/server/src:banner.js",
+    external = [
+        "path",
+    ],
+    format = "cjs",
+    # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
+    minify = False,
+    platform = "node",
+    sourcemap = "external",
+    deps = [
+        "//:node_modules/source-map-support",
+        "//vscode-ng-language-service/server/src",
+    ],
+)
+
+esbuild(
+    name = "index",
+    srcs = [
+        ":banner",
+    ],
+    config = "esbuild.mjs",
+    entry_point = "//vscode-ng-language-service/server/src:server.js",
+    external = [
+        "fs",
+        "path",
+        "typescript/lib/tsserverlibrary",
+        "vscode-languageserver",
+        "vscode-uri",
+        "vscode-jsonrpc",
+        "vscode-languageserver-textdocument",
+        "vscode-html-languageservice",
+    ],
+    format = "cjs",
+    # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
+    minify = False,
+    platform = "node",
+    sourcemap = "external",
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/source-map-support",
+        "//vscode-ng-language-service/server/src",
+    ],
+)
+
+expand_template_rule(
+    name = "package_json_expanded",
+    out = "package_expanded.json",
+    stamp_substitutions = {
+        "0.0.0-PLACEHOLDER": "{{BUILD_SCM_VERSION}}",
+    },
+    template = "package.json",
+)
+
+filegroup(
+    name = "npm_files",
+    srcs = [
+        "README.md",
+        "bin/ngserver",
+        "index.js",
+        "package_expanded.json",
+    ],
+    visibility = ["//vscode-ng-language-service:__pkg__"],
+)

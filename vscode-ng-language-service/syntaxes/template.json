@@ -1,0 +1,31 @@
+{
+  "scopeName": "template.ng",
+  "injectionSelector": "L:text.html -comment",
+  "patterns": [
+    {
+      "include": "#interpolation"
+    }
+  ],
+  "repository": {
+    "interpolation": {
+      "begin": "{{",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "end": "}}",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.block.ts"
+        }
+      },
+      "contentName": "expression.ng",
+      "patterns": [
+        {
+          "include": "expression.ng"
+        }
+      ]
+    }
+  }
+}

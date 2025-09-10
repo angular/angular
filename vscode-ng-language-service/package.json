@@ -1,0 +1,303 @@
+{
+  "name": "ng-template",
+  "displayName": "Angular Language Service",
+  "description": "Editor services for Angular templates",
+  "version": "20.2.2",
+  "publisher": "Angular",
+  "icon": "angular.png",
+  "license": "MIT",
+  "keywords": [
+    "Angular",
+    "multi-root ready"
+  ],
+  "engines": {
+    "vscode": "^1.74.3"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "The Language Server Protocol does not support remote file systems. Functionality is limited to syntax highlighting only."
+    }
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "angular.restartNgServer",
+        "title": "Restart Angular Language server",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.openLogFile",
+        "title": "Open Angular Server log",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.getTemplateTcb",
+        "title": "View Template Typecheck Block",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.goToComponentWithTemplateFile",
+        "title": "Go to component",
+        "category": "Angular"
+      },
+      {
+        "command": "angular.goToTemplateForComponent",
+        "title": "Go to template",
+        "category": "Angular"
+      }
+    ],
+    "submenus": [
+      {
+        "id": "angular.submenu",
+        "label": "Angular"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "angular.goToComponentWithTemplateFile",
+          "when": "editorLangId == html && !virtualWorkspace"
+        },
+        {
+          "command": "angular.goToTemplateForComponent",
+          "when": "editorLangId == typescript && !virtualWorkspace"
+        },
+        {
+          "command": "angular.getTemplateTcb",
+          "when": "!virtualWorkspace"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "angular.submenu",
+          "group": "angular"
+        }
+      ],
+      "angular.submenu": [
+        {
+          "when": "(resourceLangId == html || resourceLangId == typescript) && !virtualWorkspace",
+          "command": "angular.getTemplateTcb",
+          "group": "debug"
+        },
+        {
+          "when": "resourceLangId == html && !virtualWorkspace",
+          "command": "angular.goToComponentWithTemplateFile",
+          "group": "navigation"
+        },
+        {
+          "when": "resourceLangId == typescript && !virtualWorkspace",
+          "command": "angular.goToTemplateForComponent",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Angular Language Service",
+      "properties": {
+        "angular.log": {
+          "type": "string",
+          "enum": [
+            "off",
+            "terse",
+            "normal",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Enables logging of the Angular server to a file. This log can be used to diagnose Angular Server issues. The log may contain file paths, source code, and other potentially sensitive information from your project."
+        },
+        "angular.enable-strict-mode-prompt": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options). Note that strict mode is only available when using Ivy."
+        },
+        "angular.trace.server": {
+          "type": "string",
+          "scope": "window",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the Angular language server."
+        },
+        "angular.suggest.includeAutomaticOptionalChainCompletions": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable showing completions on potentially undefined values that insert an optional chain call. Requires TS 3.7+ and strict null checks to be enabled."
+        },
+        "angular.suggest.includeCompletionsWithSnippetText": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable snippet completions from Angular language server. Requires using TypeScript 4.3+ in the workspace."
+        },
+        "angular.suggest.autoImports": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Enable/disable auto import suggestions for the exported Angular components from the current project."
+        },
+        "angular.forceStrictTemplates": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enabling this option will force the language service to use [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) and ignore the user settings in the `tsconfig.json`."
+        },
+        "angular.suppressAngularDiagnosticCodes": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+        }
+      }
+    },
+    "grammars": [
+      {
+        "path": "./syntaxes/inline-template.json",
+        "scopeName": "inline-template.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "source.css": "css",
+          "source.js": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/inline-styles.json",
+        "scopeName": "inline-styles.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "source.css.scss": "scss"
+        }
+      },
+      {
+        "path": "./syntaxes/template.json",
+        "scopeName": "template.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "source.css": "css",
+          "expression.ng": "javascript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-blocks.json",
+        "scopeName": "template.blocks.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html": "html",
+          "control.block.expression.ng": "javascript",
+          "control.block.body.ng": "html"
+        }
+      },
+      {
+        "path": "./syntaxes/let-declaration.json",
+        "scopeName": "template.let.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
+        "path": "./syntaxes/host-object-literal.json",
+        "scopeName": "host-object-literal.ng",
+        "injectTo": [
+          "source.ts"
+        ],
+        "embeddedLanguages": {
+          "text.html.derivative": "html",
+          "expression.ng": "javascript",
+          "source.ts": "typescript"
+        }
+      },
+      {
+        "path": "./syntaxes/template-tag.json",
+        "scopeName": "template.tag.ng",
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
+      },
+      {
+        "path": "./syntaxes/expression.json",
+        "scopeName": "expression.ng"
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:html",
+    "onLanguage:typescript"
+  ],
+  "main": "./bazel-bin/client/src/extension",
+  "scripts": {
+    "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
+    "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
+    "format": "pnpm ng-dev format all",
+    "watch": "ibazel build //vscode-ng-language-service:index.js //vscode-ng-language-service/server:index.js",
+    "package": "pnpm bazel build //vscode-ng-language-service:npm --config=release",
+    "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
+    "test:watch": "ibazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
+    "test:lsp": "bazel test --test_output=streamed //vscode-ng-language-service/integration/lsp:test",
+    "test:e2e": "bazel test --test_output=streamed //vscode-ng-language-service/integration/e2e:test",
+    "test:inspect-client": "bazel run --config=debug //vscode-ng-language-service/client/src/tests:test",
+    "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
+    "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
+    "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
+  },
+  "dependencies": {
+    "@angular/language-service": "20.3.0",
+    "typescript": "5.9.2",
+    "vscode-html-languageservice": "^4.2.5",
+    "vscode-jsonrpc": "6.0.0",
+    "vscode-languageclient": "7.0.0",
+    "vscode-languageserver": "7.0.0",
+    "vscode-languageserver-textdocument": "^1.0.7",
+    "vscode-uri": "3.0.7"
+  },
+  "devDependencies": {
+    "@angular/core": "^20.0.0-rc.2",
+    "@types/jasmine": "3.10.7",
+    "@types/node": "18.19.39",
+    "@types/vscode": "1.67.0",
+    "balanced-match": "1.0.2",
+    "brace-expansion": "1.1.12",
+    "concat-map": "0.0.1",
+    "cross-env": "^7.0.3",
+    "esbuild": "0.14.39",
+    "jasmine-core": "5.10.0",
+    "jasmine-reporters": "2.5.2",
+    "jasmine": "5.10.0",
+    "lru-cache": "6.0.0",
+    "minimatch": "3.1.2",
+    "prettier": "2.7.1",
+    "rxjs": "6.6.7",
+    "semver": "7.7.2",
+    "source-map-support": "0.5.21",
+    "ts-node": "^10.8.1",
+    "vsce": "1.100.1",
+    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-languageserver-types": "3.16.0",
+    "vscode-nls": "5.2.0",
+    "vscode-test": "1.6.1",
+    "vscode-tmgrammar-test": "0.0.11",
+    "yallist": "4.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/vscode-ng-language-service"
+  }
+}

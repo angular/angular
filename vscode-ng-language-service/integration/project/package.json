@@ -1,0 +1,19 @@
+{
+  "name": "angular-ls-integration-test-project",
+  "private": true,
+  "dependencies": {
+    "@angular/common": "18.1.0-rc.0",
+    "@angular/compiler": "18.1.0-rc.0",
+    "@angular/compiler-cli": "18.1.0-rc.0",
+    "@angular/core": "18.1.0-rc.0",
+    "rxjs": "6.6.7",
+    "zone.js": "0.11.5"
+  },
+  "devDependencies": {
+    "ng-packagr": "^18.0.0-next.0",
+    "typescript": "~5.5.3"
+  },
+  "scripts": {
+    "build": "ng-packagr -p libs/post/ng-package.json -c libs/post/tsconfig.json"
+  }
+}
