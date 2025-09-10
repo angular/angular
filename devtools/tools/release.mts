@@ -9,6 +9,7 @@
 // tslint:disable:no-console
 import {input} from '@inquirer/prompts';
 import chalk from 'chalk';
+import semver from 'semver';
 import {writeFile, mkdir, rm, readFile} from 'node:fs/promises';
 import {exec as nodeExec, spawn, SpawnOptions} from 'node:child_process';
 import {promisify} from 'node:util';
@@ -116,7 +117,7 @@ async function main(): Promise<void> {
 
   // Fetch the latest changes from the remote.
   console.log(chalk.blue('Fetching latest changes from upstream...'));
-  await exec(`git fetch ${angularRepoRemote}`);
+  await exec(`git fetch ${angularRepoRemote} main`);
   console.log(chalk.green('Successfully fetched latest changes.'));
 
   // Check if there are any new commits to release.
@@ -134,7 +135,7 @@ async function main(): Promise<void> {
     console.log(`- ${commit}`);
   }
 
-  const newVersion = await getNewVersion();
+  const newVersion = await getNewVersion(commits);
   const outputDir = `dist/devtools-release-v${newVersion}`;
 
   console.log('');
@@ -189,7 +190,7 @@ async function checkCleanWorkingDirectory(): Promise<void> {
 async function getLastReleaseSha(version = ''): Promise<string> {
   const commitMessagePattern = releaseCommitPrefix + version;
   let {stdout: sha} = await exec(
-    `git log HEAD --grep="${commitMessagePattern}" --format=format:%H -n 1`,
+    `git log FETCH_HEAD --grep="${commitMessagePattern}" --format=format:%H -n 1`,
   );
 
   sha = sha.trim();
@@ -208,7 +209,7 @@ async function getLastReleaseSha(version = ''): Promise<string> {
  */
 async function getCommitsSince(since: string): Promise<string[]> {
   const {stdout} = await exec(
-    `git log HEAD...${since} -E --grep="^(feat|fix|perf)\\(devtools\\):" --format=format:%s`,
+    `git log FETCH_HEAD...${since} -E --grep="^(feat|fix|perf)\\(devtools\\):" --format=format:%s`,
   );
 
   return stdout
@@ -219,32 +220,29 @@ async function getCommitsSince(since: string): Promise<string[]> {
 
 /**
  * Gets the new version number from the user.
- * This function reads the current version from the manifest files, determines the next version and then prompts the user to confirm the new version.
- * @returns A promise that resolves to the new version number entered by the user.
+ * This function reads the current version from the manifest files, determines the next version based on the commits since the last release, and then prompts the user to confirm the new version.
+ * @param commits A list of commit messages since the last release.
+ * @returns A promise that resolves to the new version number.
  */
-async function getNewVersion(): Promise<string> {
+async function getNewVersion(commits: string[]): Promise<string> {
   console.log('');
   console.log(chalk.blue('Determining new version...'));
   const currentVersion = await getCurrentVersion();
-  const [currentMajor] = currentVersion.split('.');
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const builtTime = today.getTime();
-  const suggestedVersion = `${currentMajor}.${year}.${month}.${builtTime}`;
+  const releaseType = commits.some((commit) => commit.startsWith('feat')) ? 'minor' : 'patch';
+  const suggestedVersion = semver.inc(currentVersion, releaseType) ?? currentVersion;
 
   const newVersion = await input({
     message: 'Enter the new version number',
     default: suggestedVersion,
     validate: (value) => {
-      if (value === currentVersion) {
+      if (!semver.valid(value)) {
+        return chalk.red('Please enter a valid version number.');
+      }
+
+      if (semver.lte(value, currentVersion)) {
         return chalk.red(
           `Please enter a version number greater than the current version (${currentVersion}).`,
         );
-      }
-
-      if (!/^\d\.\d{4}\.\d{1,2}\.\d+$/.test(value)) {
-        return chalk.red('Please enter a valid version number.');
       }
 
       return true;
@@ -252,6 +250,7 @@ async function getNewVersion(): Promise<string> {
   });
 
   console.log(chalk.green(`New version set to: ${newVersion}`));
+
   return newVersion;
 }
 
@@ -298,9 +297,14 @@ async function prepareReleasePullRequest(newVersion: string): Promise<void> {
   await exec(`git commit -m "${releaseCommitPrefix}${newVersion}" "${manifestPaths.join('" "')}"`);
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
   console.log(chalk.green('Release branch pushed to your fork.'));
+
+  const {stdout: remoteUrl} = await exec('git config --get remote.origin.url');
+  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/angular/);
+  const origin = match ? match[1] : 'angular';
+
   console.log(
     chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/angular/angular/compare/${releaseBranch}`,
+      `Please create a pull request by visiting: https://github.com/${origin}/angular/compare/${releaseBranch}`,
     ),
   );
 }
@@ -322,7 +326,6 @@ async function getMergedCommitSha(newVersion: string): Promise<string> {
   console.log(chalk.green('Successfully fetched latest changes.'));
 
   console.log(chalk.blue('Finding merged release commit...'));
-  const commitMessage = `${releaseCommitPrefix}${newVersion}`;
   const mergedCommitSha = await getLastReleaseSha(newVersion);
 
   console.log(chalk.green(`Found merged release commit: ${mergedCommitSha}`));
@@ -388,7 +391,7 @@ async function publishFirefoxExtension(
   console.log(chalk.green(`Firefox extension packaged at ${firefoxZipPath}`));
 
   console.log(chalk.blue('Packaging source code...'));
-  await exec(`git archive HEAD -o "${sourceZipPath}"`);
+  await exec(`git archive FETCH_HEAD -o "${sourceZipPath}"`);
   console.log(chalk.green(`Source code packaged at ${sourceZipPath}`));
   console.log('');
 
