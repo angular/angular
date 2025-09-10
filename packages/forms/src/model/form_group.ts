@@ -556,13 +556,10 @@ export class FormGroup<
    */
   override reset(
     value: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any> = {},
-    options: {onlySelf?: boolean; emitEvent?: boolean} = {},
+    options: {onlySelf?: boolean; emitEvent?: boolean; overwriteDefaultValue?: boolean} = {},
   ): void {
     this._forEachChild((control: AbstractControl, name) => {
-      control.reset(value ? (value as any)[name] : null, {
-        onlySelf: true,
-        emitEvent: options.emitEvent,
-      });
+      control.reset(value ? (value as any)[name] : null, {...options, onlySelf: true});
     });
     this._updatePristine(options, this);
     this._updateTouched(options, this);

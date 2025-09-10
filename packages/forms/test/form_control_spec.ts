@@ -894,6 +894,10 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(c2.value).toBe('foo');
         expect(c2.defaultValue).toBe('foo');
 
+        c2.reset('baz', {overwriteDefaultValue: true});
+        expect(c2.value).toBe('baz');
+        expect(c2.defaultValue).toBe('baz');
+
         const c3 = new FormControl('foo', {nonNullable: false});
         expect(c3.value).toBe('foo');
         expect(c3.defaultValue).toBe(null);
@@ -905,6 +909,10 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         c3.reset();
         expect(c3.value).toBe(null);
         expect(c3.defaultValue).toBe(null);
+
+        c3.reset('baz', {overwriteDefaultValue: true});
+        expect(c3.value).toBe('baz');
+        expect(c3.defaultValue).toBe('baz');
       });
 
       it('should look inside FormState objects for a default value', () => {
