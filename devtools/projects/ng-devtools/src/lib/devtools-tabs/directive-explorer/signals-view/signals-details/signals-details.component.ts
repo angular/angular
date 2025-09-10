@@ -39,6 +39,7 @@ export class SignalsDetailsComponent {
   protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
 
   protected readonly gotoSource = output<DebugSignalGraphNode>();
+  protected readonly close = output<void>();
 
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
 }

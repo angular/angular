@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {WritableSignal} from '@angular/core';
 import {DebugSignalGraph, DebugSignalGraphNode} from '../../../../../../protocol';
 import * as d3 from 'd3';
 import {graphlib, render as dagreRender} from 'dagre-d3-es';
@@ -18,13 +17,10 @@ export class SignalsGraphVisualizer {
   zoomController: d3.ZoomBehavior<SVGSVGElement, unknown>;
 
   private animationMap: Map<string, number> = new Map();
+  private timeouts: Set<ReturnType<typeof setTimeout>> = new Set();
+  private nodeClickListeners: ((node: DebugSignalGraphNode) => void)[] = [];
 
-  private timeouts: Set<number> = new Set();
-
-  constructor(
-    private svg: SVGSVGElement,
-    private selected: WritableSignal<string | null>,
-  ) {
+  constructor(private svg: SVGSVGElement) {
     this.graph = new graphlib.Graph({directed: true});
     this.graph.setGraph({});
     this.graph.graph().rankdir = 'TB';
@@ -69,7 +65,7 @@ export class SignalsGraphVisualizer {
     }
   }
 
-  updateNodeAnimations(updatedNodes: string[], timeout: number) {
+  updateNodeAnimations(updatedNodes: string[], timeout: ReturnType<typeof setTimeout>) {
     this.timeouts.delete(timeout);
 
     for (const id of updatedNodes) {
@@ -110,7 +106,11 @@ export class SignalsGraphVisualizer {
 
     const createNode = (node: DebugSignalGraphNode) => {
       const outer = document.createElement('div');
-      outer.onclick = () => this.selected.set(node.id);
+      outer.onclick = () => {
+        for (const cb of this.nodeClickListeners) {
+          cb(node);
+        }
+      };
       outer.className = `node-label kind-${node.kind}`;
       const header = document.createElement('div');
       header.className = 'header';
@@ -202,6 +202,23 @@ export class SignalsGraphVisualizer {
       this.svg.clientWidth,
       this.svg.clientHeight,
     ]);
+  }
+
+  /**
+   * Listen for node clicks.
+   *
+   * @param cb Callback/listener
+   * @returns An unlisten function
+   */
+  onNodeClick(cb: (node: DebugSignalGraphNode) => void): () => void {
+    this.nodeClickListeners.push(cb);
+
+    return () => {
+      const idx = this.nodeClickListeners.indexOf(cb);
+      if (idx > -1) {
+        this.nodeClickListeners.splice(idx, 1);
+      }
+    };
   }
 }
 

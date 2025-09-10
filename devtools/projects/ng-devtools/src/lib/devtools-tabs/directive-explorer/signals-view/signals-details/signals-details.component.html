@@ -1,9 +1,24 @@
 @let node = this.node();
 
 <div class="header">
-  <button ng-button size="compact" (click)="gotoSource.emit(node)" [disabled]="!node.debuggable">
+  <button
+    ng-button
+    size="compact"
+    class="action-btn"
+    (click)="gotoSource.emit(node)"
+    [disabled]="!node.debuggable"
+  >
     <mat-icon> arrow_outward </mat-icon>
     View Source
+  </button>
+  <button
+    ng-button
+    btnType="icon"
+    class="close-btn"
+    (click)="close.emit()"
+    title="Close the details"
+  >
+    <mat-icon>close</mat-icon>
   </button>
 </div>
 

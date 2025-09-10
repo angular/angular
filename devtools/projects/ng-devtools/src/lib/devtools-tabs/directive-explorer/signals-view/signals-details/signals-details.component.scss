@@ -16,8 +16,12 @@
   .header {
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--quinary-contrast);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
 
-    button {
+    .action-btn {
       display: flex;
       align-items: center;
       gap: 0.25rem;
@@ -26,6 +30,15 @@
         width: 16px;
         height: 16px;
         font-size: 16px;
+      }
+    }
+
+    .close-btn {
+      mat-icon {
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+        color: var(--secondary-contrast);
       }
     }
   }
