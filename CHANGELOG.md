@@ -1,5 +1,5 @@
-<a name="20.3.0-rc.0"></a>
-# 20.3.0-rc.0 (2025-09-10)
+<a name="20.3.0"></a>
+# 20.3.0 (2025-09-10)
 ## Breaking Changes
 ### core
 - The server-side bootstrapping process has been changed to eliminate the reliance on a global platform injector.
