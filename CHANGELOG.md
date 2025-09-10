@@ -1,3 +1,32 @@
+<a name="18.2.14"></a>
+# 18.2.14 (2025-09-10)
+## Breaking Changes
+### core
+- The server-side bootstrapping process has been changed to eliminate the reliance on a global platform injector.
+  
+  Before:
+  ```ts
+  const bootstrap = () => bootstrapApplication(AppComponent, config);
+  ```
+  
+  After:
+  ```ts
+  const bootstrap = (context: BootstrapContext) =>
+    bootstrapApplication(AppComponent, config, context);
+  ```
+  
+  A schematic is provided to automatically update `main.server.ts` files to pass the `BootstrapContext` to the `bootstrapApplication` call.
+  
+  In addition, `getPlatform()` and `destroyPlatform()` will now return `null` and be a no-op respectively when running in a server environment.
+  
+  (cherry picked from commit 8bf80c9d2314b4f2bcf3df83ae01552a6fc49834)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9d1fb33f5e](https://github.com/angular/angular/commit/9d1fb33f5eeadd9da48d0306463235e6d33f82b1) | fix | introduce `BootstrapContext` for improved server bootstrapping ([#63640](https://github.com/angular/angular/pull/63640)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.15"></a>
 # 19.2.15 (2025-09-10)
 ## Breaking Changes
