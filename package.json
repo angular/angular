@@ -48,14 +48,14 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular-devkit/build-angular": "20.2.2",
-    "@angular-devkit/core": "20.2.2",
-    "@angular-devkit/schematics": "20.2.2",
+    "@angular-devkit/build-angular": "20.3.0",
+    "@angular-devkit/core": "20.3.0",
+    "@angular-devkit/schematics": "20.3.0",
     "@angular/animations": "workspace:*",
     "@angular/benchpress": "workspace: *",
-    "@angular/build": "20.2.2",
+    "@angular/build": "20.3.0",
     "@angular/cdk": "20.2.2",
-    "@angular/cli": "20.2.2",
+    "@angular/cli": "20.3.0",
     "@angular/common": "workspace:*",
     "@angular/compiler": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
@@ -70,7 +70,7 @@
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
     "@angular/service-worker": "workspace:*",
-    "@angular/ssr": "20.2.2",
+    "@angular/ssr": "20.3.0",
     "@angular/upgrade": "workspace: *",
     "@babel/cli": "7.28.3",
     "@babel/core": "7.28.3",
@@ -80,7 +80,7 @@
     "@rollup/plugin-babel": "^6.0.0",
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "@schematics/angular": "20.2.2",
+    "@schematics/angular": "20.3.0",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.20.5",
     "@types/babel__generator": "7.27.0",
@@ -166,8 +166,8 @@
   "devDependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.0",
-    "@angular-devkit/architect-cli": "0.2002.2",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#435c59b107acc48bf2b54814f2208637a960d004",
+    "@angular-devkit/architect-cli": "0.2003.0",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#ad59d80826f751b82ed501821ec9fcf97a72c96b",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",
@@ -222,8 +222,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "dagre-d3-es@7.0.11": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch",
-      "@angular/ssr": "tools/pnpm-patches/@angular__ssr.patch"
+      "dagre-d3-es@7.0.11": "tools/pnpm-patches/dagre-d3-es+7.0.11.patch"
     },
     "packageExtensions": {
       "grpc-gcp": {
