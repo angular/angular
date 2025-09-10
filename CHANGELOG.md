@@ -1,3 +1,46 @@
+<a name="21.0.0-next.3"></a>
+# 21.0.0-next.3 (2025-09-10)
+## Breaking Changes
+### compiler-cli
+- * Previously hidden type issues in host bindings may show up in your builds. Either resolve the type issues or set `"typeCheckHostBindings": false` in the `angularCompilerOptions` section of your tsconfig.
+### core
+- The server-side bootstrapping process has been changed to eliminate the reliance on a global platform injector.
+  
+  Before:
+  ```ts
+  const bootstrap = () => bootstrapApplication(AppComponent, config);
+  ```
+  
+  After:
+  ```ts
+  const bootstrap = (context: BootstrapContext) =>
+    bootstrapApplication(AppComponent, config, context);
+  ```
+  
+  A schematic is provided to automatically update `main.server.ts` files to pass the `BootstrapContext` to the `bootstrapApplication` call.
+  
+  In addition, `getPlatform()` and `destroyPlatform()` will now return `null` and be a no-op respectively when running in a server environment.
+- * TypeScript versions less than 5.9 are no longer supported.
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ef025880cc](https://github.com/angular/angular/commit/ef025880cc7587f07679b90955539601a4ec555f) | fix | remove refresh button from transfer state tab ([#63592](https://github.com/angular/angular/pull/63592)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [0571b335b9](https://github.com/angular/angular/commit/0571b335b9b11459b73a19679671eae97fbe1683) | feat | enable type checking of host bindings by default ([#63654](https://github.com/angular/angular/pull/63654)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [28926ba92c](https://github.com/angular/angular/commit/28926ba92cf3da7e45a7b8938bba49febdf58eb7) | feat | introduce `BootstrapContext` for improved server bootstrapping ([#63562](https://github.com/angular/angular/pull/63562)) |
+| [c0791e1887](https://github.com/angular/angular/commit/c0791e1887590b862bfed9333c5c90be3ac487d0) | fix | drop support for TypeScript 5.8 ([#63589](https://github.com/angular/angular/pull/63589)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [655a99d0c6](https://github.com/angular/angular/commit/655a99d0c60f70bbc14968133cfe6ab251cedc92) | fix | fix bug in ngclass-to-class migration ([#63617](https://github.com/angular/angular/pull/63617)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.0"></a>
 # 20.3.0 (2025-09-10)
 ## Breaking Changes
