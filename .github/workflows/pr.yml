@@ -127,6 +127,21 @@ jobs:
       - name: Build adev in fast mode to ensure it continues to work
         run: pnpm bazel build //adev:build
 
+  vscode-ng-language-service:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - name: Initialize environment
+        uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@d776aff2258f15fc3dc1e63852887518eec3ad75
+      - name: Setup Bazel
+        uses: angular/dev-infra/github-actions/bazel/setup@d776aff2258f15fc3dc1e63852887518eec3ad75
+      - name: Setup Bazel RBE
+        uses: angular/dev-infra/github-actions/bazel/configure-remote@d776aff2258f15fc3dc1e63852887518eec3ad75
+      - name: Install node modules
+        run: pnpm install --frozen-lockfile
+      - name: Run tests
+        run: pnpm bazel test //vscode-ng-language-service/...
+
   zone-js:
     runs-on:
       labels: ubuntu-latest
