@@ -17,6 +17,7 @@ import {
   linkedSignal,
   OnDestroy,
   output,
+  signal,
   viewChild,
 } from '@angular/core';
 import {SignalsGraphVisualizer} from './signals-visualizer';
@@ -113,6 +114,8 @@ export class SignalsTabComponent implements OnDestroy {
     );
   });
 
+  protected readonly detailsVisible = signal(false);
+
   protected treeControl = computed<FlatTreeControl<FlatNode>>(() => {
     return new FlatTreeControl(
       (node) => node.level,
@@ -156,10 +159,11 @@ export class SignalsTabComponent implements OnDestroy {
   }
 
   setUpSignalsVisualizer() {
-    this.signalsVisualizer = new SignalsGraphVisualizer(
-      this.svgComponent().nativeElement,
-      this.selected,
-    );
+    this.signalsVisualizer = new SignalsGraphVisualizer(this.svgComponent().nativeElement);
+    this.signalsVisualizer.onNodeClick((node) => {
+      this.selected.set(node.id);
+      this.detailsVisible.set(true);
+    });
   }
 
   ngOnDestroy(): void {
