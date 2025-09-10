@@ -343,7 +343,7 @@ export function ɵɵdeferHydrateNever() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  if (ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate never');
   }
 
@@ -366,7 +366,7 @@ export function ɵɵdeferOnIdle() {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
-  if (ngDevMode) {
+  if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     trackTriggerForDebugging(lView[TVIEW], tNode, 'on idle');
   }
 

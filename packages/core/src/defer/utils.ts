@@ -36,7 +36,7 @@ export function getDeferBlockDataIndex(deferBlockIndex: number) {
 export function getLDeferBlockDetails(lView: LView, tNode: TNode): LDeferBlockDetails {
   const tView = lView[TVIEW];
   const slotIndex = getDeferBlockDataIndex(tNode.index);
-  ngDevMode && assertIndexInDeclRange(tView, slotIndex);
+  typeof ngDevMode !== 'undefined' && ngDevMode && assertIndexInDeclRange(tView, slotIndex);
   return lView[slotIndex];
 }
 
@@ -48,14 +48,14 @@ export function setLDeferBlockDetails(
 ) {
   const tView = lView[TVIEW];
   const slotIndex = getDeferBlockDataIndex(deferBlockIndex);
-  ngDevMode && assertIndexInDeclRange(tView, slotIndex);
+  typeof ngDevMode !== 'undefined' && ngDevMode && assertIndexInDeclRange(tView, slotIndex);
   lView[slotIndex] = lDetails;
 }
 
 /** Retrieves static info about a defer block, given a TView and a TNode that represents a block. */
 export function getTDeferBlockDetails(tView: TView, tNode: TNode): TDeferBlockDetails {
   const slotIndex = getDeferBlockDataIndex(tNode.index);
-  ngDevMode && assertIndexInDeclRange(tView, slotIndex);
+  typeof ngDevMode !== 'undefined' && ngDevMode && assertIndexInDeclRange(tView, slotIndex);
   return tView.data[slotIndex] as TDeferBlockDetails;
 }
 
@@ -66,7 +66,7 @@ export function setTDeferBlockDetails(
   deferBlockConfig: TDeferBlockDetails,
 ) {
   const slotIndex = getDeferBlockDataIndex(deferBlockIndex);
-  ngDevMode && assertIndexInDeclRange(tView, slotIndex);
+  typeof ngDevMode !== 'undefined' && ngDevMode && assertIndexInDeclRange(tView, slotIndex);
   tView.data[slotIndex] = deferBlockConfig;
 }
 
@@ -88,7 +88,9 @@ export function getTemplateIndexForState(
     case DeferBlockState.Placeholder:
       return tDetails.placeholderTmplIndex;
     default:
-      ngDevMode && throwError(`Unexpected defer block state: ${newState}`);
+      typeof ngDevMode !== 'undefined' &&
+        ngDevMode &&
+        throwError(`Unexpected defer block state: ${newState}`);
       return null;
   }
 }

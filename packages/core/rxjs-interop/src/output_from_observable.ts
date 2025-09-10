@@ -86,6 +86,6 @@ export function outputFromObservable<T>(
   observable: Observable<T>,
   opts?: OutputOptions,
 ): OutputRef<T> {
-  ngDevMode && assertInInjectionContext(outputFromObservable);
+  typeof ngDevMode !== 'undefined' && ngDevMode && assertInInjectionContext(outputFromObservable);
   return new OutputFromObservableRef<T>(observable);
 }

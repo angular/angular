@@ -127,15 +127,24 @@ export function compileNgModuleDefs(
   ngModule: NgModule,
   allowDuplicateDeclarationsInRoot: boolean = false,
 ): void {
-  ngDevMode && assertDefined(moduleType, 'Required value moduleType');
-  ngDevMode && assertDefined(ngModule, 'Required value ngModule');
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    assertDefined(moduleType, 'Required value moduleType');
+  typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    assertDefined(ngModule, 'Required value ngModule');
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
   let ngModuleDef: any = null;
   Object.defineProperty(moduleType, NG_MOD_DEF, {
     configurable: true,
     get: () => {
       if (ngModuleDef === null) {
-        if (ngDevMode && ngModule.imports && ngModule.imports.indexOf(moduleType) > -1) {
+        if (
+          typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
+          ngModule.imports &&
+          ngModule.imports.indexOf(moduleType) > -1
+        ) {
           // We need to assert this immediately, because allowing it to continue will cause it to
           // go into an infinite loop before we've reached the point where we throw all the errors.
           throw new Error(`'${stringifyForError(moduleType)}' module can't import itself`);
@@ -197,7 +206,9 @@ export function compileNgModuleDefs(
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        ngDevMode && verifySemanticsOfNgModuleDef(moduleType, allowDuplicateDeclarationsInRoot);
+        typeof ngDevMode !== 'undefined' &&
+          ngDevMode &&
+          verifySemanticsOfNgModuleDef(moduleType, allowDuplicateDeclarationsInRoot);
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
