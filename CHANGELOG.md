@@ -1,3 +1,36 @@
+<a name="20.3.0-rc.0"></a>
+# 20.3.0-rc.0 (2025-09-10)
+## Breaking Changes
+### core
+- The server-side bootstrapping process has been changed to eliminate the reliance on a global platform injector.
+  
+  Before:
+  ```ts
+  const bootstrap = () => bootstrapApplication(AppComponent, config);
+  ```
+  
+  After:
+  ```ts
+  const bootstrap = (context: BootstrapContext) =>
+    bootstrapApplication(AppComponent, config, context);
+  ```
+  
+  A schematic is provided to automatically update `main.server.ts` files to pass the `BootstrapContext` to the `bootstrapApplication` call.
+  
+  In addition, `getPlatform()` and `destroyPlatform()` will now return `null` and be a no-op respectively when running in a server environment.
+  
+  (cherry picked from commit 8bf80c9d2314b4f2bcf3df83ae01552a6fc49834)
+### 
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a3f808d7c8](https://github.com/angular/angular/commit/a3f808d7c8cc59a4fd69f2e4b8d21a6510efa046) | fix | remove refresh button from transfer state tab ([#63592](https://github.com/angular/angular/pull/63592)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6117ccee2e](https://github.com/angular/angular/commit/6117ccee2e1507fb00549cd70e064282645db803) | feat | introduce `BootstrapContext` for improved server bootstrapping ([#63636](https://github.com/angular/angular/pull/63636)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.2.4"></a>
 # 20.2.4 (2025-09-03)
 ### core
