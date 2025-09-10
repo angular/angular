@@ -308,6 +308,7 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     reset(value?: ɵTypedOrUntyped<TControl, ɵFormArrayValue<TControl>, any>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
+        overwriteDefaultValue?: boolean;
     }): void;
     setControl(index: number, control: TControl, options?: {
         emitEvent?: boolean;
@@ -378,7 +379,7 @@ export class FormBuilder {
 
 // @public
 export interface FormControl<TValue = any> extends AbstractControl<TValue> {
-    readonly defaultValue: TValue;
+    defaultValue: TValue;
     getRawValue(): TValue;
     patchValue(value: TValue, options?: {
         onlySelf?: boolean;
@@ -391,6 +392,7 @@ export interface FormControl<TValue = any> extends AbstractControl<TValue> {
     reset(formState?: TValue | FormControlState<TValue>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
+        overwriteDefaultValue?: boolean;
     }): void;
     setValue(value: TValue, options?: {
         onlySelf?: boolean;
@@ -509,6 +511,7 @@ export class FormGroup<TControl extends {
     reset(value?: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any>, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
+        overwriteDefaultValue?: boolean;
     }): void;
     setControl<K extends string & keyof TControl>(name: K, control: TControl[K], options?: {
         emitEvent?: boolean;

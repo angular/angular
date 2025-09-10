@@ -169,6 +169,17 @@ describe('Typed Class', () => {
       val = valueFn(c);
       val = valueFn(c)!;
     });
+
+    it('should only allow to set valid values as defaultValue', () => {
+      const c1 = new FormControl('valid', {nonNullable: true});
+      c1.defaultValue = 'also valid';
+      // @ts-expect-error this should not be allowed
+      c1.defaultValue = null;
+
+      const c2 = new FormControl<string | null>('valid');
+      c2.defaultValue = 'also valid';
+      c2.defaultValue = null;
+    });
   });
 
   describe('FormGroup', () => {

@@ -11,14 +11,13 @@ import {
   AbstractControl,
   ControlEvent,
   FormArray,
-  FormBuilder,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
   ValueChangeEvent,
 } from '../index';
-import {delay, filter, map, of, startWith, timer} from 'rxjs';
+import {filter, map, of} from 'rxjs';
 
 import {
   asyncValidator,
@@ -877,6 +876,21 @@ import {FormControlStatus, StatusChangeEvent} from '../src/model/abstract_model'
           form.statusChanges.subscribe(pristineAndNotDirty);
 
           form.reset();
+        });
+
+        it('should reset default value when resetting', () => {
+          const c = new FormControl('default', {nonNullable: true});
+          const g = new FormGroup({'one': c});
+
+          expect(g.value).toEqual({one: 'default'});
+
+          g.reset();
+          expect(g.value).toEqual({one: 'default'});
+          expect(c.defaultValue).toEqual('default');
+
+          g.reset({one: 'newDefault'}, {overwriteDefaultValue: true});
+          expect(c.value).toEqual('newDefault');
+          expect(c.defaultValue).toEqual('newDefault');
         });
       });
     });
