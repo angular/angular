@@ -414,8 +414,8 @@ groups:
         - ~leonsenft
         - ~mattrbeck
     reviews:
-      request: 3 # Request reviews from 3 people
-      required: 2 # Require that 2 people approve
+      request: 2
+      required: 1
       reviewed_for: required
 
   # ================================================
