@@ -437,8 +437,8 @@ importers:
         specifier: ^7.0.0
         version: 7.1.1(conventional-commits-filter@5.0.0)
       cypress:
-        specifier: 15.1.0
-        version: 15.1.0
+        specifier: 15.2.0
+        version: 15.2.0
       emoji-regex:
         specifier: ^10.3.0
         version: 10.5.0
@@ -488,8 +488,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.19.13)(typescript@5.9.2)
       tsec:
-        specifier: 0.2.8
-        version: 0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.2)
+        specifier: 0.2.9
+        version: 0.2.9(@bazel/bazelisk@1.26.0)(typescript@5.9.2)
       tslint-eslint-rules:
         specifier: 5.4.0
         version: 5.4.0(tslint@6.1.3(typescript@5.9.2))(typescript@5.9.2)
@@ -572,8 +572,8 @@ importers:
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3
       '@codemirror/autocomplete':
-        specifier: 6.18.6
-        version: 6.18.6
+        specifier: 6.18.7
+        version: 6.18.7
       '@codemirror/commands':
         specifier: 6.8.1
         version: 6.8.1
@@ -584,8 +584,8 @@ importers:
         specifier: 6.3.1
         version: 6.3.1
       '@codemirror/lang-html':
-        specifier: 6.4.9
-        version: 6.4.9
+        specifier: 6.4.10
+        version: 6.4.10
       '@codemirror/lang-javascript':
         specifier: 6.2.4
         version: 6.2.4
@@ -2148,8 +2148,8 @@ packages:
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
-  '@codemirror/autocomplete@6.18.6':
-    resolution: {integrity: sha512-PHHBXFomUs5DF+9tCOM/UoW6XQ4R44lLNNhRaW9PKPTU0D7lIjRg3ElxaJnTwsl/oHiR93WSXDBrekhoUGCPtg==}
+  '@codemirror/autocomplete@6.18.7':
+    resolution: {integrity: sha512-8EzdeIoWPJDsMBwz3zdzwXnUpCzMiCyz5/A3FIPpriaclFCGDkAzK13sMcnsu5rowqiyeQN2Vs2TsOcoDPZirQ==}
 
   '@codemirror/commands@6.8.1':
     resolution: {integrity: sha512-KlGVYufHMQzxbdQONiLyGQDUW0itrLZwq3CcY7xpv9ZLRHqzkBSoteocBHtMCoY7/Ci4xhzSrToIeLg7FxHuaw==}
@@ -2160,8 +2160,8 @@ packages:
   '@codemirror/lang-css@6.3.1':
     resolution: {integrity: sha512-kr5fwBGiGtmz6l0LSJIbno9QrifNMUusivHbnA1H6Dmqy4HZFte3UAICix1VuKo0lMPKQr2rqB+0BkKi/S3Ejg==}
 
-  '@codemirror/lang-html@6.4.9':
-    resolution: {integrity: sha512-aQv37pIMSlueybId/2PVSP6NPnmurFDVmZwzc7jszd2KAF8qd4VBbvNYPXWQq90WIARjsdVkPbw29pszmHws3Q==}
+  '@codemirror/lang-html@6.4.10':
+    resolution: {integrity: sha512-h/SceTVsN5r+WE+TVP2g3KDvNoSzbSrtZXCKo4vkKdbfT5t4otuVgngGdFukOO/rwRD2++pCxoh6xD4TEVMkQA==}
 
   '@codemirror/lang-javascript@6.2.4':
     resolution: {integrity: sha512-0WVmhp1QOqZ4Rt6GlVGwKJN3KW7Xh4H2q8ZZNGZaP6lRdxXJzmjm4FqvmOojVj6khWJHIb9sp7U/72W7xQgqAA==}
@@ -5938,8 +5938,8 @@ packages:
   custom-event@1.0.1:
     resolution: {integrity: sha512-GAj5FOq0Hd+RsCGVJxZuKaIDXDf3h6GQoNEjFgbLLI/trgtavwUbSnZ5pVfg27DVCaWjIohryS0JFwIJyT2cMg==}
 
-  cypress@15.1.0:
-    resolution: {integrity: sha512-jS4EfyOa2W5KXCN02WBdmy4bpBBmLGe+INhZeCvzRksfJuzBSYp3rNg2G+hfOwPzM+wwMwOYCo/kEnH+5RsSjA==}
+  cypress@15.2.0:
+    resolution: {integrity: sha512-J4ehSzOSb58SkXyldCe9y/oZ8ep8Bl6+q9kDUjnkqNqc2ZKzDq5KSbhIc2lHFAFR5Jtj10oNqr9JRAZbr8DA8A==}
     engines: {node: ^20.0.0 || ^22.0.0 || >=24.0.0}
     hasBin: true
 
@@ -10985,8 +10985,8 @@ packages:
       '@swc/wasm':
         optional: true
 
-  tsec@0.2.8:
-    resolution: {integrity: sha512-d2vdTEtLbPzTs57ygzzPk6QrdW1lA8SBAoHZCVvAyC3R1LTjsQ2eGg/XRmtoCpXOVIflVtMsxtzk7eTHwT+DjQ==}
+  tsec@0.2.9:
+    resolution: {integrity: sha512-6YCqU5GYg5RBYuDqld74MB4DAwkwBT09gz5hUWS/l8bKthTJwoO62ND6txkhvfGNcmIpWIYVl6h0oqHPG7zqcA==}
     hasBin: true
     peerDependencies:
       '@bazel/bazelisk': '>=1.7.5'
@@ -13380,7 +13380,7 @@ snapshots:
 
   '@chevrotain/utils@11.0.3': {}
 
-  '@codemirror/autocomplete@6.18.6':
+  '@codemirror/autocomplete@6.18.7':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
@@ -13396,7 +13396,7 @@ snapshots:
 
   '@codemirror/lang-angular@0.1.4':
     dependencies:
-      '@codemirror/lang-html': 6.4.9
+      '@codemirror/lang-html': 6.4.10
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.3
       '@lezer/common': 1.2.3
@@ -13405,15 +13405,15 @@ snapshots:
 
   '@codemirror/lang-css@6.3.1':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/autocomplete': 6.18.7
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@lezer/common': 1.2.3
       '@lezer/css': 1.3.0
 
-  '@codemirror/lang-html@6.4.9':
+  '@codemirror/lang-html@6.4.10':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/autocomplete': 6.18.7
       '@codemirror/lang-css': 6.3.1
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.3
@@ -13425,7 +13425,7 @@ snapshots:
 
   '@codemirror/lang-javascript@6.2.4':
     dependencies:
-      '@codemirror/autocomplete': 6.18.6
+      '@codemirror/autocomplete': 6.18.7
       '@codemirror/language': 6.11.3
       '@codemirror/lint': 6.8.5
       '@codemirror/state': 6.5.2
@@ -17803,7 +17803,7 @@ snapshots:
 
   custom-event@1.0.1: {}
 
-  cypress@15.1.0:
+  cypress@15.2.0:
     dependencies:
       '@cypress/request': 3.0.9
       '@cypress/xvfb': 1.2.4(supports-color@8.1.1)
@@ -24109,11 +24109,11 @@ snapshots:
       yn: 3.1.1
     optional: true
 
-  tsec@0.2.8(@bazel/bazelisk@1.26.0)(typescript@5.9.2):
+  tsec@0.2.9(@bazel/bazelisk@1.26.0)(typescript@5.9.2):
     dependencies:
       '@bazel/bazelisk': 1.26.0
-      glob: 7.2.3
-      minimatch: 3.1.2
+      glob: 11.0.3
+      minimatch: 10.0.3
       typescript: 5.9.2
 
   tslib@1.14.1: {}
