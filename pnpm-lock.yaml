@@ -40,8 +40,8 @@ importers:
         specifier: 20.3.1
         version: 20.3.1(@angular/ssr@20.3.1)(@types/node@18.19.123)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.0)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@18.19.123)(jiti@1.21.7)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
-        specifier: 20.2.2
-        version: 20.2.2(rxjs@7.8.2)
+        specifier: 20.2.3
+        version: 20.2.3(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.3.1
         version: 20.3.1(@types/node@18.19.123)(chokidar@4.0.3)
@@ -70,8 +70,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 20.2.2
-        version: 20.2.2(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 20.2.3
+        version: 20.2.3(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -272,7 +272,7 @@ importers:
         version: 0.1.1
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -536,8 +536,8 @@ importers:
         specifier: 20.3.1
         version: 20.3.1(@angular/ssr@20.3.1)(@types/node@24.3.0)(chokidar@4.0.3)(jiti@1.21.7)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.3.0)(jiti@1.21.7)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.0)(sass@1.90.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
-        specifier: 20.2.2
-        version: 20.2.2(rxjs@7.8.2)
+        specifier: 20.2.3
+        version: 20.2.3(rxjs@7.8.2)
       '@angular/cli':
         specifier: 20.3.1
         version: 20.3.1(@types/node@24.3.0)(chokidar@4.0.3)
@@ -560,8 +560,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 20.2.2
-        version: 20.2.2(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 20.2.3
+        version: 20.2.3(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -708,7 +708,7 @@ importers:
         version: 11.10.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -1448,8 +1448,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@20.2.2':
-    resolution: {integrity: sha512-jLvIMmFI8zoi6vAu1Aszua59GmhqBOtsVfkwLUGg5Hi86DI/inJr9BznNX2EKDtaulYMGZCmDgsltXQXeqP5Lg==}
+  '@angular/cdk@20.2.3':
+    resolution: {integrity: sha512-gu1zzxxcwobeiH21VpphM+cPFrQX0dxGwlFx1W8eTcLYLWd9YjlTETucBrEUEWcXmRrVTXf/VcqA0rWsxd50Ow==}
     peerDependencies:
       rxjs: ^6.5.3 || ^7.4.0
 
@@ -1466,10 +1466,10 @@ packages:
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
     version: 2.1.6
 
-  '@angular/material@20.2.2':
-    resolution: {integrity: sha512-ovLk6h6XIw3qtSjp2bSqFn7ANYvWOIh2zTrRPdAB78siOpqs11d8YdyD4LUEuUrcZoInNgK7AMJsfldDkHwhnA==}
+  '@angular/material@20.2.3':
+    resolution: {integrity: sha512-fe6abllA5VwFQTYuKjJQNQMzMakFD8CLaQsgSoUCAYnlCJ1YjMMIVAbcrMuJVlDeGz1cM9PaZgvUyCOZCMADhQ==}
     peerDependencies:
-      '@angular/cdk': 20.2.2
+      '@angular/cdk': 20.2.3
       rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4a0716c5afaa29225482e658ceb9d5b5ebb79f9d':
@@ -12846,7 +12846,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@20.2.2(rxjs@7.8.2)':
+  '@angular/cdk@20.2.3(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -12913,9 +12913,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
-  '@angular/material@20.2.2(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@angular/material@20.2.3(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 20.2.2(rxjs@7.8.2)
+      '@angular/cdk': 20.2.3(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -22564,9 +22564,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@20.2.2(rxjs@7.8.2))(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@20.2.3(rxjs@7.8.2))(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 20.2.2(rxjs@7.8.2)
+      '@angular/cdk': 20.2.3(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
