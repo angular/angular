@@ -591,6 +591,7 @@
       "includeViewProviders",
       "incrementInitPhaseFlags",
       "inferTagNameFromDefinition",
+      "inferTagNameFromSelector",
       "initDisconnectedNodes",
       "initDomAdapter",
       "initFeatures",

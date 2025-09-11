@@ -143,6 +143,7 @@ export const enum RuntimeErrorCode {
   // Runtime dependency tracker errors
   RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
   RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
+  RUNTIME_DEPS_INVALID_SELECTOR = 982,
 
   // resource() API errors
   MUST_PROVIDE_STREAM_OPTION = 990,

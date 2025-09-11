@@ -20,6 +20,7 @@ import {
   EmbeddedViewRef,
   EnvironmentInjector,
   ErrorHandler,
+  hostSelector,
   InjectionToken,
   Injector,
   Input,
@@ -359,6 +360,556 @@ describe('ViewContainerRef', () => {
       expect(factoryHostElement.getAttribute('attr-c')).toBe(null);
       firstRef.destroy();
       secondRef.destroy();
+    });
+    describe('selector support', () => {
+      it('should create host element with custom selector when using ViewContainerRef', () => {
+        @Component({
+          selector: 'button[matButton], a[matButton], custom-button',
+          template: 'Custom Button',
+          standalone: false,
+        })
+        class MultiSelectorComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+
+          createComponentWithSelector(selector: string) {
+            return this.vcRef.createComponent(MultiSelectorComp, {
+              selector: hostSelector(selector),
+            });
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MultiSelectorComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.createComponentWithSelector('a[matButton]');
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('a');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('a');
+        expect(hostElement.hasAttribute('matbutton')).toBe(true);
+        expect(hostElement.textContent).toBe('Custom Button');
+
+        ref.destroy();
+      });
+
+      it('should create host element with complex selector', () => {
+        @Component({
+          selector: 'button.primary[type="submit"], div.secondary, span.tertiary',
+          template: 'Complex Selector',
+          standalone: false,
+        })
+        class ComplexSelectorComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, ComplexSelectorComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(ComplexSelectorComp, {
+          selector: hostSelector('button.primary[type="submit"]'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('button');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('button');
+        expect(hostElement.classList.contains('primary')).toBe(true);
+        expect(hostElement.getAttribute('type')).toBe('submit');
+
+        ref.destroy();
+      });
+
+      it('should create host element with attribute-only selector', () => {
+        @Component({
+          selector: '[custom-directive], button[special], div.highlight',
+          template: 'Attribute Directive',
+          standalone: false,
+        })
+        class AttributeComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, AttributeComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(AttributeComp, {
+          selector: hostSelector('[custom-directive]'),
+        });
+        fixture.detectChanges();
+
+        // Should fall back to first selector's tag or 'div' if no tag is available
+        const hostElement = fixture.nativeElement.querySelector('div, button, [custom-directive]');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.hasAttribute('custom-directive')).toBe(true);
+
+        ref.destroy();
+      });
+
+      it('should handle SVG elements when selector specifies svg tag', () => {
+        @Component({
+          selector: 'svg[custom], div.regular',
+          template: '<g><circle r="5"></circle></g>',
+          standalone: false,
+        })
+        class SvgComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, SvgComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(SvgComp, {
+          selector: hostSelector('svg[custom]'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('svg');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('svg');
+        expect(hostElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+        expect(hostElement.hasAttribute('custom')).toBe(true);
+
+        ref.destroy();
+      });
+
+      it('should handle MathML elements when selector specifies math tag', () => {
+        @Component({
+          selector: 'math[formula], div.regular',
+          template: '<mrow><mi>x</mi></mrow>',
+          standalone: false,
+        })
+        class MathComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MathComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(MathComp, {
+          selector: hostSelector('math[formula]'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('math');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('math');
+        expect(hostElement.namespaceURI).toBe('http://www.w3.org/1998/Math/MathML');
+        expect(hostElement.hasAttribute('formula')).toBe(true);
+
+        ref.destroy();
+      });
+
+      it('should work with :not() selectors', () => {
+        @Component({
+          selector: 'button:not(.disabled):not([readonly]), span.enabled',
+          template: 'Enabled Button',
+          standalone: false,
+        })
+        class NotSelectorComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, NotSelectorComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(NotSelectorComp, {
+          selector: hostSelector('button:not(.disabled):not([readonly])'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('button');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('button');
+        expect(hostElement.classList.contains('disabled')).toBe(false);
+        expect(hostElement.hasAttribute('readonly')).toBe(false);
+
+        ref.destroy();
+      });
+
+      it('should throw error when selector does not match component selectors', () => {
+        @Component({
+          selector: 'button[matButton], a[matButton]',
+          template: 'Mat Button',
+          standalone: false,
+        })
+        class MatButtonComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MatButtonComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        expect(() => {
+          fixture.componentInstance.vcRef.createComponent(MatButtonComp, {
+            selector: hostSelector('div[invalidSelector]'),
+          });
+        }).toThrowError(/Invalid selector for component MatButtonComp/);
+      });
+
+      it('should throw error when selector is empty', () => {
+        @Component({
+          selector: 'valid-selector',
+          template: 'Valid Component',
+          standalone: false,
+        })
+        class ValidComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, ValidComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        expect(() => {
+          fixture.componentInstance.vcRef.createComponent(ValidComp, {
+            selector: hostSelector(''),
+          });
+        }).toThrowError(/The selector must not be empty/);
+      });
+
+      it('should throw error when selector contains multiple elements', () => {
+        @Component({
+          selector: 'button[primary], a[secondary]',
+          template: 'Multi Element',
+          standalone: false,
+        })
+        class MultiElementComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MultiElementComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        expect(() => {
+          fixture.componentInstance.vcRef.createComponent(MultiElementComp, {
+            selector: hostSelector('button[primary], a[secondary]'),
+          });
+        }).toThrowError(/The selector must contain only one element/);
+      });
+
+      it('should work when hostElement is provided along with selector', () => {
+        @Component({
+          selector: 'button[mat-button], a[mat-button]',
+          template: 'Material Button',
+          standalone: false,
+        })
+        class MatButtonComp {}
+
+        @Component({
+          template: `
+            <div #existing id="existing-element"></div>
+            <ng-container #container></ng-container>
+          `,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+          @ViewChild('existing') existingElement!: ElementRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MatButtonComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        // Create component with selector - should use selector to determine element type
+        const ref = fixture.componentInstance.vcRef.createComponent(MatButtonComp, {
+          selector: hostSelector('a[mat-button]'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('a');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('a'); // Should be anchor element as specified by selector
+        expect(hostElement.hasAttribute('mat-button')).toBe(true);
+        expect(hostElement.textContent).toBe('Material Button');
+
+        ref.destroy();
+      });
+
+      it('should prefer default selector when no custom selector is provided', () => {
+        @Component({
+          selector: 'default-element, alternate-element',
+          template: 'Default Selector',
+          standalone: false,
+        })
+        class DefaultSelectorComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, DefaultSelectorComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(DefaultSelectorComp);
+        fixture.detectChanges();
+
+        // Should use first selector by default
+        const hostElement = fixture.nativeElement.querySelector('default-element');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('default-element');
+
+        ref.destroy();
+      });
+
+      it('should work with Angular Material-like button component', () => {
+        @Component({
+          selector: `
+            button[matButton], a[matButton], button[mat-button], button[mat-raised-button],
+            button[mat-flat-button], button[mat-stroked-button], a[mat-button], a[mat-raised-button],
+            a[mat-flat-button], a[mat-stroked-button]
+          `,
+          template: 'Material Button',
+          standalone: false,
+        })
+        class MatButtonComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, MatButtonComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        // Test creating an anchor-based mat button
+        const anchorRef = fixture.componentInstance.vcRef.createComponent(MatButtonComp, {
+          selector: hostSelector('a[mat-stroked-button]'),
+        });
+        fixture.detectChanges();
+
+        const anchorElement = fixture.nativeElement.querySelector('a');
+        expect(anchorElement).toBeTruthy();
+        expect(anchorElement.tagName.toLowerCase()).toBe('a');
+        expect(anchorElement.hasAttribute('mat-stroked-button')).toBe(true);
+
+        anchorRef.destroy();
+
+        // Test creating a button-based mat button
+        const buttonRef = fixture.componentInstance.vcRef.createComponent(MatButtonComp, {
+          selector: hostSelector('button[mat-raised-button]'),
+        });
+        fixture.detectChanges();
+
+        const buttonElement = fixture.nativeElement.querySelector('button');
+        expect(buttonElement).toBeTruthy();
+        expect(buttonElement.tagName.toLowerCase()).toBe('button');
+        expect(buttonElement.hasAttribute('mat-raised-button')).toBe(true);
+
+        buttonRef.destroy();
+      });
+
+      it('should preserve namespace when using selector with svg/math elements', () => {
+        @Component({
+          selector: 'svg[icon], math[formula], div[fallback]',
+          template: 'Namespace Test',
+          standalone: false,
+        })
+        class NamespaceComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, NamespaceComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        // Test SVG namespace
+        const svgRef = fixture.componentInstance.vcRef.createComponent(NamespaceComp, {
+          selector: hostSelector('svg[icon]'),
+        });
+        fixture.detectChanges();
+
+        const svgElement = fixture.nativeElement.querySelector('svg');
+        expect(svgElement).toBeTruthy();
+        expect(svgElement.namespaceURI).toBe('http://www.w3.org/2000/svg');
+
+        svgRef.destroy();
+
+        // Test MathML namespace
+        const mathRef = fixture.componentInstance.vcRef.createComponent(NamespaceComp, {
+          selector: hostSelector('math[formula]'),
+        });
+        fixture.detectChanges();
+
+        const mathElement = fixture.nativeElement.querySelector('math');
+        expect(mathElement).toBeTruthy();
+        expect(mathElement.namespaceURI).toBe('http://www.w3.org/1998/Math/MathML');
+
+        mathRef.destroy();
+      });
+
+      it('should handle class and attribute combinations in selectors', () => {
+        @Component({
+          selector: 'div.primary[data-test="button"], span.secondary[role="button"]',
+          template: 'Combo Selector',
+          standalone: false,
+        })
+        class ComboSelectorComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, ComboSelectorComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(ComboSelectorComp, {
+          selector: hostSelector('div.primary[data-test="button"]'),
+        });
+        fixture.detectChanges();
+
+        const hostElement = fixture.nativeElement.querySelector('div');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.tagName.toLowerCase()).toBe('div');
+        expect(hostElement.classList.contains('primary')).toBe(true);
+        expect(hostElement.getAttribute('data-test')).toBe('button');
+
+        ref.destroy();
+      });
+
+      it('should validate selector format before creating component', () => {
+        @Component({
+          selector: 'valid-button',
+          template: 'Valid Button',
+          standalone: false,
+        })
+        class ValidButtonComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, ValidButtonComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        // Test with malformed selector
+        expect(() => {
+          fixture.componentInstance.vcRef.createComponent(ValidButtonComp, {
+            selector: hostSelector('invalid[selector[malformed]'),
+          });
+        }).toThrow();
+      });
+
+      it('should handle edge case with no tag name in selector', () => {
+        @Component({
+          selector: '[data-component], .component-class, #component-id',
+          template: 'Edge Case Component',
+          standalone: false,
+        })
+        class EdgeCaseComp {}
+
+        @Component({
+          template: `<ng-container #container></ng-container>`,
+          standalone: false,
+        })
+        class TestComp {
+          @ViewChild('container', {read: ViewContainerRef}) vcRef!: ViewContainerRef;
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComp, EdgeCaseComp]});
+        const fixture = TestBed.createComponent(TestComp);
+        fixture.detectChanges();
+
+        const ref = fixture.componentInstance.vcRef.createComponent(EdgeCaseComp, {
+          selector: hostSelector('[data-component]'),
+        });
+        fixture.detectChanges();
+
+        // Should create element with the attribute but fallback tag
+        const hostElement = fixture.nativeElement.querySelector('[data-component]');
+        expect(hostElement).toBeTruthy();
+        expect(hostElement.hasAttribute('data-component')).toBe(true);
+
+        ref.destroy();
+      });
     });
   });
 
