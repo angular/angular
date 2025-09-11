@@ -52,6 +52,20 @@ When defining an event listener in a template, you can access the event data fro
 <custom-slider (valueChanged)="logValue($event)" />
 ```
 
+Receive the event data in the parent component:
+
+<docs-code language="ts" highlight="">
+@Component({
+ /*...*/
+})
+export class App {
+  logValue(value: number) {
+    ...
+  }
+}
+
+</docs-code>
+
 ## Customizing output names
 
 The `output` function accepts a parameter that lets you specify a different name for the event in a template:
