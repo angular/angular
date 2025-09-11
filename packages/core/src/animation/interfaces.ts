@@ -85,4 +85,12 @@ export interface AnimationLViewData {
 
   // Leave animations that apply to nodes in this view
   running?: Promise<PromiseSettledResult<void>[]>;
+
+  // Skip leave animations
+  // This flag is solely used when move operations occur. DOM Node move
+  // operations occur in lists, like `@for` loops, and use the same code
+  // path during move that detaching or removing does. So to prevent
+  // unexpected disappearing of moving nodes, we use this flag to skip
+  // the animations in that case.
+  skipLeaveAnimations?: boolean;
 }
