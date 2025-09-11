@@ -74,6 +74,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_BINDING_TARGET = 316,
     // (undocumented)
+    INVALID_CONTROL_HOST = 318,
+    // (undocumented)
     INVALID_DIFFER_INPUT = 900,
     // (undocumented)
     INVALID_EVENT_BINDING = 306,

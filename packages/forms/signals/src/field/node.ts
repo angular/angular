@@ -8,7 +8,15 @@
 
 import type {Signal, WritableSignal} from '@angular/core';
 import type {Control} from '../api/control_directive';
-import {AggregateProperty, Property} from '../api/property';
+import {
+  AggregateProperty,
+  Property,
+  MAX,
+  MAX_LENGTH,
+  MIN,
+  MIN_LENGTH,
+  REQUIRED,
+} from '../api/property';
 import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../schema/logic_node';
@@ -135,6 +143,26 @@ export class FieldNode implements FieldState<unknown> {
 
   get name(): Signal<string> {
     return this.nodeState.name;
+  }
+
+  get max(): Signal<number | undefined> {
+    return this.property(MAX);
+  }
+
+  get maxLength(): Signal<number | undefined> {
+    return this.property(MAX_LENGTH);
+  }
+
+  get min(): Signal<number | undefined> {
+    return this.property(MIN);
+  }
+
+  get minLength(): Signal<number | undefined> {
+    return this.property(MIN_LENGTH);
+  }
+
+  get required(): Signal<boolean> {
+    return this.property(REQUIRED);
   }
 
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;

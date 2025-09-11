@@ -6,7 +6,9 @@ MyComponent.ɵcmp = /* @__PURE__ */i0.ɵɵdefineComponent({
   consts: [[3, "control"]],
   template: function MyComponent_Template(rf, ctx) {
     if (rf & 1) {
-      i0.ɵɵelement(0, "input", 0);
+      i0.ɵɵelementStart(0, "input", 0);
+      i0.ɵɵcontrolCreate();
+      i0.ɵɵelementEnd();
     }
     if (rf & 2) {
       i0.ɵɵcontrol(ctx.value);
