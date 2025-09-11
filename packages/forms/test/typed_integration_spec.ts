@@ -663,6 +663,13 @@ describe('Typed Class', () => {
         let t1 = c.get('foobar')?.value;
         t1 = null as unknown as ValueType;
       }
+      {
+        // In this case we're not able to infer the type because parent is AbstractControl<any,any,any>
+        type ValueType = any;
+        let t: ValueType = c.parent?.get('foobar')?.value;
+        let t1 = c.get('foobar')?.value;
+        t1 = null as unknown as ValueType;
+      }
     });
 
     it('is assignable to AbstractControl', () => {

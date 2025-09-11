@@ -1501,6 +1501,12 @@ export abstract class AbstractControl<
   ): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
 
   /**
+   * This is basically a fallback signature, used when you can't get the other two to work.
+   * Usually happens when you have invoke the method on a union type like FormGroup | FormRecord
+   */
+  get<P extends string | Array<string | number>>(path: P): AbstractControl | null;
+
+  /**
    * Retrieves a child control given the control's name or path.
    *
    * @param path A dot-delimited string or array of string/number values that define the path to the
