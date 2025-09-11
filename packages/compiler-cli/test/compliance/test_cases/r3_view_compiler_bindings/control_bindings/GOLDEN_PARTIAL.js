@@ -21,12 +21,16 @@ export class MyComponent {
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "ng-component", ngImport: i0, template: `
+    <div control="Not a form control"></div>
+    <div [attr.control]="value">Not a form control either.</div>
     <input [control]="value">
   `, isInline: true, dependencies: [{ kind: "directive", type: Control, selector: "[control]", inputs: ["control"] }] });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
             type: Component,
             args: [{
                     template: `
+    <div control="Not a form control"></div>
+    <div [attr.control]="value">Not a form control either.</div>
     <input [control]="value">
   `,
                     imports: [Control],

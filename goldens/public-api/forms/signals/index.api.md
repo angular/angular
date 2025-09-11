@@ -70,14 +70,14 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 export const CONTROL: InjectionToken<Control<unknown>>;
 
 // @public
-export class Control<T> {
-    get cva(): ControlValueAccessor | undefined;
-    readonly cvaArray: ControlValueAccessor[] | null;
-    readonly el: ElementRef<HTMLElement>;
-    readonly field: i0.WritableSignal<FieldTree<T>>;
+export class Control<T> implements ɵControl<T> {
     // (undocumented)
-    set _field(value: FieldTree<T>);
-    get ngControl(): NgControl;
+    readonly [ɵCONTROL]: undefined;
+    // (undocumented)
+    readonly field: i0.InputSignal<FieldTree<T>>;
+    // (undocumented)
+    register(): void;
+    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "field": { "alias": "control"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;

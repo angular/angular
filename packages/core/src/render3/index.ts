@@ -96,6 +96,7 @@ export {
   ɵɵprojectionDef,
   ɵɵproperty,
   ɵɵcontrol,
+  ɵɵcontrolCreate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵloadQuery,

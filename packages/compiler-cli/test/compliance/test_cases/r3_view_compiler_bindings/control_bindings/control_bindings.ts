@@ -7,6 +7,8 @@ export class Control {
 
 @Component({
   template: `
+    <div control="Not a form control"></div>
+    <div [attr.control]="value">Not a form control either.</div>
     <input [control]="value">
   `,
   imports: [Control],

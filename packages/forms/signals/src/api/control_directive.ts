@@ -10,9 +10,6 @@ import {
   computed,
   Directive,
   effect,
-  ElementRef,
-  EventEmitter,
-  inject,
   InjectionToken,
   Injector,
   inject,
@@ -21,15 +18,6 @@ import {
   ɵControl,
 } from '@angular/core';
 import type {FieldNode} from '../field/node';
-import {
-  privateGetComponentInstance,
-  privateIsModelInput,
-  privateIsSignalInput,
-  privateRunEffect,
-  privateSetComponentInput as privateSetInputSignal,
-} from '../util/private';
-import {FormCheckboxControl, FormUiControl, FormValueControl} from './control';
-import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} from './property';
 import type {FieldTree} from './types';
 
 /**
@@ -61,50 +49,10 @@ export const CONTROL = new InjectionToken<Control<unknown>>(
  * @category control
  * @experimental 21.0.0
  */
-@Directive({
-  selector: '[control]',
-  providers: [
-    {
-      provide: NgControl,
-      useFactory: () => inject(Control).ngControl,
-    },
-    {
-      provide: CONTROL,
-      useExisting: Control,
-    },
-  ],
-})
-export class Control<T> {
-  /** The injector for this component. */
+@Directive({selector: '[control]', providers: [{provide: CONTROL, useExisting: Control}]})
+export class Control<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
-  private readonly renderer = inject(Renderer2);
-
-  /** Whether state synchronization with the field has been setup yet. */
-  private initialized = false;
-
-  /** The field that is bound to this control. */
-  readonly field = signal<FieldTree<T>>(undefined as any);
-
-  // If `[control]` is applied to a custom UI control, it wants to synchronize state in the field w/
-  // the inputs of that custom control. This is difficult to do in user-land. We use `effect`, but
-  // effects don't run before the lifecycle hooks of the component. This is usually okay, but has
-  // one significant issue: the UI control's required inputs won't be set in time for those
-  // lifecycle hooks to run.
-  //
-  // Eventually we can build custom functionality for the `Control` directive into the framework,
-  // but for now we work around this limitation with a hack. We use an `@Input` instead of a
-  // signal-based `input()` for the `[control]` to hook the exact moment inputs are being set,
-  // before the important lifecycle hooks of the UI control. We can then initialize all our effects
-  // and force them to run immediately, ensuring all required inputs have values.
-  @Input({required: true, alias: 'control'})
-  set _field(value: FieldTree<T>) {
-    this.field.set(value);
-    if (!this.initialized) {
-      this.initialize();
-    }
-  }
-
-  /** The field state of the bound field. */
+  readonly field = input.required<FieldTree<T>>({alias: 'control'});
   readonly state = computed(() => this.field()());
   readonly [ɵCONTROL] = undefined;
 
