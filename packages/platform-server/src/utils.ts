@@ -27,7 +27,7 @@ import {BootstrapContext} from '@angular/platform-browser';
 import {platformServer} from './server';
 import {PlatformState} from './platform_state';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG} from './tokens';
-import {createScript} from './transfer_state';
+import {createScript} from './create_script';
 
 /**
  * Event dispatch (JSAction) script is inlined into the HTML by the build
