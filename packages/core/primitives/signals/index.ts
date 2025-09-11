@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {ComputedNode, createComputed} from './src/computed';
+export {
+  COMPUTED_NODE,
+  ComputedNode,
+  createComputed,
+  ComputedGetter,
+  COMPUTING,
+  ERRORED,
+  UNSET,
+} from './src/computed';
 export {
   ComputationFn,
   LinkedSignalNode,
@@ -16,13 +24,14 @@ export {
   linkedSignalUpdateFn,
 } from './src/linked_signal';
 export {ValueEqualityFn, defaultEquals} from './src/equality';
-export {setThrowInvalidWriteToSignalError} from './src/errors';
+export {setThrowInvalidWriteToSignalError, throwInvalidWriteToSignalError} from './src/errors';
 export {
   REACTIVE_NODE,
   Reactive,
   ReactiveHookFn,
   ReactiveNode,
   SIGNAL,
+  Version,
   consumerAfterComputation,
   consumerBeforeComputation,
   consumerDestroy,

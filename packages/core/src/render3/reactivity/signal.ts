@@ -16,6 +16,7 @@ import {
 } from '../../../primitives/signals';
 
 import {isSignal, Signal, ValueEqualityFn} from './api';
+import {untracked} from './untracked';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
 export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
@@ -108,4 +109,35 @@ export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
  */
 export function isWritableSignal(value: unknown): value is WritableSignal<unknown> {
   return isSignal(value) && typeof (value as any).set === 'function';
+}
+
+/**
+ * Upgrade the `read` signal to be a `WritableSignal`, using the `write` function to set the value.
+ *
+ * Callers must ensure that `write` updates the value of `read` in a synchronous way.
+ *
+ * It is an error to call `upgradeSignalToWritable` on a `WritableSignal`.
+ */
+export function upgradeSignalToWritable<T>(
+  read: WritableSignal<T>,
+  write: (value: T) => void,
+): never;
+export function upgradeSignalToWritable<T>(
+  read: Signal<T>,
+  write: (value: T) => void,
+): asserts read is WritableSignal<T>;
+export function upgradeSignalToWritable<T>(
+  read: Signal<T>,
+  write: (value: T) => void,
+): asserts read is WritableSignal<T> {
+  const getter = read as WritableSignal<T>;
+  if (ngDevMode && (getter as {set?: unknown}).set) {
+    throw new Error('Cannot upgrade an already-writable signal.');
+  }
+
+  getter.set = write;
+  getter.update = (fn: (value: T) => T) => {
+    write(fn(untracked(read)));
+  };
+  getter.asReadonly = signalAsReadonlyFn;
 }
