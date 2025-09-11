@@ -20,7 +20,7 @@ export abstract class LiveCollection<T, V> {
   abstract get length(): number;
   abstract at(index: number): V;
   abstract attach(index: number, item: T): void;
-  abstract detach(index: number): T;
+  abstract detach(index: number, skipLeaveAnimations?: boolean): T;
   abstract create(index: number, value: V): T;
   destroy(item: T): void {
     // noop by default
@@ -45,7 +45,11 @@ export abstract class LiveCollection<T, V> {
     }
   }
   move(prevIndex: number, newIdx: number): void {
-    this.attach(newIdx, this.detach(prevIndex));
+    // For move operations, the detach code path is the same one used for removing
+    // DOM nodes, which would trigger `animate.leave` bindings. We need to skip
+    // those animations in the case of a move operation so the moving elements don't
+    // unexpectedly disappear.
+    this.attach(newIdx, this.detach(prevIndex, true /* skipLeaveAnimations */));
   }
 }
 

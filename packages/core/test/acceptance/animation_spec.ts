@@ -11,6 +11,7 @@ import {ViewEncapsulation} from '@angular/compiler';
 import {
   AnimationCallbackEvent,
   Component,
+  computed,
   Directive,
   ElementRef,
   NgModule,
@@ -1538,6 +1539,67 @@ describe('Animation', () => {
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
+    }));
+
+    it('should only remove one element in reactive `@for` loops when removing the second to last item', fakeAsync(() => {
+      const animateStyles = `
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @for (item of shown(); track item) {
+              <p animate.leave="fade" #el>I should slide in {{item}}.</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = signal([1, 2, 3, 4, 5, 6]);
+        shown = computed(() => this.items().slice(0, 3));
+        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
+        max = 6;
+
+        removeSecondToLast() {
+          this.items.update((old) => {
+            const newList = [...old];
+            newList.splice(1, 1);
+            return newList;
+          });
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.removeSecondToLast();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
+      fixture.debugElement
+        .query(By.css('p.fade'))
+        .nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'fade-out'}),
+        );
+      tick();
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
     }));
   });
 });

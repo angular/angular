@@ -352,12 +352,18 @@ function cleanUpView(tView: TView, lView: LView): void {
 
 function runLeaveAnimationsWithCallback(lView: LView | undefined, callback: Function) {
   if (lView && lView[ANIMATIONS] && lView[ANIMATIONS].leave) {
-    const runningAnimations = [];
-    for (let animateFn of lView[ANIMATIONS].leave) {
-      runningAnimations.push(animateFn());
+    if (lView[ANIMATIONS].skipLeaveAnimations) {
+      lView[ANIMATIONS].skipLeaveAnimations = false;
+    } else {
+      const leaveAnimations = lView[ANIMATIONS].leave;
+      const runningAnimations = [];
+      for (let index = 0; index < leaveAnimations.length; index++) {
+        const animateFn = leaveAnimations[index];
+        runningAnimations.push(animateFn());
+      }
+      lView[ANIMATIONS].running = Promise.allSettled(runningAnimations);
+      lView[ANIMATIONS].leave = undefined;
     }
-    lView[ANIMATIONS].running = Promise.allSettled(runningAnimations);
-    lView[ANIMATIONS].leave = undefined;
   }
   runAfterLeaveAnimations(lView, callback);
 }
