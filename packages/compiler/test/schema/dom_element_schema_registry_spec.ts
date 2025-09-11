@@ -6,7 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DomElementSchemaRegistry} from '../../src/schema/dom_element_schema_registry';
+import {
+  _ATTR_TO_PROP,
+  DomElementSchemaRegistry,
+  SCHEMA,
+} from '../../src/schema/dom_element_schema_registry';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SecurityContext} from '@angular/core';
 import {isNode} from '@angular/private/testing';
 
@@ -232,5 +236,15 @@ If 'onAnything' is a directive input, make sure the directive is imported by the
       expect(registry.normalizeAnimationStyleValue('zIndex', 'zIndex', 10)['value']).toBe('10');
       expect(registry.normalizeAnimationStyleValue('opacity', 'opacity', 0.5)['value']).toBe('0.5');
     });
+  });
+
+  it('should support aria property if attribute is also supported', () => {
+    const elementschema = SCHEMA[0];
+
+    [..._ATTR_TO_PROP.values()]
+      .filter((prop) => prop.startsWith('aria'))
+      .forEach((prop) => {
+        expect(elementschema).toContain(prop);
+      });
   });
 });
