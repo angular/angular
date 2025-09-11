@@ -616,6 +616,10 @@ export function control(
   return call(Identifiers.control, args, sourceSpan);
 }
 
+export function controlCreate(sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.controlCreate, [], sourceSpan);
+}
+
 export function twoWayProperty(
   name: string,
   expression: o.Expression,

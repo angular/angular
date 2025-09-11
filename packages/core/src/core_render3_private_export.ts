@@ -94,6 +94,7 @@ export {
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
+  ɵɵcontrolCreate,
   ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
@@ -242,6 +243,7 @@ export {
 } from './render3/index';
 export {CONTAINER_HEADER_OFFSET as ɵCONTAINER_HEADER_OFFSET} from './render3/interfaces/container';
 export {LContext as ɵLContext} from './render3/interfaces/context';
+export {ɵCONTROL, ɵControl, ɵFieldState} from './render3/interfaces/control';
 export {setDocument as ɵsetDocument} from './render3/interfaces/document';
 export {
   compileComponent as ɵcompileComponent,
