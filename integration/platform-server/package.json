@@ -23,7 +23,7 @@
     "@angular/forms": "file:../../dist/packages-dist/forms",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/platform-server": "18.2.14",
     "@angular/router": "file:../../dist/packages-dist/router",
     "express": "4.16.4",
     "rxjs": "file:../../node_modules/rxjs",
@@ -31,7 +31,7 @@
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "18.1.0",
+    "@angular-devkit/build-angular": "18.2.18",
     "@angular/cli": "18.1.0",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
