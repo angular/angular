@@ -867,12 +867,36 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection, NgZone, ɵNoopNgZone } from '@angular/core';
+          import { NgModule, provideZoneChangeDetection, NgZone } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({providers: [provideZoneChangeDetection(), {provide: NgZone, useClass: ɵNoopNgZone}]})
-          export class ZoneChangeDetectionModule {}
+          // TODO ADD WARNING MESSAGE
+          export class NoopNgZone implements NgZone {
+            readonly hasPendingMicrotasks = false;
+            readonly hasPendingMacrotasks = false;
+            readonly isStable = true;
+            readonly onUnstable = new EventEmitter<any>();
+            readonly onMicrotaskEmpty = new EventEmitter<any>();
+            readonly onStable = new EventEmitter<any>();
+            readonly onError = new EventEmitter<any>();
+
+            run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
+              return fn.apply(applyThis, applyArgs);
+            }
+
+            runGuarded<T>(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): T {
+              return fn.apply(applyThis, applyArgs);
+            }
+
+            runOutsideAngular<T>(fn: (...args: any[]) => T): T {
+              return fn();
+            }
+
+            runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
+              return fn.apply(applyThis, applyArgs);
+            }
+          }
 
           @NgModule({
             declarations: [AppComponent],
@@ -2117,6 +2141,75 @@ describe('bootstrap options migration', () => {
         });
 
         it('should add a single ZoneCDModule if there are multiple NgModule in the same file', async () => {
+          const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
+            ...typeFiles,
+            {
+              name: absoluteFrom('/main.ts'),
+              isProgramRootFile: true,
+              contents: `
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule);
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.module.ts'),
+              isProgramRootFile: true, // for the migration to also run in the file
+              contents: `
+            import { NgModule } from '@angular/core';
+            import { BrowserModule } from '@angular/platform-browser';
+            import { AppComponent } from './app.component';
+
+            @NgModule({
+              imports: [CommonModule],
+              bootstrap: [],
+              providers: [],
+              exports: [],
+            })
+            export class MyModule {}
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.component.ts'),
+              contents: `
+          import { Component } from '@angular/core';
+
+          @Component({selector: 'app-root', template: ''})
+          export class AppComponent {}
+        `,
+            },
+          ]);
+
+          const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
+          const expected = `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            imports: [CommonModule],
+            bootstrap: [],
+            providers: [],
+            exports: [],
+          })
+          export class MyModule {}
+        `;
+          expect(actual.replace(/\s+/g, ''))
+            .withContext(diffText(expected, actual))
+            .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule);
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
+        });
+
+        it('should not add the ZoneCDModule on a non-bootstraped Module', async () => {
           const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
             ...typeFiles,
             {

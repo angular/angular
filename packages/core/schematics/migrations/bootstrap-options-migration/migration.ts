@@ -32,6 +32,35 @@ const CORE_PACKAGE = '@angular/core';
 const PROVIDE_ZONE_CHANGE_DETECTION = 'provideZoneChangeDetection';
 const ZONE_CD_PROVIDER = `${PROVIDE_ZONE_CHANGE_DETECTION}()`;
 
+const NoopNgZone = `
+// TODO ADD WARNING MESSAGE
+export class NoopNgZone implements NgZone {
+  readonly hasPendingMicrotasks = false;
+  readonly hasPendingMacrotasks = false;
+  readonly isStable = true;
+  readonly onUnstable = new EventEmitter<any>();
+  readonly onMicrotaskEmpty = new EventEmitter<any>();
+  readonly onStable = new EventEmitter<any>();
+  readonly onError = new EventEmitter<any>();
+
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
+    return fn.apply(applyThis, applyArgs);
+  }
+
+  runGuarded<T>(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): T {
+    return fn.apply(applyThis, applyArgs);
+  }
+
+  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
+    return fn();
+  }
+
+  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
+    return fn.apply(applyThis, applyArgs);
+  }
+}
+`;
+
 export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
@@ -107,7 +136,11 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
           return;
         }
 
-        if (ngModuleMetadata.has('bootstrap')) {
+        if (
+          ngModuleMetadata.has('bootstrap') &&
+          Array.isArray(ngModuleMetadata.get('bootstrap')) &&
+          (ngModuleMetadata.get('bootstrap') as unknown[]).length > 0
+        ) {
           return ngModule;
         }
         return;
@@ -349,12 +382,18 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
           exportSymbolName: 'NgZone',
           requestedFile: moduleSourceFile,
         });
-        importManager.addImport({
-          exportModuleSpecifier: CORE_PACKAGE,
-          exportSymbolName: 'ɵNoopNgZone',
-          requestedFile: moduleSourceFile,
-        });
-        zoneInstanceProvider = `{provide: NgZone, useClass: ɵNoopNgZone}`;
+
+        replacements.push(
+          new Replacement(
+            moduleProjectFile,
+            new TextUpdate({
+              position: moduleClass.getStart() - 1,
+              end: moduleClass.getStart() - 1,
+              toInsert: NoopNgZone,
+            }),
+          ),
+        );
+        zoneInstanceProvider = `{provide: NgZone, useClass: NoopNgZone}`;
       } else if (ngZoneOption && typeof ngZoneOption !== 'string') {
         // This is a case where we're not able to migrate automatically
         // The migration fails gracefully, keeps the ngZone option and adds a TODO.
