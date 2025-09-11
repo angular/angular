@@ -40,8 +40,8 @@ importers:
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
-        specifier: 21.0.0-next.2
-        version: 21.0.0-next.2(rxjs@7.8.2)
+        specifier: 21.0.0-next.3
+        version: 21.0.0-next.3(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(@types/node@20.19.13)(chokidar@4.0.3)
@@ -70,8 +70,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 21.0.0-next.2
-        version: 21.0.0-next.2(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 21.0.0-next.3
+        version: 21.0.0-next.3(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -272,7 +272,7 @@ importers:
         version: 0.1.1
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -533,8 +533,8 @@ importers:
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.3.1)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.3.1)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.3.1)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
-        specifier: 21.0.0-next.2
-        version: 21.0.0-next.2(rxjs@7.8.2)
+        specifier: 21.0.0-next.3
+        version: 21.0.0-next.3(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(@types/node@24.3.1)(chokidar@4.0.3)
@@ -557,8 +557,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 21.0.0-next.2
-        version: 21.0.0-next.2(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2)
+        specifier: 21.0.0-next.3
+        version: 21.0.0-next.3(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -702,7 +702,7 @@ importers:
         version: 11.11.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -1453,8 +1453,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@21.0.0-next.2':
-    resolution: {integrity: sha512-KMz3ClzTXT2//A4XduBbDtDf0ChksWKvL/9HUZa2wqU7Z4mzArh9nCqTqHvCGFxEosxabx/zKOj8WHr+saJlpQ==}
+  '@angular/cdk@21.0.0-next.3':
+    resolution: {integrity: sha512-w40pO0nrmIOiOpso2XEax6xrPZM1JCCTWf3pN6O7YqkDXom0y/5FzwMFIyzYNpExAu9DF1fApHt/HkFe8eQDkQ==}
     peerDependencies:
       rxjs: ^6.5.3 || ^7.4.0
 
@@ -1471,10 +1471,10 @@ packages:
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
     version: 2.1.6
 
-  '@angular/material@21.0.0-next.2':
-    resolution: {integrity: sha512-O/Pd/Du4Hq0iLBOlMo5/nfnlYqkPnc1IynofPuk8MnRWUA8DG1vhkCIZePXDSeueo5KTWEQLNNjQvx3gas3RyA==}
+  '@angular/material@21.0.0-next.3':
+    resolution: {integrity: sha512-4ZSac9N2Vsh4ailyEsc+jDcTRj1XDtMs+7xCgpSmoVPDvE8J52JGrjmw6ggEvEkb4Nl576H4ntHCkCPk31JwRw==}
     peerDependencies:
-      '@angular/cdk': 21.0.0-next.2
+      '@angular/cdk': 21.0.0-next.3
       rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/4a0716c5afaa29225482e658ceb9d5b5ebb79f9d':
@@ -12373,7 +12373,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@21.0.0-next.2(rxjs@7.8.2)':
+  '@angular/cdk@21.0.0-next.3(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -12440,9 +12440,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
-  '@angular/material@21.0.0-next.2(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@angular/material@21.0.0-next.3(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 21.0.0-next.2(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-next.3(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -21638,9 +21638,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-next.2(rxjs@7.8.2))(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-next.3(rxjs@7.8.2))(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 21.0.0-next.2(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-next.3(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
