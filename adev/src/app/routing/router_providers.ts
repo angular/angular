@@ -24,9 +24,9 @@ import {
   withRouterConfig,
 } from '@angular/router';
 import {routes} from './routes';
-import {ADevTitleStrategy} from './core/services/a-dev-title-strategy';
-import {ReuseTutorialsRouteStrategy} from './features/tutorial/tutorials-route-reuse-strategy';
-import {AppScroller} from './app-scroller';
+import {ADevTitleStrategy} from '../core/services/a-dev-title-strategy';
+import {ReuseTutorialsRouteStrategy} from '../features/tutorial/tutorials-route-reuse-strategy';
+import {AppScroller} from '../app-scroller';
 import {Subject} from 'rxjs/internal/Subject';
 import {HttpErrorResponse} from '@angular/common/http';
 import {WINDOW} from '@angular/docs';
