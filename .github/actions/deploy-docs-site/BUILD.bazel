@@ -12,6 +12,7 @@ esbuild_checked_in(
     entry_point = ":lib/main.mts",
     external = [
         "undici",
+        "pnpapi",
     ],
     metafile = False,
     platform = "node",
