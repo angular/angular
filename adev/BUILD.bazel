@@ -148,6 +148,10 @@ ng_application(
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
+    serve_args = config_based_architect_flags + [
+        "--port",
+        "0",
+    ],
 )
 
 ng_test(
