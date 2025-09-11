@@ -293,7 +293,7 @@ async function prepareReleasePullRequest(newVersion: string): Promise<void> {
   console.log(chalk.blue('Creating release commit...'));
   const releaseBranch = `devtools-release-${newVersion}`;
   await exec(`git branch -D ${releaseBranch}`).catch(() => {});
-  await exec(`git checkout -b ${releaseBranch}`);
+  await exec(`git checkout -b ${releaseBranch} FETCH_HEAD`);
   await exec(`git commit -m "${releaseCommitPrefix}${newVersion}" "${manifestPaths.join('" "')}"`);
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
   console.log(chalk.green('Release branch pushed to your fork.'));
