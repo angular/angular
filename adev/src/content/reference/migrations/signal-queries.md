@@ -35,7 +35,7 @@ import {Component, ContentChild} from '@angular/core';
 export class MyComponent {
   @ContentChild('someRef') ref: ElementRef|undefined = undefined;
 
-  someMethod() {
+  someMethod(): void {
     if (this.ref) {
       this.ref.nativeElement;
     }
@@ -54,7 +54,7 @@ import {Component, contentChild} from '@angular/core';
 export class MyComponent {
   readonly ref = contentChild<ElementRef>('someRef');
 
-  someMethod() {
+  someMethod(): void {
     const ref = this.ref();
     if (ref) {
       ref.nativeElement;
