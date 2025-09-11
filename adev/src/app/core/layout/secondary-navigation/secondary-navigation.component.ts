@@ -28,7 +28,7 @@ import {
   shouldReduceMotion,
 } from '@angular/docs';
 import {distinctUntilChanged, filter, map, skip, startWith} from 'rxjs/operators';
-import {SUB_NAVIGATION_DATA} from '../../../sub-navigation-data';
+import {SUB_NAVIGATION_DATA} from '../../../routing/sub-navigation-data';
 import {ActivatedRouteSnapshot, NavigationEnd, Router, RouterStateSnapshot} from '@angular/router';
 import {isPlatformBrowser} from '@angular/common';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';

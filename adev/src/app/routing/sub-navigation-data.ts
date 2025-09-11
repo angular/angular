@@ -10,15 +10,15 @@ import {isDevMode} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 
 // These 2 imports are expected to be red because they are generated a build time
-import FIRST_APP_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/first-app/routes.json';
-import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/learn-angular/routes.json';
-import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/deferrable-views/routes.json';
-import SIGNALS_TUTORIAL_NAV_DATA from '../../src/assets/tutorials/signals/routes.json';
-import ERRORS_NAV_DATA from '../../src/assets/content/reference/errors/routes.json';
-import EXT_DIAGNOSTICS_NAV_DATA from '../../src/assets/content/reference/extended-diagnostics/routes.json';
+import FIRST_APP_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/first-app/routes.json';
+import LEARN_ANGULAR_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/learn-angular/routes.json';
+import DEFERRABLE_VIEWS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/deferrable-views/routes.json';
+import SIGNALS_TUTORIAL_NAV_DATA from '../../../src/assets/tutorials/signals/routes.json';
+import ERRORS_NAV_DATA from '../../../src/assets/content/reference/errors/routes.json';
+import EXT_DIAGNOSTICS_NAV_DATA from '../../../src/assets/content/reference/extended-diagnostics/routes.json';
 
-import {getApiNavigationItems} from './features/references/helpers/manifest.helper';
-import {DEFAULT_PAGES} from './core/constants/pages';
+import {getApiNavigationItems} from '../features/references/helpers/manifest.helper';
+import {DEFAULT_PAGES} from '../core/constants/pages';
 
 interface SubNavigationData {
   docs: NavigationItem[];
