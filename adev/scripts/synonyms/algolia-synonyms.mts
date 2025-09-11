@@ -14,6 +14,12 @@ import {SynonymHit} from 'algoliasearch';
  * More information about synonyms can be found here:
  *    https://www.algolia.com/doc/guides/managing-results/optimize-search-results/adding-synonyms/
  */
-const synonyms: SynonymHit[] = [];
+const synonyms: SynonymHit[] = [
+  {
+    objectID: 'di-synonyms',
+    type: 'synonym',
+    synonyms: ['DI', 'dependency injection'],
+  },
+];
 
 export default synonyms;
