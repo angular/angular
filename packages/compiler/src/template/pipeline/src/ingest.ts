@@ -1344,6 +1344,12 @@ function ingestElementBindings(
         input.sourceSpan,
       ),
     );
+
+    // If the input name is 'control', this could be a form control binding which requires a
+    // `ControlCreateOp` to properly initialize.
+    if (input.type === e.BindingType.Property && input.name === 'control') {
+      unit.create.push(ir.createControlCreateOp(input.sourceSpan));
+    }
   }
 
   unit.create.push(
