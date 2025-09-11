@@ -15,6 +15,7 @@ import {factory as missingControlFlowDirectiveFactory} from './checks/missing_co
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
 import {factory as missingStructuralDirectiveFactory} from './checks/missing_structural_directive';
 import {factory as nullishCoalescingNotNullableFactory} from './checks/nullish_coalescing_not_nullable';
+import {factory as conflictingCssStylePropertyUnitsFactory} from './checks/conflicting_css_style_property_units';
 import {factory as optionalChainNotNullableFactory} from './checks/optional_chain_not_nullable';
 import {factory as skipHydrationNotStaticFactory} from './checks/skip_hydration_not_static';
 import {factory as suffixNotSupportedFactory} from './checks/suffix_not_supported';
@@ -33,6 +34,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
 >[] = [
   invalidBananaInBoxFactory,
   nullishCoalescingNotNullableFactory,
+  conflictingCssStylePropertyUnitsFactory,
   optionalChainNotNullableFactory,
   missingControlFlowDirectiveFactory,
   textAttributeNotBindingFactory,

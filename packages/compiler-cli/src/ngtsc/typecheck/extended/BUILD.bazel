@@ -19,6 +19,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_ngforof_let",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/missing_structural_directive",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/conflicting_css_style_property_units",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
