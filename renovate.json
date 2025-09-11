@@ -53,6 +53,11 @@
         ],
         "executionMode": "branch"
       }
+    },
+    {
+      "enabled": false,
+      "matchDepNames": ["tailwindcss"],
+      "matchUpdateTypes": ["major"]
     }
   ]
 }
