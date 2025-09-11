@@ -27,22 +27,19 @@ export async function copyJsonAssets({repo, githubApi, assetsPath, destPath}) {
     await readFile(buildInfoPath, 'utf-8'),
   );
 
-  let downstreamBranch;
-  let latestSha;
-  try {
-    latestSha = await githubApi.getShaForBranch(currentBranch);
-    downstreamBranch = currentBranch;
-  } catch (e) {
+  let downstreamBranch = currentBranch;
+  let latestSha = await githubApi.getShaForBranch(currentBranch);
+  if (
+    latestSha.includes('No commit') &&
+    currentBranch !== 'refs/heads/main' &&
+    currentBranch !== storedBranch
+  ) {
     // In some cases, such as when a new branch is created for a feature,
     // the branch may not exist in the downstream repo. For example, during an
     // exceptional minor release (e.g. FW 20.3.x and Components: 20.2.x).
     // In such scenarios, we fallback to the last known branch.
-    if (currentBranch !== 'refs/heads/main' && currentBranch !== storedBranch) {
-      latestSha = await githubApi.getShaForBranch(storedBranch);
-      downstreamBranch = storedBranch;
-    } else {
-      throw e;
-    }
+    latestSha = await githubApi.getShaForBranch(storedBranch);
+    downstreamBranch = storedBranch;
   }
 
   console.log(`Comparing ${storedSha}...${latestSha}.`);
