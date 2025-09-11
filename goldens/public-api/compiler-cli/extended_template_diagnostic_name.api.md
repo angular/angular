@@ -9,6 +9,8 @@ export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
     CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = "controlFlowPreventingContentProjection",
     // (undocumented)
+    DUPLICATE_ARIA_WITH_ATTR = "duplicateAriaWithAttr",
+    // (undocumented)
     INTERPOLATED_SIGNAL_NOT_INVOKED = "interpolatedSignalNotInvoked",
     // (undocumented)
     INVALID_BANANA_IN_BOX = "invalidBananaInBox",

@@ -10,6 +10,7 @@ import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../diagnostics';
 
 import {TemplateCheckFactory} from './api';
 import {factory as interpolatedSignalNotInvoked} from './checks/interpolated_signal_not_invoked';
+import {factory as duplicateAriaWithAttrFactory} from './checks/duplicate_aria_with_attr';
 import {factory as invalidBananaInBoxFactory} from './checks/invalid_banana_in_box';
 import {factory as missingControlFlowDirectiveFactory} from './checks/missing_control_flow_directive';
 import {factory as missingNgForOfLetFactory} from './checks/missing_ngforof_let';
@@ -46,6 +47,7 @@ export const ALL_DIAGNOSTIC_FACTORIES: readonly TemplateCheckFactory<
   unparenthesizedNullishCoalescingFactory,
   uninvokedTrackFunctionFactory,
   uninvokedFunctionInTextInterpolationFactory,
+  duplicateAriaWithAttrFactory,
 ];
 
 export const SUPPORTED_DIAGNOSTIC_NAMES = new Set<string>([

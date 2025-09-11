@@ -489,6 +489,12 @@ export enum ErrorCode {
   SUFFIX_NOT_SUPPORTED = 8106,
 
   /**
+   * Raised when both [attr.aria-*] and [ariaX] bindings target the same ARIA attribute.
+   * Angular prioritizes [attr.aria-*], and the property binding is ignored.
+   */
+  DUPLICATE_ARIA_WITH_ATTR = 8118,
+
+  /**
    * The left side of an optional chain operation is not nullable.
    *
    * ```html

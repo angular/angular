@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
+
+ts_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["duplicate_aria_with_attr_spec.ts"],
+    deps = [
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/core:api",
+        "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/duplicate_aria_with_attr",
+        "//packages/compiler-cli/src/ngtsc/typecheck/testing",
+    ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+        "//packages/core:npm_package",
+    ],
+)
