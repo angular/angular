@@ -60,7 +60,15 @@ function insertDebugNameIntoCallExpression(
   );
 
   const transformedConfigProperties = ts.factory.createObjectLiteralExpression(properties);
-  const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
+  const ngDevModeCheck = ts.factory.createBinaryExpression(
+    ts.factory.createBinaryExpression(
+      ts.factory.createTypeOfExpression(ts.factory.createIdentifier('ngDevMode')),
+      ts.SyntaxKind.EqualsEqualsEqualsToken,
+      ts.factory.createStringLiteral('undefined'),
+    ),
+    ts.SyntaxKind.BarBarToken,
+    ts.factory.createIdentifier('ngDevMode'),
+  );
 
   let devModeCase: ts.ArrayLiteralExpression;
   // if the signal expression has no arguments and the config object is not required,
@@ -85,7 +93,7 @@ function insertDebugNameIntoCallExpression(
   const spreadElementContainingUpdatedOptions = ts.factory.createSpreadElement(
     ts.factory.createParenthesizedExpression(
       ts.factory.createConditionalExpression(
-        ngDevModeIdentifier,
+        ngDevModeCheck,
         /* question token */ undefined,
         devModeCase,
         /* colon token */ undefined,

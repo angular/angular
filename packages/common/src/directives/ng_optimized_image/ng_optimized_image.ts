@@ -406,7 +406,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   @Input() srcset?: string;
 
   constructor() {
-    if (ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       this.lcpObserver = this.injector.get(LCPImageObserver);
 
       // Using `DestroyRef` to avoid having an empty `ngOnDestroy` method since this
@@ -424,7 +424,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
   ngOnInit() {
     performanceMarkFeature('NgOptimizedImage');
 
-    if (ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       const ngZone = this.injector.get(NgZone);
       assertNonEmptyInput(this, 'ngSrc', this.ngSrc);
       assertValidNgSrcset(this, this.ngSrcset);
@@ -536,7 +536,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
-    if (ngDevMode) {
+    if (typeof ngDevMode !== 'undefined' && ngDevMode) {
       assertNoPostInitInputChange(this, changes, [
         'ngSrcset',
         'width',
@@ -553,7 +553,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
       const oldSrc = this._renderedSrc;
       this.updateSrcAndSrcset(true);
 
-      if (ngDevMode) {
+      if (typeof ngDevMode !== 'undefined' && ngDevMode) {
         const newSrc = this._renderedSrc;
         if (oldSrc && newSrc && oldSrc !== newSrc) {
           const ngZone = this.injector.get(NgZone);
@@ -565,6 +565,7 @@ export class NgOptimizedImage implements OnInit, OnChanges {
     }
 
     if (
+      typeof ngDevMode !== 'undefined' &&
       ngDevMode &&
       changes['placeholder']?.currentValue &&
       typeof ngServerMode !== 'undefined' &&

@@ -64,10 +64,10 @@ import {TracingAction, TracingService, TracingSnapshot} from './tracing';
  */
 export const APP_BOOTSTRAP_LISTENER = new InjectionToken<
   ReadonlyArray<(compRef: ComponentRef<any>) => void>
->(ngDevMode ? 'appBootstrapListener' : '');
+>(typeof ngDevMode === 'undefined' || ngDevMode ? 'appBootstrapListener' : '');
 
 export function publishDefaultGlobalUtils() {
-  ngDevMode && _publishDefaultGlobalUtils();
+  (typeof ngDevMode === 'undefined' || ngDevMode) && _publishDefaultGlobalUtils();
 }
 
 /**
@@ -778,7 +778,7 @@ export class ApplicationRef {
     this.components.push(componentRef);
     // Get the listeners lazily to prevent DI cycles.
     const listeners = this._injector.get(APP_BOOTSTRAP_LISTENER, []);
-    if (ngDevMode && !Array.isArray(listeners)) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !Array.isArray(listeners)) {
       throw new RuntimeError(
         RuntimeErrorCode.INVALID_MULTI_PROVIDER,
         'Unexpected type of the `APP_BOOTSTRAP_LISTENER` token value ' +
@@ -831,7 +831,8 @@ export class ApplicationRef {
     if (this._destroyed) {
       throw new RuntimeError(
         RuntimeErrorCode.APPLICATION_REF_ALREADY_DESTROYED,
-        ngDevMode && 'This instance of the `ApplicationRef` has already been destroyed.',
+        (typeof ngDevMode === 'undefined' || ngDevMode) &&
+          'This instance of the `ApplicationRef` has already been destroyed.',
       );
     }
 

@@ -23,7 +23,7 @@ import {RuntimeErrorCode} from '../../errors';
  * @publicApi
  */
 export const EVENT_MANAGER_PLUGINS = new InjectionToken<EventManagerPlugin[]>(
-  ngDevMode ? 'EventManagerPlugins' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'EventManagerPlugins' : '',
 );
 
 /**
