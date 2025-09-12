@@ -8,6 +8,7 @@
 
 import {
   ANIMATION_QUEUE,
+  ANIMATION_QUEUE,
   AnimationCallbackEvent,
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
@@ -248,11 +249,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   return ɵɵanimateLeave; // For chaining
 }
 
-function runLeaveAnimations(
-  lView: LView,
-  tNode: TNode,
-  value: string | Function,
-): {promise: Promise<void>; resolve: VoidFunction} {
+function runLeaveAnimations(lView: LView, tNode: TNode, value: string | Function): Promise<void> {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
@@ -291,10 +288,10 @@ function animateLeaveClassRunner(
   classList: string[],
   renderer: Renderer,
   ngZone: NgZone,
+  resolver: VoidFunction,
 ) {
   cancelAnimationsIfRunning(el, renderer);
   const cleanupFns: Function[] = [];
-  const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
@@ -319,6 +316,10 @@ function animateLeaveClassRunner(
       cleanupAfterLeaveAnimations(resolvers, cleanupFns);
       clearLViewNodeAnimationResolvers(lView, tNode);
     }
+    resolver();
+    for (const fn of cleanupFns) {
+      fn();
+    }
   };
 
   ngZone.runOutsideAngular(() => {
@@ -337,8 +338,10 @@ function animateLeaveClassRunner(
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
         clearLeavingNodes(tNode, el);
-        cleanupAfterLeaveAnimations(resolvers, cleanupFns);
-        clearLViewNodeAnimationResolvers(lView, tNode);
+        resolver();
+        for (const fn of cleanupFns) {
+          fn();
+        }
       }
     });
   });
@@ -439,8 +442,8 @@ function queueEnterAnimations(lView: LView) {
   const enterAnimations = lView[ANIMATIONS]?.enter;
   if (enterAnimations) {
     const animationQueue = lView[INJECTOR].get(ANIMATION_QUEUE);
-    for (const [_, nodeAnimations] of enterAnimations) {
-      for (const animateFn of nodeAnimations.animateFns) {
+    for (const [_, animateFns] of enterAnimations) {
+      for (const animateFn of animateFns) {
         animationQueue.queue.add(animateFn);
       }
     }

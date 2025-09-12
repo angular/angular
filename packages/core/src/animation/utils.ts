@@ -162,17 +162,17 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 /**
  * Retrieves the list of specified enter animations from the lView
  */
-export function getLViewEnterAnimations(lView: LView): Map<number, NodeAnimations> {
+export function getLViewEnterAnimations(lView: LView): Map<number, Function[]> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.enter ??= new Map<number, NodeAnimations>());
+  return (animationData.enter ??= new Map<number, Function[]>());
 }
 
 /**
  * Retrieves the list of specified leave animations from the lView
  */
-export function getLViewLeaveAnimations(lView: LView): Map<number, NodeAnimations> {
+export function getLViewLeaveAnimations(lView: LView): Map<number, Function[]> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.leave ??= new Map<number, NodeAnimations>());
+  return (animationData.leave ??= new Map<number, Function[]>());
 }
 
 /**
@@ -253,30 +253,11 @@ export function isLongestAnimation(
  * @param fn The animation function to be called later
  */
 export function addAnimationToLView(
-  animations: Map<number, NodeAnimations>,
+  animations: Map<number, Function[]>,
   tNode: TNode,
   fn: Function,
 ) {
-  const nodeAnimations = animations.get(tNode.index) ?? {animateFns: []};
-  nodeAnimations.animateFns.push(fn);
-  animations.set(tNode.index, nodeAnimations);
-}
-
-export function cleanupAfterLeaveAnimations(
-  resolvers: VoidFunction[] | undefined,
-  cleanupFns: Function[],
-): void {
-  if (resolvers) {
-    for (const fn of resolvers) {
-      fn();
-    }
-  }
-  for (const fn of cleanupFns) {
-    fn();
-  }
-}
-
-export function clearLViewNodeAnimationResolvers(lView: LView, tNode: TNode) {
-  const nodeAnimations = getLViewLeaveAnimations(lView).get(tNode.index);
-  if (nodeAnimations) nodeAnimations.resolvers = undefined;
+  const animationFns = animations.get(tNode.index) ?? [];
+  animationFns.push(fn);
+  animations.set(tNode.index, animationFns);
 }
