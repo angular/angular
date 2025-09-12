@@ -2,7 +2,7 @@
 </docs-decorative-header>
 
 <big style="margin-top: 2em">
-Angular is a web framework that empowers developers to build fast, reliable applications.
+Angular is a web framework that empowers developers to build fast, reliable and robust applications.
 </big>
 
 Maintained by a dedicated team at Google, Angular provides a broad suite of tools, APIs, and
