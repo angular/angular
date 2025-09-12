@@ -116,15 +116,6 @@ describe('runtime i18n', () => {
     );
   });
 
-  it('should support interpolations with custom interpolation config', () => {
-    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
-    const interpolation = ['{%', '%}'] as [string, string];
-    TestBed.overrideComponent(AppComp, {set: {interpolation}});
-    const fixture = initWithTemplate(AppComp, `<div i18n>Hello {% name %}</div>`);
-
-    expect(fixture.nativeElement.innerHTML).toBe('<div>Bonjour Angular</div>');
-  });
-
   it('should support &ngsp; in translatable sections', () => {
     // note: the `` unicode symbol represents the `&ngsp;` in translations
     loadTranslations({[computeMsgId('text ||')]: 'texte ||'});
@@ -1068,21 +1059,6 @@ describe('runtime i18n', () => {
       );
     });
 
-    it('with custom interpolation config', () => {
-      loadTranslations({
-        [computeMsgId('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION}}}')]:
-          '{VAR_SELECT, select, 10 {dix} other {{INTERPOLATION}}}',
-      });
-      const interpolation = ['{%', '%}'] as [string, string];
-      TestBed.overrideComponent(AppComp, {set: {interpolation}});
-      const fixture = initWithTemplate(
-        AppComp,
-        `<div i18n>{count, select, 10 {ten} other {{% name %}}}</div>`,
-      );
-
-      expect(fixture.nativeElement).toHaveText(`Angular`);
-    });
-
     it('inside HTML elements', () => {
       loadTranslations({
         [computeMsgId(
@@ -2003,19 +1979,6 @@ describe('runtime i18n', () => {
         `<div i18n><span i18n-title title="text">content</span></div>`,
       );
       expect(fixture.nativeElement.innerHTML).toEqual(`<div>contenu</div>`);
-    });
-
-    it('with custom interpolation config', () => {
-      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}', 'm')]: 'Bonjour {$INTERPOLATION}'});
-      const interpolation = ['{%', '%}'] as [string, string];
-      TestBed.overrideComponent(AppComp, {set: {interpolation}});
-      const fixture = initWithTemplate(
-        AppComp,
-        `<div i18n-title="m|d" title="Hello {% name %}"></div>`,
-      );
-
-      const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe('Bonjour Angular');
     });
 
     it('in nested template', () => {

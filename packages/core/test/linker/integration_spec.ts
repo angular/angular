@@ -1274,29 +1274,6 @@ describe('integration tests', function () {
       expect(needsAttribute.staticAttribute).toEqual('');
       expect(needsAttribute.fooAttribute).toBeNull();
     });
-
-    it('should support custom interpolation', () => {
-      TestBed.configureTestingModule({
-        declarations: [
-          MyComp,
-          ComponentWithCustomInterpolationA,
-          ComponentWithCustomInterpolationB,
-          ComponentWithDefaultInterpolation,
-        ],
-      });
-      const template = `<div>{{ctxProp()}}</div>
-<cmp-with-custom-interpolation-a></cmp-with-custom-interpolation-a>
-<cmp-with-custom-interpolation-b></cmp-with-custom-interpolation-b>`;
-      TestBed.overrideComponent(MyComp, {set: {template}});
-      const fixture = TestBed.createComponent(MyComp);
-
-      fixture.componentInstance.ctxProp.set('Default Interpolation');
-
-      fixture.detectChanges();
-      expect(fixture.nativeElement).toHaveText(
-        'Default InterpolationCustom Interpolation ACustom Interpolation B (Default Interpolation)',
-      );
-    });
   });
 
   describe('dependency injection', () => {
@@ -2314,26 +2291,6 @@ describe('integration tests', function () {
 })
 class ComponentWithDefaultInterpolation {
   text = 'Default Interpolation';
-}
-
-@Component({
-  selector: 'cmp-with-custom-interpolation-a',
-  template: `<div>{%text%}</div>`,
-  interpolation: ['{%', '%}'],
-  standalone: false,
-})
-class ComponentWithCustomInterpolationA {
-  text = 'Custom Interpolation A';
-}
-
-@Component({
-  selector: 'cmp-with-custom-interpolation-b',
-  template: `<div>{**text%}</div> (<cmp-with-default-interpolation></cmp-with-default-interpolation>)`,
-  interpolation: ['{**', '%}'],
-  standalone: false,
-})
-class ComponentWithCustomInterpolationB {
-  text = 'Custom Interpolation B';
 }
 
 @Injectable()
