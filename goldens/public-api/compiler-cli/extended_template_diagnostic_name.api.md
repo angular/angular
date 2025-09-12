@@ -7,6 +7,8 @@
 // @public
 export enum ExtendedTemplateDiagnosticName {
     // (undocumented)
+    CONFLICTING_CSS_STYLE_PROPERTY_UNITS = "conflictingCssStylePropertyUnits",
+    // (undocumented)
     CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION = "controlFlowPreventingContentProjection",
     // (undocumented)
     INTERPOLATED_SIGNAL_NOT_INVOKED = "interpolatedSignalNotInvoked",

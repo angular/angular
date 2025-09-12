@@ -33,4 +33,5 @@ export enum ExtendedTemplateDiagnosticName {
   UNUSED_STANDALONE_IMPORTS = 'unusedStandaloneImports',
   UNPARENTHESIZED_NULLISH_COALESCING = 'unparenthesizedNullishCoalescing',
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 'uninvokedFunctionInTextInterpolation',
+  CONFLICTING_CSS_STYLE_PROPERTY_UNITS = 'conflictingCssStylePropertyUnits',
 }

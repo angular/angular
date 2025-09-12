@@ -612,6 +612,24 @@ export enum ErrorCode {
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 8117,
 
   /**
+   * Multiple CSS style bindings are applied to the same property with different units.
+   *
+   * For example:
+   * ```html
+   * <div [style.width.px]="100" [style.width.%]="50"></div>
+   * ```
+   *
+   * This will cause unexpected overriding behavior at runtime where the last binding wins.
+   * Only one unit should be used per CSS property:
+   * ```html
+   * <div [style.width.px]="someCondition ? 100 : 200"></div>
+   * <!-- OR -->
+   * <div [style.width.%]="someCondition ? 50 : 75"></div>
+   * ```
+   */
+  CONFLICTING_CSS_STYLE_PROPERTY_UNITS = 8118,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
