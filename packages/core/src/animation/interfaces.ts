@@ -76,12 +76,22 @@ export interface LongestAnimation {
   duration: number;
 }
 
+export interface LeaveAnimation {
+  animationFn: () => Promise<void>;
+  preserveCheckFn: () => boolean;
+}
+
+export interface EnterAnimation {
+  animationFn: Function;
+  preserveCheckFn: () => boolean;
+}
+
 export interface AnimationLViewData {
   // Enter animations that apply to nodes in this view
-  enter?: Function[];
+  enter?: EnterAnimation[];
 
   // Leave animations that apply to nodes in this view
-  leave?: (() => Promise<void>)[];
+  leave?: LeaveAnimation[];
 
   // Leave animations that apply to nodes in this view
   running?: Promise<PromiseSettledResult<void>[]>;
