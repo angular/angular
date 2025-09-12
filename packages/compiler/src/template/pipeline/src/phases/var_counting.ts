@@ -119,6 +119,7 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
       return slots;
     case ir.OpKind.Property:
     case ir.OpKind.DomProperty:
+    case ir.OpKind.Control:
       slots = 1;
 
       // We need to assign a slot even for singleton interpolations, because the

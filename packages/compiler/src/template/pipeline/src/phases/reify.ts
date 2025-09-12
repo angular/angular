@@ -572,6 +572,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
         ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
+      case ir.OpKind.ControlCreate:
+        ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -600,6 +603,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
             ? reifyDomProperty(op)
             : reifyProperty(op),
         );
+        break;
+      case ir.OpKind.Control:
+        ir.OpList.replace(op, reifyControl(op));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -749,6 +755,10 @@ function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
   return isAriaProperty(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
     : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
+}
+
+function reifyControl(op: ir.ControlOp): ir.UpdateOp {
+  return ng.control(op.expression, op.sanitizer, op.sourceSpan);
 }
 
 function reifyIrExpression(expr: o.Expression): o.Expression {

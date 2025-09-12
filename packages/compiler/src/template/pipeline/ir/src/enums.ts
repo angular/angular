@@ -299,6 +299,19 @@ export enum OpKind {
    * An operation to bind animation events to an element.
    */
   AnimationListener,
+
+  /**
+   * An operation to bind an expression to a `control` property of an element.
+   */
+  Control,
+
+  /**
+   * An operation to set up a corresponding {@link Control} operation.
+   *
+   * This is responsible for setting up event listeners on a native or custom form control when
+   * bound to a specialized control directive.
+   */
+  ControlCreate,
 }
 
 /**

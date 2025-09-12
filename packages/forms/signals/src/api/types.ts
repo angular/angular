@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Signal, WritableSignal} from '@angular/core';
+import {Signal, ɵFieldState} from '@angular/core';
 import type {Control} from './control_directive';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
@@ -228,16 +228,8 @@ export type MaybeField<TValue, TKey extends string | number = string | number> =
  *
  * @experimental 21.0.0
  */
-export interface FieldState<TValue, TKey extends string | number = string | number> {
-  /**
-   * A writable signal containing the value for this field. Updating this signal will update the
-   * data model that the field is bound to.
-   */
-  readonly value: WritableSignal<TValue>;
-  /**
-   * A signal indicating whether the field has been touched by the user.
-   */
-  readonly touched: Signal<boolean>;
+export interface FieldState<TValue, TKey extends string | number = string | number>
+  extends ɵFieldState<TValue> {
   /**
    * A signal indicating whether field value has been changed by user.
    */
@@ -256,27 +248,14 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * ```
    */
   readonly hidden: Signal<boolean>;
-
-  /**
-   * A signal indicating whether the field is currently disabled.
-   */
-  readonly disabled: Signal<boolean>;
-  /**
-   * A signal containing the reasons why the field is currently disabled.
-   */
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  /**
-   * A signal indicating whether the field is currently readonly.
-   */
-  readonly readonly: Signal<boolean>;
-  /**
-   * A signal containing the current errors for the field.
-   */
   readonly errors: Signal<ValidationError[]>;
+
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
   readonly errorSummary: Signal<ValidationError[]>;
+
   /**
    * A signal indicating whether the field's value is currently valid.
    *
@@ -309,10 +288,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * A signal indicating whether the field is currently in the process of being submitted.
    */
   readonly submitting: Signal<boolean>;
-  /**
-   * A signal of a unique name for the field, by default based on the name of its parent field.
-   */
-  readonly name: Signal<string>;
 
   /**
    * The property key in the parent field under which this field is stored. If the parent field is
@@ -340,16 +315,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Checks whether the given metadata key has been defined for this field.
    */
   hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
-
-  /**
-   * Sets the touched status of the field to `true`.
-   */
-  markAsTouched(): void;
-
-  /**
-   * Sets the dirty status of the field to `true`.
-   */
-  markAsDirty(): void;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
