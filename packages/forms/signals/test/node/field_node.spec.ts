@@ -15,6 +15,7 @@ import {
   disabled,
   FieldPath,
   form,
+  hidden,
   readonly,
   required,
   REQUIRED,
@@ -177,6 +178,137 @@ describe('FieldNode', () => {
       expect(f().dirty()).toBe(false);
       expect(f.b).toBeUndefined();
     });
+
+    it('should not be marked as dirty when is readonly', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          readonly(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+      expect(f().dirty()).toBe(false);
+    });
+    it('should not be marked as dirty when is disabled', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          disabled(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+      expect(f().dirty()).toBe(false);
+    });
+
+    it('should not be marked as dirty when is hidden', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          hidden(p, () => true);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+
+      expect(f().dirty()).toBe(false);
+    });
+
+    it('should be marked as dirty when not readonly', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+    });
+
+    it('should be marked as dirty when not disabled', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+    });
+
+    it('should be marked as dirty when not hidden', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBe(false);
+
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+    });
+
+    it('should become pristine when field becomes non-interactive after being marked dirty', () => {
+      const isReadonly = signal(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          readonly(p, isReadonly);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Initially interactive and not dirty
+      expect(f().readonly()).toBe(false);
+      expect(f().dirty()).toBe(false);
+
+      // Mark as dirty while interactive
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+
+      // Make non-interactive, should become pristine
+      isReadonly.set(true);
+      expect(f().readonly()).toBe(true);
+      expect(f().dirty()).toBe(false);
+
+      // Make interactive again, should still be dirty
+      isReadonly.set(false);
+      expect(f().readonly()).toBe(false);
+      expect(f().dirty()).toBe(true);
+    });
   });
 
   describe('touched', () => {
@@ -254,6 +386,137 @@ describe('FieldNode', () => {
 
       f().reset();
       expect(f().touched()).toBe(false);
+    });
+
+    it('should not be marked as touched when is readonly', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          readonly(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+      expect(f().touched()).toBe(false);
+    });
+    it('should not be marked as touched when is disabled', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          disabled(p);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+      expect(f().touched()).toBe(false);
+    });
+
+    it('should not be marked as touched when is hidden', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          hidden(p, () => true);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+
+      expect(f().touched()).toBe(false);
+    });
+
+    it('should be marked as touched when not readonly', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+    });
+
+    it('should be marked as touched when not disabled', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+    });
+
+    it('should be marked as touched when not hidden', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBe(false);
+
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+    });
+
+    it('should become untouched when field becomes non-interactive after being marked touched', () => {
+      const isHidden = signal(false);
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        (p) => {
+          hidden(p, isHidden);
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      // Initially interactive and not touched
+      expect(f().hidden()).toBe(false);
+      expect(f().touched()).toBe(false);
+
+      // Mark as touched while interactive
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+
+      // Make non-interactive, should become untouched
+      isHidden.set(true);
+      expect(f().hidden()).toBe(true);
+      expect(f().touched()).toBe(false);
+
+      // Make interactive again, should still be touched
+      isHidden.set(false);
+      expect(f().hidden()).toBe(false);
+      expect(f().touched()).toBe(true);
     });
   });
 
