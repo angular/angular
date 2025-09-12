@@ -10,7 +10,7 @@
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/platform-server": "18.2.14",
     "@types/node": "file:../../node_modules/@types/node",
     "rxjs": "^7.3.0",
     "typescript": "file:../../node_modules/typescript",
