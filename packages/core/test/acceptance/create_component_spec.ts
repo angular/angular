@@ -1113,6 +1113,132 @@ describe('createComponent', () => {
       );
     });
 
+    it('should throw when using multiple inputBindings targeting the same property', () => {
+      @Component({
+        standalone: true,
+        template: 'Text: {{ text }}',
+      })
+      class DummyChildComponent {
+        @Input() text = '';
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const modelInput = signal('first');
+      const anotherSignal = signal('second');
+
+      expect(() => {
+        createComponent(DummyChildComponent, {
+          hostElement,
+          environmentInjector,
+          bindings: [
+            inputBinding('text', modelInput),
+            inputBinding('text', anotherSignal),
+            inputBinding('text', () => 'static'),
+          ],
+        });
+      }).toThrowError(
+        /Multiple input bindings found for the same property 'text'. Each input property can only have one binding per component./,
+      );
+    });
+
+    it('should throw when using inputBinding and twoWayBinding targeting the same property', () => {
+      @Component({
+        standalone: true,
+        template: 'Text: {{ text }}',
+      })
+      class DummyChildComponent {
+        @Input() text = '';
+        @Output() textChange = new EventEmitter();
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const modelInput = signal('first');
+      const twoWaySignal = signal('second');
+
+      expect(() => {
+        createComponent(DummyChildComponent, {
+          hostElement,
+          environmentInjector,
+          bindings: [inputBinding('text', modelInput), twoWayBinding('text', twoWaySignal)],
+        });
+      }).toThrowError(
+        /Multiple input bindings found for the same property 'text'. Each input property can only have one binding per component./,
+      );
+    });
+
+    it('should throw when using multiple inputBindings targeting the same property on a directive', () => {
+      @Directive()
+      class TestDirective {
+        @Input() value = '';
+      }
+
+      @Component({
+        standalone: true,
+        template: 'Component',
+      })
+      class TestComponent {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const firstSignal = signal('first');
+      const secondSignal = signal('second');
+
+      expect(() => {
+        createComponent(TestComponent, {
+          hostElement,
+          environmentInjector,
+          directives: [
+            {
+              type: TestDirective,
+              bindings: [
+                inputBinding('value', firstSignal),
+                inputBinding('value', secondSignal),
+                inputBinding('value', () => 'static'),
+              ],
+            },
+          ],
+        });
+      }).toThrowError(
+        /Multiple input bindings found for the same property 'value'. Each input property can only have one binding per directive./,
+      );
+    });
+
+    it('should throw when using inputBinding and twoWayBinding targeting the same property on a directive', () => {
+      @Directive()
+      class TestDirective {
+        @Input() value = '';
+        @Output() valueChange = new EventEmitter();
+      }
+
+      @Component({
+        standalone: true,
+        template: 'Component',
+      })
+      class TestComponent {}
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const inputSignal = signal('input');
+      const twoWaySignal = signal('twoWay');
+
+      expect(() => {
+        createComponent(TestComponent, {
+          hostElement,
+          environmentInjector,
+          directives: [
+            {
+              type: TestDirective,
+              bindings: [inputBinding('value', inputSignal), twoWayBinding('value', twoWaySignal)],
+            },
+          ],
+        });
+      }).toThrowError(
+        /Multiple input bindings found for the same property 'value'. Each input property can only have one binding per directive./,
+      );
+    });
+
     it('should update view of component set with the onPush strategy after input change', () => {
       @Component({
         standalone: true,
