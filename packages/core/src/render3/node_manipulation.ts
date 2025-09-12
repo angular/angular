@@ -358,11 +358,14 @@ function runLeaveAnimationsWithCallback(lView: LView | undefined, callback: Func
       const leaveAnimations = lView[ANIMATIONS].leave;
       const runningAnimations = [];
       for (let index = 0; index < leaveAnimations.length; index++) {
-        const animateFn = leaveAnimations[index];
-        runningAnimations.push(animateFn());
+        const leaveAnimation = leaveAnimations[index];
+        runningAnimations.push(leaveAnimation.animationFn());
       }
+      const preservedAnimations = leaveAnimations.filter((animation) =>
+        animation.preserveCheckFn(),
+      );
       lView[ANIMATIONS].running = Promise.allSettled(runningAnimations);
-      lView[ANIMATIONS].leave = undefined;
+      lView[ANIMATIONS].leave = preservedAnimations.length > 0 ? preservedAnimations : undefined;
     }
   }
   runAfterLeaveAnimations(lView, callback);

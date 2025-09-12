@@ -232,6 +232,9 @@ export function refreshView<T>(
     if (templateFn !== null) {
       executeTemplate(tView, lView, templateFn, RenderFlags.Update, context);
     }
+    // TODO(thePunderWoman): This needs to only run when the element is truly first entering the DOM.
+    // right now it runs every refreshView, which is fine for most cases, but content projection ends
+    // up being problematic here.
     runEnterAnimations(lView);
 
     const hooksInitPhaseCompleted =
@@ -377,10 +380,13 @@ export function refreshView<T>(
 function runEnterAnimations(lView: LView) {
   const animationData = lView[ANIMATIONS];
   if (animationData?.enter) {
-    for (const animateFn of animationData.enter) {
-      animateFn();
+    for (const enterAnimation of animationData.enter) {
+      enterAnimation.animationFn();
     }
-    animationData.enter = undefined;
+    const preservedAnimations = animationData.enter.filter((animation) =>
+      animation.preserveCheckFn(),
+    );
+    animationData.enter = preservedAnimations.length > 0 ? preservedAnimations : undefined;
   }
 }
 
