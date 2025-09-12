@@ -650,7 +650,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
   ) {
-    const compId = appId + '-' + component.id;
+    const compId = CSS.escape(appId) + '-' + component.id;
     super(
       eventManager,
       sharedStylesHost,
