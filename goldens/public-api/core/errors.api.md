@@ -164,6 +164,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     RUNTIME_DEPS_INVALID_IMPORTED_TYPE = 980,
     // (undocumented)
+    RUNTIME_DEPS_INVALID_SELECTOR = 982,
+    // (undocumented)
     RUNTIME_DEPS_ORPHAN_COMPONENT = 981,
     // (undocumented)
     SIGNAL_WRITE_FROM_ILLEGAL_CONTEXT = 600,
