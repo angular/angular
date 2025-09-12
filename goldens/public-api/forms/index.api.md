@@ -76,7 +76,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    get parent(): FormGroup | FormArray | null;
+    get parent(): FormGroup | FormArray | FormRecord | null;
     abstract patchValue(value: TValue, options?: Object): void;
     get pending(): boolean;
     get pristine(): boolean;
