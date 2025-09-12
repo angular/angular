@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {PATTERN} from '../property';
-import {FieldPath, LogicFn, PathKind} from '../types';
+import {LogicFn, PathKind, RulesFieldPath} from '../types';
 import {patternError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -28,7 +28,7 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @experimental 21.0.0
  */
 export function pattern<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<string, TPathKind>,
+  path: RulesFieldPath<string, TPathKind>,
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
