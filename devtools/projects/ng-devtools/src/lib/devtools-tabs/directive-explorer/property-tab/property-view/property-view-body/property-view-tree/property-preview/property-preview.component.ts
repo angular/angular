@@ -7,9 +7,9 @@
  */
 
 import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
-import {PropType} from '../../../../../../../protocol';
+import {PropType} from '../../../../../../../../../../protocol';
 
-import {FlatNode} from '../../property-resolver/element-property-resolver';
+import {FlatNode} from '../../../../../property-resolver/element-property-resolver';
 
 @Component({
   selector: 'ng-property-preview',

@@ -18,7 +18,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {ContainerType} from '../../../../../../../protocol';
+import {ContainerType} from '../../../../../../../../../../protocol';
 
 type EditorType = string | number | boolean;
 type EditorResult = EditorType | Array<EditorType>;

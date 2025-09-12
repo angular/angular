@@ -1,6 +1,8 @@
-@use '../../../../../styles/typography';
+@use '../../../../../../../styles/typography';
 
 :host {
+  display: block;
+
   .dep-data {
     display: flex;
     flex-wrap: nowrap;

@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 import {NODE_TYPE_CLASS_MAP, ResolutionPathComponent} from './resolution-path.component';
-import {SerializedInjector} from '../../../../../../../../protocol';
+import {SerializedInjector} from '../../../../../../../../../../protocol';
 
 describe('ResolutionPath', () => {
   let component: ResolutionPathComponent;

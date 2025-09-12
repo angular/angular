@@ -19,10 +19,10 @@ import {
   AngularDirectiveMetadata,
   AcxDirectiveMetadata,
   ComponentType,
-} from '../../../../../../protocol';
+} from '../../../../../../../../protocol';
 
-import {ElementPropertyResolver} from '../property-resolver/element-property-resolver';
-import {DocsRefButtonComponent} from '../../../shared/docs-ref-button/docs-ref-button.component';
+import {ElementPropertyResolver} from '../../../property-resolver/element-property-resolver';
+import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
 
 @Component({
   selector: 'ng-component-metadata',

@@ -11,7 +11,7 @@ import {MatIcon} from '@angular/material/icon';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatToolbar} from '@angular/material/toolbar';
 import {Platform} from '@angular/cdk/platform';
-import {FrameManager} from '../../../../application-services/frame_manager';
+import {FrameManager} from '../../../../../application-services/frame_manager';
 
 @Component({
   selector: 'ng-property-view-header',

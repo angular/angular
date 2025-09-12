@@ -10,7 +10,11 @@
               <ng-docs-ref-button docs="dependency-injection" />
             </mat-panel-title>
           </mat-expansion-panel-header>
-          <ng-injected-services [controller]="controller()" />
+          <div class="services">
+            @for (dependency of dependencies(); track dependency.position[0]) {
+              <ng-dependency-viewer [dependency]="dependency" />
+            }
+          </div>
         </mat-expansion-panel>
       </div>
     }

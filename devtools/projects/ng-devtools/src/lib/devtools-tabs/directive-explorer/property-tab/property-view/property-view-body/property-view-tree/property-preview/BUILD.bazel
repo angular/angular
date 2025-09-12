@@ -1,0 +1,27 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "property-preview_styles",
+    src = "property-preview.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "property-preview",
+    srcs = [
+        "property-preview.component.ts",
+    ],
+    angular_assets = [
+        "property-preview.component.html",
+        ":property-preview_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/protocol",
+    ],
+)
