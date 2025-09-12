@@ -168,6 +168,9 @@ export type FieldValidationResult<E extends ValidationError = ValidationError> =
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, FieldValidationResult, TPathKind>;
 
 // @public
+export const FLOATING_POINT: AggregateProperty<boolean, boolean>;
+
+// @public
 export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
 
 // @public
@@ -350,7 +353,36 @@ export type Mutable<T> = {
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
-export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | StandardSchemaValidationError;
+export type NgValidationError = RequiredValidationError | MinValidationError | MaxValidationError | MinLengthValidationError | MaxLengthValidationError | PatternValidationError | EmailValidationError | NumericValidationError | StandardSchemaValidationError;
+
+// @public
+export function numeric<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<string, TPathKind>, config?: BaseValidatorConfig<string, TPathKind> & {
+    float?: boolean | LogicFn<string, boolean, TPathKind>;
+    pattern?: RegExp | LogicFn<string, RegExp, TPathKind>;
+}): void;
+
+// @public
+export function numericError(options: WithField<NumericValidationErrorOptions>): NumericValidationError;
+
+// @public
+export function numericError(options?: NumericValidationErrorOptions): WithoutField<NumericValidationError>;
+
+// @public
+export class NumericValidationError extends _NgValidationError {
+    constructor(options?: NumericValidationErrorOptions);
+    readonly float: boolean;
+    // (undocumented)
+    readonly kind = "numeric";
+    readonly pattern: RegExp;
+}
+
+// @public
+export interface NumericValidationErrorOptions extends ValidationErrorOptions {
+    // (undocumented)
+    float?: boolean;
+    // (undocumented)
+    pattern?: RegExp;
+}
 
 // @public
 export type OneOrMany<T> = T | readonly T[];
@@ -515,6 +547,11 @@ export interface ValidationError {
     readonly field: Field<unknown>;
     readonly kind: string;
     readonly message?: string;
+}
+
+// @public
+export interface ValidationErrorOptions {
+    message?: string;
 }
 
 // @public

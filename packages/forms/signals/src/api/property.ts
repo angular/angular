@@ -181,3 +181,10 @@ export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefine
  * @experimental 21.0.0
  */
 export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> = listProperty<RegExp>();
+
+/**
+ * An aggregate property representing whether floating point numbers are supported.
+ *
+ * @experimental 21.0.0
+ */
+export const FLOATING_POINT: AggregateProperty<boolean, boolean> = andProperty();

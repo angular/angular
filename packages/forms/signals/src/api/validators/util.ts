@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, OneOrMany, PathKind, type FieldContext} from '../types';
-import {ValidationError, WithoutField} from '../validation_errors';
+import type {FieldContext, LogicFn, OneOrMany, PathKind} from '../types';
+import type {ValidationError, WithoutField} from '../validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -60,3 +60,9 @@ export function isEmpty(value: unknown): boolean {
   }
   return value === '' || value === false || value == null;
 }
+
+/** A RegExp that matches integer numbers */
+export const INTEGER_REGEXP = /^[+-]?\d+$/;
+
+/** A RegExp that matches floating point numbers */
+export const FLOAT_REGEXP = /^[+-]?\d*\.?\d+$/;

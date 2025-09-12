@@ -11,6 +11,7 @@ export * from './max';
 export * from './max_length';
 export * from './min';
 export * from './min_length';
+export * from './numeric';
 export * from './pattern';
 export * from './required';
 export * from './standard_schema';
