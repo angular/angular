@@ -26,6 +26,12 @@
       "version": "21.0.0",
       "description": "Adds `BootstrapContext` to `bootstrapApplication` calls in `main.server.ts` to support server rendering.",
       "factory": "./bundles/add-bootstrap-context-to-server-main.cjs#migrate"
+    },
+    "ngzone-event-emitter": {
+      "version": "21.0.0",
+      "description": "Replaces invocations on the NgZone EventEmitters with invocations on Subjects",
+      "factory": "./bundles/ngzone-event-emitter.cjs#migrate",
+      "optional": true
     }
   }
 }

@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+ts_project(
+    name = "ngzone-event-emitter",
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/typescript",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
+    ],
+)
