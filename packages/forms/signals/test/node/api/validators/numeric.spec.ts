@@ -55,11 +55,11 @@ describe('numeric validator', () => {
   });
 
   it('should validate with custom pattern', () => {
-    const model = signal('$1,234.56');
+    const model = signal('1,234.56');
     const f = form(
       model,
       (p) => {
-        numeric(p, {float: true, pattern: /^\$?\d{1,3}(,\d{3})*(\.\d{2})?$/});
+        numeric(p, {float: true, pattern: /^\d{1,3}(,\d{3})*(\.\d{2})?$/});
       },
       {
         injector: TestBed.inject(Injector),
@@ -68,9 +68,9 @@ describe('numeric validator', () => {
 
     expect(f().errors()).toEqual([]);
 
-    model.set('$1,234.5678');
+    model.set('1,234.5678');
     expect(f().errors()).toEqual([
-      numericError({float: true, pattern: /^\$?\d{1,3}(,\d{3})*(\.\d{2})?$/, field: f}),
+      numericError({float: true, pattern: /^\d{1,3}(,\d{3})*(\.\d{2})?$/, field: f}),
     ]);
   });
 
