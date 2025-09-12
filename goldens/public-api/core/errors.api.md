@@ -40,6 +40,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     DUPLICATE_DIRECTIVE = 309,
     // (undocumented)
+    DUPLICATE_INPUT_BINDING = 318,
+    // (undocumented)
     EXPORT_NOT_FOUND = -301,
     // (undocumented)
     EXPRESSION_CHANGED_AFTER_CHECKED = -100,

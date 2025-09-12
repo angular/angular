@@ -40,6 +40,9 @@ export interface BindingInternal extends Binding {
   /** Target index (in a view's registry) to which to apply the binding. */
   targetIdx?: number;
 
+  /** Public name of the input (for input and twoWay bindings). */
+  publicName?: string;
+
   /** Callback that will be invoked during creation. */
   create?(): void;
 
@@ -123,6 +126,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
+    publicName,
     update: () => inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value()),
   };
 
@@ -205,6 +209,7 @@ export function twoWayBinding(publicName: string, value: WritableSignal<unknown>
       kind: 'twoWay',
       requiredVars: input[BINDING].requiredVars + output[BINDING].requiredVars,
     },
+    publicName,
     set targetIdx(idx: number) {
       (input as Writable<BindingInternal>).targetIdx = idx;
       (output as Writable<BindingInternal>).targetIdx = idx;

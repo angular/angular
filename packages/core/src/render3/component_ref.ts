@@ -264,7 +264,10 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
     const prevConsumer = setActiveConsumer(null);
     try {
       const cmpDef = this.componentDef;
-      ngDevMode && verifyNotAnOrphanComponent(cmpDef);
+      if (ngDevMode) {
+        verifyNotAnOrphanComponent(cmpDef);
+        validateNoDuplicateInputBindings(componentBindings, directives);
+      }
 
       const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
       const rootViewInjector = createRootViewInjector(
@@ -482,6 +485,49 @@ function getRootTViewTemplate(
 function isInputBinding(binding: Binding): boolean {
   const kind = (binding as BindingInternal)[BINDING].kind;
   return kind === 'input' || kind === 'twoWay';
+}
+
+function validateNoDuplicateInputBindings(
+  componentBindings?: Binding[],
+  directives?: (Type<unknown> | DirectiveWithBindings<unknown>)[],
+): void {
+  if (componentBindings) {
+    const inputBindings = componentBindings.filter(isInputBinding) as BindingInternal[];
+    const seenInputs = new Set<string>();
+
+    for (const binding of inputBindings) {
+      const publicName = binding.publicName!;
+      if (seenInputs.has(publicName)) {
+        throw new RuntimeError(
+          RuntimeErrorCode.DUPLICATE_INPUT_BINDING,
+          `Multiple input bindings found for the same property '${publicName}'. ` +
+            `Each input property can only have one binding per component.`,
+        );
+      }
+      seenInputs.add(publicName);
+    }
+  }
+
+  if (directives) {
+    for (const directive of directives) {
+      if (typeof directive !== 'function') {
+        const inputBindings = directive.bindings.filter(isInputBinding) as BindingInternal[];
+        const seenInputs = new Set<string>();
+
+        for (const binding of inputBindings) {
+          const publicName = binding.publicName!;
+          if (seenInputs.has(publicName)) {
+            throw new RuntimeError(
+              RuntimeErrorCode.DUPLICATE_INPUT_BINDING,
+              `Multiple input bindings found for the same property '${publicName}'. ` +
+                `Each input property can only have one binding per directive.`,
+            );
+          }
+          seenInputs.add(publicName);
+        }
+      }
+    }
+  }
 }
 
 /**
