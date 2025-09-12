@@ -10,10 +10,10 @@ import {ChangeDetectionStrategy, Component, input, output, signal, inject} from 
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatIcon} from '@angular/material/icon';
 
-import {IndexedNode} from '../directive-forest/index-forest';
-import {ComponentMetadataComponent} from './component-metadata.component';
-import {ButtonComponent} from '../../../shared/button/button.component';
-import {Settings} from '../../../application-services/settings';
+import {IndexedNode} from '../../directive-forest/index-forest';
+import {ComponentMetadataComponent} from './component-metadata/component-metadata.component';
+import {ButtonComponent} from '../../../../shared/button/button.component';
+import {Settings} from '../../../../application-services/settings';
 
 @Component({
   templateUrl: './property-tab-header.component.html',

@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, input, output} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatTooltip} from '@angular/material/tooltip';
 import {MatIcon} from '@angular/material/icon';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
-import {FlatNode} from '../../property-resolver/element-property-resolver';
-import {PropertyDataSource} from '../../property-resolver/property-data-source';
-import {PropertyEditorComponent} from './property-editor.component';
-import {PropertyPreviewComponent} from './property-preview.component';
+import {FlatNode} from '../../../../property-resolver/element-property-resolver';
+import {PropertyDataSource} from '../../../../property-resolver/property-data-source';
+import {PropertyEditorComponent} from './property-editor/property-editor.component';
+import {PropertyPreviewComponent} from './property-preview/property-preview.component';
 import {MatTree, MatTreeNode, MatTreeNodeDef, MatTreeNodePadding} from '@angular/material/tree';
-import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
-import {SignalGraphManager} from '../../signal-graph/signal-graph-manager';
-import {DebugSignalGraphNode} from '../../../../../../../protocol';
-import {Settings} from '../../../../application-services/settings';
+import {SUPPORTED_APIS} from '../../../../../../application-providers/supported_apis';
+import {SignalGraphManager} from '../../../../signal-graph/signal-graph-manager';
+import {DebugSignalGraphNode} from '../../../../../../../../../protocol';
+import {Settings} from '../../../../../../application-services/settings';
 
 @Component({
   selector: 'ng-property-view-tree',

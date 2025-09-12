@@ -10,8 +10,8 @@ import {ChangeDetectionStrategy, Component, computed, inject, input, output} fro
 import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../protocol';
 
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
-import {PropertyViewBodyComponent} from './property-view-body.component';
-import {PropertyViewHeaderComponent} from './property-view-header.component';
+import {PropertyViewBodyComponent} from './property-view-body/property-view-body.component';
+import {PropertyViewHeaderComponent} from './property-view-header/property-view-header.component';
 
 @Component({
   selector: 'ng-property-view',

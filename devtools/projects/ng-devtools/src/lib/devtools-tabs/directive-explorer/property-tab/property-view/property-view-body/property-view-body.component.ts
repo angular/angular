@@ -12,26 +12,21 @@ import {
   Component,
   ɵFramework as Framework,
   computed,
-  forwardRef,
   input,
   output,
   signal,
 } from '@angular/core';
-import {
-  DebugSignalGraphNode,
-  DirectivePosition,
-  SerializedInjectedService,
-} from '../../../../../../../protocol';
+import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
 
 import {
   DirectivePropertyResolver,
   DirectiveTreeData,
-} from '../../property-resolver/directive-property-resolver';
-import {FlatNode} from '../../property-resolver/element-property-resolver';
-import {PropertyViewTreeComponent} from './property-view-tree.component';
+} from '../../../property-resolver/directive-property-resolver';
+import {FlatNode} from '../../../property-resolver/element-property-resolver';
+import {PropertyViewTreeComponent} from './property-view-tree/property-view-tree.component';
 import {MatExpansionModule} from '@angular/material/expansion';
-import {DependencyViewerComponent} from './dependency-viewer.component';
-import {DocsRefButtonComponent} from '../../../../shared/docs-ref-button/docs-ref-button.component';
+import {DependencyViewerComponent} from './dependency-viewer/dependency-viewer.component';
+import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
 
 @Component({
   selector: 'ng-property-view-body',
@@ -40,10 +35,10 @@ import {DocsRefButtonComponent} from '../../../../shared/docs-ref-button/docs-re
   imports: [
     MatExpansionModule,
     CdkDropList,
-    forwardRef(() => InjectedServicesComponent),
     CdkDrag,
     PropertyViewTreeComponent,
     DocsRefButtonComponent,
+    DependencyViewerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -108,47 +103,4 @@ export class PropertyViewBodyComponent {
       directivePosition: this.controller().directivePosition,
     });
   }
-}
-
-@Component({
-  selector: 'ng-injected-services',
-  template: `
-    <div class="services">
-      @for (dependency of dependencies(); track dependency.position[0]) {
-        <ng-dependency-viewer [dependency]="dependency" />
-      }
-    </div>
-  `,
-  styles: [
-    `
-      :host {
-        display: block;
-        padding: 0.5rem;
-
-        .services {
-          border-radius: 0.375rem;
-          background: color-mix(in srgb, var(--senary-contrast) 50%, var(--color-background) 50%);
-          overflow: hidden;
-
-          .wrapper {
-            ng-dependency-viewer {
-              display: block;
-            }
-          }
-        }
-    `,
-  ],
-  imports: [DependencyViewerComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class InjectedServicesComponent {
-  readonly controller = input.required<DirectivePropertyResolver>();
-
-  readonly dependencies = computed<SerializedInjectedService[]>(() => {
-    const metadata = this.controller().directiveMetadata;
-    if (!metadata) return [];
-    if (!('dependencies' in metadata)) return [];
-
-    return metadata.dependencies ?? [];
-  });
 }

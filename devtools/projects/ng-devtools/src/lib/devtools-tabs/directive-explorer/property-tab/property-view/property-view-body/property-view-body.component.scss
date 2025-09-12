@@ -1,8 +1,15 @@
-@use '../../../../../styles/typography';
+@use '../../../../../../styles/typography';
 
 :host {
   ng-docs-ref-button {
     margin-left: 0.125rem;
+  }
+
+  .services {
+    margin: 0.5rem;
+    border-radius: 0.375rem;
+    background: color-mix(in srgb, var(--senary-contrast) 50%, var(--color-background) 50%);
+    overflow: hidden;
   }
 
   /* FRAGILE */
