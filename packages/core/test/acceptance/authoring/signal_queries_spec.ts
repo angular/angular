@@ -83,24 +83,6 @@ describe('queries as signals', () => {
       expect(fixture.componentInstance.foundEl()).toBeTrue();
     });
 
-    it('should throw if required query is read in the constructor', () => {
-      @Component({
-        template: `<div #el></div>`,
-      })
-      class AppComponent {
-        divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
-
-        constructor() {
-          this.divEl();
-        }
-      }
-
-      // non-required query results are undefined before we run creation mode on the view queries
-      expect(() => {
-        TestBed.createComponent(AppComponent);
-      }).toThrowError(/NG0951: Child query result is required but no value is available/);
-    });
-
     it('should query for multiple elements in a template', () => {
       @Component({
         template: `

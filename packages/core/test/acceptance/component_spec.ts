@@ -21,10 +21,12 @@ import {
   Injector,
   input,
   Input,
+  model,
   NgModule,
   OnDestroy,
   reflectComponentType,
   Renderer2,
+  viewChild,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
@@ -920,6 +922,76 @@ describe('component', () => {
       filePath: 'comp.ts',
       lineNumber: 11,
       forbidOrphanRendering: true,
+    });
+  });
+
+  describe('required initiliazers', () => {
+    // The following tests are specifically not in the authoring subdirectory to ensure that AOT doesn't check (and throws) forbidden required reads.
+    it('should throw error if a required input is accessed too early', () => {
+      @Component({
+        selector: 'input-comp',
+        template: 'input:{{input()}}',
+      })
+      class InputComp {
+        input = input.required<number>({debugName: 'input'});
+
+        constructor() {
+          this.input();
+        }
+      }
+
+      @Component({
+        template: `<input-comp [input]="value" />`,
+        imports: [InputComp],
+      })
+      class TestCmp {
+        value = 1;
+      }
+
+      expect(() => TestBed.createComponent(TestCmp)).toThrowError(
+        /Input "input" is required but no value is available yet/,
+      );
+    });
+
+    it('should throw if a required model input is accessed too early', () => {
+      @Directive({selector: '[dir]'})
+      class Dir {
+        value = model.required<number>();
+
+        constructor() {
+          this.value();
+        }
+      }
+
+      @Component({
+        template: '<div [(value)]="value" dir></div>',
+        imports: [Dir],
+      })
+      class App {
+        value = 1;
+      }
+
+      expect(() => TestBed.createComponent(App)).toThrowError(
+        /Model is required but no value is available yet/,
+      );
+    });
+
+    it('should throw if required query is read in the constructor', () => {
+      @Component({
+        template: `<div #el></div>`,
+      })
+      class AppComponent {
+        divEl = viewChild.required<ElementRef<HTMLDivElement>>('el');
+
+        constructor() {
+          this.divEl();
+        }
+      }
+
+      // non-required query results are undefined before we run creation mode on the view queries
+      expect(() => {
+        TestBed.createComponent(AppComponent);
+      }).toThrowError(/NG0951: Child query result is required but no value is available/);
     });
   });
 });
