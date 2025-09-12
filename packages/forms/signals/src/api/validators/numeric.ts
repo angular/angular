@@ -22,6 +22,8 @@ import {BaseValidatorConfig, FLOAT_REGEXP, getOption, INTEGER_REGEXP, isEmpty} f
  *
  * @param path Path of the field to validate
  * @param config Optional, allows providing any of the following options:
+ *  - `float`: Whether floating point numbers are allowed
+ *  - `pattern`: The pattern the value must conform to
  *  - `error`: Custom validation error(s) to be used instead of the default `ValidationError.email()`
  *    or a function that receives the `FieldContext` and returns custom validation error(s).
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
