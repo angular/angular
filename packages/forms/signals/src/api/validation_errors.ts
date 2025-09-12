@@ -8,13 +8,22 @@
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {Field} from './types';
+import {INTEGER_REGEXP} from './validators/util';
 
 /**
  * Options used to create a `ValidationError`.
  */
-interface ValidationErrorOptions {
+export interface ValidationErrorOptions {
   /** Human readable error message. */
   message?: string;
+}
+
+/**
+ * Options used to create a `NumericValidationError`.
+ */
+export interface NumericValidationErrorOptions extends ValidationErrorOptions {
+  float?: boolean;
+  pattern?: RegExp;
 }
 
 /**
@@ -226,6 +235,30 @@ export function emailError(
   options?: ValidationErrorOptions,
 ): WithOptionalField<EmailValidationError> {
   return new EmailValidationError(options);
+}
+
+/**
+ * Create an numeric format error associated with the target field
+ * @param options The validation error options
+ *
+ * @experimental 21.0.0
+ */
+export function numericError(
+  options: WithField<NumericValidationErrorOptions>,
+): NumericValidationError;
+/**
+ * Create an numeric format error
+ * @param options The optional validation error options
+ *
+ * @experimental 21.0.0
+ */
+export function numericError(
+  options?: NumericValidationErrorOptions,
+): WithoutField<NumericValidationError>;
+export function numericError(
+  options?: NumericValidationErrorOptions,
+): WithOptionalField<NumericValidationError> {
+  return new NumericValidationError(options);
 }
 
 /**
@@ -452,6 +485,27 @@ export class EmailValidationError extends _NgValidationError {
 }
 
 /**
+ * An error used to indicate that a value is not a valid number.
+ *
+ * @experimental 21.0.0
+ */
+export class NumericValidationError extends _NgValidationError {
+  override readonly kind = 'numeric';
+
+  /** Whether floating point numbers are allowed. */
+  readonly float: boolean;
+
+  /** The pattern the value must conform to. */
+  readonly pattern: RegExp;
+
+  constructor(options?: NumericValidationErrorOptions) {
+    super(options);
+    this.float = options?.float ?? false;
+    this.pattern = options?.pattern ?? INTEGER_REGEXP;
+  }
+}
+
+/**
  * An error used to indicate an issue validating against a standard schema.
  *
  * @experimental 21.0.0
@@ -500,4 +554,5 @@ export type NgValidationError =
   | MaxLengthValidationError
   | PatternValidationError
   | EmailValidationError
+  | NumericValidationError
   | StandardSchemaValidationError;
