@@ -52,6 +52,7 @@ jobs:
           labels: |
             action: merge
             area: docs
+            target: automation
           commit-message: |
             docs: update Angular CDK apis
 
@@ -81,6 +82,7 @@ jobs:
           labels: |
             action: merge
             area: docs
+            target: automation
           commit-message: |
             docs: update Angular CLI help
 
