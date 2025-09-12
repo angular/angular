@@ -671,6 +671,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       }
     }
 
+    // Check for duplicate ARIA bindings after all attributes have been processed
+    this.checkForDuplicateAriaBindings(parsedProperties, attributes);
+
     return {
       attributes,
       boundEvents,
@@ -1125,6 +1128,89 @@ class HtmlAstToIvyAst implements html.Visitor {
         seenNames.add(ref.name);
       }
     }
+  }
+
+  /**
+   * Checks for duplicate ARIA bindings (property bindings and attribute bindings).
+   * Reports a warning if the same ARIA attribute is bound as both a property and an attribute.
+   */
+  private checkForDuplicateAriaBindings(
+    parsedProperties: ParsedProperty[],
+    attributes: t.TextAttribute[],
+  ) {
+    const ariaProperties = parsedProperties.filter(
+      (prop) =>
+        prop.name.startsWith('attr.aria-') ||
+        (prop.name.startsWith('aria') && prop.name.length > 4),
+    );
+
+    const ariaAttributes = attributes.filter((attr) => attr.name.startsWith('aria-'));
+
+    if (ariaProperties.length === 0 && ariaAttributes.length === 0) {
+      return;
+    }
+
+    const ariaBindings = new Map<
+      string,
+      {
+        properties: ParsedProperty[];
+        attribute?: t.TextAttribute;
+      }
+    >();
+
+    // Process property bindings (e.g., [ariaLabel], [attr.aria-label])
+    for (const prop of ariaProperties) {
+      const ariaName = this.extractAriaAttributeName(prop.name);
+      if (!ariaBindings.has(ariaName)) {
+        ariaBindings.set(ariaName, {properties: []});
+      }
+      ariaBindings.get(ariaName)!.properties.push(prop);
+    }
+
+    // Process static attributes (e.g., aria-label="value")
+    for (const attr of ariaAttributes) {
+      const ariaName = attr.name;
+      if (!ariaBindings.has(ariaName)) {
+        ariaBindings.set(ariaName, {properties: []});
+      }
+      ariaBindings.get(ariaName)!.attribute = attr;
+    }
+
+    // Check for conflicts - warn only once per ARIA attribute
+    for (const [ariaName, bindings] of ariaBindings) {
+      const hasMultipleProperties = bindings.properties.length > 1;
+      const hasStaticAttribute = !!bindings.attribute;
+      const hasPropertyBinding = bindings.properties.length > 0;
+
+      // Report only one warning per ARIA attribute to avoid noise
+      if (hasMultipleProperties || (hasPropertyBinding && hasStaticAttribute)) {
+        const message = `Conflicting ARIA attribute "${ariaName}". Found multiple bindings for the same ARIA attribute. This may cause accessibility issues.`;
+        const sourceSpan = hasMultipleProperties
+          ? bindings.properties[1].sourceSpan // Report on the second binding found
+          : bindings.properties[0].sourceSpan; // Report on the property binding
+        this.reportError(message, sourceSpan);
+      }
+    }
+  }
+
+  /**
+   * Extracts the ARIA attribute name from a property binding name.
+   * Returns the normalized ARIA attribute name (e.g., 'aria-label').
+   */
+  private extractAriaAttributeName(bindingName: string): string {
+    // Handle [attr.aria-*] bindings
+    if (bindingName.startsWith('attr.aria-')) {
+      return bindingName.substring(5); // Remove 'attr.' prefix
+    }
+
+    // Handle camelCase ARIA property bindings (e.g., [ariaLabel] -> 'aria-label')
+    return bindingName.replace(/^aria([A-Z])(.*)$/, (_, firstChar, rest) => {
+      // Convert to all lowercase after 'aria-': KeyShortcuts → keyshortcuts
+      const normalized = (firstChar.toLowerCase() + rest).replace(/([A-Z])/g, (match: string) =>
+        match.toLowerCase(),
+      );
+      return `aria-${normalized}`;
+    });
   }
 
   private reportError(

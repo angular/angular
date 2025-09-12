@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {parseTemplate} from '../../public_api';
 import {BindingType, ParsedEventType} from '../../src/expression_parser/ast';
 import * as t from '../../src/render3/r3_ast';
 import {unparse} from '../expression_parser/utils/unparser';
@@ -892,6 +893,110 @@ describe('R3 template transform', () => {
             '#two at column 7 in [one + #two + baz]',
         ),
       ]);
+    });
+  });
+
+  describe('Duplicate ARIA Bindings', () => {
+    it('should warn for duplicate ARIA bindings with [attr.aria-label] and [ariaLabel]', () => {
+      const errors = parseTemplate(
+        `<div [attr.aria-label]="'foo'" [ariaLabel]="'bar'"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].msg).toContain('Conflicting ARIA attribute "aria-label"');
+      expect(errors[0].msg).toContain('Found multiple bindings for the same ARIA attribute');
+    });
+
+    it('should warn for duplicate ARIA bindings with [attr.aria-hidden] and [ariaHidden]', () => {
+      const errors = parseTemplate(
+        `<div [ariaHidden]="true" [attr.aria-hidden]="false"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].msg).toContain('Conflicting ARIA attribute "aria-hidden"');
+      expect(errors[0].msg).toContain('Found multiple bindings for the same ARIA attribute');
+    });
+
+    it('should warn for duplicate ARIA bindings with static aria and property binding', () => {
+      const errors = parseTemplate(
+        `<div aria-label="label" [ariaLabel]="'here'"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].msg).toContain('Conflicting ARIA attribute "aria-label"');
+    });
+
+    it('should NOT warn for different ARIA attributes', () => {
+      const errors = parseTemplate(
+        `<div [attr.aria-label]="'foo'" [ariaHidden]="true"></div>`,
+        'TestComponent',
+      ).errors;
+
+      expect(errors).toBeNull();
+    });
+
+    it('should NOT warn for single ARIA binding', () => {
+      const errors = parseTemplate(`<div [ariaLabel]="'foo'"></div>`, 'TestComponent').errors;
+
+      expect(errors).toBeNull();
+    });
+
+    it('should NOT warn for non-ARIA attributes', () => {
+      const errors = parseTemplate(
+        `<div [title]="'foo'" title="bar"></div>`,
+        'TestComponent',
+      ).errors;
+
+      expect(errors).toBeNull();
+    });
+
+    it('should warn only once per element even with multiple duplicates', () => {
+      const errors = parseTemplate(
+        `<div [attr.aria-label]="'foo'" [ariaLabel]="'bar'" aria-label="static"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].msg).toContain('Conflicting ARIA attribute "aria-label"');
+      expect(errors[0].msg).toContain('Found multiple bindings for the same ARIA attribute');
+    });
+
+    it('should correctly normalize complex ARIA property names', () => {
+      const errors = parseTemplate(
+        `<div [attr.aria-keyshortcuts]="'foo'" [ariaKeyShortcuts]="'bar'"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(1);
+      expect(errors[0].msg).toContain('Conflicting ARIA attribute "aria-keyshortcuts"');
+    });
+
+    it('should detect conflicts across multiple elements correctly', () => {
+      const errors = parseTemplate(
+        `
+      <div [attr.aria-label]="'foo'" [ariaLabel]="'bar'"></div>
+      <span [ariaHidden]="true" [attr.aria-hidden]="false"></span>
+    `,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors.length).toBe(2);
+      expect(errors[0].msg).toContain('aria-label');
+      expect(errors[1].msg).toContain('aria-hidden');
+    });
+
+    it('should warn only once per element even with mixed binding types', () => {
+      const errors = parseTemplate(
+        `<div [attr.aria-label]="'attr'" [ariaLabel]="'prop'" aria-label="static"></div>`,
+        'TestComponent',
+      ).errors!;
+
+      expect(errors).not.toBeNull();
+      // Should only warn once per ARIA attribute to avoid noise
+      expect(errors!.length).toBe(1);
     });
   });
 
