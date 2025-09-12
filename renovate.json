@@ -18,14 +18,6 @@
   ],
   "packageRules": [
     {
-      "matchBaseBranches": ["main"],
-      "addLabels": ["target: minor"]
-    },
-    {
-      "matchBaseBranches": ["!main"],
-      "addLabels": ["target: patch"]
-    },
-    {
       "matchFileNames": [
         "integration/**",
         "modules/ssr-benchmarks/package.json",
