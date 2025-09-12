@@ -54,14 +54,16 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
     }
     // bound properties like `[prop]="mySignal"`
     else if (node instanceof TmplAstBoundAttribute) {
-      // we skip the check if the node is an input binding
-      const usedDirectives = ctx.templateTypeChecker.getUsedDirectives(component);
+      const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
+
       if (
-        usedDirectives !== null &&
-        usedDirectives.some((dir) => dir.inputs.getByBindingPropertyName(node.name) !== null)
+        symbol?.kind === SymbolKind.Input &&
+        symbol.bindings.length > 0 &&
+        symbol.bindings.some((binding) => binding.target.kind === SymbolKind.Directive)
       ) {
         return [];
       }
+
       // otherwise, we check if the node is
       const nodeAst = isPropertyReadNodeAst(node);
       if (

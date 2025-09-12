@@ -627,6 +627,56 @@ runInEachFileSystem(() => {
     expect(getSourceCodeForDiagnostic(diags[0])).toBe(`myNestedSignal`);
   });
 
+  // See https://github.com/angular/angular/issues/63739
+  it('should produce a warning if the template contains a directive with the same input name, but on a different node', () => {
+    const fileName = absoluteFrom('/main.ts');
+    const {program, templateTypeChecker} = setup([
+      {
+        fileName,
+        templates: {
+          'TestCmp': `<child /> <div [id]="title"></div>`,
+        },
+        source: `
+          import {signal, input} from '@angular/core';
+
+          export class Child {
+            id = input(0);
+          }
+
+          export class TestCmp {
+            title = signal('');
+          }`,
+        declarations: [
+          {
+            type: 'directive',
+            name: 'Child',
+            selector: 'child',
+            inputs: {
+              id: {
+                isSignal: true,
+                bindingPropertyName: 'id',
+                classPropertyName: 'id',
+                required: false,
+                transform: null,
+              },
+            },
+          },
+        ],
+      },
+    ]);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClass(sf, 'TestCmp');
+    const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+      templateTypeChecker,
+      program.getTypeChecker(),
+      [interpolatedSignalFactory],
+      {} /* options */,
+    );
+    const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+    expect(diags.length).toBe(1);
+    expect(diags[0].messageText).toBe('title is a function and should be invoked: title()');
+  });
+
   [
     ['dom property', 'id'],
     ['class', 'class.green'],
@@ -640,7 +690,7 @@ runInEachFileSystem(() => {
         {
           fileName,
           templates: {
-            'TestCmp': `<div [${binding}]="mySignal"></div> 
+            'TestCmp': `<div [${binding}]="mySignal"></div>
             <div [${binding}]="!negatedSignal"></div>`,
           },
           source: `
