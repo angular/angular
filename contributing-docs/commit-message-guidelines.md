@@ -96,7 +96,7 @@ There are currently a few exceptions to the "use package name" rule:
 
 * `dev-infra`: used for dev-infra related changes within the directories /scripts and /tools
 
-* `docs-infra`: used for docs-app (angular.dev) related changes within the /adev directory of the repo
+* `docs-infra`: used for infrastructure changes to the docs-app (angular.dev) within the `/adev` directory, such as application code, tooling, or configuration. **For modifications to documentation content (e.g., editing a `.md` file), use `docs:` without a scope instead.**
 
 * `migrations`: used for changes to the `ng update` migrations.
 
