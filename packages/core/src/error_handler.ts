@@ -13,6 +13,7 @@ import type {EnvironmentProviders} from './di/interface/provider';
 import {makeEnvironmentProviders, provideEnvironmentInitializer} from './di/provider_collection';
 import {EnvironmentInjector} from './di/r3_injector';
 import {DOCUMENT} from './document';
+import {RuntimeError, RuntimeErrorCode} from './errors';
 import {DestroyRef} from './linker/destroy_ref';
 import {NgZone} from './zone/ng_zone';
 
@@ -89,7 +90,16 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
 
 export const errorHandlerEnvironmentInitializer = {
   provide: ENVIRONMENT_INITIALIZER,
-  useValue: () => void inject(ErrorHandler),
+  useValue: () => {
+    const handler = inject(ErrorHandler, {optional: true});
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && handler === null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+        `A required Injectable was not found in the dependency injection tree. ` +
+          'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+      );
+    }
+  },
   multi: true,
 };
 
