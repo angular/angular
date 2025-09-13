@@ -10,7 +10,7 @@ A common pattern when working with user-provided prompts is to separate the user
 2. When the user submits (e.g., by clicking a button), update a second signal with contents of the first signal.
 3. Use the second signal in the **`params`** field of your `resource`.
 
-This setup ensures the resource's **`loader`** function only runs when the user explicitly submits their prompt, not on every keystroke. You can use additional signal parameters, like a `sessionId` or `userId` (which can be useful for creating persistent LLM sessions), in the `loader` field. This way, the request always uses these parameters' current values without re-triggering the asyncronous function defined in the `loader` field.
+This setup ensures the resource's **`loader`** function only runs when the user explicitly submits their prompt, not on every keystroke. You can use additional signal parameters, like a `sessionId` or `userId` (which can be useful for creating persistent LLM sessions), in the `loader` field. This way, the request always uses these parameters' current values without re-triggering the asynchronous function defined in the `loader` field.
 
 Many AI SDKs provide helper methods for making API calls. For example, the Genkit client library exposes a `runFlow` method for calling Genkit flows, which you can call from a resource's `loader`. For other APIs, you can use the [`httpResource`](guide/signals/resource#reactive-data-fetching-with-httpresource).
 
@@ -90,14 +90,14 @@ The following example demonstrates how to create a responsive UI to dynamically 
 
 
 ## AI patterns in action: streaming chat responses
-Interfaces often display partial results from LLM-based APIs incrementally as response data arrives. Angular's resource API provides the ability to stream responses to support this type of pattern. The `stream` property of `resource` accepts an asyncronous function you can use to apply updates to a signal value over time. The signal being updated represents the data being streamed.
+Interfaces often display partial results from LLM-based APIs incrementally as response data arrives. Angular's resource API provides the ability to stream responses to support this type of pattern. The `stream` property of `resource` accepts an asynchronous function you can use to apply updates to a signal value over time. The signal being updated represents the data being streamed.
 
 ```ts
 characters = resource({
   stream: async () => {
     const data = signal<ResourceStreamItem<string>>({value: ''});
     // Calls a Genkit streaming flow using the streamFlow method
-    // expose by the Genkit client SDK
+    // exposed by the Genkit client SDK
     const response = streamFlow({
       url: '/streamCharacters',
       input: 10
