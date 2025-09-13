@@ -584,7 +584,6 @@
       "parseCookieValue",
       "performanceMarkFeature",
       "pipeFromArray",
-      "prependTokenToDependencyPath",
       "processCleanups",
       "processHostBindingOpCodes",
       "processInjectorTypesWithProviders",

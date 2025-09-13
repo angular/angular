@@ -10,7 +10,6 @@ import type {ProviderToken} from '../di';
 import {isEnvironmentProviders} from '../di/interface/provider';
 import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-import {assertDefined} from '../util/assert';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
@@ -18,7 +17,7 @@ import {stringifyForError} from './util/stringify_utils';
 
 const NG_RUNTIME_ERROR_CODE = getClosureSafeProperty({'ngErrorCode': getClosureSafeProperty});
 const NG_RUNTIME_ERROR_MESSAGE = getClosureSafeProperty({'ngErrorMessage': getClosureSafeProperty});
-const NG_TOKEN_PATH = getClosureSafeProperty({'ngTokenPath': getClosureSafeProperty});
+export const NG_TOKEN_PATH = getClosureSafeProperty({'ngTokenPath': getClosureSafeProperty});
 
 /** Creates a circular dependency runtime error. */
 export function cyclicDependencyError(token: string, path?: string[]): Error {
@@ -73,35 +72,6 @@ export function throwProviderNotFoundError(
     ngDevMode &&
     `No provider for ${stringifyForError(token)} found${injectorName ? ` in ${injectorName}` : ''}`;
   throw new RuntimeError(RuntimeErrorCode.PROVIDER_NOT_FOUND, errorMessage);
-}
-
-/**
- * Given an Error instance and the current token - update the monkey-patched
- * dependency path info to include that token.
- *
- * @param error Current instance of the Error class.
- * @param token Extra token that should be appended.
- */
-export function prependTokenToDependencyPath(
-  error: any,
-  token: ProviderToken<unknown> | {multi: true; provide: ProviderToken<unknown>},
-): void {
-  error[NG_TOKEN_PATH] ??= [];
-  // Append current token to the current token path. Since the error
-  // is bubbling up, add the token in front of other tokens.
-  const currentPath = error[NG_TOKEN_PATH];
-  // Do not append the same token multiple times.
-  let pathStr: string;
-  if (typeof token === 'object' && 'multi' in token && token?.multi === true) {
-    assertDefined(token.provide, 'Token with multi: true should have a provide property');
-    pathStr = stringifyForError(token.provide);
-  } else {
-    pathStr = stringifyForError(token);
-  }
-
-  if (currentPath[0] !== pathStr) {
-    (error[NG_TOKEN_PATH] as string[]).unshift(pathStr);
-  }
 }
 
 /**

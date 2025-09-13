@@ -726,7 +726,6 @@
       "pipeFromArray",
       "popScheduler",
       "populateDehydratedViewsInLContainerImpl",
-      "prependTokenToDependencyPath",
       "process",
       "processCleanups",
       "processHostBindingOpCodes",

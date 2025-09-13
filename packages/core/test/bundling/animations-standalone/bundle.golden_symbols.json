@@ -813,7 +813,6 @@
       "parseTriggerCallbackName",
       "performanceMarkFeature",
       "pipeFromArray",
-      "prependTokenToDependencyPath",
       "processCleanups",
       "processHostBindingOpCodes",
       "processInjectorTypesWithProviders",

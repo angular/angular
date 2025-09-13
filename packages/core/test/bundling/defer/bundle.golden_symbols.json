@@ -688,7 +688,6 @@
       "performanceMarkFeature",
       "pipeFromArray",
       "populateDehydratedViewsInLContainer",
-      "prependTokenToDependencyPath",
       "processCleanups",
       "processHostBindingOpCodes",
       "processInjectorTypesWithProviders",

@@ -24,7 +24,7 @@ import {
   augmentRuntimeError,
   cyclicDependencyError,
   getRuntimeErrorCode,
-  prependTokenToDependencyPath,
+  NG_TOKEN_PATH,
   throwInvalidProviderError,
   throwMixedMultiProviderError,
 } from '../render3/errors_di';
@@ -79,10 +79,11 @@ import {setActiveConsumer} from '@angular/core/primitives/signals';
 import {
   Injector as PrimitivesInjector,
   InjectionToken as PrimitivesInjectionToken,
-  NOT_FOUND,
   NotFound,
   isNotFound,
 } from '@angular/core/primitives/di';
+import {assertDefined} from '../util/assert';
+import {stringifyForError} from '../render3/util/stringify_utils';
 
 /**
  * Marker which indicates that a value has not yet been created from the factory function.
@@ -396,7 +397,38 @@ export class R3Injector extends EnvironmentInjector implements PrimitivesInjecto
           throw new RuntimeError(errorCode, null);
         }
 
-        prependTokenToDependencyPath(error, token);
+        error[NG_TOKEN_PATH] ??= [];
+        // Append current token to the current token path. Since the error
+        // is bubbling up, add the token in front of other tokens.
+        const currentPath = error[NG_TOKEN_PATH];
+        // Do not append the same token multiple times.
+        let pathStr: string;
+        // We normalize the token here to a type that can either be:
+        // - a plain ProviderToken
+        // - an object representing a multi-provider ({ multi: true, provide: ProviderToken })
+        // This cast is required because TypeScript cannot automatically
+        // infer the combined type needed for our checks below.
+        const normalizedToken = token as
+          | ProviderToken<unknown>
+          | {multi: true; provide: ProviderToken<unknown>};
+
+        if (
+          typeof normalizedToken === 'object' &&
+          'multi' in normalizedToken &&
+          normalizedToken?.multi === true
+        ) {
+          assertDefined(
+            normalizedToken.provide,
+            'Token with multi: true should have a provide property',
+          );
+          pathStr = stringifyForError(normalizedToken.provide);
+        } else {
+          pathStr = stringifyForError(normalizedToken);
+        }
+
+        if (currentPath[0] !== pathStr) {
+          (error[NG_TOKEN_PATH] as string[]).unshift(pathStr);
+        }
 
         if (previousInjector) {
           // We still have a parent injector, keep throwing
