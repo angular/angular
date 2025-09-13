@@ -94,6 +94,10 @@ button {
   }
 
   @include mq.for-large-desktop-down {
-    display: none;
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1;
+    background-color: var(--page-background);
   }
 }
