@@ -1,0 +1,36 @@
+load("//tools:defaults.bzl", "copy_to_bin", "ts_project")
+
+package(
+    default_visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+)
+
+copy_to_bin(
+    name = "static_files",
+    srcs = ["schema.json"],
+)
+
+ts_project(
+    name = "ngstyle-to-style-migration",
+    srcs = glob(["**/*.ts"]),
+    data = ["schema.json"],
+    deps = [
+        "//:node_modules/@angular-devkit/schematics",
+        "//:node_modules/@types/node",
+        "//:node_modules/typescript",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/private",
+        "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/annotations/directive",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/core/schematics/utils",
+        "//packages/core/schematics/utils/tsurge",
+        "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
+    ],
+)
