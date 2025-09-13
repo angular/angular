@@ -811,12 +811,6 @@ function parseNgCompilerOptions(
   if (config['forceStrictTemplates'] === true) {
     options.strictTemplates = true;
   }
-  if (config['enableBlockSyntax'] === false) {
-    options['_enableBlockSyntax'] = false;
-  }
-  if (config['enableLetSyntax'] === false) {
-    options['_enableLetSyntax'] = false;
-  }
   if (config['enableSelectorless'] === true) {
     options['_enableSelectorless'] = true;
   }
