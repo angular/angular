@@ -33,7 +33,7 @@
   // $screen-xl is the breakpoint where Main content stop being fluid and made fixed
 
   >*:not(docs-table-of-contents) {
-    max-width: calc(mq.$screen-xxl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
+    max-width: calc(mq.$screen-xl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
   }
 
   pre {
