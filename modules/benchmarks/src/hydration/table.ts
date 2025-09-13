@@ -54,12 +54,19 @@ export class TableComponent {
 }
 
 export function setupTransferState(cols: string, rows: string) {
+  // Ensure only positive integers are used for cols and rows, fallback to safe defaults.
+  const sanitizeNumber = (value: string, defaultValue: number): number => {
+    const num = Number(value);
+    return Number.isInteger(num) && num > 0 ? num : defaultValue;
+  };
+  const safeCols = sanitizeNumber(cols, 40);
+  const safeRows = sanitizeNumber(rows, 200);
   const script = document.createElement('script');
   script.id = 'ng-state';
   script.type = 'application/json';
   // This script contains hydration annotation for the `TableComponent` component.
   // Note: if you change the `TableComponent` template, make sure to update this
   // annotation as well.
-  script.textContent = `{"__nghData__":[{"t":{"3":"t0"},"c":{"3":[{"i":"t0","r":1,"t":{"2":"t1"},"c":{"2":[{"i":"t1","r":1,"x":${cols}}]},"x":${rows}}]}}]}`;
+  script.textContent = `{"__nghData__":[{"t":{"3":"t0"},"c":{"3":[{"i":"t0","r":1,"t":{"2":"t1"},"c":{"2":[{"i":"t1","r":1,"x":${safeCols}}]},"x":${safeRows}}]}}]}`;
   document.body.insertBefore(script, document.body.firstChild);
 }
