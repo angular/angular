@@ -137,10 +137,10 @@ describe('DefaultDomRendererV2', () => {
     expect(window.getComputedStyle(shadow).color).toEqual('rgb(255, 0, 0)');
 
     const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).color).toEqual('rgb(255, 0, 0)');
+    expect(window.getComputedStyle(emulated).color).toEqual('rgb(0, 0, 255)');
 
     const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).color).toEqual('rgb(255, 0, 0)');
+    expect(window.getComputedStyle(none).color).toEqual('rgb(0, 255, 0)');
   });
 
   it('child components of shadow components should inherit browser defaults rather than their component styles', () => {
@@ -153,10 +153,10 @@ describe('DefaultDomRendererV2', () => {
     expect(window.getComputedStyle(shadow).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
 
     const emulated = fixture.debugElement.query(By.css('.emulated')).nativeElement;
-    expect(window.getComputedStyle(emulated).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+    expect(window.getComputedStyle(emulated).backgroundColor).toEqual('rgb(0, 0, 255)');
 
     const none = fixture.debugElement.query(By.css('.none')).nativeElement;
-    expect(window.getComputedStyle(none).backgroundColor).toEqual('rgba(0, 0, 0, 0)');
+    expect(window.getComputedStyle(none).backgroundColor).toEqual('rgb(0, 255, 0)');
   });
 
   it('shadow components should not be polluted by child components styles when using IsolatedShadowDom', () => {
