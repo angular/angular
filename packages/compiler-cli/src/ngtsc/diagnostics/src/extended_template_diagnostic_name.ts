@@ -33,4 +33,5 @@ export enum ExtendedTemplateDiagnosticName {
   UNUSED_STANDALONE_IMPORTS = 'unusedStandaloneImports',
   UNPARENTHESIZED_NULLISH_COALESCING = 'unparenthesizedNullishCoalescing',
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 'uninvokedFunctionInTextInterpolation',
+  DUPLICATE_TEMPLATE_REFERENCE = 'duplicateTemplateReference',
 }

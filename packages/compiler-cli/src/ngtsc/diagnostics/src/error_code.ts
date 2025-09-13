@@ -612,6 +612,19 @@ export enum ErrorCode {
   UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION = 8117,
 
   /**
+   * Duplicate template reference variables are not allowed within the same template scope.
+   *
+   * For example:
+   * ```html
+   * <div #ref></div>
+   * <span #ref></span> <!-- Error: duplicate reference name -->
+   * ```
+   *
+   * Template reference variables must have unique names within their scope to avoid conflicts.
+   */
+  DUPLICATE_TEMPLATE_REFERENCE = 8118,
+
+  /**
    * The template type-checking engine would need to generate an inline type check block for a
    * component, but the current type-checking environment doesn't support it.
    */
