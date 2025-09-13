@@ -851,7 +851,7 @@ export class BindingParser {
     }
 
     if (ast instanceof NonNullAssert) {
-      return this._isAllowedAssignmentEvent(ast.expression);
+      return false;
     }
 
     if (
@@ -866,7 +866,7 @@ export class BindingParser {
     }
 
     if (ast instanceof PropertyRead || ast instanceof KeyedRead) {
-      if (!hasRecursiveSafeReceiver(ast)) {
+      if (!hasRecursiveSafeOrNonNullReceiver(ast)) {
         return true;
       }
     }
@@ -875,17 +875,21 @@ export class BindingParser {
   }
 }
 
-function hasRecursiveSafeReceiver(ast: AST): boolean {
+function hasRecursiveSafeOrNonNullReceiver(ast: AST): boolean {
   if (ast instanceof SafePropertyRead || ast instanceof SafeKeyedRead) {
     return true;
   }
 
   if (ast instanceof ParenthesizedExpression) {
-    return hasRecursiveSafeReceiver(ast.expression);
+    return hasRecursiveSafeOrNonNullReceiver(ast.expression);
   }
 
   if (ast instanceof PropertyRead || ast instanceof KeyedRead || ast instanceof Call) {
-    return hasRecursiveSafeReceiver(ast.receiver);
+    return hasRecursiveSafeOrNonNullReceiver(ast.receiver);
+  }
+
+  if (ast instanceof NonNullAssert) {
+    return true;
   }
 
   return false;
