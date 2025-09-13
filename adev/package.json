@@ -47,7 +47,7 @@
     "emoji-regex": "10.5.0",
     "fflate": "0.8.2",
     "jasmine-core": "5.10.0",
-    "jsdom": "26.1.0",
+    "jsdom": "27.0.0",
     "karma-chrome-launcher": "3.2.0",
     "karma-coverage": "2.2.1",
     "karma-jasmine-html-reporter": "2.1.0",
