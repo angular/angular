@@ -24,7 +24,11 @@ export function CodeSymbol(props: {code: string}) {
 
         const url = getSymbolUrl(rawSymbol);
         if (url) {
-          return <a href={url}>{rawSymbol}</a>;
+          return (
+            <a href={url} aria-label={rawSymbol}>
+              {rawSymbol}
+            </a>
+          );
         }
 
         return rawSymbol;
