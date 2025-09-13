@@ -2312,6 +2312,13 @@ class Scope {
     } else if (scopedNode instanceof TmplAstIfBlockBranch) {
       const {expression, expressionAlias} = scopedNode;
       if (expression !== null && expressionAlias !== null) {
+        // Check if this variable shadows a variable from a parent scope
+        const hasParentVariable = scope.hasVariableInParents(expressionAlias.name);
+        if (hasParentVariable) {
+          // Found a variable with the same name in a parent scope - this is shadowing
+          tcb.oobRecorder.shadowedTemplateVar(tcb.id, expressionAlias);
+        }
+
         Scope.registerVariable(
           scope,
           expressionAlias,
@@ -2431,6 +2438,34 @@ class Scope {
    */
   addStatement(stmt: ts.Statement): void {
     this.statements.push(stmt);
+  }
+
+  /**
+   * Check if this scope has a variable with the given name.
+   */
+  hasVariable(name: string): boolean {
+    // Check if any variable in the varMap has the given name
+    for (const variable of this.varMap.keys()) {
+      if (variable.name === name) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if any parent scope has a variable with the given name.
+   */
+  hasVariableInParents(name: string): boolean {
+    let currentScope: Scope | null = this.parent;
+    while (currentScope !== null) {
+      if (currentScope.hasVariable(name)) {
+        return true;
+      }
+      currentScope = currentScope.parent;
+    }
+    return false;
   }
 
   /**

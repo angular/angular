@@ -1021,6 +1021,7 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   deferredPipeUsedEagerly(id: TypeCheckId, ast: BindingPipe): void {}
   deferredComponentUsedEagerly(id: TypeCheckId, element: TmplAstElement): void {}
   duplicateTemplateVar(): void {}
+  shadowedTemplateVar(): void {}
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
   suboptimalTypeInference(): void {}

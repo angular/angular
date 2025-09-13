@@ -101,6 +101,15 @@ export interface OutOfBandDiagnosticRecorder {
     firstDecl: TmplAstVariable,
   ): void;
 
+  /**
+   * Reports a template variable that shadows a variable from a parent scope.
+   *
+   * @param id the type-checking ID of the template which contains the shadowing
+   * variable.
+   * @param variable the `TmplAstVariable` which shadows a parent scope variable.
+   */
+  shadowedTemplateVar(id: TypeCheckId, variable: TmplAstVariable): void;
+
   requiresInlineTcb(id: TypeCheckId, node: ClassDeclaration): void;
 
   requiresInlineTypeConstructors(
@@ -419,6 +428,21 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
             sourceFile: mapping.node.getSourceFile(),
           },
         ],
+      ),
+    );
+  }
+
+  shadowedTemplateVar(id: TypeCheckId, variable: TmplAstVariable): void {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        variable.sourceSpan,
+        ts.DiagnosticCategory.Warning,
+        ngErrorCode(ErrorCode.CONTROL_FLOW_VARIABLE_SHADOWING),
+        `Variable '${variable.name}' shadows a variable from an outer scope. Consider using a different variable name to avoid confusion.`,
       ),
     );
   }

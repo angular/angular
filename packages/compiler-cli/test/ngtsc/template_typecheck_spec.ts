@@ -2208,6 +2208,111 @@ runInEachFileSystem(() => {
       expect(getSourceCodeForDiagnostic(diags[0])).toContain('let i = index');
     });
 
+    it('should detect a shadowed variable in nested @if blocks', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            @if (textRef; as data) {
+              <p>block if first textRef is defined</p>
+              <div>passing data from template {{ data.innerData }}</div>
+              @if (property; as data) {
+                <p>block if second property is defined</p>
+                <div>passing data from template component {{ data }}</div>
+              }
+            }
+          \`,
+          standalone: false,
+        })
+        export class TestCmp {
+          textRef = {innerData: 'outer'};
+          property = 'inner';
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        export class Module {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(1);
+      expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.CONTROL_FLOW_VARIABLE_SHADOWING));
+      expect(diags[0].category).toEqual(ts.DiagnosticCategory.Warning);
+      expect(getSourceCodeForDiagnostic(diags[0])).toContain('data');
+    });
+
+    it('should not warn for different variable names in nested @if blocks', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            @if (textRef; as outerData) {
+              <p>block if first textRef is defined</p>
+              <div>passing data from template {{ outerData.innerHTML }}</div>
+              @if (property; as innerData) {
+                <p>block if second property is defined</p>
+                <div>passing data from template component {{ innerData }}</div>
+              }
+            }
+          \`,
+          standalone: false,
+        })
+        export class TestCmp {
+          textRef: any = {innerHTML: 'outer'};
+          property: string = 'inner';
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        export class Module {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(0);
+    });
+
+    it('should not warn for @for loop variables (existing behavior)', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: \`
+            @for (item of items; track item.id) {
+              <div>{{ item.name }}</div>
+            }
+          \`,
+          standalone: false,
+        })
+        export class TestCmp {
+          items = [ { id: 1, name: 'Item 1' }, { id: 2, name: 'Item 2' } ];
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        export class Module {}
+      `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toEqual(0);
+    });
+
     it('should still type-check when fileToModuleName aliasing is enabled, but alias exports are not in the .d.ts file', () => {
       // The template type-checking file imports directives/pipes in order to type-check their
       // usage. When `UnifiedModulesHost` aliasing is enabled, these imports would ordinarily use

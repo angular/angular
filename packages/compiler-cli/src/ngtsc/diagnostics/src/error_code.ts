@@ -424,6 +424,24 @@ export enum ErrorCode {
   DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER = 8020,
 
   /**
+   * Referencing the result of an `@if` conditional expression via `as`.
+   * This typically happens when using `as` to bind the result of an expression
+   * to a variable that has the same name as one already declared in a parent scope.
+   * While valid, this can cause confusion and is reported as a warning.
+   *
+   * Example:
+   * ```angular-html
+   * @if (data; as customData) {
+   *   {{ customData }}
+   *   @if (nested; as customData) {  <!-- Warning: shadows outer variable -->
+   *     {{ customData }}
+   *   }
+   * }
+   * ```
+   */
+  CONTROL_FLOW_VARIABLE_SHADOWING = 8021,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
