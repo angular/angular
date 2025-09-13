@@ -197,7 +197,7 @@
     "gulp": "^5.0.0",
     "gulp-conventional-changelog": "^5.0.0",
     "husky": "9.1.7",
-    "jsdom": "^26.0.0",
+    "jsdom": "^27.0.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine-html-reporter": "^2.1.0",
     "karma-sauce-launcher": "^4.3.6",
