@@ -7,15 +7,18 @@
 
       <!-- Tutorial Content -->
       @if (documentContent(); as documentContent) {
-        <main docsViewer
+        <main
+          docsViewer
           [docContent]="documentContent"
-          class="docs-viewer docs-viewer-scroll-margin-large"></main>
+          class="docs-viewer docs-viewer-scroll-margin-large"
+        ></main>
       }
     </div>
   }
 
   <!-- Split View Resizer -->
   <button
+    type="button"
     role="separator"
     #resizer
     class="adev-tutorial-resizer"
@@ -39,7 +42,7 @@
   <div class="adev-tutorial-nav-container">
     <div class="adev-tutorial-nav" [class.adev-nav-open]="showNavigationDropdown()">
       <!-- Toggle Nav Button -->
-      <button class="adev-unfold-button" (click)="toggleNavigationDropdown($event)">
+      <button type="button" class="adev-unfold-button" (click)="toggleNavigationDropdown($event)">
         <docs-icon>unfold_more</docs-icon>
         <div class="adev-current-tutorial">
           <span>{{ tutorialName() }}</span>
@@ -50,6 +53,7 @@
       <!-- Reveal Answer Button -->
       @if (shouldRenderRevealAnswer()) {
         <button
+          type="button"
           #revealAnswerButton
           (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
           [disabled]="!canRevealAnswer()"
@@ -65,7 +69,7 @@
       <!-- Download code -->
       @if (localTutorialZipUrl()) {
         <a [download]="stepName() + '.zip'" [href]="localTutorialZipUrl()">
-          <button class="adev-download-button docs-primary-btn">
+          <button type="button" class="adev-download-button docs-primary-btn">
             <docs-icon>download</docs-icon>
           </button>
         </a>
@@ -74,26 +78,26 @@
       <div class="adev-nav-arrows">
         @if (previousStepPath) {
           <a [routerLink]="previousStepPath">
-            <button class="docs-primary-btn">
+            <button type="button" class="docs-primary-btn">
               <docs-icon>chevron_left</docs-icon>
             </button>
           </a>
         }
         @if (!previousStepPath) {
-          <button class="docs-primary-btn" disabled>
+          <button type="button" class="docs-primary-btn" disabled>
             <docs-icon>chevron_left</docs-icon>
           </button>
         }
 
         @if (nextStepPath) {
           <a [routerLink]="nextStepPath">
-            <button class="docs-primary-btn">
+            <button type="button" class="docs-primary-btn">
               <docs-icon>chevron_right</docs-icon>
             </button>
           </a>
         }
         @if (!nextStepPath) {
-          <button class="docs-primary-btn" disabled>
+          <button type="button" class="docs-primary-btn" disabled>
             <docs-icon>chevron_right</docs-icon>
           </button>
         }
@@ -103,6 +107,7 @@
       <div class="adev-reveal-mobile-button-container">
         @if (shouldRenderRevealAnswer()) {
           <button
+            type="button"
             #revealAnswerButton
             (click)="answerRevealed() ? handleResetAnswer() : handleRevealAnswer()"
             [disabled]="!canRevealAnswer()"

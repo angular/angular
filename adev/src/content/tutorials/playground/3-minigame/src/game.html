@@ -130,14 +130,20 @@
         accuracy: {{ totalAccuracyPercentage() > 0 ? (totalAccuracyPercentage() | number : '1.1-1')
         + '%' : '??' }}
       </h4>
-      <button id="guess" class="gradient-button" (click)="guess()" [disabled]="isGuessModalOpen()">
+      <button
+        type="button"
+        id="guess"
+        class="gradient-button"
+        (click)="guess()"
+        [disabled]="isGuessModalOpen()"
+      >
         <span></span><span>guess</span>
       </button>
     </div>
   </div>
   @if(isGuessModalOpen()) {
   <dialog id="result" cdkTrapFocus>
-    <button id="close" (click)="close()">X</button>
+    <button type="button" id="close" (click)="close()">X</button>
     <div class="result-stats">
       <h2>goal: {{ goal() }}º</h2>
       <h2>actual: {{ rotateVal() | number : '1.1-1' }}º</h2>
@@ -202,7 +208,9 @@
     </svg>
     <div>"{{ resultQuote() }}"</div>
     <div class="result-buttons">
-      <button (click)="close()" class="gradient-button"><span></span><span>again?</span></button>
+      <button type="button" (click)="close()" class="gradient-button">
+        <span></span><span>again?</span>
+      </button>
       <a
         target="_blank"
         class="gradient-button"
@@ -216,6 +224,7 @@
     @if(isAccessiblePanelOpen()) {
     <div>
       <button
+        type="button"
         [disabled]="isGuessModalOpen()"
         (click)="adjustAngle(-25)"
         aria-label="decrease angle a lot"
@@ -230,6 +239,7 @@
         -
       </button>
       <button
+        type="button"
         [disabled]="isGuessModalOpen()"
         (click)="adjustAngle(5)"
         aria-label="increase angle a little"
@@ -237,6 +247,7 @@
         +
       </button>
       <button
+        type="button"
         [disabled]="isGuessModalOpen()"
         (click)="adjustAngle(25)"
         aria-label="increase angle a lot"

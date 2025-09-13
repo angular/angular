@@ -16,7 +16,7 @@ import {HEROES} from './mock-heroes';
   selector: 'app-querying',
   template: `
     <nav>
-      <button class="toggle" (click)="show = !show" [disabled]="toggleDisabled">Toggle View</button>
+      <button type="button" class="toggle" (click)="show = !show" [disabled]="toggleDisabled">Toggle View</button>
     </nav>
     @if (show) {
       <section @query (@query.start)="toggleDisabled = true" (@query.done)="toggleDisabled = false">
