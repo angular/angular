@@ -682,10 +682,134 @@ describe('platform-server partial hydration integration', () => {
       });
     });
 
-    /* TODO: tests to add
+    describe('transfer state for nested defer blocks', () => {
+      it('should have correct transfer state data for 2-level nested defer blocks', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (on viewport; hydrate on interaction) {
+              <div>
+                Level 1
+                @defer (on viewport; hydrate on interaction) {
+                  <div>Level 2</div>
+                } @placeholder {
+                  <span>Level 2 placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Level 1 placeholder</span>
+            }
+          `,
+        })
+        class SimpleComponent {}
 
-      3. transfer state data is correct for parent / child defer blocks
-    */
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        // Check that levels are rendered
+        expect(ssrContents).toContain('Level 1');
+        expect(ssrContents).toContain('Level 2');
+
+        // Check the transfer state data
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"p":"d0"}}',
+        );
+      });
+
+      it('should have correct transfer state data for 4-level nested defer blocks', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (on viewport; hydrate on interaction) {
+              <div>
+                Level 1
+                @defer (on viewport; hydrate on interaction) {
+                  <div>
+                    Level 2
+                    @defer (on viewport; hydrate on interaction) {
+                      <div>
+                        Level 3
+                        @defer (on viewport; hydrate on interaction) {
+                          <div>Level 4</div>
+                        } @placeholder {
+                          <span>Level 4 placeholder</span>
+                        }
+                      </div>
+                    } @placeholder {
+                      <span>Level 3 placeholder</span>
+                    }
+                  </div>
+                } @placeholder {
+                  <span>Level 2 placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Level 1 placeholder</span>
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        // Check that all levels are rendered
+        expect(ssrContents).toContain('Level 1');
+        expect(ssrContents).toContain('Level 2');
+        expect(ssrContents).toContain('Level 3');
+        expect(ssrContents).toContain('Level 4');
+
+        // Check the transfer state data
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"p":"d0"},"d2":{"r":1,"s":2,"p":"d1"},"d3":{"r":1,"s":2,"p":"d2"}}',
+        );
+      });
+
+      it('should have correct transfer state data for nested defer blocks with different triggers', async () => {
+        @Component({
+          selector: 'app',
+          template: `
+            @defer (on viewport; hydrate on interaction) {
+              <div>
+                Level 1
+                @defer (on viewport; hydrate on viewport) {
+                  <div>Level 2</div>
+                } @placeholder {
+                  <span>Level 2 placeholder</span>
+                }
+              </div>
+            } @placeholder {
+              <span>Level 1 placeholder</span>
+            }
+          `,
+        })
+        class SimpleComponent {}
+
+        const appId = 'custom-app-id';
+        const providers = [{provide: APP_ID, useValue: appId}];
+        const hydrationFeatures = () => [withIncrementalHydration()];
+
+        const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+        const ssrContents = getAppContents(html);
+
+        // Check that levels are rendered
+        expect(ssrContents).toContain('Level 1');
+        expect(ssrContents).toContain('Level 2');
+
+        // Check the transfer state data with trigger array
+        expect(ssrContents).toContain(
+          '"__nghDeferData__":{"d0":{"r":1,"s":2},"d1":{"r":1,"s":2,"t":[2],"p":"d0"}}',
+        );
+      });
+    });
 
     describe('triggers', () => {
       describe('hydrate on interaction', () => {
