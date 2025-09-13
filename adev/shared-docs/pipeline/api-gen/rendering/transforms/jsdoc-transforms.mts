@@ -187,7 +187,7 @@ function convertLinks(text: string) {
     }
     const {label, url} = parsed;
 
-    return `<a href="${url}"><code>${label}</code></a>`;
+    return `<a href="${url}" aria-label="${label}"><code>${label}</code></a>`;
   });
 }
 
