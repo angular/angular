@@ -10,7 +10,7 @@
         <span class="adev-template-select">
           From v.
 
-          <button [cdkMenuTriggerFor]="templatesMenuFrom">
+          <button type="button" [cdkMenuTriggerFor]="templatesMenuFrom">
             <span>{{ from.name }}</span>
             <docs-icon>expand_more</docs-icon>
           </button>
@@ -31,7 +31,7 @@
         <span>
           <span class="adev-template-select">
             To v.
-            <button [cdkMenuTriggerFor]="templatesMenuTo">
+            <button type="button" [cdkMenuTriggerFor]="templatesMenuTo">
               <span>{{ to.name }}</span>
               <docs-icon>expand_more</docs-icon>
             </button>
