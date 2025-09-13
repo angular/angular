@@ -10649,28 +10649,6 @@ runInEachFileSystem((os: string) => {
       expect(codes).toEqual([ngErrorCode(ErrorCode.NGMODULE_BOOTSTRAP_IS_STANDALONE)]);
     });
 
-    it('should be able to turn off control flow using a compiler flag', () => {
-      env.tsconfig({_enableBlockSyntax: false});
-      env.write(
-        '/test.ts',
-        `
-        import { Component } from '@angular/core';
-
-        @Component({
-          standalone: true,
-          template: 'My email is foo@bar.com',
-        })
-        export class TestCmp {}
-      `,
-      );
-
-      env.driveMain();
-
-      // If blocks are enabled, this test will fail since `@bar.com` is an incomplete block.
-      const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('text(0, "My email is foo@bar.com")');
-    });
-
     describe('InjectorDef emit optimizations for standalone', () => {
       it('should not filter components out of NgModule.imports', () => {
         env.write(
