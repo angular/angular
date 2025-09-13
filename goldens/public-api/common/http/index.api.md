@@ -2985,6 +2985,7 @@ export abstract class HttpResponseBase {
     readonly redirected?: boolean;
     readonly responseType?: ResponseType;
     readonly status: number;
+    // @deprecated
     readonly statusText: string;
     readonly type: HttpEventType.Response | HttpEventType.ResponseHeader;
     readonly url: string | null;
