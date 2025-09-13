@@ -35,7 +35,7 @@ Here are examples of how to build with Genkit and Angular:
 
 * [Agentic Apps with Genkit and Angular starter-kit](https://github.com/angular/examples/tree/main/genkit-angular-starter-kit)— New to building with AI? Start here with a basic app that features an agentic workflow. Perfect place to start for your first AI building experience.
 
-* [Use Genkit in an Angular app](https://genkit.dev/docs/angular/)— Build a basic application that uses Genkit Flows, Angular and Gemini 2.0 Flash. This step-by-step walkthrough guides you through creating a full-stack Angular application with AI features.
+* [Use Genkit in an Angular app](https://genkit.dev/docs/angular/)— Build a basic application that uses Genkit Flows, Angular and Gemini 2.5 Flash. This step-by-step walkthrough guides you through creating a full-stack Angular application with AI features.
 
 * [Dynamic Story Generator app](https://github.com/angular/examples/tree/main/genkit-angular-story-generator)— Learn to build an agentic Angular app powered by Genkit, Gemini and Imagen 3 to dynamically generate a story based on user interaction featuring beautiful image panels to accompany the events that take place. Start here if you'd like to experiment with a more advanced use-case.
 
