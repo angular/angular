@@ -13,6 +13,7 @@
   --electric-violet: oklch(53.18% 0.28 296.97); // #8514f5
   --french-violet: oklch(47.66% 0.246 305.88); // #8001c6
   --vivid-pink: oklch(69.02% 0.277 332.77); // #f637e3
+  --always-pink: oklch(69.02% 0.277 332.77); // #f637e3
   --hot-pink: oklch(59.91% 0.239 8.14); // #e90464
   --hot-red: oklch(61.42% 0.238 15.34); // #f11653
   --orange-red: oklch(63.32% 0.24 31.68); // #fa2c04
@@ -211,6 +212,7 @@
   --electric-violet: color-mix(in srgb, oklch(53.18% 0.28 296.97), var(--full-contrast) 70%);
   --french-violet: color-mix(in srgb, oklch(47.66% 0.246 305.88), var(--full-contrast) 70%);
   --vivid-pink: color-mix(in srgb, oklch(69.02% 0.277 332.77), var(--full-contrast) 70%);
+  // --always-pink we keep the same in light mode
   --hot-pink: color-mix(in srgb, oklch(59.91% 0.239 8.14), var(--full-contrast) 70%);
   --hot-red: color-mix(in srgb, oklch(61.42% 0.238 15.34), var(--full-contrast) 70%);
   --orange-red: color-mix(in srgb, oklch(63.32% 0.24 31.68), var(--full-contrast) 60%);
