@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {minError} from '../validation_errors';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be greater than or equal to
@@ -28,24 +28,25 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  *
  * @experimental 21.0.0
  */
-export function min<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<number, TPathKind>,
-  minValue: number | LogicFn<number, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<number, TPathKind>,
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
+  minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const MIN_MEMO = property(path, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
   aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const min = ctx.state.property(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }
-    if (ctx.value() < min) {
+    if (value < min) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

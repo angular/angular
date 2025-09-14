@@ -11,7 +11,7 @@ import {aggregateProperty, property, validate} from '../logic';
 import {MAX} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {maxError} from '../validation_errors';
-import {BaseValidatorConfig, getOption, isEmpty} from './util';
+import {BaseValidatorConfig, getOption} from './util';
 
 /**
  * Binds a validator to the given path that requires the value to be less than or equal to the
@@ -28,24 +28,25 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  *
  * @experimental 21.0.0
  */
-export function max<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<number, TPathKind>,
-  maxValue: number | LogicFn<number, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<number, TPathKind>,
+export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(
+  path: FieldPath<TValue, TPathKind>,
+  maxValue: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const MAX_MEMO = property(path, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
   aggregateProperty(path, MAX, ({state}) => state.property(MAX_MEMO)!());
   validate(path, (ctx) => {
-    if (isEmpty(ctx.value())) {
+    const value = ctx.value();
+    if (value === null || Number.isNaN(value)) {
       return undefined;
     }
     const max = ctx.state.property(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
-    if (ctx.value() > max) {
+    if (value > max) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
