@@ -13,7 +13,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     CREDENTIALS_NOT_SUPPORTED_WITH_XHR = 2818,
     // (undocumented)
-    HEADERS_ALTERED_BY_TRANSFER_CACHE = 2802,
+    HEADERS_ALTERED_BY_TRANSFER_CACHE = -2802,
     // (undocumented)
     HTTP_ORIGIN_MAP_CONTAINS_PATH = 2804,
     // (undocumented)
