@@ -379,7 +379,6 @@ function appendMissingHeadersDetection(
           warningProduced.add(key);
           const truncatedUrl = truncateMiddle(url);
 
-          // TODO: create Error guide for this warning
           console.warn(
             formatRuntimeError(
               RuntimeErrorCode.HEADERS_ALTERED_BY_TRANSFER_CACHE,
