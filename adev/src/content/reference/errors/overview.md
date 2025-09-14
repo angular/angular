@@ -30,6 +30,7 @@
 | `NG01203` | [Missing value accessor](errors/NG01203)                                             |
 | `NG02200` | [Missing Iterable Differ](errors/NG02200)                                            |
 | `NG02800` | [JSONP support in HttpClient configuration](errors/NG02800)                          |
+| `NG02802` | [Headers not transferred by HttpTransferCache](errors/NG02802)                      |
 | `NG05000` | [Hydration with unsupported Zone.js instance.](errors/NG05000)                       |
 | `NG05104` | [Root element was not found.](errors/NG05104)                                        |
 
