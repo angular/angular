@@ -6,7 +6,17 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HtmlParser, ParseTreeResult, TmplAstNode} from '@angular/compiler';
+import {
+  Block,
+  Element,
+  HtmlParser,
+  LetDeclaration,
+  ParseTreeResult,
+  RecursiveVisitor,
+  Text,
+  TmplAstNode,
+  visitAll,
+} from '@angular/compiler';
 
 export interface ParseResult {
   tree: ParseTreeResult | undefined;
@@ -68,4 +78,106 @@ export function parseTemplate(template: string): ParseResult {
     return {tree: undefined, errors: [{type: 'parse', error: e}]};
   }
   return {tree: parsed, errors: []};
+}
+
+function pipeMatchRegExpFor(name: string): RegExp {
+  return new RegExp(`\\|\\s*${name}`);
+}
+
+const commonModulePipes = [
+  'date',
+  'async',
+  'currency',
+  'number',
+  'i18nPlural',
+  'i18nSelect',
+  'json',
+  'keyvalue',
+  'slice',
+  'lowercase',
+  'uppercase',
+  'titlecase',
+  'percent',
+].map((name) => pipeMatchRegExpFor(name));
+
+function allFormsOf(selector: string): string[] {
+  return [selector, `*${selector}`, `[${selector}]`];
+}
+
+const commonModuleDirectives = new Set([
+  ...allFormsOf('ngComponentOutlet'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngClass'),
+  ...allFormsOf('ngPlural'),
+  ...allFormsOf('ngPluralCase'),
+  ...allFormsOf('ngStyle'),
+  ...allFormsOf('ngTemplateOutlet'),
+  ...allFormsOf('ngComponentOutlet'),
+  '[NgForOf]',
+  '[NgForTrackBy]',
+  '[ngIfElse]',
+  '[ngIfThenElse]',
+  '*ngIf',
+  '*ngSwitch',
+  '*ngFor',
+]);
+
+/**
+ * determines if the CommonModule can be safely removed from imports
+ */
+export function canRemoveCommonModule(template: string): boolean {
+  const parsed = parseTemplate(template);
+  let removeCommonModule = false;
+  if (parsed.tree !== undefined) {
+    const visitor = new CommonCollector();
+    visitAll(visitor, parsed.tree.rootNodes);
+    removeCommonModule = visitor.count === 0;
+  }
+  return removeCommonModule;
+}
+
+/** Finds all non-control flow elements from common module. */
+class CommonCollector extends RecursiveVisitor {
+  count = 0;
+
+  override visitElement(el: Element): void {
+    if (el.attrs.length > 0) {
+      for (const attr of el.attrs) {
+        if (this.hasDirectives(attr.name) || this.hasPipes(attr.value)) {
+          this.count++;
+        }
+      }
+    }
+    super.visitElement(el, null);
+  }
+
+  override visitBlock(ast: Block): void {
+    for (const blockParam of ast.parameters) {
+      if (this.hasPipes(blockParam.expression)) {
+        this.count++;
+      }
+    }
+    super.visitBlock(ast, null);
+  }
+
+  override visitText(ast: Text) {
+    if (this.hasPipes(ast.value)) {
+      this.count++;
+    }
+  }
+
+  override visitLetDeclaration(decl: LetDeclaration): void {
+    if (this.hasPipes(decl.value)) {
+      this.count++;
+    }
+    super.visitLetDeclaration(decl, null);
+  }
+
+  private hasDirectives(input: string): boolean {
+    return commonModuleDirectives.has(input);
+  }
+
+  private hasPipes(input: string): boolean {
+    return commonModulePipes.some((regexp) => regexp.test(input));
+  }
 }

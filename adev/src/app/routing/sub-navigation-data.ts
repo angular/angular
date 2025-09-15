@@ -1497,6 +1497,12 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/ngclass-to-class',
         status: 'new',
       },
+      {
+        label: 'NgStyle to Style',
+        path: 'reference/migrations/ngstyle-to-style',
+        contentPath: 'reference/migrations/ngstyle-to-style',
+        status: 'new',
+      },
     ],
   },
 ];
