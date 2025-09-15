@@ -11,7 +11,7 @@ import {customError, ValidationError, ValidationErrorWithField} from '../validat
 import {isArray} from '../../util/type_guards';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
-export type ValueWithLengthOrSize = {length: number} | {size: number};
+export type ValueWithLengthOrSize = {length: number; size?: never} | {length?: never; size: number};
 
 /** Common options available on the standard validators. */
 export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Root> =
@@ -31,8 +31,7 @@ export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Ro
 
 /** Gets the length or size of the given value. */
 export function getLengthOrSize(value: ValueWithLengthOrSize) {
-  const v = value as {length: number; size: number};
-  return typeof v.length === 'number' ? v.length : v.size;
+  return typeof value.length === 'number' ? value.length : value.size;
 }
 
 /**

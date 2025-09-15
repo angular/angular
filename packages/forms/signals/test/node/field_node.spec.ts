@@ -16,6 +16,7 @@ import {
   FieldPath,
   form,
   hidden,
+  PathKind,
   readonly,
   required,
   REQUIRED,
@@ -1177,7 +1178,7 @@ describe('FieldNode', () => {
       const opts = {injector: TestBed.inject(Injector)};
       const subFn = jasmine.createSpy('schemaFn');
       const sub: Schema<string> = schema(subFn);
-      const s = schema((p: FieldPath<{a: string; b: string}>) => {
+      const s = schema((p: FieldPath<{a: string; b: string}, PathKind, true>) => {
         apply(p.a, sub);
         apply(p.b, sub);
       });
