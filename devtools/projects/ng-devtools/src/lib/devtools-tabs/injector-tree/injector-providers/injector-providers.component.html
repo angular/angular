@@ -1,4 +1,9 @@
-<h2 class="providers-title">Providers for {{ injector().name }}</h2>
+<div class="header">
+  <h2>Providers for {{ injector().name }}</h2>
+  <button ng-button btnType="icon" class="close-btn" title="Close details" (click)="close.emit()">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
 @if (injector()) {
   <div class="filter">
     <div class="token-filter">

@@ -83,6 +83,10 @@ export class InjectorTreeComponent {
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
 
   protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
+  protected readonly injectorProvidersEnabled = signal<boolean>(false);
+  protected readonly injectorProvidersVisible = computed(
+    () => this.injectorProvidersEnabled() && this.selectedNode() && this.providers().length > 0,
+  );
 
   protected readonly providers = input.required<SerializedProviderRecord[]>();
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
@@ -155,6 +159,7 @@ export class InjectorTreeComponent {
 
   selectInjectorByNode(node: InjectorTreeD3Node): void {
     this.selectedNode.set(node);
+    this.injectorProvidersEnabled.set(true);
     this.highlightPathFromSelectedInjector();
 
     const selectedNode = this.selectedNode();
