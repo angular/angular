@@ -11,7 +11,7 @@ import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
 import {property, validateTree} from '../logic';
-import {Field, FieldPath} from '../types';
+import {Field, RulesFieldPath} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
 /**
@@ -55,7 +55,7 @@ export type IgnoreUnknownProperties<T> =
  * @experimental 21.0.0
  */
 export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProperties<TSchema>>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   schema: StandardSchemaV1<TSchema>,
 ) {
   // We create both a sync and async validator because the standard schema validator can return
