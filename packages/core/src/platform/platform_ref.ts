@@ -14,7 +14,7 @@ import {
 } from '../change_detection/scheduling/ng_zone_scheduling';
 import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
-import {Injectable, Injector} from '../di';
+import {Injectable, Injector, StaticProvider} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -39,6 +39,7 @@ export class PlatformRef {
   private _modules: NgModuleRef<any>[] = [];
   private _destroyListeners: Array<() => void> = [];
   private _destroyed: boolean = false;
+  private _additionalApplicationProviders?: StaticProvider[];
 
   /** @internal */
   constructor(private _injector: Injector) {}
@@ -67,6 +68,7 @@ export class PlatformRef {
         ngZoneFactory,
       }),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
+      ...(this._additionalApplicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
     ];
     const moduleRef = createNgModuleRefWithProviders(

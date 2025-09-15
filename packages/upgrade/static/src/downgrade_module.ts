@@ -13,6 +13,7 @@ import {
   PlatformRef,
   StaticProvider,
   Type,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
 } from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
@@ -382,12 +383,18 @@ export function downgradeModule<T>(
   let bootstrapFn: (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>;
   if (ɵutil.isNgModuleType(moduleOrBootstrapFn)) {
     // NgModule class
-    bootstrapFn = (extraProviders: StaticProvider[]) =>
-      platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
+    bootstrapFn = (extraProviders: StaticProvider[]) => {
+      const platform = platformBrowser(extraProviders);
+      (platform as any)._additionalApplicationProviders = internalProvideZoneChangeDetection({});
+      return platform.bootstrapModule(moduleOrBootstrapFn);
+    };
   } else if (!ɵutil.isFunction(moduleOrBootstrapFn)) {
     // NgModule factory
-    bootstrapFn = (extraProviders: StaticProvider[]) =>
-      platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
+    bootstrapFn = (extraProviders: StaticProvider[]) => {
+      const platform = platformBrowser(extraProviders);
+      (platform as any)._additionalApplicationProviders = internalProvideZoneChangeDetection({});
+      return platform.bootstrapModuleFactory(moduleOrBootstrapFn);
+    };
   } else {
     // bootstrap function
     bootstrapFn = moduleOrBootstrapFn;
