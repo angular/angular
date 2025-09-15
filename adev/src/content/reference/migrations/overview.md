@@ -33,4 +33,7 @@ Learn about how you can migrate your existing angular project to the latest feat
   <docs-card title="NgClass to Class Bindings" link="Migrate now" href="reference/migrations/ngclass-to-class">
       Convert component templates to prefer class bindings over the `NgClass` directives when possible.
   </docs-card>
+  <docs-card title="NgStyle to Style Bindings" link="Migrate now" href="reference/migrations/ngstyle-to-style">
+      Convert component templates to prefer style bindings over the `NgStyle` directives when possible.
+  </docs-card>
 </docs-card-container>

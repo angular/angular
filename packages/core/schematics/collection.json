@@ -63,6 +63,12 @@
       "factory": "./bundles/ngclass-to-class-migration.cjs#migrate",
       "schema": "./migrations/ngclass-to-class-migration/schema.json",
       "aliases": ["ngclass-to-class"]
+    },
+    "ngstyle-to-style-migration": {
+      "description": "Updates usages of `ngStyle` directives to the `style` bindings where possible",
+      "factory": "./bundles/ngstyle-to-style-migration.cjs#migrate",
+      "schema": "./migrations/ngstyle-to-style-migration/schema.json",
+      "aliases": ["ngstyle-to-style"]
     }
   }
 }
