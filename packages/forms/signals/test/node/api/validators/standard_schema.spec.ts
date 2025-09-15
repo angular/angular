@@ -9,7 +9,8 @@
 import {ApplicationRef, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import * as z from 'zod';
-import {form, schema, validateStandardSchema} from '../../../../public_api';
+import {form, schema} from '../../../../public_api';
+import {validateStandardSchema} from '../../../../src/api/standard_schema/standard_schema';
 
 interface Flight {
   id: number;

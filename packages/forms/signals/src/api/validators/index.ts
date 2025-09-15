@@ -13,4 +13,3 @@ export * from './min';
 export * from './min_length';
 export * from './pattern';
 export * from './required';
-export * from './standard_schema';
