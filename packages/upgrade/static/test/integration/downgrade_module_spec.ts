@@ -28,7 +28,6 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  provideZoneChangeDetection,
   StaticProvider,
   Type,
   ViewRef,
@@ -488,7 +487,6 @@ withEachNg1Version(() => {
             {provide: 'FOO', useValue: 'Mod-foo'},
             {provide: 'BAR', useValue: 'Mod-bar'},
             {provide: 'BAZ', useValue: 'Mod-baz'},
-            provideZoneChangeDetection(),
           ],
         })
         class Ng2Module {
@@ -686,7 +684,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2AComponent, Ng2BComponent],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -756,7 +753,6 @@ withEachNg1Version(() => {
               useFactory: (i: angular.IInjectorService) => i.get('ng1Value'),
               deps: ['$injector'],
             },
-            provideZoneChangeDetection(),
           ],
         })
         class Ng2Module {
@@ -807,7 +803,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -847,7 +842,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -892,7 +886,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -967,7 +960,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [TestComponent, WrapperComponent],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1018,7 +1010,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1073,7 +1064,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [TestComponent, WrapperComponent],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1167,7 +1157,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1310,7 +1299,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1362,7 +1350,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
@@ -1432,7 +1419,6 @@ withEachNg1Version(() => {
 
         @NgModule({
           declarations: [Ng2Component],
-          providers: [provideZoneChangeDetection()],
           imports: [BrowserModule],
         })
         class Ng2Module {
@@ -1493,7 +1479,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           constructor(injector: Injector) {
@@ -1528,7 +1513,6 @@ withEachNg1Version(() => {
         @NgModule({
           declarations: [Ng2Component],
           imports: [BrowserModule],
-          providers: [provideZoneChangeDetection()],
         })
         class Ng2Module {
           ngDoBootstrap() {}
