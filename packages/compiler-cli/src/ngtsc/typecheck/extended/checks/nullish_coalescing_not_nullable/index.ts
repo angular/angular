@@ -21,7 +21,6 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * otherwise it would produce inaccurate results.
  */
 class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.NULLISH_COALESCING_NOT_NULLABLE> {
-  override readonly canVisitStructuralAttributes = false;
   override code = ErrorCode.NULLISH_COALESCING_NOT_NULLABLE as const;
 
   override visitNode(
