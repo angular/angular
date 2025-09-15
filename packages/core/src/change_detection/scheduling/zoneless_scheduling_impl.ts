@@ -28,7 +28,6 @@ import {
   PROVIDED_ZONELESS,
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
-  ZONELESS_SCHEDULER_DISABLED,
 } from './zoneless_scheduling';
 import {TracingService} from '../../application/tracing';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
@@ -64,8 +63,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly tracing = inject(TracingService, {optional: true});
-  private readonly disableScheduling =
-    inject(ZONELESS_SCHEDULER_DISABLED, {optional: true}) ?? false;
+  private readonly disableScheduling: boolean;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
@@ -106,7 +104,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
 
     // TODO(atscott): These conditions will need to change when zoneless is the default
     // Instead, they should flip to checking if ZoneJS scheduling is provided
-    this.disableScheduling ||=
+    this.disableScheduling =
       !this.zonelessEnabled &&
       // NoopNgZone without enabling zoneless means no scheduling whatsoever
       (this.ngZone instanceof NoopNgZone ||

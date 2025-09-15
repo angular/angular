@@ -67,6 +67,8 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
+      "_DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "APP_BOOTSTRAP_LISTENER",
@@ -252,7 +254,6 @@
       "ViewEncapsulation",
       "ViewRef",
       "ZONELESS_ENABLED",
-      "ZONELESS_SCHEDULER_DISABLED",
       "ZoneAwareEffectScheduler",
       "ZoneStablePendingTask",
       "\\u0275\\u0275advance",
@@ -796,9 +797,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent",
-      "_DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }

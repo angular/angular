@@ -273,7 +273,6 @@
       "XSS_SECURITY_URL",
       "XhrFactory",
       "ZONELESS_ENABLED",
-      "ZONELESS_SCHEDULER_DISABLED",
       "ZoneAwareEffectScheduler",
       "ZoneStablePendingTask",
       "\\u0275InternalFormsSharedModule",
