@@ -67,6 +67,8 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
+      "_DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "APP_BOOTSTRAP_LISTENER",
@@ -802,9 +804,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent",
-      "_DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }

@@ -383,12 +383,12 @@ export function downgradeModule<T>(
   let bootstrapFn: (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>;
   if (ɵutil.isNgModuleType(moduleOrBootstrapFn)) {
     // NgModule class
-    bootstrapFn = (extraProviders: StaticProvider[]) => 
-       platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
+    bootstrapFn = (extraProviders: StaticProvider[]) =>
+      platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
   } else if (!ɵutil.isFunction(moduleOrBootstrapFn)) {
     // NgModule factory
-    bootstrapFn = (extraProviders: StaticProvider[]) => 
-       platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
+    bootstrapFn = (extraProviders: StaticProvider[]) =>
+      platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
   } else {
     // bootstrap function
     bootstrapFn = moduleOrBootstrapFn;
@@ -397,7 +397,7 @@ export function downgradeModule<T>(
   const wrappedBootstrapFn = (extraProviders: StaticProvider[]) => {
     ɵsetZoneProvidersForNextBootstrap();
     return bootstrapFn(extraProviders);
-  }
+  };
 
   let injector: Injector;
 
