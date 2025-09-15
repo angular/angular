@@ -477,6 +477,21 @@ export interface CreateEffectOptions {
 export function createEnvironmentInjector(providers: Array<Provider | EnvironmentProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
+export interface CreateLinkedSignalOptions<D> {
+    debugName?: string;
+    equal?: ValueEqualityFn<NoInfer<D>>;
+}
+
+// @public (undocumented)
+export interface CreateLinkedSignalWithSourceOptions<S, D> extends CreateLinkedSignalOptions<D> {
+    computation: (source: NoInfer<S>, previous?: {
+        source: NoInfer<S>;
+        value: NoInfer<D>;
+    }) => D;
+    source: () => S;
+}
+
+// @public
 export function createNgModule<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
 
 // @public @deprecated
