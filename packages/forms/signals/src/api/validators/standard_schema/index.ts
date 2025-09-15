@@ -6,10 +6,4 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export * from './email';
-export * from './max';
-export * from './max_length';
-export * from './min';
-export * from './min_length';
-export * from './pattern';
-export * from './required';
+export * from './standard_schema';
