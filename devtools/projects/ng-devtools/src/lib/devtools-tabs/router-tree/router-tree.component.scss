@@ -23,6 +23,8 @@
   }
 
   .visualization {
+    position: relative;
+    overflow: hidden;
     flex: 1;
 
     .side-pane {
