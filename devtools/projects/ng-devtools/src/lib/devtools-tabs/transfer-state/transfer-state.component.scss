@@ -13,7 +13,7 @@
     flex-shrink: 0;
 
     h2 {
-      @extend %heading-600;
+      @extend %heading-500;
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -21,9 +21,9 @@
       padding: 0;
 
       mat-icon {
-        font-size: 1.25rem;
-        width: 1.25rem;
-        height: 1.25rem;
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
       }
     }
   }
@@ -103,15 +103,17 @@
           display: flex;
           flex-direction: column;
           align-items: center;
+          gap: 0.25rem;
 
           .stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
+            @extend %heading-500;
+            padding: 0;
+            margin: 0;
             color: var(--dynamic-blue-02);
           }
 
           .stat-label {
-            @extend %body-01;
+            @extend %caption-text;
             color: var(--secondary-contrast);
             text-transform: uppercase;
             letter-spacing: 0.03rem;
@@ -131,7 +133,7 @@
         width: 100%;
         background: var(--color-background);
 
-        th.mat-header-cell {
+        th {
           background: var(--color-foreground);
           font-weight: 600;
           @extend %body-01;
@@ -139,22 +141,27 @@
           letter-spacing: 0.03rem;
           padding: 0.75rem 1rem;
           border-bottom: 2px solid var(--color-separator);
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
         }
 
         .info-icon {
-          font-size: 1rem;
-          height: 1rem;
-          width: 1rem;
+          font-size: 16px;
+          height: 16px;
+          width: 16px;
           color: var(--secondary-contrast);
-          flex-shrink: 0;
+          display: inline-block;
+          vertical-align: bottom;
         }
 
-        td {
-          padding: 0.75rem 1rem;
-          border-bottom: 1px solid var(--quinary-contrast);
+        tr {
+          td {
+            padding: 0.75rem 1rem;
+          }
+
+          &:not(:last-of-type) {
+            td {
+              border-bottom: 1px solid var(--color-separator);
+            }
+          }
         }
 
         .key-cell {
@@ -183,7 +190,7 @@
               flex: 1;
               margin: 0;
               background: var(--color-foreground);
-              border: 0.5rem solid var(--color-foreground);
+              border: 1px solid var(--color-foreground);
               border-radius: 0.1875rem;
               overflow-x: auto;
               white-space: pre-wrap;
@@ -192,6 +199,7 @@
               display: -webkit-box;
               -webkit-line-clamp: 5;
               -webkit-box-orient: vertical;
+              padding: 0.25rem;
 
               &.is-expanded {
                 -webkit-line-clamp: unset;
@@ -273,10 +281,6 @@
             background: white;
             border-color: var(--quaternary-contrast);
           }
-        }
-
-        tr:hover {
-          background: var(--quinary-contrast);
         }
       }
     }
