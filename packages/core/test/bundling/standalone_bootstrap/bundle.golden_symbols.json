@@ -193,7 +193,6 @@
       "ViewRef",
       "XhrFactory",
       "ZONELESS_ENABLED",
-      "ZONELESS_SCHEDULER_DISABLED",
       "ZoneAwareEffectScheduler",
       "ZoneStablePendingTask",
       "\\u0275\\u0275defineComponent",

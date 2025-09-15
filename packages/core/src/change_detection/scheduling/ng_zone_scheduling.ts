@@ -28,7 +28,6 @@ import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
-  ZONELESS_SCHEDULER_DISABLED,
   ZONELESS_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
