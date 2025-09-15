@@ -10,12 +10,12 @@ import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
 import {AggregateProperty, createProperty, Property} from './property';
-import type {
+import {
   FieldContext,
-  FieldPath,
   FieldValidator,
   LogicFn,
   PathKind,
+  RulesFieldPath,
   TreeValidator,
 } from './types';
 
@@ -32,7 +32,7 @@ import type {
  * @experimental 21.0.0
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   logic?: string | NoInfer<LogicFn<TValue, boolean | string, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
@@ -64,7 +64,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @experimental 21.0.0
  */
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   logic: NoInfer<LogicFn<TValue, boolean, TPathKind>> = () => true,
 ) {
   assertPathIsCurrent(path);
@@ -93,7 +93,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @experimental 21.0.0
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   logic: NoInfer<LogicFn<TValue, boolean, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
@@ -113,7 +113,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @experimental 21.0.0
  */
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   logic: NoInfer<FieldValidator<TValue, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
@@ -124,7 +124,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   );
 }
 
-/**
+/*
  * Adds logic to a field to determine if the field or any of its child fields has validation errors.
  *
  * @param path The target path to add the validation logic to.
@@ -136,7 +136,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @experimental 21.0.0
  */
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   logic: NoInfer<TreeValidator<TValue, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
@@ -160,7 +160,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  * @experimental 21.0.0
  */
 export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   prop: AggregateProperty<any, TPropItem>,
   logic: NoInfer<LogicFn<TValue, TPropItem, TPathKind>>,
 ): void {
@@ -181,7 +181,7 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
  * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
 ): Property<TData>;
 
@@ -197,13 +197,13 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
  * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   prop: Property<TData>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
 ): Property<TData>;
 
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   ...rest:
     | [(ctx: FieldContext<TValue, TPathKind>) => TData]
     | [Property<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]

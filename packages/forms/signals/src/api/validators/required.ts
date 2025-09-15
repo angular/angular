@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateProperty, property, validate} from '../logic';
 import {REQUIRED} from '../property';
-import {FieldPath, LogicFn, PathKind} from '../types';
+import {LogicFn, PathKind, RulesFieldPath} from '../types';
 import {requiredError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -30,7 +30,7 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @experimental 21.0.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: RulesFieldPath<TValue, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind> & {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
@@ -38,6 +38,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   const REQUIRED_MEMO = property(path, (ctx) =>
     computed(() => (config?.when ? config.when(ctx) : true)),
   );
+
   aggregateProperty(path, REQUIRED, ({state}) => state.property(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
     if (ctx.state.property(REQUIRED_MEMO)!() && isEmpty(ctx.value())) {
