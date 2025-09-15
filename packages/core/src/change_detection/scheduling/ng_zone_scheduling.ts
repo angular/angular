@@ -93,6 +93,7 @@ export function internalProvideZoneChangeDetection({
   ngZoneFactory ??= () =>
     new NgZone({...getNgZoneOptions(), scheduleInRootZone} as InternalNgZoneOptions);
   return [
+    {provide: ZONELESS_ENABLED, useValue: false},
     {provide: NgZone, useFactory: ngZoneFactory},
     {
       provide: ENVIRONMENT_INITIALIZER,
@@ -164,11 +165,7 @@ export function provideZoneChangeDetection(options?: NgZoneOptions): Environment
     },
     scheduleInRootZone,
   });
-  return makeEnvironmentProviders([
-    {provide: PROVIDED_NG_ZONE, useValue: true},
-    {provide: ZONELESS_ENABLED, useValue: false},
-    zoneProviders,
-  ]);
+  return makeEnvironmentProviders([{provide: PROVIDED_NG_ZONE, useValue: true}, zoneProviders]);
 }
 
 /**

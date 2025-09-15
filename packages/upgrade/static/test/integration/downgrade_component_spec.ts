@@ -22,7 +22,6 @@ import {
   OnChanges,
   OnDestroy,
   Output,
-  provideZoneChangeDetection,
   SimpleChanges,
 } from '@angular/core';
 import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
