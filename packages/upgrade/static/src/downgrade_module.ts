@@ -13,7 +13,7 @@ import {
   PlatformRef,
   StaticProvider,
   Type,
-  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
+  ɵsetZoneProvidersForNextBootstrap,
 } from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
@@ -383,21 +383,20 @@ export function downgradeModule<T>(
   let bootstrapFn: (extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>;
   if (ɵutil.isNgModuleType(moduleOrBootstrapFn)) {
     // NgModule class
-    bootstrapFn = (extraProviders: StaticProvider[]) => {
-      const platform = platformBrowser(extraProviders);
-      (platform as any)._additionalApplicationProviders = internalProvideZoneChangeDetection({});
-      return platform.bootstrapModule(moduleOrBootstrapFn);
-    };
+    bootstrapFn = (extraProviders: StaticProvider[]) => 
+       platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
   } else if (!ɵutil.isFunction(moduleOrBootstrapFn)) {
     // NgModule factory
-    bootstrapFn = (extraProviders: StaticProvider[]) => {
-      const platform = platformBrowser(extraProviders);
-      (platform as any)._additionalApplicationProviders = internalProvideZoneChangeDetection({});
-      return platform.bootstrapModuleFactory(moduleOrBootstrapFn);
-    };
+    bootstrapFn = (extraProviders: StaticProvider[]) => 
+       platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
   } else {
     // bootstrap function
     bootstrapFn = moduleOrBootstrapFn;
+  }
+
+  const wrappedBootstrapFn = (extraProviders: StaticProvider[]) => {
+    ɵsetZoneProvidersForNextBootstrap();
+    return bootstrapFn(extraProviders);
   }
 
   let injector: Injector;
@@ -422,7 +421,7 @@ export function downgradeModule<T>(
       ($injector: ɵangular1.IInjectorService) => {
         setTempInjectorRef($injector);
         const result: ɵutil.LazyModuleRef = {
-          promise: bootstrapFn(angular1Providers).then((ref) => {
+          promise: wrappedBootstrapFn(angular1Providers).then((ref) => {
             injector = result.injector = new NgAdapterInjector(ref.injector);
             injector.get(ɵconstants.$INJECTOR);
 

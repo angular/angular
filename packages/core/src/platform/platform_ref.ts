@@ -21,9 +21,13 @@ import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
 import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
-import {getNgZone} from '../zone/ng_zone';
 import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
+
+let _additionalApplicationProviders: StaticProvider[]|undefined = undefined;
+export function setZoneProvidersForNextBootstrap(): void {
+  _additionalApplicationProviders = internalProvideZoneChangeDetection({});
+}
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -68,9 +72,10 @@ export class PlatformRef {
         ngZoneFactory,
       }),
       {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-      ...(this._additionalApplicationProviders ?? []),
+      ...(_additionalApplicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
     ];
+    _additionalApplicationProviders = undefined;
     const moduleRef = createNgModuleRefWithProviders(
       moduleFactory.moduleType,
       this.injector,

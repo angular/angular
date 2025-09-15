@@ -463,7 +463,6 @@ withEachNg1Version(() => {
       @NgModule({
         imports: [BrowserModule, UpgradeModule],
         declarations: [Ng2Component],
-        providers: [provideZoneChangeDetection()],
       })
       class Ng2Module {
         ngDoBootstrap() {}
