@@ -23,7 +23,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular-devkit/core':
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(chokidar@4.0.3)
@@ -38,7 +38,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(rxjs@7.8.2)
@@ -458,8 +458,8 @@ importers:
         specifier: 9.1.7
         version: 9.1.7
       jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        specifier: ^27.0.0
+        version: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
       karma-coverage:
         specifier: ^2.2.1
         version: 2.2.1
@@ -525,13 +525,13 @@ importers:
         version: 5.37.0
       '@angular-devkit/build-angular':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(utf-8-validate@6.0.5)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(utf-8-validate@6.0.5)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
       '@angular/build':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-next.3
         version: 21.0.0-next.3(rxjs@7.8.2)
@@ -680,8 +680,8 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
       jsdom:
-        specifier: 26.1.0
-        version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        specifier: 27.0.0
+        version: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
       karma-chrome-launcher:
         specifier: 3.2.0
         version: 3.2.0
@@ -786,8 +786,8 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2
       jsdom:
-        specifier: ~26.1.0
-        version: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+        specifier: ~27.0.0
+        version: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
       marked:
         specifier: ~16.3.0
         version: 16.3.0
@@ -829,7 +829,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -1000,7 +1000,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+        version: 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1254,7 +1254,7 @@ importers:
         version: 2.8.1
       vitest:
         specifier: ^3.1.3
-        version: 3.2.4(@types/node@24.3.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/node@24.3.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/zone.js/test/typings:
     dependencies:
@@ -1499,6 +1499,15 @@ packages:
 
   '@asamuzakjp/css-color@3.2.0':
     resolution: {integrity: sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw==}
+
+  '@asamuzakjp/css-color@4.0.4':
+    resolution: {integrity: sha512-cKjSKvWGmAziQWbCouOsFwb14mp1betm8Y7Fn+yglDMUUu3r9DCbJ9iJbeFDenLMqFbIMC0pQP8K+B8LAxX3OQ==}
+
+  '@asamuzakjp/dom-selector@6.5.4':
+    resolution: {integrity: sha512-RNSNk1dnB8lAn+xdjlRoM4CzdVrHlmXZtSXAWs2jyl4PiBRWqTZr9ML5M710qgd9RPTBsVG6P0SLy7dwy0Foig==}
+
+  '@asamuzakjp/nwsapi@2.3.9':
+    resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
 
   '@babel/cli@7.28.3':
     resolution: {integrity: sha512-n1RU5vuCX0CsaqaXm9I0KUCNKNQMy5epmzl/xdSSm70bSqhg9GWhgeosypyQLc0bK24+Xpk1WGzZlI9pJtkZdg==}
@@ -2243,6 +2252,12 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       '@csstools/css-tokenizer': ^3.0.4
+
+  '@csstools/css-syntax-patches-for-csstree@1.0.14':
+    resolution: {integrity: sha512-zSlIxa20WvMojjpCSy8WrNpcZ61RqfTfX3XTaOeVlGJrt/8HF3YbzgFZa01yTbT4GWQLwfTcC3EB8i3XnB647Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      postcss: ^8.4
 
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
@@ -5194,6 +5209,9 @@ packages:
   before-after-hook@4.0.0:
     resolution: {integrity: sha512-q6tR3RPqIB1pMiTRMFcZwuG5T8vwp+vUvEG0vuI6B+Rikh5BfPp2fQ82c925FOs+b0lcFQ8CFrL+KbilfZFhOQ==}
 
+  bidi-js@1.0.3:
+    resolution: {integrity: sha512-RKshQI1R3YQ+n9YJz2QQ147P66ELpa1FQEg20Dk8oW9t2KgLbpDLLp9aGZ7y8WHSshDknG0bknqGw5/tyCs5tw==}
+
   big.js@5.2.2:
     resolution: {integrity: sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==}
 
@@ -5919,6 +5937,10 @@ packages:
   css-shorthand-properties@1.1.2:
     resolution: {integrity: sha512-C2AugXIpRGQTxaCW0N7n5jD/p5irUmCrwl03TrnMFBHDbdq44CFWR2zO7rK9xPN4Eo3pUxC4vQzQgbIpzrD1PQ==}
 
+  css-tree@3.1.0:
+    resolution: {integrity: sha512-0eW44TGN5SQXU1mWSkKwFstI/22X2bG1nYzZTYMAWjylYURhse752YgbE4Cx46AC+bAvI+/dYTPRk1LqSUnu6w==}
+    engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
+
   css-value@0.0.1:
     resolution: {integrity: sha512-FUV3xaJ63buRLgHrLQVlVgQnQdR4yqdLGaDu7g8CQcWjInDfM9plBTPI9FRfpahju1UBSaMckeb2/46ApS/V1Q==}
 
@@ -5934,6 +5956,10 @@ packages:
   cssstyle@4.6.0:
     resolution: {integrity: sha512-2z+rWdzbbSZv6/rhtvzvqeZQHrBaqgogqt85sqFNbabZOuFbCVFb8kPeEtZjiKkbrm395irpNKiYeFeLiQnFPg==}
     engines: {node: '>=18'}
+
+  cssstyle@5.3.0:
+    resolution: {integrity: sha512-RveJPnk3m7aarYQ2bJ6iw+Urh55S6FzUiqtBq+TihnTDP4cI8y/TYDqGOyqgnG1J1a6BxJXZsV9JFSTulm9Z7g==}
+    engines: {node: '>=20'}
 
   csv-parse@5.6.0:
     resolution: {integrity: sha512-l3nz3euub2QMg5ouu5U09Ew9Wf6/wQ8I++ch1loQ0ljmzhmfZYrH9fflS22i/PQEvsPvxCwxgz5q7UB8K1JO4Q==}
@@ -6117,6 +6143,10 @@ packages:
   data-urls@5.0.0:
     resolution: {integrity: sha512-ZYP5VBHshaDAiVZxjbRVcFJpc+4xGgT0bK3vzy1HLN8jTO975HEbuYzZJcHoQEY5K1a0z8YayJkyVETa08eNTg==}
     engines: {node: '>=18'}
+
+  data-urls@6.0.0:
+    resolution: {integrity: sha512-BnBS08aLUM+DKamupXs3w2tJJoqU+AkaE/+6vQxi/G/DPmIZFJJp9Dkb1kM03AZx8ADehDUZgsNxju3mPXZYIA==}
+    engines: {node: '>=20'}
 
   data-view-buffer@1.0.2:
     resolution: {integrity: sha512-EmKO5V3OLXh1rtK2wgXRansaK1/mtVdTUEiEI0W8RkvgT05kfxaH29PliLnpLP73yYO6142Q72QNa8Wx/A5CqQ==}
@@ -8168,6 +8198,15 @@ packages:
       canvas:
         optional: true
 
+  jsdom@27.0.0:
+    resolution: {integrity: sha512-lIHeR1qlIRrIN5VMccd8tI2Sgw6ieYXSVktcSHaNe3Z5nE/tcPQYQWOq00wxMvYOsz+73eAkNenVvmPC6bba9A==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      canvas: ^3.0.0
+    peerDependenciesMeta:
+      canvas:
+        optional: true
+
   jsesc@3.0.2:
     resolution: {integrity: sha512-xKqzzWXDttJuOcawBt4KnKHHIf5oQ/Cxax+0PWFG+DFDgHNAdi+TXECADI+RYiFUMmx8792xsMbbgXj4CwnP4g==}
     engines: {node: '>=6'}
@@ -8663,6 +8702,9 @@ packages:
 
   mdast-util-to-hast@13.2.0:
     resolution: {integrity: sha512-QGYKEuUsYT9ykKBCMOEDLsU5JRObWQusAolFMeko/tYPufNkRffBAQjIE+99jbA87xv6FgmjLtwjh9wBWajwAA==}
+
+  mdn-data@2.12.2:
+    resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
 
   media-typer@0.3.0:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
@@ -10883,8 +10925,15 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
+  tldts-core@7.0.14:
+    resolution: {integrity: sha512-viZGNK6+NdluOJWwTO9olaugx0bkKhscIdriQQ+lNNhwitIKvb+SvhbYgnCz6j9p7dX3cJntt4agQAKMXLjJ5g==}
+
   tldts@6.1.86:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}
+    hasBin: true
+
+  tldts@7.0.14:
+    resolution: {integrity: sha512-lMNHE4aSI3LlkMUMicTmAG3tkkitjOQGDTFboPJwAg2kJXKP1ryWEyqujktg5qhrFZOkk5YFzgkxg3jErE+i5w==}
     hasBin: true
 
   tmp@0.0.30:
@@ -10931,6 +10980,10 @@ packages:
 
   tough-cookie@5.1.2:
     resolution: {integrity: sha512-FVDYdxtnj0G6Qm/DhNPSb8Ju59ULcup3tuJxkFb5K8Bv2pUXILbf0xZWU8PX8Ov19OXljbUyveOFwRMwkXzO+A==}
+    engines: {node: '>=16'}
+
+  tough-cookie@6.0.0:
+    resolution: {integrity: sha512-kXuRi1mtaKMrsLUxz3sQYvVl37B0Ns6MzfrtV5DvJceE9bPyspOqk9xxv7XbZWcfLWbFmm997vl83qUWVJA64w==}
     engines: {node: '>=16'}
 
   toxic@1.0.1:
@@ -11556,6 +11609,10 @@ packages:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
 
+  webidl-conversions@8.0.0:
+    resolution: {integrity: sha512-n4W4YFyz5JzOfQeA8oN7dUYpR+MBP3PIUsn2jLjWXwK5ASUzt0Jc/A5sAUZoCYFJRGF0FBKJ+1JjN43rNdsQzA==}
+    engines: {node: '>=20'}
+
   webpack-dev-middleware@7.4.3:
     resolution: {integrity: sha512-5kA/PzpZzDz5mNOkcNLmU1UdjGeSSxd7rt1akWpI70jMNHLASiBPRaQZn0hgyhvhawfIwSnnLfDABIxL3ueyFg==}
     engines: {node: '>= 18.12.0'}
@@ -11639,6 +11696,10 @@ packages:
   whatwg-url@14.2.0:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
+
+  whatwg-url@15.0.0:
+    resolution: {integrity: sha512-+0q+Pc6oUhtbbeUfuZd4heMNOLDJDdagYxv756mCf9vnLF+NTj4zvv5UyYNkHJpc3CJIesMVoEIOdhi7L9RObA==}
+    engines: {node: '>=20'}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -12044,13 +12105,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
+  '@angular-devkit/build-angular@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.3(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-next.3(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.3(esbuild@0.25.9)))(webpack@5.101.3(esbuild@0.25.9))
       '@angular-devkit/core': 21.0.0-next.3(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+      '@angular/build': 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -12135,13 +12196,13 @@ snapshots:
       - webpack-cli
       - yaml
 
-  '@angular-devkit/build-angular@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(utf-8-validate@6.0.5)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
+  '@angular-devkit/build-angular@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(bufferutil@4.0.9)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(protractor@7.0.0)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(tsx@4.20.5)(typescript@5.9.2)(utf-8-validate@6.0.5)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.3(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-next.3(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(webpack@5.101.3(esbuild@0.25.9)))(webpack@5.101.3(esbuild@0.25.9))
       '@angular-devkit/core': 21.0.0-next.3(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
+      '@angular/build': 21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@angular/core': link:packages/core
       '@angular/localize': link:packages/localize
@@ -12263,7 +12324,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@20.19.13)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.3(chokidar@4.0.3)
@@ -12307,7 +12368,7 @@ snapshots:
       lmdb: 3.4.2
       postcss: 8.5.6
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@20.19.13)(typescript@5.9.2))
-      vitest: 3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+      vitest: 3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -12321,7 +12382,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
+  '@angular/build@21.0.0-next.3(@angular/ssr@21.0.0-next.3)(@types/node@24.4.0)(chokidar@4.0.3)(jiti@2.5.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(postcss@8.5.6)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2)))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.5)(typescript@5.9.2)(vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1))(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.3(chokidar@4.0.3)
@@ -12365,7 +12426,7 @@ snapshots:
       lmdb: 3.4.2
       postcss: 8.5.6
       tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@24.4.0)(typescript@5.9.2))
-      vitest: 3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+      vitest: 3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
     transitivePeerDependencies:
       - '@types/node'
       - chokidar
@@ -12550,6 +12611,23 @@ snapshots:
       '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
       '@csstools/css-tokenizer': 3.0.4
       lru-cache: 10.4.3
+
+  '@asamuzakjp/css-color@4.0.4':
+    dependencies:
+      '@csstools/css-calc': 2.1.4(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
+      '@csstools/css-color-parser': 3.1.0(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
+      '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
+      '@csstools/css-tokenizer': 3.0.4
+      lru-cache: 11.2.1
+
+  '@asamuzakjp/dom-selector@6.5.4':
+    dependencies:
+      '@asamuzakjp/nwsapi': 2.3.9
+      bidi-js: 1.0.3
+      css-tree: 3.1.0
+      is-potential-custom-element-name: 1.0.1
+
+  '@asamuzakjp/nwsapi@2.3.9': {}
 
   '@babel/cli@7.28.3(@babel/core@7.28.4)':
     dependencies:
@@ -13522,6 +13600,10 @@ snapshots:
   '@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4)':
     dependencies:
       '@csstools/css-tokenizer': 3.0.4
+
+  '@csstools/css-syntax-patches-for-csstree@1.0.14(postcss@8.5.6)':
+    dependencies:
+      postcss: 8.5.6
 
   '@csstools/css-tokenizer@3.0.4': {}
 
@@ -17065,6 +17147,10 @@ snapshots:
 
   before-after-hook@4.0.0: {}
 
+  bidi-js@1.0.3:
+    dependencies:
+      require-from-string: 2.0.2
+
   big.js@5.2.2: {}
 
   big.js@7.0.1: {}
@@ -17920,6 +18006,11 @@ snapshots:
 
   css-shorthand-properties@1.1.2: {}
 
+  css-tree@3.1.0:
+    dependencies:
+      mdn-data: 2.12.2
+      source-map-js: 1.2.1
+
   css-value@0.0.1: {}
 
   css-what@7.0.0: {}
@@ -17930,6 +18021,14 @@ snapshots:
     dependencies:
       '@asamuzakjp/css-color': 3.2.0
       rrweb-cssom: 0.8.0
+
+  cssstyle@5.3.0(postcss@8.5.6):
+    dependencies:
+      '@asamuzakjp/css-color': 4.0.4
+      '@csstools/css-syntax-patches-for-csstree': 1.0.14(postcss@8.5.6)
+      css-tree: 3.1.0
+    transitivePeerDependencies:
+      - postcss
 
   csv-parse@5.6.0: {}
 
@@ -18178,6 +18277,11 @@ snapshots:
     dependencies:
       whatwg-mimetype: 4.0.0
       whatwg-url: 14.2.0
+
+  data-urls@6.0.0:
+    dependencies:
+      whatwg-mimetype: 4.0.0
+      whatwg-url: 15.0.0
 
   data-view-buffer@1.0.2:
     dependencies:
@@ -20829,6 +20933,34 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5):
+    dependencies:
+      '@asamuzakjp/dom-selector': 6.5.4
+      cssstyle: 5.3.0(postcss@8.5.6)
+      data-urls: 6.0.0
+      decimal.js: 10.6.0
+      html-encoding-sniffer: 4.0.0
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      is-potential-custom-element-name: 1.0.1
+      parse5: 7.3.0
+      rrweb-cssom: 0.8.0
+      saxes: 6.0.0
+      symbol-tree: 3.2.4
+      tough-cookie: 6.0.0
+      w3c-xmlserializer: 5.0.0
+      webidl-conversions: 8.0.0
+      whatwg-encoding: 3.1.1
+      whatwg-mimetype: 4.0.0
+      whatwg-url: 15.0.0
+      ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      xml-name-validator: 5.0.0
+    transitivePeerDependencies:
+      - bufferutil
+      - postcss
+      - supports-color
+      - utf-8-validate
+
   jsesc@3.0.2: {}
 
   jsesc@3.1.0: {}
@@ -21424,6 +21556,8 @@ snapshots:
       unist-util-position: 5.0.0
       unist-util-visit: 5.0.0
       vfile: 6.0.3
+
+  mdn-data@2.12.2: {}
 
   media-typer@0.3.0: {}
 
@@ -24110,9 +24244,15 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
+  tldts-core@7.0.14: {}
+
   tldts@6.1.86:
     dependencies:
       tldts-core: 6.1.86
+
+  tldts@7.0.14:
+    dependencies:
+      tldts-core: 7.0.14
 
   tmp@0.0.30:
     dependencies:
@@ -24152,6 +24292,10 @@ snapshots:
   tough-cookie@5.1.2:
     dependencies:
       tldts: 6.1.86
+
+  tough-cookie@6.0.0:
+    dependencies:
+      tldts: 7.0.14
 
   toxic@1.0.1:
     dependencies:
@@ -24806,7 +24950,7 @@ snapshots:
       tsx: 4.20.5
       yaml: 2.8.1
 
-  vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@20.19.13)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -24833,7 +24977,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 20.19.13
-      jsdom: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - jiti
       - less
@@ -24849,7 +24993,7 @@ snapshots:
       - yaml
     optional: true
 
-  vitest@3.2.4(@types/node@24.3.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@24.3.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -24876,7 +25020,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.3.0
-      jsdom: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - jiti
       - less
@@ -24891,7 +25035,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
+  vitest@3.2.4(@types/node@24.4.0)(jiti@2.5.1)(jsdom@27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5))(less@4.4.1)(sass@1.92.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -24918,7 +25062,7 @@ snapshots:
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/node': 24.4.0
-      jsdom: 26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      jsdom: 27.0.0(bufferutil@4.0.9)(postcss@8.5.6)(utf-8-validate@6.0.5)
     transitivePeerDependencies:
       - jiti
       - less
@@ -25055,6 +25199,8 @@ snapshots:
 
   webidl-conversions@7.0.0: {}
 
+  webidl-conversions@8.0.0: {}
+
   webpack-dev-middleware@7.4.3(webpack@5.101.3(esbuild@0.25.9)):
     dependencies:
       colorette: 2.0.20
@@ -25182,6 +25328,11 @@ snapshots:
     dependencies:
       tr46: 5.1.1
       webidl-conversions: 7.0.0
+
+  whatwg-url@15.0.0:
+    dependencies:
+      tr46: 5.1.1
+      webidl-conversions: 8.0.0
 
   whatwg-url@5.0.0:
     dependencies:
