@@ -141,10 +141,16 @@ export class Search {
 
     const items = result.hits as unknown as SearchResult[];
 
-    return this.getUniqueSearchResultItems(items).map((hitItem: SearchResult) => {
+    return this.getUniqueSearchResultItems(items).map((hitItem: SearchResult): SearchResultItem => {
       const content = hitItem._snippetResult.content;
       const hierarchy = hitItem._snippetResult.hierarchy;
+      const type = hitItem.hierarchy.lvl0 === 'Tutorials' ? 'code' : 'doc';
+      const category = hitItem.hierarchy?.lvl0 ?? null;
       const hasSubLabel = content || hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
+      const subLabelHtml =
+        category === 'Reference'
+          ? extractPackageNameFromUrl(hitItem.url)
+          : this.parseLabelToHtml(hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null);
 
       return {
         id: hitItem.objectID,
@@ -152,10 +158,7 @@ export class Search {
         url: hitItem.url,
 
         labelHtml: this.parseLabelToHtml(hitItem._snippetResult.hierarchy?.lvl1?.value ?? ''),
-        subLabelHtml: this.parseLabelToHtml(
-          hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
-        ),
-
+        subLabelHtml,
         category: hitItem.hierarchy?.lvl0 ?? null,
       };
     });
@@ -232,4 +235,12 @@ function wait(ms: number, signal: AbortSignal): Promise<void> {
       {once: true},
     );
   });
+}
+
+function extractPackageNameFromUrl(url: string): string | null {
+  const extractedSegment = url.match(/\/api\/(.*)\/.*#?/);
+  if (extractedSegment == null) {
+    return null;
+  }
+  return `From <code>@angular/${extractedSegment[1]}</code>`;
 }
