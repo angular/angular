@@ -8,9 +8,7 @@
 
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
-import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/change_detection_scheduling';
 import {Injectable, Injector, StaticProvider} from '../di';
-import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
 import {CompilerOptions} from '../linker';
@@ -73,10 +71,8 @@ export class PlatformRef {
       defaultZoneCdProviders.push(internalProvideZoneChangeDetection({ngZoneFactory}));
     }
     const allAppProviders = [
-      provideZonelessChangeDetectionInternal(),
       ...defaultZoneCdProviders,
       ...(_additionalApplicationProviders ?? []),
-      errorHandlerEnvironmentInitializer,
     ];
     _additionalApplicationProviders = undefined;
     const moduleRef = createNgModuleRefWithProviders(

@@ -87,6 +87,16 @@ export function bootstrap<M>(
   const envInjector = isApplicationBootstrapConfig(config)
     ? config.r3Injector
     : config.moduleRef.injector;
+  if (
+    (typeof ngDevMode === 'undefined' || ngDevMode) &&
+    envInjector.get(NgZone, null) === null
+  ) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+      `A required Injectable was not found in the dependency injection tree. ` +
+        'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+    );
+  }
   const ngZone = envInjector.get(NgZone);
   return ngZone.run(() => {
     if (isApplicationBootstrapConfig(config)) {

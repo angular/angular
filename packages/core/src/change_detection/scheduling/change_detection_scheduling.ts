@@ -12,7 +12,7 @@ import {InjectionToken} from '../../di/injection_token';
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
-import {EnvironmentProviders, Provider} from '../../di/interface/provider';
+import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
 import {PendingTasksInternal} from '../../pending_tasks_internal';
@@ -411,16 +411,10 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
   }
 
   return makeEnvironmentProviders([
-    ...provideZonelessChangeDetectionInternal(),
+    {provide: NgZone, useClass: NoopNgZone},
+    {provide: ZONELESS_ENABLED, useValue: true},
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
   ]);
-}
-
-export function provideZonelessChangeDetectionInternal(): Provider[] {
-  return [
-    {provide: NgZone, useClass: NoopNgZone},
-    {provide: ZONELESS_ENABLED, useValue: true},
-  ];
 }
