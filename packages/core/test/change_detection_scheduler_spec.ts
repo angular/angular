@@ -48,7 +48,7 @@ import {
 
 import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {isBrowser, isNode, withBody} from '@angular/private/testing';
-import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
+import {ChangeDetectionScheduler} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
 import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
 import {global} from '../src/util/global';
@@ -850,7 +850,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
     childZone.run(() => {
       fixture.componentInstance.thing.set('new');
-      expect(TestBed.inject(ChangeDetectionSchedulerImpl)['cancelScheduledCallback']).toBeNull();
+      expect(TestBed.inject(ChangeDetectionScheduler)['cancelScheduledCallback']).toBeNull();
     });
   });
 
@@ -867,7 +867,7 @@ describe('Angular with scheduler and ZoneJS', () => {
 
     childAngularZone.run(() => {
       fixture.componentInstance.thing.set('new');
-      expect(TestBed.inject(ChangeDetectionSchedulerImpl)['cancelScheduledCallback']).toBeNull();
+      expect(TestBed.inject(ChangeDetectionScheduler)['cancelScheduledCallback']).toBeNull();
     });
   });
 

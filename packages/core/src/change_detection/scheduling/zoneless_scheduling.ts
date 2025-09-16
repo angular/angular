@@ -55,14 +55,6 @@ export const enum NotificationSource {
   ViewEffect,
 }
 
-/**
- * Injectable that is notified when an `LView` is made aware of changes to application state.
- */
-export abstract class ChangeDetectionScheduler {
-  abstract notify(source: NotificationSource): void;
-  abstract runningTick: boolean;
-}
-
 /** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
 export const ZONELESS_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',

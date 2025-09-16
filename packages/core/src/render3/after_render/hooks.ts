@@ -15,12 +15,8 @@ import {performanceMarkFeature} from '../../util/performance';
 import {assertNotInReactiveContext} from '../reactivity/asserts';
 import {ViewContext} from '../view_context';
 import {AfterRenderRef} from './api';
-import {
-  AfterRenderHooks,
-  AfterRenderImpl,
-  AfterRenderManager,
-  AfterRenderSequence,
-} from './manager';
+import {AfterRenderHooks, AfterRenderManager, AfterRenderSequence} from './manager';
+import {AfterRenderImpl} from './after_render_impl';
 
 /**
  * An argument list containing the first non-never type in the given type array, or an empty

@@ -16,6 +16,7 @@ import {scheduleCallbackWithRafRace} from '../util/callback_scheduler';
 import {noop} from '../util/noop';
 
 import {AsyncStackTaggingZoneSpec} from './async-stack-tagging';
+import {ɵɵdefineInjectable} from '../di/interface/defs';
 
 // The below is needed as otherwise a number of targets fail in G3 due to:
 // ERROR - [JSC_UNDEFINED_VARIABLE] variable Zone is undeclared
@@ -102,6 +103,13 @@ let ngZoneInstanceId = 0;
  * @publicApi
  */
 export class NgZone {
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
+    token: NgZone,
+    providedIn: 'root',
+    factory: () => new NoopNgZone(),
+  });
+
   readonly hasPendingMacrotasks: boolean = false;
   readonly hasPendingMicrotasks: boolean = false;
 
