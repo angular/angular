@@ -804,6 +804,54 @@ describe('route lazy loading migration', () => {
     expect(error).toMatch(/Could not find any files to migrate under the path/);
   });
 
+  it('should migrate if routes are exported as default', async () => {
+    writeFile(
+      'app.module.ts',
+      `
+      import {NgModule} from '@angular/core';
+      import {RouterModule} from '@angular/router';
+      import {routes} from './routes';
+
+      @NgModule({
+        imports: [RouterModule.forRoot(routes],
+      })
+      export class AppModule {}
+    `,
+    );
+
+    writeFile(
+      'routes.ts',
+      `
+      import {Routes, Route} from '@angular/router';
+      import {TestComponent} from './test';
+      export default [
+        {path: 'test', component: TestComponent}
+      ] as Routes;
+    `,
+    );
+
+    writeFile(
+      'test.ts',
+      `
+      import {Component} from '@angular/core';
+      @Component({template: 'hello', standalone: true})
+      export class TestComponent {}
+    `,
+    );
+
+    await runMigration('route-lazy-loading');
+
+    expect(stripWhitespace(tree.readContent('routes.ts'))).toContain(
+      stripWhitespace(`
+         import {Routes, Route} from '@angular/router';
+
+         export default [
+          {path: 'test', loadComponent: () => import('./test').then(m => m.TestComponent)}
+         ] as Routes;
+      `),
+    );
+  });
+
   xit('should migrate routes if the routes file in is another file without type', async () => {
     writeFile(
       'app.module.ts',

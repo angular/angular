@@ -117,9 +117,7 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
           }
         }
       }
-    }
-
-    if (ts.isVariableDeclaration(node)) {
+    } else if (ts.isVariableDeclaration(node)) {
       if (isAngularRoutesArray(node, typeChecker)) {
         const initializer = node.initializer;
         if (
@@ -138,6 +136,37 @@ function findRoutesArrayToMigrate(sourceFile: ts.SourceFile, typeChecker: ts.Typ
             array: initializer,
             routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
           });
+        }
+      }
+    } else if (ts.isExportAssignment(node)) {
+      // Handles `export default routes`, `export default [...]` and `export default [...] as Routes`
+      let expression = node.expression;
+
+      if (ts.isAsExpression(expression)) {
+        expression = expression.expression;
+      }
+
+      if (ts.isArrayLiteralExpression(expression)) {
+        routesArrays.push({
+          routeFilePath: sourceFile.fileName,
+          array: expression,
+          routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
+        });
+      } else if (ts.isIdentifier(expression)) {
+        manageRoutesExportedByDefault(routesArrays, typeChecker, expression, sourceFile);
+      }
+    } else if (ts.isExportDeclaration(node)) {
+      // Handles cases like `export { routes as default }`
+      if (node.exportClause && ts.isNamedExports(node.exportClause)) {
+        for (const specifier of node.exportClause.elements) {
+          if (specifier.name.text === 'default') {
+            manageRoutesExportedByDefault(
+              routesArrays,
+              typeChecker,
+              specifier.propertyName ?? specifier.name,
+              sourceFile,
+            );
+          }
         }
       }
     }
@@ -324,6 +353,31 @@ function createLoadComponentPropertyAssignment(
     ),
   );
 }
+
+const manageRoutesExportedByDefault = (
+  routesArrays: RouteData[],
+  typeChecker: ts.TypeChecker,
+  expression: ts.Expression,
+  sourceFile: ts.SourceFile,
+) => {
+  const symbol = typeChecker.getSymbolAtLocation(expression);
+  if (!symbol?.declarations) {
+    return;
+  }
+  for (const declaration of symbol.declarations) {
+    if (
+      ts.isVariableDeclaration(declaration) &&
+      declaration.initializer &&
+      ts.isArrayLiteralExpression(declaration.initializer)
+    ) {
+      routesArrays.push({
+        routeFilePath: sourceFile.fileName,
+        array: declaration.initializer,
+        routeFileImports: sourceFile.statements.filter(ts.isImportDeclaration),
+      });
+    }
+  }
+};
 
 // import('./path)
 const createImportCallExpression = (componentImportPath: string) =>
