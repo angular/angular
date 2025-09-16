@@ -16,6 +16,7 @@ import {
   provideZonelessChangeDetection,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -51,6 +52,252 @@ describe('control directive', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
+    });
+  });
+
+  describe('properties', () => {
+    describe('disabled', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<input [control]="f">`,
+        })
+        class TestCmp {
+          readonly disabled = signal(false);
+          readonly f = form(signal(false), (p) => {
+            disabled(p, this.disabled);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const input = fixture.nativeElement.firstChild;
+        expect(input.disabled).toBe(false);
+
+        act(() => fixture.componentInstance.disabled.set(true));
+        expect(input.disabled).toBe(true);
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model(false);
+          readonly disabled = input(false);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly disabled = signal(false);
+          readonly f = form(signal(false), (p) => {
+            disabled(p, this.disabled);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().disabled()).toBe(false);
+
+        act(() => component.disabled.set(true));
+        expect(component.customControl().disabled()).toBe(true);
+      });
+    });
+
+    describe('name', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `
+            @for (item of f; track item) {
+              <input #control [control]="item">
+              <span>{{item().value()}}</span>
+            }
+          `,
+        })
+        class TestCmp {
+          readonly f = form(signal(['a', 'b']), {name: 'root'});
+          readonly controls = viewChildren<ElementRef<HTMLInputElement>>('control');
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        const controlA = component.controls()[0].nativeElement;
+        const controlB = component.controls()[1].nativeElement;
+        expect(controlA.value).toBe('a');
+        expect(controlB.value).toBe('b');
+        expect(controlA.name).toBe('root.0');
+        expect(controlB.name).toBe('root.1');
+        expect(fixture.nativeElement.innerText).toBe('ab');
+
+        act(() => component.f().value.update((items) => [items[1], items[0]]));
+
+        // @for should not recreate views when swapped.
+        expect(controlA.isConnected).toBeTrue();
+        expect(controlB.isConnected).toBeTrue();
+
+        pending('TODO: https://github.com/angular/angular/issues/63882');
+
+        // Controls should retain their value.
+        expect(controlA.value).toBe('a');
+        expect(controlB.value).toBe('b');
+
+        // Controls should have new names to reflect their new position.
+        expect(controlA.name).toBe('root.1');
+        expect(controlB.name).toBe('root.0');
+
+        // DOM order of controls should be swapped.
+        expect(fixture.nativeElement.innerText).toBe('ba');
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: `{{value()}}`})
+        class CustomControl {
+          readonly value = model('');
+          readonly name = input('');
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `
+            @for (item of f; track item) {
+              <custom-control [control]="item" />
+            }
+          `,
+        })
+        class TestCmp {
+          readonly f = form(signal(['a', 'b']), {name: 'root'});
+          readonly controls = viewChildren(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        const controlA = component.controls()[0];
+        const controlB = component.controls()[1];
+        expect(controlA.value()).toBe('a');
+        expect(controlB.value()).toBe('b');
+        expect(controlA.name()).toBe('root.0');
+        expect(controlB.name()).toBe('root.1');
+        expect(fixture.nativeElement.innerText).toBe('ab');
+
+        act(() => component.f().value.update((items) => [items[1], items[0]]));
+
+        // @for should not recreate views when swapped.
+        expect(component.controls()).toContain(controlA);
+        expect(component.controls()).toContain(controlB);
+
+        pending('TODO: https://github.com/angular/angular/issues/63882');
+
+        // Controls should retain their values.
+        expect(controlA.value()).toBe('a');
+        expect(controlB.value()).toBe('b');
+
+        // Controls should have new names to reflect their new position.
+        expect(controlA.name()).toBe('root.1');
+        expect(controlB.name()).toBe('root.0');
+
+        // DOM order of controls should be swapped.
+        expect(fixture.nativeElement.innerText).toBe('ba');
+      });
+    });
+
+    describe('readonly', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<input [control]="f">`,
+        })
+        class TestCmp {
+          readonly readonly = signal(true);
+          readonly f = form(signal(''), (p) => {
+            readonly(p, this.readonly);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.readOnly).toBe(true);
+
+        act(() => fixture.componentInstance.readonly.set(false));
+        expect(element.readOnly).toBe(false);
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model('');
+          readonly readonly = input(false);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly readonly = signal(false);
+          readonly f = form(signal(''), (p) => {
+            readonly(p, this.readonly);
+          });
+          readonly child = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.child().readonly()).toBe(false);
+
+        act(() => component.readonly.set(true));
+        expect(component.child().readonly()).toBe(true);
+      });
+    });
+
+    describe('required', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<input [control]="f">`,
+        })
+        class TestCmp {
+          readonly required = signal(false);
+          readonly f = form(signal(''), (p) => {
+            required(p, {when: this.required});
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild;
+        expect(element.required).toBe(false);
+
+        act(() => fixture.componentInstance.required.set(true));
+        expect(element.required).toBe(true);
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model('');
+          readonly required = input(false);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly required = signal(false);
+          readonly f = form(signal(''), (p) => {
+            required(p, {when: this.required});
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().required()).toBe(false);
+
+        act(() => component.required.set(true));
+        expect(component.customControl().required()).toBe(true);
+      });
     });
   });
 

@@ -330,7 +330,7 @@ function updateCustomControl(
   maybeWriteToDirectiveInput(componentDef, component, 'min', state.max);
   maybeWriteToDirectiveInput(componentDef, component, 'minLength', state.minLength);
   maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
-  maybeWriteToDirectiveInput(componentDef, component, 'readOnly', state.readonly);
+  maybeWriteToDirectiveInput(componentDef, component, 'readonly', state.readonly);
   maybeWriteToDirectiveInput(componentDef, component, 'required', state.required);
   maybeWriteToDirectiveInput(componentDef, component, 'touched', state.touched);
 }
@@ -369,7 +369,7 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   // TODO: check if bindings changed before writing
   setNativeControlValue(input, state.value());
   renderer.setAttribute(input, 'name', state.name());
-  setBooleanAttribute(renderer, input, 'disable', state.disabled());
+  setBooleanAttribute(renderer, input, 'disabled', state.disabled());
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
   setBooleanAttribute(renderer, input, 'required', state.required());
 
