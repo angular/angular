@@ -334,7 +334,7 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
         ts.isPropertyAccessExpression(optionsNode)
       ) {
         // This is tricky case to handle, in G3 we're might not be able to resolve the identifier's value
-        // Our best alternative is to assume there is not CD providers set and add the ZoneChangeDetection provider
+        // Our best alternative is to assume there is no CD providers set and add the ZoneChangeDetection provider
         // In the cases where it is, we'll just override the zone provider we just set by re-used inthe appConfig providers
 
         // TODO: Should we insert a TODO to clean this up ?
@@ -468,17 +468,25 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
           requestedFile: moduleSourceFile,
         });
 
+        // The migration specifically relies on this being longer than ZoneChangeDetectionModule
+        // As we take the "longest" change in case of duplicate replacements.
+        const moduleName = 'ZonelessChangeDetectionModule';
         replacements.push(
           new Replacement(
             moduleProjectFile,
             new TextUpdate({
               position: moduleClass.getStart() - 1,
               end: moduleClass.getStart() - 1,
-              toInsert: NoopNgZone,
+              toInsert: `${NoopNgZone}\n@NgModule({providers: [{provide: NgZone, useClass: NoopNgZone}]})\nexport class ${moduleName} {}\n\n`,
             }),
           ),
         );
-        zoneInstanceProvider = `{provide: NgZone, useClass: NoopNgZone}`;
+
+        const importsNode = findLiteralProperty(ngModule, 'imports');
+        if (importsNode && ts.isPropertyAssignment(importsNode)) {
+          insertZoneCDModule(importsNode.initializer, moduleProjectFile, replacements, moduleName);
+        }
+        return;
       } else if (ngZoneOption && typeof ngZoneOption !== 'string') {
         // This is a case where we're not able to migrate automatically
         // The migration fails gracefully, keeps the ngZone option and adds a TODO.
@@ -512,7 +520,7 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
               position: node.getStart() - 1,
               end: node.getStart() - 1,
               toInsert:
-                '// TODO: BootstrapOptions are deprecated. Configure NgZone in the providers array of the application module instead.',
+                '// TODO: BootstrapOptions are deprecated & ignored. Configure NgZone in the providers array of the application module instead.',
             }),
           ),
         );
@@ -575,7 +583,7 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
       requestedFile: sourceFile,
     });
     addZoneCDModule(ZONE_CD_PROVIDER, moduleProjectFile, insertPosition, replacements);
-    insertZoneCDModule(ngModules, moduleProjectFile, replacements);
+    insertZoneCDModule(ngModules, moduleProjectFile, replacements, 'ZoneChangeDetectionModule');
   }
 
   private analyzeModuleWithBootstrapProp(
@@ -627,10 +635,15 @@ function addProvidersToNgModule(
 
   const importsNode = findLiteralProperty(ngModule, 'imports');
   if (importsNode && ts.isPropertyAssignment(importsNode)) {
-    insertZoneCDModule(importsNode.initializer, projectFile, replacements);
+    insertZoneCDModule(
+      importsNode.initializer,
+      projectFile,
+      replacements,
+      'ZoneChangeDetectionModule',
+    );
   } else {
     const text = `imports: [ZoneChangeDetectionModule]`;
-    let toInsert = `${text},\n`;
+    const toInsert = `${text},\n`;
     let position = ngModule.getStart() + 1;
 
     if (ngModule.properties.length > 0) {
@@ -675,17 +688,21 @@ export class ZoneChangeDetectionModule {}\n\n`;
   );
 }
 
-function insertZoneCDModule(node: ts.Node, projectFile: ProjectFile, replacements: Replacement[]) {
+function insertZoneCDModule(
+  node: ts.Node,
+  projectFile: ProjectFile,
+  replacements: Replacement[],
+  importedModule: string,
+) {
   if (ts.isArrayLiteralExpression(node)) {
     const literal = node;
-    const text = `ZoneChangeDetectionModule,`;
     replacements.push(
       new Replacement(
         projectFile,
         new TextUpdate({
           position: literal.elements[0]?.getStart() ?? literal.getEnd() - 1,
           end: literal.elements[0]?.getStart() ?? literal.getEnd() - 1,
-          toInsert: text,
+          toInsert: importedModule + ',',
         }),
       ),
     );
@@ -694,7 +711,7 @@ function insertZoneCDModule(node: ts.Node, projectFile: ProjectFile, replacement
     let isArray = !node.text.endsWith('Module');
 
     // Because if it's an array, we need to spread it
-    const newImports = `[ZoneChangeDetectionModule, ${isArray ? '...' : ''}${node.text}]`;
+    const newImports = `[${importedModule}, ${isArray ? '...' : ''}${node.text}]`;
     replacements.push(
       new Replacement(
         projectFile,
@@ -705,6 +722,8 @@ function insertZoneCDModule(node: ts.Node, projectFile: ProjectFile, replacement
         }),
       ),
     );
+  } else {
+    throw new Error('unsupported importsNode: ' + node.getText());
   }
 }
 

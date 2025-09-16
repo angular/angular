@@ -53,7 +53,6 @@ const coreTypesFile = {
   contents: `
   export declare function provideZoneChangeDetection(options?: any): any;
   export declare function provideZonelessChangeDetection(options?: any): any;
-  export declare function createApplication(options?: any): any;
 
   export declare function NgModule(obj: any): any;
   export declare function Component(obj: any): any;
@@ -750,183 +749,6 @@ describe('bootstrap options migration', () => {
     });
   });
 
-  describe('createApplication', () => {
-    it('should migrate createApplication with existing options', async () => {
-      const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
-        ...typeFiles,
-        {
-          name: absoluteFrom('/main.ts'),
-          isProgramRootFile: true,
-          contents: `
-          import { createApplication } from "@angular/core";
-
-          createApplication({providers: []});
-        `,
-        },
-      ]);
-
-      const actual = fs.readFile(absoluteFrom('/main.ts'));
-      const expected = `
-          import { createApplication, provideZoneChangeDetection } from "@angular/core";
-
-          createApplication({providers: [provideZoneChangeDetection(),]});
-        `;
-      expect(actual.replace(/\s+/g, ''))
-        .withContext(diffText(expected, actual))
-        .toEqual(expected.replace(/\s+/g, ''));
-    });
-
-    it('should migrate createApplication without existing options', async () => {
-      const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
-        ...typeFiles,
-        {
-          name: absoluteFrom('/main.ts'),
-          isProgramRootFile: true,
-          contents: `
-          import { createApplication } from "@angular/core";
-
-          createApplication();
-        `,
-        },
-      ]);
-
-      const actual = fs.readFile(absoluteFrom('/main.ts'));
-      const expected = `
-          import { createApplication, provideZoneChangeDetection } from "@angular/core";
-
-          createApplication({providers: [provideZoneChangeDetection()]});
-        `;
-      expect(actual.replace(/\s+/g, ''))
-        .withContext(diffText(expected, actual))
-        .toEqual(expected.replace(/\s+/g, ''));
-    });
-
-    it('should migrate createApplication without existing options in app.config.ts', async () => {
-      const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
-        ...typeFiles,
-        {
-          name: absoluteFrom('/app/app.config.ts'),
-          contents: `
-          import { provideZoneChangeDetection } from "@angular/core";
-
-          export const appConfig = {
-            providers: [],
-          };
-        `,
-        },
-        {
-          name: absoluteFrom('/main.ts'),
-          isProgramRootFile: true,
-          contents: `
-          import { createApplication } from "@angular/core";
-          import { appConfig } from './app/app.config';
-
-          createApplication(appConfig);
-        `,
-        },
-      ]);
-
-      const actualMain = fs.readFile(absoluteFrom('/main.ts'));
-      const expectedMain = `
-          import { createApplication, provideZoneChangeDetection } from "@angular/core";
-          import { appConfig } from './app/app.config';
-
-          createApplication({...appConfig, providers: [provideZoneChangeDetection(), ...appConfig.providers]});
-        `;
-      expect(actualMain.replace(/\s+/g, ''))
-        .withContext(diffText(expectedMain, actualMain))
-        .toEqual(expectedMain.replace(/\s+/g, ''));
-
-      // We're not changing that file because it might not be analyzable in G3
-      // So the changes are only applied to the file where the createApplication is called
-      const actualConfig = fs.readFile(absoluteFrom('/app/app.config.ts'));
-      const expectedConfig = `
-          import { provideZoneChangeDetection } from "@angular/core";
-
-          export const appConfig = {
-            providers: [],
-          };
-        `;
-      expect(actualConfig.replace(/\s+/g, ''))
-        .withContext(diffText(expectedConfig, actualConfig))
-        .toEqual(expectedConfig.replace(/\s+/g, ''));
-    });
-
-    it('should migrate createApplication with a call expression config', async () => {
-      const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
-        ...typeFiles,
-        {
-          name: absoluteFrom('/app/app.config.ts'),
-          contents: `
-          export function getAppConfig() {
-            return {
-              providers: [],
-            };
-          }
-        `,
-        },
-        {
-          name: absoluteFrom('/main.ts'),
-          isProgramRootFile: true,
-          contents: `
-          import { createApplication } from "@angular/core";
-          import { getAppConfig } from './app/app.config';
-
-          createApplication(getAppConfig());
-        `,
-        },
-      ]);
-
-      const actualMain = fs.readFile(absoluteFrom('/main.ts'));
-      const expectedMain = `
-          import { createApplication, provideZoneChangeDetection } from "@angular/core";
-          import { getAppConfig } from './app/app.config';
-
-          createApplication({...getAppConfig(), providers: [provideZoneChangeDetection(), ...getAppConfig().providers]});
-        `;
-      expect(actualMain.replace(/\s+/g, ''))
-        .withContext(diffText(expectedMain, actualMain))
-        .toEqual(expectedMain.replace(/\s+/g, ''));
-    });
-
-    it('should migrate createApplication with a property access config', async () => {
-      const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
-        ...typeFiles,
-        {
-          name: absoluteFrom('/app/app.config.ts'),
-          contents: `
-          export const config = {
-            app: {
-              providers: [],
-            }
-          };
-        `,
-        },
-        {
-          name: absoluteFrom('/main.ts'),
-          isProgramRootFile: true,
-          contents: `
-          import { createApplication } from "@angular/core";
-          import { config } from './app/app.config';
-
-          createApplication(config.app);
-        `,
-        },
-      ]);
-
-      const actualMain = fs.readFile(absoluteFrom('/main.ts'));
-      const expectedMain = `
-          import { createApplication, provideZoneChangeDetection } from "@angular/core";
-          import { config } from './app/app.config';
-
-          createApplication({...config.app, providers: [provideZoneChangeDetection(), ...config.app.providers]});
-        `;
-      expect(actualMain.replace(/\s+/g, ''))
-        .withContext(diffText(expectedMain, actualMain))
-        .toEqual(expectedMain.replace(/\s+/g, ''));
-    });
-  });
-
   describe('bootstrapModule', () => {
     [
       // {packageName: 'platform-browser-dynamic', platformBrowserFn: 'platformBrowserDynamic'},
@@ -1076,9 +898,12 @@ describe('bootstrap options migration', () => {
             }
           }
 
+          @NgModule({providers: [{provide: NgZone, useClass: NoopNgZone}]})
+          export class ZonelessChangeDetectionModule {}
+
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [ZonelessChangeDetectionModule, BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -2086,7 +1911,7 @@ describe('bootstrap options migration', () => {
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
-          // TODO: BootstrapOptions are deprecated. Configure NgZone in the providers array of the application module instead.
+          // TODO: BootstrapOptions are deprecated & ignored. Configure NgZone in the providers array of the application module instead.
           ${platformBrowserFn}().bootstrapModule(AppModule, { ngZone: new NgZone({}) });
           `;
           expect(mainActual.replace(/\s+/g, ''))
@@ -2162,7 +1987,7 @@ describe('bootstrap options migration', () => {
 
           const ngZone = new NgZone({});
 
-          // TODO: BootstrapOptions are deprecated. Configure NgZone in the providers array of the application module instead.
+          // TODO: BootstrapOptions are deprecated & ignored. Configure NgZone in the providers array of the application module instead.
           ${platformBrowserFn}().bootstrapModule(AppModule, { ngZone: ngZone });
           `;
           expect(mainActual.replace(/\s+/g, ''))
