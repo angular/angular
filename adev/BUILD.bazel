@@ -148,7 +148,7 @@ ng_application(
     project_name = "angular-dev",
     serve_args = config_based_architect_flags + [
         "--port",
-        "0",
+        "4201",
     ],
 )
 
