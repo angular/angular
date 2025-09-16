@@ -672,7 +672,7 @@ export interface EffectRef {
 // @public
 export class ElementRef<T = any> {
     constructor(nativeElement: T);
-    nativeElement: T;
+    readonly nativeElement: T;
 }
 
 // @public
