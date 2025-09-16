@@ -11,13 +11,11 @@ import {Subscription} from 'rxjs';
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
 import {
   ENVIRONMENT_INITIALIZER,
-  EnvironmentInjector,
   EnvironmentProviders,
   inject,
   Injectable,
   InjectionToken,
   makeEnvironmentProviders,
-  provideEnvironmentInitializer,
   StaticProvider,
 } from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
@@ -32,7 +30,7 @@ import {
   SCHEDULE_IN_ROOT_ZONE,
 } from './zoneless_scheduling';
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
-import {INTERNAL_APPLICATION_ERROR_HANDLER, ErrorHandler} from '../../error_handler';
+import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
 @Injectable({providedIn: 'root'})
 export class NgZoneChangeDetectionScheduler {

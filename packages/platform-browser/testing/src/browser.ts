@@ -12,11 +12,14 @@ import {
   NgModule,
   StaticProvider,
   ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   PlatformRef,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule, platformBrowser} from '../../index';
 import {DOMTestComponentRenderer} from './dom_test_component_renderer';
+
+const ZONELESS_BY_DEFAULT = true;
 
 /**
  * Platform for testing
@@ -36,6 +39,7 @@ export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => Plat
   providers: [
     {provide: APP_ID, useValue: 'a'},
     provideZonelessChangeDetectionInternal(),
+    ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
     ɵprovideFakePlatformNavigation(),
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],

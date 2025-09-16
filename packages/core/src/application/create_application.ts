@@ -21,6 +21,9 @@ import {ProfilerEvent} from '../render3/profiler_types';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {PlatformRef} from '../platform/platform_ref';
+import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
+
+const ZONELESS_BY_DEFAULT = true;
 
 /**
  * Internal create application API that implements the core application creation logic and optional
@@ -64,6 +67,7 @@ export function internalCreateApplication(config: {
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
+      ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
       errorHandlerEnvironmentInitializer,
       ...(appProviders || []),
     ];
