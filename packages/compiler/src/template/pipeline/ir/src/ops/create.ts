@@ -1952,8 +1952,9 @@ export function createSourceLocationOp(
 }
 
 /**
- * An operation that checks if a specialized control directive exists and possibly registers it to
- * manage a native or custom form control.
+ * An operation that determines whether a `[control]` binding targets a specialized control
+ * directive on a native or custom form control, and if so, adds event listeners to synchronize the
+ * bound form field to the form control.
  */
 export interface ControlCreateOp extends Op<CreateOp> {
   kind: OpKind.ControlCreate;
