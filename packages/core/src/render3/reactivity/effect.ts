@@ -27,7 +27,7 @@ import {noop} from '../../util/noop';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+} from '../../change_detection/scheduling/change_detection_scheduling';
 import {setIsRefreshingViews} from '../state';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
 

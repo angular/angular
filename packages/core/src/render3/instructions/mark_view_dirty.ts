@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/change_detection_scheduling';
 import {isRootView} from '../interfaces/type_checks';
 import {ENVIRONMENT, FLAGS, LView, LViewFlags} from '../interfaces/view';
 import {isRefreshingViews} from '../state';

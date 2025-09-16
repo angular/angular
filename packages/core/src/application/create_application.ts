@@ -14,7 +14,7 @@ import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 
 import {ApplicationRef} from './application_ref';
-import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling';
+import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/change_detection_scheduling';
 import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';

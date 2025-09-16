@@ -18,7 +18,7 @@ import {
 import {type Observable, Subject, type Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ZONELESS_ENABLED} from '../change_detection/scheduling/zoneless_scheduling';
+import {ZONELESS_ENABLED} from '../change_detection/scheduling/change_detection_scheduling';
 import {Console} from '../console';
 import {inject} from '../di';
 import {Injectable} from '../di/injectable';

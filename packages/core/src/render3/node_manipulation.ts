@@ -8,7 +8,7 @@
 
 import {consumerDestroy, setActiveConsumer} from '../../primitives/signals';
 
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../change_detection/scheduling/change_detection_scheduling';
 import {hasInSkipHydrationBlockFlag} from '../hydration/skip_hydration';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererStyleFlags2} from '../render/api_flags';

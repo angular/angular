@@ -43,7 +43,7 @@ export {
   provideZoneChangeDetection,
   NgZoneOptions,
 } from './change_detection/scheduling/ng_zone_scheduling';
-export {provideZonelessChangeDetection} from './change_detection/scheduling/zoneless_scheduling';
+export {provideZonelessChangeDetection} from './change_detection/scheduling/change_detection_scheduling';
 export {PendingTasks} from './pending_tasks';
 export {provideCheckNoChangesConfig} from './change_detection/provide_check_no_changes_config';
 export {enableProdMode, isDevMode} from './util/is_dev_mode';

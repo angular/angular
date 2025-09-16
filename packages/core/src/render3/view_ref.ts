@@ -11,7 +11,7 @@ import {
   UseExhaustiveCheckNoChanges,
 } from '../change_detection/use_exhaustive_check_no_changes';
 import type {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../change_detection/scheduling/change_detection_scheduling';
 import type {ApplicationRef} from '../core';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import type {EmbeddedViewRef} from '../linker/view_ref';

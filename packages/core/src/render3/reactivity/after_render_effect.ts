@@ -22,7 +22,7 @@ import {TracingService, TracingSnapshot} from '../../application/tracing';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+} from '../../change_detection/scheduling/change_detection_scheduling';
 import {assertInInjectionContext} from '../../di/contextual';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';

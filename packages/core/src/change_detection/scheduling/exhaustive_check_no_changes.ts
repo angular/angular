@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef} from '../../application/application_ref';
-import {ChangeDetectionScheduler} from './zoneless_scheduling';
+import {ChangeDetectionScheduler} from './change_detection_scheduling';
 import {inject} from '../../di/injector_compatibility';
 import {provideEnvironmentInitializer} from '../../di/provider_collection';
 import {NgZone} from '../../zone/ng_zone';

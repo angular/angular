@@ -21,7 +21,7 @@ import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from '../application/application_init';
 import {ApplicationRef, remove} from '../application/application_ref';
-import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
+import {PROVIDED_ZONELESS} from '../change_detection/scheduling/change_detection_scheduling';
 import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';

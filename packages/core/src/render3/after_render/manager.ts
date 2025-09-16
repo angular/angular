@@ -10,7 +10,7 @@ import {TracingAction, TracingService, TracingSnapshot} from '../../application/
 import {
   ChangeDetectionScheduler,
   NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+} from '../../change_detection/scheduling/change_detection_scheduling';
 import {inject} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable} from '../../di/interface/defs';
 import {ErrorHandler} from '../../error_handler';

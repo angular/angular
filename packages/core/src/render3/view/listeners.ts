@@ -8,7 +8,7 @@
 
 import {setActiveConsumer} from '@angular/core/primitives/signals';
 
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/change_detection_scheduling';
 import type {TNode} from '../interfaces/node';
 import {isComponentHost, isDirectiveHost} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, type LView, type TView} from '../interfaces/view';

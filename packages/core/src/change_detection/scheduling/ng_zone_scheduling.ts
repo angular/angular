@@ -28,7 +28,7 @@ import {
   ChangeDetectionScheduler,
   ZONELESS_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
-} from './zoneless_scheduling';
+} from './change_detection_scheduling';
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 
