@@ -8,7 +8,7 @@
 
 import {compileNgModuleFactory} from '../application/application_ngmodule_factory_compiler';
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
-import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
+import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling';
 import {Injectable, Injector, StaticProvider} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';

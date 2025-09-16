@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef} from '../../application/application_ref';
-import {ChangeDetectionSchedulerImpl} from './zoneless_scheduling_impl';
+import {ChangeDetectionScheduler} from './zoneless_scheduling';
 import {inject} from '../../di/injector_compatibility';
 import {provideEnvironmentInitializer} from '../../di/provider_collection';
 import {NgZone} from '../../zone/ng_zone';
@@ -19,7 +19,7 @@ export function exhaustiveCheckNoChangesInterval(interval: number) {
   return provideEnvironmentInitializer(() => {
     const applicationRef = inject(ApplicationRef);
     const errorHandler = inject(ErrorHandler);
-    const scheduler = inject(ChangeDetectionSchedulerImpl);
+    const scheduler = inject(ChangeDetectionScheduler);
     const ngZone = inject(NgZone);
 
     function scheduleCheckNoChanges() {
