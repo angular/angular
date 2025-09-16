@@ -18,16 +18,16 @@ import {
   createPlatformFactory,
   Injector,
   NgModule,
-  Optional,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
   PlatformRef,
   Provider,
-  StaticProvider,
   Testability,
   ɵsetDocument,
   ɵTESTABILITY as TESTABILITY,
+  inject,
+  StaticProvider,
 } from '@angular/core';
 import {
   BrowserModule,
@@ -44,18 +44,19 @@ import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 import {TRANSFER_STATE_SERIALIZATION_PROVIDERS} from './transfer_state';
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
-  {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
+  {provide: DOCUMENT, useFactory: _document},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]},
+  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true},
   {
     provide: PlatformLocation,
     useClass: ServerPlatformLocation,
-    deps: [DOCUMENT, [Optional, INITIAL_CONFIG]],
+    deps: [],
   },
   {provide: PlatformState, deps: [DOCUMENT]},
 ];
 
-function initDominoAdapter(injector: Injector) {
+function initDominoAdapter() {
+  const injector = inject(Injector);
   const _enableDomEmulation = enableDomEmulation(injector);
   return () => {
     if (_enableDomEmulation) {
@@ -90,7 +91,8 @@ export const PLATFORM_SERVER_PROVIDERS: Provider[] = [
 })
 export class ServerModule {}
 
-function _document(injector: Injector) {
+function _document() {
+  const injector = inject(Injector);
   const config: PlatformConfig | null = injector.get(INITIAL_CONFIG, null);
   const _enableDomEmulation = enableDomEmulation(injector);
   let document: Document;

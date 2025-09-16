@@ -15,7 +15,7 @@ import {
   PathLocationStrategy,
   PlatformLocation,
 } from '../../index';
-import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {inject, InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {UpgradeModule} from '@angular/upgrade/static';
 
 import {$locationShim, $locationShimProvider} from './location_shim';
@@ -80,26 +80,26 @@ export class LocationUpgradeModule {
         {
           provide: $locationShim,
           useFactory: provide$location,
-          deps: [UpgradeModule, Location, PlatformLocation, UrlCodec, LocationStrategy],
         },
         {provide: LOCATION_UPGRADE_CONFIGURATION, useValue: config ? config : {}},
-        {provide: UrlCodec, useFactory: provideUrlCodec, deps: [LOCATION_UPGRADE_CONFIGURATION]},
+        {provide: UrlCodec, useFactory: provideUrlCodec},
         {
           provide: APP_BASE_HREF_RESOLVED,
           useFactory: provideAppBaseHref,
-          deps: [LOCATION_UPGRADE_CONFIGURATION, [new Inject(APP_BASE_HREF), new Optional()]],
         },
         {
           provide: LocationStrategy,
           useFactory: provideLocationStrategy,
-          deps: [PlatformLocation, APP_BASE_HREF_RESOLVED, LOCATION_UPGRADE_CONFIGURATION],
         },
       ],
     };
   }
 }
 
-export function provideAppBaseHref(config: LocationUpgradeConfig, appBaseHref?: string) {
+function provideAppBaseHref() {
+  const config = inject(LOCATION_UPGRADE_CONFIGURATION);
+  const appBaseHref = inject(APP_BASE_HREF, {optional: true});
+
   if (config && config.appBaseHref != null) {
     return config.appBaseHref;
   } else if (appBaseHref != null) {
@@ -108,34 +108,28 @@ export function provideAppBaseHref(config: LocationUpgradeConfig, appBaseHref?: 
   return '';
 }
 
-export function provideUrlCodec(config: LocationUpgradeConfig) {
+function provideUrlCodec() {
+  const config = inject(LOCATION_UPGRADE_CONFIGURATION);
   const codec = (config && config.urlCodec) || AngularJSUrlCodec;
   return new (codec as any)();
 }
 
-export function provideLocationStrategy(
-  platformLocation: PlatformLocation,
-  baseHref: string,
-  options: LocationUpgradeConfig = {},
-) {
+function provideLocationStrategy() {
+  const platformLocation = inject(PlatformLocation);
+  const baseHref = inject(APP_BASE_HREF_RESOLVED);
+  const options = inject(LOCATION_UPGRADE_CONFIGURATION);
   return options.useHash
     ? new HashLocationStrategy(platformLocation, baseHref)
     : new PathLocationStrategy(platformLocation, baseHref);
 }
 
-export function provide$location(
-  ngUpgrade: UpgradeModule,
-  location: Location,
-  platformLocation: PlatformLocation,
-  urlCodec: UrlCodec,
-  locationStrategy: LocationStrategy,
-) {
+function provide$location() {
   const $locationProvider = new $locationShimProvider(
-    ngUpgrade,
-    location,
-    platformLocation,
-    urlCodec,
-    locationStrategy,
+    inject(UpgradeModule),
+    inject(Location),
+    inject(PlatformLocation),
+    inject(UrlCodec),
+    inject(LocationStrategy),
   );
 
   return $locationProvider.$get();

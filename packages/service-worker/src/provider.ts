@@ -123,10 +123,9 @@ function delayWithTimeout(timeout: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
-export function ngswCommChannelFactory(
-  opts: SwRegistrationOptions,
-  injector: Injector,
-): NgswCommChannel {
+export function ngswCommChannelFactory(): NgswCommChannel {
+  const opts = inject(SwRegistrationOptions);
+  const injector = inject(Injector);
   const isBrowser = !(typeof ngServerMode !== 'undefined' && ngServerMode);
 
   return new NgswCommChannel(
@@ -241,7 +240,6 @@ export function provideServiceWorker(
     {
       provide: NgswCommChannel,
       useFactory: ngswCommChannelFactory,
-      deps: [SwRegistrationOptions, Injector],
     },
     provideAppInitializer(ngswAppInitializer),
   ]);

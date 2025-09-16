@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '@angular/common';
 import {HttpBackend} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
@@ -45,7 +44,6 @@ export class InMemoryWebApiModule {
         {
           provide: HttpBackend,
           useFactory: httpClientInMemBackendServiceFactory,
-          deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory],
         },
       ],
     };

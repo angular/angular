@@ -20,7 +20,6 @@ import {
   ErrorHandler,
   InjectionToken,
   NgModule,
-  NgZone,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
@@ -29,7 +28,6 @@ import {
   RendererFactory2,
   StaticProvider,
   Testability,
-  TestabilityRegistry,
   Type,
   ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   ɵinternalCreateApplication as internalCreateApplication,
@@ -239,12 +237,10 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
 ];
 
@@ -255,9 +251,8 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT],
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,

@@ -13,7 +13,6 @@ import {ChromeApplicationEnvironment} from './chrome-application-environment';
 import {ChromeApplicationOperations} from './chrome-application-operations';
 import {Events, MessageBus, PriorityAwareMessageBus} from '../../../protocol';
 import {FrameManager} from '../../../ng-devtools/src/lib/application-services/frame_manager';
-import {Platform} from '@angular/cdk/platform';
 import {ChromeMessageBus} from './chrome-message-bus';
 
 export const appConfig: ApplicationConfig = {
@@ -23,7 +22,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: ApplicationOperations,
       useClass: ChromeApplicationOperations,
-      deps: [Platform],
     },
     {
       provide: ApplicationEnvironment,
