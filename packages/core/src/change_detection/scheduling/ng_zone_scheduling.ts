@@ -24,11 +24,8 @@ import {performanceMarkFeature} from '../../util/performance';
 import {NgZone} from '../../zone';
 import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
-import {
-  ChangeDetectionScheduler,
-  ZONELESS_ENABLED,
-  SCHEDULE_IN_ROOT_ZONE,
-} from './zoneless_scheduling';
+import {ChangeDetectionScheduler} from './zoneless_scheduling_impl';
+import {ZONELESS_ENABLED, SCHEDULE_IN_ROOT_ZONE} from './zoneless_scheduling';
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
 

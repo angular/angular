@@ -19,10 +19,8 @@ import {
 import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
 import {type Signal} from '../reactivity/api';
 import {TracingService, TracingSnapshot} from '../../application/tracing';
-import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+import {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling_impl';
+import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
 import {assertInInjectionContext} from '../../di/contextual';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';
@@ -31,10 +29,10 @@ import {AfterRenderPhase, type AfterRenderRef} from '../after_render/api';
 import {NOOP_AFTER_RENDER_REF, type AfterRenderOptions} from '../after_render/hooks';
 import {
   AFTER_RENDER_PHASES,
-  AfterRenderImpl,
   AfterRenderManager,
   AfterRenderSequence,
 } from '../after_render/manager';
+import {AfterRenderImpl} from '../after_render/after_render_impl';
 import {LView} from '../interfaces/view';
 import {ViewContext} from '../view_context';
 import {assertNotInReactiveContext} from './asserts';

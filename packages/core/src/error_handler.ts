@@ -88,21 +88,6 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
   },
 );
 
-export const errorHandlerEnvironmentInitializer = {
-  provide: ENVIRONMENT_INITIALIZER,
-  useValue: () => {
-    const handler = inject(ErrorHandler, {optional: true});
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && handler === null) {
-      throw new RuntimeError(
-        RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
-        `A required Injectable was not found in the dependency injection tree. ` +
-          'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
-      );
-    }
-  },
-  multi: true,
-};
-
 const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorListeners' : '', {
   providedIn: 'root',
   factory: () => {
