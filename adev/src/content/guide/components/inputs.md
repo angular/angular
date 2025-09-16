@@ -7,12 +7,12 @@ TIP: If you're familiar with other web frameworks, input properties are similar 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
 
-<docs-code language="ts" highlight="[7]">
+<docs-code language="ts" highlight="[6]">
 import {Component, input} from '@angular/core';
 
 @Component({/*...*/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero.
+  // Declare an input named 'value' with a initial value of zero.
   value = input(0);
 }
 </docs-code>
@@ -23,7 +23,7 @@ This lets you bind to the property in a template:
 <custom-slider [value]="50" />
 ```
 
-If an input has a default value, TypeScript infers the type from the default value:
+If an input has a initial value, TypeScript infers the type from the initial value:
 
 ```typescript
 @Component({/*...*/})
@@ -35,7 +35,7 @@ export class CustomSlider {
 
 You can explicitly declare a type for the input by specifying a generic parameter to the function.
 
-If an input without a default value is not set, its value is `undefined`:
+If an input without an initial value is not set, its value is `undefined`:
 
 ```typescript
 @Component({/*...*/})
@@ -53,16 +53,22 @@ When extending a component class, **inputs are inherited by the child class.**
 
 **Input names are case-sensitive.**
 
+<docs-callout important title="Caveat when binding Router data to component inputs">
+When binding router data to component inputs, an input can be reset to `undefined` if it has no matching data in the router state.
+
+For more information, read the [dedicated router guide](guide/routing/common-router-tasks#getting-route-information). 
+</docs-callout>
+
 ## Reading inputs
 
 The `input` function returns an `InputSignal`. You can read the value by calling the signal:
 
-<docs-code language="ts" highlight="[5]">
+<docs-code language="ts" highlight="[6]">
 import {Component, input} from '@angular/core';
 
 @Component({/*...*/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero. 
+  // Declare an input named 'value' with a initial value of zero. 
   value = input(0);
 
   // Create a computed expression that reads the value input
@@ -76,7 +82,7 @@ Signals created by the `input` function are read-only.
 
 You can declare that an input is `required` by calling `input.required` instead of `input`:
 
-<docs-code language="ts" highlight="[3]">
+<docs-code language="ts" highlight="[4]">
 @Component({/*...*/})
 export class CustomSlider {
   // Declare a required input named value. Returns an `InputSignal<number>`.
