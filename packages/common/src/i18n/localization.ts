@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, Injectable, LOCALE_ID, ɵRuntimeError as RuntimeError} from '@angular/core';
+import {inject, Inject, Injectable, LOCALE_ID, ɵRuntimeError as RuntimeError} from '@angular/core';
 
 import {getLocalePluralCase, Plural} from './locale_data_api';
 import {RuntimeErrorCode} from '../errors';
@@ -16,8 +16,7 @@ import {RuntimeErrorCode} from '../errors';
  */
 @Injectable({
   providedIn: 'root',
-  useFactory: (locale: string) => new NgLocaleLocalization(locale),
-  deps: [LOCALE_ID],
+  useFactory: () => new NgLocaleLocalization(inject(LOCALE_ID)),
 })
 export abstract class NgLocalization {
   abstract getPluralCategory(value: any, locale?: string): string;

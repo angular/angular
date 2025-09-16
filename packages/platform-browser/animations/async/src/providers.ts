@@ -14,6 +14,7 @@ import {
   NgZone,
   RendererFactory2,
   ɵperformanceMarkFeature as performanceMarkFeature,
+  inject,
 } from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '../../../index';
 
@@ -61,10 +62,14 @@ export function provideAnimationsAsync(
   return makeEnvironmentProviders([
     {
       provide: RendererFactory2,
-      useFactory: (doc: Document, renderer: DomRendererFactory2, zone: NgZone) => {
-        return new AsyncAnimationRendererFactory(doc, renderer, zone, type);
+      useFactory: () => {
+        return new AsyncAnimationRendererFactory(
+          inject(DOCUMENT),
+          inject(DomRendererFactory2),
+          inject(NgZone),
+          type,
+        );
       },
-      deps: [DOCUMENT, DomRendererFactory2, NgZone],
     },
     {
       provide: ANIMATION_MODULE_TYPE,

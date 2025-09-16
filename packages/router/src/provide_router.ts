@@ -102,14 +102,14 @@ export function provideRouter(routes: Routes, ...features: RouterFeatures[]): En
     typeof ngDevMode === 'undefined' || ngDevMode
       ? {provide: ROUTER_IS_PROVIDED, useValue: true}
       : [],
-    {provide: ActivatedRoute, useFactory: rootRoute, deps: [Router]},
+    {provide: ActivatedRoute, useFactory: rootRoute},
     {provide: APP_BOOTSTRAP_LISTENER, multi: true, useFactory: getBootstrapListener},
     features.map((feature) => feature.ɵproviders),
   ]);
 }
 
-export function rootRoute(router: Router): ActivatedRoute {
-  return router.routerState.root;
+export function rootRoute(): ActivatedRoute {
+  return inject(Router).routerState.root;
 }
 
 /**
