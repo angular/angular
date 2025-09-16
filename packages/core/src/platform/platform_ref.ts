@@ -18,7 +18,13 @@ import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
 import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
-import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
+import {
+  getNgZoneOptions,
+  internalProvideZoneChangeDetection,
+} from '../change_detection/scheduling/ng_zone_scheduling';
+import {getNgZone} from '../zone/ng_zone';
+
+const ZONELESS_BY_DEFAULT = true;
 
 // Holds the set of providers to be used for the *next* application to be bootstrapped.
 // Used only for providing the zone related providers by default with `downgradeModule`.
@@ -55,8 +61,20 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions,
   ): Promise<NgModuleRef<M>> {
+    const defaultZoneCdProviders = [];
+    if (!ZONELESS_BY_DEFAULT) {
+      const ngZoneFactory = () =>
+        getNgZone(options?.ngZone, {
+          ...getNgZoneOptions({
+            eventCoalescing: options?.ngZoneEventCoalescing,
+            runCoalescing: options?.ngZoneRunCoalescing,
+          }),
+        });
+      defaultZoneCdProviders.push(internalProvideZoneChangeDetection({ngZoneFactory}));
+    }
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
+      ...defaultZoneCdProviders,
       ...(_additionalApplicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
     ];

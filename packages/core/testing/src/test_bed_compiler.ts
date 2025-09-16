@@ -42,6 +42,7 @@ import {
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
   ɵNG_COMP_DEF as NG_COMP_DEF,
@@ -90,6 +91,8 @@ enum TestingModuleOverride {
   DECLARATION,
   OVERRIDE_TEMPLATE,
 }
+
+const ZONELESS_BY_DEFAULT = true;
 
 function isTestingModuleOverride(value: unknown): value is TestingModuleOverride {
   return (
@@ -935,6 +938,7 @@ export class TestBedCompiler {
       providers: [
         ...this.rootProviderOverrides,
         provideZonelessChangeDetectionInternal(),
+        ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
         {
           provide: ENVIRONMENT_INITIALIZER,

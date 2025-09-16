@@ -67,8 +67,6 @@
       "shimStylesContent"
     ],
     "lazy": [
-      "DeferComponent",
-      "_DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "APP_BOOTSTRAP_LISTENER",
@@ -190,6 +188,7 @@
       "NgModuleRef",
       "NgOnChangesFeatureImpl",
       "NgZone",
+      "NgZoneChangeDetectionScheduler",
       "NodeInjector",
       "NodeInjectorDestroyRef",
       "NodeInjectorFactory",
@@ -252,9 +251,11 @@
       "VIEW_REFS",
       "ViewEncapsulation",
       "ViewRef",
+      "ZONELESS_BY_DEFAULT",
       "ZONELESS_ENABLED",
       "ZONELESS_SCHEDULER_DISABLED",
       "ZoneAwareEffectScheduler",
+      "ZoneStablePendingTask",
       "\\u0275\\u0275advance",
       "\\u0275\\u0275defer",
       "\\u0275\\u0275deferWhen",
@@ -515,6 +516,7 @@
       "getNearestLContainer",
       "getNextLContainer",
       "getNgDirectiveDef",
+      "getNgZoneOptions",
       "getNodeInjectable",
       "getNullInjector",
       "getOrBorrowReactiveLViewConsumer",
@@ -583,6 +585,7 @@
       "instructionState",
       "internalCreateApplication",
       "internalImportProvidersFrom",
+      "internalProvideZoneChangeDetection",
       "invokeAllTriggerCleanupFns",
       "invokeDirectivesHostBindings",
       "invokeHostBindingsInCreationMode",
@@ -790,7 +793,9 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput"
+      "writeToDirectiveInput",
+      "DeferComponent",
+      "_DeferComponent"
     ]
   }
 }
