@@ -7,7 +7,7 @@
  */
 
 import {AnimationLViewData} from '../../animation/interfaces';
-import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/zoneless_scheduling';
+import type {ChangeDetectionScheduler} from '../../change_detection/scheduling/change_detection_scheduler';
 import {TDeferBlockDetails} from '../../defer/interfaces';
 import type {Injector} from '../../di/injector';
 import {ProviderToken} from '../../di/provider_token';

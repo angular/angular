@@ -8,10 +8,8 @@
 
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
-import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from './change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from './change_detection/scheduling/tokens';
+import {ChangeDetectionScheduler} from './change_detection/scheduling/change_detection_scheduler';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from './error_handler';
 import {PendingTasksInternal} from './pending_tasks_internal';
 

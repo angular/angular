@@ -18,7 +18,7 @@ import {stringifyForError} from './util/stringify_utils';
 import {createOutputListener} from './view/directive_outputs';
 import {markViewDirty} from './instructions/mark_view_dirty';
 import {getComponentLViewByIndex} from './util/view_utils';
-import {NotificationSource} from '../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../change_detection/scheduling/tokens';
 
 /** Symbol used to store and retrieve metadata about a binding. */
 export const BINDING: unique symbol = /* @__PURE__ */ Symbol('BINDING');

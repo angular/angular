@@ -41,13 +41,12 @@ export {
   internalProvideZoneChangeDetection as ɵinternalProvideZoneChangeDetection,
   PROVIDED_NG_ZONE as ɵPROVIDED_NG_ZONE,
 } from './change_detection/scheduling/ng_zone_scheduling';
-export {PROVIDED_ZONELESS as ɵPROVIDED_ZONELESS} from './change_detection/scheduling/zoneless_scheduling';
-export {provideZonelessChangeDetectionInternal as ɵprovideZonelessChangeDetectionInternal} from './change_detection/scheduling/zoneless_scheduling_impl';
+export {ZONELESS_ENABLED as ɵZONELESS_ENABLED} from './change_detection/scheduling/tokens';
+export {ChangeDetectionScheduler as ɵChangeDetectionScheduler} from './change_detection/scheduling/change_detection_scheduler';
 export {
-  ChangeDetectionScheduler as ɵChangeDetectionScheduler,
   NotificationSource as ɵNotificationSource,
-  ZONELESS_ENABLED as ɵZONELESS_ENABLED,
-} from './change_detection/scheduling/zoneless_scheduling';
+  PROVIDED_ZONELESS as ɵPROVIDED_ZONELESS,
+} from './change_detection/scheduling/tokens';
 export {Console as ɵConsole} from './console';
 export {
   DeferBlockDetails as ɵDeferBlockDetails,

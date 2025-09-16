@@ -67,6 +67,8 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
+      "_DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "APP_BOOTSTRAP_LISTENER",
@@ -114,7 +116,7 @@
       "DEHYDRATED_VIEWS",
       "DI_DECORATOR_FLAG",
       "DOCUMENT",
-      "DOCUMENT2",
+      "DOCUMENT",
       "DeferBlockBehavior",
       "DeferBlockInternalState",
       "DeferBlockState",
@@ -272,7 +274,6 @@
       "_AnonymousSubject",
       "_BehaviorSubject",
       "_ChainedInjector",
-      "_ChangeDetectionScheduler",
       "_ComponentFactory",
       "_ComponentFactoryResolver",
       "_ComponentRef",
@@ -283,7 +284,6 @@
       "_EventEmitter_",
       "_InjectionToken",
       "_Injector",
-      "_NgZone",
       "_NodeInjector",
       "_NodeInjectorDestroyRef",
       "_NodeInjectorFactory",
@@ -449,7 +449,6 @@
       "enterView",
       "epoch",
       "errorContext",
-      "errorHandlerEnvironmentInitializer",
       "errorNotification",
       "execFinalizer",
       "executeCheckHooks",
@@ -690,7 +689,6 @@
       "profilerCallbacks",
       "projectNodes",
       "provideZonelessChangeDetection",
-      "provideZonelessChangeDetectionInternal",
       "providerToFactory",
       "providerToRecord",
       "publishSignalConfiguration",
@@ -792,9 +790,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent",
-      "_DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }

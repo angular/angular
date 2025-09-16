@@ -21,7 +21,7 @@ import {NgZone} from '../zone/ng_zone';
 
 import {ApplicationInitStatus} from '../application/application_init';
 import {ApplicationRef, remove} from '../application/application_ref';
-import {PROVIDED_ZONELESS} from '../change_detection/scheduling/zoneless_scheduling';
+import {PROVIDED_ZONELESS} from '../change_detection/scheduling/tokens';
 import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
@@ -87,6 +87,13 @@ export function bootstrap<M>(
   const envInjector = isApplicationBootstrapConfig(config)
     ? config.r3Injector
     : config.moduleRef.injector;
+  if ((typeof ngDevMode === 'undefined' || ngDevMode) && envInjector.get(NgZone, null) === null) {
+    throw new RuntimeError(
+      RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+      `A required Injectable was not found in the dependency injection tree. ` +
+        'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+    );
+  }
   const ngZone = envInjector.get(NgZone);
   return ngZone.run(() => {
     if (isApplicationBootstrapConfig(config)) {

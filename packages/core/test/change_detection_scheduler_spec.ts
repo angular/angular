@@ -48,7 +48,7 @@ import {
 
 import {provideNoopAnimations} from '@angular/platform-browser/animations';
 import {isBrowser, isNode, withBody} from '@angular/private/testing';
-import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/zoneless_scheduling_impl';
+import {ChangeDetectionSchedulerImpl} from '../src/change_detection/scheduling/change_detection_scheduler_impl';
 import {RuntimeError, RuntimeErrorCode} from '../src/errors';
 import {scheduleCallbackWithRafRace} from '../src/util/callback_scheduler';
 import {global} from '../src/util/global';

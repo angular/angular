@@ -19,10 +19,8 @@ import {
 import {type EffectCleanupFn, type EffectCleanupRegisterFn} from './effect';
 import {type Signal} from '../reactivity/api';
 import {TracingService, TracingSnapshot} from '../../application/tracing';
-import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/tokens';
+import {ChangeDetectionScheduler} from '../../change_detection/scheduling/change_detection_scheduler';
 import {assertInInjectionContext} from '../../di/contextual';
 import {Injector} from '../../di/injector';
 import {inject} from '../../di/injector_compatibility';

@@ -9,10 +9,8 @@
 import {setActiveConsumer} from '../../primitives/signals';
 
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from '../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../change_detection/scheduling/tokens';
+import {ChangeDetectionScheduler} from '../change_detection/scheduling/change_detection_scheduler';
 import {Injector} from '../di/injector';
 import {EnvironmentInjector} from '../di/r3_injector';
 import {RuntimeError, RuntimeErrorCode} from '../errors';

@@ -24,10 +24,8 @@ import {assertInInjectionContext} from '../../di/contextual';
 import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
 import {ViewContext} from '../view_context';
 import {noop} from '../../util/noop';
-import {
-  ChangeDetectionScheduler,
-  NotificationSource,
-} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/tokens';
+import {ChangeDetectionScheduler} from '../../change_detection/scheduling/change_detection_scheduler';
 import {setIsRefreshingViews} from '../state';
 import {EffectScheduler, SchedulableEffect} from './root_effect_scheduler';
 

@@ -14,11 +14,9 @@ import {assertStandaloneComponentType} from '../render3/errors';
 import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 
 import {ApplicationRef} from './application_ref';
-import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
 import {ProfilerEvent} from '../render3/profiler_types';
-import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {PlatformRef} from '../platform/platform_ref';
 import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
@@ -66,9 +64,7 @@ export function internalCreateApplication(config: {
     // Create root application injector based on a set of providers configured at the platform
     // bootstrap level as well as providers passed to the bootstrap call by a user.
     const allAppProviders = [
-      provideZonelessChangeDetectionInternal(),
       ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
-      errorHandlerEnvironmentInitializer,
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({

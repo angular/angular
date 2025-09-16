@@ -41,7 +41,6 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
-  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
@@ -937,7 +936,6 @@ export class TestBedCompiler {
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
       providers: [
         ...this.rootProviderOverrides,
-        provideZonelessChangeDetectionInternal(),
         ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
         {

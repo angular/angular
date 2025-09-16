@@ -9,9 +9,8 @@
 import {Subscription} from 'rxjs';
 
 import {ApplicationRef, ApplicationRefDirtyFlags} from '../../application/application_ref';
-import {Injectable} from '../../di/injectable';
 import {inject} from '../../di/injector_compatibility';
-import {EnvironmentProviders, Provider} from '../../di/interface/provider';
+import {EnvironmentProviders} from '../../di/interface/provider';
 import {makeEnvironmentProviders} from '../../di/provider_collection';
 import {RuntimeError, RuntimeErrorCode, formatRuntimeError} from '../../errors';
 import {PendingTasksInternal} from '../../pending_tasks_internal';
@@ -23,14 +22,15 @@ import {performanceMarkFeature} from '../../util/performance';
 import {NgZone, NgZonePrivate, NoopNgZone, angularZoneInstanceIdProperty} from '../../zone/ng_zone';
 
 import {
-  ChangeDetectionScheduler,
   NotificationSource,
   PROVIDED_ZONELESS,
   SCHEDULE_IN_ROOT_ZONE,
   ZONELESS_ENABLED,
-} from './zoneless_scheduling';
+} from './tokens';
+import type {ChangeDetectionScheduler} from './change_detection_scheduler';
 import {TracingService} from '../../application/tracing';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../../error_handler';
+import {ɵɵdefineInjectable} from '../../di/interface/defs';
 
 const CONSECUTIVE_MICROTASK_NOTIFICATION_LIMIT = 100;
 let consecutiveMicrotaskNotifications = 0;
@@ -55,8 +55,13 @@ function trackMicrotaskNotificationForDebugging() {
   }
 }
 
-@Injectable({providedIn: 'root'})
 export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
+  /** @nocollapse */
+  static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
+    token: ChangeDetectionSchedulerImpl,
+    providedIn: 'root',
+    factory: () => new ChangeDetectionSchedulerImpl(),
+  });
   private readonly applicationErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
@@ -354,17 +359,10 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
   }
 
   return makeEnvironmentProviders([
-    ...provideZonelessChangeDetectionInternal(),
+    {provide: NgZone, useClass: NoopNgZone},
+    {provide: ZONELESS_ENABLED, useValue: true},
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],
   ]);
-}
-
-export function provideZonelessChangeDetectionInternal(): Provider[] {
-  return [
-    {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
-    {provide: NgZone, useClass: NoopNgZone},
-    {provide: ZONELESS_ENABLED, useValue: true},
-  ];
 }

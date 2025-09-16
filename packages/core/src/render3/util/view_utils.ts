@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NotificationSource} from '../../change_detection/scheduling/zoneless_scheduling';
+import {NotificationSource} from '../../change_detection/scheduling/tokens';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 import {
   assertDefined,
