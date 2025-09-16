@@ -63,7 +63,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
   private readonly ngZone = inject(NgZone);
   private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
   private readonly tracing = inject(TracingService, {optional: true});
-  private readonly disableScheduling: boolean;
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
   private readonly subscriptions = new Subscription();
@@ -101,15 +100,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         }
       }),
     );
-
-    // TODO(atscott): These conditions will need to change when zoneless is the default
-    // Instead, they should flip to checking if ZoneJS scheduling is provided
-    this.disableScheduling =
-      !this.zonelessEnabled &&
-      // NoopNgZone without enabling zoneless means no scheduling whatsoever
-      (this.ngZone instanceof NoopNgZone ||
-        // The same goes for the lack of Zone without enabling zoneless scheduling
-        !this.zoneIsDefined);
   }
 
   notify(source: NotificationSource): void {
@@ -124,8 +114,6 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
       // to make listener callbacks work correctly with `OnPush` components.
       return;
     }
-
-    let force = false;
 
     switch (source) {
       case NotificationSource.MarkAncestorsForTraversal: {
@@ -145,34 +133,19 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
         // during CD. In practice this is a no-op since the elements code also calls via a
         // `markForRefresh()` API which sends `NotificationSource.MarkAncestorsForTraversal` anyway.
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-        force = true;
         break;
       }
       case NotificationSource.RootEffect: {
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.RootEffects;
-        // Root effects still force a CD, even if the scheduler is disabled. This ensures that
-        // effects always run, even when triggered from outside the zone when the scheduler is
-        // otherwise disabled.
-        force = true;
         break;
       }
       case NotificationSource.ViewEffect: {
         // This is technically a no-op, since view effects will also send a
         // `MarkAncestorsForTraversal` notification. Still, we set this for logical consistency.
         this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeTraversal;
-        // View effects still force a CD, even if the scheduler is disabled. This ensures that
-        // effects always run, even when triggered from outside the zone when the scheduler is
-        // otherwise disabled.
-        force = true;
         break;
       }
       case NotificationSource.PendingTaskRemoved: {
-        // Removing a pending task via the public API forces a scheduled tick, ensuring that
-        // stability is async and delayed until there was at least an opportunity to run
-        // application synchronization. This prevents some footguns when working with the
-        // public API for pending tasks where developers attempt to update application state
-        // immediately after removing the last task.
-        force = true;
         break;
       }
       case NotificationSource.ViewDetachedFromDOM:
@@ -192,7 +165,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     // context which produced the notification.
     this.appRef.tracingSnapshot = this.tracing?.snapshot(this.appRef.tracingSnapshot) ?? null;
 
-    if (!this.shouldScheduleTick(force)) {
+    if (!this.shouldScheduleTick()) {
       return;
     }
 
@@ -218,8 +191,8 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
     }
   }
 
-  private shouldScheduleTick(force: boolean): boolean {
-    if ((this.disableScheduling && !force) || this.appRef.destroyed) {
+  private shouldScheduleTick(): boolean {
+    if (this.appRef.destroyed) {
       return false;
     }
     // already scheduled or running
