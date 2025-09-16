@@ -72,10 +72,10 @@ export const enum NotificationSource {
   ViewEffect,
 }
 
-/** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
-export const ZONELESS_ENABLED = new InjectionToken<boolean>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
-  {providedIn: 'root', factory: () => true},
+/** Token used to indicate if Zone CD was enabled via provideZoneChangeDetection(). */
+export const ZONE_CHANGE_DETECTION_ENABLED = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Zone CD enabled' : '',
+  {providedIn: 'root', factory: () => false},
 );
 
 /** Token used to indicate `provideZonelessChangeDetection` was used. */
@@ -118,7 +118,7 @@ export class ChangeDetectionScheduler {
   private readonly appRef = inject(ApplicationRef);
   private readonly taskService = inject(PendingTasksInternal);
   private readonly ngZone = inject(NgZone);
-  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly zoneCdEnabled = inject(ZONE_CHANGE_DETECTION_ENABLED);
   private readonly tracing = inject(TracingService, {optional: true});
   private readonly zoneIsDefined = typeof Zone !== 'undefined' && !!Zone.root.run;
   private readonly schedulerTickApplyArgs = [{data: {'__scheduler_tick__': true}}];
@@ -127,7 +127,7 @@ export class ChangeDetectionScheduler {
     ? (this.ngZone as NgZonePrivate)._inner?.get(angularZoneInstanceIdProperty)
     : null;
   private readonly scheduleInRootZone =
-    !this.zonelessEnabled &&
+    this.zoneCdEnabled &&
     this.zoneIsDefined &&
     (inject(SCHEDULE_IN_ROOT_ZONE, {optional: true}) ?? false);
 
@@ -160,7 +160,7 @@ export class ChangeDetectionScheduler {
   }
 
   notify(source: NotificationSource): void {
-    if (!this.zonelessEnabled && source === NotificationSource.Listener) {
+    if (this.zoneCdEnabled && source === NotificationSource.Listener) {
       // When the notification comes from a listener, we skip the notification unless the
       // application has enabled zoneless. Ideally, listeners wouldn't notify the scheduler at all
       // automatically. We do not know that a developer made a change in the listener callback that
@@ -259,7 +259,7 @@ export class ChangeDetectionScheduler {
     // If we're inside the zone don't bother with scheduler. Zone will stabilize
     // eventually and run change detection.
     if (
-      !this.zonelessEnabled &&
+      this.zoneCdEnabled &&
       this.zoneIsDefined &&
       Zone.current.get(angularZoneInstanceIdProperty + this.angularZoneId)
     ) {
@@ -306,7 +306,7 @@ export class ChangeDetectionScheduler {
     // thing).
     //
     // TODO(alxhub): clean up and remove this workaround as a breaking change.
-    if (!this.zonelessEnabled && this.appRef.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
+    if (this.zoneCdEnabled && this.appRef.dirtyFlags & ApplicationRefDirtyFlags.ViewTreeAny) {
       this.appRef.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
     }
 
@@ -412,7 +412,7 @@ export function provideZonelessChangeDetection(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     {provide: NgZone, useClass: NoopNgZone},
-    {provide: ZONELESS_ENABLED, useValue: true},
+    {provide: ZONE_CHANGE_DETECTION_ENABLED, useValue: false},
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [{provide: PROVIDED_ZONELESS, useValue: true}]
       : [],

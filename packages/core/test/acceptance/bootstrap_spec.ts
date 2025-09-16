@@ -20,7 +20,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   ɵNoopNgZone,
-  ɵZONELESS_ENABLED,
+  ɵZONE_CHANGE_DETECTION_ENABLED,
 } from '../../src/core';
 import {bootstrapApplication, BrowserModule, platformBrowser} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
@@ -372,7 +372,7 @@ describe('bootstrap', () => {
 
           const {injector} = await platformBrowser().bootstrapModule(MyModule);
           expect(injector.get(NgZone)).toBeInstanceOf(ɵNoopNgZone);
-          expect(injector.get(ɵZONELESS_ENABLED)).toBeTrue();
+          expect(injector.get(ɵZONE_CHANGE_DETECTION_ENABLED)).toBeFalse();
         }),
       );
 

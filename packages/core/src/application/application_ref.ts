@@ -18,7 +18,7 @@ import {
 import {type Observable, Subject, type Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ZONELESS_ENABLED} from '../change_detection/scheduling/change_detection_scheduling';
+import {ZONE_CHANGE_DETECTION_ENABLED} from '../change_detection/scheduling/change_detection_scheduling';
 import {Console} from '../console';
 import {inject} from '../di';
 import {Injectable} from '../di/injectable';
@@ -267,7 +267,7 @@ export class ApplicationRef {
   _views: InternalViewRef<unknown>[] = [];
   private readonly internalErrorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly afterRenderManager = inject(AfterRenderManager);
-  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly zoneCdEnabled = inject(ZONE_CHANGE_DETECTION_ENABLED);
   private readonly rootEffectScheduler = inject(EffectScheduler);
 
   /**
@@ -568,7 +568,7 @@ export class ApplicationRef {
    * detection pass during which all change detection must complete.
    */
   tick(): void {
-    if (!this.zonelessEnabled) {
+    if (this.zoneCdEnabled) {
       this.dirtyFlags |= ApplicationRefDirtyFlags.ViewTreeGlobal;
     }
     this._tick();
@@ -676,7 +676,7 @@ export class ApplicationRef {
         }
 
         const mode =
-          useGlobalCheck && !this.zonelessEnabled
+          useGlobalCheck && this.zoneCdEnabled
             ? // Global mode includes `CheckAlways` views.
               // When using zoneless, all root views must be explicitly marked for refresh, even if they are
               // `CheckAlways`.

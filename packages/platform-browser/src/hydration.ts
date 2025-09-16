@@ -20,7 +20,7 @@ import {
   ɵwithDomHydration as withDomHydration,
   ɵwithEventReplay,
   ɵwithI18nSupport,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+  ɵZONE_CHANGE_DETECTION_ENABLED as ZONE_CHANGE_DETECTION_ENABLED,
   ɵwithIncrementalHydration,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
 } from '@angular/core';
@@ -151,10 +151,10 @@ function provideZoneJsCompatibilityDetector(): Provider[] {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
         const ngZone = inject(NgZone);
-        const isZoneless = inject(ZONELESS_ENABLED);
+        const isZoneCdEnabled = inject(ZONE_CHANGE_DETECTION_ENABLED);
         // Checking `ngZone instanceof NgZone` would be insufficient here,
         // because custom implementations might use NgZone as a base class.
-        if (!isZoneless && ngZone.constructor !== NgZone) {
+        if (isZoneCdEnabled && ngZone.constructor !== NgZone) {
           const console = inject(Console);
           const message = formatRuntimeError(
             RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,

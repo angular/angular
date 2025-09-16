@@ -266,7 +266,7 @@
       "ViewRef",
       "XSS_SECURITY_URL",
       "XhrFactory",
-      "ZONELESS_ENABLED",
+      "ZONE_CHANGE_DETECTION_ENABLED",
       "ZoneAwareEffectScheduler",
       "\\u0275InternalFormsSharedModule",
       "\\u0275NgNoValidate",

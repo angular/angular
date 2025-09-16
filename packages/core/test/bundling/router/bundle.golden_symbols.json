@@ -319,7 +319,7 @@
       "XSS_SECURITY_URL",
       "XhrFactory",
       "ZONELESS_BY_DEFAULT",
-      "ZONELESS_ENABLED",
+      "ZONE_CHANGE_DETECTION_ENABLED",
       "ZoneAwareEffectScheduler",
       "ZoneStablePendingTask",
       "\\u0275EmptyOutletComponent",

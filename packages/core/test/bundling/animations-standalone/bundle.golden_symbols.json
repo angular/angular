@@ -269,7 +269,7 @@
       "WebAnimationsStyleNormalizer",
       "XhrFactory",
       "ZONELESS_BY_DEFAULT",
-      "ZONELESS_ENABLED",
+      "ZONE_CHANGE_DETECTION_ENABLED",
       "ZoneAwareEffectScheduler",
       "ZoneStablePendingTask",
       "\\u0275PRE_STYLE",

@@ -44,7 +44,7 @@ export {
 export {
   ChangeDetectionScheduler as ɵChangeDetectionScheduler,
   NotificationSource as ɵNotificationSource,
-  ZONELESS_ENABLED as ɵZONELESS_ENABLED,
+  ZONE_CHANGE_DETECTION_ENABLED as ɵZONE_CHANGE_DETECTION_ENABLED,
   PROVIDED_ZONELESS as ɵPROVIDED_ZONELESS
 } from './change_detection/scheduling/change_detection_scheduling';
 export {Console as ɵConsole} from './console';

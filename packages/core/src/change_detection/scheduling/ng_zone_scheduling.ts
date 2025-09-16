@@ -26,7 +26,7 @@ import {InternalNgZoneOptions} from '../../zone/ng_zone';
 
 import {
   ChangeDetectionScheduler,
-  ZONELESS_ENABLED,
+  ZONE_CHANGE_DETECTION_ENABLED,
   SCHEDULE_IN_ROOT_ZONE,
 } from './change_detection_scheduling';
 import {SCHEDULE_IN_ROOT_ZONE_DEFAULT} from './flags';
@@ -90,7 +90,7 @@ export function internalProvideZoneChangeDetection({
   ngZoneFactory ??= () =>
     new NgZone({...getNgZoneOptions(), scheduleInRootZone} as InternalNgZoneOptions);
   return [
-    {provide: ZONELESS_ENABLED, useValue: false},
+    {provide: ZONE_CHANGE_DETECTION_ENABLED, useValue: true},
     {provide: NgZone, useFactory: ngZoneFactory},
     {
       provide: ENVIRONMENT_INITIALIZER,

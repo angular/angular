@@ -22,7 +22,7 @@ import {
   ɵNoopNgZone as NoopNgZone,
   RendererFactory2,
   ViewRef,
-  ɵZONELESS_ENABLED as ZONELESS_ENABLED,
+  ɵZONE_CHANGE_DETECTION_ENABLED as ZONE_CHANGE_DETECTION_ENABLED,
   ɵChangeDetectionScheduler,
   ɵNotificationSource,
 } from '../../src/core';
@@ -86,10 +86,10 @@ export class ComponentFixture<T> {
   private readonly _testAppRef = this._appRef as unknown as TestAppRef;
   private readonly pendingTasks = inject(PendingTasksInternal);
   private readonly appErrorHandler = inject(TestBedApplicationErrorHandler);
-  private readonly zonelessEnabled = inject(ZONELESS_ENABLED);
+  private readonly zoneCdEnabled = inject(ZONE_CHANGE_DETECTION_ENABLED);
   private readonly scheduler = inject(ɵChangeDetectionScheduler);
   private readonly rootEffectScheduler = inject(EffectScheduler);
-  private readonly autoDetectDefault = this.zonelessEnabled ? true : false;
+  private readonly autoDetectDefault = this.zoneCdEnabled ? false : true;
   private autoDetect =
     inject(ComponentFixtureAutoDetect, {optional: true}) ?? this.autoDetectDefault;
 
@@ -151,7 +151,7 @@ export class ComponentFixture<T> {
         this.componentRef.changeDetectorRef.checkNoChanges = () => {};
       }
 
-      if (this.zonelessEnabled) {
+      if (!this.zoneCdEnabled) {
         try {
           this._testAppRef.includeAllTestViews = true;
           this._appRef.tick();
@@ -197,10 +197,10 @@ export class ComponentFixture<T> {
    */
   autoDetectChanges(): void;
   autoDetectChanges(autoDetect = true): void {
-    if (!autoDetect && this.zonelessEnabled) {
+    if (!autoDetect && !this.zoneCdEnabled) {
       throw new Error('Cannot set autoDetect to false with zoneless change detection.');
     }
-    if (this._noZoneOptionIsSet && !this.zonelessEnabled) {
+    if (this._noZoneOptionIsSet && this.zoneCdEnabled) {
       throw new Error('Cannot call autoDetectChanges when ComponentFixtureNoNgZone is set.');
     }
 
