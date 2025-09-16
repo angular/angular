@@ -10,7 +10,7 @@ import {APP_BOOTSTRAP_LISTENER, ApplicationRef} from '../application/application
 import {Console} from '../console';
 import {
   ENVIRONMENT_INITIALIZER,
-  EnvironmentProviders,
+  EnvironmentProviders, Injectable, InjectionToken,
   Injector,
   makeEnvironmentProviders,
   Provider,
@@ -134,6 +134,70 @@ function enableIncrementalHydrationRuntimeSupport() {
     isIncrementalHydrationRuntimeSupportEnabled = true;
     enableRetrieveDeferBlockDataImpl();
   }
+}
+
+/**
+ * Notifies registered listeners when client-side hydration has fully completed.
+ *
+ * This service is provided in the application root injector and collects all callbacks
+ * registered under the HYDRATION_COMPLETE_TRIGGER injection token. When hydration
+ * finishes, Angular calls notifyHydrationIsComplete() internally which, in turn,
+ * invokes HydrationCompleteNotifier.notify() to execute all registered callbacks.
+ *
+ * Typical use cases include:
+ * - Performing post-hydration DOM measurements.
+ * - Integrating analytics that should run only after the app is interactive.
+ * - Kicking off effects that must wait until server-rendered content is fully hydrated.
+ *
+ * Developers do not normally need to inject or call this service directly. Instead,
+ * provide one or more callbacks using HYDRATION_COMPLETE_TRIGGER with multi: true.
+ * See HYDRATION_COMPLETE_TRIGGER for an example.
+ */
+@Injectable({providedIn: 'root'})
+export class HydrationCompleteNotifier {
+  /**
+   * Collection of callbacks to run once hydration is complete.
+   *
+   * Values are provided via HYDRATION_COMPLETE_TRIGGER using multi: true providers.
+   */
+  triggers = inject<Array<(() => void)>>(HYDRATION_COMPLETE_TRIGGER);
+
+  /**
+   * Executes all registered hydration-complete callbacks.
+   * Called by the framework after hydration completes.
+   */
+  notify() {
+    for (const trigger of this.triggers) {
+      trigger();
+    }
+  }
+}
+
+/**
+ * Injection token used to register callbacks that should run after hydration completes.
+ *
+ * This is a multi token. To register a callback, provide it with multi: true, for example:
+ *
+ * providers: [
+ *   { provide: HYDRATION_COMPLETE_TRIGGER, multi: true, useValue: () => console.log('hydrated') },
+ * ]
+ *
+ * Each provided function will be invoked once, after Angular finishes hydrating the application.
+ * Learn more about hydration at https://angular.dev/guide/hydration.
+ */
+export const HYDRATION_COMPLETE_TRIGGER = new InjectionToken<(() => void)>(
+  'HYDRATION_COMPLETE_TRIGGER',
+);
+
+/**
+ * Triggers execution of all registered hydration-complete callbacks.
+ *
+ * This function is called internally by the framework when hydration has finished.
+ * Application code should not need to call it directly.
+ */
+function notifyHydrationIsComplete(injector: Injector) {
+  const hydrationCompleteNotifier = injector.get(HydrationCompleteNotifier);
+  hydrationCompleteNotifier.notify();
 }
 
 /**
@@ -295,6 +359,8 @@ export function withDomHydration(): EnvironmentProviders {
                 }
 
                 cleanupDehydratedViews(appRef);
+
+                notifyHydrationIsComplete(appRef.injector);
                 if (typeof ngDevMode !== 'undefined' && ngDevMode) {
                   countBlocksSkippedByHydration(appRef.injector);
                   printHydrationStats(appRef.injector);
