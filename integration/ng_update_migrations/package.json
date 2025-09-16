@@ -24,9 +24,9 @@
     "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "19.0.0",
-    "@angular/cli": "file:../../node_modules/@angular/cli",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular-devkit/build-angular": "20.3.1",
+    "@angular/cli": "18.1.0",
+    "@angular/compiler-cli": "18.1.0",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/node": "file:../../node_modules/@types/node",
