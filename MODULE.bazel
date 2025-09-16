@@ -7,7 +7,7 @@ module(
 bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_nodejs", version = "6.5.0")
 bazel_dep(name = "aspect_rules_ts", version = "3.7.0")
-bazel_dep(name = "aspect_rules_js", version = "2.5.0")
+bazel_dep(name = "aspect_rules_js", version = "2.6.0")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.22.1")
 bazel_dep(name = "aspect_rules_jasmine", version = "2.0.0")
 bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
