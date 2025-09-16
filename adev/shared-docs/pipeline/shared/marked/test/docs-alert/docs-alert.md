@@ -16,3 +16,5 @@ CRITICAL: Use Critical to call out potential bad stuff or alert the reader they 
 IMPORTANT: Use Important for information that's crucial to comprehending the text or to completing some task.
 
 HELPFUL: Use Best practice to call out practices that are known to be successful or better than alternatives.
+
+NOTE: THIS NOTE WITHOUT A LINE RETURN
