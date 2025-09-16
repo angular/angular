@@ -23,7 +23,8 @@
   --deprecated-docs-bg: var(--deprecated-light); // Alias specifically for deprecated docs
 
   // subtle-purple is used for inline-code bg, docs-card hover bg & docs-code header bg
-  --subtle-purple: color-mix(in srgb, var(--bright-blue) 8%, white 92%);
+  --subtle-purple: color-mix(in srgb, var(--bright-blue) 5%, white 10%);
+  --subtle-blue: color-mix(in srgb, var(--bright-blue) 5%, white 95%);
   --light-blue: color-mix(in srgb, var(--bright-blue), white 50%);
   --light-violet: color-mix(in srgb, var(--electric-violet), white 65%);
   --light-orange: color-mix(in srgb, var(--orange-red), white 50%);
@@ -222,7 +223,7 @@
   --deprecated-docs-bg: var(--deprecated-dark); // Alias specifically for deprecated docs
 
   --light-pink: color-mix(in srgb, var(--vivid-pink) 5%, var(--page-background) 75%);
-  --subtle-purple: color-mix(in srgb, var(--bright-blue) 5%, var(--page-background) 85%);
+  --subtle-blue: color-mix(in srgb, var(--bright-blue) 5%, var(--page-background) 90%);
 
   --symbolic-purple: color-mix(in srgb, oklch(42.86% 0.29 266.4), var(--full-contrast) 65%);
   --symbolic-gray: color-mix(in srgb, oklch(66.98% 0 0), var(--full-contrast) 65%);
