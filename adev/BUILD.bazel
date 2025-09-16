@@ -1,4 +1,3 @@
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
 load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
@@ -99,56 +98,49 @@ TEST_DEPS = [
 
 ng_config(name = "ng_config")
 
-bool_flag(
-    name = "full_build_adev",
-    build_setting_default = False,
-)
-
-config_setting(
-    name = "prod_build",
-    flag_values = {
-        ":full_build_adev": "true",
-    },
-)
-
-config_setting(
-    name = "dev_build",
-    flag_values = {
-        ":full_build_adev": "false",
-    },
-)
-
-config_based_architect_env = select({
-    ":dev_build": {
-        "NG_BUILD_PARTIAL_SSR": "1",
-    },
-    ":prod_build": {
-        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
-    },
-})
-
-config_based_architect_flags = select({
-    ":dev_build": [
-        "--configuration",
-        "development",
-    ],
-    ":prod_build": [
-        "--configuration",
-        "production",
-    ],
-})
-
 ng_application(
     name = "build",
     srcs = APPLICATION_FILES + APPLICATION_DEPS,
-    args = config_based_architect_flags,
-    env = config_based_architect_env,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
-    serve_args = config_based_architect_flags + [
+    serve_args = [
         "--port",
         "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
     ],
 )
 
