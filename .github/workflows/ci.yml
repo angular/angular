@@ -117,7 +117,7 @@ jobs:
       - name: Run tests
         run: pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
-        run: pnpm bazel build //adev:build --config=release
+        run: pnpm bazel build //adev:build
 
   publish-snapshots:
     runs-on:
@@ -204,7 +204,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Build adev to ensure it continues to work
-        run: pnpm bazel build //adev:build --full_build_adev --config=release
+        run: pnpm bazel build //adev:build.production
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
         with:

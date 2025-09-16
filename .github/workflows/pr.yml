@@ -125,7 +125,7 @@ jobs:
       - name: Run tests
         run: pnpm bazel test //adev/...
       - name: Build adev in fast mode to ensure it continues to work
-        run: pnpm bazel build //adev:build --config=release
+        run: pnpm bazel build //adev:build
 
   zone-js:
     runs-on:
