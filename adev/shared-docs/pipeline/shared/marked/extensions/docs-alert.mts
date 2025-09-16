@@ -41,7 +41,7 @@ export const docsAlertExtension = {
     let match: DocsAlert | undefined;
     for (const key of Object.keys(AlertSeverityLevel)) {
       // Capture group 1: all alert text content after the severity level
-      const rule = new RegExp('^s*' + key + ': (.*?)\n(\n|$)', 's');
+      const rule = new RegExp('^s*' + key + ': (.*?)(?:\n{2,}|\s*$)', 's');
       const possibleMatch = rule.exec(src);
 
       if (possibleMatch?.[1]) {

@@ -34,4 +34,10 @@ describe('markdown to html', () => {
 
     expect(noteEl?.textContent?.trim()).toContain(`This is a multiline note`);
   });
+
+  it(`should handle alerts without a line return`, () => {
+    const noteEl = markdownDocument.querySelector(`.docs-alert-note:last-of-type`);
+
+    expect(noteEl?.textContent?.trim()).toContain(`THIS NOTE WITHOUT A LINE RETURN`);
+  });
 });
