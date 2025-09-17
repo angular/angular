@@ -170,6 +170,42 @@ export const enum TNodeFlags {
    * Bit #10 - This bit is set if the node is within a set of control flow blocks.
    */
   isInControlFlow = 0x200,
+
+  /**
+   * Bit #11 - This bit is set if the node represents a form control.
+   *
+   * True when the node has an input binding to a `ɵControl` directive (but not also to a custom
+   * component).
+   */
+  isFormControl = 0x400,
+
+  /**
+   * Bit #12 - This bit is set if the node hosts a custom control component.
+   *
+   * A custom control component's model property is named `value`.
+   */
+  isFormValueControl = 0x800,
+
+  /**
+   * Bit #13 - This bit is set if the node hosts a custom checkbox component.
+   *
+   * A custom checkbox component's model property is named `checked`.
+   */
+  isFormCheckboxControl = 0x1000,
+
+  /**
+   * Bit #14 - This bit is set if the node is a native control with a numeric type.
+   *
+   * This is used to determine whether the control supports the `min` and `max` properties.
+   */
+  isNativeNumericControl = 0x2000,
+
+  /**
+   * Bit #15 - This bit is set if the node is a native text control.
+   *
+   * This is used to determine whether control supports the `minLength` and `maxLength` properties.
+   */
+  isNativeTextControl = 0x4000,
 }
 
 /**

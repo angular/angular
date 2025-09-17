@@ -10,11 +10,11 @@ import {bindingUpdated} from '../bindings';
 import {ɵCONTROL, ɵControl} from '../interfaces/control';
 import {ComponentDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
-import {TNode} from '../interfaces/node';
+import {TNode, TNodeFlags} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
-import {LView, RENDERER} from '../interfaces/view';
+import {LView, RENDERER, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {getNativeByTNode} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
@@ -33,34 +33,22 @@ import {writeToDirectiveInput} from './write_to_directive_input';
  */
 export function ɵɵcontrolCreate(): void {
   const lView = getLView<{} | null>();
+  const tView = getTView();
   const tNode = getCurrentTNode()!;
+  const control = tView.firstCreatePass
+    ? getControlDirectiveFirstCreatePass(tView, tNode, lView)
+    : getControlDirective(tNode, lView);
 
-  // TODO(https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274)
-  // * cache the field directive index or instance for reuse.
-  const control = getControlDirective(tNode, lView);
   if (!control) {
     return;
   }
 
-  // TODO(https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274):
-  // * cache the custom control component index or instance for reuse.
-  // * cache the control model name for reuse.
-  const customControl = getCustomControlComponent(tNode);
-  if (customControl) {
-    const [componentIndex, modelName] = customControl;
-    listenToCustomControl(lView, tNode, control, componentIndex, modelName);
-  } else if (isNativeControl(lView, tNode)) {
-    listenToNativeControl(lView, tNode, control);
+  if (tNode.flags & TNodeFlags.isFormValueControl) {
+    listenToCustomControl(lView, tNode, control, 'value');
+  } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
+    listenToCustomControl(lView, tNode, control, 'checked');
   } else {
-    // For example, user wrote <div [control]="f">.
-    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860276
-    const tagName = tNode.value;
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_CONTROL_HOST,
-      `'<${tagName}>' is an invalid control host. The host must be a native form control (such ` +
-        `as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
-        `'value' or 'checked' model.`,
-    );
+    listenToNativeControl(lView, tNode, control);
   }
 
   control.register();
@@ -79,8 +67,8 @@ export function ɵɵcontrolCreate(): void {
  */
 export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
   const lView = getLView();
-  const bindingIndex = nextBindingIndex();
   const tNode = getSelectedTNode();
+  const bindingIndex = nextBindingIndex();
 
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
@@ -88,20 +76,79 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
   }
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * only run if this is really a control binding determine in the create pass.
   const control = getControlDirective(tNode, lView);
-  if (!control) {
+  if (control) {
+    if (tNode.flags & TNodeFlags.isFormValueControl) {
+      updateCustomControl(tNode, lView, control, 'value');
+    } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
+      updateCustomControl(tNode, lView, control, 'checked');
+    } else {
+      updateNativeControl(tNode, lView, control);
+    }
+  }
+}
+
+function getControlDirectiveFirstCreatePass<T>(
+  tView: TView,
+  tNode: TNode,
+  lView: LView,
+): ɵControl<T> | undefined {
+  const directiveIndices = tNode.inputs?.['field'];
+  if (!directiveIndices) {
+    // There are no matching inputs for the `[field]` property binding.
     return;
   }
 
-  const customControl = getCustomControlComponent(tNode);
-  if (customControl) {
-    const [componentIndex, modelName] = customControl;
-    updateCustomControl(lView, componentIndex, modelName, control);
-  } else {
-    updateNativeControl(tNode, lView, control);
+  let componentIndex!: number;
+  if (isComponentHost(tNode)) {
+    componentIndex = tNode.directiveStart + tNode.componentOffset;
+    if (directiveIndices.includes(componentIndex)) {
+      // If component has a `field` input, we assume that it will handle binding the field to the
+      // appropriate native/custom control in its template, so we do not attempt to bind any inputs
+      // on this component.
+      return;
+    }
   }
+
+  // Search for the `ɵControl` directive.
+  const control = findControlDirective<T>(lView, directiveIndices);
+  if (!control) {
+    // The `ɵControl` directive was not imported by this component.
+    return;
+  }
+
+  tNode.flags |= TNodeFlags.isFormControl;
+
+  if (isComponentHost(tNode)) {
+    const componentDef = tView.data[componentIndex] as ComponentDef<unknown>;
+    // TODO: should we check that any additional field state inputs are signal based?
+    if (hasModelInput(componentDef, 'value')) {
+      tNode.flags |= TNodeFlags.isFormValueControl;
+      return control;
+    } else if (hasModelInput(componentDef, 'checked')) {
+      tNode.flags |= TNodeFlags.isFormCheckboxControl;
+      return control;
+    }
+  }
+
+  const nativeElement = lView[tNode.index];
+  if (isNativeControl(nativeElement)) {
+    if (isNumericInput(nativeElement)) {
+      tNode.flags |= TNodeFlags.isNativeNumericControl;
+    }
+    if (isTextControl(nativeElement)) {
+      tNode.flags |= TNodeFlags.isNativeTextControl;
+    }
+    return control;
+  }
+
+  const tagName = tNode.value;
+  throw new RuntimeError(
+    RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
+    `'<${tagName}>' is an invalid [field] directive host. The host must be a native form control ` +
+      `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
+      `'value' or 'checked' model.`,
+  );
 }
 
 /**
@@ -114,23 +161,15 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
  * @param lView The `LView` that contains the element.
  */
 function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | undefined {
-  const directiveIndices = tNode.inputs?.['field'];
-  if (!directiveIndices) {
-    // There are no matching inputs for the `[control]` property binding.
-    return;
-  }
+  return tNode.flags & TNodeFlags.isFormControl
+    ? findControlDirective(lView, tNode.inputs!['field'])
+    : undefined;
+}
 
-  if (isComponentHost(tNode)) {
-    const componentIndex = tNode.directiveStart + tNode.componentOffset;
-    if (directiveIndices.includes(componentIndex)) {
-      // If component has a `field` input, we assume that it will handle binding the field to the
-      // appropriate native/custom control in its template, so we do not attempt to bind any inputs
-      // on this component.
-      return;
-    }
-  }
-
-  // Search for the `Field` directive.
+function findControlDirective<T>(
+  lView: LView,
+  directiveIndices: number[],
+): ɵControl<T> | undefined {
   for (let index of directiveIndices) {
     const directive = lView[index];
     if (ɵCONTROL in directive) {
@@ -139,40 +178,6 @@ function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | unde
   }
 
   // The `Field` directive was not imported by this component.
-  return;
-}
-
-/**
- * The name of the property that represents a control's value.
- */
-type ControlModelName = 'value' | 'checked';
-
-/**
- * Returns information about the component on the specified node, if it appears to be a custom form
- * control.
- *
- * A component is considered a custom form control if it has a model input named `value` or
- * `checked`.
- *
- * @param tNode The `TNode` of the element to check.
- * @returns an array containing the component index and model input name if it's a custom form
- *  control, or undefined.
- */
-function getCustomControlComponent(tNode: TNode): [number, ControlModelName] | undefined {
-  if (!isComponentHost(tNode)) {
-    return;
-  }
-  const tView = getTView();
-  const componentIndex = tNode.directiveStart + tNode.componentOffset;
-  const componentDef = tView.data[componentIndex] as ComponentDef<unknown>;
-  if (hasModelInput(componentDef, 'value')) {
-    return [componentIndex, 'value'];
-  }
-  if (hasModelInput(componentDef, 'checked')) {
-    return [componentIndex, 'checked'];
-  }
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861022
-  // * should we check that any additional field state inputs are signal based?
   return;
 }
 
@@ -205,9 +210,9 @@ function listenToCustomControl(
   lView: LView<{} | null>,
   tNode: TNode,
   control: ɵControl<unknown>,
-  componentIndex: number,
-  modelName: ControlModelName,
+  modelName: string,
 ) {
+  const componentIndex = tNode.directiveStart + tNode.componentOffset;
   const outputName = modelName + 'Change';
   listenToOutput(
     tNode,
@@ -254,8 +259,7 @@ interface HTMLTextAreaElementNarrowed extends HTMLTextAreaElement {
  */
 type NativeControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElementNarrowed;
 
-function isNativeControl(lView: LView<unknown>, tNode: TNode): boolean {
-  const element = lView[tNode.index];
+function isNativeControl(element: unknown): element is NativeControlElement {
   return (
     element instanceof HTMLInputElement ||
     element instanceof HTMLSelectElement ||
@@ -314,12 +318,13 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
  * @param control The `ɵControl` directive instance.
  */
 function updateCustomControl(
+  tNode: TNode,
   lView: LView,
-  componentIndex: number,
-  modelName: ControlModelName,
   control: ɵControl<unknown>,
+  modelName: string,
 ) {
   const tView = getTView();
+  const componentIndex = tNode.directiveStart + tNode.componentOffset;
   const component = lView[componentIndex];
   const componentDef = tView.data[componentIndex] as ComponentDef<{}>;
   const state = control.state();
@@ -380,16 +385,12 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
   setBooleanAttribute(renderer, input, 'required', state.required());
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * cache this in `tNode.flags`.
-  if (isNumericInput(input)) {
+  if (tNode.flags & TNodeFlags.isNativeNumericControl) {
     setOptionalAttribute(renderer, input, 'max', state.max());
     setOptionalAttribute(renderer, input, 'min', state.min());
   }
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * cache this in `tNode.flags`.
-  if (isTextInput(input)) {
+  if (tNode.flags & TNodeFlags.isNativeTextControl) {
     setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
     setOptionalAttribute(renderer, input, 'minLength', state.minLength());
   }
@@ -421,9 +422,9 @@ function isNumericInput(control: NativeControlElement) {
  * This is not the same as an input with `type="text"`, but rather any input that accepts
  * text-based input which includes numeric types.
  */
-function isTextInput(
+function isTextControl(
   control: NativeControlElement,
-): control is HTMLInputElement | HTMLTextAreaElementNarrowed {
+): control is Exclude<NativeControlElement, HTMLSelectElement> {
   return !(control instanceof HTMLSelectElement);
 }
 
