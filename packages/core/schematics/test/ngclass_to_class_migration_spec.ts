@@ -575,7 +575,34 @@ describe('NgClass migration', () => {
         export class Cmp {}`);
     });
 
-    it('should migrate when NgClass is provided by CommonModule', async () => {
+    it('should migrate when NgClass is provided by CommonModule and remove CommonModule', async () => {
+      writeFile(
+        '/app.component.ts',
+        `
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        @Component({
+          imports: [CommonModule],
+          template: \`
+            <div [ngClass]="{'admin': isAdmin, dense: density === 'high'}">
+              <p>{{item}}</p>
+            </div>
+          \`
+        })
+        export class Cmp {}
+      `,
+      );
+
+      await runMigration();
+
+      const content = tree.readContent('/app.component.ts');
+
+      expect(content).toContain(`[class]="{'admin': isAdmin, dense: density === 'high'}"`);
+      expect(content).not.toContain('imports: [CommonModule]');
+      expect(content).not.toContain("import {CommonModule} from '@angular/common';");
+    });
+
+    it('should migrate when NgClass is provided by CommonModule but not remove CommonModule', async () => {
       writeFile(
         '/app.component.ts',
         `
@@ -585,13 +612,14 @@ describe('NgClass migration', () => {
           standalone: true,
           imports: [CommonModule],
           template: \`
-            <div [ngClass]="{'admin': isAdmin, dense: density === 'high'}">
+            <div *ngIf='condition' [ngClass]="{'admin': isAdmin, dense: density === 'high'}">
               <p>{{item}}</p>
             </div>
           \`
         })
         export class Cmp {
           isAdmin = true;
+          condition = true;
         }
       `,
       );
