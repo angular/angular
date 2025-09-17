@@ -429,6 +429,136 @@ describe('control directive', () => {
         expect(element.min).toBe('');
       });
     });
+
+    describe('maxLength', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<textarea [control]="f"></textarea>`,
+        })
+        class TestCmp {
+          readonly maxLength = signal(20);
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, this.maxLength);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+        expect(element.maxLength).toBe(20);
+
+        act(() => fixture.componentInstance.maxLength.set(15));
+        expect(element.maxLength).toBe(15);
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model('');
+          readonly maxLength = input<number | null>(null);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly maxLength = signal(10);
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, this.maxLength);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().maxLength()).toBe(10);
+
+        act(() => component.maxLength.set(5));
+        expect(component.customControl().maxLength()).toBe(5);
+      });
+
+      it('is not set on a native control that does not support it', () => {
+        @Component({
+          imports: [Control],
+          template: `<select [control]="f"></select>`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            maxLength(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLSelectElement;
+        expect(element.getAttribute('maxLength')).toBeNull();
+      });
+    });
+
+    describe('minLength', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<textarea [control]="f"></textarea>`,
+        })
+        class TestCmp {
+          readonly minLength = signal(20);
+          readonly f = form(signal(''), (p) => {
+            minLength(p, this.minLength);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+        expect(element.minLength).toBe(20);
+
+        act(() => fixture.componentInstance.minLength.set(15));
+        expect(element.minLength).toBe(15);
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model('');
+          readonly minLength = input<number | null>(null);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly minLength = signal(10);
+          readonly f = form(signal(''), (p) => {
+            minLength(p, this.minLength);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().minLength()).toBe(10);
+
+        act(() => component.minLength.set(5));
+        expect(component.customControl().minLength()).toBe(5);
+      });
+
+      it('is not set on a native control that does not support it', () => {
+        @Component({
+          imports: [Control],
+          template: `<select [control]="f"></select>`,
+        })
+        class TestCmp {
+          readonly f = form(signal(''), (p) => {
+            minLength(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLSelectElement;
+        expect(element.getAttribute('minLength')).toBeNull();
+      });
+    });
   });
 
   it('synchronizes a basic form with a custom control', () => {
