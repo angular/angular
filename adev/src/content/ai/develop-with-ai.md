@@ -39,3 +39,7 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 * <a href="/context/llm-files/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
 Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.
+
+## Web Codegen Scorer
+The Angular team developed and open-sourced the [Web Codegen Scorer](https://github.com/angular/web-codegen-scorer), a tool to evaluate and score the quality of AI generated web code. You can use this tool to make evidence-based decisions relating to AI-generated code, such as fine-tuning prompts to improve the accuracy of LLM-generated code for Angular. These prompts can be included as system instructions for your AI tooling or as context with your prompt. You can also use this tool to compare the quality of code produced by different models and monitor quality over time as models and agents evolve.
+
