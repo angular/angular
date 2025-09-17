@@ -61,7 +61,7 @@ You can also bind to HTML _attributes_ by prefixing the attribute name with `att
 <ul [attr.role]="listRole()">
 ```
 
-Angular automatically updates DOM properties and attribute when the bound value changes.
+Angular automatically updates DOM properties and attributes when the bound value changes.
 
 ## Handling user interaction
 
