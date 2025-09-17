@@ -327,7 +327,7 @@ function updateCustomControl(
   maybeWriteToDirectiveInput(componentDef, component, 'disabledReasons', state.disabledReasons);
   maybeWriteToDirectiveInput(componentDef, component, 'max', state.max);
   maybeWriteToDirectiveInput(componentDef, component, 'maxLength', state.maxLength);
-  maybeWriteToDirectiveInput(componentDef, component, 'min', state.max);
+  maybeWriteToDirectiveInput(componentDef, component, 'min', state.min);
   maybeWriteToDirectiveInput(componentDef, component, 'minLength', state.minLength);
   maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
   maybeWriteToDirectiveInput(componentDef, component, 'readonly', state.readonly);
@@ -362,7 +362,7 @@ function maybeWriteToDirectiveInput(
  * @param control The `ɵControl` directive instance.
  */
 function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unknown>): void {
-  const input = getNativeByTNode(tNode, lView) as HTMLInputElement;
+  const input = getNativeByTNode(tNode, lView) as NativeControlElement;
   const renderer = lView[RENDERER];
   const state = control.state();
 
@@ -373,16 +373,35 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
   setBooleanAttribute(renderer, input, 'required', state.required());
 
-  // TODO: use tag and type attribute to determine which of these properties to bind.
-  setOptionalAttribute(renderer, input, 'max', state.max());
+  // TODO: cache this in `tNode.flags`.
+  if (isNumericInput(input)) {
+    setOptionalAttribute(renderer, input, 'max', state.max());
+    setOptionalAttribute(renderer, input, 'min', state.min());
+  }
+
+  // TODO: only set these attributes if the input type supports them.
   setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-  setOptionalAttribute(renderer, input, 'min', state.min());
   setOptionalAttribute(renderer, input, 'minLength', state.minLength());
 }
 
 /** Checks if a given value is a Date or null */
 function isDateOrNull(value: unknown): value is Date | null {
   return value === null || value instanceof Date;
+}
+
+/** Returns whether `control` has a numeric input type. */
+function isNumericInput(control: NativeControlElement) {
+  switch (control.type) {
+    case 'date':
+    case 'datetime-local':
+    case 'month':
+    case 'number':
+    case 'range':
+    case 'time':
+    case 'week':
+      return true;
+  }
+  return false;
 }
 
 /**
