@@ -1,3 +1,59 @@
+<a name="21.0.0-next.4"></a>
+# 21.0.0-next.4 (2025-09-17)
+## Breaking Changes
+### common
+- `ngComponentOutletContent` is now of type `Node[][] | undefined` instead of `any[][] | undefined`.
+### core
+- Using a combination of `provideZoneChangeDetection`
+  while also removing ZoneJS polyfills will no longer result in the
+  internal scheduler being disabled. All Angular applications now
+  consistenly use the same scheduler, and those with the Zone change detection
+  provider include additional automatic scheduling behaviors based on
+  NgZone stabilization.
+- Angular no longer provides a change detection scheduler
+  for ZoneJS-based change detection by default. Add
+  `provideZoneChangeDetection` to the providers of your
+  `bootstrapApplication` function or your `AppModule` (if using
+  `bootstrapModule`). This provider addition will be covered by an
+  automated migration.
+- `moduleId` was removed from `Component` metadata.
+- The `interpolation` option on Components has been removed. Only the default `{{ ... }}` is now supported.
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7a4b225c57](https://github.com/angular/angular/commit/7a4b225c57d8e390ec06731f5211d52d14da3a9c) | refactor | improve typing of `ngComponentOutletContent` ([#63674](https://github.com/angular/angular/pull/63674)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [803dc8e44c](https://github.com/angular/angular/commit/803dc8e44c047ebccdfa5ce9ce6a450c6971a78b) | fix | Add support for `aria-invalid` ([#63748](https://github.com/angular/angular/pull/63748)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [89cf62f907](https://github.com/angular/angular/commit/89cf62f907d28684d726d26fa4f12be23e8152ff) | fix | only bind inputs that are part of microsyntax to a structural directive ([#52453](https://github.com/angular/angular/pull/52453)) |
+| [7fd3db0423](https://github.com/angular/angular/commit/7fd3db04232d63f1b48ec389bbb62d9ca277fcf9) | fix | remove internal syntax-related flags ([#63787](https://github.com/angular/angular/pull/63787)) |
+| [0a60e355e1](https://github.com/angular/angular/commit/0a60e355e1563051f1152efd46fe6a7daa3e5951) | fix | signal not invoked diagnostic not raised when input has same name in template ([#63754](https://github.com/angular/angular/pull/63754)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [809a4ed8c1](https://github.com/angular/angular/commit/809a4ed8c110ca930cb1c6bad309f8bfcaf7ceb8) | feat | Add migration for zoneless by default. ([#63042](https://github.com/angular/angular/pull/63042)) |
+| [1352fbdbf2](https://github.com/angular/angular/commit/1352fbdbf2542c39715045c7a6c0f6aa41516b02) | fix | Drop special-case disables automatic change detection scheduling ([#63846](https://github.com/angular/angular/pull/63846)) |
+| [3d6eeab2e0](https://github.com/angular/angular/commit/3d6eeab2e0045fcf8e5343f3f999ec9bd4a0d71d) | fix | prevent animation events from being cleaned up on destroy ([#63414](https://github.com/angular/angular/pull/63414)) |
+| [a4001c440f](https://github.com/angular/angular/commit/a4001c440f2a86aebd916252fa75f31563227b57) | fix | Prevent leave animations on a move operation ([#63745](https://github.com/angular/angular/pull/63745)) |
+| [45fed3d201](https://github.com/angular/angular/commit/45fed3d2011bf6feffa8ee1365a5c88d603f826c) | fix | Remove Zone-based change provider from internals by default ([#63382](https://github.com/angular/angular/pull/63382)) |
+| [a5e5dbbc16](https://github.com/angular/angular/commit/a5e5dbbc16f605cce6dd72a82ddb9110e655a89b) | refactor | remove `moduleId` from Component metadata ([#63482](https://github.com/angular/angular/pull/63482)) |
+| [9a16718b13](https://github.com/angular/angular/commit/9a16718b13a03df2941c31cb968dcbfa6904a481) | refactor | remove deprecated `interpolation` option on Components. ([#63474](https://github.com/angular/angular/pull/63474)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d201cd2c2b](https://github.com/angular/angular/commit/d201cd2c2bdb418fd1b595320855c35eb91e1e5b) | feat | Prevents marking fields as touched/dirty when state is hidden/readonly/disabled ([#63633](https://github.com/angular/angular/pull/63633)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8dc8914c8a](https://github.com/angular/angular/commit/8dc8914c8a2be44e30b512670628a558bdd7f1f4) | feat | add migration to convert ngStyle to use style ([#63517](https://github.com/angular/angular/pull/63517)) |
+| [4133b08d93](https://github.com/angular/angular/commit/4133b08d9353a0403179483048fac00b0d5331cf) | fix | fix route-lazy-loading migration ([#63818](https://github.com/angular/angular/pull/63818)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.1"></a>
 # 20.3.1 (2025-09-17)
 ### compiler
