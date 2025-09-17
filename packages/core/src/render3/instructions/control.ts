@@ -379,9 +379,11 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
     setOptionalAttribute(renderer, input, 'min', state.min());
   }
 
-  // TODO: only set these attributes if the input type supports them.
-  setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-  setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+  // TODO: cache this in `tNode.flags`.
+  if (isTextInput(input)) {
+    setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
+    setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+  }
 }
 
 /** Checks if a given value is a Date or null */
@@ -402,6 +404,18 @@ function isNumericInput(control: NativeControlElement) {
       return true;
   }
   return false;
+}
+
+/**
+ * Returns whether `control` is a text-based input.
+ *
+ * This is not the same as an input with `type="text"`, but rather any input that accepts
+ * text-based input which includes numeric types.
+ */
+function isTextInput(
+  control: NativeControlElement,
+): control is HTMLInputElement | HTMLTextAreaElementNarrowed {
+  return !(control instanceof HTMLSelectElement);
 }
 
 /**
