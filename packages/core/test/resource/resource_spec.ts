@@ -18,8 +18,7 @@ import {
   signal,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-
-import type {PromiseConstructor} from '../../src/util/promise_with_resolvers';
+import {promiseWithResolvers} from '../../src/util/promise_with_resolvers';
 
 abstract class MockBackend<T, R> {
   protected pending = new Map<
@@ -337,7 +336,7 @@ describe('resource', () => {
     const res = resource({
       params: request,
       loader: async ({params}) => {
-        const p = (Promise as unknown as PromiseConstructor).withResolvers<number>();
+        const p = promiseWithResolvers<number>();
         resolve.push(() => p.resolve(params));
         return p.promise;
       },
