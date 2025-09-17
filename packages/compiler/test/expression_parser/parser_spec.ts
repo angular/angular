@@ -510,6 +510,36 @@ describe('parser', () => {
         checkBinding('typeof `hello ${name}!`');
       });
     });
+
+    describe('regular expression literals', () => {
+      it('should parse a regular expression literal without flags', () => {
+        checkBinding('/abc/');
+        checkBinding('/[a/]$/');
+        checkBinding('/a\\w+/');
+        checkBinding('/^http:\\/\\/foo\\.bar/');
+      });
+
+      it('should parse a regular expression literal with flags', () => {
+        checkBinding('/abc/g');
+        checkBinding('/[a/]$/gi');
+        checkBinding('/a\\w+/gim');
+        checkBinding('/^http:\\/\\/foo\\.bar/i');
+      });
+
+      it('should parse a regular expression that is a part of other expressions', () => {
+        checkBinding('/abc/.test("foo")');
+        checkBinding('"foo".match(/(abc)/)[1].toUpperCase()');
+        checkBinding('/abc/.test("foo") && something || somethingElse');
+      });
+
+      it('should report invalid regular expression flag', () => {
+        expectBindingError('"foo".match(/abc/O)', 'Unsupported regular expression flag "O"');
+      });
+
+      it('should report duplicated regular expression flags', () => {
+        expectBindingError('"foo".match(/abc/gig)', 'Duplicate regular expression flag "g"');
+      });
+    });
   });
 
   describe('parse spans', () => {
@@ -690,6 +720,22 @@ describe('parser', () => {
       function expectSpan(input: string) {
         expect(unparseWithSpan(parseBinding(input))).toContain([jasmine.any(String), input]);
       }
+    });
+
+    it('should record span for a regex without flags', () => {
+      const ast = parseBinding('/^http:\\/\\/foo\\.bar/');
+      expect(unparseWithSpan(ast)).toContain([
+        '/^http:\\/\\/foo\\.bar/',
+        '/^http:\\/\\/foo\\.bar/',
+      ]);
+    });
+
+    it('should record span for a regex with flags', () => {
+      const ast = parseBinding('/^http:\\/\\/foo\\.bar/gim');
+      expect(unparseWithSpan(ast)).toContain([
+        '/^http:\\/\\/foo\\.bar/gim',
+        '/^http:\\/\\/foo\\.bar/gim',
+      ]);
     });
   });
 

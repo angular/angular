@@ -26,6 +26,7 @@ import {
   ParenthesizedExpression,
   PrefixNot,
   PropertyRead,
+  RegularExpressionLiteral,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
@@ -197,6 +198,10 @@ class AstTranslator implements AstVisitor {
 
   visitThisReceiver(ast: ThisReceiver): never {
     throw new Error('Method not implemented.');
+  }
+
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
+    throw new Error('TODO');
   }
 
   visitInterpolation(ast: Interpolation): ts.Expression {
@@ -602,5 +607,8 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
   }
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
     return ast.expression.visit(this);
+  }
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
+    return false;
   }
 }
