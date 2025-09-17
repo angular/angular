@@ -19,7 +19,7 @@ import {Renderer} from '../interfaces/renderer';
 import {NgZone} from '../../zone';
 import {determineLongestAnimation, allLeavingAnimations} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
-import type {PromiseConstructor} from '../../util/promise_with_resolvers';
+import {promiseWithResolvers} from '../../util/promise_with_resolvers';
 
 import {
   areAnimationsDisabled,
@@ -230,7 +230,7 @@ function runLeaveAnimations(
   value: string | Function,
   animationsDisabled: boolean,
 ): Promise<void> {
-  const {promise, resolve} = (Promise as unknown as PromiseConstructor).withResolvers<void>();
+  const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
@@ -363,7 +363,7 @@ function runLeaveAnimationFunction(
   tNode: TNode,
   value: AnimationFunction,
 ): Promise<void> {
-  const {promise, resolve} = (Promise as unknown as PromiseConstructor).withResolvers<void>();
+  const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
