@@ -11,5 +11,5 @@ import {InjectionToken} from '../di';
 export const USE_EXHAUSTIVE_CHECK_NO_CHANGES_DEFAULT = false;
 
 export const UseExhaustiveCheckNoChanges = new InjectionToken<boolean>(
-  ngDevMode ? 'exhaustive checkNoChanges' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'exhaustive checkNoChanges' : '',
 );

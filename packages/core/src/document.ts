@@ -15,4 +15,6 @@ import {InjectionToken} from './di';
  *
  * @publicApi
  */
-export const DOCUMENT = new InjectionToken<Document>(ngDevMode ? 'DocumentToken' : '');
+export const DOCUMENT = new InjectionToken<Document>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'DocumentToken' : '',
+);

@@ -57,7 +57,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * @publicApi
  */
 export const ROUTER_OUTLET_DATA = new InjectionToken<Signal<unknown | undefined>>(
-  ngDevMode ? 'RouterOutlet data' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'RouterOutlet data' : '',
 );
 
 /**

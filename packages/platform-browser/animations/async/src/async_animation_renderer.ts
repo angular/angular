@@ -319,5 +319,5 @@ export class DynamicDelegationRenderer implements Renderer2 {
  * Private token for investigation purposes
  */
 export const ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN = new InjectionToken<<T>(loadFn: () => T) => T>(
-  ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
 );

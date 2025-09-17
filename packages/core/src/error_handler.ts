@@ -103,57 +103,60 @@ export const errorHandlerEnvironmentInitializer = {
   multi: true,
 };
 
-const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorListeners' : '', {
-  providedIn: 'root',
-  factory: () => {
-    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-      return;
-    }
-    const window = inject(DOCUMENT).defaultView;
-    if (!window) {
-      return;
-    }
-
-    const errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-    const rejectionListener = (e: PromiseRejectionEvent) => {
-      errorHandler(e.reason);
-      e.preventDefault();
-    };
-    const errorListener = (e: ErrorEvent) => {
-      if (e.error) {
-        errorHandler(e.error);
-      } else {
-        errorHandler(
-          new Error(
-            ngDevMode
-              ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
-              : e.message,
-            {cause: e},
-          ),
-        );
+const globalErrorListeners = new InjectionToken<void>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'GlobalErrorListeners' : '',
+  {
+    providedIn: 'root',
+    factory: () => {
+      if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+        return;
       }
-      e.preventDefault();
-    };
+      const window = inject(DOCUMENT).defaultView;
+      if (!window) {
+        return;
+      }
 
-    const setupEventListeners = () => {
-      window.addEventListener('unhandledrejection', rejectionListener);
-      window.addEventListener('error', errorListener);
-    };
+      const errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+      const rejectionListener = (e: PromiseRejectionEvent) => {
+        errorHandler(e.reason);
+        e.preventDefault();
+      };
+      const errorListener = (e: ErrorEvent) => {
+        if (e.error) {
+          errorHandler(e.error);
+        } else {
+          errorHandler(
+            new Error(
+              ngDevMode
+                ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
+                : e.message,
+              {cause: e},
+            ),
+          );
+        }
+        e.preventDefault();
+      };
 
-    // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
-    // the scope of this functionality.
-    if (typeof Zone !== 'undefined') {
-      Zone.root.run(setupEventListeners);
-    } else {
-      setupEventListeners();
-    }
+      const setupEventListeners = () => {
+        window.addEventListener('unhandledrejection', rejectionListener);
+        window.addEventListener('error', errorListener);
+      };
 
-    inject(DestroyRef).onDestroy(() => {
-      window.removeEventListener('error', errorListener);
-      window.removeEventListener('unhandledrejection', rejectionListener);
-    });
+      // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
+      // the scope of this functionality.
+      if (typeof Zone !== 'undefined') {
+        Zone.root.run(setupEventListeners);
+      } else {
+        setupEventListeners();
+      }
+
+      inject(DestroyRef).onDestroy(() => {
+        window.removeEventListener('error', errorListener);
+        window.removeEventListener('unhandledrejection', rejectionListener);
+      });
+    },
   },
-});
+);
 
 /**
  * Provides an environment initializer which forwards unhandled errors to the ErrorHandler.

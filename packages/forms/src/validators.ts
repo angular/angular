@@ -77,7 +77,7 @@ function lengthOrSize(value: unknown): number | null {
  * @publicApi
  */
 export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Function>>(
-  ngDevMode ? 'NgValidators' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'NgValidators' : '',
 );
 
 /**
@@ -110,7 +110,7 @@ export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Functi
  * @publicApi
  */
 export const NG_ASYNC_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Function>>(
-  ngDevMode ? 'NgAsyncValidators' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'NgAsyncValidators' : '',
 );
 
 /**
