@@ -201,9 +201,7 @@ class AstTranslator implements AstVisitor {
   }
 
   visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
-    return wrapForTypeChecker(
-      ts.factory.createRegularExpressionLiteral(`/${ast.body}/${ast.flags ?? ''}`),
-    );
+    throw new Error('TODO');
   }
 
   visitInterpolation(ast: Interpolation): ts.Expression {
