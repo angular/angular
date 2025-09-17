@@ -18,7 +18,7 @@ import {
 import {Router, RouterLink} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
-import {CommonModule} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 
 import {SearchHistory} from '../../services';
 import {RelativeLink} from '../../pipes';
@@ -26,7 +26,7 @@ import {SearchItem} from '../../directives';
 
 @Component({
   selector: 'docs-search-history',
-  imports: [CommonModule, RelativeLink, RouterLink, SearchItem],
+  imports: [NgTemplateOutlet, RelativeLink, RouterLink, SearchItem],
   templateUrl: './search-history.component.html',
   styleUrl: './search-history.component.scss',
   host: {
