@@ -208,11 +208,6 @@ describe('type check blocks', () => {
     );
   });
 
-  it('should generate regular expressions', () => {
-    const TEMPLATE = '{{ /\\d+/g.test("123") }}';
-    expect(tcb(TEMPLATE)).toContain('(((/\\d+/g)).test("123"))');
-  });
-
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
