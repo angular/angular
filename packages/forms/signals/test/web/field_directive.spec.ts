@@ -1278,6 +1278,20 @@ describe('field directive', () => {
       expect(cmp.f().value()).toBe('#0000ff');
     });
   });
+
+  it('should throw for invalid field directive host', () => {
+    @Component({
+      imports: [Field],
+      template: `<div [field]="f"></div>`,
+    })
+    class TestCmp {
+      f = form(signal(''));
+    }
+
+    expect(() => act(() => TestBed.createComponent(TestCmp))).toThrowError(
+      /'<div>' is an invalid \[field\] directive host\./,
+    );
+  });
 });
 
 function setupRadioGroup() {
