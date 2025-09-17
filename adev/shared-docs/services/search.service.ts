@@ -144,13 +144,8 @@ export class Search {
     return this.getUniqueSearchResultItems(items).map((hitItem: SearchResult): SearchResultItem => {
       const content = hitItem._snippetResult.content;
       const hierarchy = hitItem._snippetResult.hierarchy;
-      const type = hitItem.hierarchy.lvl0 === 'Tutorials' ? 'code' : 'doc';
       const category = hitItem.hierarchy?.lvl0 ?? null;
-      const hasSubLabel = content || hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
-      const subLabelHtml =
-        category === 'Reference'
-          ? extractPackageNameFromUrl(hitItem.url)
-          : this.parseLabelToHtml(hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null);
+      const hasSubLabel = hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
 
       return {
         id: hitItem.objectID,
@@ -158,18 +153,18 @@ export class Search {
         url: hitItem.url,
 
         labelHtml: this.parseLabelToHtml(hitItem._snippetResult.hierarchy?.lvl1?.value ?? ''),
-        subLabelHtml,
+        subLabelHtml: this.parseLabelToHtml(
+          hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
+        ),
+        contentHtml: content ? this.parseLabelToHtml(content.value) : null,
+        package: category === 'Reference' ? extractPackageNameFromUrl(hitItem.url) : null,
+
         category: hitItem.hierarchy?.lvl0 ?? null,
       };
     });
   }
 
   private getBestSnippetForMatch(result: SearchResult): string {
-    // if there is content, return it
-    if (result._snippetResult.content !== undefined) {
-      return result._snippetResult.content.value;
-    }
-
     const hierarchy = result._snippetResult.hierarchy;
     if (hierarchy === undefined) {
       return '';
@@ -242,5 +237,5 @@ function extractPackageNameFromUrl(url: string): string | null {
   if (extractedSegment == null) {
     return null;
   }
-  return `From <code>@angular/${extractedSegment[1]}</code>`;
+  return `<code>@angular/${extractedSegment[1]}</code>`;
 }
