@@ -31,6 +31,7 @@ import {
   maxLength,
   min,
   minLength,
+  pattern,
   readonly,
   required,
   type DisabledReason,
@@ -561,6 +562,35 @@ describe('field directive', () => {
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const element = fixture.nativeElement.firstChild as HTMLSelectElement;
         expect(element.getAttribute('minLength')).toBeNull();
+      });
+    });
+
+    describe('pattern', () => {
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+          readonly pattern = input<readonly RegExp[]>([]);
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="f" />`,
+        })
+        class TestCmp {
+          readonly pattern = signal(/abc/);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, this.pattern);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().pattern()).toEqual([/abc/]);
+
+        act(() => component.pattern.set(/def/));
+        expect(component.customControl().pattern()).toEqual([/def/]);
       });
     });
   });
