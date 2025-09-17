@@ -22,6 +22,7 @@ import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {PlatformRef} from '../platform/platform_ref';
 import {internalProvideZoneChangeDetection} from '../change_detection/scheduling/ng_zone_scheduling';
+import {validAppIdInitializer} from './application_tokens';
 
 const ZONELESS_BY_DEFAULT = true;
 
@@ -69,6 +70,7 @@ export function internalCreateApplication(config: {
       provideZonelessChangeDetectionInternal(),
       ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
       errorHandlerEnvironmentInitializer,
+      ...(ngDevMode ? [validAppIdInitializer] : []),
       ...(appProviders || []),
     ];
     const adapter = new EnvironmentNgModuleRefAdapter({
