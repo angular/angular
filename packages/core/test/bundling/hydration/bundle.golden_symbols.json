@@ -93,7 +93,6 @@
       "HEADER_OFFSET",
       "HOST",
       "HOST_ATTR",
-      "HOST_TAG_NAME",
       "HTTP_ROOT_INTERCEPTOR_FNS",
       "HTTP_TRANSFER_CACHE_ORIGIN_MAP",
       "HYDRATION",
