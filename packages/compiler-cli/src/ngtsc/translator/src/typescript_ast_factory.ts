@@ -341,6 +341,10 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     );
   }
 
+  createRegularExpressionLiteral(body: string, flags: string | null): ts.Expression {
+    return ts.factory.createRegularExpressionLiteral(`/${body}/${flags ?? ''}`);
+  }
+
   setSourceMapRange<T extends ts.Node>(node: T, sourceMapRange: SourceMapRange | null): T {
     if (sourceMapRange === null) {
       return node;

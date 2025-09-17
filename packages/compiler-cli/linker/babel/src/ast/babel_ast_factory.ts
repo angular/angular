@@ -215,6 +215,10 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     ]);
   }
 
+  createRegularExpressionLiteral(body: string, flags: string | null): t.Expression {
+    return t.regExpLiteral(body, flags ?? undefined);
+  }
+
   setSourceMapRange<T extends t.Statement | t.Expression | t.TemplateElement>(
     node: T,
     sourceMapRange: SourceMapRange | null,
