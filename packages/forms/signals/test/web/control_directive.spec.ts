@@ -299,6 +299,136 @@ describe('control directive', () => {
         expect(component.customControl().required()).toBe(true);
       });
     });
+
+    describe('max', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<input type="number" [control]="f">`,
+        })
+        class TestCmp {
+          readonly max = signal(10);
+          readonly f = form(signal(5), (p) => {
+            max(p, this.max);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('10');
+
+        act(() => fixture.componentInstance.max.set(5));
+        expect(element.max).toBe('5');
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model(0);
+          readonly max = input<number | null>(null);
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly max = signal(10);
+          readonly f = form(signal(5), (p) => {
+            max(p, this.max);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().max()).toBe(10);
+
+        act(() => component.max.set(5));
+        expect(component.customControl().max()).toBe(5);
+      });
+
+      it('is not set on native control if type does not support it', () => {
+        @Component({
+          imports: [Control],
+          template: `<input type="text" [control]="f">`,
+        })
+        class TestCmp {
+          readonly f = form(signal(5), (p) => {
+            max(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.max).toBe('');
+      });
+    });
+
+    describe('min', () => {
+      it('native control', () => {
+        @Component({
+          imports: [Control],
+          template: `<input type="number" [control]="f">`,
+        })
+        class TestCmp {
+          readonly min = signal(10);
+          readonly f = form(signal(15), (p) => {
+            min(p, this.min);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('10');
+
+        act(() => fixture.componentInstance.min.set(5));
+        expect(element.min).toBe('5');
+      });
+
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl {
+          readonly value = model(0);
+          readonly min = input<number>();
+        }
+
+        @Component({
+          imports: [Control, CustomControl],
+          template: `<custom-control [control]="f" />`,
+        })
+        class TestCmp {
+          readonly min = signal(10);
+          readonly f = form(signal(15), (p) => {
+            min(p, this.min);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().min()).toBe(10);
+
+        act(() => component.min.set(5));
+        expect(component.customControl().min()).toBe(5);
+      });
+
+      it('is not set on native control if type does not support it', () => {
+        @Component({
+          imports: [Control],
+          template: `<input type="text" [control]="f">`,
+        })
+        class TestCmp {
+          readonly f = form(signal(15), (p) => {
+            min(p, 10);
+          });
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const element = fixture.nativeElement.firstChild as HTMLInputElement;
+        expect(element.min).toBe('');
+      });
+    });
   });
 
   it('synchronizes a basic form with a custom control', () => {
