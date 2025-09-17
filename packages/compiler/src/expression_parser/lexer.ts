@@ -16,8 +16,6 @@ export enum TokenType {
   String,
   Operator,
   Number,
-  RegExpBody,
-  RegExpFlags,
   Error,
 }
 
@@ -130,14 +128,6 @@ export class Token {
     return this.type === TokenType.Error;
   }
 
-  isRegExpBody(): boolean {
-    return this.type === TokenType.RegExpBody;
-  }
-
-  isRegExpFlags(): boolean {
-    return this.type === TokenType.RegExpFlags;
-  }
-
   toNumber(): number {
     return this.type === TokenType.Number ? this.numValue : -1;
   }
@@ -169,8 +159,6 @@ export class Token {
       case TokenType.PrivateIdentifier:
       case TokenType.String:
       case TokenType.Error:
-      case TokenType.RegExpBody:
-      case TokenType.RegExpFlags:
         return this.strValue;
       case TokenType.Number:
         return this.numValue.toString();
@@ -217,14 +205,6 @@ function newNumberToken(index: number, end: number, n: number): Token {
 
 function newErrorToken(index: number, end: number, message: string): Token {
   return new Token(index, end, TokenType.Error, 0, message);
-}
-
-function newRegExpBodyToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.RegExpBody, 0, text);
-}
-
-function newRegExpFlagsToken(index: number, end: number, text: string): Token {
-  return new Token(index, end, TokenType.RegExpFlags, 0, text);
 }
 
 export const EOF: Token = new Token(-1, -1, TokenType.Character, 0, '');
@@ -320,9 +300,6 @@ class _Scanner {
       case chars.$MINUS:
         return this.scanComplexOperator(start, '-', chars.$EQ, '=');
       case chars.$SLASH:
-        if (this.isStartOfRegex()) {
-          return this.scanRegex(index);
-        }
         return this.scanComplexOperator(start, '/', chars.$EQ, '=');
       case chars.$PERCENT:
         return this.scanComplexOperator(start, '%', chars.$EQ, '=');
@@ -628,78 +605,6 @@ class _Scanner {
     }
 
     return newOperatorToken(start, this.index, operator);
-  }
-
-  private isStartOfRegex(): boolean {
-    if (this.tokens.length === 0) {
-      return true;
-    }
-
-    const lastToken = this.tokens[this.tokens.length - 1];
-
-    return (
-      !lastToken.isIdentifier() &&
-      !lastToken.isPrivateIdentifier() &&
-      !lastToken.isNumber() &&
-      !lastToken.isString() &&
-      !lastToken.isKeyword() &&
-      !lastToken.isCharacter(chars.$RPAREN) &&
-      !lastToken.isCharacter(chars.$RBRACKET)
-    );
-  }
-
-  private scanRegex(tokenStart: number): Token {
-    this.advance();
-    const textStart = this.index;
-    let inEscape = false;
-    let inCharacterClass = false;
-
-    while (true) {
-      const peek = this.peek;
-
-      if (peek === chars.$EOF) {
-        return this.error('Unterminated regular expression', 0);
-      }
-
-      if (inEscape) {
-        inEscape = false;
-      } else if (peek === chars.$BACKSLASH) {
-        inEscape = true;
-      } else if (peek === chars.$LBRACKET) {
-        inCharacterClass = true;
-      } else if (peek === chars.$RBRACKET) {
-        inCharacterClass = false;
-      } else if (peek === chars.$SLASH && !inCharacterClass) {
-        break;
-      }
-      this.advance();
-    }
-
-    // Note that we want the text without the slashes,
-    // but we still want the slashes to be part of the span.
-    const value = this.input.substring(textStart, this.index);
-    this.advance();
-    const bodyToken = newRegExpBodyToken(tokenStart, this.index, value);
-    const flagsToken = this.scanRegexFlags(this.index);
-
-    if (flagsToken !== null) {
-      this.tokens.push(bodyToken);
-      return flagsToken;
-    }
-
-    return bodyToken;
-  }
-
-  private scanRegexFlags(start: number): Token | null {
-    if (!chars.isAsciiLetter(this.peek)) {
-      return null;
-    }
-
-    while (chars.isAsciiLetter(this.peek)) {
-      this.advance();
-    }
-
-    return newRegExpFlagsToken(start, this.index, this.input.substring(start, this.index));
   }
 }
 
