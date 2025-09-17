@@ -26,7 +26,6 @@ import {
   PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
-  RegularExpressionLiteral,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
@@ -236,10 +235,6 @@ class Unparser implements AstVisitor {
     this._expression += '(';
     this._visit(ast.expression);
     this._expression += ')';
-  }
-
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {
-    this._expression += `/${ast.body}/${ast.flags || ''}`;
   }
 
   private _visit(ast: AST) {
