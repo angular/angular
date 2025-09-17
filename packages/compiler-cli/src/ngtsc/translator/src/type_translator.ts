@@ -189,6 +189,10 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
+  visitRegularExpressionLiteral(ast: o.outputAst.RegularExpressionLiteral, context: any) {
+    throw new Error('Method not implemented.');
+  }
+
   visitNotExpr(ast: o.NotExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
