@@ -39781,7 +39781,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // 
-var VERSION4 = "7.0.3";
+var VERSION4 = "7.0.4";
 
 // 
 var noop = () => {
@@ -40064,7 +40064,7 @@ function paginateRest(octokit) {
 paginateRest.VERSION = VERSION6;
 
 // 
-var VERSION7 = "16.0.0";
+var VERSION7 = "16.1.0";
 
 // 
 var Endpoints = {
@@ -40876,11 +40876,20 @@ var Endpoints = {
     removeSelectedRepoFromOrgSecret: [
       "DELETE /orgs/{org}/dependabot/secrets/{secret_name}/repositories/{repository_id}"
     ],
+    repositoryAccessForOrg: [
+      "GET /organizations/{org}/dependabot/repository-access"
+    ],
+    setRepositoryAccessDefaultLevel: [
+      "PUT /organizations/{org}/dependabot/repository-access/default-level"
+    ],
     setSelectedReposForOrgSecret: [
       "PUT /orgs/{org}/dependabot/secrets/{secret_name}/repositories"
     ],
     updateAlert: [
       "PATCH /repos/{owner}/{repo}/dependabot/alerts/{alert_number}"
+    ],
+    updateRepositoryAccessForOrg: [
+      "PATCH /organizations/{org}/dependabot/repository-access"
     ]
   },
   dependencyGraph: {
@@ -40986,6 +40995,9 @@ var Endpoints = {
     addAssignees: [
       "POST /repos/{owner}/{repo}/issues/{issue_number}/assignees"
     ],
+    addBlockedByDependency: [
+      "POST /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by"
+    ],
     addLabels: ["POST /repos/{owner}/{repo}/issues/{issue_number}/labels"],
     addSubIssue: [
       "POST /repos/{owner}/{repo}/issues/{issue_number}/sub_issues"
@@ -41012,10 +41024,17 @@ var Endpoints = {
     getEvent: ["GET /repos/{owner}/{repo}/issues/events/{event_id}"],
     getLabel: ["GET /repos/{owner}/{repo}/labels/{name}"],
     getMilestone: ["GET /repos/{owner}/{repo}/milestones/{milestone_number}"],
+    getParent: ["GET /repos/{owner}/{repo}/issues/{issue_number}/parent"],
     list: ["GET /issues"],
     listAssignees: ["GET /repos/{owner}/{repo}/assignees"],
     listComments: ["GET /repos/{owner}/{repo}/issues/{issue_number}/comments"],
     listCommentsForRepo: ["GET /repos/{owner}/{repo}/issues/comments"],
+    listDependenciesBlockedBy: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by"
+    ],
+    listDependenciesBlocking: [
+      "GET /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocking"
+    ],
     listEvents: ["GET /repos/{owner}/{repo}/issues/{issue_number}/events"],
     listEventsForRepo: ["GET /repos/{owner}/{repo}/issues/events"],
     listEventsForTimeline: [
@@ -41041,6 +41060,9 @@ var Endpoints = {
     ],
     removeAssignees: [
       "DELETE /repos/{owner}/{repo}/issues/{issue_number}/assignees"
+    ],
+    removeDependencyBlockedBy: [
+      "DELETE /repos/{owner}/{repo}/issues/{issue_number}/dependencies/blocked_by/{issue_id}"
     ],
     removeLabel: [
       "DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}"
@@ -41144,6 +41166,9 @@ var Endpoints = {
     convertMemberToOutsideCollaborator: [
       "PUT /orgs/{org}/outside_collaborators/{username}"
     ],
+    createArtifactStorageRecord: [
+      "POST /orgs/{org}/artifacts/metadata/storage-record"
+    ],
     createInvitation: ["POST /orgs/{org}/invitations"],
     createIssueType: ["POST /orgs/{org}/issue-types"],
     createOrUpdateCustomProperties: ["PATCH /orgs/{org}/properties/schema"],
@@ -41155,15 +41180,15 @@ var Endpoints = {
     ],
     createWebhook: ["POST /orgs/{org}/hooks"],
     delete: ["DELETE /orgs/{org}"],
+    deleteAttestationsBulk: ["POST /orgs/{org}/attestations/delete-request"],
+    deleteAttestationsById: [
+      "DELETE /orgs/{org}/attestations/{attestation_id}"
+    ],
+    deleteAttestationsBySubjectDigest: [
+      "DELETE /orgs/{org}/attestations/digest/{subject_digest}"
+    ],
     deleteIssueType: ["DELETE /orgs/{org}/issue-types/{issue_type_id}"],
     deleteWebhook: ["DELETE /orgs/{org}/hooks/{hook_id}"],
-    enableOrDisableSecurityProductOnAllOrgRepos: [
-      "POST /orgs/{org}/{security_product}/{enablement}",
-      {},
-      {
-        deprecated: "octokit.rest.orgs.enableOrDisableSecurityProductOnAllOrgRepos() is deprecated, see https://docs.github.com/rest/orgs/orgs#enable-or-disable-a-security-feature-for-an-organization"
-      }
-    ],
     get: ["GET /orgs/{org}"],
     getAllCustomProperties: ["GET /orgs/{org}/properties/schema"],
     getCustomProperty: [
@@ -41183,7 +41208,13 @@ var Endpoints = {
     ],
     list: ["GET /organizations"],
     listAppInstallations: ["GET /orgs/{org}/installations"],
+    listArtifactStorageRecords: [
+      "GET /orgs/{org}/artifacts/{subject_digest}/metadata/storage-records"
+    ],
     listAttestations: ["GET /orgs/{org}/attestations/{subject_digest}"],
+    listAttestationsBulk: [
+      "POST /orgs/{org}/attestations/bulk-list{?per_page,before,after}"
+    ],
     listBlockedUsers: ["GET /orgs/{org}/blocks"],
     listCustomPropertiesValuesForRepos: ["GET /orgs/{org}/properties/values"],
     listFailedInvitations: ["GET /orgs/{org}/failed_invitations"],
@@ -41376,6 +41407,44 @@ var Endpoints = {
     listOrgPrivateRegistries: ["GET /orgs/{org}/private-registries"],
     updateOrgPrivateRegistry: [
       "PATCH /orgs/{org}/private-registries/{secret_name}"
+    ]
+  },
+  projects: {
+    addItemForOrg: ["POST /orgs/{org}/projectsV2/{project_number}/items"],
+    addItemForUser: ["POST /users/{user_id}/projectsV2/{project_number}/items"],
+    deleteItemForOrg: [
+      "DELETE /orgs/{org}/projectsV2/{project_number}/items/{item_id}"
+    ],
+    deleteItemForUser: [
+      "DELETE /users/{user_id}/projectsV2/{project_number}/items/{item_id}"
+    ],
+    getFieldForOrg: [
+      "GET /orgs/{org}/projectsV2/{project_number}/fields/{field_id}"
+    ],
+    getFieldForUser: [
+      "GET /users/{user_id}/projectsV2/{project_number}/fields/{field_id}"
+    ],
+    getForOrg: ["GET /orgs/{org}/projectsV2/{project_number}"],
+    getForUser: ["GET /users/{user_id}/projectsV2/{project_number}"],
+    getOrgItem: ["GET /orgs/{org}/projectsV2/{project_number}/items/{item_id}"],
+    getUserItem: [
+      "GET /users/{user_id}/projectsV2/{project_number}/items/{item_id}"
+    ],
+    listFieldsForOrg: ["GET /orgs/{org}/projectsV2/{project_number}/fields"],
+    listFieldsForUser: [
+      "GET /users/{user_id}/projectsV2/{project_number}/fields"
+    ],
+    listForOrg: ["GET /orgs/{org}/projectsV2"],
+    listForUser: ["GET /users/{username}/projectsV2"],
+    listItemsForOrg: ["GET /orgs/{org}/projectsV2/{project_number}/items"],
+    listItemsForUser: [
+      "GET /users/{user_id}/projectsV2/{project_number}/items"
+    ],
+    updateItemForOrg: [
+      "PATCH /orgs/{org}/projectsV2/{project_number}/items/{item_id}"
+    ],
+    updateItemForUser: [
+      "PATCH /users/{user_id}/projectsV2/{project_number}/items/{item_id}"
     ]
   },
   pulls: {
@@ -41956,8 +42025,14 @@ var Endpoints = {
     listLocationsForAlert: [
       "GET /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}/locations"
     ],
+    listOrgPatternConfigs: [
+      "GET /orgs/{org}/secret-scanning/pattern-configurations"
+    ],
     updateAlert: [
       "PATCH /repos/{owner}/{repo}/secret-scanning/alerts/{alert_number}"
+    ],
+    updateOrgPatternConfigs: [
+      "PATCH /orgs/{org}/secret-scanning/pattern-configurations"
     ]
   },
   securityAdvisories: {
@@ -42067,6 +42142,15 @@ var Endpoints = {
     ],
     createPublicSshKeyForAuthenticatedUser: ["POST /user/keys"],
     createSshSigningKeyForAuthenticatedUser: ["POST /user/ssh_signing_keys"],
+    deleteAttestationsBulk: [
+      "POST /users/{username}/attestations/delete-request"
+    ],
+    deleteAttestationsById: [
+      "DELETE /users/{username}/attestations/{attestation_id}"
+    ],
+    deleteAttestationsBySubjectDigest: [
+      "DELETE /users/{username}/attestations/digest/{subject_digest}"
+    ],
     deleteEmailForAuthenticated: [
       "DELETE /user/emails",
       {},
@@ -42111,6 +42195,9 @@ var Endpoints = {
     ],
     list: ["GET /users"],
     listAttestations: ["GET /users/{username}/attestations/{subject_digest}"],
+    listAttestationsBulk: [
+      "POST /users/{username}/attestations/bulk-list{?per_page,before,after}"
+    ],
     listBlockedByAuthenticated: [
       "GET /user/blocks",
       {},
