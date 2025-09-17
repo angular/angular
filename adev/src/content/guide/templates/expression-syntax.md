@@ -17,12 +17,7 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 | Array           | `['Onion', 'Cheese', 'Garlic']` |
 | null            | `null`                          |
 | Template string | `` `Hello ${name}` ``           |
-
-### Unsupported literals
-
-| Literal type | Example value |
-| ------------ | ------------- |
-| RegExp       | `/\d+/`       |
+| RegExp          | `/\d+/`                         |
 
 ## Globals
 
