@@ -52,7 +52,7 @@ const REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE = false;
  * from component rendering.
  */
 export const ENABLE_ROOT_COMPONENT_BOOTSTRAP = new InjectionToken<boolean>(
-  ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
 );
 
 export interface BootstrapConfig {

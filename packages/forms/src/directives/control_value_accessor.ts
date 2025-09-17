@@ -212,5 +212,5 @@ export class BuiltInControlValueAccessor extends BaseControlValueAccessor {}
  * @publicApi
  */
 export const NG_VALUE_ACCESSOR = new InjectionToken<ReadonlyArray<ControlValueAccessor>>(
-  ngDevMode ? 'NgValueAccessor' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'NgValueAccessor' : '',
 );

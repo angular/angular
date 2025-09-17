@@ -73,7 +73,7 @@ export abstract class PlatformLocation {
  * @publicApi
  */
 export const LOCATION_INITIALIZED = new InjectionToken<Promise<any>>(
-  ngDevMode ? 'Location Initialized' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'Location Initialized' : '',
 );
 
 /**

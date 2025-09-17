@@ -56,11 +56,11 @@ export interface LocationUpgradeConfig {
  * @publicApi
  */
 export const LOCATION_UPGRADE_CONFIGURATION = new InjectionToken<LocationUpgradeConfig>(
-  ngDevMode ? 'LOCATION_UPGRADE_CONFIGURATION' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'LOCATION_UPGRADE_CONFIGURATION' : '',
 );
 
 const APP_BASE_HREF_RESOLVED = new InjectionToken<string>(
-  ngDevMode ? 'APP_BASE_HREF_RESOLVED' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'APP_BASE_HREF_RESOLVED' : '',
 );
 
 /**

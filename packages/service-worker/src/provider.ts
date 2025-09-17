@@ -25,7 +25,9 @@ import {SwPush} from './push';
 import {SwUpdate} from './update';
 import {RuntimeErrorCode} from './errors';
 
-export const SCRIPT = new InjectionToken<string>(ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '');
+export const SCRIPT = new InjectionToken<string>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'NGSW_REGISTER_SCRIPT' : '',
+);
 
 export function ngswAppInitializer(): void {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
