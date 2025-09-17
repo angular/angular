@@ -113,7 +113,6 @@
       "HEADER_OFFSET",
       "HOST",
       "HOST_ATTR",
-      "HOST_TAG_NAME",
       "HYDRATION",
       "HistoryStateManager",
       "HostAttributeToken",
