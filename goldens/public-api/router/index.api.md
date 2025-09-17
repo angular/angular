@@ -136,6 +136,15 @@ export interface CanDeactivate<T> {
 }
 
 // @public
+export interface CanDeactivateChild {
+    // (undocumented)
+    canDeactivateChild(...params: Parameters<CanDeactivateChildFn>): MaybeAsync<GuardResult>;
+}
+
+// @public
+export type CanDeactivateChildFn = (childComponent: unknown, childRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => MaybeAsync<GuardResult>;
+
+// @public
 export type CanDeactivateFn<T> = (component: T, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState: RouterStateSnapshot) => MaybeAsync<GuardResult>;
 
 // @public @deprecated
@@ -387,6 +396,9 @@ export function mapToCanActivateChild(providers: Array<Type<CanActivateChild>>):
 
 // @public
 export function mapToCanDeactivate<T = unknown>(providers: Array<Type<CanDeactivate<T>>>): CanDeactivateFn<T>[];
+
+// @public
+export function mapToCanDeactivateChild(providers: Array<Type<CanDeactivateChild>>): CanDeactivateChildFn[];
 
 // @public
 export function mapToCanMatch(providers: Array<Type<CanMatch>>): CanMatchFn[];
@@ -659,6 +671,7 @@ export interface Route {
     canActivate?: Array<CanActivateFn | DeprecatedGuard>;
     canActivateChild?: Array<CanActivateChildFn | DeprecatedGuard>;
     canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
+    canDeactivateChild?: Array<CanDeactivateChildFn>;
     // @deprecated
     canLoad?: Array<CanLoadFn | DeprecatedGuard>;
     canMatch?: Array<CanMatchFn | DeprecatedGuard>;
