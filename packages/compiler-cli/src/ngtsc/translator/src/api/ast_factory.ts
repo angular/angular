@@ -273,6 +273,14 @@ export interface AstFactory<TStatement, TExpression> {
   ): TStatement;
 
   /**
+   * Create a regular expression literal (e.g. `/\d+/g`).
+   *
+   * @param body Body of the regex.
+   * @param flags Flags of the regex, if any.
+   */
+  createRegularExpressionLiteral(body: string, flags: string | null): TExpression;
+
+  /**
    * Attach a source map range to the given node.
    *
    * @param node the node to which the range should be attached.

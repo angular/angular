@@ -8606,5 +8606,51 @@ suppress
         );
       });
     });
+
+    describe('regular expressions', () => {
+      it('should infer the type of a regular expression literal', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '{{acceptsNumber(/123/)}}',
+            })
+            class TestCmp {
+              acceptsNumber(value: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'RegExp' is not assignable to parameter of type 'number'.`,
+        );
+      });
+
+      it('should infer the type of methods on a regular expression literal', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              template: '{{acceptsNumber(/123/.test("hello"))}}',
+            })
+            class TestCmp {
+              acceptsNumber(value: number) {}
+            }
+          `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Argument of type 'boolean' is not assignable to parameter of type 'number'.`,
+        );
+      });
+    });
   });
 });
