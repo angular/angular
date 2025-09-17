@@ -238,10 +238,33 @@ export function withInMemoryScrolling(
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }
 
+/**
+ * Enables the use of the browser's `History` API for navigation.
+ *
+ * @description
+ * This function provides a `Location` strategy that uses the browser's `History` API.
+ * It is required when using features that rely on `history.state`. For example, the
+ * `state` object in `NavigationExtras` is passed to `history.pushState` or
+ * `history.replaceState`.
+ *
+ * @usageNotes
+ *
+ * ```typescript
+ * const appRoutes: Routes = [
+ *   { path: 'page', component: PageComponent },
+ * ];
+ *
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideRouter(appRoutes, withPlatformNavigation())
+ *   ]
+ * });
+ * ```
+ *
+ * @returns A `RouterFeature` that enables the platform navigation.
+ */
 export function withPlatformNavigation() {
-  const providers = [
-    {provide: StateManager, useExisting: NavigationStateManager},
-    {provide: Location, useClass: ɵNavigationAdapterForLocation},
+  const devModeLocationCheck =
     typeof ngDevMode === 'undefined' || ngDevMode
       ? [
           provideEnvironmentInitializer(() => {
@@ -258,7 +281,11 @@ export function withPlatformNavigation() {
             }
           }),
         ]
-      : [],
+      : [];
+  const providers = [
+    {provide: StateManager, useExisting: NavigationStateManager},
+    {provide: Location, useClass: ɵNavigationAdapterForLocation},
+    devModeLocationCheck,
   ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }

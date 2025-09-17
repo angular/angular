@@ -14,6 +14,19 @@ import {NavigationTrigger} from '../events';
 import {SubscriptionLike} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
+/**
+ * A `StateManager` that uses the browser's Navigation API to get the state of a `popstate`
+ * event.
+ *
+ * This class is currently an extension of `HistoryStateManager` and is used when the
+ * Navigation API is available. It overrides the behavior of listening to `popstate` events
+ * to retrieve the state from `navigation.currentEntry` instead of `history.state` since
+ * history and navigation states are separate.
+ *
+ * This implementation is not complete - it does not integrate at all with navigation API other than
+ * providing the right state on popstate. It needs to manage the whole lifecycle of the navigation
+ * by intercepting the navigation event.
+ */
 export class NavigationStateManager extends HistoryStateManager {
   private readonly navigation = inject(PlatformNavigation);
 
