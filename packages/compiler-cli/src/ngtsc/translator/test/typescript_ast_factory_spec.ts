@@ -475,6 +475,20 @@ describe('TypeScriptAstFactory', () => {
     });
   });
 
+  describe('createRegularExpressionLiteral()', () => {
+    it('should create a regular expressions without flags', () => {
+      const {generate} = setupStatements();
+      const regex = factory.createRegularExpressionLiteral('^\\d+-foo$', null);
+      expect(generate(regex)).toEqual('/^\\d+-foo$/');
+    });
+
+    it('should create a regular expressions with flags', () => {
+      const {generate} = setupStatements();
+      const regex = factory.createRegularExpressionLiteral('^\\d+-foo$', 'gi');
+      expect(generate(regex)).toEqual('/^\\d+-foo$/gi');
+    });
+  });
+
   describe('setSourceMapRange()', () => {
     it('should attach the `sourceMapRange` to the given `node`', () => {
       const {

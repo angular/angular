@@ -396,6 +396,18 @@ describe('BabelAstFactory', () => {
     });
   });
 
+  describe('createRegularExpressionLiteral()', () => {
+    it('should create a regular expressions without flags', () => {
+      const regex = factory.createRegularExpressionLiteral('^\\d+-foo$', null);
+      expect(generate(regex).code).toEqual('/^\\d+-foo$/');
+    });
+
+    it('should create a regular expressions with flags', () => {
+      const regex = factory.createRegularExpressionLiteral('^\\d+-foo$', 'gi');
+      expect(generate(regex).code).toEqual('/^\\d+-foo$/gi');
+    });
+  });
+
   describe('setSourceMapRange()', () => {
     it('should attach the `sourceMapRange` to the given `node`', () => {
       const expr = expression.ast`42`;
