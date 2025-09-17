@@ -1,3 +1,26 @@
+<a name="20.3.1"></a>
+# 20.3.1 (2025-09-17)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [7fb5a8087e](https://github.com/angular/angular/commit/7fb5a8087ee8fb0451cedbe6ac4ce972eca4b56e) | fix | Add support for `aria-invalid` ([#63748](https://github.com/angular/angular/pull/63748)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8843707919](https://github.com/angular/angular/commit/88437079190cef9ee522a3e2defa6e2672c2d030) | fix | only bind inputs that are part of microsyntax to a structural directive ([#52453](https://github.com/angular/angular/pull/52453)) |
+| [38c9921ff3](https://github.com/angular/angular/commit/38c9921ff387d235981a79e26dc8bc7e60a2e10c) | fix | signal not invoked diagnostic not raised when input has same name in template ([#63754](https://github.com/angular/angular/pull/63754)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [802dbcc2a0](https://github.com/angular/angular/commit/802dbcc2a0c5d3784cb04b4c78ea71ed0925327c) | fix | prevent animation events from being cleaned up on destroy ([#63414](https://github.com/angular/angular/pull/63414)) |
+| [3ec8a5c753](https://github.com/angular/angular/commit/3ec8a5c7536cdd2c1db7db4bfbc2d4995156a833) | fix | Prevent leave animations on a move operation ([#63745](https://github.com/angular/angular/pull/63745)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6e54bdfdcb](https://github.com/angular/angular/commit/6e54bdfdcb01522ee46865fadec911f960fff730) | fix | fix route-lazy-loading migration ([#63818](https://github.com/angular/angular/pull/63818)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.0"></a>
 # 20.3.0 (2025-09-10)
 ## Breaking Changes
