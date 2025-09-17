@@ -388,9 +388,11 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * use tag and type attribute to determine which of these properties to bind.
-  setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-  setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+  // * cache this in `tNode.flags`.
+  if (isTextInput(input)) {
+    setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
+    setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+  }
 }
 
 /** Checks if a given value is a Date or null */
@@ -411,6 +413,18 @@ function isNumericInput(control: NativeControlElement) {
       return true;
   }
   return false;
+}
+
+/**
+ * Returns whether `control` is a text-based input.
+ *
+ * This is not the same as an input with `type="text"`, but rather any input that accepts
+ * text-based input which includes numeric types.
+ */
+function isTextInput(
+  control: NativeControlElement,
+): control is HTMLInputElement | HTMLTextAreaElementNarrowed {
+  return !(control instanceof HTMLSelectElement);
 }
 
 /**
