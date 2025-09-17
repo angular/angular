@@ -1320,8 +1320,7 @@ export function transformExpressionsInExpression(
   } else if (
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||
-    expr instanceof o.LiteralExpr ||
-    expr instanceof o.RegularExpressionLiteral
+    expr instanceof o.LiteralExpr
   ) {
     // No action for these types.
   } else {
