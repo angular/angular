@@ -19,9 +19,9 @@ import {
   TsurgeFunnelMigration,
 } from '../../utils/tsurge';
 import {
-  migrateNgClassBindings,
   calculateImportReplacements,
   createNgClassImportsArrayRemoval,
+  migrateNgClassBindings,
 } from './util';
 import {AbsoluteFsPath} from '@angular/compiler-cli';
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
@@ -46,11 +46,46 @@ export class NgClassMigration extends TsurgeFunnelMigration<
     super();
   }
 
+  private processTemplate(
+    template: {content: string; inline: boolean; filePath: string | null; start: number},
+    node: ts.ClassDeclaration,
+    file: ProjectFile,
+    info: ProgramInfo,
+    typeChecker: ts.TypeChecker,
+  ): {
+    replacements: Replacement[];
+    replacementCount: number;
+    canRemoveCommonModule: boolean;
+  } | null {
+    const {migrated, changed, replacementCount, canRemoveCommonModule} = migrateNgClassBindings(
+      template.content,
+      this.config,
+      node,
+      typeChecker,
+    );
+
+    if (!changed) {
+      return null;
+    }
+
+    const fileToMigrate = template.inline
+      ? file
+      : projectFile(template.filePath as AbsoluteFsPath, info);
+    const end = template.start + template.content.length;
+
+    return {
+      replacements: [prepareTextReplacement(fileToMigrate, migrated, template.start, end)],
+      replacementCount,
+      canRemoveCommonModule,
+    };
+  }
+
   override async analyze(info: ProgramInfo): Promise<Serializable<NgClassCompilationUnitData>> {
     const {sourceFiles, program} = info;
     const typeChecker = program.getTypeChecker();
     const ngClassReplacements: Array<NgClassMigrationData> = [];
     const filesWithNgClassDeclarations = new Set<ts.SourceFile>();
+    const filesToRemoveCommonModule = new Set<ProjectFileID>();
 
     for (const sf of sourceFiles) {
       ts.forEachChild(sf, (node: ts.Node) => {
@@ -69,58 +104,55 @@ export class NgClassMigration extends TsurgeFunnelMigration<
 
         const replacementsForClass: Replacement[] = [];
         let replacementCountForClass = 0;
+        let canRemoveCommonModuleForFile = true;
 
-        templateVisitor.resolvedTemplates.forEach((template) => {
-          const {migrated, changed, replacementCount} = migrateNgClassBindings(
-            template.content,
-            this.config,
-            node,
-            typeChecker,
-          );
+        for (const template of templateVisitor.resolvedTemplates) {
+          const result = this.processTemplate(template, node, file, info, typeChecker);
+          if (result) {
+            replacementsForClass.push(...result.replacements);
+            replacementCountForClass += result.replacementCount;
+            if (!result.canRemoveCommonModule) {
+              canRemoveCommonModuleForFile = false;
+            }
+          }
+        }
 
-          if (!changed) {
-            return;
+        if (replacementsForClass.length > 0) {
+          if (canRemoveCommonModuleForFile) {
+            filesToRemoveCommonModule.add(file.id);
           }
 
-          replacementCountForClass += replacementCount;
-
-          const fileToMigrate = template.inline
-            ? file
-            : projectFile(template.filePath as AbsoluteFsPath, info);
-          const end = template.start + template.content.length;
-
-          replacementsForClass.push(
-            prepareTextReplacement(fileToMigrate, migrated, template.start, end),
+          // Handle the `@Component({ imports: [...] })` array.
+          const importsRemoval = createNgClassImportsArrayRemoval(
+            node,
+            file,
+            typeChecker,
+            canRemoveCommonModuleForFile,
           );
-        });
+          if (importsRemoval) {
+            replacementsForClass.push(importsRemoval);
+          }
 
-        if (replacementCountForClass === 0) {
-          return;
-        }
-
-        filesWithNgClassDeclarations.add(sf);
-
-        const importArrayRemoval = createNgClassImportsArrayRemoval(node, file, typeChecker);
-        if (importArrayRemoval) {
-          replacementsForClass.push(importArrayRemoval);
-        }
-
-        const existing = ngClassReplacements.find((entry) => entry.file === file);
-        if (existing) {
-          existing.replacements.push(...replacementsForClass);
-          existing.replacementCount += replacementCountForClass;
-        } else {
           ngClassReplacements.push({
             file,
-            replacements: replacementsForClass,
             replacementCount: replacementCountForClass,
+            replacements: replacementsForClass,
           });
+          filesWithNgClassDeclarations.add(sf);
         }
       });
     }
 
-    const importReplacements = calculateImportReplacements(info, filesWithNgClassDeclarations);
-    return confirmAsSerializable({ngClassReplacements, importReplacements});
+    const importReplacements = calculateImportReplacements(
+      info,
+      filesWithNgClassDeclarations,
+      filesToRemoveCommonModule,
+    );
+
+    return confirmAsSerializable({
+      ngClassReplacements,
+      importReplacements,
+    });
   }
 
   override async combine(

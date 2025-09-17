@@ -21,7 +21,7 @@ import {MigrationConfig} from './types';
 import {getImportSpecifiers} from '../../utils/typescript/imports';
 import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
-import {parseTemplate} from '../../utils/parse_html';
+import {canRemoveCommonModule, parseTemplate} from '../../utils/parse_html';
 
 const ngClassStr = 'NgClass';
 const commonModuleStr = '@angular/common';
@@ -36,10 +36,11 @@ export function migrateNgClassBindings(
   replacementCount: number;
   migrated: string;
   changed: boolean;
+  canRemoveCommonModule: boolean;
 } {
   const parsed = parseTemplate(template);
   if (!parsed.tree || !parsed.tree.rootNodes.length) {
-    return {migrated: template, changed: false, replacementCount: 0};
+    return {migrated: template, changed: false, replacementCount: 0, canRemoveCommonModule: false};
   }
 
   const visitor = new NgClassCollector(template, componentNode, typeChecker);
@@ -57,7 +58,13 @@ export function migrateNgClassBindings(
     replacementCount++;
   }
 
-  return {migrated: newTemplate, changed: newTemplate !== template, replacementCount};
+  const changed = newTemplate !== template;
+  return {
+    migrated: newTemplate,
+    changed,
+    replacementCount,
+    canRemoveCommonModule: changed ? canRemoveCommonModule(newTemplate) : false,
+  };
 }
 
 /**
@@ -68,6 +75,7 @@ export function createNgClassImportsArrayRemoval(
   classNode: ts.ClassDeclaration,
   file: ProjectFile,
   typeChecker: ts.TypeChecker,
+  removeCommonModule: boolean,
 ): Replacement | null {
   const reflector = new TypeScriptReflectionHost(typeChecker);
   const evaluator = new PartialEvaluator(reflector, typeChecker, null);
@@ -115,92 +123,73 @@ export function createNgClassImportsArrayRemoval(
   }
 
   const importsArray = importsProperty.initializer;
-
-  const ngClassIndex = importsArray.elements.findIndex(
-    (e): e is ts.Identifier => ts.isIdentifier(e) && e.text === ngClassStr,
-  );
-
-  if (ngClassIndex === -1) {
-    return null;
+  const elementsToRemove = new Set<string>([ngClassStr]);
+  if (removeCommonModule) {
+    elementsToRemove.add(commonModuleImportsStr);
   }
 
-  const elements = importsArray.elements;
-  const ngClassElement = elements[ngClassIndex];
-
-  const range = getNgClassRemovalRange(
-    importsProperty,
-    importsArray,
-    ngClassElement,
-    classNode.getSourceFile(),
+  const originalElements = importsArray.elements;
+  const filteredElements = originalElements.filter(
+    (el) => !ts.isIdentifier(el) || !elementsToRemove.has(el.text),
   );
+
+  if (filteredElements.length === originalElements.length) {
+    return null; // No changes needed.
+  }
+
+  // If the array becomes empty, remove the entire `imports` property.
+  if (filteredElements.length === 0) {
+    const removalRange = getPropertyRemovalRange(importsProperty);
+    return new Replacement(
+      file,
+      new TextUpdate({
+        position: removalRange.start,
+        end: removalRange.end,
+        toInsert: '',
+      }),
+    );
+  }
+
+  const printer = ts.createPrinter();
+  const newArray = ts.factory.updateArrayLiteralExpression(importsArray, filteredElements);
+  const newText = printer.printNode(ts.EmitHint.Unspecified, newArray, classNode.getSourceFile());
 
   return new Replacement(
     file,
-    new TextUpdate({position: range.start, end: range.end, toInsert: ''}),
+    new TextUpdate({
+      position: importsArray.getStart(),
+      end: importsArray.getEnd(),
+      toInsert: newText,
+    }),
   );
 }
 
-function getElementRemovalRange(
-  elementNode: ts.Node,
-  sourceFile: ts.SourceFile,
-): {start: number; end: number} {
-  const parent = elementNode.parent;
-
-  // Check if in array context (imports: [..]) or object context (@Component({..}))
-  const isArrayLiteralExpression = ts.isArrayLiteralExpression(parent);
-  const isObjectLiteralExpression = ts.isObjectLiteralExpression(parent);
-
-  let elements: ts.NodeArray<ts.Node>;
-
-  if (isArrayLiteralExpression) {
-    elements = parent.elements;
-  } else if (isObjectLiteralExpression) {
-    elements = parent.properties;
-  } else {
-    return {start: elementNode.getStart(sourceFile), end: elementNode.getEnd()};
+function getPropertyRemovalRange(property: ts.ObjectLiteralElementLike): {
+  start: number;
+  end: number;
+} {
+  const parent = property.parent;
+  if (!ts.isObjectLiteralExpression(parent)) {
+    return {start: property.getStart(), end: property.getEnd()};
   }
 
-  const elementIndex = elements.indexOf(elementNode);
-  const isLastElement = elementIndex === elements.length - 1;
+  const properties = parent.properties;
+  const propertyIndex = properties.indexOf(property);
+  const end = property.getEnd();
 
-  if (isLastElement) {
-    // If this is the LAST element, the range is from the END of the previous element
-    // to the END of this element. This captures the comma and space preceding it.
-    // Ex: `[a, b]` -> remove `, b`
-    const start =
-      elementIndex > 0 ? elements[elementIndex - 1].getEnd() : elementNode.getStart(sourceFile); // If it is also the first (only) element, there is no comma before it.
-
-    return {start: start, end: elementNode.getEnd()};
-  } else {
-    // If it's the FIRST or MIDDLE element, the range goes from the BEGINNING of this element
-    // to the BEGINNING of the next one. This captures the element itself and the comma that FOLLOWS it.
-    // Ex: `[a, b]` -> remove `a,`
-    const nextElement = elements[elementIndex + 1];
-    return {
-      start: elementNode.getStart(sourceFile),
-      end: nextElement.getStart(sourceFile),
-    };
+  if (propertyIndex < properties.length - 1) {
+    const nextProperty = properties[propertyIndex + 1];
+    return {start: property.getStart(), end: nextProperty.getStart()};
   }
+
+  return {start: property.getStart(), end};
 }
 
-/**
- * If there is more than one import, it affects the NgClass element within the array.
- * Otherwise, `NgClass` is the only import. The removal affects the entire `imports: [...]` property.
- */
-function getNgClassRemovalRange(
-  importsProperty: ts.PropertyAssignment,
-  importsArray: ts.ArrayLiteralExpression,
-  ngClassElement: ts.Expression,
-  sourceFile: ts.SourceFile,
-): {start: number; end: number} {
-  if (importsArray.elements.length > 1) {
-    return getElementRemovalRange(ngClassElement, sourceFile);
-  } else {
-    return getElementRemovalRange(importsProperty, sourceFile);
-  }
-}
-
-export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<ts.SourceFile>) {
+export function calculateImportReplacements(
+  info: ProgramInfo,
+  sourceFiles: Set<ts.SourceFile>,
+  filesToRemoveCommonModule: Set<ProjectFileID>,
+) {
   const importReplacements: Record<
     ProjectFileID,
     {add: Replacement[]; addAndRemove: Replacement[]}
@@ -210,15 +199,23 @@ export function calculateImportReplacements(info: ProgramInfo, sourceFiles: Set<
   for (const sf of sourceFiles) {
     const file = projectFile(sf, info);
 
+    // Always remove NgClass if it's imported directly.
     importManager.removeImport(sf, ngClassStr, commonModuleStr);
+
+    // Conditionally remove CommonModule if it's no longer needed.
+    if (filesToRemoveCommonModule.has(file.id)) {
+      importManager.removeImport(sf, commonModuleImportsStr, commonModuleStr);
+    }
 
     const addRemove: Replacement[] = [];
     applyImportManagerChanges(importManager, addRemove, [sf], info);
 
-    importReplacements[file.id] = {
-      add: [],
-      addAndRemove: addRemove,
-    };
+    if (addRemove.length > 0) {
+      importReplacements[file.id] = {
+        add: [],
+        addAndRemove: addRemove,
+      };
+    }
   }
 
   return importReplacements;
