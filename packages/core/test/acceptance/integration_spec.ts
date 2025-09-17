@@ -2702,6 +2702,23 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Message: Hello, Bilbo - 1');
   });
 
+  it('should support regular expressions in templates', () => {
+    @Component({
+      template: 'Matches: {{/\\d+/.test(value)}}',
+    })
+    class App {
+      value = '123';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Matches: true');
+
+    fixture.componentInstance.value = 'hello';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Matches: false');
+  });
+
   it('should support void expressions', () => {
     @Component({
       host: {
