@@ -40,6 +40,7 @@ import {
   PrefixNot,
   PropertyRead,
   RecursiveAstVisitor,
+  RegularExpressionLiteral,
   SafeCall,
   SafeKeyedRead,
   SafePropertyRead,
@@ -580,6 +581,9 @@ enum ParseContextFlags {
    */
   Writable = 1,
 }
+
+/** Possible flags that can be used in a regex literal. */
+const SUPPORTED_REGEX_FLAGS = new Set(['d', 'g', 'i', 'm', 's', 'u', 'v', 'y']);
 
 class _ParseAST {
   private rparensExpected = 0;
@@ -1178,6 +1182,8 @@ class _ParseAST {
     } else if (this.next.isPrivateIdentifier()) {
       this._reportErrorForPrivateIdentifier(this.next, null);
       return new EmptyExpr(this.span(start), this.sourceSpan(start));
+    } else if (this.next.isRegExpBody()) {
+      return this.parseRegularExpressionLiteral();
     } else if (this.index >= this.tokens.length) {
       this.error(`Unexpected end of expression: ${this.input}`);
       return new EmptyExpr(this.span(start), this.sourceSpan(start));
@@ -1616,6 +1622,49 @@ class _ParseAST {
     }
 
     return new TemplateLiteral(this.span(start), this.sourceSpan(start), elements, expressions);
+  }
+
+  private parseRegularExpressionLiteral() {
+    const bodyToken = this.next;
+    this.advance();
+
+    if (!bodyToken.isRegExpBody()) {
+      return new EmptyExpr(this.span(this.inputIndex), this.sourceSpan(this.inputIndex));
+    }
+
+    let flagsToken: Token | null = null;
+
+    if (this.next.isRegExpFlags()) {
+      flagsToken = this.next;
+      this.advance();
+      const seenFlags = new Set<string>();
+
+      for (let i = 0; i < flagsToken.strValue.length; i++) {
+        const char = flagsToken.strValue[i];
+
+        if (!SUPPORTED_REGEX_FLAGS.has(char)) {
+          this.error(
+            `Unsupported regular expression flag "${char}". The supported flags are: ` +
+              Array.from(SUPPORTED_REGEX_FLAGS, (f) => `"${f}"`).join(', '),
+            flagsToken.index + i,
+          );
+        } else if (seenFlags.has(char)) {
+          this.error(`Duplicate regular expression flag "${char}"`, flagsToken.index + i);
+        } else {
+          seenFlags.add(char);
+        }
+      }
+    }
+
+    const start = bodyToken.index;
+    const end = flagsToken ? flagsToken.end : bodyToken.end;
+
+    return new RegularExpressionLiteral(
+      this.span(start, end),
+      this.sourceSpan(start, end),
+      bodyToken.strValue,
+      flagsToken ? flagsToken.strValue : null,
+    );
   }
 
   /**
