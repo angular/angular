@@ -129,10 +129,6 @@ class SerializeExpressionVisitor implements expr.AstVisitor {
     return `void ${ast.expression.visit(this, context)}`;
   }
 
-  visitRegularExpressionLiteral(ast: expr.RegularExpressionLiteral, context: any) {
-    return `/${ast.body}/${ast.flags || ''}`;
-  }
-
   visitASTWithSource(ast: expr.ASTWithSource, context: any): string {
     return ast.ast.visit(this, context);
   }

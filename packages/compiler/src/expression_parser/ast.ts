@@ -488,21 +488,6 @@ export class ParenthesizedExpression extends AST {
   }
 }
 
-export class RegularExpressionLiteral extends AST {
-  constructor(
-    span: ParseSpan,
-    sourceSpan: AbsoluteSourceSpan,
-    readonly body: string,
-    readonly flags: string | null,
-  ) {
-    super(span, sourceSpan);
-  }
-
-  override visit(visitor: AstVisitor, context?: any) {
-    return visitor.visitRegularExpressionLiteral(this, context);
-  }
-}
-
 /**
  * Records the absolute position of a text span in a source file, where `start` and `end` are the
  * starting and ending byte offsets, respectively, of the text span in a source file.
@@ -632,7 +617,6 @@ export interface AstVisitor {
   visitTemplateLiteralElement(ast: TemplateLiteralElement, context: any): any;
   visitTaggedTemplateLiteral(ast: TaggedTemplateLiteral, context: any): any;
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any): any;
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -735,7 +719,6 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitParenthesizedExpression(ast: ParenthesizedExpression, context: any) {
     this.visit(ast.expression, context);
   }
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any) {}
   // This is not part of the AstVisitor interface, just a helper method
   visitAll(asts: AST[], context: any): any {
     for (const ast of asts) {
