@@ -81,9 +81,11 @@ describe('withPlatformNavigation feature', () => {
   });
 });
 
-it('something', async () => {
-  TestBed.configureTestingModule({
-    providers: [provideRouter([], withPlatformNavigation()), provideLocationMocks()],
+describe('configuration error', () => {
+  it('throws an error mentioning SpyLocation and the location mocks', () => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([], withPlatformNavigation()), provideLocationMocks()],
+    });
+    expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation.*provideLocationMocks/);
   });
-  expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation/);
 });
