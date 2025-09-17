@@ -38,8 +38,6 @@ export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => Plat
   exports: [BrowserModule],
   providers: [
     {provide: APP_ID, useValue: 'a'},
-    provideZonelessChangeDetectionInternal(),
-    ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
     ɵprovideFakePlatformNavigation(),
     {provide: TestComponentRenderer, useClass: DOMTestComponentRenderer},
   ],
