@@ -19,9 +19,14 @@ export const MAX_RECENT_HISTORY_SIZE = 10;
 export interface HistoryItem {
   id: string;
   labelHtml: string;
+  subLabelHtml?: string;
   url: string;
   isFavorite: boolean;
   createdAt: number;
+}
+
+function cleanUpHtml(label: string | null): string {
+  return (label || '').replace(/<\/?mark>/g, '');
 }
 
 @Injectable({providedIn: 'root'})
@@ -46,11 +51,10 @@ export class SearchHistory {
 
   addItem(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
-      const labelHtml = (item.labelHtml || '').replace(/<\/?mark>/g, '');
-
       map.set(item.id, {
         id: item.id,
-        labelHtml,
+        labelHtml: cleanUpHtml(item.labelHtml),
+        subLabelHtml: item.subLabelHtml ? cleanUpHtml(item.subLabelHtml) : undefined,
         url: item.url,
         isFavorite: false,
         createdAt: Date.now(),
