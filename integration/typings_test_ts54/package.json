@@ -14,7 +14,7 @@
     "@angular/localize": "file:../../dist/packages-dist/localize",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
+    "@angular/platform-server": "18.2.14",
     "@angular/router": "file:../../dist/packages-dist/router",
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
