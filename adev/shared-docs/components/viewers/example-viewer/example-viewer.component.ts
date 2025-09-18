@@ -21,7 +21,7 @@ import {
   Type,
   viewChild,
 } from '@angular/core';
-import {CommonModule, DOCUMENT} from '@angular/common';
+import {DOCUMENT, NgTemplateOutlet} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
@@ -43,7 +43,7 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, CopySourceCodeButton, MatTabsModule, MatTooltipModule, IconComponent],
+  imports: [CopySourceCodeButton, MatTabsModule, MatTooltipModule, IconComponent, NgTemplateOutlet],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

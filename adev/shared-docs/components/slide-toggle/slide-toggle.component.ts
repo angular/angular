@@ -7,12 +7,11 @@
  */
 
 import {ChangeDetectionStrategy, Component, forwardRef, model, input, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
   selector: 'docs-slide-toggle',
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slide-toggle.component.html',
   styleUrls: ['./slide-toggle.component.scss'],
