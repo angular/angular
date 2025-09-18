@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {computed, ResourceRef, Signal} from '@angular/core';
-import {FieldNode} from '../field/node';
-import {addDefaultField} from '../field/validation';
-import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent} from '../schema/schema';
-import {property} from './logic';
-import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
+import { httpResource, HttpResourceOptions, HttpResourceRequest } from '@angular/common/http';
+import { computed, ResourceRef, Signal } from '@angular/core';
+import { FieldNode } from '../field/node';
+import { addDefaultField } from '../field/validation';
+import { FieldPathNode } from '../schema/path_node';
+import { assertPathIsCurrent } from '../schema/schema';
+import { property } from './logic';
+import { FieldContext, FieldPath, PathKind, TreeValidationResult } from './types';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
