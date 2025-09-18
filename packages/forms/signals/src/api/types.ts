@@ -9,7 +9,11 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
 import {AggregateMetadataKey, MetadataKey} from './metadata';
-import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
+import type {
+  ValidationError,
+  ValidationErrorWithField,
+  WithOptionalField,
+} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -102,7 +106,7 @@ export type ValidationSuccess = null | undefined | void;
  */
 export type FieldValidationResult<E extends ValidationError = ValidationError> =
   | ValidationSuccess
-  | OneOrMany<WithoutField<E>>;
+  | OneOrMany<E>;
 
 /**
  * The result of running a tree validation function.
@@ -248,12 +252,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  readonly errors: Signal<ValidationError[]>;
+  readonly errors: Signal<ValidationErrorWithField[]>;
 
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
-  readonly errorSummary: Signal<ValidationError[]>;
+  readonly errorSummary: Signal<ValidationErrorWithField[]>;
 
   /**
    * A signal indicating whether the field's value is currently valid.

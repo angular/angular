@@ -9,7 +9,7 @@
 import {untracked} from '@angular/core';
 import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import {DisabledReason, type FieldContext, type FieldPath, type LogicFn} from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+import type {ValidationErrorWithField} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
 import {isArray} from '../util/type_guards';
 
@@ -253,11 +253,11 @@ export class LogicContainer {
   /** Logic that determines if the field is read-only. */
   readonly readonly: BooleanOrLogic;
   /** Logic that produces synchronous validation errors for the field. */
-  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
+  readonly syncErrors: ArrayMergeIgnoreLogic<ValidationErrorWithField, null>;
   /** Logic that produces synchronous validation errors for the field's subtree. */
-  readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationError, null>;
+  readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationErrorWithField, null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
-  readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError | 'pending', null>;
+  readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationErrorWithField | 'pending', null>;
   /** A map of aggregate metadata keys to the `AbstractLogic` instances that compute their values. */
   private readonly aggregateMetadataKeys = new Map<
     AggregateMetadataKey<unknown, unknown>,
@@ -278,9 +278,11 @@ export class LogicContainer {
     this.hidden = new BooleanOrLogic(predicates);
     this.disabledReasons = new ArrayMergeLogic(predicates);
     this.readonly = new BooleanOrLogic(predicates);
-    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
-    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError>(predicates);
-    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationError | 'pending'>(predicates);
+    this.syncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationErrorWithField>(predicates);
+    this.syncTreeErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationErrorWithField>(predicates);
+    this.asyncErrors = ArrayMergeIgnoreLogic.ignoreNull<ValidationErrorWithField | 'pending'>(
+      predicates,
+    );
   }
 
   /** Checks whether there is logic for the given aggregate metadata key. */
