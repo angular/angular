@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {ComponentFactoryResolver, Injector, Type} from '@angular/core';
+import {ComponentFactoryResolver, Injector, Type, ɵNG_COMP_DEF as NG_COMP_DEF} from '@angular/core';
 
 /**
  * Provide methods for scheduling the execution of a callback.
@@ -107,5 +107,63 @@ export function getComponentInputs(
 }[] {
   const componentFactoryResolver = injector.get(ComponentFactoryResolver);
   const componentFactory = componentFactoryResolver.resolveComponentFactory(component);
-  return componentFactory.inputs;
+  const hostDirectiveInputs = getHostDirectiveProps(component).inputs;
+  return [...componentFactory.inputs, ...hostDirectiveInputs];
+}
+
+export function getHostDirectiveProps(component: Type<any>) {
+  const hostDirectiveProps: {
+    inputs: {
+      propName: string;
+      templateName: string;
+      transform?: (value: any) => any;
+      isSignal: boolean;
+    }[];
+    outputs: {
+      propName: string;
+      templateName: string;
+    }[];
+  } = {
+    inputs: [],
+    outputs: [],
+  };
+  const componentDef = (component as any)[NG_COMP_DEF];
+
+  if (componentDef?.findHostDirectiveDefs) {
+    const hostDirectiveDefs = new Map();
+    componentDef.findHostDirectiveDefs(componentDef, [], hostDirectiveDefs);
+    hostDirectiveDefs.forEach((_, factory) => {
+      const inputs: {
+        propName: string;
+        templateName: string;
+        transform?: (value: any) => any;
+        isSignal: boolean;
+      }[] = Object.entries(factory.inputConfig).map(([propName, templateName]: any) => {
+        if (Array.isArray(templateName)) {
+          return {
+            propName,
+            templateName: templateName[0],
+            ...(templateName[2] && {transform: templateName[2]}),
+            isSignal: factory.signals,
+          };
+        } else {
+          return {
+            propName,
+            templateName,
+            isSignal: factory.signals,
+          };
+        }
+      });
+      const outputs = Object.entries(factory.outputs).map(([propName, templateName]: any) => {
+        return {
+          propName,
+          templateName,
+        };
+      });
+      hostDirectiveProps.inputs.push(...inputs);
+      hostDirectiveProps.outputs.push(...outputs);
+    });
+  }
+
+  return hostDirectiveProps;
 }
