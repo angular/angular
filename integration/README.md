@@ -4,7 +4,7 @@ This directory contains end-to-end tests for Angular. Each directory is a self-c
 that exactly mimics how a user might expect Angular to work, so they allow high-fidelity
 reproductions of real-world issues.
 
-For this to work, we first build the Angular distribution via `yarn build`, then
+For this to work, we first build the Angular distribution via `pnpm build`, then
 install the distribution into each app.
 
 To test Angular CLI applications, we use the `cli-hello-world-*` integration tests.
@@ -13,10 +13,10 @@ When a significant change is released in the CLI, the applications should be upd
 
 ```bash
 $ cd integration/cli-hello-world[-*]
-$ yarn install
-$ yarn ng update @angular/cli @angular-devkit/build-angular
-$ yarn build
-$ yarn test
+$ pnpm install
+$ pnpm ng update @angular/cli @angular-devkit/build-angular
+$ pnpm build
+$ pnpm test
 ```
 
 Afterwards the `@angular/cli` and `@angular-devkit/build-angular` should be reverted to the `file:../` urls
@@ -35,7 +35,7 @@ The API for each test is:
 
 - Each sub-directory here is an integration test
 - Each test should have a `package.json` file
-- The test runner will run `yarn` and `yarn test` on the package
+- The test runner will run `yarn` and `pnpm test` on the package
 
 This means that the test should be started by test script, like
 ```
@@ -53,7 +53,7 @@ directly from `file:../../node_modules`.
 > Always ensure that `yarn.lock` files are up-to-date with the corresponding `package.json` files
 > (wrt the non-local dependencies - i.e. dependencies whose versions do not start with `file:`).
 >
-> You can update a `yarn.lock` file by running `yarn install` in the project subdirectory.
+> You can update a `yarn.lock` file by running `pnpm install` in the project subdirectory.
 
 
 ## Running integration tests
@@ -72,7 +72,7 @@ The PR https://github.com/angular/angular/pull/33927 added the ability to run in
 Locally, if Bazel uses all of your cores to run the maximum number of integration tests in parallel then this can lead to test timeouts and flakes and freeze up your machine while these tests are running. You can limit the number of concurrent local integration tests that run with:
 
 ```
-yarn bazel test --local_test_jobs=<N> //integration/...
+pnpm bazel test --local_test_jobs=<N> //integration/...
 ```
 
 Set a reasonable `local_test_jobs` limit for your local machine to prevent full cpu utilization during local development test runs.
@@ -90,8 +90,8 @@ The downside of this is that this will apply to all tests and not just the resou
 Two of the integration tests that run Bazel-in-Bazel are particularly resource intensive and are tagged "manual" and "exclusive". To run these tests use,
 
 ```
-yarn bazel test //integration/bazel:test
-yarn bazel test //integration/cli-hello-world-ivy-minimal:test
+pnpm bazel test //integration/bazel:test
+pnpm bazel test //integration/cli-hello-world-ivy-minimal:test
 ```
 
 ## Adding a new integration test

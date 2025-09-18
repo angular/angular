@@ -4,26 +4,27 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/elements": "file:../../dist/packages-dist/elements",
-    "@angular/forms": "file:../../dist/packages-dist/forms",
-    "@angular/localize": "file:../../dist/packages-dist/localize",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "@angular/router": "file:../../dist/packages-dist/router",
-    "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
-    "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
-    "@types/jasmine": "file:../../node_modules/@types/jasmine",
-    "rxjs": "file:../../node_modules/rxjs",
+    "@angular/animations": "next",
+    "@angular/common": "next",
+    "@angular/compiler": "next",
+    "@angular/compiler-cli": "next",
+    "@angular/core": "next",
+    "@angular/elements": "next",
+    "@angular/forms": "next",
+    "@angular/localize": "next",
+    "@angular/platform-browser": "next",
+    "@angular/platform-browser-dynamic": "next",
+    "@angular/platform-server": "next",
+    "@angular/router": "next",
+    "@angular/service-worker": "next",
+    "@angular/upgrade": "next",
+    "@types/jasmine": "^5.0.0",
+    "rxjs": "^7.0.0",
     "typescript": "5.9.2",
-    "zone.js": "0.14.10"
+    "zone.js": "0.15.1"
   },
   "scripts": {
     "test": "tsc"
-  }
+  },
+  "packageManager": "pnpm@10.17.0"
 }

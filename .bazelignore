@@ -35,9 +35,10 @@ integration/standalone-bootstrap/node_modules
 integration/terser/node_modules
 integration/trusted-types/node_modules
 integration/typings_test_rxjs7/node_modules
-integration/typings_test_ts58/node_modules
+integration/legacy-animations/node_modules
+integration/legacy-animations-async/node_modules
+integration/typings_test_ts59/node_modules
 modules/ssr-benchmarks/node_modules
-
 
 # For rules_js
 adev/node_modules

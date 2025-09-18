@@ -8,36 +8,8 @@
 load("@devinfra//bazel/integration:index.bzl", "integration_test")
 load("//:packages.bzl", "INTEGRATION_PACKAGES")
 
-NPM_PACKAGE_ARCHIVES = INTEGRATION_PACKAGES + [
-    "@babel/core",
-    "@rollup/plugin-babel",
-    "@rollup/plugin-node-resolve",
-    "@rollup/plugin-commonjs",
-    "check-side-effects",
-    "jasmine",
-    "http-server",
-    "typescript",
-    "rxjs",
-    "systemjs",
-    "tslib",
-    "protractor",
-    "terser",
-    "rollup",
-    "rollup-plugin-sourcemaps",
-    "@angular/ssr",
-    "@angular/build",
-    "@angular/cli",
-    "@angular-devkit/build-angular",
-    "@bazel/bazelisk",
-    "@types/jasmine",
-    "@types/jasminewd2",
-    "@types/node",
-    "zone.js",
-]
-
 def _ng_integration_test(name, setup_chromium = False, **kwargs):
     "Set defaults for the npm_integration_test common to the angular repo"
-    pinned_npm_packages = kwargs.pop("pinned_npm_packages", [])
     toolchains = kwargs.pop("toolchains", [])
     environment = kwargs.pop("environment", {})
     data = kwargs.pop("data", [])
@@ -50,20 +22,19 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
             "CHROME_BIN": "$(CHROME-HEADLESS-SHELL)",
         })
 
-    # By default run `yarn install` followed by `yarn test` using the tools linked
+    # By default run `pnpm install` followed by `pnpm test` using the tools linked
     # into the integration tests (using the `tool_mappings` attribute).
     commands = kwargs.pop("commands", [
-        "yarn install --cache-folder ./.yarn_local_cache",
-        "yarn test",
+        "pnpm install",
+        "pnpm run test",
     ])
 
     # Complete list of npm packages to override in the test's package.json file mapped to
     # tgz archive to use for the replacement. This is the full list for all integration
     # tests. Any given integration does not need to use all of these packages.
     npm_packages = {}
-    for pkg in NPM_PACKAGE_ARCHIVES:
-        if pkg not in pinned_npm_packages:
-            npm_packages["//:node_modules/%s/dir" % pkg] = pkg
+    for pkg in INTEGRATION_PACKAGES:
+        npm_packages["//:node_modules/%s/dir" % pkg] = pkg
 
     integration_test(
         name = name,
@@ -82,7 +53,6 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         toolchains = toolchains,
         tool_mappings = {
             "@pnpm//:pnpm": "pnpm",
-            "//:yarn_vendored": "yarn",
             "@nodejs_toolchains//:resolved_toolchain": "node",
         },
         # 15-minute timeout
@@ -102,7 +72,6 @@ def ng_integration_test(name, **kwargs):
             include = ["**/*"],
             exclude = [
                 "node_modules/**",
-                ".yarn_local_cache/**",
             ],
         ),
     )

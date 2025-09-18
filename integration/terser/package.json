@@ -6,12 +6,13 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "rxjs": "file:../../node_modules/rxjs",
-    "terser": "file:../../node_modules/terser",
-    "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
-  }
+    "@angular/compiler": "next",
+    "@angular/compiler-cli": "next",
+    "@angular/core": "next",
+    "rxjs": "^7.0.0",
+    "terser": "^5.8.0",
+    "typescript": "5.9.2",
+    "zone.js": "0.15.1"
+  },
+  "packageManager": "pnpm@10.17.0"
 }
