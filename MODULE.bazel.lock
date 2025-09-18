@@ -4127,7 +4127,7 @@
     },
     "@@rules_sass~//src/toolchain:extensions.bzl%sass": {
       "general": {
-        "bzlTransitiveDigest": "+GauQp6nWf/mHsJ/XVWUL2JTuC15MuxATrVcAgDpclc=",
+        "bzlTransitiveDigest": "RA58Nyrsn03Z5YmQnpmBw3mqlVck++XIrx34amsqU/E=",
         "usagesDigest": "FPXQ5+6+DFGdSdCMXLwFaruzstMFlLH6N0TRxi0sSH8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -4142,6 +4142,18 @@
               "constraints": [
                 "@@platforms//os:linux",
                 "@@platforms//cpu:x86_64"
+              ]
+            }
+          },
+          "linux_arm64_sass": {
+            "bzlFile": "@@rules_sass~//src/toolchain:configure_sass.bzl",
+            "ruleClassName": "configure_sass",
+            "attributes": {
+              "file": "@rules_sass//src/compiler/built:sass_linux_arm",
+              "sha256": "",
+              "constraints": [
+                "@@platforms//os:linux",
+                "@@platforms//cpu:arm64"
               ]
             }
           },
