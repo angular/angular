@@ -26,7 +26,7 @@ import type {
   SchemaOrSchemaFn,
   TreeValidationResult,
 } from './types';
-import {ValidationError, WithOptionalField} from './validation_errors';
+import {ValidationError, ValidationErrorWithField, WithOptionalField} from './validation_errors';
 
 /**
  * Options that may be specified when creating a form.
@@ -425,7 +425,7 @@ function setServerErrors(
   if (!isArray(errors)) {
     errors = [errors];
   }
-  const errorsByField = new Map<FieldNode, ValidationError[]>();
+  const errorsByField = new Map<FieldNode, ValidationErrorWithField[]>();
   for (const error of errors) {
     const errorWithField = addDefaultField(error, submittedField.fieldProxy);
     const field = errorWithField.field() as FieldNode;
