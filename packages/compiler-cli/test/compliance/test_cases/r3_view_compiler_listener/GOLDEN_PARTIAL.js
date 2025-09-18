@@ -977,7 +977,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: '[ngModel]',
                 }]
-        }] });
+        }], propDecorators: { ngModel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ngModel", required: true }] }, { type: i0.Output, args: ["ngModelChange"] }] } });
 export class TestCmp {
     constructor() {
         this.names = [signal('Angular')];
@@ -1031,7 +1031,7 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", versi
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NgModelDirective, decorators: [{
             type: Directive,
             args: [{ selector: '[ngModel]' }]
-        }] });
+        }], propDecorators: { ngModel: [{ type: i0.Input, args: [{ isSignal: true, alias: "ngModel", required: false }] }, { type: i0.Output, args: ["ngModelChange"] }] } });
 export class TestCmp {
     constructor() {
         this.value = 123;

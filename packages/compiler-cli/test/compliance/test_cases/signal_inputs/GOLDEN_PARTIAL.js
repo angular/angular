@@ -14,7 +14,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: input_directive_definition.d.ts
@@ -45,7 +45,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: 'Works',
                 }]
-        }] });
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: input_component_definition.d.ts
@@ -81,7 +81,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }], propDecorators: { decoratorInput: [{
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }], signalWithTransform: [{ type: i0.Input, args: [{ isSignal: true, alias: "signalWithTransform", required: false }] }], signalWithTransformAndAlias: [{ type: i0.Input, args: [{ isSignal: true, alias: "publicNameSignal", required: false }] }], decoratorInput: [{
                 type: Input
             }], decoratorInputWithAlias: [{
                 type: Input,
@@ -127,7 +127,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: transform_not_captured.d.ts
@@ -163,7 +163,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }], name2: [{ type: i0.Input, args: [{ isSignal: true, alias: "name2", required: true }] }], genericTransform: [{ type: i0.Input, args: [{ isSignal: true, alias: "genericTransform", required: true }] }], genericTransform2: [{ type: i0.Input, args: [{ isSignal: true, alias: "genericTransform2", required: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: complex_transform_functions.d.ts
