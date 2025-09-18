@@ -310,7 +310,7 @@ export interface ValidationError {
   /** Identifies the kind of error. */
   readonly kind: string;
   /** The field associated with this error. */
-  readonly field: FieldTree<unknown>;
+  readonly field?: FieldTree<unknown>;
   /** Human readable error message. */
   readonly message?: string;
 }
