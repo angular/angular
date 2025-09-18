@@ -5,6 +5,86 @@
   position: relative;
 }
 
+.banners-layer {
+  z-index: 10;
+
+  .adev-banner-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: absolute;
+    top: var(--layout-padding);
+    left: calc(var(--layout-padding) + var(--primary-nav-width));
+
+    @include mq.for-tablet-landscape-down {
+      top: 6rem;
+      left: var(--layout-padding);
+      /* Assuming the container width is identical to the viewport width (mobile device). */
+      max-width: calc(100% - var(--layout-padding) * 2);
+    }
+
+    @include mq.for-phone-only {
+      & {
+        top: 5rem;
+      }
+    }
+  }
+
+  .adev-banner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border: 1px solid var(--senary-contrast);
+    background: var(--page-background);
+    border-radius: 0.25rem;
+    padding: 10px;
+    max-width: 100%;
+    width: fit-content;
+    box-sizing: border-box;
+
+    h1,
+    p {
+      display: inline;
+      font-size: 0.875rem;
+      margin: 0;
+      background-image: var(--red-to-pink-to-purple-horizontal-gradient);
+      background-clip: text;
+      color: transparent;
+      width: fit-content;
+      font-weight: 500;
+      box-shadow: none;
+      position: relative;
+
+      &.adev-banner-cta {
+        color: var(--tertiary-contrast);
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          transform: scaleX(0);
+          height: 1px;
+          bottom: -2px;
+          left: 0;
+          background: var(--red-to-pink-to-purple-horizontal-gradient);
+          transform-origin: bottom right;
+          transition: transform 0.3s ease;
+        }
+      }
+    }
+
+    &:hover {
+      .adev-banner-cta {
+        &::after {
+          transform: scaleX(1);
+          transform-origin: bottom left;
+        }
+      }
+    }
+  }
+}
+
 .logo-section {
   text-align: center;
   background-image:
@@ -35,7 +115,6 @@
     }
   }
 
-  $transition: 200ms linear;
   margin-top: 5rem;
 
   .svg {
