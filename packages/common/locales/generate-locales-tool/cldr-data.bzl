@@ -4,6 +4,7 @@ def _cldr_json_data_repository_impl(ctx):
         ctx.download_and_extract(
             url = url,
             sha256 = sha256,
+            canonical_id = sha256,
         )
 
     ctx.report_progress("Extracting available locales from: %s" % ctx.attr.available_locales_path)
@@ -36,6 +37,7 @@ def _cldr_xml_data_repository_impl(ctx):
         ctx.download_and_extract(
             url = url,
             sha256 = sha256,
+            canonical_id = sha256,
         )
 
     ctx.file("BUILD.bazel", content = """
