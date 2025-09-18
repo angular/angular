@@ -815,9 +815,51 @@ importers:
 
   integration:
     dependencies:
+      '@angular/animations':
+        specifier: workspace:*
+        version: link:../packages/animations
+      '@angular/benchpress':
+        specifier: 'workspace: *'
+        version: link:../packages/benchpress
+      '@angular/common':
+        specifier: workspace:*
+        version: link:../packages/common
+      '@angular/compiler':
+        specifier: workspace:*
+        version: link:../packages/compiler
       '@angular/compiler-cli':
         specifier: workspace:*
         version: link:../packages/compiler-cli
+      '@angular/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@angular/elements':
+        specifier: workspace:*
+        version: link:../packages/elements
+      '@angular/forms':
+        specifier: workspace:*
+        version: link:../packages/forms
+      '@angular/language-service':
+        specifier: 'workspace: *'
+        version: link:../packages/language-service
+      '@angular/localize':
+        specifier: 'workspace: *'
+        version: link:../packages/localize
+      '@angular/platform-browser':
+        specifier: workspace:*
+        version: link:../packages/platform-browser
+      '@angular/platform-browser-dynamic':
+        specifier: workspace:*
+        version: link:../packages/platform-browser-dynamic
+      '@angular/platform-server':
+        specifier: workspace:*
+        version: link:../packages/platform-server
+      '@angular/router':
+        specifier: workspace:*
+        version: link:../packages/router
+      '@angular/upgrade':
+        specifier: 'workspace: *'
+        version: link:../packages/upgrade
 
   modules:
     dependencies:
