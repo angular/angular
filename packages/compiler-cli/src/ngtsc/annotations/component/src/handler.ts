@@ -154,12 +154,14 @@ import {
   ResourceLoader,
   toFactoryMetadata,
   tryUnwrapForwardRef,
+  UndecoratedMetadataExtractor,
   validateHostDirectives,
   wrapFunctionExpressionsInParens,
 } from '../../common';
 import {
   extractDirectiveMetadata,
   extractHostBindingResources,
+  getDirectiveUndecoratedMetadataExtractor,
   parseDirectiveStyles,
 } from '../../directive';
 import {createModuleWithProvidersResolver, NgModuleSymbol} from '../../ng_module';
@@ -290,6 +292,11 @@ export class ComponentDecoratorHandler
       preserveSignificantWhitespace: this.i18nPreserveSignificantWhitespace,
     };
 
+    this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
+      reflector,
+      importTracker,
+    );
+
     // Dependencies can't be deferred during HMR, because the HMR update module can't have
     // dynamic imports and its dependencies need to be passed in directly. If dependencies
     // are deferred, their imports will be deleted so we may lose the reference to them.
@@ -298,6 +305,7 @@ export class ComponentDecoratorHandler
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
+  private readonly undecoratedMetadataExtractor: UndecoratedMetadataExtractor;
 
   /**
    * During the asynchronous preanalyze phase, it's necessary to parse the template to extract
@@ -973,6 +981,7 @@ export class ComponentDecoratorHandler
               this.isCore,
               this.annotateForClosureCompiler,
               (dec) => transformDecoratorResources(dec, component, styles, template),
+              this.undecoratedMetadataExtractor,
             )
           : null,
         classDebugInfo: extractClassDebugInfo(

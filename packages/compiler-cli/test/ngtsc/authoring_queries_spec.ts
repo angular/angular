@@ -389,6 +389,146 @@ runInEachFileSystem(() => {
         const diagnostics = env.driveDiagnostics();
         expect(diagnostics.length).toBe(0);
       });
+
+      it('should capture a viewChild query in the setClasMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, viewChild} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = viewChild('myLocator');
+            }
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ViewChild, args: ['myLocator', { isSignal: true }] }] });`);
+      });
+
+      it('should capture a viewChildren query in the setClasMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, viewChildren} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = viewChildren('myLocator');
+            }
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ViewChildren, args: ['myLocator', { isSignal: true }] }] });`);
+      });
+
+      it('should capture a contentChild query in the setClasMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, contentChild} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = contentChild('myLocator');
+            }
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ContentChild, args: ['myLocator', { isSignal: true }] }] });`);
+      });
+
+      it('should capture a contentChildren query in the setClasMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, contentChildren} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = contentChildren('myLocator');
+            }
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ContentChildren, args: ['myLocator', { isSignal: true }] }] });`);
+      });
+
+      it('should capture a query with options in a setClassMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, viewChild, ElementRef} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = viewChild('myLocator', {read: ElementRef});
+            }
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(
+          `i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ViewChild, ` +
+            `args: ['myLocator', Object.assign({ read: ElementRef }, { isSignal: true })] }] });`,
+        );
+      });
+
+      it('should wrap reference in query as a forwardRef in the setClassMetadata call', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component, Directive, viewChild} from '@angular/core';
+
+            @Component({selector: 'test', template: ''})
+            export class TestDir {
+              el = viewChild(Dep);
+            }
+
+            @Directive({selector: '[dep]'})
+            export class Dep {}
+          `,
+        );
+        env.driveMain();
+
+        const js = env.getContents('test.js');
+        expect(js).toContain('import * as i0 from "@angular/core";');
+        expect(js).toContain(
+          `i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { el: [{ type: i0.ViewChild, args: [i0.forwardRef(() => Dep), { isSignal: true }] }] });`,
+        );
+      });
     });
   });
 });
