@@ -54,7 +54,7 @@ Here is an example of how to build with Firebase AI Logic and Angular:
   This example includes an [in-depth video walkthrough explaining the functionality and demonstrates how to add new features](https://youtube.com/live/4vfDz2al_BI).
 
 ### Build AI-powered applications with Gemini API and Angular
-The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state-of-the-art models from Google that supports audio, images, video, and text input. The models that are optimized for specific use cases, [learn more on the Gemini API documentation site](https://ai.google.dev/gemini-api/docs/models).
+The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state-of-the-art models from Google that support audio, images, video, and text input. These models that are optimized for specific use cases, [learn more on the Gemini API documentation site](https://ai.google.dev/gemini-api/docs/models).
 
 * [AI Text Editor Angular app template](https://github.com/FirebaseExtended/firebase-framework-tools/tree/main/starters/angular/ai-text-editor) - Use this template to start with a fully functioning text editor with AI-powered features like refining text, expanding text and formalizing text. This is a good starting point to gain experience with calling the Gemini API via HTTP.
 
@@ -64,7 +64,7 @@ The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state
 ### Connecting to model providers and keeping your API Credentials Secure
 When connecting to model providers, it is important to keep your API secrets safe. *Never put your API key in a file that ships to the client, such as `environments.ts`*.
 
-Your application's architecture determines which AI APIs and tools to choose. Specifically, choose based on whether or not your application is client-side or server-side. Tools such as Firebase AI Logic provide a secure connection to the model APIs for client-side code. If you want to use a different API than Firerbase AI Logic or prefer to use a different model provider, consider creating a proxy-server or even [Cloud Functions for Firebase](https://firebase.google.com/docs/functions) to serve as a proxy and not expose your API keys.
+Your application's architecture determines which AI APIs and tools to choose. Specifically, choose based on whether or not your application is client-side or server-side. Tools such as Firebase AI Logic provide a secure connection to the model APIs for client-side code. If you want to use a different API than Firebase AI Logic or prefer to use a different model provider, consider creating a proxy-server or even [Cloud Functions for Firebase](https://firebase.google.com/docs/functions) to serve as a proxy and not expose your API keys.
 
 For an example of connecting using a client-side app, see the code:  [Firebase AI Logic Angular example repository](https://github.com/angular/examples/tree/main/vertex-ai-firebase-angular-example).
 
@@ -88,7 +88,7 @@ Because models can return non-deterministic results, your applications should be
 Even considering these strategies and techniques, sensible fallbacks should be incorporated in your application design. Follow existing standards of application resiliency. For example, it is not acceptable for an application to crash if a resource or API is not available. In that scenario, an error message is displayed to the user and, if applicable, options for next steps are also displayed. Building AI-powered applications requires the same consideration. Confirm that the response is aligned with the expected output and provide a "safe landing" in case it is not aligned by way of [graceful degradation](https://developer.mozilla.org/en-US/docs/Glossary/Graceful_degradation). This also applies to API outages for LLM providers.
 
 Consider this example: The LLM provider is not responding. A potential strategy to handle the outage is:
-* Save the response from the user to used in a retry scenario (now or at a later time)
+* Save the response from the user to use in a retry scenario (now or at a later time)
 * Alert the user to the outage with an appropriate message that doesn't reveal sensitive information
 * Resume the conversation at a later time once the services are available again.
 
