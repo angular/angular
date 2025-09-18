@@ -1,0 +1,93 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@angular/common':
+        specifier: file:../../dist/packages-dist/common
+        version: file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)
+      '@angular/core':
+        specifier: file:../../dist/packages-dist/core
+        version: file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
+      '@angular/service-worker':
+        specifier: file:../../dist/packages-dist/service-worker
+        version: file:../../dist/packages-dist/service-worker(@angular/core@file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)
+      rxjs:
+        specifier: file:../../node_modules/rxjs
+        version: file:../../node_modules/rxjs
+      zone.js:
+        specifier: file:../../node_modules/zone.js
+        version: file:../../node_modules/zone.js
+
+packages:
+
+  '@angular/common@file:../../dist/packages-dist/common':
+    resolution: {directory: ../../dist/packages-dist/common, type: directory}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    peerDependencies:
+      '@angular/core': 21.0.0-next.3+sha-e715426-with-local-changes
+      rxjs: ^6.5.3 || ^7.4.0
+
+  '@angular/core@file:../../dist/packages-dist/core':
+    resolution: {directory: ../../dist/packages-dist/core, type: directory}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    peerDependencies:
+      '@angular/compiler': 21.0.0-next.3+sha-e715426-with-local-changes
+      rxjs: ^6.5.3 || ^7.4.0
+      zone.js: ~0.15.0
+    peerDependenciesMeta:
+      '@angular/compiler':
+        optional: true
+      zone.js:
+        optional: true
+
+  '@angular/service-worker@file:../../dist/packages-dist/service-worker':
+    resolution: {directory: ../../dist/packages-dist/service-worker, type: directory}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    hasBin: true
+    peerDependencies:
+      '@angular/core': 21.0.0-next.3+sha-e715426-with-local-changes
+      rxjs: ^6.5.3 || ^7.4.0
+
+  rxjs@file:../../node_modules/rxjs:
+    resolution: {directory: ../../node_modules/rxjs, type: directory}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+  zone.js@file:../../node_modules/zone.js:
+    resolution: {directory: ../../node_modules/zone.js, type: directory}
+
+snapshots:
+
+  '@angular/common@file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)':
+    dependencies:
+      '@angular/core': file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
+      rxjs: file:../../node_modules/rxjs
+      tslib: 2.8.1
+
+  '@angular/core@file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)':
+    dependencies:
+      rxjs: file:../../node_modules/rxjs
+      tslib: 2.8.1
+    optionalDependencies:
+      zone.js: file:../../node_modules/zone.js
+
+  '@angular/service-worker@file:../../dist/packages-dist/service-worker(@angular/core@file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)':
+    dependencies:
+      '@angular/core': file:../../dist/packages-dist/core(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
+      rxjs: file:../../node_modules/rxjs
+      tslib: 2.8.1
+
+  rxjs@file:../../node_modules/rxjs:
+    dependencies:
+      tslib: 2.8.1
+
+  tslib@2.8.1: {}
+
+  zone.js@file:../../node_modules/zone.js: {}

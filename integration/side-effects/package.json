@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "test": "check-side-effects --test side-effects.json --pure-getters",
-    "update": "yarn test --update"
+    "update": "pnpm test --update"
   },
   "dependencies": {
     "@angular/animations": "file:../../dist/packages-dist/animations",
