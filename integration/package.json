@@ -1,19 +1,19 @@
 {
   "dependencies": {
-    "@angular/compiler": "workspace:*",
-    "@angular/compiler-cli": "workspace:*",
-    "@angular/core": "workspace:*",
-    "@angular/common": "workspace:*",
-    "@angular/router": "workspace:*",
-    "@angular/platform-browser": "workspace:*",
-    "@angular/platform-browser-dynamic": "workspace:*",
-    "@angular/platform-server": "workspace:*",
-    "@angular/forms": "workspace:*",
-    "@angular/elements": "workspace:*",
     "@angular/animations": "workspace:*",
     "@angular/benchpress": "workspace: *",
+    "@angular/common": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/elements": "workspace:*",
+    "@angular/forms": "workspace:*",
     "@angular/language-service": "workspace: *",
     "@angular/localize": "workspace: *",
+    "@angular/platform-browser-dynamic": "workspace:*",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-server": "workspace:*",
+    "@angular/router": "workspace:*",
     "@angular/upgrade": "workspace: *"
   }
 }
