@@ -71,9 +71,9 @@ export default class ApiReferenceList {
 
   // inputs are route binded, they can reset to undefined
   // also we want a writable state, so we use a linked signal
-  query = linkedSignal(() => this.queryInput() ?? '');
-  type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
-  status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
+  protected query = linkedSignal(() => this.queryInput() ?? '');
+  public type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
+  private status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
 
   // const state
   protected readonly itemTypes = Object.values(ApiItemType);
