@@ -9,40 +9,40 @@ importers:
   .:
     dependencies:
       '@angular/compiler':
-        specifier: file:../../dist/packages-dist/compiler
-        version: file:../../dist/packages-dist/compiler
+        specifier: next
+        version: 21.0.0-next.4
       '@angular/compiler-cli':
-        specifier: file:../../dist/packages-dist/compiler-cli
-        version: file:../../dist/packages-dist/compiler-cli(@angular/compiler@file:../../dist/packages-dist/compiler)
+        specifier: next
+        version: 21.0.0-next.4(@angular/compiler@21.0.0-next.4)
       '@angular/core':
-        specifier: file:../../dist/packages-dist/core
-        version: file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)
+        specifier: next
+        version: 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)
       rxjs:
-        specifier: file:../../node_modules/rxjs
-        version: file:../../node_modules/rxjs
+        specifier: ^7.0.0
+        version: 7.8.2
 
 packages:
 
-  '@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli':
-    resolution: {directory: ../../dist/packages-dist/compiler-cli, type: directory}
+  '@angular/compiler-cli@21.0.0-next.4':
+    resolution: {integrity: sha512-hlXQ3NL80Mow/FsAeY0ctIjn94xJhJ4BtF5csNUnfO5bU2qY9l5uicZvghhEPLxrn+bZAAOyIdCH5RHb0EnXHQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/compiler': 21.0.0-next.4
       typescript: '>=5.9 <6.0'
     peerDependenciesMeta:
       typescript:
         optional: true
 
-  '@angular/compiler@file:../../dist/packages-dist/compiler':
-    resolution: {directory: ../../dist/packages-dist/compiler, type: directory}
+  '@angular/compiler@21.0.0-next.4':
+    resolution: {integrity: sha512-6CZO4v/4jnRJ7/fKfVNzcInaMT4QcyoTe3Ugf8FMMuWlJRZv4NbzN4hZHV3F2whLwDZsaiuqxav7x20eLXJk7g==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@angular/core@file:../../dist/packages-dist/core':
-    resolution: {directory: ../../dist/packages-dist/core, type: directory}
+  '@angular/core@21.0.0-next.4':
+    resolution: {integrity: sha512-z7M/YyV6GapAH/qEz5v4O/HARNXkquIs8rxg2QY1PhZXWueWel9GXmMceIANrP5zv7GZL8oU64oGTSv2icwJVQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/compiler': 21.0.0-next.4
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.15.0
     peerDependenciesMeta:
@@ -231,8 +231,8 @@ packages:
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
-  rxjs@file:../../node_modules/rxjs:
-    resolution: {directory: ../../node_modules/rxjs, type: directory}
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -281,9 +281,9 @@ packages:
 
 snapshots:
 
-  '@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli(@angular/compiler@file:../../dist/packages-dist/compiler)':
+  '@angular/compiler-cli@21.0.0-next.4(@angular/compiler@21.0.0-next.4)':
     dependencies:
-      '@angular/compiler': file:../../dist/packages-dist/compiler
+      '@angular/compiler': 21.0.0-next.4
       '@babel/core': 7.28.4
       '@jridgewell/sourcemap-codec': 1.5.5
       chokidar: 4.0.3
@@ -295,16 +295,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@angular/compiler@file:../../dist/packages-dist/compiler':
+  '@angular/compiler@21.0.0-next.4':
     dependencies:
       tslib: 2.8.1
 
-  '@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)':
+  '@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)':
     dependencies:
-      rxjs: file:../../node_modules/rxjs
+      rxjs: 7.8.2
       tslib: 2.8.1
     optionalDependencies:
-      '@angular/compiler': file:../../dist/packages-dist/compiler
+      '@angular/compiler': 21.0.0-next.4
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -491,7 +491,7 @@ snapshots:
 
   reflect-metadata@0.2.2: {}
 
-  rxjs@file:../../node_modules/rxjs:
+  rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
 

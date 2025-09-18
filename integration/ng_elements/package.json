@@ -3,27 +3,27 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/elements": "file:../../dist/packages-dist/elements",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "rxjs": "file:../../node_modules/rxjs",
-    "tslib": "file:../../node_modules/tslib",
-    "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
+    "@angular/common": "next",
+    "@angular/compiler": "next",
+    "@angular/compiler-cli": "next",
+    "@angular/core": "next",
+    "@angular/elements": "next",
+    "@angular/platform-browser": "next",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "typescript": "5.9.2",
+    "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@babel/core": "file:../../node_modules/@babel/core",
-    "@rollup/plugin-babel": "file:../../node_modules/@rollup/plugin-babel",
-    "@rollup/plugin-node-resolve": "file:../../node_modules/@rollup/plugin-node-resolve",
-    "@types/jasmine": "file:../../node_modules/@types/jasmine",
-    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "@babel/core": "7.28.4",
+    "@rollup/plugin-babel": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@types/jasmine": "^5.0.0",
+    "@types/jasminewd2": "^2.0.8",
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
-    "protractor": "file:../../node_modules/protractor",
-    "rollup": "file:../../node_modules/rollup"
+    "protractor": "^7.0.0",
+    "rollup": "4.50.2"
   },
   "scripts": {
     "build": "pnpm ngc && pnpm rollup -c rollup.config.mjs",
@@ -32,5 +32,6 @@
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
   },
-  "private": true
+  "private": true,
+  "packageManager": "pnpm@10.17.0"
 }

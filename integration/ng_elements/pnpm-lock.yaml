@@ -9,51 +9,51 @@ importers:
   .:
     dependencies:
       '@angular/common':
-        specifier: file:../../dist/packages-dist/common
-        version: file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)
+        specifier: next
+        version: 21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/compiler':
-        specifier: file:../../dist/packages-dist/compiler
-        version: file:../../dist/packages-dist/compiler
+        specifier: next
+        version: 21.0.0-next.4
       '@angular/compiler-cli':
-        specifier: file:../../dist/packages-dist/compiler-cli
-        version: file:../../dist/packages-dist/compiler-cli(@angular/compiler@file:../../dist/packages-dist/compiler)(typescript@file:../../node_modules/typescript)
+        specifier: next
+        version: 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(typescript@5.9.2)
       '@angular/core':
-        specifier: file:../../dist/packages-dist/core
-        version: file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
+        specifier: next
+        version: 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1)
       '@angular/elements':
-        specifier: file:../../dist/packages-dist/elements
-        version: file:../../dist/packages-dist/elements(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)
+        specifier: next
+        version: 21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
       '@angular/platform-browser':
-        specifier: file:../../dist/packages-dist/platform-browser
-        version: file:../../dist/packages-dist/platform-browser(@angular/common@file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs))(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))
+        specifier: next
+        version: 21.0.0-next.4(@angular/common@21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))
       rxjs:
-        specifier: file:../../node_modules/rxjs
-        version: file:../../node_modules/rxjs
+        specifier: ^7.0.0
+        version: 7.8.2
       tslib:
-        specifier: file:../../node_modules/tslib
-        version: file:../../node_modules/tslib
+        specifier: ^2.3.0
+        version: 2.8.1
       typescript:
-        specifier: file:../../node_modules/typescript
-        version: file:../../node_modules/typescript
+        specifier: 5.9.2
+        version: 5.9.2
       zone.js:
-        specifier: file:../../node_modules/zone.js
-        version: file:../../node_modules/zone.js
+        specifier: 0.15.1
+        version: 0.15.1
     devDependencies:
       '@babel/core':
-        specifier: file:../../node_modules/@babel/core
-        version: file:../../node_modules/@babel/core
+        specifier: 7.28.4
+        version: 7.28.4
       '@rollup/plugin-babel':
-        specifier: file:../../node_modules/@rollup/plugin-babel
-        version: file:../../node_modules/@rollup/plugin-babel(@babel/core@file:../../node_modules/@babel/core)(rollup@file:../../node_modules/rollup)
+        specifier: ^6.0.0
+        version: 6.0.4(@babel/core@7.28.4)(rollup@4.50.2)
       '@rollup/plugin-node-resolve':
-        specifier: file:../../node_modules/@rollup/plugin-node-resolve
-        version: file:../../node_modules/@rollup/plugin-node-resolve(rollup@file:../../node_modules/rollup)
+        specifier: ^16.0.0
+        version: 16.0.1(rollup@4.50.2)
       '@types/jasmine':
-        specifier: file:../../node_modules/@types/jasmine
-        version: file:../../node_modules/@types/jasmine
+        specifier: ^5.0.0
+        version: 5.1.9
       '@types/jasminewd2':
-        specifier: file:../../node_modules/@types/jasminewd2
-        version: file:../../node_modules/@types/jasminewd2
+        specifier: ^2.0.8
+        version: 2.0.13
       concurrently:
         specifier: 3.4.0
         version: 3.4.0
@@ -61,41 +61,41 @@ importers:
         specifier: 2.2.2
         version: 2.2.2
       protractor:
-        specifier: file:../../node_modules/protractor
-        version: file:../../node_modules/protractor
+        specifier: ^7.0.0
+        version: 7.0.0
       rollup:
-        specifier: file:../../node_modules/rollup
-        version: file:../../node_modules/rollup
+        specifier: 4.50.2
+        version: 4.50.2
 
 packages:
 
-  '@angular/common@file:../../dist/packages-dist/common':
-    resolution: {directory: ../../dist/packages-dist/common, type: directory}
+  '@angular/common@21.0.0-next.4':
+    resolution: {integrity: sha512-dg6p5ZDOLVlmbjNJtVxOMRqwNZgScFj9nrqMtExr3o/imHOUC/EtTPKQLPveJnpgnr+vepLJHigd2ccaaGgmSg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/core': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/core': 21.0.0-next.4
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli':
-    resolution: {directory: ../../dist/packages-dist/compiler-cli, type: directory}
+  '@angular/compiler-cli@21.0.0-next.4':
+    resolution: {integrity: sha512-hlXQ3NL80Mow/FsAeY0ctIjn94xJhJ4BtF5csNUnfO5bU2qY9l5uicZvghhEPLxrn+bZAAOyIdCH5RHb0EnXHQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/compiler': 21.0.0-next.4
       typescript: '>=5.9 <6.0'
     peerDependenciesMeta:
       typescript:
         optional: true
 
-  '@angular/compiler@file:../../dist/packages-dist/compiler':
-    resolution: {directory: ../../dist/packages-dist/compiler, type: directory}
+  '@angular/compiler@21.0.0-next.4':
+    resolution: {integrity: sha512-6CZO4v/4jnRJ7/fKfVNzcInaMT4QcyoTe3Ugf8FMMuWlJRZv4NbzN4hZHV3F2whLwDZsaiuqxav7x20eLXJk7g==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
-  '@angular/core@file:../../dist/packages-dist/core':
-    resolution: {directory: ../../dist/packages-dist/core, type: directory}
+  '@angular/core@21.0.0-next.4':
+    resolution: {integrity: sha512-z7M/YyV6GapAH/qEz5v4O/HARNXkquIs8rxg2QY1PhZXWueWel9GXmMceIANrP5zv7GZL8oU64oGTSv2icwJVQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/compiler': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/compiler': 21.0.0-next.4
       rxjs: ^6.5.3 || ^7.4.0
       zone.js: ~0.15.0
     peerDependenciesMeta:
@@ -104,20 +104,20 @@ packages:
       zone.js:
         optional: true
 
-  '@angular/elements@file:../../dist/packages-dist/elements':
-    resolution: {directory: ../../dist/packages-dist/elements, type: directory}
+  '@angular/elements@21.0.0-next.4':
+    resolution: {integrity: sha512-LIDkJYhjPIVP/KdRH9uD0e+dY3Iq7Tm0q1XG1TmzCyhuu6SR/FIdIyrAZrpJ4Mvw/ygpIBVhICP8Q54UagAQOA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/core': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/core': 21.0.0-next.4
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/platform-browser@file:../../dist/packages-dist/platform-browser':
-    resolution: {directory: ../../dist/packages-dist/platform-browser, type: directory}
+  '@angular/platform-browser@21.0.0-next.4':
+    resolution: {integrity: sha512-wx/1ifmtT2eyWUSvAY64q+sWpnwl/g1L6RxHYcMlYju+BLHMabo9XmjpdKn/C1oBLQpxWDcHDS4t6ICtDjBsDg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/animations': 21.0.0-next.3+sha-e715426-with-local-changes
-      '@angular/common': 21.0.0-next.3+sha-e715426-with-local-changes
-      '@angular/core': 21.0.0-next.3+sha-e715426-with-local-changes
+      '@angular/animations': 21.0.0-next.4
+      '@angular/common': 21.0.0-next.4
+      '@angular/core': 21.0.0-next.4
     peerDependenciesMeta:
       '@angular/animations':
         optional: true
@@ -132,10 +132,6 @@ packages:
 
   '@babel/core@7.28.4':
     resolution: {integrity: sha512-2BCOP7TN8M+gVDj7/ht3hsaO/B/n5oDbiAyyvnRlNOs+u1o+JWNYTQrmpuNp1/Wq2gcFrI01JAW+paEKDMx/CA==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/core@file:../../node_modules/@babel/core':
-    resolution: {directory: ../../node_modules/@babel/core, type: directory}
     engines: {node: '>=6.9.0'}
 
   '@babel/generator@7.28.3':
@@ -156,7 +152,6 @@ packages:
 
   '@babel/helper-module-transforms@7.28.3':
     resolution: {integrity: sha512-gytXUbs8k2sXS9PnQptz5o0QnpLL51SwASIORY6XaBKF88nsOT0Zw9szLqlSGQDP/4TljBAD5y98p2U1fqkdsw==}
-    version: 7.28.3
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -210,8 +205,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@rollup/plugin-babel@file:../../node_modules/@rollup/plugin-babel':
-    resolution: {directory: ../../node_modules/@rollup/plugin-babel, type: directory}
+  '@rollup/plugin-babel@6.0.4':
+    resolution: {integrity: sha512-YF7Y52kFdFT/xVSuVdjkV5ZdX/3YtmX0QulG+x0taQOtJdHYzVU61aSSkAgVJ7NOv6qPkIYiJSgSWWN/DM5sGw==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -223,8 +218,8 @@ packages:
       rollup:
         optional: true
 
-  '@rollup/plugin-node-resolve@file:../../node_modules/@rollup/plugin-node-resolve':
-    resolution: {directory: ../../node_modules/@rollup/plugin-node-resolve, type: directory}
+  '@rollup/plugin-node-resolve@16.0.1':
+    resolution: {integrity: sha512-tk5YCxJWIG81umIvNkSod2qK5KyQW19qcBF/B78n1bjtOON6gzKoVeSzAE8yHCZEDmqkHKkxplExA8KzdJLJpA==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^2.78.0||^3.0.0||^4.0.0
@@ -234,7 +229,6 @@ packages:
 
   '@rollup/pluginutils@5.3.0':
     resolution: {integrity: sha512-5EdhGZtnu3V88ces7s53hhfK5KSASnJZv8Lulpc04cWO3REESroJXg73DFsOmgbU2BhwV0E20bu2IDZb3VKW4Q==}
-    version: 5.3.0
     engines: {node: '>=14.0.0'}
     peerDependencies:
       rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
@@ -359,11 +353,8 @@ packages:
   '@types/jasmine@5.1.9':
     resolution: {integrity: sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==}
 
-  '@types/jasmine@file:../../node_modules/@types/jasmine':
-    resolution: {directory: ../../node_modules/@types/jasmine, type: directory}
-
-  '@types/jasminewd2@file:../../node_modules/@types/jasminewd2':
-    resolution: {directory: ../../node_modules/@types/jasminewd2, type: directory}
+  '@types/jasminewd2@2.0.13':
+    resolution: {integrity: sha512-aJ3wj8tXMpBrzQ5ghIaqMisD8C3FIrcO6sDKHqFbuqAsI7yOxj0fA7MrRCPLZHIVUjERIwsMmGn/vB0UQ9u0Hg==}
 
   '@types/node@24.5.2':
     resolution: {integrity: sha512-FYxk1I7wPv3K2XBaoyH2cTnocQEu8AOZ60hPbsyukMPLv5/5qr7V1i8PLHdl6Zf87I+xZXFvPCXYjiTFq+YSDQ==}
@@ -1212,9 +1203,10 @@ packages:
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  protractor@file:../../node_modules/protractor:
-    resolution: {directory: ../../node_modules/protractor, type: directory}
+  protractor@7.0.0:
+    resolution: {integrity: sha512-UqkFjivi4GcvUQYzqGYNe0mLzfn5jiLmO8w9nMhQoJRLhy2grJonpga2IWhI6yJO30LibWXJJtA4MOIZD2GgZw==}
     engines: {node: '>=10.13.x'}
+    deprecated: We have news to share - Protractor is deprecated and will reach end-of-life by Summer 2023. To learn more and find out about other options please refer to this post on the Angular blog. Thank you for using and contributing to Protractor. https://goo.gle/state-of-e2e-in-angular
     hasBin: true
 
   psl@1.15.0:
@@ -1287,8 +1279,8 @@ packages:
     deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
-  rollup@file:../../node_modules/rollup:
-    resolution: {directory: ../../node_modules/rollup, type: directory}
+  rollup@4.50.2:
+    resolution: {integrity: sha512-BgLRGy7tNS9H66aIMASq1qSYbAAJV6Z6WR4QYTvj5FgF15rZ/ympT1uixHXwzbZUBDbkvqUI1KR0fH1FhMaQ9w==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -1298,8 +1290,8 @@ packages:
   rx@4.1.0:
     resolution: {integrity: sha512-CiaiuN6gapkdl+cZUr67W6I8jquN4lkak3vtIsIWCl4XIPP8ffsoyN6/+PuGXnQy8Cu8W2y9Xxh31Rq4M6wUug==}
 
-  rxjs@file:../../node_modules/rxjs:
-    resolution: {directory: ../../node_modules/rxjs, type: directory}
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
   safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -1479,17 +1471,14 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  tslib@file:../../node_modules/tslib:
-    resolution: {directory: ../../node_modules/tslib, type: directory}
-
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
   tweetnacl@0.14.5:
     resolution: {integrity: sha512-KXXFFdAbFXY4geFIwoyNK+f5Z1b7swfXABfL7HXCmoIWMKU3dmS26672A4EeQtDzLKy7SXmfBu51JolvEKwtGA==}
 
-  typescript@file:../../node_modules/typescript:
-    resolution: {directory: ../../node_modules/typescript, type: directory}
+  typescript@5.9.2:
+    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1630,20 +1619,20 @@ packages:
     resolution: {integrity: sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
-  zone.js@file:../../node_modules/zone.js:
-    resolution: {directory: ../../node_modules/zone.js, type: directory}
+  zone.js@0.15.1:
+    resolution: {integrity: sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==}
 
 snapshots:
 
-  '@angular/common@file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)':
+  '@angular/common@21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
     dependencies:
-      '@angular/core': file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
-      rxjs: file:../../node_modules/rxjs
+      '@angular/core': 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1)
+      rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli(@angular/compiler@file:../../dist/packages-dist/compiler)(typescript@file:../../node_modules/typescript)':
+  '@angular/compiler-cli@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(typescript@5.9.2)':
     dependencies:
-      '@angular/compiler': file:../../dist/packages-dist/compiler
+      '@angular/compiler': 21.0.0-next.4
       '@babel/core': 7.28.4
       '@jridgewell/sourcemap-codec': 1.5.5
       chokidar: 4.0.3
@@ -1653,32 +1642,32 @@ snapshots:
       tslib: 2.8.1
       yargs: 18.0.0
     optionalDependencies:
-      typescript: file:../../node_modules/typescript
+      typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
 
-  '@angular/compiler@file:../../dist/packages-dist/compiler':
+  '@angular/compiler@21.0.0-next.4':
     dependencies:
       tslib: 2.8.1
 
-  '@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)':
+  '@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1)':
     dependencies:
-      rxjs: file:../../node_modules/rxjs
+      rxjs: 7.8.2
       tslib: 2.8.1
     optionalDependencies:
-      '@angular/compiler': file:../../dist/packages-dist/compiler
-      zone.js: file:../../node_modules/zone.js
+      '@angular/compiler': 21.0.0-next.4
+      zone.js: 0.15.1
 
-  '@angular/elements@file:../../dist/packages-dist/elements(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)':
+  '@angular/elements@21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)':
     dependencies:
-      '@angular/core': file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
-      rxjs: file:../../node_modules/rxjs
+      '@angular/core': 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1)
+      rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/platform-browser@file:../../dist/packages-dist/platform-browser(@angular/common@file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs))(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))':
+  '@angular/platform-browser@21.0.0-next.4(@angular/common@21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2))(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))':
     dependencies:
-      '@angular/common': file:../../dist/packages-dist/common(@angular/core@file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js))(rxjs@file:../../node_modules/rxjs)
-      '@angular/core': file:../../dist/packages-dist/core(@angular/compiler@file:../../dist/packages-dist/compiler)(rxjs@file:../../node_modules/rxjs)(zone.js@file:../../node_modules/zone.js)
+      '@angular/common': 21.0.0-next.4(@angular/core@21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1))(rxjs@7.8.2)
+      '@angular/core': 21.0.0-next.4(@angular/compiler@21.0.0-next.4)(rxjs@7.8.2)(zone.js@0.15.1)
       tslib: 2.8.1
 
   '@babel/code-frame@7.27.1':
@@ -1694,27 +1683,7 @@ snapshots:
       '@babel/code-frame': 7.27.1
       '@babel/generator': 7.28.3
       '@babel/helper-compilation-targets': 7.27.2
-      '@babel/helper-module-transforms': 7.28.3(@babel/core@file:../../node_modules/@babel/core)
-      '@babel/helpers': 7.28.4
-      '@babel/parser': 7.28.4
-      '@babel/template': 7.27.2
-      '@babel/traverse': 7.28.4
-      '@babel/types': 7.28.4
-      '@jridgewell/remapping': 2.3.5
-      convert-source-map: 2.0.0
-      debug: 4.4.3
-      gensync: 1.0.0-beta.2
-      json5: 2.2.3
-      semver: 6.3.1
-    transitivePeerDependencies:
-      - supports-color
-
-  '@babel/core@file:../../node_modules/@babel/core':
-    dependencies:
-      '@babel/code-frame': 7.27.1
-      '@babel/generator': 7.28.3
-      '@babel/helper-compilation-targets': 7.27.2
-      '@babel/helper-module-transforms': 7.28.3(@babel/core@file:../../node_modules/@babel/core)
+      '@babel/helper-module-transforms': 7.28.3(@babel/core@7.28.4)
       '@babel/helpers': 7.28.4
       '@babel/parser': 7.28.4
       '@babel/template': 7.27.2
@@ -1754,9 +1723,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/helper-module-transforms@7.28.3(@babel/core@file:../../node_modules/@babel/core)':
+  '@babel/helper-module-transforms@7.28.3(@babel/core@7.28.4)':
     dependencies:
-      '@babel/core': file:../../node_modules/@babel/core
+      '@babel/core': 7.28.4
       '@babel/helper-module-imports': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
       '@babel/traverse': 7.28.4
@@ -1820,33 +1789,33 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@rollup/plugin-babel@file:../../node_modules/@rollup/plugin-babel(@babel/core@file:../../node_modules/@babel/core)(rollup@file:../../node_modules/rollup)':
+  '@rollup/plugin-babel@6.0.4(@babel/core@7.28.4)(rollup@4.50.2)':
     dependencies:
-      '@babel/core': file:../../node_modules/@babel/core
+      '@babel/core': 7.28.4
       '@babel/helper-module-imports': 7.27.1
-      '@rollup/pluginutils': 5.3.0(rollup@file:../../node_modules/rollup)
+      '@rollup/pluginutils': 5.3.0(rollup@4.50.2)
     optionalDependencies:
-      rollup: file:../../node_modules/rollup
+      rollup: 4.50.2
     transitivePeerDependencies:
       - supports-color
 
-  '@rollup/plugin-node-resolve@file:../../node_modules/@rollup/plugin-node-resolve(rollup@file:../../node_modules/rollup)':
+  '@rollup/plugin-node-resolve@16.0.1(rollup@4.50.2)':
     dependencies:
-      '@rollup/pluginutils': 5.3.0(rollup@file:../../node_modules/rollup)
+      '@rollup/pluginutils': 5.3.0(rollup@4.50.2)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
       is-module: 1.0.0
       resolve: 1.22.10
     optionalDependencies:
-      rollup: file:../../node_modules/rollup
+      rollup: 4.50.2
 
-  '@rollup/pluginutils@5.3.0(rollup@file:../../node_modules/rollup)':
+  '@rollup/pluginutils@5.3.0(rollup@4.50.2)':
     dependencies:
       '@types/estree': 1.0.8
       estree-walker: 2.0.2
       picomatch: 4.0.3
     optionalDependencies:
-      rollup: file:../../node_modules/rollup
+      rollup: 4.50.2
 
   '@rollup/rollup-android-arm-eabi@4.50.2':
     optional: true
@@ -1921,9 +1890,7 @@ snapshots:
 
   '@types/jasmine@5.1.9': {}
 
-  '@types/jasmine@file:../../node_modules/@types/jasmine': {}
-
-  '@types/jasminewd2@file:../../node_modules/@types/jasminewd2':
+  '@types/jasminewd2@2.0.13':
     dependencies:
       '@types/jasmine': 5.1.9
 
@@ -2753,7 +2720,7 @@ snapshots:
 
   process-nextick-args@2.0.1: {}
 
-  protractor@file:../../node_modules/protractor:
+  protractor@7.0.0:
     dependencies:
       '@types/q': 0.0.32
       '@types/selenium-webdriver': 3.0.26
@@ -2856,7 +2823,7 @@ snapshots:
     dependencies:
       glob: 7.2.3
 
-  rollup@file:../../node_modules/rollup:
+  rollup@4.50.2:
     dependencies:
       '@types/estree': 1.0.8
     optionalDependencies:
@@ -2887,7 +2854,7 @@ snapshots:
 
   rx@4.1.0: {}
 
-  rxjs@file:../../node_modules/rxjs:
+  rxjs@7.8.2:
     dependencies:
       tslib: 2.8.1
 
@@ -3104,15 +3071,13 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tslib@file:../../node_modules/tslib: {}
-
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
 
   tweetnacl@0.14.5: {}
 
-  typescript@file:../../node_modules/typescript: {}
+  typescript@5.9.2: {}
 
   ua-parser-js@1.0.41: {}
 
@@ -3258,4 +3223,4 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 22.0.0
 
-  zone.js@file:../../node_modules/zone.js: {}
+  zone.js@0.15.1: {}
