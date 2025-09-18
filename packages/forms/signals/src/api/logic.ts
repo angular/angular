@@ -18,6 +18,7 @@ import type {
   PathKind,
   TreeValidator,
 } from './types';
+import {ensureCustomValidationResult} from './validators/util';
 
 /**
  * Adds logic to a field to conditionally disable it. A disabled field does not contribute to the
@@ -123,9 +124,11 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncErrorRule((ctx) =>
-    addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
-  );
+  pathNode.logic.addSyncErrorRule((ctx) => {
+    return ensureCustomValidationResult(
+      addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
+    );
+  });
 }
 
 /**

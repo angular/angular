@@ -16,6 +16,7 @@ import type {
 } from '../api/types';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {BoundPredicate, LogicContainer, Predicate} from './logic';
+import {ValidationErrorWithField} from '../api/validation_errors';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -31,21 +32,28 @@ export abstract class AbstractLogicNodeBuilder {
 
   /** Adds a rule to determine if a field should be hidden. */
   abstract addHiddenRule(logic: LogicFn<any, boolean>): void;
+
   /** Adds a rule to determine if a field should be disabled, and for what reason. */
   abstract addDisabledReasonRule(logic: LogicFn<any, DisabledReason | undefined>): void;
+
   /** Adds a rule to determine if a field should be read-only. */
   abstract addReadonlyRule(logic: LogicFn<any, boolean>): void;
+
   /** Adds a rule for synchronous validation errors for a field. */
   abstract addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void;
+
   /** Adds a rule for synchronous validation errors that apply to a subtree. */
   abstract addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void;
+
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
+
   /** Adds a rule to compute aggregate metadata for a field. */
   abstract addAggregateMetadataRule<M>(
     key: AggregateMetadataKey<unknown, M>,
     logic: LogicFn<any, M>,
   ): void;
+
   /** Adds a factory function to produce a data value associated with a field. */
   abstract addMetadataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
@@ -105,15 +113,19 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addReadonlyRule(logic);
   }
 
-  override addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void {
+  override addSyncErrorRule(logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>): void {
     this.getCurrent().addSyncErrorRule(logic);
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void {
+  override addSyncTreeErrorRule(
+    logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>,
+  ): void {
     this.getCurrent().addSyncTreeErrorRule(logic);
   }
 
-  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
+  override addAsyncErrorRule(
+    logic: LogicFn<any, AsyncValidationResult<ValidationErrorWithField>>,
+  ): void {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
@@ -221,15 +233,19 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.readonly.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addSyncErrorRule(logic: LogicFn<any, ValidationResult>): void {
+  override addSyncErrorRule(logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>): void {
     this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void {
+  override addSyncTreeErrorRule(
+    logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>,
+  ): void {
     this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void {
+  override addAsyncErrorRule(
+    logic: LogicFn<any, AsyncValidationResult<ValidationErrorWithField>>,
+  ): void {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 

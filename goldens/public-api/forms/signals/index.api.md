@@ -175,7 +175,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 export type FieldTree<TValue, TKey extends string | number = string | number> = (() => FieldState<TValue, TKey>) & (TValue extends Array<infer U> ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TValue extends Record<string, any> ? Subfields<TValue> : unknown);
 
 // @public
-export type FieldValidationResult<E extends ValidationError = ValidationError> = ValidationSuccess | OneOrMany<WithoutField<E>>;
+export type FieldValidationResult<E extends ValidationError = ValidationError> = ValidationSuccess | OneOrMany<E>;
 
 // @public
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, FieldValidationResult, TPathKind>;
@@ -521,7 +521,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 
 // @public
 export interface ValidationError {
-    readonly field: FieldTree<unknown>;
+    readonly field?: FieldTree<unknown>;
     readonly kind: string;
     readonly message?: string;
 }

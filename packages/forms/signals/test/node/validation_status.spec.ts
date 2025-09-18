@@ -19,17 +19,17 @@ import {
   validateAsync,
   validateTree,
   ValidationError,
-  type WithoutField,
+  ValidationErrorWithField,
 } from '../../public_api';
 
-function validateValue(value: string): WithoutField<ValidationError>[] {
+function validateValue(value: string): ValidationError[] {
   return value === 'INVALID' ? [customError()] : [];
 }
 
 function validateValueForChild(
   value: string,
   field: FieldTree<unknown> | undefined,
-): ValidationError[] {
+): ValidationErrorWithField[] {
   return value === 'INVALID' ? [customError({field})] : [];
 }
 

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, OneOrMany, PathKind, type FieldContext} from '../types';
-import {ValidationError, WithoutField} from '../validation_errors';
+import {LogicFn, OneOrMany, PathKind, type FieldContext, ValidationResult} from '../types';
+import {customError, ValidationError, ValidationErrorWithField} from '../validation_errors';
+import {isArray} from '../../util/type_guards';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -24,9 +25,7 @@ export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Ro
        * Custom validation error(s) to report instead of the default,
        * or a function that receives the `FieldContext` and returns custom validation error(s).
        */
-      error?:
-        | OneOrMany<WithoutField<ValidationError>>
-        | LogicFn<TValue, OneOrMany<WithoutField<ValidationError>>, TPathKind>;
+      error?: OneOrMany<ValidationError> | LogicFn<TValue, OneOrMany<ValidationError>, TPathKind>;
       message?: never;
     };
 
@@ -59,4 +58,44 @@ export function isEmpty(value: unknown): boolean {
     return isNaN(value);
   }
   return value === '' || value === false || value == null;
+}
+
+/**
+ * Whether the value is a plain object, as opposed to being an instance of Validation error.
+ * @param error An error that could be a plain object, or an instance of a class implementing ValidationError.
+ */
+function isPlainError(error: ValidationError) {
+  return (
+    typeof error === 'object' &&
+    (Object.getPrototypeOf(error) === Object.prototype || Object.getPrototypeOf(error) === null)
+  );
+}
+
+/**
+ * If the value provided is a plain object, it wraps it into a custom error.
+ * @param error An error that could be a plain object, or an instance of a class implementing ValidationError.
+ */
+function ensureCustomValidationError(error: ValidationErrorWithField): ValidationErrorWithField {
+  if (isPlainError(error)) {
+    return customError(error);
+  }
+  return error;
+}
+
+/**
+ * Makes sure every provided error is wrapped as a custom error.
+ * @param result Validation result with a field.пше з
+ */
+export function ensureCustomValidationResult(
+  result: ValidationResult<ValidationErrorWithField>,
+): ValidationResult<ValidationErrorWithField> {
+  if (result === null || result === undefined) {
+    return result;
+  }
+
+  if (isArray(result)) {
+    return result.map(ensureCustomValidationError);
+  }
+
+  return ensureCustomValidationError(result);
 }
