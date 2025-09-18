@@ -277,7 +277,6 @@ export function ɵɵdeferPrefetchWhen(rawValue: unknown) {
     try {
       const value = Boolean(rawValue); // handle truthy or falsy values
       const tView = lView[TVIEW];
-      const tNode = getSelectedTNode();
       const tDetails = getTDeferBlockDetails(tView, tNode);
       if (value === true && tDetails.loadingState === DeferDependenciesLoadingState.NOT_STARTED) {
         // If loading has not been started yet, trigger it now.
