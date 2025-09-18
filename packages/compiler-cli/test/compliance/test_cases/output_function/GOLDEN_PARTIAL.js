@@ -18,7 +18,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { a: [{ type: i0.Output, args: ["a"] }], b: [{ type: i0.Output, args: ["b"] }], c: [{ type: i0.Output, args: ["cPublic"] }], d: [{ type: i0.Output, args: ["d"] }], e: [{ type: i0.Output, args: ["e"] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: output_in_directive.d.ts
@@ -56,7 +56,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: 'Works',
                 }]
-        }] });
+        }], propDecorators: { a: [{ type: i0.Output, args: ["a"] }], b: [{ type: i0.Output, args: ["b"] }], c: [{ type: i0.Output, args: ["cPublic"] }], d: [{ type: i0.Output, args: ["d"] }], e: [{ type: i0.Output, args: ["e"] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: output_in_component.d.ts
@@ -97,7 +97,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     standalone: true,
                 }]
-        }], propDecorators: { clickDecorator1: [{
+        }], propDecorators: { click1: [{ type: i0.Output, args: ["click1"] }], click2: [{ type: i0.Output, args: ["click2"] }], click3: [{ type: i0.Output, args: ["click3"] }], _bla: [{ type: i0.Output, args: ["decoratorPublicName"] }], _bla2: [{ type: i0.Output, args: ["decoratorPublicName2"] }], clickDecorator1: [{
                 type: Output
             }], clickDecorator2: [{
                 type: Output

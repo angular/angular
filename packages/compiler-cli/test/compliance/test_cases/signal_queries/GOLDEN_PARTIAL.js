@@ -24,7 +24,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.2.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { query1: [{ type: i0.ViewChild, args: ['locatorA', { isSignal: true }] }], query2: [{ type: i0.ViewChildren, args: ['locatorB', { isSignal: true }] }], query3: [{ type: i0.ContentChild, args: ['locatorC', { isSignal: true }] }], query4: [{ type: i0.ContentChildren, args: ['locatorD', { isSignal: true }] }], query5: [{ type: i0.ViewChild, args: [forwardRef(() => SomeToken), { isSignal: true }] }], query6: [{ type: i0.ViewChildren, args: [i0.forwardRef(() => SomeToken), { isSignal: true }] }], query7: [{ type: i0.ViewChild, args: ['locatorE', Object.assign({ read: SomeToken }, { isSignal: true })] }], query8: [{ type: i0.ContentChildren, args: ['locatorF, locatorG', Object.assign({ descendants: true }, { isSignal: true })] }], query9: [{ type: i0.ContentChildren, args: [i0.forwardRef(() => nonAnalyzableRefersToString), Object.assign({ descendants: true }, { isSignal: true })] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: query_in_directive.d.ts
@@ -66,7 +66,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: 'Works',
                 }]
-        }] });
+        }], propDecorators: { query1: [{ type: i0.ViewChild, args: ['locatorA', { isSignal: true }] }], query2: [{ type: i0.ViewChildren, args: ['locatorB', { isSignal: true }] }], query3: [{ type: i0.ContentChild, args: ['locatorC', { isSignal: true }] }], query4: [{ type: i0.ContentChildren, args: ['locatorD', { isSignal: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: query_in_component.d.ts
@@ -100,10 +100,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
         }], propDecorators: { decoratorViewChild: [{
                 type: ViewChild,
                 args: ['locator1']
-            }], decoratorContentChild: [{
+            }], signalViewChild: [{ type: i0.ViewChild, args: ['locator1', { isSignal: true }] }], decoratorContentChild: [{
                 type: ContentChild,
                 args: ['locator2']
-            }] } });
+            }], signalContentChild: [{ type: i0.ContentChild, args: ['locator2', { isSignal: true }] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: mixed_query_variants.d.ts
