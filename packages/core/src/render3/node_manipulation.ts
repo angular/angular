@@ -139,8 +139,11 @@ function applyToElementOrContainer(
     } else if (action === WalkTNodeTreeAction.Insert && parent !== null) {
       nativeInsertBefore(renderer, parent, rNode, beforeNode || null, true);
     } else if (action === WalkTNodeTreeAction.Detach) {
-      runLeaveAnimationsWithCallback(parentLView, () => {
-        nativeRemoveNode(renderer, rNode, isComponent);
+      runLeaveAnimationsWithCallback(parentLView, (nodeHasLeaveAnimations: boolean) => {
+        // the nodeHasLeaveAnimations indicates to the renderer that the element needs to
+        // be removed synchronously and sets the requireSynchronousElementRemoval flag in
+        // the renderer.
+        nativeRemoveNode(renderer, rNode, isComponent, nodeHasLeaveAnimations);
       });
     } else if (action === WalkTNodeTreeAction.Destroy) {
       runLeaveAnimationsWithCallback(parentLView, () => {
@@ -350,6 +353,10 @@ function cleanUpView(tView: TView, lView: LView): void {
   }
 }
 
+function hasLeaveAnimations(lView: LView | undefined): boolean {
+  return lView !== undefined && lView[ANIMATIONS] !== null && lView[ANIMATIONS].leave !== undefined;
+}
+
 function runLeaveAnimationsWithCallback(lView: LView | undefined, callback: Function) {
   if (lView && lView[ANIMATIONS] && lView[ANIMATIONS].leave) {
     if (lView[ANIMATIONS].skipLeaveAnimations) {
@@ -375,11 +382,11 @@ function runAfterLeaveAnimations(lView: LView | undefined, callback: Function) {
         lView[ANIMATIONS].running = undefined;
       }
       allLeavingAnimations.delete(lView);
-      callback();
+      callback(true);
     });
     return;
   }
-  callback();
+  callback(false);
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
