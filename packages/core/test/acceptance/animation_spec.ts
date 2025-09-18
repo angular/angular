@@ -23,8 +23,8 @@ import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {isNode} from '@angular/private/testing';
 import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -37,9 +37,17 @@ describe('Animation', () => {
     return;
   }
 
-  beforeAll(() => {
+  beforeEach(() => {
     TestBed.resetTestEnvironment();
     TestBed.initTestEnvironment([BrowserTestingModule, TestModule], platformBrowserTesting());
+  });
+
+  afterEach(() => {
+    TestBed.resetTestEnvironment();
+    TestBed.initTestEnvironment(
+      [BrowserTestingModule, NoopAnimationsModule, TestModule],
+      platformBrowserTesting(),
+    );
   });
 
   afterAll(() => {
@@ -709,6 +717,70 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('slide-out fade ');
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
     }));
+
+    describe('legacy animations compatibility', () => {
+      beforeAll(() => {
+        TestBed.resetTestEnvironment();
+        TestBed.initTestEnvironment(
+          [BrowserTestingModule, NoopAnimationsModule, TestModule],
+          platformBrowserTesting(),
+        );
+      });
+
+      const styles = `
+      .fade {
+        animation: fade-out 1ms;
+      }
+      @keyframes fade-out {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+      `;
+
+      it('should have the same exact timing when AnimationsModule is present', fakeAsync(() => {
+        const logSpy = jasmine.createSpy('logSpy');
+        @Component({
+          selector: 'test-cmp',
+          styles: styles,
+          template:
+            '<div>@if (show()) {<p animate.leave="fade" (animationend)="logMe($event)">I should fade</p>}</div>',
+          encapsulation: ViewEncapsulation.None,
+        })
+        class TestComponent {
+          show = signal(true);
+
+          logMe(event: AnimationEvent) {
+            logSpy();
+          }
+        }
+
+        TestBed.configureTestingModule({animationsEnabled: true});
+
+        const fixture = TestBed.createComponent(TestComponent);
+        const cmp = fixture.componentInstance;
+        fixture.detectChanges();
+        const paragragh = fixture.debugElement.query(By.css('p'));
+
+        expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+        cmp.show.set(false);
+        fixture.detectChanges();
+        tickAnimationFrames(1);
+        expect(cmp.show()).toBeFalsy();
+        fixture.detectChanges();
+        expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
+        fixture.detectChanges();
+        paragragh.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'fade-out'}),
+        );
+        tick();
+        expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
+        expect(logSpy).toHaveBeenCalled();
+      }));
+    });
   });
 
   describe('animate.enter', () => {
