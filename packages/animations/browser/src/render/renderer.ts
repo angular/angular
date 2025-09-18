@@ -78,7 +78,20 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onInsert(this.namespaceId, newChild, parent, isMove);
   }
 
-  removeChild(parent: any, oldChild: any, isHostElement?: boolean): void {
+  // TODO(thePunderWoman): remove the requireSynchronousElementRemoval flag after the
+  // animations package has been fully deleted post v23.
+  removeChild(
+    parent: any,
+    oldChild: any,
+    isHostElement?: boolean,
+    requireSynchronousElementRemoval?: boolean,
+  ): void {
+    // Elements using the new `animate.leave` API require synchronous removal and should
+    // skip the rest of the legacy animation behaviors.
+    if (requireSynchronousElementRemoval) {
+      this.delegate.removeChild(parent, oldChild, isHostElement);
+      return;
+    }
     // Prior to the changes in #57203, this method wasn't being called at all by `core` if the child
     // doesn't have a parent. There appears to be some animation-specific downstream logic that
     // depends on the null check happening before the animation engine. This check keeps the old
