@@ -477,6 +477,17 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  // Decorators
+  static inputDecorator: o.ExternalReference = {name: 'Input', moduleName: CORE};
+  static outputDecorator: o.ExternalReference = {name: 'Output', moduleName: CORE};
+  static viewChildDecorator: o.ExternalReference = {name: 'ViewChild', moduleName: CORE};
+  static viewChildrenDecorator: o.ExternalReference = {name: 'ViewChildren', moduleName: CORE};
+  static contentChildDecorator: o.ExternalReference = {name: 'ContentChild', moduleName: CORE};
+  static contentChildrenDecorator: o.ExternalReference = {
+    name: 'ContentChildren',
+    moduleName: CORE,
+  };
+
   // type-checking
   static InputSignalBrandWriteType = {name: 'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE', moduleName: CORE};
   static UnwrapDirectiveSignalInputs = {name: 'ɵUnwrapDirectiveSignalInputs', moduleName: CORE};
