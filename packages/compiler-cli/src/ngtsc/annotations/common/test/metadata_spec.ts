@@ -108,7 +108,7 @@ runInEachFileSystem(() => {
         }
       `);
       expect(res).toContain(
-        `{ 'has-dashes-in-name': [{ type: Input }], noDashesInName: [{ type: Input }] })`,
+        `{ "has-dashes-in-name": [{ type: Input }], noDashesInName: [{ type: Input }] })`,
       );
     });
 
