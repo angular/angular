@@ -529,6 +529,11 @@ This is caused by a [defect](https://github.com/evanw/esbuild/issues/399) in the
 
 IMPORTANT: Avoiding the use of modules with non-local side effects (outside of polyfills) is recommended whenever possible regardless of the build system being used and avoids this particular issue. Modules with non-local side effects can have a negative effect on both application size and runtime performance as well.
 
+### Output location changes 
+
+By default, after a successful build by the application builder the bundle is located in a `dist/<project-name>/browser` directory (instead of `dist/<project-name>` for the browser builder).
+This might break some of the toolchains that rely the previous location. In this case, you can [configure the output path](reference/configs/workspace-config#output-path-configuration) to suit your needs.
+
 ## Bug reports
 
 Report issues and feature requests on [GitHub](https://github.com/angular/angular-cli/issues).
