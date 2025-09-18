@@ -14,7 +14,6 @@ import { FieldPathNode } from '../schema/path_node';
 import { assertPathIsCurrent } from '../schema/schema';
 import { property } from './logic';
 import { FieldContext, FieldPath, PathKind, TreeValidationResult } from './types';
-import { ValidationError } from './validation_errors';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
