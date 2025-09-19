@@ -5037,4 +5037,90 @@ describe('standalone migration', () => {
     `),
     );
   });
+
+  it('should add handle import aliases to the same module name', async () => {
+    writeFile(
+      './app/comp.ts',
+      `
+      import { Component, NgModule } from '@angular/core';
+      import { AnotherModule } from '../another/another';
+      import { AnotherModule as LegacyAnotherModule } from '../another/another-legacy';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<another1 /> <another2 />',
+        standalone: false
+      })
+      export class MyComponent {}
+
+      @NgModule({
+        imports: [AnotherModule, LegacyAnotherModule],
+        declarations: [MyComponent],
+        exports: [MyComponent]
+      })
+      export class MyModule {}
+
+    `,
+    );
+
+    writeFile(
+      './another/another.ts',
+      `
+      import { Component, NgModule } from '@angular/core';
+
+      @Component({
+        selector: 'another1',
+        template: 'another1',
+        standalone: false
+      })
+      export class AnotherComponent {}
+
+      @NgModule({
+        declarations: [AnotherComponent],
+        exports: [AnotherComponent]
+      })
+      export class AnotherModule {}
+
+    `,
+    );
+
+    writeFile(
+      './another/another-legacy.ts',
+      `
+      import { Component, NgModule } from '@angular/core';
+
+      @Component({
+        selector: 'another2',
+        template: 'another2',
+        standalone: false
+      })
+      export class AnotherComponent {}
+
+      @NgModule({
+        declarations: [AnotherComponent],
+        exports: [AnotherComponent]
+      })
+      export class AnotherModule {}
+
+    `,
+    );
+
+    await runMigration('convert-to-standalone', './app/');
+
+    const myCompContent = tree.readContent('app/comp.ts');
+
+    expect(myCompContent).toContain(`import { AnotherModule } from '../another/another';`);
+    expect(myCompContent).toContain(
+      `import { AnotherModule as LegacyAnotherModule } from '../another/another-legacy';`,
+    );
+    expect(stripWhitespace(myCompContent)).toContain(
+      stripWhitespace(`
+      @Component({
+        selector: 'my-comp',
+        template: '<another1 /> <another2 />',
+        imports: [AnotherModule, LegacyAnotherModule]
+      })
+    `),
+    );
+  });
 });
