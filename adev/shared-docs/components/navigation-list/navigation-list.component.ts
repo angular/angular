@@ -27,7 +27,6 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
     NgTemplateOutlet,
     MatTooltipModule,
     ReactiveFormsModule,
-    SlideToggle,
     TitleCasePipe,
   ],
   templateUrl: './navigation-list.component.html',
@@ -40,7 +39,6 @@ export class NavigationList {
   readonly collapsableLevel = input<number | undefined>();
   readonly expandableLevel = input<number>(2);
   readonly isDropdownView = input<boolean>(false);
-  protected readonly groupingCtrl = new FormControl(true, {nonNullable: true});
 
   readonly linkClicked = output<void>();
 
@@ -63,13 +61,13 @@ export class NavigationList {
     this.linkClicked.emit();
   }
 
-  protected hasCategories(items: NavigationItem[]): boolean {
+  private hasCategories(items: NavigationItem[]): boolean {
     return items.some((item) => !!item.category);
   }
 
   protected groupItems(items: NavigationItem[]): Map<string, NavigationItem[]> {
     const hasCategories = this.hasCategories(items);
-    if (hasCategories && this.groupingCtrl.value) {
+    if (hasCategories) {
       const others: NavigationItem[] = [];
       const categorizedItems = new Map<string, NavigationItem[]>();
       for (const item of items) {
