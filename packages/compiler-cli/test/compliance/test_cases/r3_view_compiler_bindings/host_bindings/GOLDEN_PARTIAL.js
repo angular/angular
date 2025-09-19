@@ -795,13 +795,13 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     selector: '[hostBindingDir]',
                     standalone: false
                 }]
-        }], propDecorators: { "is-a": [{
+        }], propDecorators: { 'is-a': [{
                 type: HostBinding,
                 args: ['class.a']
-            }], "is-\"b\"": [{
+            }], 'is-"b"': [{
                 type: HostBinding,
                 args: ['class.b']
-            }], "\"is-c\"": [{
+            }], '"is-c"': [{
                 type: HostBinding,
                 args: ['class.c']
             }] } });
