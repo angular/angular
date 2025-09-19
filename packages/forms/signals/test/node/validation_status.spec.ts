@@ -33,15 +33,6 @@ function validateValueForChild(
   return value === 'INVALID' ? [customError({field})] : [];
 }
 
-async function waitFor(fn: () => boolean, count = 100): Promise<void> {
-  while (!fn()) {
-    await new Promise((resolve) => setTimeout(resolve, 1));
-    if (--count === 0) {
-      throw Error('waitFor timeout');
-    }
-  }
-}
-
 describe('validation status', () => {
   let injector: Injector;
   let appRef: ApplicationRef;
@@ -203,8 +194,6 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
-
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
@@ -216,7 +205,6 @@ describe('validation status', () => {
       expect(f().invalid()).toBe(false);
 
       f().value.set('INVALID');
-      await waitFor(() => res?.isLoading());
 
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
@@ -255,8 +243,6 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
-
       expect(f.child().pending()).toBe(true);
       expect(f.child().valid()).toBe(false);
       expect(f.child().invalid()).toBe(false);
@@ -268,7 +254,6 @@ describe('validation status', () => {
       expect(f.child().invalid()).toBe(false);
 
       f.child().value.set('INVALID');
-      await waitFor(() => res?.isLoading());
 
       expect(f.child().pending()).toBe(true);
       expect(f.child().valid()).toBe(false);
@@ -307,8 +292,6 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
-
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
@@ -320,7 +303,6 @@ describe('validation status', () => {
       expect(f().invalid()).toBe(false);
 
       f.child().value.set('INVALID');
-      await waitFor(() => res?.isLoading());
 
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
@@ -362,8 +344,6 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
-
       expect(f.sibling().pending()).toBe(true);
       expect(f.sibling().valid()).toBe(false);
       expect(f.sibling().invalid()).toBe(false);
@@ -375,7 +355,6 @@ describe('validation status', () => {
       expect(f.sibling().invalid()).toBe(false);
 
       f.child().value.set('INVALID');
-      await waitFor(() => res?.isLoading());
 
       expect(f.sibling().pending()).toBe(true);
       expect(f.sibling().valid()).toBe(false);
@@ -410,8 +389,6 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
-
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
@@ -423,7 +400,6 @@ describe('validation status', () => {
       expect(f().invalid()).toBe(false);
 
       f.child().value.set('INVALID');
-      await waitFor(() => res?.isLoading());
 
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
@@ -473,16 +449,17 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => res?.isLoading());
       expect(f().pending()).toBe(true);
       expect(f().valid()).toBe(false);
       expect(f().invalid()).toBe(false);
     });
 
     it('should be invalid status when validators are mix of invalid and pending', async () => {
-      let res: Resource<unknown>;
-      let res2: Resource<unknown>;
+      let res!: Resource<unknown>;
+      let res2!: Resource<unknown>;
 
+      const promise = Promise.resolve<ValidationError[]>([customError()]);
+      const promise2 = new Promise<ValidationError[]>(() => {});
       const f = form(
         signal('MIXED'),
         (p) => {
@@ -491,8 +468,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res = resource({
                 params,
-                loader: () =>
-                  new Promise<ValidationError[]>((r) => setTimeout(() => r([customError()]))),
+                loader: () => promise,
               })),
             errors: (errs) => errs,
           });
@@ -501,7 +477,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () => promise2,
               })),
             errors: (errs) => errs,
           });
@@ -509,15 +485,23 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => !res?.isLoading() && res2.isLoading());
-      expect(f().pending()).toBe(true);
-      expect(f().valid()).toBe(false);
-      expect(f().invalid()).toBe(true);
+      await promise;
+      // Resource needs 2
+      await TestBed.tick();
+      await TestBed.tick();
+
+      expect(f().pending()).withContext('pending').toBe(true);
+      expect(f().valid()).withContext('valid').toBe(false);
+      expect(f().invalid()).withContext('invalid').toBe(true);
     });
 
     it('should be invalid status when validators are mix of valid, invalid, and pending', async () => {
       let res: Resource<unknown>;
       let res2: Resource<unknown>;
+
+      const invalidPromise = Promise.resolve<ValidationError[]>([customError()]);
+      const validPromise = Promise.resolve<ValidationError[]>([]);
+      const pendingPromise = new Promise<ValidationError[]>(() => {});
 
       const f = form(
         signal('MIXED'),
@@ -528,8 +512,7 @@ describe('validation status', () => {
             factory: (params) =>
               (res = resource({
                 params,
-                loader: () =>
-                  new Promise<ValidationError[]>((r) => setTimeout(() => r([customError()]))),
+                loader: () => invalidPromise,
               })),
             errors: (errs) => errs,
           });
@@ -538,7 +521,16 @@ describe('validation status', () => {
             factory: (params) =>
               (res2 = resource({
                 params,
-                loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]), 10)),
+                loader: () => validPromise,
+              })),
+            errors: (errs) => errs,
+          });
+          validateAsync(p, {
+            params: () => [],
+            factory: (params) =>
+              (res2 = resource({
+                params,
+                loader: () => pendingPromise,
               })),
             errors: (errs) => errs,
           });
@@ -546,10 +538,15 @@ describe('validation status', () => {
         {injector},
       );
 
-      await waitFor(() => !res?.isLoading() && res2.isLoading());
-      expect(f().pending()).toBe(true);
-      expect(f().valid()).toBe(false);
-      expect(f().invalid()).toBe(true);
+      await invalidPromise;
+      await validPromise;
+      // Resource needs 2
+      await TestBed.tick();
+      await TestBed.tick();
+
+      expect(f().pending()).withContext('pending').toBe(true);
+      expect(f().valid()).withContext('valid').toBe(false);
+      expect(f().invalid()).withContext('invalid').toBe(true);
     });
   });
 
