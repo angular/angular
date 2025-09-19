@@ -50,6 +50,11 @@ export class SearchHistory {
   }
 
   addItem(item: SearchResultItem | HistoryItem): void {
+    // We don't want to reset nor update the creation date of favorites
+    if (this.history().get(item.id)?.isFavorite) {
+      return;
+    }
+
     this.updateHistory((map) => {
       map.set(item.id, {
         id: item.id,
