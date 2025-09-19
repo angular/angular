@@ -194,9 +194,17 @@ function getComponentImportExpressions(
       typeChecker,
     );
 
-    if (importLocation && !seenImports.has(importLocation.symbolName)) {
-      seenImports.add(importLocation.symbolName);
-      resolvedDependencies.push(importLocation);
+    if (importLocation) {
+      // Create a unique key that includes both the symbol name and module specifier
+      // to handle cases where the same symbol name is imported from different modules
+      const importKey = importLocation.moduleSpecifier
+        ? `${importLocation.symbolName}::${importLocation.moduleSpecifier}`
+        : importLocation.symbolName;
+
+      if (!seenImports.has(importKey)) {
+        seenImports.add(importKey);
+        resolvedDependencies.push(importLocation);
+      }
     }
   }
 
