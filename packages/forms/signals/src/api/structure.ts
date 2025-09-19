@@ -15,12 +15,12 @@ import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
 import {isArray} from '../util/type_guards';
-import type {
+import {
   Field,
-  FieldPath,
   LogicFn,
   OneOrMany,
   PathKind,
+  RulesFieldPath,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
@@ -50,7 +50,7 @@ export interface FormOptions {
 }
 
 /** Extracts the model, schema, and options from the arguments passed to `form()`. */
-function normalizeFormArgs<TValue>(
+export function normalizeFormArgs<TValue>(
   args: any[],
 ): [WritableSignal<TValue>, SchemaOrSchemaFn<TValue> | undefined, FormOptions | undefined] {
   let model: WritableSignal<TValue>;
@@ -195,7 +195,7 @@ export function form<TValue>(
  */
 export function form<TValue>(
   model: WritableSignal<TValue>,
-  schema: SchemaOrSchemaFn<TValue>,
+  schema: SchemaOrSchemaFn<TValue, PathKind>,
   options: FormOptions,
 ): Field<TValue>;
 
@@ -250,7 +250,7 @@ export function form<TValue>(...args: any[]): Field<TValue> {
  * @experimental 21.0.0
  */
 export function applyEach<TValue>(
-  path: FieldPath<TValue[]>,
+  path: RulesFieldPath<TValue[]>,
   schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>,
 ): void {
   assertPathIsCurrent(path);
@@ -281,7 +281,7 @@ export function applyEach<TValue>(
  * @experimental 21.0.0
  */
 export function apply<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
   assertPathIsCurrent(path);
@@ -302,7 +302,7 @@ export function apply<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhen<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue, PathKind>,
   logic: LogicFn<TValue, boolean>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
@@ -326,7 +326,7 @@ export function applyWhen<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   predicate: (value: TValue) => value is TNarrowed,
   schema: SchemaOrSchemaFn<TNarrowed>,
 ): void;
@@ -344,13 +344,13 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   predicate: (value: TValue) => boolean,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void;
 
 export function applyWhenValue(
-  path: FieldPath<unknown>,
+  path: RulesFieldPath<unknown>,
   predicate: (value: unknown) => boolean,
   schema: SchemaOrSchemaFn<unknown>,
 ) {

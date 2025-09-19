@@ -7,11 +7,23 @@
  */
 
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
-import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
+import {
+  BothFieldPath,
+  Field,
+  FieldContext,
+  FieldPath,
+  FieldState,
+  UnwrapControl,
+} from '../api/types';
 import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 import {getBoundPathDepth} from './resolution';
+import {AbstractControl} from '@angular/forms';
+
+export function isAbstractControl(value: unknown): value is AbstractControl {
+  return value instanceof AbstractControl;
+}
 
 /**
  * `FieldContext` implementation, backed by a `FieldNode`.
@@ -37,7 +49,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
    * @param target The path to resolve
    * @returns The field corresponding to the target path.
    */
-  private resolve<U>(target: FieldPath<U>): Field<U> {
+  private resolve<U>(target: BothFieldPath<U>): Field<U> {
     if (!this.cache.has(target)) {
       const resolver = computed<Field<unknown>>(() => {
         const targetPathNode = FieldPathNode.unwrapFieldPath(target);
@@ -107,7 +119,17 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return Number(key);
   });
 
-  readonly fieldOf = <P>(p: FieldPath<P>) => this.resolve(p);
-  readonly stateOf = <P>(p: FieldPath<P>) => this.resolve(p)();
-  readonly valueOf = <P>(p: FieldPath<P>) => this.resolve(p)().value();
+  readonly fieldOf = <P>(p: BothFieldPath<P>) => this.resolve(p);
+  readonly stateOf = <P>(p: BothFieldPath<P>) => this.resolve(p)();
+  readonly valueOf = <P>(p: BothFieldPath<P>) => {
+    const result = this.resolve(p)().value() as UnwrapControl<P>;
+
+    if (isAbstractControl(result)) {
+      throw new Error(
+        `RuntimeError: trying to get AbstractControl as a value. Did you mean to use compatForm instead?`,
+      );
+    }
+
+    return result;
+  };
 }
