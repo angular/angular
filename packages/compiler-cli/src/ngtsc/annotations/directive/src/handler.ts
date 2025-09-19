@@ -74,16 +74,10 @@ import {
   ReferencesRegistry,
   resolveProvidersRequiringFactory,
   toFactoryMetadata,
-  UndecoratedMetadataExtractor,
   validateHostDirectives,
 } from '../../common';
 
-import {
-  extractDirectiveMetadata,
-  extractHostBindingResources,
-  getDirectiveUndecoratedMetadataExtractor,
-  HostBindingNodes,
-} from './shared';
+import {extractDirectiveMetadata, extractHostBindingResources, HostBindingNodes} from './shared';
 import {DirectiveSymbol} from './symbol';
 import {JitDeclarationRegistry} from '../../common/src/jit_declaration_registry';
 import {
@@ -160,16 +154,10 @@ export class DirectiveDecoratorHandler
     private readonly usePoisonedData: boolean,
     private readonly typeCheckHostBindings: boolean,
     private readonly emitDeclarationOnly: boolean,
-  ) {
-    this.undecoratedMetadataExtractor = getDirectiveUndecoratedMetadataExtractor(
-      reflector,
-      importTracker,
-    );
-  }
+  ) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = 'DirectiveDecoratorHandler';
-  private readonly undecoratedMetadataExtractor: UndecoratedMetadataExtractor;
 
   detect(
     node: ClassDeclaration,
@@ -252,14 +240,7 @@ export class DirectiveDecoratorHandler
         hostDirectives: directiveResult.hostDirectives,
         rawHostDirectives: directiveResult.rawHostDirectives,
         classMetadata: this.includeClassMetadata
-          ? extractClassMetadata(
-              node,
-              this.reflector,
-              this.isCore,
-              this.annotateForClosureCompiler,
-              undefined,
-              this.undecoratedMetadataExtractor,
-            )
+          ? extractClassMetadata(node, this.reflector, this.isCore, this.annotateForClosureCompiler)
           : null,
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
