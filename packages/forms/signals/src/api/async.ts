@@ -130,6 +130,12 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
   readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
 
   /**
+   * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
+   * Receives the error and the field context, returns a list of validation errors.
+   */
+  readonly onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => ValidationError[];
+
+  /**
    * The options to use when creating the httpResource.
    */
   readonly options?: HttpResourceOptions<TResult, unknown>;
@@ -214,5 +220,6 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
     params: opts.request,
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     errors: opts.errors,
+    onError: opts.onError
   });
 }
