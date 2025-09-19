@@ -1,42 +1,4 @@
 /****************************************************************************************************
- * PARTIAL FILE: aria_bindings.js
- ****************************************************************************************************/
-import { Component } from '@angular/core';
-import * as i0 from "@angular/core";
-export class MyComponent {
-    constructor() {
-        this.disabled = '';
-        this.readonly = '';
-        this.label = '';
-    }
-}
-MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: true, selector: "ng-component", host: { properties: { "attr.aria-disabled": "disabled", "aria-readonly": "readonly", "ariaLabel": "label" } }, ngImport: i0, template: ``, isInline: true });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
-            type: Component,
-            args: [{
-                    template: ``,
-                    host: {
-                        '[attr.aria-disabled]': 'disabled',
-                        '[aria-readonly]': 'readonly',
-                        '[ariaLabel]': 'label',
-                    },
-                }]
-        }] });
-
-/****************************************************************************************************
- * PARTIAL FILE: aria_bindings.d.ts
- ****************************************************************************************************/
-import * as i0 from "@angular/core";
-export declare class MyComponent {
-    disabled: string;
-    readonly: string;
-    label: string;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never, true, never>;
-}
-
-/****************************************************************************************************
  * PARTIAL FILE: host_bindings.js
  ****************************************************************************************************/
 import { Directive, HostBinding, NgModule } from '@angular/core';

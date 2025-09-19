@@ -16,7 +16,8 @@ import {
   type CompilationUnit,
 } from '../compilation';
 import * as ng from '../instruction';
-import {isAriaAttribute} from '../util/attributes';
+
+const ARIA_PREFIX = 'aria';
 
 /**
  * Map of target resolvers for event listeners.
@@ -687,6 +688,35 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
 }
 
 /**
+ * Converts an ARIA property name to its corresponding attribute name, if necessary.
+ *
+ * For example, converts `ariaLabel` to `aria-label`.
+ *
+ * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
+ *
+ * This must be kept in sync with the the function of the same name in
+ * packages/core/src/render3/instructions/aria_property.ts.
+ *
+ * @param name A property name that starts with `aria`.
+ * @returns The corresponding attribute name.
+ */
+function ariaAttrName(name: string): string {
+  return name.charAt(ARIA_PREFIX.length) !== '-'
+    ? ARIA_PREFIX + '-' + name.slice(ARIA_PREFIX.length).toLowerCase()
+    : name; // Property already has attribute name.
+}
+
+/**
+ * Returns whether `name` is an ARIA property (or attribute) name.
+ *
+ * This is a heuristic based on whether name begins with and is longer than `aria`. For example,
+ * this returns true for both `ariaLabel` and `aria-label`.
+ */
+function isAriaProperty(name: string): boolean {
+  return name.startsWith(ARIA_PREFIX) && name.length > ARIA_PREFIX.length;
+}
+
+/**
  * Reifies a DOM property binding operation.
  *
  * This is an optimized version of {@link reifyProperty} that avoids unnecessarily trying to bind
@@ -696,12 +726,14 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
  * @returns A statement to update the property at runtime.
  */
 function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
-  return ng.domProperty(
-    DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
-    op.expression,
-    op.sanitizer,
-    op.sourceSpan,
-  );
+  return isAriaProperty(op.name)
+    ? ng.attribute(ariaAttrName(op.name), op.expression, null, null, op.sourceSpan)
+    : ng.domProperty(
+        DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+        op.expression,
+        op.sanitizer,
+        op.sourceSpan,
+      );
 }
 
 /**
@@ -714,7 +746,7 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
  * @returns A statement to update the property at runtime.
  */
 function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
-  return isAriaAttribute(op.name)
+  return isAriaProperty(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
     : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
 }

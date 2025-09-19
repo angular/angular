@@ -24,6 +24,20 @@ describe('renderApplication', () => {
     expect(html).toContain('aria-label="some label"');
   });
 
+  it('should render ARIA attributes from their corresponding property bindings', async () => {
+    @Component({
+      selector: 'app',
+      standalone: true,
+      template: '<div [ariaLabel]="label"></div>',
+    })
+    class SomeComponent {
+      label = 'some other label';
+    }
+
+    const html = await ssr(SomeComponent);
+    expect(html).toContain('aria-label="some other label"');
+  });
+
   it('should render ARIA attributes using property binding syntax', async () => {
     @Component({
       selector: 'app',

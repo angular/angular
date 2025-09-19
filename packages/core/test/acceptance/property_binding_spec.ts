@@ -142,7 +142,7 @@ describe('property bindings', () => {
     },
   );
 
-  it('should bind ARIA properties', () => {
+  it('should bind ARIA properties to their corresponding attributes', () => {
     @Component({
       template: '<button [ariaLabel]="label" [ariaHasPopup]="hasPopup"></button>',
     })
@@ -152,19 +152,19 @@ describe('property bindings', () => {
     }
 
     const fixture = TestBed.createComponent(MyComp);
-    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
 
     fixture.componentInstance.label = 'Open';
     fixture.componentInstance.hasPopup = 'menu';
     fixture.detectChanges();
 
-    expect(button.ariaLabel).toBe('Open');
-    expect(button.ariaHasPopup).toBe('menu');
+    expect(button.getAttribute('aria-label')).toBe('Open');
+    expect(button.getAttribute('aria-haspopup')).toBe('menu');
 
     fixture.componentInstance.label = 'Close';
     fixture.detectChanges();
 
-    expect(button.ariaLabel).toBe('Close');
+    expect(button.getAttribute('aria-label')).toBe('Close');
   });
 
   it('should bind interpolated ARIA attributes', () => {
