@@ -135,6 +135,7 @@ ng_application(
     ],
     env = {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+        "NG_BUILD_MAX_WORKERS": "6",
     },
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
