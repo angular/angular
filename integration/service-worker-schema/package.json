@@ -7,9 +7,9 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "next",
-    "@angular/core": "next",
-    "@angular/service-worker": "next",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/service-worker": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "zone.js": "0.15.1"
   },

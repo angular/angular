@@ -12,12 +12,12 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "next",
-    "@angular/common": "next",
-    "@angular/compiler": "next",
-    "@angular/core": "next",
-    "@angular/platform-browser": "next",
-    "@angular/router": "next",
+    "@angular/animations": "link:./in-existing-linked-by-bazel",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0",
     "tslib": "^2.3.0",
     "zone.js": "0.15.1"
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "21.0.0-next.4",
     "@angular/cli": "21.0.0-next.4",
-    "@angular/compiler-cli": "next",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/node": "^20.14.8",
     "ts-node": "^10.9.1",
     "typescript": "5.9.2"
