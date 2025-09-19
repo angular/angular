@@ -477,6 +477,21 @@ export interface CreateEffectOptions {
 export function createEnvironmentInjector(providers: Array<Provider | EnvironmentProviders>, parent: EnvironmentInjector, debugName?: string | null): EnvironmentInjector;
 
 // @public
+export interface CreateLinkedSignalOptions<D> {
+    debugName?: string;
+    equal?: ValueEqualityFn<NoInfer<D>>;
+}
+
+// @public (undocumented)
+export interface CreateLinkedSignalWithSourceOptions<S, D> extends CreateLinkedSignalOptions<D> {
+    computation: (source: NoInfer<S>, previous?: {
+        source: NoInfer<S>;
+        value: NoInfer<D>;
+    }) => D;
+    source: () => S;
+}
+
+// @public
 export function createNgModule<T>(ngModule: Type<T>, parentInjector?: Injector): NgModuleRef<T>;
 
 // @public @deprecated
@@ -1132,19 +1147,10 @@ export class KeyValueDiffers {
 }
 
 // @public
-export function linkedSignal<D>(computation: () => D, options?: {
-    equal?: ValueEqualityFn<NoInfer<D>>;
-}): WritableSignal<D>;
+export function linkedSignal<D>(computation: () => D, options?: CreateLinkedSignalOptions<D>): WritableSignal<D>;
 
 // @public
-export function linkedSignal<S, D>(options: {
-    source: () => S;
-    computation: (source: NoInfer<S>, previous?: {
-        source: NoInfer<S>;
-        value: NoInfer<D>;
-    }) => D;
-    equal?: ValueEqualityFn<NoInfer<D>>;
-}): WritableSignal<D>;
+export function linkedSignal<S, D>(options: CreateLinkedSignalWithSourceOptions<S, D>): WritableSignal<D>;
 
 // @public
 export interface ListenerOptions {
