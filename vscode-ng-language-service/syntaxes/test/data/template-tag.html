@@ -1,0 +1,78 @@
+<!-- Property binding test -->
+<div [ ngStyle ]="{'max-width.px': i * 2 + 5}"></div>
+<div [ngClass]="[
+    'class-one',
+    'class-two',
+    'class-three'
+]"></div>
+<div [style.right.%]="val"></div>
+<div [@animation.trigger]="val"></div>
+<img [attr.aria-label]="val" />
+<div [my-property]="val"></div>
+<div [my_property]="val"></div>
+<div [myProperty$]="val"></div>
+<div [%invalidProperty]="val"></div>
+<div [invalidProperty)="val"></div>
+
+<!-- Event binding test -->
+<button (click)="onClick($event)"></button>
+<input (ngModelChange)="onModelChange($event)" />
+<div (@animation.done)="onAnimationDone($event)"></div>
+<div (someEvent)="
+    if (isCondition) {
+        methodIfTrue($event);
+    } else {
+        methodIfFalse($event);
+    }
+"></div>
+<div ( extraSpacing )="onExtraSpacing($event)"></div>
+<my-component (myEvent)="onMyEvent($event)"></my-component>
+<my-component (my-event)="onMyEvent($event)"></my-component>
+<my-component (my_event)="onMyEvent($event)"></my-component>
+<my-component (myEvent$)="onMyEvent($event)"></my-component>
+<my-component (%invalidEvent)="onMyEvent($event)"></my-component>
+<my-component (invalidEvent]="onMyEvent($event)"></my-component>
+
+<!-- Two-way binding test -->
+<button [(click)]="clickProp"></button>
+<div [( extraSpacing )]="extraSpacing"></div>
+<div [(@animation.done)]="animation"></div>
+<my-component [(my-prop)]="myProp"></my-component>
+<my-component [(my_prop)]="myProp"></my-component>
+<my-component [($my_prop)]="myProp"></my-component>
+<my-component [(%invalid)]="invalid"></my-component>
+<my-component ([invalid)]="invalid"></my-component>
+
+<!-- Event binding test -->
+<button *ngModel="title"></button>
+<div *ngFor="let book of books"></div>
+<my-component *custom-if="true != false"></my-component>
+<my-component *custom_if="true != false"></my-component>
+<my-component *custom_$if="true != false"></my-component>
+<my-component *%invalid="expr"></my-component>
+
+<!-- Microsyntax -->
+<!-- Let Expression -->
+<div *ngFor="let i = index;"></div>
+<div *ngFor="let i = index"></div>
+<!-- Key Expression -->
+<div *ngFor="let i = index; trackBy: hash;"></div>
+<div *ngFor="let i = index; trackBy: hash"></div>
+<div *ngFor="let param of params;"></div>
+<div *ngFor="let param of params"></div>
+<!-- As Expression -->
+<div *ngFor="let param of params; index as i;"></div>
+<div *ngFor="let param of params; index as i"></div>
+<div *ngIf='x as y'></div>
+<!-- Mixed -->
+<div *ngFor="let param of params; let i = index; let last = last"></div>
+<div *ngFor="let param of params; let i = index; let last = last;"></div>
+<div *ngFor="let param of params; let i = index; last as last"></div>
+<div *ngFor="let param of params; let i = index; last as last;"></div>
+
+<!-- Regression -->
+<!-- #575 -->
+<div *ngFor="let n of nums; index as i"></div>
+<div *matHeaderCellDef></div>
+<!-- #613 -->
+<div *ngIf="x$ | async as a"></div>

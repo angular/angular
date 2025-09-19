@@ -1,0 +1,34 @@
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config", "ts_project")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = ["//vscode-ng-language-service/integration:__subpackages__"],
+    deps = [
+        "//vscode-ng-language-service:tsconfig",
+        "//vscode-ng-language-service/server:tsconfig",
+    ],
+)
+
+ts_project(
+    name = "integration",
+    # NB: there is an import cycle between integration/lsp/*.ts and integration/test_constants.ts so
+    # they cannot be broken up into separate ts_project targets
+    srcs = glob([
+        "*.ts",
+    ]) + ["//vscode-ng-language-service/integration/lsp:srcs"],
+    declaration = True,
+    source_map = True,
+    tsconfig = ":tsconfig",
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/vscode-jsonrpc",
+        "//vscode-ng-language-service:node_modules/vscode-languageserver-protocol",
+        "//vscode-ng-language-service:node_modules/vscode-uri",
+        "//vscode-ng-language-service/common",
+    ],
+)
