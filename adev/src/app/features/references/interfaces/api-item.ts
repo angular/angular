@@ -16,5 +16,6 @@ export interface ApiItem {
   developerPreview: {version: string | undefined} | undefined;
   experimental: {version: string | undefined} | undefined;
   stable: {version: string | undefined} | undefined;
+  category: string | undefined;
   groupName?: string;
 }

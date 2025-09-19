@@ -12,8 +12,10 @@ import {NavigationState} from '../../services/index';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 import {IconComponent} from '../icon/icon.component';
 import {IsActiveNavigationItem} from '../../pipes';
-import {NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {SlideToggle} from '../slide-toggle/slide-toggle.component';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'docs-navigation-list',
@@ -24,6 +26,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     IsActiveNavigationItem,
     NgTemplateOutlet,
     MatTooltipModule,
+    ReactiveFormsModule,
+    SlideToggle,
+    TitleCasePipe,
   ],
   templateUrl: './navigation-list.component.html',
   styleUrls: ['./navigation-list.component.scss'],
@@ -35,6 +40,7 @@ export class NavigationList {
   readonly collapsableLevel = input<number | undefined>();
   readonly expandableLevel = input<number>(2);
   readonly isDropdownView = input<boolean>(false);
+  protected readonly groupingCtrl = new FormControl(true, {nonNullable: true});
 
   readonly linkClicked = output<void>();
 
@@ -55,5 +61,34 @@ export class NavigationList {
 
   emitClickOnLink(): void {
     this.linkClicked.emit();
+  }
+
+  protected hasCategories(items: NavigationItem[]): boolean {
+    return items.some((item) => !!item.category);
+  }
+
+  protected groupItems(items: NavigationItem[]): Map<string, NavigationItem[]> {
+    const hasCategories = this.hasCategories(items);
+    if (hasCategories && this.groupingCtrl.value) {
+      const others: NavigationItem[] = [];
+      const categorizedItems = new Map<string, NavigationItem[]>();
+      for (const item of items) {
+        const category = item.category || 'Other';
+        if (category === 'Other') {
+          others.push(item);
+          continue;
+        }
+        if (!categorizedItems.has(category)) {
+          categorizedItems.set(category, []);
+        }
+        categorizedItems.get(category)!.push(item);
+      }
+      if (others.length) {
+        categorizedItems.set('Other', others);
+      }
+      return categorizedItems;
+    } else {
+      return new Map([['', items]]);
+    }
   }
 }
