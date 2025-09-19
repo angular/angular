@@ -19,6 +19,7 @@ import {
 } from '@angular/core';
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
+import {createScript} from './create_script';
 
 /** Tracks whether the server-side application transfer state has already been serialized. */
 const TRANSFER_STATE_STATUS = new InjectionToken<{serialized: boolean}>(
@@ -36,21 +37,6 @@ export const TRANSFER_STATE_SERIALIZATION_PROVIDERS: Provider[] = [
     multi: true,
   },
 ];
-
-/** TODO: Move this to a utils folder and convert to use SafeValues. */
-export function createScript(
-  doc: Document,
-  textContent: string,
-  nonce: string | null,
-): HTMLScriptElement {
-  const script = doc.createElement('script');
-  script.textContent = textContent;
-  if (nonce) {
-    script.setAttribute('nonce', nonce);
-  }
-
-  return script;
-}
 
 function warnIfStateTransferHappened(injector: Injector): void {
   const transferStateStatus = injector.get(TRANSFER_STATE_STATUS);
