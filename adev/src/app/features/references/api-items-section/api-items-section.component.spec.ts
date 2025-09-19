@@ -30,6 +30,7 @@ describe('ApiItemsSection', () => {
         developerPreview: undefined,
         experimental: undefined,
         stable: undefined,
+        category: undefined,
       },
       {
         title: 'Fake Standard Title',
@@ -39,6 +40,7 @@ describe('ApiItemsSection', () => {
         developerPreview: undefined,
         experimental: undefined,
         stable: undefined,
+        category: undefined,
       },
     ],
   };
