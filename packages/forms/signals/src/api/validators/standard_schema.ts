@@ -52,6 +52,7 @@ export type IgnoreUnknownProperties<T> =
  *   or a partial of it.
  * @template TValue The type of value stored in the field being validated.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProperties<TSchema>>(
