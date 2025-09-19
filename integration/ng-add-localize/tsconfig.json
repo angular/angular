@@ -18,11 +18,7 @@
     "importHelpers": true,
     "target": "es2017",
     "module": "es2022",
-    "lib": [
-      "es2018",
-      "dom",
-      "ES2020.Promise"
-    ]
+    "lib": ["es2018", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

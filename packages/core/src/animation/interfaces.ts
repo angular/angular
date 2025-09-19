@@ -84,7 +84,8 @@ export interface AnimationLViewData {
   leave?: (() => Promise<void>)[];
 
   // Leave animations that apply to nodes in this view
-  running?: Promise<PromiseSettledResult<void>[]>;
+  // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type
+  running?: Promise<unknown>;
 
   // Skip leave animations
   // This flag is solely used when move operations occur. DOM Node move
