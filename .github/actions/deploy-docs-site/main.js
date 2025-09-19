@@ -13846,8 +13846,8 @@ is not a problem with esbuild. You need to fix your environment instead.
         if (isFirstPacket) {
           isFirstPacket = false;
           let binaryVersion = String.fromCharCode(...bytes);
-          if (binaryVersion !== "0.25.9") {
-            throw new Error(`Cannot start service: Host version "${"0.25.9"}" does not match binary version ${quote(binaryVersion)}`);
+          if (binaryVersion !== "0.25.10") {
+            throw new Error(`Cannot start service: Host version "${"0.25.10"}" does not match binary version ${quote(binaryVersion)}`);
           }
           return;
         }
@@ -15078,7 +15078,7 @@ for your current platform.`);
             "node_modules",
             ".cache",
             "esbuild",
-            `pnpapi-${pkg.replace("/", "-")}-${"0.25.9"}-${path.basename(subpath)}`
+            `pnpapi-${pkg.replace("/", "-")}-${"0.25.10"}-${path.basename(subpath)}`
           );
           if (!fs.existsSync(binTargetPath)) {
             fs.mkdirSync(path.dirname(binTargetPath), { recursive: true });
@@ -15111,7 +15111,7 @@ for your current platform.`);
       }
     }
     var _a;
-    var isInternalWorkerThread = ((_a = worker_threads == null ? void 0 : worker_threads.workerData) == null ? void 0 : _a.esbuildVersion) === "0.25.9";
+    var isInternalWorkerThread = ((_a = worker_threads == null ? void 0 : worker_threads.workerData) == null ? void 0 : _a.esbuildVersion) === "0.25.10";
     var esbuildCommandAndArgs = () => {
       if ((!ESBUILD_BINARY_PATH || false) && (path2.basename(__filename) !== "main.js" || path2.basename(__dirname) !== "lib")) {
         throw new Error(
@@ -15178,7 +15178,7 @@ More information: The file containing the code for esbuild's JavaScript API (${_
         }
       }
     };
-    var version = "0.25.9";
+    var version = "0.25.10";
     var build = (options) => ensureServiceIsRunning().build(options);
     var context2 = (buildOptions) => ensureServiceIsRunning().context(buildOptions);
     var transform = (input, options) => ensureServiceIsRunning().transform(input, options);
@@ -15296,7 +15296,7 @@ More information: The file containing the code for esbuild's JavaScript API (${_
       if (longLivedService)
         return longLivedService;
       let [command, args] = esbuildCommandAndArgs();
-      let child = child_process.spawn(command, args.concat(`--service=${"0.25.9"}`, "--ping"), {
+      let child = child_process.spawn(command, args.concat(`--service=${"0.25.10"}`, "--ping"), {
         windowsHide: true,
         stdio: ["pipe", "pipe", "inherit"],
         cwd: defaultWD
@@ -15404,7 +15404,7 @@ More information: The file containing the code for esbuild's JavaScript API (${_
         esbuild: node_exports
       });
       callback(service);
-      let stdout = child_process.execFileSync(command, args.concat(`--service=${"0.25.9"}`), {
+      let stdout = child_process.execFileSync(command, args.concat(`--service=${"0.25.10"}`), {
         cwd: defaultWD,
         windowsHide: true,
         input: stdin,
@@ -15424,7 +15424,7 @@ More information: The file containing the code for esbuild's JavaScript API (${_
     var startWorkerThreadService = (worker_threads2) => {
       let { port1: mainPort, port2: workerPort } = new worker_threads2.MessageChannel();
       let worker = new worker_threads2.Worker(__filename, {
-        workerData: { workerPort, defaultWD, esbuildVersion: "0.25.9" },
+        workerData: { workerPort, defaultWD, esbuildVersion: "0.25.10" },
         transferList: [workerPort],
         // From node's documentation: https://nodejs.org/api/worker_threads.html
         //
