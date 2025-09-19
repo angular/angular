@@ -35,7 +35,7 @@
     "@types/jasmine": "^5.0.0",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
-    "concurrently": "3.1.0",
+    "concurrently": "9.2.1",
     "jasmine-core": "5.10.0",
     "jasmine-spec-reporter": "~5.0.2",
     "protractor": "^7.0.0",
