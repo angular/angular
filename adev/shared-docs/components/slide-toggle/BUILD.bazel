@@ -13,6 +13,7 @@ ng_project(
     ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/navigation-list:__pkg__",
     ],
     deps = [
         "//adev:node_modules/@angular/common",

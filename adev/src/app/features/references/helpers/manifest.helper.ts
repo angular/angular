@@ -46,6 +46,7 @@ export function getApiNavigationItems(): NavigationItem[] {
       children: packageEntry.entries.map((api) => ({
         path: getApiUrl(packageEntry, api.name),
         label: api.name,
+        category: api.category,
       })),
     };
 
