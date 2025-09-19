@@ -72,8 +72,6 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INJECTOR_ALREADY_DESTROYED = 205,
     // (undocumented)
-    INVALID_APP_ID = 211,
-    // (undocumented)
     INVALID_BINDING_TARGET = 316,
     // (undocumented)
     INVALID_DIFFER_INPUT = 900,

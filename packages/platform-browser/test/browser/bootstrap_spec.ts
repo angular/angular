@@ -45,7 +45,6 @@ import {
   destroyPlatform,
   providePlatformInitializer,
   ɵcreateOrReusePlatformInjector as createOrReusePlatformInjector,
-  APP_ID,
 } from '@angular/core';
 import {ɵLog as Log, inject, TestBed} from '@angular/core/testing';
 import {BrowserModule} from '../../index';
@@ -800,24 +799,6 @@ describe('bootstrap factory method', () => {
       expect(el).toHaveText('hello world!');
       done();
     }, done.fail);
-  });
-
-  it('should throw an error if the provided APP_ID is invalid', (done) => {
-    const logger = new MockConsole();
-    const errorHandler = new ErrorHandler();
-    (errorHandler as any)._console = logger as any;
-
-    const refPromise = bootstrap(HelloRootCmp, [{provide: APP_ID, useValue: 'foo:bar'}]);
-    refPromise.then(
-      () => fail(),
-      (reason) => {
-        expect(reason.message).toContain(
-          `NG0211: APP_ID value "foo:bar" is not alphanumeric. The APP_ID must be a string of alphanumeric characters.`,
-        );
-        done();
-        return null;
-      },
-    );
   });
 
   describe('change detection', () => {

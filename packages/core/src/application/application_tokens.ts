@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ENVIRONMENT_INITIALIZER, inject, StaticProvider} from '../di';
 import {InjectionToken} from '../di/injection_token';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {getDocument} from '../render3/interfaces/document';
 
 /**
@@ -48,24 +46,6 @@ export const APP_ID = new InjectionToken<string>(ngDevMode ? 'AppId' : '', {
 
 /** Default value of the `APP_ID` token. */
 const DEFAULT_APP_ID = 'ng';
-
-/** Initializer check for the validity of the APP_ID */
-export const validAppIdInitializer: StaticProvider = {
-  provide: ENVIRONMENT_INITIALIZER,
-  multi: true,
-  useValue: () => {
-    const appId = inject(APP_ID);
-    const isAlphanumeric = /^[a-zA-Z0-9\-_]+$/.test(appId);
-
-    if (!isAlphanumeric) {
-      throw new RuntimeError(
-        RuntimeErrorCode.INVALID_APP_ID,
-        `APP_ID value "${appId}" is not alphanumeric. ` +
-          `The APP_ID must be a string of alphanumeric characters. (a-zA-Z0-9), hyphens (-) and underscores (_) are allowed.`,
-      );
-    }
-  },
-};
 
 /**
  * A function that is executed when a platform is initialized.

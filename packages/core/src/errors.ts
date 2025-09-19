@@ -43,7 +43,6 @@ export const enum RuntimeErrorCode {
   MISSING_INJECTION_TOKEN = 208,
   INVALID_MULTI_PROVIDER = -209,
   MISSING_DOCUMENT = 210,
-  INVALID_APP_ID = 211,
 
   // Template Errors
   MULTIPLE_COMPONENTS_MATCH = -300,
