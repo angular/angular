@@ -29,6 +29,7 @@ import type {
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
@@ -61,6 +62,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
@@ -90,6 +92,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
@@ -110,6 +113,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
@@ -133,6 +137,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
  * @template TValue The type of value stored in the field the logic is bound to.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>(
@@ -157,6 +162,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TPropItem The type of value the property aggregates over.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind = PathKind.Root>(
@@ -178,6 +184,7 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
  *   This function is **not** reactive. It is run once when the field is created.
  * @returns The newly created property
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
@@ -194,6 +201,7 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
  *   This function is **not** reactive. It is run once when the field is created.
  * @returns The given property
  *
+ * @category logic
  * @experimental 21.0.0
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
