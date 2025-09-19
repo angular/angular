@@ -21,7 +21,6 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * otherwise it would produce inaccurate results.
  */
 class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE> {
-  override readonly canVisitStructuralAttributes = false;
   override code = ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE as const;
 
   override visitNode(
