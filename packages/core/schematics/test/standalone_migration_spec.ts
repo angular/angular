@@ -3448,6 +3448,57 @@ describe('standalone migration', () => {
     );
   });
 
+  it('should remove unused NgModule imports', async () => {
+    writeFile(
+      'comp.ts',
+      `
+      import { Component } from '@angular/core';
+      import { OtherModule } from './other';
+
+      @Component({
+          selector: 'my-comp',
+          template: 'test',
+          imports: [OtherModule]
+      })
+      export class MyComponent {}
+    `,
+    );
+
+    writeFile(
+      'other.ts',
+      `
+      import { Component, NgModule } from '@angular/core';
+
+      @Component({
+          selector: 'other',
+          template: 'other'
+      })
+      export class OtherComponent {}
+
+      @NgModule({
+          imports: [OtherComponent],
+          exports: [OtherComponent]
+      })
+      export class OtherModule {}
+      `,
+    );
+
+    await runMigration('prune-ng-modules');
+
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(
+      stripWhitespace(`
+        import { Component } from '@angular/core';
+
+        @Component({
+            selector: 'my-comp',
+            template: 'test',
+            imports: []
+        })
+        export class MyComponent {}
+    `),
+    );
+  });
+
   it('should switch a platformBrowser().bootstrapModule call to bootstrapApplication', async () => {
     writeFile(
       'main.ts',

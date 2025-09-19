@@ -278,6 +278,7 @@ function replaceInComponentImportsArray(
     }
 
     const replacements = new UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>();
+    const nodesToRemove = new Set<ts.Node>();
     const usedImports = new Set(
       findTemplateDependencies(closestClass, templateTypeChecker).map((ref) => ref.node),
     );
@@ -289,11 +290,18 @@ function replaceInComponentImportsArray(
         const moduleMeta = templateTypeChecker.getNgModuleMetadata(moduleDecl);
 
         if (moduleMeta) {
+          let hasUsedExports = false;
           moduleMeta.exports.forEach((exp) => {
             if (usedImports.has(exp.node as NamedClassDeclaration)) {
               replacements.track(node, exp as Reference<NamedClassDeclaration>);
+              hasUsedExports = true;
             }
           });
+
+          // If the module has no used exports, mark it for removal
+          if (!hasUsedExports) {
+            nodesToRemove.add(node);
+          }
         } else {
           // It's unlikely not to have module metadata at this point, but just in
           // case unmark the class for removal to reduce the chance of breakages.
@@ -302,7 +310,14 @@ function replaceInComponentImportsArray(
       }
     }
 
-    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
+    replaceModulesInImportsArray(
+      array,
+      replacements,
+      nodesToRemove,
+      tracker,
+      templateTypeChecker,
+      importRemapper,
+    );
   }
 }
 
@@ -355,7 +370,14 @@ function replaceInTestImportsArray(
       }
     }
 
-    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
+    replaceModulesInImportsArray(
+      array,
+      replacements,
+      new Set(),
+      tracker,
+      templateTypeChecker,
+      importRemapper,
+    );
   }
 }
 
@@ -363,6 +385,7 @@ function replaceInTestImportsArray(
  * Replaces any leftover modules in an `imports` arrays with a set of specified exports
  * @param array Imports array which is being migrated.
  * @param replacements Map of NgModule references to their exports.
+ * @param nodesToRemove Set of nodes that should be completely removed.
  * @param tracker
  * @param templateTypeChecker
  * @param importRemapper
@@ -370,11 +393,12 @@ function replaceInTestImportsArray(
 function replaceModulesInImportsArray(
   array: ts.ArrayLiteralExpression,
   replacements: UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>,
+  nodesToRemove: Set<ts.Node>,
   tracker: ChangeTracker,
   templateTypeChecker: TemplateTypeChecker,
   importRemapper?: DeclarationImportsRemapper,
 ): void {
-  if (replacements.isEmpty()) {
+  if (replacements.isEmpty() && nodesToRemove.size === 0) {
     return;
   }
 
@@ -389,6 +413,11 @@ function replaceModulesInImportsArray(
 
   for (const element of array.elements) {
     const replacementRefs = replacements.get(element);
+
+    // Skip elements marked for removal
+    if (nodesToRemove.has(element)) {
+      continue;
+    }
 
     if (!replacementRefs) {
       newElements.push(element);
