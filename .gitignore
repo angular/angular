@@ -27,6 +27,9 @@ modules/.vscode
 # Don't check in secret files
 *secret.js
 
+# Pnpm folder
+.pnpm-store/
+
 # Ignore npm/yarn debug log
 npm-debug.log
 yarn-error.log
