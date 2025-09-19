@@ -1,14 +1,4 @@
 <ng-template #navigationList let-navigationItems>
-  @let hasCat = hasCategories(navigationItems);
-  @if (hasCat) {
-    <div class="docs-group-toggle">
-      <docs-slide-toggle
-        buttonId="api-cat-grouping"
-        [formControl]="groupingCtrl"
-        label="Group by category"
-      />
-    </div>
-  }
   <ul
     class="docs-navigation-list docs-faceted-list"
     [class.docs-navigation-list-dropdown]="isDropdownView()"
