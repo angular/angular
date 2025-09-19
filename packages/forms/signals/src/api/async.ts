@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {computed, ResourceRef, Signal} from '@angular/core';
-import {FieldNode} from '../field/node';
-import {addDefaultField} from '../field/validation';
-import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent} from '../schema/schema';
-import {property} from './logic';
-import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
+import { httpResource, HttpResourceOptions, HttpResourceRequest } from '@angular/common/http';
+import { computed, ResourceRef, Signal } from '@angular/core';
+import { FieldNode } from '../field/node';
+import { addDefaultField } from '../field/validation';
+import { FieldPathNode } from '../schema/path_node';
+import { assertPathIsCurrent } from '../schema/schema';
+import { property } from './logic';
+import { FieldContext, FieldPath, PathKind, TreeValidationResult } from './types';
+import { ValidationError } from './validation_errors';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -73,6 +74,11 @@ export interface AsyncValidatorOptions<
   readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
 
   /**
+   * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
+   * Receives the error and the field context, returns a list of validation errors.
+   */
+  readonly onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+  /**
    * A function that takes the resource result, and the current field context and maps it to a list
    * of validation errors.
    *
@@ -106,8 +112,8 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    * @returns The URL or request for creating the httpResource.
    */
   readonly request:
-    | ((ctx: FieldContext<TValue, TPathKind>) => string | undefined)
-    | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
+  | ((ctx: FieldContext<TValue, TPathKind>) => string | undefined)
+  | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 
   /**
    * A function that takes the httpResource result, and the current field context and maps it to a
@@ -122,6 +128,11 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    */
   readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
 
+  /**
+   * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
+   * Receives the error and the field context, returns a list of validation errors.
+   */
+  readonly onError?: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
   /**
    * The options to use when creating the httpResource.
    */
@@ -177,6 +188,10 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
         const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
         return addDefaultField(errors, ctx.field);
       case 'error':
+        if (opts.onError) {
+          const errors = opts.onError(res.error(), ctx as FieldContext<TValue, TPathKind>);
+          return addDefaultField(errors, ctx.field);
+        }
         // TODO: Design error handling for async validation. For now, just throw the error.
         throw res.error();
     }
@@ -204,5 +219,6 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
     params: opts.request,
     factory: (request: Signal<any>) => httpResource(request, opts.options),
     errors: opts.errors,
+    onError: opts.onError
   });
 }
