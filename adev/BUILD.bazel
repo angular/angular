@@ -118,6 +118,9 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
     ],
 )
 
@@ -141,6 +144,9 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
     ],
 )
 

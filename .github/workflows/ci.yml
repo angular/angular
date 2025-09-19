@@ -193,7 +193,7 @@ jobs:
   adev-deploy:
     needs: [adev]
     if: needs.adev.result == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8core
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@d776aff2258f15fc3dc1e63852887518eec3ad75
@@ -203,7 +203,7 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@d776aff2258f15fc3dc1e63852887518eec3ad75
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-      - name: Build adev to ensure it continues to work
+      - name: Build adev
         run: pnpm bazel build //adev:build.production
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
