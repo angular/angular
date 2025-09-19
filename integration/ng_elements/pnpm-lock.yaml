@@ -58,8 +58,8 @@ importers:
         specifier: 9.2.1
         version: 9.2.1
       lite-server:
-        specifier: 2.2.2
-        version: 2.2.2
+        specifier: 2.6.1
+        version: 2.6.1
       protractor:
         specifier: ^7.0.0
         version: 7.0.0
@@ -943,8 +943,8 @@ packages:
   limiter@1.1.5:
     resolution: {integrity: sha512-FWWMIEOxz3GwUI4Ts/IvgVy6LPvoMPgjMdQ185nN6psJyBJ4yOpzqm695/h5umdLJg2vW3GR5iG11MAkR2AzJA==}
 
-  lite-server@2.2.2:
-    resolution: {integrity: sha512-7enj18KffG8tVb1en8FU48rw+hPchnGFdEHs1iLL3rNxJx56l6ZZO7K88FnNc7kI2WVztZN+Qdfsf/SnqaPCYw==}
+  lite-server@2.6.1:
+    resolution: {integrity: sha512-d3oyB/C8AU4EwYQHlLxcu6vTQDnCaLb81v1KKNYABmFS5oeJ11A+YxlqtpbTclID1AFddJfcB5klf0q98vYIMw==}
     hasBin: true
 
   localtunnel@2.0.2:
@@ -983,9 +983,6 @@ packages:
 
   minimatch@3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
-
-  minimist@1.2.0:
-    resolution: {integrity: sha512-7Wl+Jz+IGWuSdgsQEJ4JunV0si/iMhg42MnQQG6h1R6TNeVenp4U9x5CC5v/gYqz/fENLQITAWXidNtVL0NNbw==}
 
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
@@ -2354,13 +2351,13 @@ snapshots:
 
   limiter@1.1.5: {}
 
-  lite-server@2.2.2:
+  lite-server@2.6.1:
     dependencies:
       browser-sync: 2.29.3
       connect-history-api-fallback: 1.6.0
       connect-logger: 0.0.1
       lodash: 4.17.21
-      minimist: 1.2.0
+      minimist: 1.2.8
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -2404,8 +2401,6 @@ snapshots:
   minimatch@3.1.2:
     dependencies:
       brace-expansion: 1.1.12
-
-  minimist@1.2.0: {}
 
   minimist@1.2.8: {}
 
