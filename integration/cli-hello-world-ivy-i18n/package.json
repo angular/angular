@@ -38,7 +38,7 @@
     "jasmine-spec-reporter": "~5.0.2",
     "npm-run-all": "4.1.5",
     "protractor": "^7.0.0",
-    "serve": "11.2.0",
+    "serve": "14.2.5",
     "ts-node": "^10.9.1",
     "typescript": "5.9.2"
   },
