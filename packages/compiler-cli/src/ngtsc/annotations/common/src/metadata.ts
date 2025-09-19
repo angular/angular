@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode, FatalDiagnosticError} from '../../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../../diagnostics';
 import {
   ArrowFunctionExpr,
   Expression,
@@ -19,7 +19,6 @@ import {
 import ts from 'typescript';
 
 import {
-  ClassMember,
   ClassMemberAccessLevel,
   CtorParameter,
   DeclarationNode,
@@ -89,32 +88,15 @@ export function extractClassMetadata(
   const classMembers = reflection.getMembersOfClass(clazz).filter(
     (member) =>
       !member.isStatic &&
+      member.decorators !== null &&
+      member.decorators.length > 0 &&
       // Private fields are not supported in the metadata emit
       member.accessLevel !== ClassMemberAccessLevel.EcmaScriptPrivate,
   );
-
-  const decoratedMembers: {key: string; value: Expression; quoted: boolean}[] = [];
-  const seenMemberNames = new Set<string>();
-  let duplicateDecoratedMembers: ClassMember[] | null = null;
-
-  for (const member of classMembers) {
-    if (member.decorators !== null && member.decorators.length > 0) {
-      decoratedMembers.push({
-        key: member.name,
-        quoted: false,
-        value: decoratedClassMemberToMetadata(member.decorators!, isCore),
-      });
-
-      if (seenMemberNames.has(member.name)) {
-        duplicateDecoratedMembers ??= [];
-        duplicateDecoratedMembers.push(member);
-      } else {
-        seenMemberNames.add(member.name);
-      }
-    }
-  }
-
-  if (duplicateDecoratedMembers !== null) {
+  const duplicateDecoratedMembers = classMembers.filter(
+    (member, i, arr) => arr.findIndex((arrayMember) => arrayMember.name === member.name) < i,
+  );
+  if (duplicateDecoratedMembers.length > 0) {
     // This should theoretically never happen, because the only way to have duplicate instance
     // member names is getter/setter pairs and decorators cannot appear in both a getter and the
     // corresponding setter.
@@ -125,9 +107,13 @@ export function extractClassMetadata(
         duplicateDecoratedMembers.map((member) => member.name).join(', '),
     );
   }
-
+  const decoratedMembers = classMembers.map((member) =>
+    classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore),
+  );
   if (decoratedMembers.length > 0) {
-    metaPropDecorators = literalMap(decoratedMembers);
+    metaPropDecorators = new WrappedNodeExpr(
+      ts.factory.createObjectLiteralExpression(decoratedMembers),
+    );
   }
 
   return {
@@ -167,14 +153,16 @@ function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): Express
 /**
  * Convert a reflected class member to metadata.
  */
-function decoratedClassMemberToMetadata(
+function classMemberToMetadata(
+  name: ts.PropertyName | string,
   decorators: Decorator[],
   isCore: boolean,
-): LiteralArrayExpr {
+): ts.PropertyAssignment {
   const ngDecorators = decorators
     .filter((dec) => isAngularDecorator(dec, isCore))
-    .map((decorator: Decorator) => new WrappedNodeExpr(decoratorToMetadata(decorator)));
-  return new LiteralArrayExpr(ngDecorators);
+    .map((decorator: Decorator) => decoratorToMetadata(decorator));
+  const decoratorMeta = ts.factory.createArrayLiteralExpression(ngDecorators);
+  return ts.factory.createPropertyAssignment(name, decoratorMeta);
 }
 
 /**
