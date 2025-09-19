@@ -586,11 +586,13 @@ class MockRenderer implements Renderer2 {
   removeChild(parent: RElement, oldChild: Element): void {
     oldChild.remove();
   }
-  selectRootElement(selectorOrNode: string | any): RElement {
-    return typeof selectorOrNode === 'string'
-      ? document.querySelector<HTMLElement>(selectorOrNode)!
-      : selectorOrNode;
+  selectRootElement(selectorOrNode: string | HTMLElement | null): RElement {
+    if (typeof selectorOrNode === 'string') {
+      return document.querySelector<HTMLElement>(selectorOrNode) || document.createElement('div');
+    }
+    return selectorOrNode || document.createElement('div');
   }
+
   parentNode(node: Node): Element | null {
     return node.parentNode as Element;
   }
