@@ -10,7 +10,6 @@
  * Represents a property that may be defined on a field when it is created using a `property` rule
  * in the schema. A particular `Property` can only be defined on a particular field **once**.
  *
- * @category logic
  * @experimental 21.0.0
  */
 export class Property<TValue> {
@@ -144,7 +143,6 @@ export function andProperty(): AggregateProperty<boolean, boolean> {
 /**
  * An aggregate property representing whether the field is required.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const REQUIRED: AggregateProperty<boolean, boolean> = orProperty();
@@ -152,7 +150,6 @@ export const REQUIRED: AggregateProperty<boolean, boolean> = orProperty();
 /**
  * An aggregate property representing the min value of the field.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const MIN: AggregateProperty<number | undefined, number | undefined> = maxProperty();
@@ -160,7 +157,6 @@ export const MIN: AggregateProperty<number | undefined, number | undefined> = ma
 /**
  * An aggregate property representing the max value of the field.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const MAX: AggregateProperty<number | undefined, number | undefined> = minProperty();
@@ -168,7 +164,6 @@ export const MAX: AggregateProperty<number | undefined, number | undefined> = mi
 /**
  * An aggregate property representing the min length of the field.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined> = maxProperty();
@@ -176,7 +171,6 @@ export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefine
 /**
  * An aggregate property representing the max length of the field.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined> = minProperty();
@@ -184,7 +178,6 @@ export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefine
 /**
  * An aggregate property representing the patterns the field must match.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> = listProperty<RegExp>();

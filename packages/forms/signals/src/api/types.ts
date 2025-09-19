@@ -70,7 +70,6 @@ export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  *
- * @category submission
  * @experimental 21.0.0
  */
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
@@ -78,7 +77,6 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 /**
  * A reason for a field's disablement.
  *
- * @category logic
  * @experimental 21.0.0
  */
 export interface DisabledReason {
@@ -91,7 +89,6 @@ export interface DisabledReason {
 /**
  * The absence of an error which indicates a successful validation result.
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type ValidationSuccess = null | undefined | void;
@@ -107,7 +104,6 @@ export type ValidationSuccess = null | undefined | void;
  *
  * @template E the type of error (defaults to {@link ValidationError}).
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type FieldValidationResult<E extends ValidationError = ValidationError> =
@@ -125,7 +121,6 @@ export type FieldValidationResult<E extends ValidationError = ValidationError> =
  *
  * @template E the type of error (defaults to {@link ValidationError}).
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type TreeValidationResult<E extends ValidationError = ValidationError> =
@@ -142,7 +137,6 @@ export type TreeValidationResult<E extends ValidationError = ValidationError> =
  *
  * @template E the type of error (defaults to {@link ValidationError}).
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type ValidationResult<E extends ValidationError = ValidationError> =
@@ -158,7 +152,6 @@ export type ValidationResult<E extends ValidationError = ValidationError> =
  *
  * @template E the type of error (defaults to {@link ValidationError}).
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type AsyncValidationResult<E extends ValidationError = ValidationError> =
@@ -175,7 +168,6 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<
@@ -234,7 +226,6 @@ export type MaybeField<TValue, TKey extends string | number = string | number> =
  * Contains all of the state (e.g. value, statuses, etc.) associated with a `Field`, exposed as
  * signals.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export interface FieldState<TValue, TKey extends string | number = string | number> {
@@ -376,7 +367,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  * @template TValue The type of the data which the form is wrapped around.
  * @template TPathKind The kind of path (root field, child field, or item of an array)
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
@@ -408,7 +398,6 @@ export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
  *
  * @template TValue The type of data stored in the form that this schema is attached to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type Schema<in TValue> = {
@@ -421,7 +410,6 @@ export type Schema<in TValue> = {
  * @template TValue The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
@@ -434,7 +422,6 @@ export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
  * @template TValue The type of data stored in the form that this schema function is attached to.
  * @template TPathKind The kind of path this schema function can be bound to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> =
@@ -449,7 +436,6 @@ export type SchemaOrSchemaFn<TValue, TPathKind extends PathKind = PathKind.Root>
  * @template TReturn The type of the result returned by the logic function.
  * @template TPathKind The kind of path the logic is applied to (root field, child field, or item of an array)
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root> = (
@@ -463,7 +449,6 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
@@ -479,7 +464,6 @@ export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> =
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
@@ -496,7 +480,6 @@ export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = 
  * @template TValue The type of value stored in the field being validated
  * @template TPathKind The kind of path being validated (root field, child field, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
@@ -509,7 +492,6 @@ export type Validator<TValue, TPathKind extends PathKind = PathKind.Root> = Logi
  * Provides access to the state of the current field as well as functions that can be used to look
  * up state of other fields based on a `FieldPath`.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export type FieldContext<
@@ -544,7 +526,6 @@ export interface RootFieldContext<TValue> {
 /**
  * Field context that is available for all fields that are a child of another field.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
