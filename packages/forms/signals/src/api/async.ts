@@ -45,7 +45,6 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export interface AsyncValidatorOptions<
@@ -94,7 +93,6 @@ export interface AsyncValidatorOptions<
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
@@ -139,7 +137,6 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
  * @template TResult The type of result returned by the resource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root>(
@@ -193,7 +190,6 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
  * @template TResult The type of result returned by the httpResource
  * @template TPathKind The kind of path being validated (a root path, child path, or item of an array)
  *
- * @category validation
  * @experimental 21.0.0
  */
 export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKind = PathKind.Root>(

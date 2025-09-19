@@ -13,7 +13,6 @@ import {ValidationError, type WithOptionalField} from './validation_errors';
 /**
  * The base set of properties shared by all form control contracts.
  *
- * @category control
  * @experimental 21.0.0
  */
 export interface FormUiControl {
@@ -113,7 +112,6 @@ export interface FormUiControl {
  *
  * @template TValue The type of `Field` that the implementing component can edit.
  *
- * @category control
  * @experimental 21.0.0
  */
 export interface FormValueControl<TValue> extends FormUiControl {
@@ -142,7 +140,6 @@ export interface FormValueControl<TValue> extends FormUiControl {
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Control` directive.
  *
- * @category control
  * @experimental 21.0.0
  */
 export interface FormCheckboxControl extends FormUiControl {

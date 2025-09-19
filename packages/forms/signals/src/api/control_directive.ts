@@ -56,7 +56,6 @@ import type {Field} from './types';
  *    forms `NgControl`. This is provided to improve interoperability with controls designed to work
  *    with reactive forms. It should not be used by controls written for signal forms.
  *
- * @category control
  * @experimental 21.0.0
  */
 @Directive({

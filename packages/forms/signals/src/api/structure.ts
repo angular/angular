@@ -31,7 +31,6 @@ import {ValidationError, WithOptionalField} from './validation_errors';
 /**
  * Options that may be specified when creating a form.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export interface FormOptions {
@@ -95,7 +94,6 @@ function normalizeFormArgs<TValue>(
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
@@ -142,7 +140,6 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
  * @return A `Field` representing a form around the data model
  * @template TValue The type of the data model.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function form<TValue>(
@@ -190,7 +187,6 @@ export function form<TValue>(
  * @return A `Field` representing a form around the data model.
  * @template TValue The type of the data model.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function form<TValue>(
@@ -246,7 +242,6 @@ export function form<TValue>(...args: any[]): Field<TValue> {
  * element of the array.
  * @template TValue The data type of the item field to apply the schema to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function applyEach<TValue>(
@@ -277,7 +272,6 @@ export function applyEach<TValue>(
  * @param schema The schema to apply to the property
  * @template TValue The data type of the field to apply the schema to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function apply<TValue>(
@@ -298,7 +292,6 @@ export function apply<TValue>(
  * @param schema The schema to apply to the field when the `logic` function returns `true`.
  * @template TValue The data type of the field to apply the schema to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function applyWhen<TValue>(
@@ -322,7 +315,6 @@ export function applyWhen<TValue>(
  * @template TValue The data type of the field to apply the schema to.
  * @template TNarrowed The data type of the schema (a narrowed type of TValue).
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
@@ -340,7 +332,6 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @param schema The schema to apply to the field when `predicate` returns `true`.
  * @template TValue The data type of the field to apply the schema to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue>(
@@ -388,7 +379,6 @@ export function applyWhenValue(
  * errors.
  * @template TValue The data type of the field being submitted.
  *
- * @category submission
  * @experimental 21.0.0
  */
 export async function submit<TValue>(
@@ -447,7 +437,6 @@ function setServerErrors(
  * @returns A schema object that implements the given logic.
  * @template TValue The value type of a `Field` that this schema binds to.
  *
- * @category structure
  * @experimental 21.0.0
  */
 export function schema<TValue>(fn: SchemaFn<TValue>): Schema<TValue> {
