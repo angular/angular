@@ -17,8 +17,7 @@
     "lib": [
       "es2018",
       "dom",
-      "ES2020.Promise"
-    ]
+x    ]
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
