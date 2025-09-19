@@ -4,21 +4,21 @@
 
 ```ts
 
-import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
-import { ElementRef } from '@angular/core';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
 import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
 import { ModelSignal } from '@angular/core';
-import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { WritableSignal } from '@angular/core';
+import { ɵCONTROL } from '@angular/core';
+import { ɵControl } from '@angular/core';
+import { ɵFieldState } from '@angular/core';
 
 // @public
 export class AggregateProperty<TAcc, TItem> {
@@ -65,17 +65,17 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 }
 
 // @public
-export class Control<T> {
-    get cva(): ControlValueAccessor | undefined;
-    readonly cvaArray: ControlValueAccessor[] | null;
-    readonly el: ElementRef<HTMLElement>;
-    readonly field: i0.WritableSignal<Field<T>>;
+export class Control<T> implements ɵControl<T> {
     // (undocumented)
-    set _field(value: Field<T>);
-    get ngControl(): NgControl;
+    readonly [ɵCONTROL]: undefined;
+    // (undocumented)
+    readonly field: i0.InputSignal<Field<T>>;
+    // (undocumented)
+    register(): void;
+    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "_field": { "alias": "control"; "required": true; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "field": { "alias": "control"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Control<any>, never>;
 }
@@ -136,29 +136,24 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
 } : unknown);
 
 // @public
-export interface FieldState<TValue, TKey extends string | number = string | number> {
+export interface FieldState<TValue, TKey extends string | number = string | number> extends ɵFieldState<TValue> {
     readonly controls: Signal<readonly Control<unknown>[]>;
     readonly dirty: Signal<boolean>;
-    readonly disabled: Signal<boolean>;
+    // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
+    // (undocumented)
     readonly errors: Signal<ValidationError[]>;
     readonly errorSummary: Signal<ValidationError[]>;
     hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;
     readonly keyInParent: Signal<TKey>;
-    markAsDirty(): void;
-    markAsTouched(): void;
-    readonly name: Signal<string>;
     readonly pending: Signal<boolean>;
     property<M>(prop: AggregateProperty<M, any>): Signal<M>;
     property<M>(prop: Property<M>): M | undefined;
-    readonly readonly: Signal<boolean>;
     reset(): void;
     readonly submitting: Signal<boolean>;
-    readonly touched: Signal<boolean>;
     readonly valid: Signal<boolean>;
-    readonly value: WritableSignal<TValue>;
 }
 
 // @public
