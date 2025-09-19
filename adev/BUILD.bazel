@@ -109,6 +109,7 @@ ng_application(
     ],
     env = {
         "NG_BUILD_PARTIAL_SSR": "1",
+        "NG_BUILD_OPTIMIZE_CHUNK2XSx": "2",
     },
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
@@ -120,6 +121,8 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
+        # RBE will significantly slow down the build because the CLI invokes multiple, CPU-intensive instances of esbuild.
+        "no-remote-exec",
     ],
 )
 
@@ -132,6 +135,7 @@ ng_application(
     ],
     env = {
         "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+        "NG_BUILD_OPTIMIZE_CHUNK2XSx": "2",
     },
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
@@ -143,6 +147,8 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
+        # RBE will significantly slow down the build because the CLI invokes multiple, CPU-intensive instances of esbuild.
+        "no-remote-exec",
     ],
 )
 
