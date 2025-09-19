@@ -64,8 +64,8 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
       jasmine-spec-reporter:
-        specifier: ~5.0.2
-        version: 5.0.2
+        specifier: ~7.0.0
+        version: 7.0.0
       npm-run-all:
         specifier: 4.1.5
         version: 4.1.5
@@ -3388,8 +3388,8 @@ packages:
   jasmine-core@5.10.0:
     resolution: {integrity: sha512-MrChbWV5LBo+EaeKwTM1eZ6oYSz1brvFExnRafraEkJkbJ9evbUxABhnIgGQimhpMxhg+BD6QmOvb/e3NXsNdg==}
 
-  jasmine-spec-reporter@5.0.2:
-    resolution: {integrity: sha512-6gP1LbVgJ+d7PKksQBc2H0oDGNRQI3gKUsWlswKaQ2fif9X5gzhQcgM5+kiJGCQVurOG09jqNhk7payggyp5+g==}
+  jasmine-spec-reporter@7.0.0:
+    resolution: {integrity: sha512-OtC7JRasiTcjsaCBPtMO0Tl8glCejM4J4/dNuOJdA8lBjz4PmWjYQ6pzb0uzpBNAWJMDudYuj9OdXJWqM2QTJg==}
 
   jasmine@2.8.0:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
@@ -8718,7 +8718,7 @@ snapshots:
 
   jasmine-core@5.10.0: {}
 
-  jasmine-spec-reporter@5.0.2:
+  jasmine-spec-reporter@7.0.0:
     dependencies:
       colors: 1.4.0
 
