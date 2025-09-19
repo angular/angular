@@ -324,14 +324,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         );
 
         // ---- element instruction
-
-        // TODO(crisbeto): in practice `hostElement` should always be defined, but there are some
-        // tests where the renderer is mocked out and `undefined` is returned. We should update the
-        // tests so that this check can be removed.
-        if (hostElement) {
-          setupStaticAttributes(hostRenderer, hostElement, hostTNode);
-          attachPatchData(hostElement, rootLView);
-        }
+        setupStaticAttributes(hostRenderer, hostElement, hostTNode);
+        attachPatchData(hostElement, rootLView);
 
         // TODO(pk): this logic is similar to the instruction code where a node can have directives
         createDirectivesInstances(rootTView, rootLView, hostTNode);
