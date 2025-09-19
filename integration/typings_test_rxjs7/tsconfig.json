@@ -10,15 +10,8 @@
     "outDir": "./dist/out-tsc",
     "rootDir": ".",
     "target": "es2020",
-    "lib": [
-      "ES2020",
-      "dom",
-      "ES2020.promise"
-    ],
-    "types": [],
+    "lib": ["ES2020", "dom"],
+    "types": []
   },
-  "files": [
-    "include-all.ts",
-    "node_modules/@types/jasmine/index.d.ts"
-  ]
+  "files": ["include-all.ts", "node_modules/@types/jasmine/index.d.ts"]
 }
