@@ -14,7 +14,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }] });
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }, { type: i0.Output, args: ["counterChange"] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }, { type: i0.Output, args: ["nameChange"] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: model_directive_definition.d.ts
@@ -45,7 +45,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     template: 'Works',
                 }]
-        }] });
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }, { type: i0.Output, args: ["counterChange"] }], name: [{ type: i0.Input, args: [{ isSignal: true, alias: "name", required: true }] }, { type: i0.Output, args: ["nameChange"] }] } });
 
 /****************************************************************************************************
  * PARTIAL FILE: model_component_definition.d.ts
@@ -80,7 +80,7 @@ TestDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, decorators: [{
             type: Directive,
             args: [{}]
-        }], propDecorators: { decoratorInput: [{
+        }], propDecorators: { counter: [{ type: i0.Input, args: [{ isSignal: true, alias: "counter", required: false }] }, { type: i0.Output, args: ["counterChange"] }], modelWithAlias: [{ type: i0.Input, args: [{ isSignal: true, alias: "alias", required: false }] }, { type: i0.Output, args: ["aliasChange"] }], decoratorInput: [{
                 type: Input
             }], decoratorInputWithAlias: [{
                 type: Input,
