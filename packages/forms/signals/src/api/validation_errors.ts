@@ -52,6 +52,7 @@ export function requiredError(options: WithField<ValidationErrorOptions>): Requi
  * Create a required error
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function requiredError(
@@ -68,6 +69,7 @@ export function requiredError(
  * @param min The min value constraint
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function minError(
@@ -79,6 +81,7 @@ export function minError(
  * @param min The min value constraint
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function minError(
@@ -97,6 +100,7 @@ export function minError(
  * @param max The max value constraint
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function maxError(
@@ -108,6 +112,7 @@ export function maxError(
  * @param max The max value constraint
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function maxError(
@@ -126,6 +131,7 @@ export function maxError(
  * @param minLength The minLength constraint
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function minLengthError(
@@ -137,6 +143,7 @@ export function minLengthError(
  * @param minLength The minLength constraint
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function minLengthError(
@@ -155,6 +162,7 @@ export function minLengthError(
  * @param maxLength The maxLength constraint
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function maxLengthError(
@@ -166,6 +174,7 @@ export function maxLengthError(
  * @param maxLength The maxLength constraint
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function maxLengthError(
@@ -184,6 +193,7 @@ export function maxLengthError(
  * @param pattern The violated pattern
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function patternError(
@@ -195,6 +205,7 @@ export function patternError(
  * @param pattern The violated pattern
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function patternError(
@@ -212,6 +223,7 @@ export function patternError(
  * Create an email format error associated with the target field
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function emailError(options: WithField<ValidationErrorOptions>): EmailValidationError;
@@ -219,6 +231,7 @@ export function emailError(options: WithField<ValidationErrorOptions>): EmailVal
  * Create an email format error
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function emailError(options?: ValidationErrorOptions): WithoutField<EmailValidationError>;
@@ -233,6 +246,7 @@ export function emailError(
  * @param issue The standard schema issue
  * @param options The validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function standardSchemaError(
@@ -244,6 +258,7 @@ export function standardSchemaError(
  * @param issue The standard schema issue
  * @param options The optional validation error options
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function standardSchemaError(
@@ -261,6 +276,7 @@ export function standardSchemaError(
  * Create a custom error associated with the target field
  * @param obj The object to create an error from
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function customError<E extends Partial<ValidationError>>(
@@ -270,6 +286,7 @@ export function customError<E extends Partial<ValidationError>>(
  * Create a custom error
  * @param obj The object to create an error from
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export function customError<E extends Partial<ValidationError>>(
@@ -286,6 +303,7 @@ export function customError<E extends Partial<ValidationError>>(
  *
  * Use the creation functions to create an instance (e.g. `requiredError`, `minError`, etc.).
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export interface ValidationError {
@@ -300,6 +318,7 @@ export interface ValidationError {
 /**
  * A custom error that may contain additional properties
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class CustomValidationError implements ValidationError {
@@ -356,6 +375,7 @@ abstract class _NgValidationError implements ValidationError {
 /**
  * An error used to indicate that a required field is empty.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class RequiredValidationError extends _NgValidationError {
@@ -365,6 +385,7 @@ export class RequiredValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is lower than the minimum allowed.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class MinValidationError extends _NgValidationError {
@@ -381,6 +402,7 @@ export class MinValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is higher than the maximum allowed.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class MaxValidationError extends _NgValidationError {
@@ -397,6 +419,7 @@ export class MaxValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is shorter than the minimum allowed length.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class MinLengthValidationError extends _NgValidationError {
@@ -413,6 +436,7 @@ export class MinLengthValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is longer than the maximum allowed length.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class MaxLengthValidationError extends _NgValidationError {
@@ -429,6 +453,7 @@ export class MaxLengthValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value does not match the required pattern.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class PatternValidationError extends _NgValidationError {
@@ -445,6 +470,7 @@ export class PatternValidationError extends _NgValidationError {
 /**
  * An error used to indicate that a value is not a valid email.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class EmailValidationError extends _NgValidationError {
@@ -454,6 +480,7 @@ export class EmailValidationError extends _NgValidationError {
 /**
  * An error used to indicate an issue validating against a standard schema.
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export class StandardSchemaValidationError extends _NgValidationError {
@@ -489,6 +516,7 @@ export class StandardSchemaValidationError extends _NgValidationError {
  * }
  * ```
  *
+ * @category validation
  * @experimental 21.0.0
  */
 export const NgValidationError: abstract new () => NgValidationError = _NgValidationError as any;
