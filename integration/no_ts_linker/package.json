@@ -5,9 +5,9 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@angular/compiler": "next",
-    "@angular/compiler-cli": "next",
-    "@angular/core": "next",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
     "rxjs": "^7.0.0"
   },
   "scripts": {

@@ -7,13 +7,13 @@
     "update": "pnpm test --update"
   },
   "dependencies": {
-    "@angular/animations": "next",
-    "@angular/common": "next",
-    "@angular/core": "next",
-    "@angular/elements": "next",
-    "@angular/forms": "next",
-    "@angular/platform-browser": "next",
-    "@angular/router": "next",
+    "@angular/animations": "link:./in-existing-linked-by-bazel",
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/elements": "link:./in-existing-linked-by-bazel",
+    "@angular/forms": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
     "check-side-effects": "0.0.23"
   },
   "packageManager": "pnpm@10.17.0"
