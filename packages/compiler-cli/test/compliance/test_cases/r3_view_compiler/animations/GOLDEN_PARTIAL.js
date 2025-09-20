@@ -45,7 +45,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             type: Directive,
             args: [{
                     selector: '[any-structural-directive]',
-                    standalone: true,
                 }]
         }] });
 export class MyComponent {
@@ -61,7 +60,6 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
             args: [{
                     selector: 'my-component',
                     imports: [AnyStructuralDirective],
-                    standalone: true,
                     template: `
     <div>
       <p *any-structural-directive animate.enter="slide">Sliding Content</p>

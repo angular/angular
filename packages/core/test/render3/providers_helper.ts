@@ -26,7 +26,6 @@ export function expectProvidersScenario(defs: {
   ngModule?: Type<any>;
 }): void {
   @Component({
-    standalone: true,
     selector: 'view-child',
     template: 'view-child',
     encapsulation: ViewEncapsulation.None,
@@ -40,7 +39,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Directive({
-    standalone: true,
     selector: 'view-child',
     providers: defs.viewChild?.directiveProviders ?? [],
   })
@@ -51,7 +49,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Component({
-    standalone: true,
     selector: 'content-child',
     template: 'content-child',
     encapsulation: ViewEncapsulation.None,
@@ -65,7 +62,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Directive({
-    standalone: true,
     selector: 'content-child',
     providers: defs.contentChild?.directiveProviders ?? [],
   })
@@ -76,7 +72,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Component({
-    standalone: true,
     imports: [ViewChildComponent, ViewChildDirective],
     selector: 'parent',
     template: '<view-child></view-child>',
@@ -91,7 +86,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Directive({
-    standalone: true,
     selector: 'parent',
     providers: defs.parent?.directiveProviders ?? [],
   })
@@ -101,7 +95,6 @@ export function expectProvidersScenario(defs: {
     }
   }
   @Directive({
-    standalone: true,
     selector: 'parent',
     providers: defs.parent?.directive2Providers ?? [],
   })
@@ -112,7 +105,6 @@ export function expectProvidersScenario(defs: {
   }
 
   @Component({
-    standalone: true,
     imports: [
       ParentComponent,
       // Note: tests are sensitive to the ordering here - the providers from `ParentDirective`

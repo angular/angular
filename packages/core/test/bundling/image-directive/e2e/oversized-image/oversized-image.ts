@@ -16,7 +16,6 @@ const imageLoader = {
 
 @Component({
   selector: 'oversized-image-passing',
-  standalone: true,
   imports: [NgOptimizedImage],
   providers: [imageLoader],
   template: `
@@ -35,7 +34,6 @@ export class OversizedImageComponentPassing {}
 
 @Component({
   selector: 'oversized-image-failing',
-  standalone: true,
   imports: [NgOptimizedImage],
   providers: [imageLoader],
   template: `

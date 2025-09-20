@@ -403,10 +403,7 @@ describe('ComponentFactory', () => {
 
     it('should not set input if value is the same as the previous', () => {
       let log: string[] = [];
-      @Component({
-        template: `{{input}}`,
-        standalone: true,
-      })
+      @Component({template: `{{input}}`})
       class DynamicCmp {
         @Input()
         set input(v: string) {

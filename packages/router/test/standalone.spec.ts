@@ -486,7 +486,6 @@ describe('standalone in Router API', () => {
       const TOKEN = new InjectionToken<string>('token');
       @Component({
         template: ``,
-        standalone: true,
       })
       class Cmp {
         constructor(public service: any) {}

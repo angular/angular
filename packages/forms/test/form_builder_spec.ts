@@ -264,7 +264,6 @@ import {of} from 'rxjs';
 
     it('should be injectable', () => {
       @Component({
-        standalone: true,
         template: '...',
       })
       class MyComp {
@@ -291,7 +290,6 @@ import {of} from 'rxjs';
 
     it('should be injectable as NonNullableFormBuilder', () => {
       @Component({
-        standalone: true,
         template: '...',
       })
       class MyComp {

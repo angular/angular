@@ -4780,7 +4780,7 @@ withEachNg1Version(() => {
         const ng1Component: angular.IComponent = {template: `I'm from AngularJS!`};
 
         // Define `Ng1ComponentFacade` (standalone)
-        @Directive({selector: 'ng1', standalone: true})
+        @Directive({selector: 'ng1'})
         class Ng1ComponentStandaloneFacade extends UpgradeComponent {
           constructor(elementRef: ElementRef, injector: Injector) {
             super('ng1', elementRef, injector);

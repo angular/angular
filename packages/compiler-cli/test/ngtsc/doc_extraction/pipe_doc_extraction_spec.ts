@@ -30,7 +30,6 @@ runInEachFileSystem(() => {
         `
         import {Pipe} from '@angular/core';
         @Pipe({
-          standalone: true,
           name: 'shorten',
         })
         export class ShortenPipe {
@@ -57,7 +56,7 @@ runInEachFileSystem(() => {
         import {Pipe, NgModule} from '@angular/core';
         @Pipe({
           name: 'shorten',
-          standalone: false, 
+          standalone: false,
         })
         export class ShortenPipe {
           transform(value: string): string { return ''; }

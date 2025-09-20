@@ -10,7 +10,6 @@ import {Component, provideZonelessChangeDetection} from '@angular/core';
 import {bootstrapApplication} from '@angular/platform-browser';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   template: 'Hello World!',
 })

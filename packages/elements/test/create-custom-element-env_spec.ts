@@ -26,7 +26,6 @@ describe('createCustomElement with env injector', () => {
 
   it('should use provided EnvironmentInjector to create a custom element', async () => {
     @Component({
-      standalone: true,
       template: `Hello, standalone element!`,
     })
     class TestStandaloneCmp {}
