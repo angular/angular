@@ -119,6 +119,7 @@ export class SharedStylesHost implements OnDestroy {
    * Set of host DOM nodes that will have styles attached.
    */
   private readonly hosts = new Set<Node>();
+  private readonly shadowRoots: ShadowRoot[] = [];
 
   constructor(
     @Inject(DOCUMENT) private readonly doc: Document,
@@ -135,18 +136,20 @@ export class SharedStylesHost implements OnDestroy {
   /**
    * Adds embedded styles to the DOM via HTML `style` elements.
    * @param styles An array of style content strings.
+   * @param urls An optional array of external stylesheet URL strings.
    */
   addStyles(styles: string[], urls?: string[]): void {
-    for (const value of styles) {
-      this.addUsage(value, this.inline, createStyleElement);
+    // Active isolated shadow root (only populated for IsolatedShadowDom renderers)
+    for (const style of styles) {
+      this.addUsage(style, this.inline, createStyleElement);
     }
-
-    urls?.forEach((value) => this.addUsage(value, this.external, createLinkElement));
+    urls?.forEach((url) => this.addUsage(url, this.external, createLinkElement));
   }
 
   /**
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
+   * @param urls An optional array of external stylesheet URL strings to remove.
    */
   removeStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
@@ -161,24 +164,59 @@ export class SharedStylesHost implements OnDestroy {
     usages: Map<string, UsageRecord<T>>,
     creator: (value: string, doc: Document) => T,
   ): void {
-    // Attempt to get any current usage of the value
+    const activeShadowRoot = this.shadowRoots.at(-1);
     const record = usages.get(value);
-
-    // If existing, just increment the usage count
     if (record) {
+      // If later used inside an isolated shadow root, ensure it is present there.
+      if (activeShadowRoot) {
+        let presentInActive = false;
+        for (const el of record.elements) {
+          if (el.parentNode === activeShadowRoot) {
+            presentInActive = true;
+            break;
+          }
+        }
+        if (!presentInActive) {
+          record.elements.push(this.addElement(activeShadowRoot, creator(value, this.doc)));
+        }
+      } else {
+        // If now used globally (no active shadow root) but was first defined only inside an isolated root,
+        // make sure we also have a head element.
+        let hasHead = false;
+        for (const el of record.elements) {
+          if (el.parentNode === this.doc.head) {
+            hasHead = true;
+            break;
+          }
+        }
+        if (!hasHead) {
+          record.elements.push(this.addElement(this.doc.head, creator(value, this.doc)));
+        }
+      }
       if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
-        // A usage count of zero indicates a preexisting server generated style.
-        // This attribute is solely used for debugging purposes of SSR style reuse.
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
       }
       record.usage++;
-    } else {
-      // Otherwise, create an entry to track the elements and add element for each host
+      return;
+    }
+
+    // New style: if inside isolated shadow root, scope ONLY to that root (original behavior),
+    // deferring global insertion until (and if) used outside.
+    if (activeShadowRoot) {
       usages.set(value, {
         usage: 1,
-        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
+        elements: [this.addElement(activeShadowRoot, creator(value, this.doc))],
       });
+      return;
     }
+
+    if (this.hosts.size === 0) return;
+
+    const elements: T[] = [];
+    for (const h of this.hosts) {
+      elements.push(this.addElement(h, creator(value, this.doc)));
+    }
+    usages.set(value, {usage: 1, elements});
   }
 
   protected removeUsage<T extends HTMLElement>(
@@ -229,17 +267,26 @@ export class SharedStylesHost implements OnDestroy {
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {
-    // Add a nonce if present
     if (this.nonce) {
       element.setAttribute('nonce', this.nonce);
     }
 
     // Add application identifier when on the server to support client-side reuse
-    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+    if (typeof ngServerMode !== 'undefined' && ngServerMode && host === this.doc.head) {
       element.setAttribute(APP_ID_ATTRIBUTE_NAME, this.appId);
     }
+    host.appendChild(element);
+    return element;
+  }
 
-    // Insert the element into the DOM with the host node as parent
-    return host.appendChild(element);
+  addShadowRoot(shadowRoot: ShadowRoot): void {
+    this.shadowRoots.push(shadowRoot);
+  }
+
+  removeShadowRoot(shadowRoot: ShadowRoot): void {
+    const index = this.shadowRoots.indexOf(shadowRoot);
+    if (index > -1) {
+      this.shadowRoots.splice(index, 1);
+    }
   }
 }
