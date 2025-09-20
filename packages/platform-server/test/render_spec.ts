@@ -13,7 +13,6 @@ describe('renderApplication', () => {
   it('should render ARIA attributes from attribute bindings', async () => {
     @Component({
       selector: 'app',
-      standalone: true,
       template: '<div [attr.aria-label]="label"></div>',
     })
     class SomeComponent {
@@ -27,7 +26,6 @@ describe('renderApplication', () => {
   it('should render ARIA attributes using property binding syntax', async () => {
     @Component({
       selector: 'app',
-      standalone: true,
       template: '<div [aria-label]="label"></div>',
     })
     class SomeComponent {

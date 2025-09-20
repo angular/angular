@@ -382,7 +382,6 @@ describe('Angular with zoneless enabled', () => {
         destroyPlatform();
 
         @Component({
-          standalone: true,
           template: `<p>Component created</p>`,
         })
         class DynamicComponent {
@@ -391,7 +390,6 @@ describe('Angular with zoneless enabled', () => {
 
         @Component({
           selector: 'app',
-          standalone: true,
           template: `<main #outlet></main>`,
         })
         class App {

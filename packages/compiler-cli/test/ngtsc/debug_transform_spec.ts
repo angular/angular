@@ -466,7 +466,7 @@ runInEachFileSystem(() => {
             `
               import {signal, computed} from '@angular/core';
               declare function equal(): boolean;
-          
+
               const testSignal = signal(123);
               const testComputed = computed(() => testSignal(), { equal });
             `,
@@ -1166,15 +1166,13 @@ runInEachFileSystem(() => {
             import {viewChild, Component} from '@angular/core';
 
             @Component({
-                selector: 'child-component',
-                standalone: true,
-                template: ''
+              selector: 'child-component',
+              template: ''
             }) class ChildComponent {}
 
             @Component({
-                template: '<child-component/>',
-                standalone: true,
-                imports: [ChildComponent]
+              template: '<child-component/>',
+              imports: [ChildComponent]
             }) class MyComponent {
                 testViewChild = viewChild('foo');
                 testViewChildComponent = viewChild(ChildComponent);
@@ -1200,14 +1198,12 @@ runInEachFileSystem(() => {
 
             @Component({
                 selector: 'child-component',
-                standalone: true,
-                template: ''
+                                template: ''
             }) class ChildComponent {}
 
             @Component({
                 template: '<child-component/>',
-                standalone: true,
-                imports: [ChildComponent]
+                                imports: [ChildComponent]
             }) class MyComponent {
                 testViewChild = viewChild('foo');
                 testViewChildComponent = viewChild(ChildComponent);
@@ -1231,14 +1227,12 @@ runInEachFileSystem(() => {
 
             @Component({
                 selector: 'child-component',
-                standalone: true,
-                template: ''
+                                template: ''
             }) class ChildComponent {}
 
             @Component({
                 template: '<child-component/>',
-                standalone: true,
-                imports: [ChildComponent]
+                                imports: [ChildComponent]
             }) class MyComponent {
                 testViewChild = viewChild('foo');
                 testViewChildComponent = viewChild(ChildComponent);

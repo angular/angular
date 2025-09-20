@@ -63,7 +63,6 @@ describe('navigate for test examples', () => {
   it('test a ActivatedRoute', async () => {
     // #docregion ActivatedRoute
     @Component({
-      standalone: true,
       imports: [AsyncPipe],
       template: `search: {{ (route.queryParams | async)?.query }}`,
     })

@@ -1014,7 +1014,6 @@ runInEachFileSystem(() => {
             import {SomeModule} from './some_where';
 
             @Component({
-              standalone: true,
               selector: 'main',
               template: '<span>Hi!</span>',
               imports: [SomeModule],
@@ -1105,7 +1104,6 @@ runInEachFileSystem(() => {
             import {SomeModule} from './some_where';
 
             @Component({
-              standalone: true,
               selector: 'main',
               template: '<span>Hi!</span>',
               schemas: [CUSTOM_ELEMENTS_SCHEMA],

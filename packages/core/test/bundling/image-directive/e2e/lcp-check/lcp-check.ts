@@ -11,7 +11,6 @@ import {Component} from '../../../../../src/core';
 
 @Component({
   selector: 'lcp-check',
-  standalone: true,
   imports: [NgOptimizedImage],
   template: `
     <!--
