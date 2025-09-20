@@ -30,7 +30,6 @@ import {assertComponentDef} from './errors';
  *
  * ```angular-ts
  * @Component({
- *   standalone: true,
  *   template: `Hello {{ name }}!`
  * })
  * class HelloComponent {
@@ -38,7 +37,6 @@ import {assertComponentDef} from './errors';
  * }
  *
  * @Component({
- *   standalone: true,
  *   template: `<div id="hello-component-host"></div>`
  * })
  * class RootComponent {}
@@ -60,7 +58,7 @@ import {assertComponentDef} from './errors';
  * applicationRef.attachView(componentRef.hostView);
  * componentRef.changeDetectorRef.detectChanges();
  * ```
- * 
+ *
  * @param component Component class reference.
  * @param options Set of options to use:
  *  * `environmentInjector`: An `EnvironmentInjector` instance to be used for the component.
@@ -159,7 +157,6 @@ export interface ComponentMirror<C> {
  *
  * ```angular-ts
  * @Component({
- *   standalone: true,
  *   selector: 'foo-component',
  *   template: `
  *     <ng-content></ng-content>

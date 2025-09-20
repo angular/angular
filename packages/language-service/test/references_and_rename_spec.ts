@@ -1958,8 +1958,7 @@ describe('find references and rename locations', () => {
         import {Component} from '@angular/core';
 
         @Component({
-          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }',
-          standalone: true
+          template: '@if (x; as aliasX) { {{aliasX}} {{aliasX + "second"}} }'
         })
         export class AppCmp {
           x?: string;

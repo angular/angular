@@ -218,7 +218,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     it('should detect changes even when updated during CD', async () => {
       @Component({
-        standalone: true,
         template: ``,
       })
       class DriverCmp {
@@ -361,7 +360,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
 });
 
 @Directive({
-  standalone: true,
   selector: '[cdTracker]',
 })
 export class CdTrackerDir {
@@ -374,7 +372,6 @@ export class CdTrackerDir {
 
 @Component({
   selector: 'fake-component',
-  standalone: true,
   imports: [CdTrackerDir],
   template: `
     <ng-container cdTracker></ng-container>

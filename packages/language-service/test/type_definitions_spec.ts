@@ -58,8 +58,7 @@ describe('type definitions', () => {
           import {Component, Directive, input} from '@angular/core';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             firstName = input<string>();
@@ -67,7 +66,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {}
@@ -94,8 +92,7 @@ describe('type definitions', () => {
           import {Component, Directive, output} from '@angular/core';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             nameChanges = output<string>();
@@ -103,8 +100,7 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
-            imports: [MyDir],
+                        imports: [MyDir],
           })
           export class AppCmp {
             doSmth() {}
@@ -133,8 +129,7 @@ describe('type definitions', () => {
           import {outputFromObservable} from '@angular/core/rxjs-interop';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             nameChanges = outputFromObservable(new EventEmitter<number>());
@@ -142,8 +137,7 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
-            imports: [MyDir],
+                        imports: [MyDir],
           })
           export class AppCmp {
             doSmth() {}
@@ -168,17 +162,13 @@ describe('type definitions', () => {
       'app.ts': `
         import {Component, Directive, model} from '@angular/core';
 
-        @Directive({
-          selector: 'my-dir',
-          standalone: true
-        })
+        @Directive({selector: 'my-dir'})
         export class MyDir {
           twoWayValue = model<string>();
         }
 
         @Component({
           templateUrl: 'app.html',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {

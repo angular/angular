@@ -35,7 +35,7 @@ import {Component} from '../../../src/core';
   `,
   ],
   template: `
-    <h1> 
+    <h1>
       <img ngSrc="a.png" width="50" height="50" priority ngSrcset="1x, 2x">
       <span>Angular image app</span>
     </h1>
@@ -44,7 +44,6 @@ import {Component} from '../../../src/core';
       <img ngSrc="hermes2.jpeg" ngSrcset="100w, 200w, 1000w, 2000w" width="1791" height="1008">
     </main>
   `,
-  standalone: true,
   imports: [NgOptimizedImage],
   providers: [provideImgixLoader('https://aurora-project.imgix.net')],
 })

@@ -837,7 +837,7 @@ describe('completions', () => {
         '',
         {},
         `
-        @Component({selector: 'other-cmp', template: 'unimportant', standalone: true})
+        @Component({selector: 'other-cmp', template: 'unimportant'})
         export class OtherCmp {}
       `,
       );
@@ -1097,7 +1097,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
                 inputs: ['myInput']
               })
               export class HostDir {
@@ -1131,8 +1130,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
-                inputs: ['myInput']
+                                inputs: ['myInput']
               })
               export class HostDir {
                 myInput = 'foo';
@@ -1161,8 +1159,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
-                inputs: ['myInput']
+                                inputs: ['myInput']
               })
               export class HostDir {
                 myInput = 'foo';
@@ -1195,8 +1192,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
                   @Directive({
-                    standalone: true,
-                    inputs: ['myInput: myPublicInput']
+                                        inputs: ['myInput: myPublicInput']
                   })
                   export class HostDir {
                     myInput = 'foo';
@@ -1565,8 +1561,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput']
+                            outputs: ['myOutput']
             })
             export class HostDir {
               myOutput: any;
@@ -1599,8 +1594,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput']
+                            outputs: ['myOutput']
             })
             export class HostDir {
               myOutput: any;
@@ -1628,8 +1622,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (ali)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput: myPublicOutput']
+                            outputs: ['myOutput: myPublicOutput']
             })
             export class HostDir {
               myOutput: any;

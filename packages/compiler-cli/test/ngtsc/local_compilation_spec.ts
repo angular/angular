@@ -140,7 +140,7 @@ runInEachFileSystem(() => {
           `
         import {NgModule, Component} from '@angular/core';
 
-        @Component({template:'', standalone: true})
+        @Component({template: ''})
         export class Comp3 {
         }
 
@@ -154,7 +154,7 @@ runInEachFileSystem(() => {
           `
         import {Component} from '@angular/core';
 
-        @Component({template:'', standalone: true})
+        @Component({template: ''})
         export class Comp2 {
         }
         `,
@@ -418,7 +418,7 @@ runInEachFileSystem(() => {
         import {Component} from '@angular/core';
 
         @Component({
-          template: '...', 
+          template: '...',
           selector: 'internal-comp',
           standalone: false,
         })
@@ -432,7 +432,7 @@ runInEachFileSystem(() => {
         import {Directive} from '@angular/core';
 
         @Directive({
-          selector: '[internal-dir]', 
+          selector: '[internal-dir]',
           standalone: false,
         })
         export class InternalDir {
@@ -787,7 +787,6 @@ runInEachFileSystem(() => {
           import {SomeThing2} from 'some-where2';
 
           @Component({
-            standalone: true,
             imports: [SomeThing, forwardRef(()=>SomeThing2)],
             selector: 'test-main',
             template: '<span>Hello world!</span>',
@@ -816,7 +815,6 @@ runInEachFileSystem(() => {
           const NG_IMPORTS = [SomeThing, forwardRef(()=>SomeThing2)];
 
           @Component({
-            standalone: true,
             imports: NG_IMPORTS,
             selector: 'test-main',
             template: '<span>Hello world!</span>',
@@ -841,7 +839,6 @@ runInEachFileSystem(() => {
       import {Component} from '@angular/core';
 
       @Component({
-        standalone: true,
         imports: [],
         selector: 'test-main',
         template: '<span>Hello world!</span>',
@@ -866,7 +863,6 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
 
           @Component({
-            standalone: true,
             selector: 'test-main',
             template: '<span>Hello world!</span>',
           })
@@ -1072,7 +1068,6 @@ runInEachFileSystem(() => {
           import * as SomeWhere4 from './some-where4'
 
           @Component({
-            standalone: true,
             selector: 'test-main',
             template: '<span>Hello world</span>',
           })
@@ -1148,9 +1143,7 @@ runInEachFileSystem(() => {
           import * as SomeWhere3 from './some-where3'
           import * as SomeWhere4 from './some-where4'
 
-          @Directive({
-            standalone: true,
-          })
+          @Directive()
           export class MainDirective {
             constructor(
               private someService1: SomeService1,
@@ -1222,10 +1215,7 @@ runInEachFileSystem(() => {
           import * as SomeWhere3 from './some-where3'
           import * as SomeWhere4 from './some-where4'
 
-          @Pipe({
-            name: 'pipe',
-            standalone: true,
-          })
+          @Pipe({name: 'pipe'})
           export class MainPipe {
             constructor(
               private someService1: SomeService1,
@@ -1570,7 +1560,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1603,7 +1594,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1636,7 +1628,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1669,7 +1662,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1700,7 +1694,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1730,7 +1725,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1760,7 +1756,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1777,8 +1774,7 @@ runInEachFileSystem(() => {
           import {ExternalString} from './some-where';
 
           @Directive({selector: '[test]', exportAs: ExternalString})
-          export class Main {
-          }
+          export class Main {}
           `,
         );
 
@@ -1789,7 +1785,8 @@ runInEachFileSystem(() => {
         const {code, messageText, relatedInformation, length} = errors[0];
 
         expect(code).toBe(ngErrorCode(ErrorCode.LOCAL_COMPILATION_UNRESOLVED_CONST));
-        expect(length).toBe(14), expect(relatedInformation).toBeUndefined();
+        expect(length).toBe(14);
+        expect(relatedInformation).toBeUndefined();
 
         const text = ts.flattenDiagnosticMessageText(messageText, '\n');
 
@@ -1922,9 +1919,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component} from '@angular/core';
 
-          @Directive({
-            standalone: true
-          })
+          @Directive()
           export class LocalDirective {
           }
 
@@ -1959,19 +1954,11 @@ runInEachFileSystem(() => {
           import {Directive, Component} from '@angular/core';
           import {ExternalDirective} from 'some_where';
 
-          @Directive({
-            standalone: true,
-            hostDirectives: [ExternalDirective],
-          })
-          export class LocalDirective {
-          }
+          @Directive({hostDirectives: [ExternalDirective]})
+          export class LocalDirective {}
 
-          @Directive({
-            standalone: true,
-            hostDirectives: [LocalDirective],
-          })
-          export class LocalDirective2 {
-          }
+          @Directive({hostDirectives: [LocalDirective]})
+          export class LocalDirective2 {}
         `,
         );
 
@@ -2004,7 +1991,6 @@ runInEachFileSystem(() => {
           }
 
           @Directive({
-            standalone: true,
             hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
           })
           export class DirectiveB {
@@ -2186,7 +2172,6 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
             selector: 'deferred-cmp-a',
             template: 'DeferredCmpA contents',
           })
@@ -2200,8 +2185,7 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
-            selector: 'deferred-cmp-b',
+                        selector: 'deferred-cmp-b',
             template: 'DeferredCmpB contents',
           })
           export class DeferredCmpB {
@@ -2216,7 +2200,6 @@ runInEachFileSystem(() => {
           import {DeferredCmpA} from './deferred-a';
           import {DeferredCmpB} from './deferred-b';
           @Component({
-            standalone: true,
             deferredImports: [DeferredCmpA, DeferredCmpB],
             template: \`
               @defer {
@@ -2267,7 +2250,6 @@ runInEachFileSystem(() => {
           `
           import {Component} from '@angular/core';
           @Component({
-            standalone: true,
             selector: 'deferred-cmp-a',
             template: 'DeferredCmpA contents',
           })
@@ -2282,7 +2264,6 @@ runInEachFileSystem(() => {
           import {Component} from '@angular/core';
           import {DeferredCmpA} from './deferred-a';
           @Component({
-            standalone: true,
             imports: [DeferredCmpA],
             template: \`
               @defer {
@@ -2320,7 +2301,6 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
                 selector: 'eager-cmp-a',
                 template: 'EagerCmpA contents',
               })
@@ -2334,7 +2314,6 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2348,8 +2327,7 @@ runInEachFileSystem(() => {
           `
               import {Component} from '@angular/core';
               @Component({
-                standalone: true,
-                selector: 'deferred-cmp-b',
+                                selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
               export class DeferredCmpB {
@@ -2365,7 +2343,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpB} from './deferred-b';
               import {EagerCmpA} from './eager-a';
               @Component({
-                standalone: true,
                 imports: [EagerCmpA],
                 deferredImports: [DeferredCmpA, DeferredCmpB],
                 template: \`
@@ -2427,7 +2404,6 @@ runInEachFileSystem(() => {
               import {Component} from '@angular/core';
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2435,7 +2411,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
@@ -2455,7 +2430,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB} from './deferred-deps';
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpA],
                 template: \`
                   @defer {
@@ -2466,7 +2440,6 @@ runInEachFileSystem(() => {
               export class AppCmpA {}
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpB],
                 template: \`
                   @defer {
@@ -2521,7 +2494,6 @@ runInEachFileSystem(() => {
               import {Component} from '@angular/core';
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-a',
                 template: 'DeferredCmpA contents',
               })
@@ -2529,7 +2501,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 selector: 'deferred-cmp-b',
                 template: 'DeferredCmpB contents',
               })
@@ -2553,7 +2524,6 @@ runInEachFileSystem(() => {
               import {DeferredCmpA, DeferredCmpB, utilityFn} from './deferred-deps';
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpA],
                 template: \`
                   @defer {
@@ -2568,7 +2538,6 @@ runInEachFileSystem(() => {
               }
 
               @Component({
-                standalone: true,
                 deferredImports: [DeferredCmpB],
                 template: \`
                   @defer {
@@ -2579,7 +2548,6 @@ runInEachFileSystem(() => {
               export class AppCmpB {}
 
               @Component({
-                standalone: true,
                 template: 'Component without any dependencies'
               })
               export class ComponentWithoutDeps {}

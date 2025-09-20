@@ -60,12 +60,11 @@ export function verifyStandaloneImport(depType: Type<unknown>, importingType: Ty
     if (def != null) {
       // if a component, directive or pipe is imported make sure that it is standalone
       if (!def.standalone) {
+        const type = getDependencyTypeForError(depType);
         throw new Error(
-          `The "${stringifyForError(depType)}" ${getDependencyTypeForError(
-            depType,
-          )}, imported from "${stringifyForError(
+          `The "${stringifyForError(depType)}" ${type}, imported from "${stringifyForError(
             importingType,
-          )}", is not standalone. Did you forget to add the standalone: true flag?`,
+          )}", is not standalone. Does the ${type} have the standalone: false flag?`,
         );
       }
     } else {

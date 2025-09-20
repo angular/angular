@@ -2149,7 +2149,6 @@ describe('platform-server partial hydration integration', () => {
     it('should render an error block when loading fails and cleanup the original content', async () => {
       @Component({
         selector: 'nested-cmp',
-        standalone: true,
         template: 'Rendering {{ block }} block.',
       })
       class NestedCmp {
@@ -2157,7 +2156,6 @@ describe('platform-server partial hydration integration', () => {
       }
 
       @Component({
-        standalone: true,
         selector: 'app',
         imports: [NestedCmp],
         template: `
