@@ -73,7 +73,7 @@ import {assertComponentDef} from './errors';
  * `[[element1, element2], [element3]]`: projects `element1` and `element2` into one `<ng-content>`,
  * and `element3` into a separate `<ng-content>`.
  *  * `directives` (optional): Directives that should be applied to the component.
- *  * `binding` (optional): Bindings to apply to the root component.
+ *  * `bindings` (optional): Bindings to apply to the root component.
  * @returns ComponentRef instance that represents a given Component.
  *
  * @publicApi
