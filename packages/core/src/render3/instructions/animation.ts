@@ -10,6 +10,9 @@ import {
   AnimationCallbackEvent,
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
+  LongestAnimation,
+  EnterAnimation,
+  LeaveAnimation,
 } from '../../animation/interfaces';
 import {getLView, getCurrentTNode} from '../state';
 import {RENDERER, INJECTOR, CONTEXT, LView} from '../interfaces/view';
@@ -35,6 +38,7 @@ import {
   getLViewEnterAnimations,
   getLViewLeaveAnimations,
   isLongestAnimation,
+  isTNodeContentProjectionRoot,
   longestAnimations,
   noOpAnimationComplete,
   trackEnterClasses,
@@ -66,7 +70,10 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   cancelLeavingNodes(tNode, lView);
 
-  getLViewEnterAnimations(lView).push(() => runEnterAnimation(lView, tNode, value));
+  getLViewEnterAnimations(lView).push({
+    animationFn: () => runEnterAnimation(lView, tNode, value),
+    preserveCheckFn: () => isTNodeContentProjectionRoot(tNode),
+  });
 
   return ɵɵanimateEnter; // For chaining
 }
@@ -75,6 +82,9 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+  // we want to skip running enter animations if the element isn't yet on the page.
+  if (!nativeElement.isConnected) return;
 
   const renderer = lView[RENDERER];
   const ngZone = lView[INJECTOR]!.get(NgZone);
@@ -175,17 +185,22 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   cancelLeavingNodes(tNode, lView);
 
-  getLViewEnterAnimations(lView).push(() => runEnterAnimationFunction(lView, tNode, value));
-
+  getLViewEnterAnimations(lView).push({
+    animationFn: () => runEnterAnimationFunction(lView, tNode, value),
+    preserveCheckFn: () => isTNodeContentProjectionRoot(tNode),
+  });
   return ɵɵanimateEnterListener;
 }
 
 /**
  * runs enter animations when a custom function is provided
  */
-function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationFunction) {
+function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationFunction): void {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+  // we want to skip running enter animations if the element isn't yet on the page.
+  if (!nativeElement.isConnected) return;
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 }
@@ -217,9 +232,10 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
 
   const tNode = getCurrentTNode()!;
 
-  getLViewLeaveAnimations(lView).push(() =>
-    runLeaveAnimations(lView, tNode, value, animationsDisabled),
-  );
+  getLViewLeaveAnimations(lView).push({
+    animationFn: () => runLeaveAnimations(lView, tNode, value, animationsDisabled),
+    preserveCheckFn: () => isTNodeContentProjectionRoot(tNode),
+  });
 
   return ɵɵanimateLeave; // For chaining
 }
@@ -350,7 +366,10 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   allLeavingAnimations.add(lView);
 
-  getLViewLeaveAnimations(lView).push(() => runLeaveAnimationFunction(lView, tNode, value));
+  getLViewLeaveAnimations(lView).push({
+    animationFn: () => runLeaveAnimationFunction(lView, tNode, value),
+    preserveCheckFn: () => isTNodeContentProjectionRoot(tNode),
+  });
 
   return ɵɵanimateLeaveListener; // For chaining
 }

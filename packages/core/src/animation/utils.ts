@@ -7,7 +7,7 @@
  */
 
 import {stringify} from '../util/stringify'; // Adjust imports as per actual location
-import {ANIMATIONS_DISABLED, LongestAnimation} from './interfaces';
+import {ANIMATIONS_DISABLED, LongestAnimation, EnterAnimation, LeaveAnimation} from './interfaces';
 import {INJECTOR, LView, DECLARATION_LCONTAINER, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
@@ -162,7 +162,7 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 /**
  * Retrieves the list of specified enter animations from the lView
  */
-export function getLViewEnterAnimations(lView: LView): Function[] {
+export function getLViewEnterAnimations(lView: LView): EnterAnimation[] {
   const animationData = (lView[ANIMATIONS] ??= {});
   return (animationData.enter ??= []);
 }
@@ -170,7 +170,7 @@ export function getLViewEnterAnimations(lView: LView): Function[] {
 /**
  * Retrieves the list of specified leave animations from the lView
  */
-export function getLViewLeaveAnimations(lView: LView): Function[] {
+export function getLViewLeaveAnimations(lView: LView): LeaveAnimation[] {
   const animationData = (lView[ANIMATIONS] ??= {});
   return (animationData.leave ??= []);
 }
