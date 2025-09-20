@@ -610,12 +610,16 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should parse bound events and properties via [(...)] with non-null operator', () => {
-      expectFromHtml('<div [(prop)]="v!"></div>').toEqual([
-        ['Element', 'div'],
-        ['BoundAttribute', BindingType.TwoWay, 'prop', 'v!'],
-        ['BoundEvent', ParsedEventType.TwoWay, 'propChange', null, 'v!'],
-      ]);
+    it('should report unsupported 2-way binding with non-null assertion operator', () => {
+      expect(() => parse(`<div [(prop)]="v!"></div>`)).toThrowError(
+        /Unsupported expression in a two-way binding/,
+      );
+    });
+
+    it('should report unsupported 2-way binding with non-null operator', () => {
+      expect(() => parse(`<div [(prop)]="a.b!.c"></div>`)).toThrowError(
+        /Unsupported expression in a two-way binding/,
+      );
     });
 
     it('should parse property reads bound via [(...)]', () => {
