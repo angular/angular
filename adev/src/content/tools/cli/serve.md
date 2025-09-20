@@ -33,11 +33,34 @@ This page discusses usage and options of `@angular-devkit/build-angular:dev-serv
 
 ## Proxying to a backend server
 
-Use [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
+You can use proxying support to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
+
+IMPORTANT: The development server's proxy configuration depends on your build configuration:
+- **Modern applications** (using `@angular-devkit/build-angular:application` or `@angular-devkit/build-angular:browser-esbuild`) use [Vite's development server](https://vite.dev/config/server-options#server-proxy)
+- **Legacy applications** (using `@angular-devkit/build-angular:browser`) use [Webpack's development server](https://webpack.js.org/configuration/dev-server/#devserverproxy)
+
+Since Angular v17, new projects use the `application` builder with Vite by default.
 
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
 1. Add the following content to the new proxy file:
+
+    **For modern applications (Vite-based):**
+
+    <docs-code language="json">
+
+    {
+      "/api/**": {
+        "target": "http://localhost:3000",
+        "secure": false,
+        "changeOrigin": true,
+        "logLevel": "debug"
+      }
+    }
+
+    </docs-code>
+
+    **For legacy applications (Webpack-based):**
 
     <docs-code language="json">
 
@@ -49,6 +72,10 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
     }
 
     </docs-code>
+
+    **Key differences:**
+    - **Route matching**: Vite uses `**` for wildcard matching (e.g., `/api/**`), while Webpack uses a single path segment (e.g., `/api`)
+    - **Additional options**: Vite configurations often require `changeOrigin: true` for proper header handling
 
 1. In the CLI configuration file, `angular.json`, add the `proxyConfig` option to the `serve` target:
 
@@ -74,7 +101,9 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 1. To run the development server with this proxy configuration, call `ng serve`.
 
 Edit the proxy configuration file to add configuration options; following are some examples.
-For a detailed description of all options, refer to the [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) when using `@angular-devkit/build-angular:browser`, or the [Vite DevServer documentation](https://vite.dev/config/server-options#server-proxy) when using `@angular-devkit/build-angular:browser-esbuild` or `@angular-devkit/build-angular:application`.
+For a detailed description of all available proxy options, refer to:
+- [Vite DevServer documentation](https://vite.dev/config/server-options#server-proxy) for modern applications using `@angular-devkit/build-angular:application` or `@angular-devkit/build-angular:browser-esbuild`
+- [Webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) for legacy applications using `@angular-devkit/build-angular:browser`
 
 NOTE: If you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 
