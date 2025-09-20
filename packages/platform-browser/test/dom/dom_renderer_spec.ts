@@ -43,6 +43,7 @@ describe('DefaultDomRendererV2', () => {
 
   describe('setAttribute', () => {
     describe('with namespace', () => {
+      console.log('test running')
       it('xmlns', () => shouldSetAttributeWithNs('xmlns'));
       it('xml', () => shouldSetAttributeWithNs('xml'));
       it('svg', () => shouldSetAttributeWithNs('svg'));
@@ -521,6 +522,8 @@ export class SomeApp {}
 @Component({
   selector: 'shadow-parent-app-with-children',
   template: `
+    <cmp-none></cmp-none>
+    <cmp-emulated></cmp-emulated>
     <cmp-shadow-children></cmp-shadow-children>
   `,
   standalone: false,
