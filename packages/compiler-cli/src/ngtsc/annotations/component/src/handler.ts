@@ -2154,11 +2154,12 @@ export class ComponentDecoratorHandler
     for (const [_, deps] of resolution.deferPerBlockDependencies) {
       for (const deferBlockDep of deps) {
         const node = deferBlockDep.declaration.node;
-        const importDecl = resolution.deferrableDeclToImportDecl.get(node) ?? null;
-        if (importDecl !== null && this.deferredSymbolTracker.canDefer(importDecl)) {
+        const importInfo = resolution.deferrableDeclToImportDecl.get(node) ?? null;
+        if (importInfo !== null && this.deferredSymbolTracker.canDefer(importInfo.node)) {
           deferBlockDep.isDeferrable = true;
-          deferBlockDep.importPath = (importDecl.moduleSpecifier as ts.StringLiteral).text;
-          deferBlockDep.isDefaultImport = isDefaultImport(importDecl);
+          deferBlockDep.symbolName = importInfo.name;
+          deferBlockDep.importPath = importInfo.from;
+          deferBlockDep.isDefaultImport = isDefaultImport(importInfo.node);
 
           // The same dependency may be used across multiple deferred blocks. De-duplicate it
           // because it can throw off other logic further down the compilation pipeline.
@@ -2408,9 +2409,10 @@ export class ComponentDecoratorHandler
       return;
     }
 
-    // Keep track of how this class made it into the current source file
-    // (which ts.ImportDeclaration was used for this symbol).
-    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp.node);
+    // Keep track of how this class made it into the current source file.
+    // Store the full `Import` info so that callers can correctly determine the
+    // exported name (handling aliasing) and the module specifier.
+    resolutionData.deferrableDeclToImportDecl.set(decl.node, imp);
 
     this.deferredSymbolTracker.markAsDeferrableCandidate(
       node,
