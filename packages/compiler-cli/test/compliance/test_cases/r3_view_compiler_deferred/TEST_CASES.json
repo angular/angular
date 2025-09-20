@@ -309,6 +309,26 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "Defer alias re-export/import",
+      "inputFiles": [
+        "deferred_import_alias.ts",
+        "deferred_import_alias_index.ts",
+        "counter.component.ts"
+      ],
+      "compilationModeFilter": ["declaration-only emit"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_import_alias.js",
+              "generated": "deferred_import_alias_generated.js"
+            }
+          ],
+          "failureMessage": "Defer block output with import alias does not match deferred_import_alias.js (possible alias resolution regression)"
+        }
+      ]
     }
   ]
 }
