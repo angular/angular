@@ -12,7 +12,6 @@ import {bootstrapApplication} from '@angular/platform-browser';
 import {DeferComponent} from './defer.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   imports: [DeferComponent],
   template: `

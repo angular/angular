@@ -574,7 +574,6 @@ describe('getSemanticDiagnostics', () => {
       @Component({
         templateUrl: './test.ng.html',
         imports: [PostModule],
-        standalone: true,
       })
       export class Main { }
        `,
@@ -611,7 +610,7 @@ describe('getSuggestedDiagnostics', () => {
       export class AppComponent {
         /**
          * @deprecated
-         * 
+         *
          * Used to test to get the symbol of the type "string", using the
          * "type.getSymbol()" to check if the symbol is "undefined".
          */

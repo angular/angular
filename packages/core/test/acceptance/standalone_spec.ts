@@ -599,7 +599,7 @@ describe('standalone components, directives, and pipes', () => {
     expect(() => {
       TestBed.createComponent(StandaloneCmp);
     }).toThrowError(
-      'The "NonStandaloneCmp" component, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?',
+      'The "NonStandaloneCmp" component, imported from "StandaloneCmp", is not standalone. Does the component have the standalone: false flag?',
     );
   });
 
@@ -620,7 +620,7 @@ describe('standalone components, directives, and pipes', () => {
     expect(() => {
       TestBed.createComponent(StandaloneCmp);
     }).toThrowError(
-      'The "NonStandaloneDirective" directive, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?',
+      'The "NonStandaloneDirective" directive, imported from "StandaloneCmp", is not standalone. Does the directive have the standalone: false flag?',
     );
   });
 
@@ -641,7 +641,7 @@ describe('standalone components, directives, and pipes', () => {
     expect(() => {
       TestBed.createComponent(StandaloneCmp);
     }).toThrowError(
-      'The "NonStandalonePipe" pipe, imported from "StandaloneCmp", is not standalone. Did you forget to add the standalone: true flag?',
+      'The "NonStandalonePipe" pipe, imported from "StandaloneCmp", is not standalone. Does the pipe have the standalone: false flag?',
     );
   });
 

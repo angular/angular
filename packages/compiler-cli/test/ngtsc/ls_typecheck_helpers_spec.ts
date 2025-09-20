@@ -41,8 +41,7 @@ runInEachFileSystem(() => {
 		 import {Component} from '@angular/core';
 
 		 @Component({
-			 standalone: true,
-			 selector: 'test-cmp',
+       selector: 'test-cmp',
 			 template: '<div></div>',
 		 })
 		 export class TestCmp {}
@@ -148,8 +147,7 @@ runInEachFileSystem(() => {
 			  @Component({
 				  selector: 'app-cmp',
 				  template: '<div></div>',
-				  standalone: true,
-			  })
+				})
 			  export class AppCmp {}
 			`,
         );
@@ -200,10 +198,7 @@ runInEachFileSystem(() => {
           `
 			 import {Pipe} from '@angular/core';
 
-			 @Pipe({
-				name: 'foo-pipe',
-				standalone: true,
-			  })
+			 @Pipe({name: 'foo-pipe'})
 			  export class OnePipe {
 			  }
 			 `,
@@ -215,8 +210,7 @@ runInEachFileSystem(() => {
 			 import {Component} from '@angular/core';
 
 			 @Component({
-				 standalone: true,
-				 selector: 'two-cmp',
+        selector: 'two-cmp',
 				 template: '<div></div>',
 			 })
 			 export class TwoCmp {}

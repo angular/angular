@@ -34,16 +34,10 @@ runInEachFileSystem(() => {
         `
         import {Directive, Component} from '@angular/core';
 
-        @Directive({
-          selector: '[dir-a]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-a]'})
         export class DirectiveA {}
 
-        @Directive({
-          selector: '[dir-b]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-b]'})
         export class DirectiveB {}
 
         @Component({
@@ -79,10 +73,7 @@ runInEachFileSystem(() => {
         `
         import {Directive, Component, Input, Output, EventEmitter} from '@angular/core';
 
-        @Directive({
-          selector: '[dir-a]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-a]'})
         export class HostDir {
           @Input() value: number;
           @Input() color: string;
@@ -129,10 +120,7 @@ runInEachFileSystem(() => {
         `
         import {Directive, Component, Input, Output, EventEmitter} from '@angular/core';
 
-        @Directive({
-          selector: '[dir-a]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-a]'})
         export class HostDir {
           @Input('valueAlias') value: number;
           @Input('colorAlias') color: string;
@@ -183,17 +171,11 @@ runInEachFileSystem(() => {
         export class DirectiveA {
         }
 
-        @Directive({
-          standalone: true,
-          hostDirectives: [DirectiveA],
-        })
+        @Directive({hostDirectives: [DirectiveA]})
         export class DirectiveB {
         }
 
-        @Directive({
-          standalone: true,
-          hostDirectives: [DirectiveB],
-        })
+        @Directive({hostDirectives: [DirectiveB]})
         export class DirectiveC {
         }
 
@@ -263,7 +245,6 @@ runInEachFileSystem(() => {
         }
 
         @Directive({
-          standalone: true,
           hostDirectives: [{directive: forwardRef(() => DirectiveA), inputs: ['value']}],
         })
         export class DirectiveB {
@@ -315,10 +296,7 @@ runInEachFileSystem(() => {
         `
         import {Directive} from '@angular/core';
 
-        @Directive({
-          selector: '[dir-a]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-a]'})
         export class DirectiveA {}
       `,
       );
@@ -328,10 +306,7 @@ runInEachFileSystem(() => {
         `
         import {Directive, Input, Output, EventEmitter} from '@angular/core';
 
-        @Directive({
-          selector: '[dir-b]',
-          standalone: true
-        })
+        @Directive({selector: '[dir-b]'})
         export class DirectiveB {
           @Input() input: any;
           @Output() output = new EventEmitter<any>();
@@ -493,14 +468,12 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
-              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
-              standalone: true
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}]
             })
             export class Dir {}
 
             @Component({
               template: '<div dir></div>',
-              standalone: true,
               imports: [Dir]
             })
             class App {}
@@ -528,14 +501,12 @@ runInEachFileSystem(() => {
 
             @Directive({
               selector: '[dir]',
-              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}],
-              standalone: true
+              hostDirectives: [{directive: HostDir, inputs: ['inputAlias: customAlias']}]
             })
             export class Dir {}
 
             @Component({
               template: '<div dir [customAlias]="value"></div>',
-              standalone: true,
               imports: [Dir]
             })
             class App {
@@ -600,10 +571,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component, NgModule} from '@angular/core';
 
-          @Component({
-            template: '',
-            standalone: true,
-          })
+          @Component({template: ''})
           export class HostComp {}
 
           @Directive({
@@ -691,7 +659,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dir-a]',
-            standalone: true,
             hostDirectives: [HostDirB]
           })
           export class HostDirA {}
@@ -832,7 +799,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[host-dir]', standalone: true})
+          @Directive({selector: '[host-dir]'})
           class HostDir {
             @Input('colorAlias') color?: string;
             @Input() buttonColor?: string;
@@ -860,7 +827,7 @@ runInEachFileSystem(() => {
           `
             import {Directive, Input} from '@angular/core';
 
-            @Directive({selector: '[host-dir]', standalone: true})
+            @Directive({selector: '[host-dir]'})
             class HostDir {
               @Input('colorAlias') color?: string;
               @Input('buttonColorAlias') buttonColor?: string;
@@ -887,7 +854,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[host-dir]', standalone: true})
+          @Directive({selector: '[host-dir]'})
           class HostDir {
             @Input('color') color?: string;
           }
@@ -910,7 +877,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Output, EventEmitter} from '@angular/core';
 
-          @Directive({selector: '[host-dir]', standalone: true})
+          @Directive({selector: '[host-dir]'})
           class HostDir {
             @Output('clickedAlias') clicked = new EventEmitter();
             @Output('tappedAlias') tapped = new EventEmitter();
@@ -937,7 +904,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Output, EventEmitter} from '@angular/core';
 
-          @Directive({selector: '[host-dir]', standalone: true})
+          @Directive({selector: '[host-dir]'})
           class HostDir {
             @Output('clicked') clicked = new EventEmitter();
           }
@@ -960,10 +927,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component, Input} from '@angular/core';
 
-          @Directive({
-            selector: '[dir-a]',
-            standalone: true
-          })
+          @Directive({selector: '[dir-a]'})
           export class HostDir {
             @Input({required: true}) input: any;
           }
@@ -990,10 +954,7 @@ runInEachFileSystem(() => {
           `
               import {Directive, Component, Input} from '@angular/core';
 
-              @Directive({
-                selector: '[dir-a]',
-                standalone: true
-              })
+              @Directive({selector: '[dir-a]'})
               export class HostDir {
                 @Input({required: true, alias: 'inputAlias'}) input: any;
               }
@@ -1020,10 +981,7 @@ runInEachFileSystem(() => {
           `
           import {Directive, Component, Input} from '@angular/core';
 
-          @Directive({
-            selector: '[dir-a]',
-            standalone: true
-          })
+          @Directive({selector: '[dir-a]'})
           export class HostDir {
             @Input({required: true, alias: 'inputAlias'}) input: any;
           }
@@ -1048,10 +1006,7 @@ runInEachFileSystem(() => {
           `
               import {Directive, Component, Input} from '@angular/core';
 
-              @Directive({
-                selector: '[dir-a]',
-                standalone: true
-              })
+              @Directive({selector: '[dir-a]'})
               export class HostDir {
                 @Input({required: true, alias: 'inputAlias'}) input: any;
               }
@@ -1079,14 +1034,12 @@ runInEachFileSystem(() => {
           @Directive({
             outputs: ['opened: triggerOpened'],
             selector: '[trigger]',
-            standalone: true,
           })
           export class Trigger {
             opened = new EventEmitter();
           }
 
           @Directive({
-            standalone: true,
             selector: '[host]',
             hostDirectives: [{directive: Trigger, outputs: ['triggerOpened']}]
           })
@@ -1112,12 +1065,10 @@ runInEachFileSystem(() => {
           @Directive({
             outputs: ['opened: triggerOpened'],
             selector: '[trigger]',
-            standalone: true,
           })
           export class Trigger extends Base {}
 
           @Directive({
-            standalone: true,
             selector: '[host]',
             hostDirectives: [{directive: Trigger, outputs: ['triggerOpened: hostOpened']}]
           })

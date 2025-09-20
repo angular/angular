@@ -2981,7 +2981,6 @@ describe('acceptance integration tests', () => {
 
   it('should support tagged template literals with no interpolations in expressions', () => {
     @Component({
-      standalone: true,
       template: `
         <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p>
         <p>{{ greet\`Hi, I'm \${name}, and I'm \${age}\` }}</p>
@@ -3015,7 +3014,6 @@ describe('acceptance integration tests', () => {
 
   it('should not confuse operators for template literal tags', () => {
     @Component({
-      standalone: true,
       template: '{{ typeof`test` }}',
     })
     class TestComponent {
@@ -3029,7 +3027,6 @@ describe('acceptance integration tests', () => {
 
   it('should support "in" expressions', () => {
     @Component({
-      standalone: true,
       template: `{{'foo' in obj ? 'OK' : 'KO'}}`,
     })
     class TestComponent {

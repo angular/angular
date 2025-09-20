@@ -3229,7 +3229,7 @@ runInEachFileSystem((os: string) => {
 
           const NOT_A_FUNCTION: any = null!;
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: NOT_A_FUNCTION}) value!: number;
           }
@@ -3249,7 +3249,6 @@ runInEachFileSystem((os: string) => {
 
           @Directive({
             selector: '[dir]',
-            standalone: true,
             inputs: [{
               name: 'value',
               transform: NOT_A_FUNCTION
@@ -3274,7 +3273,7 @@ runInEachFileSystem((os: string) => {
           `
               import {Directive, Input} from '@angular/core';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: (val) => 1}) value!: number;
               }
@@ -3293,7 +3292,7 @@ runInEachFileSystem((os: string) => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: <T>(val: T) => 1}) value!: number;
           }
@@ -3312,7 +3311,7 @@ runInEachFileSystem((os: string) => {
           `
           import {Directive, Input} from '@angular/core';
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: (val: string) => 1}) value!: number;
 
@@ -3345,7 +3344,7 @@ runInEachFileSystem((os: string) => {
             import {Directive, Input} from '@angular/core';
             import {toNumber} from './util';
 
-            @Directive({selector: '[dir]', standalone: true})
+            @Directive({selector: '[dir]'})
             export class Dir {
               @Input({transform: toNumber}) value!: number;
             }
@@ -3376,7 +3375,7 @@ runInEachFileSystem((os: string) => {
               import {Directive, Input} from '@angular/core';
               import {toNumber} from './util';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: toNumber}) value!: number;
               }
@@ -3411,7 +3410,7 @@ runInEachFileSystem((os: string) => {
               import {Directive, Input} from '@angular/core';
               import {toNumber} from './util';
 
-              @Directive({selector: '[dir]', standalone: true})
+              @Directive({selector: '[dir]'})
               export class Dir {
                 @Input({transform: toNumber}) value!: number;
               }
@@ -3434,7 +3433,7 @@ runInEachFileSystem((os: string) => {
             foo: boolean;
           }
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: (val: InternalType) => 1}) val!: number;
           }
@@ -3457,7 +3456,7 @@ runInEachFileSystem((os: string) => {
             return (innerValue: string) => outerValue;
           }
 
-          @Directive({selector: '[dir]', standalone: true})
+          @Directive({selector: '[dir]'})
           export class Dir {
             @Input({transform: createTransform(1)}) value!: number;
           }
@@ -7839,9 +7838,7 @@ runInEachFileSystem((os: string) => {
           `
         import {Directive, NgModule} from '@angular/core';
 
-        @Directive({
-          standalone: true,
-        })
+        @Directive()
         class HostDir {}
 
         // The directive is not exported.
@@ -9185,17 +9182,13 @@ runInEachFileSystem((os: string) => {
             @Input({required: true}) input: any;
           }
 
-          @Directive({
-            selector: '[dir]',
-            standalone: true
-          })
+          @Directive({selector: '[dir]'})
           export class Dir extends BaseDir {}
 
           @Component({
             selector: 'test-cmp',
             template: '<div dir></div>',
-            standalone: true,
-            imports: [Dir]
+                        imports: [Dir]
           })
           export class Cmp {}
         `,
@@ -9219,16 +9212,12 @@ runInEachFileSystem((os: string) => {
             @Input({required: true}) input: any;
           }
 
-          @Directive({
-            selector: '[dir]',
-            standalone: true
-          })
+          @Directive({selector: '[dir]'})
           export class Dir extends BaseDir {}
 
           @Component({
             selector: 'test-cmp',
             template: '<div dir [input]="value"></div>',
-            standalone: true,
             imports: [Dir]
           })
           export class Cmp {
@@ -9707,14 +9696,12 @@ runInEachFileSystem((os: string) => {
                 import {Component, Directive} from '@angular/core';
 
                 @Directive({
-                  standalone: true,
                   selector: '[sandbox]',
                   inputs: ['sandbox']
                 })
                 class Dir {}
 
                 @Component({
-                  standalone: true,
                   imports: [Dir],
                   template: \`
                     <div [sandbox]="''" [title]="'Hi!'"></div>
@@ -10583,8 +10570,7 @@ runInEachFileSystem((os: string) => {
         import {Component, NgModule} from '@angular/core';
 
         @Component({
-          standalone: true,
-          selector: 'standalone-component',
+                    selector: 'standalone-component',
           template: '...',
         })
         class StandaloneComponent {}
@@ -10610,8 +10596,7 @@ runInEachFileSystem((os: string) => {
         import {Component, NgModule, forwardRef} from '@angular/core';
 
         @Component({
-          standalone: true,
-          selector: 'standalone-component',
+                    selector: 'standalone-component',
           template: '...',
         })
         class StandaloneComponent {}
@@ -10644,7 +10629,6 @@ runInEachFileSystem((os: string) => {
           export class DepModule {}
 
           @Component({
-            standalone: true,
             selector: 'standalone-cmp',
             imports: [DepModule],
             template: '',
@@ -11078,7 +11062,6 @@ runInEachFileSystem((os: string) => {
             import {Component} from '@angular/core';
 
             @Component({
-              standalone: true,
               template: '...',
             })
             export class Comp {}

@@ -100,7 +100,6 @@ import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
  *
  * ```angular-ts
  * @Component({
- *   standalone: true,
  *   selector: 'dynamic',
  *   template: `<span>This is a content of a dynamic component.</span>`,
  * })
@@ -109,7 +108,6 @@ import {Binding, DirectiveWithBindings} from '../render3/dynamic_bindings';
  * }
  *
  * @Component({
- *   standalone: true,
  *   selector: 'app',
  *   template: `<main>Hi! This is the main content.</main>`,
  * })

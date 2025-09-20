@@ -218,7 +218,7 @@ runInEachFileSystem(() => {
         import {SELECTOR} from './dep';
 
         @Component({
-          selector: SELECTOR, 
+          selector: SELECTOR,
           template: 'cmp',
           standalone: false,
         })
@@ -231,9 +231,9 @@ runInEachFileSystem(() => {
         import {Component} from '@angular/core';
 
         @Component({
-          selector: 'cmp2', 
+          selector: 'cmp2',
           template: '<cmp></cmp>',
-          standalone: false,  
+          standalone: false,
         })
         export class Cmp2 {}
       `,
@@ -592,7 +592,6 @@ runInEachFileSystem(() => {
         import {DepModule} from './provider-dep';
 
         @Component({
-          standalone: true,
           template: '',
           imports: [DepModule],
         })
@@ -899,7 +898,7 @@ runInEachFileSystem(() => {
           `
           import {Directive} from '@angular/core';
 
-          @Directive({ 
+          @Directive({
             selector: '[dir]',
             standalone: false,
           })
@@ -928,8 +927,8 @@ runInEachFileSystem(() => {
           `
           import {Directive} from '@angular/core';
 
-          @Directive({ 
-            selector: '[dir]', 
+          @Directive({
+            selector: '[dir]',
             inputs: ['added'],
             standalone: false,
           })
@@ -1316,9 +1315,9 @@ runInEachFileSystem(() => {
     import {Component} from '@angular/core';
 
     @Component({
-      selector: 'bar', 
+      selector: 'bar',
       templateUrl: './bar_component.html',
-      standalone: false,  
+      standalone: false,
     })
     export class BarCmp {}
   `,

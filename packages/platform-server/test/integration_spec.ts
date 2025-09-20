@@ -1060,7 +1060,6 @@ class HiddenModule {}
 
         it('appends SSR integrity marker comment when hydration is enabled', async () => {
           @Component({
-            standalone: true,
             selector: 'app',
             template: ``,
           })
@@ -1372,7 +1371,6 @@ class HiddenModule {}
         const ngZone = TestBed.inject(NgZone);
 
         @Component({
-          standalone: true,
           selector: 'lazy',
           template: `LazyCmp content`,
         })
