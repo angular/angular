@@ -158,9 +158,19 @@ export class RouterTreeComponent {
 
   private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
     d3Node.attr('class', (node: RouterTreeD3Node) => {
-      // Since `node-faded` could pre-exist, drop it if the node is a match.
-      const classNames = d3Node.attr('class').replace('node-faded', '');
-      const nodeClasses = [classNames];
+      // Drop all class labels and recompute them.
+      const classesToRemove = new Set([
+        'node-faded',
+        'node-element',
+        'node-lazy',
+        'node-search',
+        'node-environment',
+      ]);
+
+      const nodeClasses = d3Node
+        .attr('class')
+        .split(' ')
+        .filter((cls) => !classesToRemove.has(cls));
 
       if (node.data.isActive) {
         nodeClasses.push('node-element');
