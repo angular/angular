@@ -31,13 +31,20 @@ You can determine which builder is being used for a particular project by lookin
 
 This page discusses usage and options of `@angular-devkit/build-angular:dev-server`.
 
+
 ## Proxying to a backend server
 
-Use [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
-For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
+> **Note:** As of Angular v18, the default development server is powered by [Vite](https://vitejs.dev/) (with esbuild), not Webpack. Proxy configuration should follow Vite's proxy options. Webpack-specific proxy syntax (such as a bare `*` for path matching) will **not** work with Vite. See the [Vite proxy documentation](https://vitejs.dev/config/server-options.html#server-proxy) for all available options and syntax.
+
+If you are using a custom builder or an older Angular project that still uses Webpack, refer to the [Webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) instead.
+
+To divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
+
 1. Add the following content to the new proxy file:
+
+  > **Note:** This example works for Vite (the default dev server) and most simple proxy scenarios. For advanced options or path matching, refer to the [Vite proxy documentation](https://vitejs.dev/config/server-options.html#server-proxy).
 
     <docs-code language="json">
 
@@ -73,8 +80,11 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 
 1. To run the development server with this proxy configuration, call `ng serve`.
 
+
 Edit the proxy configuration file to add configuration options; following are some examples.
-For a detailed description of all options, refer to the [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) when using `@angular-devkit/build-angular:browser`, or the [Vite DevServer documentation](https://vite.dev/config/server-options#server-proxy) when using `@angular-devkit/build-angular:browser-esbuild` or `@angular-devkit/build-angular:application`.
+For a detailed description of all options, refer to the [Vite DevServer documentation](https://vitejs.dev/config/server-options.html#server-proxy) (default for new projects), or the [Webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) if you are using the legacy Webpack builder.
+
+**Warning:** Proxy configuration syntax differs between Vite and Webpack. For example, Vite does not support a bare `*` as a path matcher. Always consult the correct documentation for your builder.
 
 NOTE: If you edit the proxy configuration file, you must relaunch the `ng serve` process to make your changes effective.
 
