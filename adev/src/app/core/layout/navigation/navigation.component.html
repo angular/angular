@@ -151,7 +151,7 @@
             aria-label="Select Angular version"
             role="menu"
             class="adev-version-button"
-            [class.adev-mini-menu-open]="openedMenu === 'version-picker'"
+            [class.adev-mini-menu-open]="openedMenu() === 'version-picker'"
             [cdkMenuTriggerFor]="docsVersionMiniMenu"
             [cdkMenuPosition]="miniMenuPositions"
             (cdkMenuClosed)="closeMenu()"
@@ -299,7 +299,7 @@
     <!-- Bottom section of primary nav -->
     <div class="adev-nav__bottom">
       <!-- Social Icons Dots -->
-      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu === 'social'">
+      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu() === 'social'">
         <button
           type="button"
           [cdkMenuTriggerFor]="socialMiniMenu"
@@ -447,7 +447,7 @@
         </ng-template>
       </div>
       <!-- TODO: Refactor this and make it better. Accessible, animated, etc. -->
-      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu === 'theme-picker'">
+      <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu() === 'theme-picker'">
         <button
           type="button"
           [cdkMenuTriggerFor]="themeMiniMenu"

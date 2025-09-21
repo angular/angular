@@ -8,7 +8,14 @@
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, inject} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  PLATFORM_ID,
+  inject,
+  signal,
+} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -73,7 +80,7 @@ export class Navigation {
 
   activeRouteItem = this.navigationState.primaryActiveRouteItem;
   protected theme = this.themeManager.theme;
-  protected openedMenu: MenuType | null = null;
+  protected openedMenu = signal<MenuType | null>(null);
 
   protected currentDocsVersion = this.versionManager.currentDocsVersion;
   protected currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
@@ -113,11 +120,11 @@ export class Navigation {
   }
 
   protected openMenu(menuType: MenuType): void {
-    this.openedMenu = menuType;
+    this.openedMenu.set(menuType);
   }
 
   protected closeMenu(): void {
-    this.openedMenu = null;
+    this.openedMenu.set(null);
   }
 
   protected openMobileNav($event: MouseEvent): void {
