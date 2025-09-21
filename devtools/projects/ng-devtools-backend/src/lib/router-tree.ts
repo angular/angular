@@ -18,18 +18,18 @@ type Router = any;
 
 export function parseRoutes(router: Router): Route {
   const currentUrl = router.stateManager?.routerState?.snapshot?.url;
-  const rootName = (router as any).rootComponentType?.name || 'no-name';
+  const rootName = 'App Root';
   const rootChildren = router.config;
 
   const root: Route = {
     component: rootName,
-    path: '/',
+    path: rootName,
     children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
     isAux: false,
     isLazy: false,
     isRedirect: false,
+    isActive: true, // Root is always active.
     data: [],
-    isActive: currentUrl === '/',
   };
 
   return root;
