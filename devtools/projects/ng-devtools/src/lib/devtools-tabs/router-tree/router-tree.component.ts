@@ -24,7 +24,11 @@ import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route} from '../../../../../protocol';
-import {SvgD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tree-visualizer';
+import {
+  SvgD3Node,
+  SvgD3Link,
+  TreeVisualizerConfig,
+} from '../../shared/tree-visualizer/tree-visualizer';
 import {
   RouterTreeD3Node,
   transformRoutesIntoVisTree,
@@ -97,6 +101,7 @@ export class RouterTreeComponent {
   protected readonly routerTreeConfig: Partial<TreeVisualizerConfig<RouterTreeNode>> = {
     nodeSeparation: () => 1,
     d3NodeModifier: (n) => this.d3NodeModifier(n),
+    d3LinkModifier: (l) => this.d3LinkModifier(l),
   };
 
   constructor() {
@@ -164,10 +169,6 @@ export class RouterTreeComponent {
 
       if (node.data.isActive) {
         nodeClasses.push('node-element');
-      } else if (node.data.isLazy) {
-        nodeClasses.push('node-lazy');
-      } else {
-        nodeClasses.push('node-environment');
       }
 
       if (this.searchMatches.has(node.data)) {
@@ -177,6 +178,13 @@ export class RouterTreeComponent {
       }
 
       return nodeClasses.join(' ');
+    });
+  }
+
+  private d3LinkModifier(d3Link: SvgD3Link<RouterTreeNode>) {
+    d3Link.attr('stroke-dasharray', (node: RouterTreeD3Node) => {
+      // Make edges to lazy loaded routes dashed
+      return node.data.isLazy ? '5,5' : 'none';
     });
   }
 }

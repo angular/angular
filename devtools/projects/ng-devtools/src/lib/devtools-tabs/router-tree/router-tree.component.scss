@@ -101,6 +101,15 @@
             border-color: var(--green-02);
             background-color: var(--green-03);
           }
+
+          &.dashed-line::before {
+            border-color: var(--quaternary-contrast);
+            background-color: transparent;
+            border-style: dashed;
+            border-width: 1px;
+            width: 16px;
+            height: 0;
+          }
         }
       }
     }

@@ -118,12 +118,14 @@ export class InjectorTreeComponent {
   environmentTreeConfig: Partial<TreeVisualizerConfig<InjectorTreeNode>> = {
     d3NodeModifier: d3InjectorTreeNodeModifier,
     d3LinkModifier: d3InjectorTreeLinkModifier,
+    arrowDirection: 'child-to-parent',
   };
 
   elementTreeConfig: Partial<TreeVisualizerConfig<InjectorTreeNode>> = {
     nodeSeparation: () => 1,
     d3NodeModifier: d3InjectorTreeNodeModifier,
     d3LinkModifier: d3InjectorTreeLinkModifier,
+    arrowDirection: 'child-to-parent',
   };
 
   constructor() {

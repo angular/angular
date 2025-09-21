@@ -44,6 +44,7 @@ export interface TreeVisualizerConfig<T extends TreeNode> {
   nodeSize: [width: number, height: number];
   nodeSeparation: (nodeA: TreeD3Node<T>, nodeB: TreeD3Node<T>) => number;
   nodeLabelSize: [width: number, height: number];
+  arrowDirection: 'parent-to-child' | 'child-to-parent';
   /** Perform custom changes on the SVG node (e.g. set classes, colors, attributes, etc.) */
   d3NodeModifier: (node: SvgD3Node<T>) => void;
   /** Perform custom changes on the SVG link (e.g. set classes, colors, attributes, etc.) */
@@ -68,6 +69,7 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
     nodeSize: [200, 500],
     nodeSeparation: () => 2,
     nodeLabelSize: [250, 60],
+    arrowDirection: 'parent-to-child',
     d3NodeModifier: () => {},
     d3LinkModifier: () => {},
   };
@@ -175,6 +177,23 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .append('svg:path')
       .attr('d', 'M0,-5L10,0L0,5');
 
+    svg
+      .append('svg:defs')
+      .selectAll('marker')
+      .data([`start${arrowDefId}`]) // Different link/path types can be defined here
+      .enter()
+      .append('svg:marker') // This section adds in the arrows
+      .attr('id', String)
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 0)
+      .attr('refY', 0)
+      .attr('class', 'arrow')
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('svg:path')
+      .attr('d', 'M10,-5L0,0L10,5');
+
     const [labelWidth, labelHeight] = this.config.nodeLabelSize;
     const halfLabelWidth = labelWidth / 2;
     const halfLabelHeight = labelHeight / 2;
@@ -186,7 +205,12 @@ export class TreeVisualizer<T extends TreeNode = TreeNode> extends GraphRenderer
       .append('path')
       .attr('aria-labelledby', (_, idx) => `tree-link-${instanceIdx}-${idx}`)
       .attr('class', 'link')
-      .attr('marker-end', `url(#end${arrowDefId})`)
+      .attr(
+        this.config.arrowDirection === 'parent-to-child' ? 'marker-start' : 'marker-end',
+        this.config.arrowDirection === 'parent-to-child'
+          ? `url(#start${arrowDefId})`
+          : `url(#end${arrowDefId})`,
+      )
       .attr('d', (node: TreeD3Node<T>) => {
         const {x, y} = this.getNodeCoor(node);
         const {x: parentX, y: parentY} = this.getNodeCoor(node.parent!);
