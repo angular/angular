@@ -112,7 +112,7 @@ more">
 ## Open-source first
 
 <docs-card-container>
-  <docs-card title="Made in the open on GitHub" href="https://github.com/angular/angular" link="Star our GitHub">
+  <docs-card title="Open Development on GitHub" href="https://github.com/angular/angular" link="Star Angular on GitHub">
   Curious what we’re working on? Every PR and commit is available on our GitHub. Run into an issue or bug? We triage GitHub issues regularly to ensure we’re responsive and engaged with our community, and solving the real world problems you’re facing.
   </docs-card>
   <docs-card title="Built with transparency" href="roadmap" link="Read our public roadmap">
