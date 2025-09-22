@@ -1600,7 +1600,9 @@ export function resolveForwardRef<T>(type: T): T;
 // @public
 export interface Resource<T> {
     readonly error: Signal<Error | undefined>;
-    hasValue(): this is Resource<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is Resource<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
     readonly isLoading: Signal<boolean>;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
@@ -1636,7 +1638,9 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
 export interface ResourceRef<T> extends WritableResource<T> {
     destroy(): void;
     // (undocumented)
-    hasValue(): this is ResourceRef<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is ResourceRef<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
 }
 
 // @public
@@ -2013,7 +2017,9 @@ export interface WritableResource<T> extends Resource<T> {
     // (undocumented)
     asReadonly(): Resource<T>;
     // (undocumented)
-    hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is WritableResource<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
     reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;

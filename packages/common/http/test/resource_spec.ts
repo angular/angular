@@ -15,6 +15,7 @@ import {
   httpResource,
   HttpContext,
   HttpContextToken,
+  HttpResourceRef,
 } from '../index';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
@@ -337,5 +338,50 @@ describe('httpResource', () => {
     expect(res.headers()).toBe(undefined);
     expect(res.progress()).toBe(undefined);
     expect(res.statusCode()).toBe(undefined);
+  });
+
+  describe('types', () => {
+    it('should narrow hasValue() when the value can be undefined', () => {
+      const result: HttpResourceRef<number | undefined> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        // @ts-expect-error
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when a default value is provided', () => {
+      const result: HttpResourceRef<number> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+        defaultValue: 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when the resource type is unknown', () => {
+      const result: HttpResourceRef<unknown> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+      });
+
+      if (result.hasValue()) {
+        const _value: unknown = result.value();
+      } else if (result.isLoading()) {
+        const _value: unknown = result.value();
+      } else if (result.error()) {
+      }
+    });
   });
 });
