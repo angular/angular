@@ -14,6 +14,7 @@ import {
   EnvironmentInjector,
   Injector,
   resource,
+  ResourceRef,
   ResourceStatus,
   signal,
 } from '../../src/core';
@@ -940,6 +941,81 @@ describe('resource', () => {
     expect(echoResource.hasValue()).toBeTrue();
     expect(echoResource.value()).toEqual({});
     expect(echoResource.error()).toEqual(undefined);
+  });
+
+  describe('types', () => {
+    it('should narrow hasValue() when the value can be undefined', () => {
+      const result: ResourceRef<number | undefined> = resource({
+        params: () => 1,
+        loader: async ({params}) => params,
+        injector: TestBed.inject(Injector),
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        // @ts-expect-error
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+
+      const readonly = result.asReadonly();
+      if (readonly.hasValue()) {
+        const _value: number = readonly.value();
+      } else if (readonly.isLoading()) {
+        // @ts-expect-error
+        const _value: number = readonly.value();
+      } else if (readonly.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when a default value is provided', () => {
+      const result: ResourceRef<number> = resource({
+        params: () => 1,
+        loader: async ({params}) => params,
+        injector: TestBed.inject(Injector),
+        defaultValue: 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+
+      const readonly = result.asReadonly();
+      if (readonly.hasValue()) {
+        const _value: number = readonly.value();
+      } else if (readonly.isLoading()) {
+        const _value: number = readonly.value();
+      } else if (readonly.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when the resource type is unknown', () => {
+      const result: ResourceRef<unknown> = resource({
+        params: () => 1 as unknown,
+        loader: async ({params}) => params,
+        injector: TestBed.inject(Injector),
+        defaultValue: 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: unknown = result.value();
+      } else if (result.isLoading()) {
+        const _value: unknown = result.value();
+      } else if (result.error()) {
+      }
+
+      const readonly = result.asReadonly();
+      if (readonly.hasValue()) {
+        const _value: unknown = readonly.value();
+      } else if (readonly.isLoading()) {
+        const _value: unknown = readonly.value();
+      } else if (readonly.error()) {
+      }
+    });
   });
 });
 

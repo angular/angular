@@ -2894,7 +2894,9 @@ export interface HttpResourceRef<T> extends WritableResource<T>, ResourceRef<T> 
     // (undocumented)
     destroy(): void;
     // (undocumented)
-    hasValue(): this is HttpResourceRef<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is HttpResourceRef<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
     readonly headers: Signal<HttpHeaders | undefined>;
     readonly progress: Signal<HttpProgressEvent | undefined>;
     readonly statusCode: Signal<number | undefined>;
