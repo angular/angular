@@ -1,8 +1,7 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@devinfra//bazel/validation:defs.bzl", "validate_ts_version_matching")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("//:yarn.bzl", "YARN_PATH")
-load("//tools:defaults.bzl", "copy_to_bin", "js_binary")
+load("//tools:defaults.bzl", "copy_to_bin")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +9,6 @@ exports_files([
     "LICENSE",
     "karma-js.conf.js",
     "browser-providers.conf.js",
-    YARN_PATH,
     "package.json",
 ])
 
@@ -63,16 +61,6 @@ copy_to_bin(
 config_setting(
     name = "stamp",
     values = {"stamp": "true"},
-)
-
-js_binary(
-    name = "yarn_vendored",
-    data = [".yarn/releases/yarn-1.22.22.cjs"],
-    entry_point = ".yarn/releases/yarn-1.22.22.cjs",
-    visibility = [
-        "//integration:__subpackages__",
-        "//modules/ssr-benchmarks:__subpackages__",
-    ],
 )
 
 alias(

@@ -58,6 +58,10 @@ use_repo(node, "nodejs_linux_s390x")
 use_repo(node, "nodejs_windows_amd64")
 
 pnpm = use_extension("@aspect_rules_js//npm:extensions.bzl", "pnpm")
+pnpm.pnpm(
+    name = "pnpm",
+    pnpm_version = "10.16.1",
+)
 use_repo(pnpm, "pnpm")
 
 npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")

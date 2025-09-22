@@ -5,12 +5,13 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "rxjs": "file:../../node_modules/rxjs"
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "rxjs": "^7.0.0"
   },
   "scripts": {
     "test": "node ./test.mjs"
-  }
+  },
+  "packageManager": "pnpm@10.17.0"
 }
