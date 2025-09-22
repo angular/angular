@@ -32,35 +32,6 @@ const CORE_PACKAGE = '@angular/core';
 const PROVIDE_ZONE_CHANGE_DETECTION = 'provideZoneChangeDetection';
 const ZONE_CD_PROVIDER = `${PROVIDE_ZONE_CHANGE_DETECTION}()`;
 
-const NoopNgZone = `
-// TODO ADD WARNING MESSAGE
-export class NoopNgZone implements NgZone {
-  readonly hasPendingMicrotasks = false;
-  readonly hasPendingMacrotasks = false;
-  readonly isStable = true;
-  readonly onUnstable = new EventEmitter<any>();
-  readonly onMicrotaskEmpty = new EventEmitter<any>();
-  readonly onStable = new EventEmitter<any>();
-  readonly onError = new EventEmitter<any>();
-
-  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
-    return fn.apply(applyThis, applyArgs);
-  }
-
-  runGuarded<T>(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): T {
-    return fn.apply(applyThis, applyArgs);
-  }
-
-  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
-    return fn();
-  }
-
-  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
-    return fn.apply(applyThis, applyArgs);
-  }
-}
-`;
-
 export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
   CompilationUnitData,
   CompilationUnitData
@@ -75,6 +46,7 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
       // * `platformBrowser().bootstrapModule(AppModule)`
       // * `platformBrowserDynamic().bootstrapModule(AppModule)`
       // * `TestBed.initTestEnvironment([AppModule], platformBrowserTesting())`
+      // * `getTestBed.initTestEnvironment([AppModule], platformBrowserTesting())`
 
       const specifiers = getSpecifiers(sourceFile);
       // If none of the imports related to bootstraping are present, we can skip the file.
@@ -86,6 +58,7 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
         platformBrowserSpecifier,
         testBedSpecifier,
         createApplicationSpecifier,
+        getTestBedSpecifier,
       } = specifiers;
 
       const typeChecker = info.program.getTypeChecker();
@@ -128,31 +101,9 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
           ts.isCallExpression(node) &&
           ts.isPropertyAccessExpression(node.expression) &&
           node.expression.name.text === 'initTestEnvironment' &&
-          isReferenceToImport(typeChecker, node.expression.expression, testBedSpecifier)
+          (isReferenceToImport(typeChecker, node.expression.expression, testBedSpecifier) ||
+            isReferenceToImport(typeChecker, node.expression.expression, getTestBedSpecifier))
         );
-      };
-      const NgModuleWithBootstrapPropMetadataLiteral = (
-        node: ts.ClassDeclaration,
-      ): ts.ObjectLiteralExpression | undefined => {
-        const moduleClass = node;
-        const ngModule = findNgModule(moduleClass, reflector);
-
-        if (!ngModule) return;
-
-        const ngModuleMetadata = evaluator.evaluate(ngModule);
-
-        if (!(ngModuleMetadata instanceof Map)) {
-          return;
-        }
-
-        if (
-          ngModuleMetadata.has('bootstrap') &&
-          Array.isArray(ngModuleMetadata.get('bootstrap')) &&
-          (ngModuleMetadata.get('bootstrap') as unknown[]).length > 0
-        ) {
-          return ngModule;
-        }
-        return;
       };
 
       const reflector = new TypeScriptReflectionHost(typeChecker);
@@ -197,19 +148,6 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
             importManager,
             replacements,
           );
-        } else if (ts.isClassDeclaration(node)) {
-          // This case is specific for handling G3 where the NgModule metadata might not be inspectable when it's in a different build target.
-          const ngModuleLiteral = NgModuleWithBootstrapPropMetadataLiteral(node);
-          if (ngModuleLiteral) {
-            this.analyzeModuleWithBootstrapProp(
-              ngModuleLiteral,
-              sourceFile,
-              info,
-              typeChecker,
-              importManager,
-              replacements,
-            );
-          }
         }
         node.forEachChild(walk);
       };
@@ -462,30 +400,6 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
           zoneInstanceProvider = `{provide: NgZone, useClass: ${clazz.name.text}}`;
         }
       } else if (typeof ngZoneOption === 'string' && ngZoneOption === 'noop') {
-        importManager.addImport({
-          exportModuleSpecifier: CORE_PACKAGE,
-          exportSymbolName: 'NgZone',
-          requestedFile: moduleSourceFile,
-        });
-
-        // The migration specifically relies on this being longer than ZoneChangeDetectionModule
-        // As we take the "longest" change in case of duplicate replacements.
-        const moduleName = 'ZonelessChangeDetectionModule';
-        replacements.push(
-          new Replacement(
-            moduleProjectFile,
-            new TextUpdate({
-              position: moduleClass.getStart() - 1,
-              end: moduleClass.getStart() - 1,
-              toInsert: `${NoopNgZone}\n@NgModule({providers: [{provide: NgZone, useClass: NoopNgZone}]})\nexport class ${moduleName} {}\n\n`,
-            }),
-          ),
-        );
-
-        const importsNode = findLiteralProperty(ngModule, 'imports');
-        if (importsNode && ts.isPropertyAssignment(importsNode)) {
-          insertZoneCDModule(importsNode.initializer, moduleProjectFile, replacements, moduleName);
-        }
         return;
       } else if (ngZoneOption && typeof ngZoneOption !== 'string') {
         // This is a case where we're not able to migrate automatically
@@ -584,40 +498,6 @@ export class BootstrapOptionsMigration extends TsurgeFunnelMigration<
     });
     addZoneCDModule(ZONE_CD_PROVIDER, moduleProjectFile, insertPosition, replacements);
     insertZoneCDModule(ngModules, moduleProjectFile, replacements, 'ZoneChangeDetectionModule');
-  }
-
-  private analyzeModuleWithBootstrapProp(
-    ngModuleProps: ts.ObjectLiteralExpression,
-    sourceFile: ts.SourceFile,
-    info: ProgramInfo,
-    typeChecker: ts.TypeChecker,
-    importManager: ImportManager,
-    replacements: Replacement[],
-  ) {
-    if (sourceFile.getText().includes('ZoneChangeDetectionModule')) {
-      // If the file already contains the ZoneChangeDetectionModule, we can skip it.
-      return;
-    }
-
-    const hasExistingChangeDetectionProvider = hasChangeDetectionProvider(
-      ngModuleProps,
-      typeChecker,
-    );
-    if (hasExistingChangeDetectionProvider) return;
-
-    importManager.addImport({
-      exportModuleSpecifier: CORE_PACKAGE,
-      exportSymbolName: PROVIDE_ZONE_CHANGE_DETECTION,
-      requestedFile: sourceFile,
-    });
-
-    addProvidersToNgModule(
-      projectFile(sourceFile, info),
-      sourceFile,
-      ngModuleProps,
-      ZONE_CD_PROVIDER,
-      replacements,
-    );
   }
 }
 
@@ -977,6 +857,7 @@ function getSpecifiers(sourceFile: ts.SourceFile) {
     'platformBrowser',
   );
   const testBedSpecifier = getImportSpecifier(sourceFile, '@angular/core/testing', 'TestBed');
+  const getTestBedSpecifier = getImportSpecifier(sourceFile, '@angular/core/testing', 'getTestBed');
   const ngModuleSpecifier = getImportSpecifier(sourceFile, '@angular/core', 'NgModule');
   if (
     !createApplicationSpecifier &&
@@ -984,7 +865,8 @@ function getSpecifiers(sourceFile: ts.SourceFile) {
     !platformBrowserDynamicSpecifier &&
     !platformBrowserSpecifier &&
     !testBedSpecifier &&
-    !ngModuleSpecifier
+    !ngModuleSpecifier &&
+    !getTestBedSpecifier
   ) {
     return null;
   }
@@ -996,6 +878,7 @@ function getSpecifiers(sourceFile: ts.SourceFile) {
     platformBrowserSpecifier,
     testBedSpecifier,
     ngModuleSpecifier,
+    getTestBedSpecifier,
   };
 }
 
