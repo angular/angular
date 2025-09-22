@@ -70,6 +70,9 @@ export function finalizeConsumerAfterComputation(node: ReactiveNode): void;
 // @public (undocumented)
 export function getActiveConsumer(): ReactiveNode | null;
 
+// @public
+export function installDevToolsSignalFormatter(): void;
+
 // @public (undocumented)
 export function isInNotificationPhase(): boolean;
 
