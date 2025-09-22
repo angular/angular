@@ -7,18 +7,19 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/forms": "file:../../dist/packages-dist/forms",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "@angular/router": "file:../../dist/packages-dist/router",
-    "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
-    "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
-    "rxjs": "file:../../node_modules/rxjs",
-    "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../node_modules/zone.js"
-  }
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/forms": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-server": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/service-worker": "link:./in-existing-linked-by-bazel",
+    "@angular/upgrade": "link:./in-existing-linked-by-bazel",
+    "rxjs": "^7.0.0",
+    "typescript": "5.9.2",
+    "zone.js": "0.15.1"
+  },
+  "packageManager": "pnpm@10.17.0"
 }

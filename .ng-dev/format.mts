@@ -15,7 +15,6 @@ export const format: FormatConfig = {
       // Both third_party and .yarn are directories containing copied code which should
       // not be modified.
       '!third_party/**',
-      '!.yarn/**',
       // Do not format the locale files which are checked-in for Google3, but generated using
       // the `generate-locales-tool` from `packages/common/locales`.
       '!packages/core/src/i18n/locale_en.ts',

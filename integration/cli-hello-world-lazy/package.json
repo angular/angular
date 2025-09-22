@@ -4,27 +4,28 @@
   "scripts": {
     "build": "ng build --configuration production",
     "e2e": "echo 'No e2e tests specified'",
-    "test": "yarn build && node check-output-for-ngdevmode.js"
+    "test": "pnpm build && node check-output-for-ngdevmode.js"
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/router": "file:../../dist/packages-dist/router",
-    "@angular/ssr": "file:../../node_modules/@angular/ssr",
-    "rxjs": "file:../../node_modules/rxjs",
-    "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../node_modules/zone.js"
+    "@angular/common": "link:./in-existing-linked-by-bazel",
+    "@angular/compiler": "link:./in-existing-linked-by-bazel",
+    "@angular/core": "link:./in-existing-linked-by-bazel",
+    "@angular/platform-browser": "link:./in-existing-linked-by-bazel",
+    "@angular/router": "link:./in-existing-linked-by-bazel",
+    "@angular/ssr": "20.3.2",
+    "rxjs": "^7.0.0",
+    "tslib": "^2.3.0",
+    "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
-    "@angular/build": "file:../../node_modules/@angular/build",
-    "@angular/cli": "file:../../node_modules/@angular/cli",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@types/node": "file:../../node_modules/@types/node",
-    "ts-node": "8.3.0",
-    "typescript": "file:../../node_modules/typescript"
-  }
+    "@angular-devkit/build-angular": "20.3.2",
+    "@angular/build": "20.3.2",
+    "@angular/cli": "20.3.2",
+    "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
+    "@types/node": "^20.14.8",
+    "ts-node": "^10.9.1",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@10.17.0"
 }
