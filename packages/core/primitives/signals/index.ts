@@ -58,3 +58,4 @@ export {Watch, WatchCleanupFn, WatchCleanupRegisterFn, createWatch} from './src/
 export {setAlternateWeakRefImpl} from './src/weak_ref';
 export {untracked} from './src/untracked';
 export {runEffect, BASE_EFFECT_NODE, BaseEffectNode} from './src/effect';
+export {installDevToolsSignalFormatter} from './src/formatter';
