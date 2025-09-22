@@ -62,6 +62,10 @@
     .adev-nav {
       width: 0;
       height: 0;
+
+      @include mq.for-tablet-landscape-down {
+        width: 100%;
+      }
     }
 
     @include mq.for-tablet-landscape-up {
