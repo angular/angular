@@ -24,6 +24,12 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 | ------------ | ------------- |
 | RegExp       | `/\d+/`       |
 
+### Unsupported value literals
+
+| Literal type | Example values |
+|--------------|----------------|
+| BigInt       | `1n`           |
+
 ## Globals
 
 Angular expressions support the following [globals](https://developer.mozilla.org/en-US/docs/Glossary/Global_object):
