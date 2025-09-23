@@ -226,6 +226,66 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should not produce optional chain warning for an indexed access if noUncheckedIndexedAccess is false', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup(
+        [
+          {
+            fileName,
+            templates: {
+              'TestCmp': `{{ arr[0]?.bar }}`,
+            },
+            source: `
+               export class TestCmp {
+                  arr: Array<{ bar: string }> = [];
+               }
+             `,
+          },
+        ],
+        {options: {noUncheckedIndexedAccess: false}},
+      );
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [optionalChainNotNullableFactory],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
+    it('should produce optional chain warning for an indexed access if noUncheckedIndexedAccess is true', () => {
+      const fileName = absoluteFrom('/main.ts');
+      const {program, templateTypeChecker} = setup(
+        [
+          {
+            fileName,
+            templates: {
+              'TestCmp': `{{ arr[0]?.bar }}`,
+            },
+            source: `
+               export class TestCmp {
+                  arr: Array<{ bar: string }> = [];
+               }
+             `,
+          },
+        ],
+        {options: {noUncheckedIndexedAccess: true}},
+      );
+      const sf = getSourceFileOrError(program, fileName);
+      const component = getClass(sf, 'TestCmp');
+      const extendedTemplateChecker = new ExtendedTemplateCheckerImpl(
+        templateTypeChecker,
+        program.getTypeChecker(),
+        [optionalChainNotNullableFactory],
+        {strictNullChecks: true} /* options */,
+      );
+      const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
+      expect(diags.length).toBe(0);
+    });
+
     it('should not produce optional chain warning for a type that includes undefined', () => {
       const fileName = absoluteFrom('/main.ts');
       const {program, templateTypeChecker} = setup([
