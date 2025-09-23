@@ -5074,6 +5074,44 @@ describe('control flow migration (ng update)', () => {
         '@if (show) {<div>Some greek characters: θδ!</div>}',
       );
     });
+
+    it('should migrate multiple ngIf directives with same else template and preserve template outlet', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          imports: [NgIf],
+          template: \`
+            <div *ngIf="1 == 1; else elseTemplate">
+              <h1>TEST</h1>
+            </div>
+            <div *ngIf="1 == 1; else elseTemplate">
+              <h1>TEST</h1>
+            </div>
+
+            <ng-container [ngTemplateOutlet]="elseTemplate"></ng-container>
+            <ng-template #elseTemplate>
+              <h1>Test</h1>
+              <div>Test</div>
+            </ng-template>
+          \`
+        })
+        class Comp {
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expect(content.replace(/\s+/g, ' ')).toContain(
+        `<ng-container [ngTemplateOutlet]="elseTemplate"></ng-container>`,
+      );
+      expect(content.replace(/\s+/g, ' ')).toContain(`<ng-template #elseTemplate>`);
+    });
   });
 
   describe('formatting', () => {
