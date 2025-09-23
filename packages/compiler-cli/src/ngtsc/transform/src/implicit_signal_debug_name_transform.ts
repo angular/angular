@@ -287,6 +287,7 @@ const signalFunctions: ReadonlySet<string> = new Set([
   'contentChild',
   'contentChildren',
   'effect',
+  'linkedSignal',
 ]);
 
 function isSignalFunction(expression: ts.Identifier): boolean {
