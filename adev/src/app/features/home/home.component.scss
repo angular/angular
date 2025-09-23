@@ -3,6 +3,7 @@
 :host {
   width: 100%;
   position: relative;
+  display: block;
 }
 
 .banners-layer {
@@ -324,7 +325,8 @@ section {
   }
 
   svg {
-    max-width: 64px;
+    width: 64px;
+    flex: 0 0 64px;
     margin: 0 1rem;
   }
 
