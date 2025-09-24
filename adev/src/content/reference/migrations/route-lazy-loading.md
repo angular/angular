@@ -72,4 +72,4 @@ export class AppModule {}
 export class AppModule {}
 </docs-code>
 
-This migration will also collect information about all the components declared in NgModules and output the list of routes that use them (including corresponding location of the file). Consider making those components standalone and run this migration again. You can use an existing migration (see https://angular.dev/reference/migrations/standalone) to convert those components to standalone.
+This migration will also collect information about all the components declared in NgModules and output the list of routes that use them (including corresponding location of the file). Consider making those components standalone and run this migration again. You can use an existing migration ([see](reference/migrations/standalone)) to convert those components to standalone.
