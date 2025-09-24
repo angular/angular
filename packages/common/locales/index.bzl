@@ -17,9 +17,6 @@ def generate_base_currencies_file(name, src):
         name = name + "_generated",
         outs = ["base_currencies_generated.ts"],
         tool = "//packages/common/locales/generate-locales-tool/bin:get-base-currencies-file",
-        tags = [
-            "no-remote-exec",
-        ],
         chdir = native.package_name(),
     )
     write_source_file(
@@ -33,11 +30,6 @@ def generate_base_locale_file(name, src):
         name = name + "_generated",
         outs = ["base_locale_file.ts"],
         tool = "//packages/common/locales/generate-locales-tool/bin:get-base-locale-file",
-        tags = [
-            # No remote execution is used as the number of individual files used is beyond the RBE limit
-            # due to the number of CLDR files which we cannot control.
-            "no-remote-exec",
-        ],
         chdir = native.package_name(),
     )
     write_source_file(
@@ -51,11 +43,6 @@ def generate_closure_locale_file(name, src):
         name = name + "_generated",
         outs = ["closure_locale_generated.ts"],
         tool = "//packages/common/locales/generate-locales-tool/bin:get-closure-locale-file",
-        tags = [
-            # No remote execution is used as the number of individual files used is beyond the RBE limit
-            # due to the number of CLDR files which we cannot control.
-            "no-remote-exec",
-        ],
         chdir = native.package_name(),
     )
     write_source_file(
@@ -78,10 +65,5 @@ def generate_all_locale_files(name):
         name = name,
         outs = locale_files,
         tool = "//packages/common/locales/generate-locales-tool/bin:write-locale-files-to-dist",
-        tags = [
-            # No remote execution is used as the number of individual files used is beyond the RBE limit
-            # due to the number of CLDR files which we cannot control.
-            "no-remote-exec",
-        ],
         chdir = native.package_name(),
     )

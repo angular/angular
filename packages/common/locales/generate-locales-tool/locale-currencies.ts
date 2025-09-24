@@ -83,7 +83,7 @@ export function getCurrencySettings(localeName: string, localeData: CldrLocaleDa
 
   let currencySettings = [undefined, undefined, undefined];
 
-  if (currencyInfo[currentCurrency]) {
+  if (currentCurrency) {
     currencySettings = [
       currentCurrency,
       currencyInfo[currentCurrency].symbol,
