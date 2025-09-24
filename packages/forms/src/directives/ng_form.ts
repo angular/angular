@@ -366,7 +366,6 @@ export class NgForm extends ControlContainer implements Form, AfterViewInit {
   resetForm(value: any = undefined): void {
     this.form.reset(value);
     this.submittedReactive.set(false);
-    this.form._events.next(new FormResetEvent(this.form));
   }
 
   private _setUpdateStrategy() {

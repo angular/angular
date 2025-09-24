@@ -1496,6 +1496,132 @@ describe('reactive forms integration tests', () => {
       expect(events[0]).toBeInstanceOf(FormSubmittedEvent);
       expect(events[0].source).toBe(form);
     });
+
+    it('formArray should emit an event when resetting a form', () => {
+      @Component({
+        selector: 'form-array-comp',
+        template: `
+          <form #formElement [formArray]="form" (ngSubmit)="event=$event">
+            @for(_ of controls; track $index) {
+              <input type="text" [formControlName]="$index">
+            }
+          </form>`,
+        standalone: false,
+      })
+      class FormArrayComp {
+        controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        form = new FormArray(this.controls);
+        event!: Event;
+
+        @ViewChild('formElement') formElement!: ElementRef<HTMLFormElement>;
+      }
+
+      const fixture = initTest(FormArrayComp);
+      fixture.detectChanges();
+
+      const formArrayDir = fixture.debugElement.children[0].injector.get(FormArrayDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+      formArrayDir.resetForm();
+
+      expect(events.length).toBe(4);
+      expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(events[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+
+      // The event that matters
+      expect(events[3]).toBeInstanceOf(FormResetEvent);
+      expect(events[3].source).toBe(fixture.componentInstance.form);
+    });
+
+    it('formControl should emit an event when resetting it', () => {
+      const fc = new FormControl<string | null>('foo', Validators.required);
+      const fcEvents: ControlEvent[] = [];
+      fc.events.subscribe((event) => fcEvents.push(event));
+      expect(fcEvents.length).toBe(0);
+
+      fc.reset('bar');
+      expect(fcEvents.length).toBe(3);
+      expect(fcEvents[0]).toBeInstanceOf(ValueChangeEvent);
+      expect(fcEvents[1]).toBeInstanceOf(StatusChangeEvent);
+      expect(fcEvents[2]).toBeInstanceOf(FormResetEvent);
+      expect(fcEvents[2].source).toBe(fc);
+    });
+
+    it('formControl should not emit an event when resetting it with emit:false', () => {
+      const fc = new FormControl<string | null>('foo', Validators.required);
+      const fcEvents: ControlEvent[] = [];
+      fc.events.subscribe((event) => fcEvents.push(event));
+      expect(fcEvents.length).toBe(0);
+
+      fc.reset('bar', {emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+    });
+
+    it('formGroup should emit a reset event when resetting it', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fgEvents: ControlEvent[] = [];
+      fg.events.subscribe((event) => fgEvents.push(event));
+      expect(fgEvents.length).toBe(0);
+
+      fg.reset({fc1: 'newFoo', fc2: 'newBar'});
+      expect(fgEvents.length).toBe(4);
+      expect(fgEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(fgEvents[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(fgEvents[2]).toBeInstanceOf(StatusChangeEvent);
+      expect(fgEvents[3]).toBeInstanceOf(FormResetEvent);
+      expect(fgEvents[3].source).toBe(fg);
+    });
+
+    it('formGroup should not emit a reset event when resetting it with emit:false', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fgEvents: ControlEvent[] = [];
+      fg.events.subscribe((event) => fgEvents.push(event));
+      expect(fgEvents.length).toBe(0);
+
+      fg.reset({fc1: 'newFoo', fc2: 'newBar'}, {emitEvent: false});
+      expect(fgEvents.length).toBe(1);
+      expect(fgEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+    });
+
+    it('formArray should emit a reset event when resetting it', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fa = new FormArray([fc1, fc2]);
+
+      const faEvents: ControlEvent[] = [];
+      fa.events.subscribe((event) => faEvents.push(event));
+      expect(faEvents.length).toBe(0);
+
+      fa.reset(['newFoo', 'newBar']);
+      expect(faEvents.length).toBe(4);
+      expect(faEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(faEvents[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(faEvents[2]).toBeInstanceOf(StatusChangeEvent);
+      expect(faEvents[3]).toBeInstanceOf(FormResetEvent);
+      expect(faEvents[3].source).toBe(fa);
+    });
+
+    it('formArray should not emit a reset event when resetting it with emit:false', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fa = new FormArray([fc1, fc2]);
+
+      const faEvents: ControlEvent[] = [];
+      fa.events.subscribe((event) => faEvents.push(event));
+      expect(faEvents.length).toBe(0);
+
+      fa.reset(['newFoo', 'newBar'], {emitEvent: false});
+      expect(faEvents.length).toBe(1);
+      expect(faEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+    });
   });
 
   describe('setting status classes', () => {
