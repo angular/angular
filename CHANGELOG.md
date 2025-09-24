@@ -1,3 +1,27 @@
+<a name="20.3.2"></a>
+# 20.3.2 (2025-09-24)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ba40153ac0](https://github.com/angular/angular/commit/ba40153ac07fc721585a1224fda09a654672cb74) | fix | capture metadata for undecorated fields ([#63904](https://github.com/angular/angular/pull/63904)) |
+| [1d4f81c8ee](https://github.com/angular/angular/commit/1d4f81c8eedf5ea69c51c720f8dc5c5d12a62ba2) | fix | resolve import alias in defer blocks ([#63966](https://github.com/angular/angular/pull/63966)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9515a70933](https://github.com/angular/angular/commit/9515a709331883f0ca9857ed46a5262b01979a26) | fix | fix narrowing of `Resource.hasValue()` ([#63994](https://github.com/angular/angular/pull/63994)) |
+| [e78451cf8a](https://github.com/angular/angular/commit/e78451cf8a48322879e83b33fecc0b5854947afb) | fix | prevent animations renderer from impacting `animate.leave` ([#63921](https://github.com/angular/angular/pull/63921)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1fd8d5d446](https://github.com/angular/angular/commit/1fd8d5d446f909a16a127ba117a0f423c7a5db0c) | fix | Emit `FormResetEvent` when resetting control ([#64034](https://github.com/angular/angular/pull/64034)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [16d0d43ad4](https://github.com/angular/angular/commit/16d0d43ad4903b69b8dcd9b76c48b5089e7f82ee) | fix | handle import aliases to the same module name ([#63934](https://github.com/angular/angular/pull/63934)) |
+| [3ebaeccb46](https://github.com/angular/angular/commit/3ebaeccb466119ee43eeaa486f5e132c85e9caa2) | fix | handle reused templates in control flow migration ([#63996](https://github.com/angular/angular/pull/63996)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.4"></a>
 # 21.0.0-next.4 (2025-09-17)
 ## Breaking Changes
