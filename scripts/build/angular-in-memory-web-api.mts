@@ -7,9 +7,8 @@
  */
 
 import {join} from 'path';
-import sh from 'shelljs';
 
-import {projectDir, bazelCmd, exec} from './package-builder.mjs';
+import {bazelCmd, exec} from './package-builder.mjs';
 
 /**
  * Build the `angular-in-memory-web-api` npm package and copies it into the release
@@ -28,12 +27,9 @@ export function buildAngularInMemoryWebApiPackage(destDir: string): void {
   console.info('  Building angular-in-memory-web-api npm package');
   console.info('##############################');
 
-  exec(`${bazelCmd} build //packages/misc/angular-in-memory-web-api:npm_package`);
-
-  // Create the output directory.
-  if (!sh.test('-d', destDir)) {
-    sh.mkdir('-p', destDir);
-  }
+  exec(`${bazelCmd} build //packages/misc/angular-in-memory-web-api:npm_package`, true);
+  // Ensure the output directory is available.
+  exec(`mkdir -p ${destDir}`);
 
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
 
@@ -44,7 +40,7 @@ export function buildAngularInMemoryWebApiPackage(destDir: string): void {
 
   console.info(`# Copy npm_package artifacts to ${distTargetDir}`);
 
-  sh.rm('-rf', distTargetDir);
-  sh.cp('-R', buildOutputDir, distTargetDir);
-  sh.chmod('-R', 'u+w', distTargetDir);
+  exec(`rm -rf ${distTargetDir}`);
+  exec(`cp -R ${buildOutputDir} ${distTargetDir}`);
+  exec(`chmod -R u+w ${distTargetDir}`);
 }

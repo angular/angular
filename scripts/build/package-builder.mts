@@ -6,14 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {execSync} from 'child_process';
+import {execSync, spawnSync} from 'child_process';
 import {join, dirname} from 'path';
 import {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
-import sh from 'shelljs';
-
-// ShellJS should exit if a command fails.
-sh.set('-e');
 
 /** Path to the project directory. */
 export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -76,9 +72,9 @@ function buildReleasePackages(
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
-    if (sh.test('-d', outputPath)) {
-      sh.chmod('-R', 'u+w', outputPath);
-      sh.rm('-rf', outputPath);
+    if (spawnSync(`[ -d ${outputPath} ]`).status !== 0) {
+      exec(`chmod -R u+w ${outputPath}`);
+      exec(`rm -rf ${outputPath}`);
     }
   });
 
@@ -86,16 +82,16 @@ function buildReleasePackages(
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.
-  sh.rm('-rf', distPath);
-  sh.mkdir('-p', distPath);
+  exec(`rm -rf ${distPath}`);
+  exec(`mkdir -p ${distPath}`);
 
   // Copy the package output into the specified distribution folder.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
     const targetFolder = getDistPath(pkgName);
     console.info(`> Copying package output to "${targetFolder}"`);
-    sh.cp('-R', outputPath, targetFolder);
-    sh.chmod('-R', 'u+w', targetFolder);
+    exec(`cp -R ${outputPath} ${targetFolder}`);
+    exec(`chmod -R u+w ${targetFolder}`);
   });
 
   return packageNames.map((pkg) => {
