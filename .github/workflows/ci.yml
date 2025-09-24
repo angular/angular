@@ -204,7 +204,7 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Build adev
-        run: pnpm bazel build //adev:build.production
+        run: pnpm bazel build //adev:build.production --config=release
       - name: Deploy to firebase
         uses: ./.github/actions/deploy-docs-site
         with:
