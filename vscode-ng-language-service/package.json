@@ -294,7 +294,7 @@
     "vscode-nls": "5.2.0",
     "vscode-test": "1.6.1",
     "vscode-tmgrammar-test": "0.0.11",
-    "yallist": "4.0.0"
+    "yallist": "5.0.0"
   },
   "repository": {
     "type": "git",
