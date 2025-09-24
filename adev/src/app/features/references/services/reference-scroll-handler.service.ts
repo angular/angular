@@ -18,13 +18,8 @@ export class ReferenceScrollHandler {
   private readonly destroyRef = inject(DestroyRef);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   setupListeners(tocClass: string): void {
-    if (!this.isBrowser) {
-      return;
-    }
-
     this.setupCodeToCListeners(tocClass);
   }
 
