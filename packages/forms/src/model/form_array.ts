@@ -15,6 +15,7 @@ import {
   AbstractControlOptions,
   assertAllValuesPresent,
   assertControlPresent,
+  FormResetEvent,
   pickAsyncValidators,
   pickValidators,
   ɵRawValue,
@@ -431,6 +432,9 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     this._updatePristine(options, this);
     this._updateTouched(options, this);
     this.updateValueAndValidity(options);
+    if (options?.emitEvent !== false) {
+      this._events.next(new FormResetEvent(this));
+    }
   }
 
   /**

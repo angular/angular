@@ -14,6 +14,7 @@ import {removeListItem} from '../util';
 import {
   AbstractControl,
   AbstractControlOptions,
+  FormResetEvent,
   isOptionsObj,
   pickAsyncValidators,
   pickValidators,
@@ -529,6 +530,9 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
     this.markAsUntouched(options);
     this.setValue(this.value, options);
     this._pendingChange = false;
+    if (options?.emitEvent !== false) {
+      this._events.next(new FormResetEvent(this));
+    }
   }
 
   /**  @internal */
