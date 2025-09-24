@@ -1443,6 +1443,8 @@ export abstract class AbstractControl<
    *
    * Calling `setErrors` also updates the validity of the parent control.
    *
+   * Note: Manually set errors are always overwritten by the results of the next validation run.
+   *
    * @param opts Configuration options that determine how the control propagates
    * changes and emits events after the control errors are set.
    * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
