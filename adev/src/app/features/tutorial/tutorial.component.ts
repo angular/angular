@@ -48,6 +48,7 @@ import {
 } from '../../editor/index';
 import {SplitResizerHandler} from './split-resizer-handler.service';
 import {PAGE_PREFIX} from '../../core/constants/pages';
+import {TutorialNavigationList} from './tutorial-navigation-list';
 
 const INTRODUCTION_LABEL = 'Introduction';
 
@@ -57,17 +58,13 @@ const INTRODUCTION_LABEL = 'Introduction';
     NgComponentOutlet,
     NgTemplateOutlet,
     DocViewer,
-    NavigationList,
+    TutorialNavigationList,
     ClickOutside,
     RouterLink,
     IconComponent,
   ],
   templateUrl: './tutorial.component.html',
-  styleUrls: [
-    './tutorial.component.scss',
-    './tutorial-navigation.scss',
-    './tutorial-navigation-list.scss',
-  ],
+  styleUrls: ['./tutorial.component.scss', './tutorial-navigation.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [SplitResizerHandler],
 })

@@ -124,8 +124,7 @@
       <!-- Tutorial Nav: List -->
       @if (showNavigationDropdown()) {
         <div class="adev-tutorial-nav-list-dropdown" (docsClickOutside)="hideNavigationDropdown()">
-          <docs-navigation-list
-            [isDropdownView]="true"
+          <adev-tutorial-navigation-list
             [navigationItems]="tutorialNavigationItems()"
             class="adev-nav-list"
           />
