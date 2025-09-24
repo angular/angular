@@ -301,9 +301,6 @@ export abstract class AbstractFormDirective
   resetForm(value: any = undefined, options: {onlySelf?: boolean; emitEvent?: boolean} = {}): void {
     this.form.reset(value, options);
     this._submittedReactive.set(false);
-    if (options?.emitEvent !== false) {
-      this.form._events.next(new FormResetEvent(this.form));
-    }
   }
 
   /**
