@@ -26,4 +26,11 @@ In Angular, dependencies are typically services, but they also can be values, su
   <docs-card title="Hierarchical injectors" href="/guide/di/hierarchical-dependency-injection">
     Hierarchical DI enables you to share dependencies between different parts of the application only when and if you need to. This is an advanced topic.
   </docs-card>
+    <docs-card title="Optimizing injection tokens" href="/guide/di/lightweight-injection-tokens">
+    Learn how to use lightweight injection tokens to optimize your application's performance and reduce bundle size.
+  </docs-card>
+    <docs-card title="DI in action" href="/guide/di/di-in-action">
+    See practical examples of dependency injection in real Angular applications.
+  </docs-card>
+
 </docs-card-container>
