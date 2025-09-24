@@ -1,0 +1,43 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "compile",
+      "group": "build",
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "never"
+      },
+      "problemMatcher": [
+        "$tsc"
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "vscode:watch",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "panel": "dedicated",
+        "reveal": "never"
+      },
+      "problemMatcher": {
+        "base": "$tsc-watch",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^iBazel \\[\\d{1,2}:\\d{1,2}(?:AM|PM)\\]: Querying for files to watch.*",
+          "endsPattern": "^INFO: Build completed successfully, \\d+ total action(s)?"
+        }
+      }
+    },
+    {
+      "type": "shell",
+      "label": "build vsix",
+      "command": "pnpm bazel build //vscode-ng-language-service:npm --config=release"
+    }
+  ]
+}
