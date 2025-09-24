@@ -852,6 +852,8 @@ export class NavigationTransitions {
               this.currentNavigation.set(null);
               this.currentTransition = null;
             }
+            // Clear out to avoid holding on to resources.
+            (overallTransitionState as any) = null;
           }),
           catchError((e) => {
             // If the application is already destroyed, the catch block should not
