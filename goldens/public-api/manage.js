@@ -1,22 +1,23 @@
-const {exec} = require('shelljs');
+const {spawnSync} = require('node:child_process');
 const {Parser: parser} = require('yargs/helpers');
 
 // Remove all command line flags from the arguments.
 const argv = parser(process.argv.slice(2));
 // The command the user would like to run, either 'accept' or 'test'
 const USER_COMMAND = argv._[0];
-
-// Location of all packages that we'd need to process.
-const API_TARGETS_LOCATION = 'packages/...';
-
 // The shell command to query for all Public API guard tests.
-const BAZEL_PUBLIC_API_TARGET_QUERY_CMD =
-  `pnpm --silent bazel query --output label 'kind(js_test, ${API_TARGETS_LOCATION}) ` +
-  `intersect attr("tags", "api_guard", ${API_TARGETS_LOCATION})'`;
+const BAZEL_PUBLIC_API_TARGET_QUERY_CMD = [
+  'bazel',
+  'query',
+  '--output=label',
+  'kind(js_test, //packages/...) intersect attr("tags", "api_guard", //packages/...)',
+];
 // Bazel targets for testing Public API goldens
 process.stdout.write('Gathering all Public API targets...');
-const ALL_PUBLIC_API_TESTS = exec(BAZEL_PUBLIC_API_TARGET_QUERY_CMD, {silent: true})
-  .trim()
+const ALL_PUBLIC_API_TESTS = spawnSync('pnpm', ['--silent', ...BAZEL_PUBLIC_API_TARGET_QUERY_CMD], {
+  encoding: 'utf-8',
+})
+  .stdout.trim()
   .split('\n')
   .map((test) => test.trim());
 process.stdout.clearLine();
@@ -28,9 +29,15 @@ const ALL_PUBLIC_API_ACCEPTS = ALL_PUBLIC_API_TESTS.map((test) => `${test}.accep
 /** Builds all targets in parallel. */
 function buildTargets(targets) {
   process.stdout.write('Building all public API targets...');
-  const commandResult = exec(`pnpm --silent bazel build ${targets.join(' ')}`, {silent: true});
-  if (commandResult.code) {
+  const commandResult = spawnSync('pnpm', ['--silent', 'bazel', 'build', ...targets], {
+    encoding: 'utf-8',
+  });
+  if (commandResult.status) {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    console.error('Building golden targets failed:');
     console.error(commandResult.stdout || commandResult.stderr);
+    process.exit(1);
   } else {
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
@@ -43,10 +50,10 @@ function buildTargets(targets) {
 function runBazelCommandOnTargets(command, targets, present) {
   for (const target of targets) {
     process.stdout.write(`${present}: ${target}`);
-    const commandResult = exec(`pnpm --silent bazel ${command} ${target}`, {silent: true});
+    const commandResult = spawnSync('pnpm', ['--silent', 'bazel', command, target]);
     process.stdout.clearLine();
     process.stdout.cursorTo(0);
-    if (commandResult.code) {
+    if (commandResult.status) {
       console.error(`Failed ${command}: ${target}`);
       console.group();
       console.error(commandResult.stdout || commandResult.stderr);
