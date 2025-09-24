@@ -21,6 +21,7 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/nullish_coalescing_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/optional_chain_not_nullable",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/skip_hydration_not_static",
+        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/defer_prefetch_without_main_trigger",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/suffix_not_supported",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/text_attribute_not_binding",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_event_binding",

@@ -422,6 +422,11 @@ export enum ErrorCode {
    * ```
    */
   DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER = 8020,
+  /**
+   * Raised when an `@defer` block configures prefetching but does not define a main trigger
+   * (`on …` or `when …`). Rendering will fallback to `on idle` in this case.
+   */
+  DEFER_PREFETCH_WITHOUT_MAIN_TRIGGER = 8021,
 
   /**
    * A two way binding in a template has an incorrect syntax,
