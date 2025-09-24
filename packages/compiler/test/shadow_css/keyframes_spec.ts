@@ -467,7 +467,7 @@ describe('ShadowCss, keyframes and animations', () => {
 
         @keyframes foo {}
         @keyframes 'fo\\'o' {}
-        @keyframes 'foo'' {}
+        @keyframes 'foo\\'' {}
         @keyframes 'foo\\\\' {}
         @keyframes "bar" {}
         @keyframes 'ba\\'r' {}
@@ -476,7 +476,7 @@ describe('ShadowCss, keyframes and animations', () => {
     const result = shim(css, 'host-a');
     expect(result).toContain('@keyframes host-a_foo {}');
     expect(result).toContain("@keyframes 'host-a_fo\\'o' {}");
-    expect(result).toContain("@keyframes 'host-a_foo'' {}");
+    expect(result).toContain("@keyframes 'host-a_foo\\'' {}");
     expect(result).toContain("@keyframes 'host-a_foo\\\\' {}");
     expect(result).toContain('@keyframes "host-a_bar" {}');
     expect(result).toContain("@keyframes 'host-a_ba\\'r' {}");
