@@ -438,13 +438,11 @@ function generateChangelog(commits: string[]): string {
  * @returns The reviewer note.
  */
 function getFirefoxReviewerNote(commitSha: string): string {
-  return `This is a monorepo and includes much more code than just the DevTools extension. The relevant
-code is under \`devtools/...\` and \`devtools/README.md\` contains instructions for compiling
-release builds locally.
+  return `
+This is a monorepo and includes much more code than just the DevTools extension. The relevant code is under \`devtools/...\` and \`devtools/README.md\` contains instructions for compiling release builds locally.
 
-The uploaded source is equivalent to:
-https://github.com/angular/angular/tree/${commitSha}/.
-`;
+The uploaded source is equivalent to: https://github.com/angular/angular/tree/${commitSha}/.
+  `.trim();
 }
 
 /**
