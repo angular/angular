@@ -273,7 +273,7 @@
     "@types/jasmine": "3.10.7",
     "@types/node": "18.19.39",
     "@types/vscode": "1.67.0",
-    "balanced-match": "1.0.2",
+    "balanced-match": "3.0.1",
     "brace-expansion": "1.1.12",
     "concat-map": "0.0.1",
     "cross-env": "^7.0.3",
