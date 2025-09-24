@@ -70,10 +70,8 @@ ts_project(
     srcs = glob(["node/*.ts"]),
     deps = [
         "//packages/zone.js:node_modules/@types/node",
-        "//packages/zone.js:node_modules/@types/shelljs",
         "//packages/zone.js:node_modules/@types/systemjs",
         "//packages/zone.js:node_modules/rxjs",
-        "//packages/zone.js:node_modules/shelljs",
         "//packages/zone.js:node_modules/systemjs",
         "//packages/zone.js/lib",
     ],
@@ -88,10 +86,8 @@ ts_project(
     ],
     deps = [
         ":common_spec_env",
-        "//packages/zone.js:node_modules/@types/shelljs",
         "//packages/zone.js:node_modules/@types/systemjs",
         "//packages/zone.js:node_modules/rxjs",
-        "//packages/zone.js:node_modules/shelljs",
         "//packages/zone.js:node_modules/systemjs",
         "//packages/zone.js/lib",
     ],
@@ -201,7 +197,6 @@ ts_project(
     testonly = True,
     srcs = ["npm_package/npm_package.spec.ts"],
     deps = [
-        "//packages/zone.js:node_modules/@types/shelljs",
     ],
 )
 
@@ -209,7 +204,6 @@ jasmine_test(
     name = "test_npm_package",
     data = [
         ":npm_package_spec_lib",
-        "//packages/zone.js:node_modules/shelljs",
         "//packages/zone.js:npm_package",
     ],
 )
@@ -225,10 +219,8 @@ env_deps = [
     ":common_spec_util",
     ":error_spec_srcs",
     "//packages/zone.js/lib:lib",
-    "//packages/zone.js:node_modules/@types/shelljs",
     "//packages/zone.js:node_modules/@types/systemjs",
     "//packages/zone.js:node_modules/rxjs",
-    "//packages/zone.js:node_modules/shelljs",
     "//packages/zone.js:node_modules/systemjs",
 ]
 
@@ -254,10 +246,8 @@ test_deps = [
     ":common_spec_util",
     ":error_spec_srcs",
     "//packages/zone.js/lib:lib",
-    "//packages/zone.js:node_modules/@types/shelljs",
     "//packages/zone.js:node_modules/@types/systemjs",
     "//packages/zone.js:node_modules/rxjs",
-    "//packages/zone.js:node_modules/shelljs",
     "//packages/zone.js:node_modules/systemjs",
 ]
 

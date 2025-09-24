@@ -1240,9 +1240,6 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.5.2
-      '@types/shelljs':
-        specifier: 0.8.17
-        version: 0.8.17
       '@types/systemjs':
         specifier: 6.15.3
         version: 6.15.3
@@ -1282,9 +1279,6 @@ importers:
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
-      shelljs:
-        specifier: 0.10.0
-        version: 0.10.0
       source-map-support:
         specifier: 0.5.21
         version: 0.5.21
