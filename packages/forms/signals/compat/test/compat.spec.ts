@@ -126,6 +126,25 @@ describe('Forms compat', () => {
     });
   });
 
+  it('handles multiple value and control changes', () => {
+    const control = new FormControl(100, Validators.min(3));
+    const cat = signal(control);
+
+    const f = compatForm(cat, {
+      injector: TestBed.inject(Injector),
+    });
+
+    expect(f().value()).toBe(100);
+    control.setValue(101);
+    expect(f().value()).toBe(101);
+    cat.set(new FormControl(6));
+    expect(f().value()).toBe(6);
+    cat.set(new FormControl(7));
+    expect(f().value()).toBe(7);
+    cat.set(new FormControl(8));
+    expect(f().value()).toBe(8);
+  });
+
   describe('validation', () => {
     it('picks up the validation from a new form control', () => {
       const control = new FormControl(5, Validators.min(10));

@@ -6,14 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  computed,
-  runInInjectionContext,
-  Signal,
-  signal,
-  untracked,
-  WritableSignal,
-} from '@angular/core';
+import {computed, Signal, signal, WritableSignal} from '@angular/core';
 import {FormFieldManager} from '../../src/field/manager';
 import {FieldNode, ParentFieldNode} from '../../src/field/node';
 import {
@@ -24,8 +17,8 @@ import {
 } from '../../src/field/structure';
 
 import {toSignal} from '@angular/core/rxjs-interop';
-import {getInjectorFromOptions} from '../../src/field/util';
 import {AbstractControl} from '@angular/forms';
+import {extractControlPropToSignal} from './compat_field_node';
 
 /**
  * Child Field Node options also exposing control property.
@@ -77,15 +70,8 @@ function getFieldManagerFromOptions(options: FieldNodeOptions) {
  * @param options
  */
 function getControlValueSignal<T>(options: CompatFieldNodeOptions) {
-  const value = computed(() => {
-    // Control is also reactive, so we need to unwrap it here, in reactive context.
-    const control = options.control();
-
-    return untracked(() => {
-      return runInInjectionContext(getInjectorFromOptions(options), () => {
-        return toSignal(control.valueChanges, {initialValue: control.value});
-      });
-    })();
+  const value = extractControlPropToSignal<T>(options, (control) => {
+    return toSignal(control.valueChanges, {initialValue: control.value});
   }) as WritableSignal<T>;
 
   value.set = (value: T) => {

@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {computed, linkedSignal, runInInjectionContext, Signal, untracked} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {FieldNode} from '../../src/field/node';
 import {getInjectorFromOptions} from '../../src/field/util';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {map} from 'rxjs/operators';
-import {CompatFieldNodeOptions} from './compat_structure';
+import type {CompatFieldNodeOptions} from './compat_structure';
 
 /**
- * Field node with additional control property.
+ * Field node with additional  control property.
  *
  * Compat node has no children.
  */
@@ -29,61 +29,76 @@ export class CompatFieldNode extends FieldNode {
 }
 
 /**
- * This is a helper function, simplifying getting control properties after status changes.
+ * Helper function taking options, and a callback which takes options, and a function
+ * converting reactive control to appropriate property using toSignal from rxjs compat.
+ *
+ * This helper keeps all complexity in one place by doing the following things:
+ * - Running the callback in injection context
+ * - Not tracking the callback, as it creates a new signal.
+ * - Reacting to control changes, allowing to swap control dynamically.
+ *
+ * @param options
+ * @param makeSignal
+ */
+export function extractControlPropToSignal<T, R = T>(
+  options: CompatFieldNodeOptions,
+  makeSignal: (c: AbstractControl<T>) => Signal<R>,
+): Signal<R> {
+  const injector = getInjectorFromOptions(options);
+
+  const signalOfControlSignal = linkedSignal({
+    source: options.control,
+    computation: (control) => {
+      return untracked(() => {
+        return runInInjectionContext(injector, () => makeSignal(control));
+      });
+    },
+  });
+
+  return computed(() => signalOfControlSignal()());
+}
+
+/**
+ * A helper function, simplifying getting reactive control properties after status changes.
+ *
+ * Used to extract errors and statuses such as valid, pending.
+ *
  * @param options
  * @param getValue
  */
 export const getControlStatusSignal = <T>(
   options: CompatFieldNodeOptions,
-  getValue: (c: AbstractControl) => T,
+  getValue: (c: AbstractControl<unknown>) => T,
 ) => {
-  return computed(() => {
-    // We get control outside untracked call, so it's actually tracked.
-    // TODO: Investigate whether we need to handle destruction in a special way.
-    const c = options.control();
-    return untracked(() => {
-      return runInInjectionContext(getInjectorFromOptions(options), () =>
-        toSignal(
-          c.statusChanges.pipe(
-            map(() => {
-              return getValue(c);
-            }),
-          ),
-          {
-            initialValue: getValue(c),
-          },
-        ),
-      );
-    })();
-  });
+  return extractControlPropToSignal<unknown, T>(options, (c) =>
+    toSignal(c.statusChanges.pipe(map(() => getValue(c))), {
+      initialValue: getValue(c),
+    }),
+  );
 };
 
 /**
+ * A helper function, simplifying converting convert events to signals.
  *
+ * Used to get dirty and touched signals from control.
  *
- * @param options
+ *  @param options
  * @param getValue A function which takes control and returns required value.
  */
 export const getControlEventsSignal = <T>(
   options: CompatFieldNodeOptions,
   getValue: (c: AbstractControl) => T,
 ) => {
-  return computed(() => {
-    // We get control outside untracked call, so it's actually tracked.
-    const c = options.control();
-    return untracked(() => {
-      return runInInjectionContext(getInjectorFromOptions(options), () =>
-        toSignal(
-          c.events.pipe(
-            map(() => {
-              return getValue(c);
-            }),
-          ),
-          {
-            initialValue: getValue(c),
-          },
-        ),
-      );
-    })();
-  });
+  return extractControlPropToSignal<unknown, T>(options, (c) =>
+    toSignal(
+      c.events.pipe(
+        map(() => {
+          return getValue(c);
+        }),
+      ),
+      {
+        initialValue: getValue(c),
+      },
+    ),
+  );
 };
