@@ -298,7 +298,7 @@ async function prepareReleasePullRequest(newVersion: string): Promise<void> {
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
   console.log(chalk.green('Release branch pushed to your fork.'));
 
-  const {stdout: remoteUrl} = await exec('git config --get remote.origin.url');
+  const {stdout: remoteUrl} = await exec('git remote get-url origin');
   const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/angular/);
   const origin = match ? match[1] : 'angular';
 
