@@ -276,7 +276,7 @@
     "balanced-match": "1.0.2",
     "brace-expansion": "1.1.12",
     "concat-map": "0.0.1",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "esbuild": "0.14.39",
     "jasmine-core": "5.10.0",
     "jasmine-reporters": "2.5.2",
