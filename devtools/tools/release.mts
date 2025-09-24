@@ -299,12 +299,13 @@ async function prepareReleasePullRequest(newVersion: string): Promise<void> {
   console.log(chalk.green('Release branch pushed to your fork.'));
 
   const {stdout: remoteUrl} = await exec('git remote get-url origin');
-  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/angular/);
-  const origin = match ? match[1] : 'angular';
+  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
+  const originUser = match ? match[1] : 'angular';
+  const originRepo = match ? match[2] : 'angular';
 
   console.log(
     chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/${origin}/angular/compare/${releaseBranch}`,
+      `Please create a pull request by visiting: https://github.com/${originUser}/${originRepo}/pull/new/${releaseBranch}`,
     ),
   );
 }
