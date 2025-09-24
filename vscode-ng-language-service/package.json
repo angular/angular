@@ -288,7 +288,7 @@
     "semver": "7.7.2",
     "source-map-support": "0.5.21",
     "ts-node": "^10.8.1",
-    "vsce": "1.100.1",
+    "vsce": "2.15.0",
     "vscode-languageserver-protocol": "3.16.0",
     "vscode-languageserver-types": "3.16.0",
     "vscode-nls": "5.2.0",
