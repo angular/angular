@@ -32,11 +32,7 @@ import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playgro
   selector: 'adev-playground',
   imports: [NgComponentOutlet, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
   templateUrl: './playground.component.html',
-  styleUrls: [
-    './playground.component.scss',
-    '../tutorial/tutorial-navigation.scss',
-    '../tutorial/tutorial-navigation-list.scss',
-  ],
+  styleUrls: ['./playground.component.scss', '../tutorial/tutorial-navigation.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaygroundComponent {
