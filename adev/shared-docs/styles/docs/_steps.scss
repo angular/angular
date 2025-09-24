@@ -27,7 +27,7 @@
     pointer-events: none;
     position: absolute;
     left: calc(var(--gutter) * -1);
-    top: 2.7rem;
+    top: 1rem;
     bottom: 0;
 
     &::before {
@@ -39,7 +39,8 @@
       border-radius: 50%;
       aspect-ratio: 1 / 1;
       border: 1px solid transparent;
-      background-image: linear-gradient(var(--page-background), var(--page-background)),
+      background-image:
+        linear-gradient(var(--page-background), var(--page-background)),
         var(--pink-to-purple-horizontal-gradient);
       background-origin: border-box;
       background-clip: content-box, border-box;
