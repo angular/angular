@@ -19,7 +19,7 @@
  * features are only released to main.
  */
 
-const {exec} = require('shelljs');
+const {execSync} = require('child_process');
 const semver = require('semver');
 
 // Ignore commits that have specific patterns in commit message, it's ok for these commits to be
@@ -44,7 +44,7 @@ const initialVersion = 'initial';
 // Helper methods
 
 function execGitCommand(gitCommand) {
-  const output = exec(gitCommand, {silent: true});
+  const output = execSync(gitCommand, {silent: true});
   if (output.code !== 0) {
     console.error(`Error: git command "${gitCommand}" failed: \n\n ${output.stderr}`);
     process.exit(1);

@@ -7,9 +7,8 @@
  */
 
 import {join} from 'path';
-import sh from 'shelljs';
 
-import {projectDir, bazelCmd, exec} from './package-builder.mjs';
+import {bazelCmd, exec} from './package-builder.mjs';
 
 /**
  * Build the `zone.js` npm package into `dist/bin/packages/zone.js/npm_package/` and copy it to
@@ -29,11 +28,8 @@ export function buildZoneJsPackage(destDir: string): void {
   console.info('##############################');
 
   exec(`${bazelCmd} build //packages/zone.js:npm_package`);
-
-  // Create the output directory.
-  if (!sh.test('-d', destDir)) {
-    sh.mkdir('-p', destDir);
-  }
+  // Ensure the output directory is available.
+  exec(`mkdir -p ${destDir}`);
 
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
 
@@ -44,7 +40,7 @@ export function buildZoneJsPackage(destDir: string): void {
 
   console.info(`# Copy npm_package artifacts to ${distTargetDir}`);
 
-  sh.rm('-rf', distTargetDir);
-  sh.cp('-R', buildOutputDir, distTargetDir);
-  sh.chmod('-R', 'u+w', distTargetDir);
+  exec(`rm -rf ${distTargetDir}`);
+  exec(`cp -R ${buildOutputDir} ${distTargetDir}`);
+  exec(`chmod -R u+w ${distTargetDir}`);
 }
