@@ -11,7 +11,7 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
 import {resolve} from 'node:path';
-import shx from 'shelljs';
+import {execSync} from 'node:child_process';
 
 describe('application-config migration', () => {
   let runner: SchematicTestRunner;
@@ -43,7 +43,7 @@ describe('application-config migration', () => {
       }),
     );
 
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   it('should migrate an import of ApplicationConfig', async () => {

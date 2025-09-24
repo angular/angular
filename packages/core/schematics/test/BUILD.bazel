@@ -7,7 +7,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
-        "//:node_modules/@types/shelljs",
         "//:node_modules/tslint",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
@@ -19,7 +18,6 @@ jasmine_test(
     timeout = "moderate",
     data = [
         ":test_lib",
-        "//:node_modules/shelljs",
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:schematics_jsons",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",

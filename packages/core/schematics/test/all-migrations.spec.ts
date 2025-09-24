@@ -10,9 +10,9 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
+import {rmSync} from 'node:fs';
 import fs from 'fs';
 import {resolve} from 'path';
-import shx from 'shelljs';
 
 describe('all migrations', () => {
   let runner: SchematicTestRunner;
@@ -41,17 +41,17 @@ describe('all migrations', () => {
     );
     writeFile('/tsconfig.json', `{}`);
 
-    previousWorkingDir = shx.pwd();
+    previousWorkingDir = process.cwd();
     tmpDirPath = getSystemPath(host.root);
 
     // Switch into the temporary directory path. This allows us to run
     // the schematic against our custom unit test tree.
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   afterEach(() => {
-    shx.cd(previousWorkingDir);
-    shx.rm('-r', tmpDirPath);
+    process.chdir(previousWorkingDir);
+    rmSync(tmpDirPath, {recursive: true});
   });
 
   function writeFile(filePath: string, contents: string) {
@@ -103,7 +103,7 @@ describe('all migrations', () => {
         error = e;
       }
 
-      expect(error).toBe(null);
+      expect(error).toBe(null, migrationName);
     });
   }
 });

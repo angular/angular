@@ -9,12 +9,11 @@
  */
 
 // tslint:disable:no-console
-import shelljs from 'shelljs';
-const {exec} = shelljs;
+import {execSync, spawnSync} from 'child_process';
 
 process.stdout.write('Gathering all partial golden update targets');
 const queryCommand = `pnpm -s bazel query --output label "kind(_write_source_file, //packages/compiler-cli/test/compliance/test_cases:*)"`;
-const allUpdateTargets = exec(queryCommand, {silent: true})
+const allUpdateTargets = execSync(queryCommand, {encoding: 'utf-8', stdio: 'pipe'})
   .trim()
   .split('\n')
   .map((target) => target.trim())
@@ -33,10 +32,13 @@ process.stdout.cursorTo(0);
 for (const [index, target] of allUpdateTargets.entries()) {
   const progress = `${index + 1} / ${allUpdateTargets.length}`;
   process.stdout.write(`[${progress}] Running: ${target}`);
-  const commandResult = exec(`pnpm bazel run ${target}`, {silent: true});
+  const commandResult = spawnSync('pnpm', ['bazel', 'run', target], {
+    stdio: 'pipe',
+    encoding: 'utf-8',
+  });
   process.stdout.clearLine();
   process.stdout.cursorTo(0);
-  if (commandResult.code) {
+  if (commandResult.status) {
     console.error(`[${progress}] Failed run: ${target}`);
     console.group();
     console.error(commandResult.stdout || commandResult.stderr);
