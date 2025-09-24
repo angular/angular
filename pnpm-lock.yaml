@@ -168,9 +168,6 @@ importers:
       '@types/semver':
         specifier: ^7.3.4
         version: 7.7.1
-      '@types/shelljs':
-        specifier: ^0.8.6
-        version: 0.8.17
       '@types/systemjs':
         specifier: 6.15.3
         version: 6.15.3
@@ -306,9 +303,6 @@ importers:
       semver-dsl:
         specifier: ^1.0.1
         version: 1.0.1
-      shelljs:
-        specifier: ^0.10.0
-        version: 0.10.0
       source-map:
         specifier: 0.7.6
         version: 0.7.6
@@ -5185,9 +5179,6 @@ packages:
 
   '@types/serve-static@1.15.8':
     resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
-
-  '@types/shelljs@0.8.17':
-    resolution: {integrity: sha512-IDksKYmQA2W9MkQjiyptbMmcQx+8+Ol6b7h6dPU5S05JyiQDSb/nZKnrMrZqGwgV6VkVdl6/SPCKPDlMRvqECg==}
 
   '@types/sinonjs__fake-timers@8.1.1':
     resolution: {integrity: sha512-0kSuKjAS0TrGLJ0M/+8MaFkGsQhZpB6pxOmvS3K8FYI72K//YmdfoW9X2qPsAKh1mkwxGD5zib9s1FIFed6E8g==}
@@ -11424,10 +11415,6 @@ packages:
   shell-quote@1.8.3:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
-
-  shelljs@0.10.0:
-    resolution: {integrity: sha512-Jex+xw5Mg2qMZL3qnzXIfaxEtBaC4n7xifqaqtrZDdlheR70OGkydrPJWT0V1cA1k3nanC86x9FwAmQl6w3Klw==}
-    engines: {node: '>=18'}
 
   shiki@3.13.0:
     resolution: {integrity: sha512-aZW4l8Og16CokuCLf8CF8kq+KK2yOygapU5m3+hoGw0Mdosc6fPitjM+ujYarppj5ZIKGyPDPP1vqmQhr+5/0g==}
@@ -17742,11 +17729,6 @@ snapshots:
       '@types/http-errors': 2.0.5
       '@types/node': 24.5.2
       '@types/send': 0.17.5
-
-  '@types/shelljs@0.8.17':
-    dependencies:
-      '@types/node': 24.5.2
-      glob: 11.0.3
 
   '@types/sinonjs__fake-timers@8.1.1': {}
 
@@ -25240,11 +25222,6 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.8.3: {}
-
-  shelljs@0.10.0:
-    dependencies:
-      execa: 5.1.1
-      fast-glob: 3.3.3
 
   shiki@3.13.0:
     dependencies:

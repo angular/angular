@@ -11,7 +11,7 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
 import {resolve} from 'path';
-import shx from 'shelljs';
+import {rmSync} from 'node:fs';
 
 describe('route lazy loading migration', () => {
   let runner: SchematicTestRunner;
@@ -69,17 +69,17 @@ describe('route lazy loading migration', () => {
     `,
     );
 
-    previousWorkingDir = shx.pwd();
+    previousWorkingDir = process.cwd();
     tmpDirPath = getSystemPath(host.root);
 
     // Switch into the temporary directory path. This allows us to run
     // the schematic against our custom unit test tree.
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   afterEach(() => {
-    shx.cd(previousWorkingDir);
-    shx.rm('-r', tmpDirPath);
+    process.chdir(previousWorkingDir);
+    rmSync(tmpDirPath, {recursive: true});
   });
 
   it('should throw an error if no files match the passed-in path', async () => {
