@@ -215,7 +215,7 @@
         {
           "name": "zoneless",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Generate an application that does not use `zone.js`."
         }
       ],
