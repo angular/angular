@@ -283,7 +283,7 @@
     "jasmine": "5.10.0",
     "lru-cache": "11.2.2",
     "minimatch": "3.1.2",
-    "prettier": "2.7.1",
+    "prettier": "3.6.2",
     "rxjs": "6.6.7",
     "semver": "7.7.2",
     "source-map-support": "0.5.21",
