@@ -1,3 +1,34 @@
+<a name="21.0.0-next.5"></a>
+# 21.0.0-next.5 (2025-09-24)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8ca3e3a0bc](https://github.com/angular/angular/commit/8ca3e3a0bc5c291ea31a46a5363581876bde8bac) | feat | update to cldr 47 ([#63923](https://github.com/angular/angular/pull/63923)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c091abba6](https://github.com/angular/angular/commit/4c091abba617f07f9308baca98078c289de718d2) | fix | capture metadata for undecorated fields ([#63904](https://github.com/angular/angular/pull/63904)) |
+| [3bd91ded43](https://github.com/angular/angular/commit/3bd91ded439e7f74efd750bb333f8ad486b2058a) | fix | resolve import alias in defer blocks ([#63966](https://github.com/angular/angular/pull/63966)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [539717f58a](https://github.com/angular/angular/commit/539717f58a9bff1f8aacc857657b7df573d0bb70) | feat | support regular expressions in templates ([#63887](https://github.com/angular/angular/pull/63887)) |
+| [f008045ded](https://github.com/angular/angular/commit/f008045dedc773f70dd6f1ced73e689fb4436d6d) | fix | do not rename ARIA property bindings to attributes ([#63925](https://github.com/angular/angular/pull/63925)) |
+| [fec7c288e9](https://github.com/angular/angular/commit/fec7c288e96dd32f5861124384dbef4d5350d437) | fix | Error on invalid APP_ID ([#63252](https://github.com/angular/angular/pull/63252)) |
+| [50d9d55f49](https://github.com/angular/angular/commit/50d9d55f49822d963d4b6beeb3bf2fec3382a612) | fix | fix narrowing of `Resource.hasValue()` ([#63994](https://github.com/angular/angular/pull/63994)) |
+| [dde5badb71](https://github.com/angular/angular/commit/dde5badb7133826187314e07fcdc578297aabbc9) | fix | prevent animations renderer from impacting `animate.leave` ([#63921](https://github.com/angular/angular/pull/63921)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c0d88c37c9](https://github.com/angular/angular/commit/c0d88c37c983991236177a0337f5cab75054abf7) | fix | Emit `FormResetEvent` when resetting control ([#64024](https://github.com/angular/angular/pull/64024)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [aeb3e6c6a5](https://github.com/angular/angular/commit/aeb3e6c6a52f39300b10a4b4756637d3d95909ca) | fix | handle import aliases to the same module name ([#63934](https://github.com/angular/angular/pull/63934)) |
+| [b96afb4bfc](https://github.com/angular/angular/commit/b96afb4bfc295583c8d0c60156dd8757c7766740) | fix | handle reused templates in control flow migration ([#63996](https://github.com/angular/angular/pull/63996)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.2"></a>
 # 20.3.2 (2025-09-24)
 ### compiler-cli
