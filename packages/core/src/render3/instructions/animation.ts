@@ -89,6 +89,9 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
   // This also allows us to setup cancellation of animations in progress if the
   // gets removed early.
   const handleEnterAnimationStart = (event: AnimationEvent | TransitionEvent) => {
+    // this early exit case is to prevent issues with bubbling events that are from child element animations
+    if (event.target !== nativeElement) return;
+
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
       cleanupFns.push(renderer.listen(nativeElement, eventName, handleEnterAnimationEnd));
@@ -97,6 +100,9 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
 
   // When the longest animation ends, we can remove all the classes
   const handleEnterAnimationEnd = (event: AnimationEvent | TransitionEvent) => {
+    // this early exit case is to prevent issues with bubbling events that are from child element animations
+    if (event.target !== nativeElement) return;
+
     enterAnimationEnd(event, nativeElement, renderer);
   };
 
@@ -135,7 +141,8 @@ function enterAnimationEnd(
   renderer: Renderer,
 ) {
   const elementData = enterClassMap.get(nativeElement);
-  if (!elementData) return;
+  // this event.target check is to prevent issues with bubbling events that are from child element animations
+  if (event.target !== nativeElement || !elementData) return;
   if (isLongestAnimation(event, nativeElement)) {
     // Now that we've found the longest animation, there's no need
     // to keep bubbling up this event as it's not going to apply to
@@ -279,6 +286,8 @@ function animateLeaveClassRunner(
   cancelAnimationsIfRunning(el, renderer);
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
+    // this early exit case is to prevent issues with bubbling events that are from child element animations
+    if (event.target !== el) return;
     if (event instanceof CustomEvent || isLongestAnimation(event, el)) {
       // Now that we've found the longest animation, there's no need
       // to keep bubbling up this event as it's not going to apply to
