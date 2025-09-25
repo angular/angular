@@ -9,8 +9,6 @@
 const desiredCapabilities = {
   firefox52Win7: {browserName: 'firefox', platform: 'Windows 7', version: '52'},
   firefox53Win7: {browserName: 'firefox', platform: 'Windows 7', version: '53'},
-  edge14: {browserName: 'MicrosoftEdge', platform: 'Windows 10', version: '14.14393'},
-  edge15: {browserName: 'MicrosoftEdge', platform: 'Windows 10', version: '15.15063'},
   chrome48: {browserName: 'chrome', version: '48'},
   safari8: {browserName: 'safari', platform: 'OS X 10.10', version: '8.0'},
   safari9: {browserName: 'safari', platform: 'OS X 10.11', version: '9.0'},

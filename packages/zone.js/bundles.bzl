@@ -55,9 +55,6 @@ BUNDLES_ENTRY_POINTS = {
     "zone-error": {
         "entrypoint": _DIR + "common/rollup-error-rewrite",
     },
-    "zone-legacy": {
-        "entrypoint": _DIR + "browser/rollup-browser-legacy",
-    },
     "zone-bluebird": {
         "entrypoint": _DIR + "extra/rollup-bluebird",
     },
