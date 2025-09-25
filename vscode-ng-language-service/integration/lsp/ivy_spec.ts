@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
-import {join} from 'path';
-import {promisify} from 'util';
+import * as fs from 'node:fs';
+import {join} from 'node:path';
+import {promisify} from 'node:util';
 import {MessageConnection} from 'vscode-jsonrpc';
 import * as lsp from 'vscode-languageserver-protocol';
 import {URI} from 'vscode-uri';
@@ -158,7 +158,7 @@ describe('Angular Ivy language server', () => {
     const {targetUri} = response[0];
 
     // This can be hashed
-    expect(targetUri).toMatch(/angular\/common\/common_module.*\.d\.ts$/)
+    expect(targetUri).toMatch(/angular\/common\/common_module.*\.d\.ts$/);
 
     // Open the `.d.ts` file
     openTextDocument(client, URI.parse(targetUri).fsPath);

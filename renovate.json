@@ -14,7 +14,12 @@
     "angular-mocks-1.8",
     "convert-source-map",
     "selenium-webdriver",
-    "systemjs"
+    "systemjs",
+    "vscode-jsonrpc",
+    "vscode-languageclient",
+    "vscode-languageserver",
+    "vscode-languageserver-protocol",
+    "vscode-languageserver-types"
   ],
   "packageRules": [
     {

@@ -16,14 +16,11 @@
   },
   "dependencies": {
     "@angular/language-service": "21.0.0-next.5",
-    "vscode-html-languageservice": "^4.2.5",
+    "vscode-html-languageservice": "^5.5.1",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver": "7.0.0",
-    "vscode-languageserver-textdocument": "^1.0.7",
-    "vscode-uri": "3.0.7"
-  },
-  "devDependencies": {
-    "test": "3.3.0"
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-uri": "3.1.0"
   },
   "publishConfig": {
     "registry": "https://wombat-dressing-room.appspot.com"
