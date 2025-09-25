@@ -244,7 +244,6 @@
   ],
   "main": "./bazel-bin/client/src/extension",
   "scripts": {
-    "ng-dev": "tsx --tsconfig .ng-dev/tsconfig.json node_modules/@angular/ng-dev/bundles/cli.mjs",
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
     "format": "pnpm ng-dev format all",
     "watch": "ibazel build //vscode-ng-language-service:index.js //vscode-ng-language-service/server:index.js",
@@ -259,7 +258,7 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "20.3.0",
+    "@angular/language-service": "21.0.0-next.5",
     "typescript": "5.9.2",
     "vscode-html-languageservice": "^4.2.5",
     "vscode-jsonrpc": "6.0.0",
@@ -269,7 +268,7 @@
     "vscode-uri": "3.0.7"
   },
   "devDependencies": {
-    "@angular/core": "^20.0.0-rc.2",
+    "@angular/core": "^21.0.0-next",
     "@types/jasmine": "3.10.7",
     "@types/node": "18.19.39",
     "@types/vscode": "1.67.0",
@@ -283,11 +282,9 @@
     "jasmine": "5.10.0",
     "lru-cache": "11.2.2",
     "minimatch": "3.1.2",
-    "prettier": "3.6.2",
     "rxjs": "6.6.7",
     "semver": "7.7.2",
     "source-map-support": "0.5.21",
-    "ts-node": "^10.8.1",
     "vsce": "2.15.0",
     "vscode-languageserver-protocol": "3.16.0",
     "vscode-languageserver-types": "3.16.0",
