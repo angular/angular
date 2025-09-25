@@ -167,6 +167,7 @@ groups:
           'packages/router/**/{*,.*}',
           'packages/service-worker/**/{*,.*}',
           'packages/upgrade/**/{*,.*}',
+          'vscode-ng-language-service/**/{*,.*}',
         ])
     reviewers:
       users:
