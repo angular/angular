@@ -1384,8 +1384,8 @@ importers:
         specifier: 11.2.2
         version: 11.2.2
       minimatch:
-        specifier: 3.1.2
-        version: 3.1.2
+        specifier: 10.0.3
+        version: 10.0.3
       prettier:
         specifier: 3.6.2
         version: 3.6.2
