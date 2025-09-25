@@ -5,6 +5,9 @@ package(default_visibility = ["//devtools:__subpackages__"])
 sass_binary(
     name = "signals-tab_styles",
     src = "signals-tab.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
 )
 
 ng_project(
