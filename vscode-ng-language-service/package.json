@@ -261,7 +261,7 @@
   "dependencies": {
     "@angular/language-service": "20.3.0",
     "typescript": "5.9.2",
-    "vscode-html-languageservice": "^4.2.5",
+    "vscode-html-languageservice": "^5.0.0",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageclient": "7.0.0",
     "vscode-languageserver": "7.0.0",
