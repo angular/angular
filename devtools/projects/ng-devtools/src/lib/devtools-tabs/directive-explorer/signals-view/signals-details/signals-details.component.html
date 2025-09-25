@@ -23,8 +23,10 @@
 </div>
 
 <dl>
-  <dt>Name:</dt>
-  <dd class="node-name">{{node.label}}</dd>
+  @if (node.label) {
+    <dt>Name:</dt>
+    <dd class="node-name">{{node.label}}</dd>
+  }
   <dt>Type:</dt>
   <dd>
     <span [class]="TYPE_CLASS_MAP[node.kind]" [class.type]="true">{{node.kind}}</span>

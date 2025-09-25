@@ -1,3 +1,5 @@
+@use '../../../../styles/typography' as tg;
+
 :host {
   position: relative;
   height: 100%;
@@ -16,10 +18,6 @@
         contain: paint;
         width: 70px;
         height: 60px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
         text-align: center;
         word-wrap: break-word;
         border-radius: 8px;
@@ -31,14 +29,20 @@
           border-width: 5px;
         }
         .header {
-          width: 85%;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          padding: 7.5%;
+          padding: 3px;
           background-color: var(--red-06);
+
+          &.special {
+            font-style: italic;
+          }
         }
         .body {
+          font-family: tg.$font-family-mono;
+          font-size: 11px;
+          padding: 5px;
           flex: 1;
         }
       }

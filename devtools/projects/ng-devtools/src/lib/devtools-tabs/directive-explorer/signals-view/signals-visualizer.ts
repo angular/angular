@@ -113,8 +113,17 @@ export class SignalsGraphVisualizer {
       };
       outer.className = `node-label kind-${node.kind}`;
       const header = document.createElement('div');
-      header.className = 'header';
-      header.textContent = node.label ?? 'Unnamed';
+      let label = node.label;
+      if (node.kind === 'effect') {
+        label = 'Effect';
+        header.classList.add('special');
+      }
+      if (!label) {
+        label = 'Unnamed';
+        header.classList.add('special');
+      }
+      header.classList.add('header');
+      header.textContent = label;
       const body = document.createElement('div');
       body.className = 'body';
       body.textContent = getBodyText(node);
