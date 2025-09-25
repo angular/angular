@@ -1378,8 +1378,8 @@ importers:
         specifier: 1.6.1
         version: 1.6.1
       vscode-tmgrammar-test:
-        specifier: 0.0.11
-        version: 0.0.11
+        specifier: 0.1.3
+        version: 0.1.3
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
@@ -1388,7 +1388,7 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))
       '@angular/compiler':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
@@ -1409,7 +1409,7 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))
       '@angular/core':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
@@ -1418,7 +1418,7 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))
       '@angular/compiler':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
@@ -1443,7 +1443,7 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))
       '@angular/compiler':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
@@ -1688,7 +1688,6 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@angular/core': 21.0.0-next.5
-      rxjs: ^6.5.3 || ^7.4.0
 
   '@angular/compiler-cli@21.0.0-next.5':
     resolution: {integrity: sha512-IJZJ4B0xMZMsdoM44HghiaGR87arI9kbIDIzjYDIP+vV+yL6o2ZfEs1MqjMt53NDtvYuWqk2/Pg3RZZnfBmjeQ==}
@@ -5776,6 +5775,9 @@ packages:
     resolution: {integrity: sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==}
     deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
+  bottleneck@2.19.5:
+    resolution: {integrity: sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==}
+
   boundary@2.0.0:
     resolution: {integrity: sha512-rJKn5ooC9u8q13IMCrW0RSp31pxBCHE3y9V/tp3TdWSLf8Em3p6Di4NBpfzbJge9YjjFEsD0RtFEjtvHL5VyEA==}
 
@@ -6223,6 +6225,10 @@ packages:
   commander@8.3.0:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
+
+  commander@9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
 
   common-path-prefix@3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}
@@ -12349,11 +12355,11 @@ packages:
     engines: {node: '>=8.9.3'}
     deprecated: This package has been renamed to @vscode/test-electron, please update to the new name
 
-  vscode-textmate@5.5.0:
-    resolution: {integrity: sha512-jToQkPGMNKn0eyKyitYeINJF0NoD240aYyKPIWJv5W2jfPt++jIRg0OSergubtGhbw6SoefkvBYEpX7TsfoSUQ==}
+  vscode-textmate@7.0.4:
+    resolution: {integrity: sha512-9hJp0xL7HW1Q5OgGe03NACo7yiCTMEk3WU/rtKXUbncLtdg6rVVNJnHwD88UhbIYU2KoxY0Dih0x+kIsmUKn2A==}
 
-  vscode-tmgrammar-test@0.0.11:
-    resolution: {integrity: sha512-Bd60x/OeBLAQnIxiR2GhUic1CQZOFfWM8Pd43HjdEUBf/0vcvYAlFQikOXvv+zkItHLznjKaDX7VWKPVYUF9ug==}
+  vscode-tmgrammar-test@0.1.3:
+    resolution: {integrity: sha512-Wg6Pz+ePAT1O+F/A1Fc4wS5vY2X+HNtgN4qMdL+65NLQYd1/zdDWH4fhwsLjX8wTzeXkMy49Cr4ZqWTJ7VnVxg==}
     hasBin: true
 
   vscode-uri@3.0.8:
@@ -13326,7 +13332,7 @@ snapshots:
       - chokidar
       - supports-color
 
-  '@angular/common@21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)':
+  '@angular/common@21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))':
     dependencies:
       '@angular/core': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
       rxjs: 7.8.2
@@ -18247,6 +18253,8 @@ snapshots:
 
   boolean@3.2.0: {}
 
+  bottleneck@2.19.5: {}
+
   boundary@2.0.0: {}
 
   boxen@5.1.2:
@@ -18764,6 +18772,8 @@ snapshots:
   commander@7.2.0: {}
 
   commander@8.3.0: {}
+
+  commander@9.5.0: {}
 
   common-path-prefix@3.0.0: {}
 
@@ -26423,16 +26433,17 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vscode-textmate@5.5.0: {}
+  vscode-textmate@7.0.4: {}
 
-  vscode-tmgrammar-test@0.0.11:
+  vscode-tmgrammar-test@0.1.3:
     dependencies:
+      bottleneck: 2.19.5
       chalk: 2.4.2
-      commander: 2.20.3
+      commander: 9.5.0
       diff: 4.0.2
       glob: 7.2.3
       vscode-oniguruma: 1.7.0
-      vscode-textmate: 5.5.0
+      vscode-textmate: 7.0.4
 
   vscode-uri@3.0.8: {}
 
