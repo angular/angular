@@ -18,7 +18,6 @@ ts_project(
     tsconfig = ":tsconfig",
     deps = [
         "//vscode-ng-language-service:node_modules/@types/jasmine",
-        "//vscode-ng-language-service:node_modules/rxjs",
         "//vscode-ng-language-service/server/src",
     ],
 )

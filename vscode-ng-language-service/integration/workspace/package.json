@@ -6,7 +6,7 @@
     "@angular/compiler": "21.0.0-next.5",
     "@angular/compiler-cli": "21.0.0-next.5",
     "@angular/core": "21.0.0-next.5",
-    "rxjs": "6.6.7",
-    "zone.js": "0.11.5"
+    "rxjs": "7.8.2",
+    "zone.js": "0.15.1"
   }
 }

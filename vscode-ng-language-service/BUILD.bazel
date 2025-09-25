@@ -3,7 +3,7 @@ load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@npm//vscode-ng-language-service:vsce/package_json.bzl", vsce_bin = "bin")
+load("@npm//vscode-ng-language-service:@vscode/vsce/package_json.bzl", vsce_bin = "bin")
 
 npm_link_all_packages(name = "node_modules")
 
@@ -34,36 +34,13 @@ expand_template_rule(
 npm_package(
     name = "vsix_sandbox",
     srcs = [
-        "package_expanded.json",
-        "angular.png",
         "CHANGELOG.md",
         "README.md",
+        "angular.png",
+        "package_expanded.json",
         "//vscode-ng-language-service/client:index.js",
         "//vscode-ng-language-service/server:npm_files",
         "//vscode-ng-language-service/syntaxes:npm_files",
-
-        # Transitive closure of npm deps needed for vsce; this set was determined manually by
-        # running `bazel build //:vsix` and burning down missing packages. We do this so that we
-        # don't have to run an additional `npm install` action to create a node_modules within the
-        # //:npm npm_package where the vsce build takes place.
-        "//vscode-ng-language-service:node_modules/@angular/language-service",
-        "//vscode-ng-language-service:node_modules/balanced-match",
-        "//vscode-ng-language-service:node_modules/brace-expansion",
-        "//vscode-ng-language-service:node_modules/concat-map",
-        "//vscode-ng-language-service:node_modules/lru-cache",
-        "//vscode-ng-language-service:node_modules/minimatch",
-        "//vscode-ng-language-service:node_modules/semver",
-        "//vscode-ng-language-service:node_modules/typescript",
-        "//vscode-ng-language-service:node_modules/vscode-jsonrpc",
-        "//vscode-ng-language-service:node_modules/vscode-html-languageservice",
-        "//vscode-ng-language-service:node_modules/vscode-languageclient",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver-protocol",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver-textdocument",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver-types",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver",
-        "//vscode-ng-language-service:node_modules/vscode-nls",
-        "//vscode-ng-language-service:node_modules/vscode-uri",
-        "//vscode-ng-language-service:node_modules/yallist",
     ],
     exclude_srcs_patterns = [
         "*.map",
@@ -90,11 +67,11 @@ vsce_bin.vsce(
         "package",
         "-o",
         "../ng-template.vsix",
+        "--no-dependencies",
+        "--allow-package-env-file",
+        "--allow-package-all-secrets",
     ],
     chdir = "vscode-ng-language-service/vsix_sandbox",
-    # vsce requires npm on the PATH; we can get this from the Bazel rules_nodejs but it is not
-    # included by default in rules_js binary rules so we include it here explicitly
-    include_npm = True,
 )
 
 npm_package(
