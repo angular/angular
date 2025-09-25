@@ -154,9 +154,12 @@ describe('Angular Ivy language server', () => {
       position: {line: 0, character: 7},
     })) as lsp.LocationLink[];
     // 2 results - the NgIf class and the ngIf input
-    expect(Array.isArray(response)).toBe(true);
+    expect(response).toHaveSize(2);
     const {targetUri} = response[0];
-    expect(targetUri.endsWith('angular/common/index.d.ts')).toBeTrue();
+
+    // This can be hashed
+    expect(targetUri).toMatch(/angular\/common\/common_module.*\.d\.ts$/)
+
     // Open the `.d.ts` file
     openTextDocument(client, URI.parse(targetUri).fsPath);
     // try a hover operation again on *ngIf
@@ -168,7 +171,7 @@ describe('Angular Ivy language server', () => {
     });
     expect(hoverResponse?.contents).toContain({
       language: 'typescript',
-      value: 'declare (property) NgIf<boolean>.ngIf: boolean',
+      value: 'deprecated,declare (property) NgIf<boolean>.ngIf: boolean',
     });
   });
 

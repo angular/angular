@@ -41,6 +41,7 @@ npm_package(
         "//vscode-ng-language-service/client:index.js",
         "//vscode-ng-language-service/server:npm_files",
         "//vscode-ng-language-service/syntaxes:npm_files",
+
         # Transitive closure of npm deps needed for vsce; this set was determined manually by
         # running `bazel build //:vsix` and burning down missing packages. We do this so that we
         # don't have to run an additional `npm install` action to create a node_modules within the
