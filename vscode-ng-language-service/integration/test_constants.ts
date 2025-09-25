@@ -1,6 +1,5 @@
-import {join, resolve} from 'path';
-
-import {convertPathToFileUrl} from './lsp/test_utils';
+import {join, resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
 
 export const IS_BAZEL = !!process.env['TEST_TARGET'];
 export const PACKAGE_ROOT = IS_BAZEL ? resolve(__dirname, '..') : resolve(__dirname, '../..');
@@ -15,13 +14,13 @@ export const PRE_STANDALONE_PROJECT_PATH = join(
 );
 
 export const APP_COMPONENT = join(PROJECT_PATH, 'app', 'app.component.ts');
-export const APP_COMPONENT_URI = convertPathToFileUrl(APP_COMPONENT);
+export const APP_COMPONENT_URI = pathToFileURL(APP_COMPONENT).href;
 export const BAR_COMPONENT = join(PROJECT_PATH, 'app', 'bar.component.ts');
-export const BAR_COMPONENT_URI = convertPathToFileUrl(BAR_COMPONENT);
+export const BAR_COMPONENT_URI = pathToFileURL(BAR_COMPONENT).href;
 export const APP_COMPONENT_MODULE = join(PROJECT_PATH, 'app', 'app.module.ts');
-export const APP_COMPONENT_MODULE_URI = convertPathToFileUrl(APP_COMPONENT_MODULE);
+export const APP_COMPONENT_MODULE_URI = pathToFileURL(APP_COMPONENT_MODULE).href;
 export const FOO_TEMPLATE = join(PROJECT_PATH, 'app', 'foo.component.html');
-export const FOO_TEMPLATE_URI = convertPathToFileUrl(FOO_TEMPLATE);
+export const FOO_TEMPLATE_URI = pathToFileURL(FOO_TEMPLATE).href;
 export const FOO_COMPONENT = join(PROJECT_PATH, 'app', 'foo.component.ts');
-export const FOO_COMPONENT_URI = convertPathToFileUrl(FOO_COMPONENT);
+export const FOO_COMPONENT_URI = pathToFileURL(FOO_COMPONENT).href;
 export const TSCONFIG = join(PROJECT_PATH, 'tsconfig.json');
