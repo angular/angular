@@ -1673,5 +1673,79 @@ describe('Animation', () => {
       tick();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
     }));
+
+    it('should not remove elements when child element animations finish', fakeAsync(() => {
+      const animateStyles = `
+        .fade {
+          animation: fade-out 500ms;
+        }
+        .flash {
+          animation: flash 200ms;
+        }
+        @keyframes flash {
+          from {
+            background-color: rgba(255, 255, 255, 1);
+          }
+          to {
+            background-color: rgba(255, 255, 255, 0);;
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @if (show()) {
+              <p animate.leave="fade" #el>
+                I should slide in.
+                <button [class]="buttonClass()" (click)="flash()">click me</button>
+              </p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+        buttonClass = signal('');
+        flash() {
+          this.show.update((val) => !val);
+          this.buttonClass.set('flash');
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      cmp.flash();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      fixture.debugElement
+        .query(By.css('button'))
+        .nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'flash', bubbles: true}),
+        );
+      tick();
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(1);
+      fixture.debugElement
+        .query(By.css('p'))
+        .nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'fade-out', bubbles: true}),
+        );
+      tick();
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(0);
+    }));
   });
 });
