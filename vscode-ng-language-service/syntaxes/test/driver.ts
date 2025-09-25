@@ -39,15 +39,12 @@ function spawn(...args: Parameters<typeof cp.spawn>): Promise<number> {
 async function snapshotTest({scopeName, grammarFiles, testFile}: TestCase): Promise<number> {
   grammarFiles.push(...DUMMY_GRAMMARS);
   const grammarOptions = grammarFiles.reduce((acc, file) => [...acc, '-g', file], [] as string[]);
-  const extraArgs = process.argv.slice(3);
   const options = [
-    'node_modules/vscode-tmgrammar-test/dist/src/snapshot.js',
+    'node_modules/vscode-tmgrammar-test/dist/snapshot.js',
     '-s',
     scopeName,
     ...grammarOptions,
-    '-t',
     testFile,
-    ...extraArgs,
   ];
 
   return spawn('node', options, {stdio: 'inherit' /* use parent process IO */}).catch(
