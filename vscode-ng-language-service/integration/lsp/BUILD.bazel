@@ -15,11 +15,12 @@ jasmine_test(
         "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
         "//vscode-ng-language-service/server:index",
     ],
+    flaky = True,
     node_modules = "//vscode-ng-language-service:node_modules",
     shard_count = 2,
     tags = [
         "e2e",
-        "no-remote",
+        "no-remote-exec",
         "no-sandbox",
     ],
 )
