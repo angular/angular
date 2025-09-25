@@ -1332,8 +1332,8 @@ importers:
         specifier: 6.0.0
         version: 6.0.0
       vscode-languageclient:
-        specifier: 7.0.0
-        version: 7.0.0
+        specifier: 9.0.1
+        version: 9.0.1
       vscode-languageserver:
         specifier: 7.0.0
         version: 7.0.0
@@ -12687,9 +12687,9 @@ packages:
     resolution: {integrity: sha512-C+r0eKJUIfiDIfwJhria30+TYWPtuHJXHtI7J0YlOmKAo7ogxP20T0zxB7HZQIFhIyvoBPwWskjxrvAtfjyZfA==}
     engines: {node: '>=14.0.0'}
 
-  vscode-languageclient@7.0.0:
-    resolution: {integrity: sha512-P9AXdAPlsCgslpP9pRxYPqkNYV7Xq8300/aZDpO35j1fJm/ncize8iGswzYlcvFw5DQUx4eVk+KvfXdL0rehNg==}
-    engines: {vscode: ^1.52.0}
+  vscode-languageclient@9.0.1:
+    resolution: {integrity: sha512-JZiimVdvimEuHh5olxhxkht09m3JzUGwggb5eRUkzzJhZ2KjCN0nh55VfiED9oez9DyF8/fz1g1iBV3h+0Z2EA==}
+    engines: {vscode: ^1.82.0}
 
   vscode-languageserver-protocol@3.16.0:
     resolution: {integrity: sha512-sdeUoAawceQdgIfTI+sdcwkiK2KU+2cbEYA0agzM2uqaUy2UpnnGHtWTHVEtS0ES4zHU0eMFRGN+oQgDxlD66A==}
@@ -26921,11 +26921,11 @@ snapshots:
 
   vscode-jsonrpc@8.2.0: {}
 
-  vscode-languageclient@7.0.0:
+  vscode-languageclient@9.0.1:
     dependencies:
-      minimatch: 3.1.2
+      minimatch: 5.1.6
       semver: 7.7.2
-      vscode-languageserver-protocol: 3.16.0
+      vscode-languageserver-protocol: 3.17.5
 
   vscode-languageserver-protocol@3.16.0:
     dependencies:
