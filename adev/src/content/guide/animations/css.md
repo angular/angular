@@ -167,7 +167,7 @@ In this example, the `rotate` and `fade-in` animations fire at the same time, bu
 
 ### Animating the items of a reordering list
 
-Items in a `@for` loop will be removed and re-added, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example above.
+Items in a `@for` loop will be removed and re-added, which will fire off animations using `@starting-styles` for entry animations. Alternatively, you can use `animate.enter` for this same behavior. Use `animate.leave` to animate elements as they are removed, as seen in the example below.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/native-css/reorder.component.ts">
     <docs-code header="src/app/reorder.component.ts" path="adev/src/content/examples/animations/src/app/native-css/reorder.component.ts" />
