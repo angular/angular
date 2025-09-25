@@ -2664,7 +2664,7 @@ describe('R3 template transform', () => {
         ['Directive', 'Dir'],
         ['TextAttribute', 'a', '1'],
         ['BoundAttribute', 0, 'b', 'two'],
-        ['BoundAttribute', 5, 'd', 'd'],
+        ['BoundAttribute', BindingType.TwoWay, 'd', 'd'],
         ['BoundEvent', 0, 'c', null, 'c()'],
         ['BoundEvent', 2, 'dChange', null, 'd'],
       ]);
@@ -2770,5 +2770,20 @@ describe('R3 template transform', () => {
         expect(() => parseSelectorless('<div @Dir(#foo #foo)></div>')).toThrowError(pattern);
       });
     });
+  });
+
+  it('should report an error for attribute bindings on ng-container', () => {
+    const template = `<ng-container [attr.title]="'test'"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe(
+      'Attribute bindings are not supported on ng-container. Use property bindings instead.',
+    );
+  });
+
+  it('should not report an error on non-attr bindings on ng-container', () => {
+    const template = `<ng-container *ngIf"test" [ngTemplateOutlet]="foo"></ng-container>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(0);
   });
 });
