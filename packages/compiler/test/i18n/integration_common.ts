@@ -9,7 +9,6 @@
 import {NgLocalization} from '@angular/common';
 import {Serializer} from '../../src/i18n';
 import {MessageBundle} from '../../src/i18n/message_bundle';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {ResourceLoader} from '../../src/resource_loader';
 import {Component, DebugElement, TRANSLATIONS, TRANSLATIONS_FORMAT} from '@angular/core';
@@ -204,6 +203,6 @@ export function createComponent(html: string) {
 
 export function serializeTranslations(html: string, serializer: Serializer) {
   const catalog = new MessageBundle(new HtmlParser(), [], {});
-  catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
+  catalog.updateFromTemplate(html, 'file.ts');
   return catalog.write(serializer);
 }

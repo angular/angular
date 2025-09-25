@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import * as core from '../../core';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/defaults';
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {RecursiveVisitor, visitAll} from '../r3_ast';
@@ -123,12 +122,6 @@ export function createComponentDefinitionMap(
     definitionMap.set(
       'encapsulation',
       o.importExpr(R3.ViewEncapsulation).prop(core.ViewEncapsulation[meta.encapsulation]),
-    );
-  }
-  if (meta.interpolation !== DEFAULT_INTERPOLATION_CONFIG) {
-    definitionMap.set(
-      'interpolation',
-      o.literalArr([o.literal(meta.interpolation.start), o.literal(meta.interpolation.end)]),
     );
   }
 
