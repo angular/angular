@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import * as fs from 'node:fs';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
 import {MessageConnection} from 'vscode-jsonrpc';
 import * as lsp from 'vscode-languageserver-protocol';
-import {URI} from 'vscode-uri';
 
 import {
   ProjectLanguageService,
@@ -42,7 +42,6 @@ import {
 } from '../test_constants';
 
 import {
-  convertPathToFileUrl,
   createConnection,
   createTracer,
   initializeServer,
@@ -161,7 +160,7 @@ describe('Angular Ivy language server', () => {
     expect(targetUri).toMatch(/angular\/common\/common_module.*\.d\.ts$/);
 
     // Open the `.d.ts` file
-    openTextDocument(client, URI.parse(targetUri).fsPath);
+    openTextDocument(client, fileURLToPath(targetUri));
     // try a hover operation again on *ngIf
     const hoverResponse = await client.sendRequest(lsp.HoverRequest.type, {
       textDocument: {
@@ -998,7 +997,7 @@ function getDiagnosticsForFile(
     client.onNotification(
       lsp.PublishDiagnosticsNotification.type,
       (params: lsp.PublishDiagnosticsParams) => {
-        if (params.uri === convertPathToFileUrl(fileName)) {
+        if (params.uri === pathToFileURL(fileName).href) {
           resolve(params.diagnostics);
         }
       },
