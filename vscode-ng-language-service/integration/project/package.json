@@ -2,15 +2,15 @@
   "name": "angular-ls-integration-test-project",
   "private": true,
   "dependencies": {
-    "@angular/common": "18.1.0-rc.0",
-    "@angular/compiler": "18.1.0-rc.0",
-    "@angular/compiler-cli": "18.1.0-rc.0",
-    "@angular/core": "18.1.0-rc.0",
+    "@angular/common": "21.0.0-next.5",
+    "@angular/compiler": "21.0.0-next.5",
+    "@angular/compiler-cli": "21.0.0-next.5",
+    "@angular/core": "21.0.0-next.5",
     "rxjs": "6.6.7",
     "zone.js": "0.11.5"
   },
   "devDependencies": {
-    "ng-packagr": "^18.0.0-next.0",
+    "ng-packagr": "^21.0.0-next",
     "typescript": "~5.5.3"
   },
   "scripts": {
