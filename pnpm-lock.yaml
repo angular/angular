@@ -1348,8 +1348,8 @@ importers:
         specifier: ^20.0.0-rc.2
         version: 20.3.0(@angular/compiler@packages+compiler)(rxjs@6.6.7)
       '@types/jasmine':
-        specifier: 3.10.7
-        version: 3.10.7
+        specifier: 5.1.9
+        version: 5.1.9
       '@types/node':
         specifier: 18.19.39
         version: 18.19.39
@@ -5091,9 +5091,6 @@ packages:
 
   '@types/istanbul-reports@3.0.4':
     resolution: {integrity: sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==}
-
-  '@types/jasmine@3.10.7':
-    resolution: {integrity: sha512-brLuHhITMz4YV2IxLstAJtyRJgtWfLqFKiqiJFvFWMSmydpAmn42CE4wfw7ywkSk02UrufhtzipTcehk8FctoQ==}
 
   '@types/jasmine@5.1.9':
     resolution: {integrity: sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==}
@@ -17620,8 +17617,6 @@ snapshots:
   '@types/istanbul-reports@3.0.4':
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
-
-  '@types/jasmine@3.10.7': {}
 
   '@types/jasmine@5.1.9': {}
 

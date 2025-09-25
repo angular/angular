@@ -270,7 +270,7 @@
   },
   "devDependencies": {
     "@angular/core": "^20.0.0-rc.2",
-    "@types/jasmine": "3.10.7",
+    "@types/jasmine": "5.1.9",
     "@types/node": "18.19.39",
     "@types/vscode": "1.67.0",
     "balanced-match": "1.0.2",
