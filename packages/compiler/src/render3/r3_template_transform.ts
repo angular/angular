@@ -234,6 +234,18 @@ class HtmlAstToIvyAst implements html.Visitor {
         parsedProperties,
         i18nAttrsMeta,
       );
+
+      if (element.name === 'ng-container') {
+        for (const bound of attrs.bound) {
+          if (bound.type === BindingType.Attribute) {
+            this.reportError(
+              `Attribute bindings are not supported on ng-container. Use property bindings instead.`,
+              bound.sourceSpan,
+            );
+          }
+        }
+      }
+
       parsedElement = new t.Element(
         element.name,
         attributes,
