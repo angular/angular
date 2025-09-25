@@ -20,7 +20,6 @@ import {
   CssSelector,
   DeclarationListEmitMode,
   DeclareComponentTemplateInfo,
-  DEFAULT_INTERPOLATION_CONFIG,
   DeferBlockDepsEmitMode,
   DomElementSchemaRegistry,
   ExternalExpr,
@@ -955,7 +954,6 @@ export class ComponentDecoratorHandler
           template,
           encapsulation,
           changeDetection,
-          interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
           styles,
           externalStyles,
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -1349,7 +1347,6 @@ export class ComponentDecoratorHandler
     ctx.updateFromTemplate(
       analysis.template.content,
       analysis.template.declaration.resolvedTemplateUrl,
-      analysis.template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
     );
   }
 
@@ -2473,7 +2470,7 @@ export class ComponentDecoratorHandler
 
   /** Creates a new binding parser. */
   private getNewBindingParser() {
-    return makeBindingParser(undefined, this.enableSelectorless);
+    return makeBindingParser(this.enableSelectorless);
   }
 }
 
