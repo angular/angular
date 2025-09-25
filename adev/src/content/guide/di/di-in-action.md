@@ -2,40 +2,7 @@
 
 This guide explores additional features of dependency injection in Angular.
 
-## Custom providers with `@Inject`
-
-Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs.
-The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`:
-
-<docs-code header="src/app/storage.service.ts" language="typescript"
-           highlight="[[3,6],[12]]">
-import { Inject, Injectable, InjectionToken } from '@angular/core';
-
-export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
-  providedIn: 'root',
-  factory: () => localStorage
-});
-
-@Injectable({
-  providedIn: 'root'
-})
-export class BrowserStorageService {
-  public storage = inject(BROWSER_STORAGE);
-
-  get(key: string) {
-    return this.storage.getItem(key);
-  }
-
-  set(key: string, value: string) {
-    this.storage.setItem(key, value);
-  }
-}
-</docs-code>
-
-The `factory` function returns the `localStorage` property that is attached to the browser's window object.
-The `inject` function initializes the `storage` property with an instance of the token.
-
-This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
+NOTE: For comprehensive coverage of InjectionToken and custom providers, see the [defining dependency providers guide](guide/di/defining-dependency-providers#injection-tokens).
 
 ## Inject the component's DOM element
 
