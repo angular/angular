@@ -129,6 +129,8 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/setup@08d451f9b4e900928b65cd31234693ef9a994492
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@08d451f9b4e900928b65cd31234693ef9a994492
+        with:
+          google_credential: ${{ secrets.RBE_TRUSTED_BUILDS_USER }}
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run tests
