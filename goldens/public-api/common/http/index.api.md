@@ -3134,6 +3134,7 @@ export type HttpTransferCacheOptions = {
     filter?: (req: HttpRequest<unknown>) => boolean;
     includePostRequests?: boolean;
     includeRequestsWithAuthHeaders?: boolean;
+    includeFailedResponses?: boolean;
 };
 
 // @public
