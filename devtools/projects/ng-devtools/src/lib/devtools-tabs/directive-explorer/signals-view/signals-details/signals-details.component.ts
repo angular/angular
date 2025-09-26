@@ -24,6 +24,7 @@ const TYPE_CLASS_MAP: {[key: string]: string} = {
   'computed': 'type-computed',
   'effect': 'type-effect',
   'template': 'type-template',
+  'linkedSignal': 'type-linked-signal',
 };
 
 @Component({
