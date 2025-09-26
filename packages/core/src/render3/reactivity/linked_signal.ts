@@ -27,7 +27,7 @@ const identityFn = <T>(v: T) => v;
  */
 export function linkedSignal<D>(
   computation: () => D,
-  options?: {equal?: ValueEqualityFn<NoInfer<D>>},
+  options?: {equal?: ValueEqualityFn<NoInfer<D>>; debugName?: string},
 ): WritableSignal<D>;
 
 /**
