@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {InjectionToken} from '../di/injection_token';
+import {RNode} from '../render3/interfaces/renderer_dom';
 
 /**
  * A [DI token](api/core/InjectionToken) that enables or disables all enter and leave animations.
@@ -15,6 +16,27 @@ export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
   {
     providedIn: 'root',
     factory: () => false,
+  },
+);
+
+export interface AnimationQueue {
+  queue: Set<Function>;
+  isScheduled: boolean;
+}
+
+/**
+ * A [DI token](api/core/InjectionToken) for the queue of all animations.
+ */
+export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationQueue' : '',
+  {
+    providedIn: 'root',
+    factory: () => {
+      return {
+        queue: new Set(),
+        isScheduled: false,
+      };
+    },
   },
 );
 
@@ -78,10 +100,10 @@ export interface LongestAnimation {
 
 export interface AnimationLViewData {
   // Enter animations that apply to nodes in this view
-  enter?: Function[];
+  enter?: Map<RNode, Function[]>;
 
   // Leave animations that apply to nodes in this view
-  leave?: (() => Promise<void>)[];
+  leave?: Map<RNode, (() => Promise<void>)[]>;
 
   // Leave animations that apply to nodes in this view
   // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type

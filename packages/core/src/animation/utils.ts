@@ -11,7 +11,7 @@ import {ANIMATIONS_DISABLED, LongestAnimation} from './interfaces';
 import {INJECTOR, LView, DECLARATION_LCONTAINER, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
-import {RElement} from '../render3/interfaces/renderer_dom';
+import {RElement, RNode} from '../render3/interfaces/renderer_dom';
 import {TNode} from '../render3/interfaces/node';
 import {getBeforeNodeForView} from '../render3/node_manipulation';
 
@@ -162,17 +162,17 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 /**
  * Retrieves the list of specified enter animations from the lView
  */
-export function getLViewEnterAnimations(lView: LView): Function[] {
+export function getLViewEnterAnimations(lView: LView): Map<RNode, Function[]> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.enter ??= []);
+  return (animationData.enter ??= new Map<RNode, Function[]>());
 }
 
 /**
  * Retrieves the list of specified leave animations from the lView
  */
-export function getLViewLeaveAnimations(lView: LView): Function[] {
+export function getLViewLeaveAnimations(lView: LView): Map<RNode, (() => Promise<void>)[]> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.leave ??= []);
+  return (animationData.leave ??= new Map<RNode, (() => Promise<void>)[]>());
 }
 
 /**
@@ -241,11 +241,4 @@ export function isLongestAnimation(
       (longestAnimation.propertyName !== undefined &&
         (event as TransitionEvent).propertyName === longestAnimation.propertyName))
   );
-}
-
-/**
- * Determines if a given tNode is a content projection root node.
- */
-export function isTNodeContentProjectionRoot(tNode: TNode): boolean {
-  return Array.isArray(tNode.projection);
 }

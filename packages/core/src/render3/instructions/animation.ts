@@ -7,12 +7,13 @@
  */
 
 import {
+  ANIMATION_QUEUE,
   AnimationCallbackEvent,
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
 } from '../../animation/interfaces';
 import {getLView, getCurrentTNode} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, LView} from '../interfaces/view';
+import {RENDERER, INJECTOR, CONTEXT, LView, ANIMATIONS} from '../interfaces/view';
 import {getNativeByTNode} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
@@ -20,6 +21,8 @@ import {NgZone} from '../../zone';
 import {determineLongestAnimation, allLeavingAnimations} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
 import {promiseWithResolvers} from '../../util/promise_with_resolvers';
+import {inject, Injector} from '../../di';
+import {afterEveryRender} from '../after_render/hooks';
 
 import {
   areAnimationsDisabled,
@@ -66,15 +69,25 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   cancelLeavingNodes(tNode, lView);
 
-  getLViewEnterAnimations(lView).push(() => runEnterAnimation(lView, tNode, value));
+  const animations = getLViewEnterAnimations(lView);
+  const rNode = getNativeByTNode(tNode, lView);
+  const enterAnimations = animations.get(rNode) ?? [];
+  enterAnimations.push(() => runEnterAnimation(lView, tNode, value));
+  animations.set(rNode, enterAnimations);
+
+  queueEnterAnimations(lView);
+  scheduleAnimationQueue(lView[INJECTOR]);
 
   return ɵɵanimateEnter; // For chaining
 }
 
-export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Function): void {
+export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Function): boolean {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+  // we want to skip running enter animations if the element isn't yet on the page.
+  if (!nativeElement.isConnected) return false;
 
   const renderer = lView[RENDERER];
   const ngZone = lView[INJECTOR]!.get(NgZone);
@@ -94,7 +107,7 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
 
     const eventName = event instanceof AnimationEvent ? 'animationend' : 'transitionend';
     ngZone.runOutsideAngular(() => {
-      cleanupFns.push(renderer.listen(nativeElement, eventName, handleEnterAnimationEnd));
+      renderer.listen(nativeElement, eventName, handleEnterAnimationEnd);
     });
   };
 
@@ -118,6 +131,7 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
     for (const klass of activeClasses) {
       renderer.addClass(nativeElement, klass);
     }
+
     // In the case that the classes added have no animations, we need to remove
     // the classes right away. This could happen because someone is intentionally
     // preventing an animation via selector specificity.
@@ -133,6 +147,7 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
       });
     });
   }
+  return true;
 }
 
 function enterAnimationEnd(
@@ -182,7 +197,14 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   cancelLeavingNodes(tNode, lView);
 
-  getLViewEnterAnimations(lView).push(() => runEnterAnimationFunction(lView, tNode, value));
+  const animations = getLViewEnterAnimations(lView);
+  const rNode = getNativeByTNode(tNode, lView);
+  const enterAnimations = animations.get(rNode) ?? [];
+  enterAnimations.push(() => runEnterAnimationFunction(lView, tNode, value));
+  animations.set(rNode, enterAnimations);
+
+  queueEnterAnimations(lView);
+  scheduleAnimationQueue(lView[INJECTOR]);
 
   return ɵɵanimateEnterListener;
 }
@@ -190,9 +212,12 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 /**
  * runs enter animations when a custom function is provided
  */
-function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationFunction) {
+function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationFunction): void {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
+
+  // we want to skip running enter animations if the element isn't yet on the page.
+  if (!nativeElement.isConnected) return;
 
   value.call(lView[CONTEXT], {target: nativeElement, animationComplete: noOpAnimationComplete});
 }
@@ -224,9 +249,12 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
 
   const tNode = getCurrentTNode()!;
 
-  getLViewLeaveAnimations(lView).push(() =>
-    runLeaveAnimations(lView, tNode, value, animationsDisabled),
-  );
+  const animations = getLViewLeaveAnimations(lView);
+  const rNode = getNativeByTNode(tNode, lView);
+  const leaveAnimations = animations.get(rNode) ?? [];
+  leaveAnimations.push(() => runLeaveAnimations(lView, tNode, value, animationsDisabled));
+  animations.set(rNode, leaveAnimations);
+  scheduleAnimationQueue(lView[INJECTOR]);
 
   return ɵɵanimateLeave; // For chaining
 }
@@ -282,8 +310,8 @@ function animateLeaveClassRunner(
     resolver();
     return;
   }
-
   cancelAnimationsIfRunning(el, renderer);
+  const cleanupFns: Function[] = [];
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
@@ -307,11 +335,14 @@ function animateLeaveClassRunner(
       }
     }
     resolver();
+    for (const fn of cleanupFns) {
+      fn();
+    }
   };
 
   ngZone.runOutsideAngular(() => {
-    renderer.listen(el, 'animationend', handleOutAnimationEnd);
-    renderer.listen(el, 'transitionend', handleOutAnimationEnd);
+    cleanupFns.push(renderer.listen(el, 'animationend', handleOutAnimationEnd));
+    cleanupFns.push(renderer.listen(el, 'transitionend', handleOutAnimationEnd));
   });
   trackLeavingNodes(tNode, el);
   for (const item of classList) {
@@ -326,6 +357,9 @@ function animateLeaveClassRunner(
       if (!longestAnimations.has(el)) {
         clearLeavingNodes(tNode, el);
         resolver();
+        for (const fn of cleanupFns) {
+          fn();
+        }
       }
     });
   });
@@ -359,7 +393,12 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   allLeavingAnimations.add(lView);
 
-  getLViewLeaveAnimations(lView).push(() => runLeaveAnimationFunction(lView, tNode, value));
+  const animations = getLViewLeaveAnimations(lView);
+  const rNode = getNativeByTNode(tNode, lView);
+  const leaveAnimations = animations.get(rNode) ?? [];
+  leaveAnimations.push(() => runLeaveAnimationFunction(lView, tNode, value));
+  animations.set(rNode, leaveAnimations);
+  scheduleAnimationQueue(lView[INJECTOR]);
 
   return ɵɵanimateLeaveListener; // For chaining
 }
@@ -415,4 +454,37 @@ function runLeaveAnimationFunction(
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
   return promise;
+}
+
+function queueEnterAnimations(lView: LView) {
+  const enterAnimations = lView[ANIMATIONS]?.enter;
+  if (enterAnimations) {
+    const animationQueue = lView[INJECTOR].get(ANIMATION_QUEUE);
+    for (const [_, animateFns] of enterAnimations) {
+      for (const animateFn of animateFns) {
+        animationQueue.queue.add(animateFn);
+      }
+    }
+  }
+}
+
+function scheduleAnimationQueue(injector: Injector) {
+  const animationQueue = injector.get(ANIMATION_QUEUE);
+  if (!animationQueue.isScheduled) {
+    afterEveryRender(
+      () => {
+        runAnimations(injector);
+      },
+      {injector},
+    );
+    animationQueue.isScheduled = true;
+  }
+}
+
+function runAnimations(injector: Injector) {
+  const animationQueue = injector.get(ANIMATION_QUEUE);
+  for (let animateFn of animationQueue.queue) {
+    animateFn();
+  }
+  animationQueue.queue.clear();
 }

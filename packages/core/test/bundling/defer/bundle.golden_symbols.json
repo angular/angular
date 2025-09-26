@@ -58,8 +58,10 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
+      "ANIMATION_QUEUE",
       "APP_BOOTSTRAP_LISTENER",
       "APP_ID",
       "APP_INITIALIZER",
@@ -291,6 +293,7 @@
       "addAfterRenderSequencesForView",
       "addDepsToRegistry",
       "addLViewToLContainer",
+      "addToAnimationQueue",
       "addToArray",
       "addToEndOfViewTree",
       "addViewToDOM",
@@ -507,6 +510,7 @@
       "hasDeps",
       "hasHydrateTriggers",
       "hasInSkipHydrationBlockFlag",
+      "hasLeaveAnimations",
       "hasLift",
       "hasOnDestroy",
       "hasParentInjector",
@@ -674,7 +678,6 @@
       "retrieveHydrationInfo",
       "runAfterLeaveAnimations",
       "runEffectsInView",
-      "runEnterAnimations",
       "runInInjectionContext",
       "runLeaveAnimationsWithCallback",
       "runPlatformInitializers",
@@ -744,8 +747,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }
