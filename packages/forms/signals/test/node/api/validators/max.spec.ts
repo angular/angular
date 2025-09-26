@@ -122,6 +122,21 @@ describe('max validator', () => {
     expect(f().errors()).toEqual([]);
   });
 
+  it('should treat null value as valid', () => {
+    const model = signal(null);
+    const f = form(
+      model,
+      (p) => {
+        max(p, -1);
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f().errors()).toEqual([]);
+  });
+
   describe('custom properties', () => {
     it('stores the MAX property on max', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 6});

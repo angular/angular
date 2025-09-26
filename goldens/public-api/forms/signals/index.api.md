@@ -249,7 +249,7 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
 export const MAX: AggregateProperty<number | undefined, number | undefined>;
 
 // @public
-export function max<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<number, TPathKind>, maxValue: number | LogicFn<number, number | undefined, TPathKind>, config?: BaseValidatorConfig<number, TPathKind>): void;
+export function max<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, maxValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined>;
@@ -300,7 +300,7 @@ export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
 export const MIN: AggregateProperty<number | undefined, number | undefined>;
 
 // @public
-export function min<TPathKind extends PathKind = PathKind.Root>(path: FieldPath<number, TPathKind>, minValue: number | LogicFn<number, number | undefined, TPathKind>, config?: BaseValidatorConfig<number, TPathKind>): void;
+export function min<TValue extends number | null, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, minValue: number | LogicFn<TValue, number | undefined, TPathKind>, config?: BaseValidatorConfig<TValue, TPathKind>): void;
 
 // @public
 export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined>;
