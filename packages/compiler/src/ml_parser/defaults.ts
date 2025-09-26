@@ -24,6 +24,9 @@ export class InterpolationConfig {
   ) {}
 }
 
+/**
+ * This symbol is referenced inside G3 and will require some cleanup.
+ */
 export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig = new InterpolationConfig(
   '{{',
   '}}',

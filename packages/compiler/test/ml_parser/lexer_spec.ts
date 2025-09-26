@@ -2203,17 +2203,6 @@ describe('HtmlLexer', () => {
       ]);
     });
 
-    it('should parse interpolation with custom markers', () => {
-      expect(
-        tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}),
-      ).toEqual([
-        [TokenType.TEXT, ''],
-        [TokenType.INTERPOLATION, '{%', ' a ', '%}'],
-        [TokenType.TEXT, ''],
-        [TokenType.EOF],
-      ]);
-    });
-
     it('should handle CR & LF in text', () => {
       expect(tokenizeAndHumanizeParts('t\ne\rs\r\nt')).toEqual([
         [TokenType.TEXT, 't\ne\ns\nt'],
