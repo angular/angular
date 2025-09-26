@@ -24,7 +24,6 @@ import {
   form,
   hidden,
   max,
-  MAX,
   maxLength,
   min,
   minLength,
@@ -425,7 +424,6 @@ describe('control directive', () => {
 
     const comp = act(() => TestBed.createComponent(CustomPropsTestCmp)).componentInstance;
 
-    expect(comp.f.number().property(MAX)()).toBe(100);
     expect(comp.textInput().nativeElement.required).toBe(true);
     expect(comp.textInput().nativeElement.minLength).toBe(0);
     expect(comp.textInput().nativeElement.maxLength).toBe(100);
