@@ -122,10 +122,20 @@
       "description": "Karma reporters to use. Directly passed to the karma runner."
     },
     {
+      "name": "scripts",
+      "type": "array",
+      "description": "Global scripts to be included in the build."
+    },
+    {
       "name": "source-map",
       "type": "boolean",
       "default": true,
       "description": "Output source maps for scripts and styles. For more information, see https://angular.dev/reference/configs/workspace-config#source-map-configuration."
+    },
+    {
+      "name": "styles",
+      "type": "array",
+      "description": "Global styles to be included in the build."
     },
     {
       "name": "ts-config",

@@ -212,6 +212,11 @@
       "positional": 0
     },
     {
+      "name": "scripts",
+      "type": "array",
+      "description": "Global scripts to be included in the build."
+    },
+    {
       "name": "server",
       "type": "string",
       "description": "The full path for the server entry point to the application, relative to the current workspace."
@@ -238,6 +243,11 @@
       "type": "boolean",
       "default": false,
       "description": "Generates a 'stats.json' file which can be analyzed with https://esbuild.github.io/analyze/."
+    },
+    {
+      "name": "styles",
+      "type": "array",
+      "description": "Global styles to be included in the build."
     },
     {
       "name": "subresource-integrity",
