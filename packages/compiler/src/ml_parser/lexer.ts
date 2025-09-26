@@ -9,6 +9,7 @@
 import * as chars from '../chars';
 import {ParseError, ParseLocation, ParseSourceFile, ParseSourceSpan} from '../parse_util';
 
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './defaults';
 import {NAMED_ENTITIES} from './entities';
 import {TagContentType, TagDefinition} from './tags';
 import {
@@ -41,6 +42,8 @@ export interface LexerRange {
 export interface TokenizeOptions {
   /** Whether to tokenize ICU messages (considered as text nodes when false). */
   tokenizeExpansionForms?: boolean;
+  /** How to tokenize interpolation markers. */
+  interpolationConfig?: InterpolationConfig;
   /**
    * The start and end point of the text to parse within the `source` string.
    * The entire `source` string is parsed if this is not provided.
@@ -155,15 +158,11 @@ const SUPPORTED_BLOCKS = [
   '@error',
 ];
 
-const INTERPOLATION = {
-  start: '{{',
-  end: '}}',
-};
-
 // See https://www.w3.org/TR/html51/syntax.html#writing-html-documents
 class _Tokenizer {
   private _cursor: CharacterCursor;
   private _tokenizeIcu: boolean;
+  private _interpolationConfig: InterpolationConfig;
   private _leadingTriviaCodePoints: number[] | undefined;
   private _currentTokenStart: CharacterCursor | null = null;
   private _currentTokenType: TokenType | null = null;
@@ -190,6 +189,7 @@ class _Tokenizer {
     options: TokenizeOptions,
   ) {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
+    this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
     this._leadingTriviaCodePoints =
       options.leadingTriviaChars && options.leadingTriviaChars.map((c) => c.codePointAt(0) || 0);
     const range = options.range || {
@@ -1145,7 +1145,7 @@ class _Tokenizer {
 
     while (!endPredicate()) {
       const current = this._cursor.clone();
-      if (this._attemptStr(INTERPOLATION.start)) {
+      if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
         this._endToken([this._processCarriageReturns(parts.join(''))], current);
         parts.length = 0;
         this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
@@ -1182,7 +1182,7 @@ class _Tokenizer {
   ): void {
     const parts: string[] = [];
     this._beginToken(interpolationTokenType, interpolationStart);
-    parts.push(INTERPOLATION.start);
+    parts.push(this._interpolationConfig.start);
 
     // Find the end of the interpolation, ignoring content inside quotes.
     const expressionStart = this._cursor.clone();
@@ -1205,10 +1205,10 @@ class _Tokenizer {
       }
 
       if (inQuote === null) {
-        if (this._attemptStr(INTERPOLATION.end)) {
+        if (this._attemptStr(this._interpolationConfig.end)) {
           // We are not in a string, and we hit the end interpolation marker
           parts.push(this._getProcessedChars(expressionStart, current));
-          parts.push(INTERPOLATION.end);
+          parts.push(this._interpolationConfig.end);
           this._endToken(parts);
           return;
         } else if (this._attemptStr('//')) {
@@ -1380,10 +1380,13 @@ class _Tokenizer {
     if (this._cursor.peek() !== chars.$LBRACE) {
       return false;
     }
-    const start = this._cursor.clone();
-    const isInterpolation = this._attemptStr(INTERPOLATION.start);
-    this._cursor = start;
-    return !isInterpolation;
+    if (this._interpolationConfig) {
+      const start = this._cursor.clone();
+      const isInterpolation = this._attemptStr(this._interpolationConfig.start);
+      this._cursor = start;
+      return !isInterpolation;
+    }
+    return true;
   }
 }
 

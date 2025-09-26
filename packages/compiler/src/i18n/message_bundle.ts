@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {InterpolationConfig} from '../ml_parser/defaults';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {WhitespaceVisitor, visitAllWithSiblings} from '../ml_parser/html_whitespaces';
 import {ParseError} from '../parse_util';
@@ -28,8 +29,15 @@ export class MessageBundle {
     private readonly _preserveWhitespace = true,
   ) {}
 
-  updateFromTemplate(source: string, url: string): ParseError[] {
-    const htmlParserResult = this._htmlParser.parse(source, url, {tokenizeExpansionForms: true});
+  updateFromTemplate(
+    source: string,
+    url: string,
+    interpolationConfig: InterpolationConfig,
+  ): ParseError[] {
+    const htmlParserResult = this._htmlParser.parse(source, url, {
+      tokenizeExpansionForms: true,
+      interpolationConfig,
+    });
 
     if (htmlParserResult.errors.length) {
       return htmlParserResult.errors;
@@ -47,6 +55,7 @@ export class MessageBundle {
 
     const i18nParserResult = extractMessages(
       rootNodes,
+      interpolationConfig,
       this._implicitTags,
       this._implicitAttrs,
       /* preserveSignificantWhitespace */ this._preserveWhitespace,

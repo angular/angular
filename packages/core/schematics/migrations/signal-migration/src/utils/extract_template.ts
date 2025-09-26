@@ -8,12 +8,14 @@
 
 import ts from 'typescript';
 import {ReflectionHost, reflectObjectLiteral} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {MigrationHost} from '../migration_host';
 import {getAngularDecorators, ResourceLoader} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import {
   ExternalTemplateDeclaration,
   InlineTemplateDeclaration,
 } from '@angular/compiler-cli/src/ngtsc/annotations/component/src/resources';
+import {DEFAULT_INTERPOLATION_CONFIG} from '@angular/compiler';
 
 /**
  * Attempts to extract the `TemplateDefinition` for the given
@@ -57,6 +59,7 @@ export function attemptExtractTemplateDefinition(
       return {
         isInline: true,
         expression: templateProp,
+        interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
         preserveWhitespaces: false,
         resolvedTemplateUrl: containingFile,
         templateUrl: containingFile,
@@ -71,6 +74,7 @@ export function attemptExtractTemplateDefinition(
       if (typeof templateUrl === 'string') {
         return {
           isInline: false,
+          interpolationConfig: DEFAULT_INTERPOLATION_CONFIG,
           preserveWhitespaces: false,
           templateUrlExpression: templateUrlProp,
           templateUrl,

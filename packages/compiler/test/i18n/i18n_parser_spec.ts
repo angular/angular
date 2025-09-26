@@ -9,6 +9,7 @@
 import {digest, serializeNodes} from '../../src/i18n/digest';
 import {extractMessages} from '../../src/i18n/extractor_merger';
 import {Message} from '../../src/i18n/i18n_ast';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 
 describe('I18nParser', () => {
@@ -425,6 +426,7 @@ export function _extractMessages(
 
   return extractMessages(
     parseResult.rootNodes,
+    DEFAULT_INTERPOLATION_CONFIG,
     implicitTags,
     implicitAttrs,
     preserveSignificantWhitespace,

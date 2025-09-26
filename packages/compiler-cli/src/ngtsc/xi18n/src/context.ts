@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {InterpolationConfig} from '@angular/compiler';
+
 /**
  * Captures template information intended for extraction of i18n messages from a template.
  *
@@ -21,5 +23,5 @@ export interface Xi18nContext {
    * the return type is declared as `void` for simplicity, since any parse errors would be reported
    * as diagnostics anyway.
    */
-  updateFromTemplate(html: string, url: string): void;
+  updateFromTemplate(html: string, url: string, interpolationConfig: InterpolationConfig): void;
 }
