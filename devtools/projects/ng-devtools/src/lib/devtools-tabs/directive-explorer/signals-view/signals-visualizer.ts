@@ -10,6 +10,14 @@ import {DebugSignalGraph, DebugSignalGraphNode} from '../../../../../../protocol
 import * as d3 from 'd3';
 import {graphlib, render as dagreRender} from 'dagre-d3-es';
 
+const KIND_CLASS_MAP: {[key: string]: string} = {
+  'signal': 'kind-signal',
+  'computed': 'kind-computed',
+  'effect': 'kind-effect',
+  'template': 'kind-template',
+  'linkedSignal': 'kind-linked-signal',
+};
+
 export class SignalsGraphVisualizer {
   private graph: graphlib.Graph;
   private drender: ReturnType<typeof dagreRender>;
@@ -111,7 +119,7 @@ export class SignalsGraphVisualizer {
           cb(node);
         }
       };
-      outer.className = `node-label kind-${node.kind}`;
+      outer.className = `node-label ${KIND_CLASS_MAP[node.kind]}`;
       const header = document.createElement('div');
       let label = node.label;
       if (node.kind === 'effect') {

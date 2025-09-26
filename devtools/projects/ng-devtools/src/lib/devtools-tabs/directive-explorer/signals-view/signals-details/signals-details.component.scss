@@ -68,7 +68,7 @@
         }
 
         &.type-computed {
-          background-color: var(--green-02);
+          background-color: var(--green-01);
         }
 
         &.type-effect {
@@ -77,6 +77,10 @@
 
         &.type-template {
           background-color: var(--gray-500);
+        }
+
+        &.type-linked-signal {
+          background-color: var(--red-03);
         }
       }
     }
