@@ -424,6 +424,13 @@ export enum ErrorCode {
   DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER = 8020,
 
   /**
+   * Raised when an `@defer` block defines unreachable or redundant triggers.
+   * Examples: multiple main triggers, 'on immediate' together with other mains or any prefetch,
+   * prefetch timer delay that is not earlier than the main timer, or an identical prefetch
+   */
+  DEFER_TRIGGER_MISCONFIGURATION = 8021,
+
+  /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
    *
