@@ -186,6 +186,7 @@ const getLatestComponentExplorerViewCallback =
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () =>
   checkForAngular(messageBus);
+
 const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
 const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string) => {
@@ -318,16 +319,7 @@ const getSignalNestedPropertiesCallback =
 
 // todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
-  const forest = prepareForestForSerialization(
-    initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
-    ngDebugDependencyInjectionApiIsSupported(),
-  );
-  if (forest.length === 0) return;
-
-  const rootInjector = forest[0].resolutionPath?.find((i) => i.name === 'Root');
-  if (!rootInjector) return;
-
-  const route = getRouterConfigFromRoot(rootInjector);
+  const route = getRouterConfigFromRoot();
   if (!route) return;
 
   const sanitizedRoute = sanitizeRouteData(route);
@@ -335,83 +327,13 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   messageBus.emit('updateRouterTree', [[sanitizedRoute]]);
 };
 
-const getSerializedProviderRecords = (injector: SerializedInjector) => {
-  if (!idToInjector.has(injector.id)) {
+const getRouterConfigFromRoot = (): Route | void => {
+  const router = getRouterInstance();
+  if (!router) {
     return;
   }
 
-  const providerRecords = getInjectorProviders(idToInjector.get(injector.id)!);
-  const allProviderRecords: SerializedProviderRecord[] = [];
-  const tokenToRecords: Map<unknown, SerializedProviderRecord[]> = new Map();
-
-  for (const [index, providerRecord] of providerRecords.entries()) {
-    const record = serializeProviderRecord(providerRecord, index, injector.type === 'environment');
-    allProviderRecords.push(record);
-
-    const records = tokenToRecords.get(providerRecord.token) ?? [];
-    records.push(record);
-    tokenToRecords.set(providerRecord.token, records);
-  }
-  const serializedProviderRecords: SerializedProviderRecord[] = [];
-  for (const [token, records] of tokenToRecords.entries()) {
-    const multiRecords = records.filter((record) => record.multi);
-    const nonMultiRecords = records.filter((record) => !record.multi);
-    for (const record of nonMultiRecords) {
-      serializedProviderRecords.push(record);
-    }
-    const [firstMultiRecord] = multiRecords;
-    if (firstMultiRecord !== undefined) {
-      // All multi providers will have the same token, so we can just use the first one.
-      serializedProviderRecords.push({
-        token: firstMultiRecord.token,
-        type: 'multi',
-        multi: true,
-        // todo(aleksanderbodurri): implememnt way to differentiate multi providers that
-        // provided as viewProviders
-        isViewProvider: firstMultiRecord.isViewProvider,
-        index: records.map((record) => record.index as number),
-      });
-    }
-  }
-
-  return serializedProviderRecords;
-};
-
-const getProviderValue = (
-  serializedInjector: SerializedInjector,
-  serializedProvider: SerializedProviderRecord,
-) => {
-  if (!idToInjector.has(serializedInjector.id)) {
-    return;
-  }
-
-  const injector = idToInjector.get(serializedInjector.id)!;
-  const providerRecords = getInjectorProviders(injector);
-
-  if (typeof serializedProvider.index === 'number') {
-    const provider = providerRecords[serializedProvider.index];
-    return injector.get(provider.token, null, {optional: true});
-  } else if (Array.isArray(serializedProvider.index)) {
-    const provider = serializedProvider.index.map((index) => providerRecords[index]);
-    return injector.get(provider[0].token, null, {optional: true});
-  } else {
-    return;
-  }
-};
-
-const getRouterConfigFromRoot = (injector: SerializedInjector): Route | void => {
-  const serializedProviderRecords = getSerializedProviderRecords(injector) ?? [];
-  const routerInstance = serializedProviderRecords.find(
-    (provider) => provider.token === 'Router', // get the instance of router using token
-  );
-
-  if (!routerInstance) {
-    return;
-  }
-
-  const routerProvider = getProviderValue(injector, routerInstance);
-
-  return parseRoutes(routerProvider);
+  return parseRoutes(router);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
