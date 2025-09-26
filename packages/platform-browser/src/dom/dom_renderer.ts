@@ -177,15 +177,68 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     }
 
     const renderer = this.getOrCreateRenderer(element, type);
+
+    // Store a reference to the factory so renderers can access findNearestIsolatedShadowRoot
+    if (
+      renderer instanceof EmulatedEncapsulationDomRenderer2 ||
+      renderer instanceof NoneEncapsulationDomRenderer
+    ) {
+      (renderer as any).rendererFactory = this;
+    }
+
     // Renderers have different logic due to different encapsulation behaviours.
     // Ex: for emulated, an attribute is added to the element.
     if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
       renderer.applyToHost(element);
     } else if (renderer instanceof NoneEncapsulationDomRenderer) {
-      renderer.applyStyles();
+      // Check if none-encapsulated component is inside isolated shadow DOM
+      const isolatedShadowRoot = this.findNearestIsolatedShadowRoot(element);
+      if (isolatedShadowRoot) {
+        renderer.applyStyles(isolatedShadowRoot);
+      } else {
+        renderer.applyStyles();
+      }
     }
 
     return renderer;
+  }
+
+  /**
+   * Finds the nearest isolated shadow root that contains the given element.
+   * This is used to determine where emulated component styles should be applied
+   * when components are projected into isolated shadow DOM components.
+   *
+   * @param element The DOM element to start searching from
+   * @returns The nearest isolated shadow root, or null if the nearest shadow root is not isolated
+   */
+  findNearestIsolatedShadowRoot(element: any): ShadowRoot | null {
+    try {
+      let current = element;
+
+      while (current && current !== this.doc) {
+        // Check if we're inside a shadow root
+        const root = current.getRootNode?.();
+        if (root && root !== this.doc && root.host) {
+          // We found a shadow root - check if it's isolated
+          if (this.sharedStylesHost.isIsolatedShadowRoot?.(root)) {
+            return root;
+          } else {
+            // Found a standard ShadowDom boundary - stop here and return null
+            // This preserves standard ShadowDom encapsulation behavior
+            return null;
+          }
+        }
+
+        // Move up the DOM tree
+        current = current.parentElement || current.parentNode;
+      }
+    } catch (e) {
+      if (ngDevMode) {
+        console.warn('Could not determine shadow root, falling back to global styles', e);
+      }
+    }
+
+    return null;
   }
 
   private getOrCreateRenderer(element: any, type: RendererType2): Renderer2 {
@@ -216,17 +269,6 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
           );
           break;
         case ViewEncapsulation.ShadowDom:
-          return new ShadowDomRenderer(
-            eventManager,
-            element,
-            type,
-            doc,
-            ngZone,
-            this.nonce,
-            platformIsServer,
-            tracingService,
-            sharedStylesHost,
-          );
         case ViewEncapsulation.IsolatedShadowDom:
           return new ShadowDomRenderer(
             eventManager,
@@ -237,6 +279,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
             this.nonce,
             platformIsServer,
             tracingService,
+            sharedStylesHost,
           );
 
         default:
@@ -513,20 +556,21 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   constructor(
     eventManager: EventManager,
     private hostEl: any,
-    component: RendererType2,
+    private component: RendererType2,
     doc: Document,
     ngZone: NgZone,
     nonce: string | null,
     platformIsServer: boolean,
     tracingService: TracingService<TracingSnapshot> | null,
-    private sharedStylesHost?: SharedStylesHost,
+    private sharedStylesHost: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
-    // This is optional as it is not used by IsolatedShadowDom.
-    if (this.sharedStylesHost) {
+    if (component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+      this.sharedStylesHost.addShadowRoot(this.shadowRoot);
+    } else {
       this.sharedStylesHost.addHost(this.shadowRoot);
     }
     let styles = component.styles;
@@ -536,17 +580,21 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    if (component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+      this.sharedStylesHost.addStyles(styles, component.getExternalStyles?.(), this.shadowRoot);
+    } else {
+      styles = shimStylesContent(component.id, styles);
 
-    for (const style of styles) {
-      const styleEl = document.createElement('style');
+      for (const style of styles) {
+        const styleEl = document.createElement('style');
 
-      if (nonce) {
-        styleEl.setAttribute('nonce', nonce);
+        if (nonce) {
+          styleEl.setAttribute('nonce', nonce);
+        }
+
+        styleEl.textContent = style;
+        this.shadowRoot.appendChild(styleEl);
       }
-
-      styleEl.textContent = style;
-      this.shadowRoot.appendChild(styleEl);
     }
 
     // Apply any external component styles to the shadow root for the component's element.
@@ -589,7 +637,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
 
   override destroy() {
     if (this.sharedStylesHost) {
-      this.sharedStylesHost.removeHost(this.shadowRoot);
+      if (this.component.encapsulation === ViewEncapsulation.IsolatedShadowDom) {
+        this.sharedStylesHost.removeShadowRoot(this.shadowRoot);
+      } else {
+        this.sharedStylesHost.removeHost(this.shadowRoot);
+      }
     }
   }
 }
@@ -621,8 +673,8 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     this.styleUrls = component.getExternalStyles?.(compId);
   }
 
-  applyStyles(): void {
-    this.sharedStylesHost.addStyles(this.styles, this.styleUrls);
+  applyStyles(targetShadowRoot?: ShadowRoot): void {
+    this.sharedStylesHost.addStyles(this.styles, this.styleUrls, targetShadowRoot);
   }
 
   override destroy(): void {
@@ -667,6 +719,20 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
   }
 
   applyToHost(element: any): void {
+    // Check for isolated shadow root - this handles projected content
+    if ((this as any).rendererFactory) {
+      const isolatedShadowRoot = (this as any).rendererFactory.findNearestIsolatedShadowRoot(
+        element,
+      );
+      if (isolatedShadowRoot) {
+        // Component is inside isolated shadow DOM - styles go ONLY to shadow root
+        this.applyStyles(isolatedShadowRoot);
+        this.setAttribute(element, this.hostAttr, '');
+        return;
+      }
+    }
+
+    // Component is in main document - styles go to doc.head (and any standard shadow DOM hosts)
     this.applyStyles();
     this.setAttribute(element, this.hostAttr, '');
   }
