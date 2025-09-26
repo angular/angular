@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@angular/language-service": "21.0.0-next.5",
+    "typescript": "5.9.2",
     "vscode-html-languageservice": "^5.5.1",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver": "7.0.0",

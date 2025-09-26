@@ -1,5 +1,12 @@
+import {mkdtempSync} from 'node:fs';
 import {join, resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
+
+// TEST_TMPDIR is always set by Bazel.
+const tmpDir = join(process.env['TEST_TMPDIR']!, 'vscode-integration-tests-');
+export function makeTempDir(): string {
+  return mkdtempSync(tmpDir);
+}
 
 export const IS_BAZEL = !!process.env['TEST_TARGET'];
 export const PACKAGE_ROOT = IS_BAZEL ? resolve(__dirname, '..') : resolve(__dirname, '../..');
