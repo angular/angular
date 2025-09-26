@@ -10,11 +10,17 @@ import {Signal, WritableSignal} from '@angular/core';
 import type {Control} from './control_directive';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
+import {AbstractControl} from '@angular/forms';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
-declare const ɵɵTYPE: unique symbol;
+export declare const ɵɵTYPE: unique symbol;
+
+/**
+ *
+ */
+export type ControlValue<TValue> = TValue extends AbstractControl<infer R> ? R : TValue;
 
 /**
  * Creates a type based on the given type T, but with all readonly properties made writable.
@@ -212,7 +218,7 @@ export type Subfields<TValue> = {
 export type ReadonlyArrayLike<T> = Pick<
   ReadonlyArray<T>,
   number | 'length' | typeof Symbol.iterator
->;
+> & {readonly [n: number]: T};
 
 /**
  * Helper type for defining `Field`. Given a type `TValue` that may include `undefined`, it extracts
@@ -379,13 +385,53 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  * @category types
  * @experimental 21.0.0
  */
-export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
-  [ɵɵTYPE]: [TValue, TPathKind];
+export type FieldPath<
+  TValue,
+  TPathKind extends PathKind = PathKind.Root,
+  TSupportsRules extends boolean = boolean,
+> = {
+  [ɵɵTYPE]: {
+    value: TValue;
+    pathKind: TPathKind;
+    supportsRules: TSupportsRules;
+  };
 } & (TValue extends Array<unknown>
   ? unknown
   : TValue extends Record<string, any>
-    ? {[K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child>}
+    ? {[K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child, TSupportsRules>}
     : unknown);
+
+/**
+ * Field path that supports rules.
+ *
+ * This type can be used for rules such as `validate`, or `disable`, and would
+ * prevert paths that do not support rules (e.g. compat path, which already has rules inherited
+ * from abstract control).
+ *
+ * This is shallow: this path would have no children.
+ */
+export type RulesFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
+  [ɵɵTYPE]: {
+    value: TValue;
+    pathKind: TPathKind;
+    supportsRules: true;
+  };
+};
+
+/**
+ * Fields path that might or might not support rules.
+ *
+ * This is used in context, e.g., valueOf/fieldOf.
+ *
+ * This is shallow: this path would have no children.
+ */
+export type BothFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
+  [ɵɵTYPE]: {
+    value: TValue;
+    pathKind: TPathKind;
+    supportsRules: boolean;
+  };
+};
 
 /**
  * Helper type for defining `FieldPath`. Given a type `TValue` that may include `undefined`, it
@@ -399,9 +445,11 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
  *
  * @experimental 21.0.0
  */
-export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
-  | (TValue & undefined)
-  | FieldPath<Exclude<TValue, undefined>, TPathKind>;
+export type MaybeFieldPath<
+  TValue,
+  TPathKind extends PathKind = PathKind.Root,
+  TSupportsRules extends boolean = boolean,
+> = (TValue & undefined) | FieldPath<Exclude<TValue, undefined>, TPathKind, TSupportsRules>;
 
 /**
  * Defines logic for a form.
@@ -425,7 +473,7 @@ export type Schema<in TValue> = {
  * @experimental 21.0.0
  */
 export type SchemaFn<TValue, TPathKind extends PathKind = PathKind.Root> = (
-  p: FieldPath<TValue, TPathKind>,
+  p: FieldPath<TValue, TPathKind, true>,
 ) => void;
 
 /**
@@ -534,11 +582,11 @@ export interface RootFieldContext<TValue> {
   /** The current field. */
   readonly field: Field<TValue>;
   /** Gets the value of the field represented by the given path. */
-  readonly valueOf: <P>(p: FieldPath<P>) => P;
+  readonly valueOf: <P>(p: BothFieldPath<P>) => ControlValue<P>;
   /** Gets the state of the field represented by the given path. */
-  readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
+  readonly stateOf: <P>(p: BothFieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */
-  readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+  readonly fieldOf: <P>(p: BothFieldPath<P>) => Field<P>;
 }
 
 /**
