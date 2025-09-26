@@ -10,6 +10,7 @@ import {serializeNodes} from '../../src/i18n/digest';
 import * as i18n from '../../src/i18n/i18n_ast';
 import {MessageBundle} from '../../src/i18n/message_bundle';
 import {Serializer} from '../../src/i18n/serializers/serializer';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 
 describe('MessageBundle', () => {
@@ -21,7 +22,11 @@ describe('MessageBundle', () => {
     });
 
     it('should extract the message to the catalog', () => {
-      messages.updateFromTemplate('<p i18n="m|d">Translate Me</p>', 'url');
+      messages.updateFromTemplate(
+        '<p i18n="m|d">Translate Me</p>',
+        'url',
+        DEFAULT_INTERPOLATION_CONFIG,
+      );
       expect(humanizeMessages(messages)).toEqual(['Translate Me (m|d)']);
     });
 
@@ -29,6 +34,7 @@ describe('MessageBundle', () => {
       messages.updateFromTemplate(
         '<p i18n="m|d@@1">Translate Me</p><p i18n="@@2">Translate Me</p><p i18n="@@2">Translate Me</p>',
         'url',
+        DEFAULT_INTERPOLATION_CONFIG,
       );
       expect(humanizeMessages(messages)).toEqual(['Translate Me (m|d)', 'Translate Me (|)']);
     });

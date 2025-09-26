@@ -8,6 +8,7 @@
 
 import * as i18n from '../../src/i18n/i18n_ast';
 import {MessageBundle} from '../../src/i18n/message_bundle';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {Xmb} from '../../src/i18n/serializers/xmb';
 
@@ -451,7 +452,7 @@ function extractMessages(source: string, preserveWhitespace: boolean): Assertabl
     undefined /* locale */,
     preserveWhitespace,
   );
-  const errors = bundle.updateFromTemplate(source, 'url');
+  const errors = bundle.updateFromTemplate(source, 'url', DEFAULT_INTERPOLATION_CONFIG);
   if (errors.length !== 0) {
     throw new Error(
       `Failed to parse template:\n${errors.map((err) => err.toString()).join('\n\n')}`,

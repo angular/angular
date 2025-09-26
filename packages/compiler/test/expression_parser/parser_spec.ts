@@ -1316,6 +1316,17 @@ describe('parser', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
     });
 
+    it('should support custom interpolation', () => {
+      const parser = new Parser(new Lexer());
+      const ast = parser.parseInterpolation('{% a %}', getFakeSpan(), 0, null, {
+        start: '{%',
+        end: '%}',
+      })!.ast as any;
+      expect(ast.strings).toEqual(['', '']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
     describe('comments', () => {
       it('should ignore comments in interpolation expressions', () => {
         checkInterpolation('{{a //comment}}', '{{ a }}');

@@ -11,6 +11,7 @@ import {escapeRegExp} from '../../../src/util';
 import {serializeNodes} from '../../../src/i18n/digest';
 import {MessageBundle} from '../../../src/i18n/message_bundle';
 import {Xliff2} from '../../../src/i18n/serializers/xliff2';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 
 const HTML = `
@@ -282,7 +283,7 @@ describe('XLIFF 2.0 serializer', () => {
 
   function toXliff(html: string, locale: string | null = null): string {
     const catalog = new MessageBundle(new HtmlParser(), [], {}, locale);
-    catalog.updateFromTemplate(html, 'file.ts');
+    catalog.updateFromTemplate(html, 'file.ts', DEFAULT_INTERPOLATION_CONFIG);
     return catalog.write(serializer);
   }
 
