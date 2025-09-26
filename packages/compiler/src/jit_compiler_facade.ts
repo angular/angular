@@ -45,6 +45,7 @@ import {
   ViewEncapsulation,
 } from './core';
 import {compileInjectable} from './injectable_compiler_2';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
 import {
   DeclareVarStmt,
   Expression,
@@ -291,11 +292,12 @@ export class CompilerFacadeImpl implements CompilerFacade {
     facade: R3ComponentMetadataFacade,
   ): any {
     // Parse the template and check for errors.
-    const {template, defer} = parseJitTemplate(
+    const {template, interpolation, defer} = parseJitTemplate(
       facade.template,
       facade.name,
       sourceMapUrl,
       facade.preserveWhitespaces,
+      facade.interpolation,
       undefined,
     );
 
@@ -311,6 +313,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
       styles: [...facade.styles, ...template.styles],
       encapsulation: facade.encapsulation,
+      interpolation,
       changeDetection: facade.changeDetection ?? null,
       animations: facade.animations != null ? new WrappedNodeExpr(facade.animations) : null,
       viewProviders:
@@ -343,7 +346,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     meta: R3ComponentMetadata<R3TemplateDependency>,
   ): any {
     const constantPool = new ConstantPool();
-    const bindingParser = makeBindingParser();
+    const bindingParser = makeBindingParser(meta.interpolation);
     const res = compileComponentFromMetadata(meta, constantPool, bindingParser);
     return this.jitExpression(
       res.expression,
@@ -616,11 +619,12 @@ function convertDeclareComponentFacadeToMetadata(
   typeSourceSpan: ParseSourceSpan,
   sourceMapUrl: string,
 ): R3ComponentMetadata<R3TemplateDependencyMetadata> {
-  const {template, defer} = parseJitTemplate(
+  const {template, interpolation, defer} = parseJitTemplate(
     decl.template,
     decl.type.name,
     sourceMapUrl,
     decl.preserveWhitespaces ?? false,
+    decl.interpolation,
     decl.deferBlockDependencies,
   );
 
@@ -669,6 +673,7 @@ function convertDeclareComponentFacadeToMetadata(
     defer,
     changeDetection: decl.changeDetection ?? ChangeDetectionStrategy.Default,
     encapsulation: decl.encapsulation ?? ViewEncapsulation.Emulated,
+    interpolation,
     declarationListEmitMode: DeclarationListEmitMode.ClosureResolved,
     relativeContextFilePath: '',
     i18nUseExternalIds: true,
@@ -732,10 +737,17 @@ function parseJitTemplate(
   typeName: string,
   sourceMapUrl: string,
   preserveWhitespaces: boolean,
+  interpolation: [string, string] | undefined,
   deferBlockDependencies: (() => Promise<unknown> | null)[] | undefined,
 ) {
+  const interpolationConfig = interpolation
+    ? InterpolationConfig.fromArray(interpolation)
+    : DEFAULT_INTERPOLATION_CONFIG;
   // Parse the template and check for errors.
-  const parsed = parseTemplate(template, sourceMapUrl, {preserveWhitespaces});
+  const parsed = parseTemplate(template, sourceMapUrl, {
+    preserveWhitespaces,
+    interpolationConfig,
+  });
   if (parsed.errors !== null) {
     const errors = parsed.errors.map((err) => err.toString()).join(', ');
     throw new Error(`Errors during JIT compilation of template for ${typeName}: ${errors}`);
@@ -745,6 +757,7 @@ function parseJitTemplate(
 
   return {
     template: parsed,
+    interpolation: interpolationConfig,
     defer: createR3ComponentDeferMetadata(boundTarget, deferBlockDependencies),
   };
 }

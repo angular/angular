@@ -10,6 +10,7 @@ import {Lexer as ExpressionLexer} from '../expression_parser/lexer';
 import {Parser as ExpressionParser} from '../expression_parser/parser';
 import {serialize as serializeExpression} from '../expression_parser/serializer';
 import * as html from '../ml_parser/ast';
+import {InterpolationConfig} from '../ml_parser/defaults';
 import {getHtmlTagDefinition} from '../ml_parser/html_tags';
 import {
   AttributeValueInterpolationToken,
@@ -38,15 +39,17 @@ export interface I18nMessageFactory {
 }
 
 /**
- * Returns a function converting html nodes to an i18n Message
+ * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
 export function createI18nMessageFactory(
+  interpolationConfig: InterpolationConfig,
   containerBlocks: Set<string>,
   retainEmptyTokens: boolean,
   preserveExpressionWhitespace: boolean,
 ): I18nMessageFactory {
   const visitor = new _I18nVisitor(
     _expParser,
+    interpolationConfig,
     containerBlocks,
     retainEmptyTokens,
     preserveExpressionWhitespace,
@@ -71,6 +74,7 @@ function noopVisitNodeFn(_html: html.Node, i18n: i18n.Node): i18n.Node {
 class _I18nVisitor implements html.Visitor {
   constructor(
     private _expressionParser: ExpressionParser,
+    private _interpolationConfig: InterpolationConfig,
     private _containerBlocks: Set<string>,
     private readonly _retainEmptyTokens: boolean,
     private readonly _preserveExpressionWhitespace: boolean,
@@ -385,6 +389,7 @@ class _I18nVisitor implements html.Visitor {
       expression,
       /* location */ token.sourceSpan,
       /* absoluteOffset */ token.sourceSpan.start.offset,
+      this._interpolationConfig,
     );
     return serializeExpression(expr);
   }

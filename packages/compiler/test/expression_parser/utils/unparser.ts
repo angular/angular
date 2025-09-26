@@ -37,14 +37,17 @@ import {
   Unary,
   VoidExpression,
 } from '../../../src/expression_parser/ast';
+import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
   // using non-null assertion because they're both re(set) by unparse()
   private _expression!: string;
+  private _interpolationConfig!: InterpolationConfig;
 
-  unparse(ast: AST) {
+  unparse(ast: AST, interpolationConfig: InterpolationConfig) {
     this._expression = '';
+    this._interpolationConfig = interpolationConfig;
     this._visit(ast);
     return this._expression;
   }
@@ -124,9 +127,9 @@ class Unparser implements AstVisitor {
     for (let i = 0; i < ast.strings.length; i++) {
       this._expression += ast.strings[i];
       if (i < ast.expressions.length) {
-        this._expression += `{{ `;
+        this._expression += `${this._interpolationConfig.start} `;
         this._visit(ast.expressions[i]);
-        this._expression += ` }}`;
+        this._expression += ` ${this._interpolationConfig.end}`;
       }
     }
   }
@@ -241,14 +244,20 @@ class Unparser implements AstVisitor {
 
 const sharedUnparser = new Unparser();
 
-export function unparse(ast: AST): string {
-  return sharedUnparser.unparse(ast);
+export function unparse(
+  ast: AST,
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+): string {
+  return sharedUnparser.unparse(ast, interpolationConfig);
 }
 
 // [unparsed AST, original source code of AST]
 type UnparsedWithSpan = [string, string];
 
-export function unparseWithSpan(ast: ASTWithSource): UnparsedWithSpan[] {
+export function unparseWithSpan(
+  ast: ASTWithSource,
+  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
+): UnparsedWithSpan[] {
   const unparsed: UnparsedWithSpan[] = [];
   const source = ast.source!;
   const recursiveSpanUnparser = new (class extends RecursiveAstVisitor {
@@ -256,7 +265,7 @@ export function unparseWithSpan(ast: ASTWithSource): UnparsedWithSpan[] {
       const span = ast[spanKey];
       const prefix = spanKey === 'span' ? '' : `[${spanKey}] `;
       const src = source.substring(span.start, span.end);
-      unparsedList.push([unparse(ast), prefix + src]);
+      unparsedList.push([unparse(ast, interpolationConfig), prefix + src]);
     }
 
     override visit(ast: AST, unparsedList: UnparsedWithSpan[]) {
