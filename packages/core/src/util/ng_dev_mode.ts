@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {installDevToolsSignalFormatter} from '../../primitives/signals';
 import {global} from './global';
 
 declare global {
@@ -84,6 +85,7 @@ export function initNgDevMode(): boolean {
   // yet.
   if (typeof ngDevMode === 'undefined' || ngDevMode) {
     if (typeof ngDevMode !== 'object' || Object.keys(ngDevMode).length === 0) {
+      installDevToolsSignalFormatter();
       ngDevModeResetPerfCounters();
     }
     return typeof ngDevMode !== 'undefined' && !!ngDevMode;
