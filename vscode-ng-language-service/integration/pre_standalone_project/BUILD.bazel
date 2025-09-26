@@ -7,6 +7,6 @@ copy_to_bin(
     name = "pre_standalone_project",
     srcs = glob(["**"]),
     visibility = [
-        "//vscode-ng-language-service/integration:__pkg__",
+        "//vscode-ng-language-service/integration/lsp:__pkg__",
     ],
 )

@@ -71,6 +71,7 @@ packages/zone.js/test/typings/node_modules
 packages/zone.js/node_modules
 tools/bazel/rules_angular_store/node_modules
 vscode-ng-language-service/node_modules
+vscode-ng-language-service/server/node_modules
 vscode-ng-language-service/integration/pre_standalone_project/node_modules
 vscode-ng-language-service/integration/workspace/node_modules
 vscode-ng-language-service/integration/pre_apf_project/node_modules

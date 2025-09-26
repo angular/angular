@@ -7,18 +7,14 @@
  */
 
 import {fileURLToPath, pathToFileURL} from 'node:url';
-import * as fs from 'node:fs';
-import {join} from 'node:path';
-import {promisify} from 'node:util';
+import fs from 'node:fs';
+import {cp, readFile, writeFile} from 'node:fs/promises';
+import {basename, join} from 'node:path';
+import {setTimeout} from 'node:timers/promises';
 import {MessageConnection} from 'vscode-jsonrpc';
 import * as lsp from 'vscode-languageserver-protocol';
 
-import {
-  ProjectLanguageService,
-  ProjectLanguageServiceParams,
-  SuggestStrictMode,
-  SuggestStrictModeParams,
-} from '../../common/notifications';
+import {SuggestStrictMode, SuggestStrictModeParams} from '../../common/notifications';
 import {
   GetComponentsWithTemplateFile,
   GetTcbRequest,
@@ -35,7 +31,7 @@ import {
   FOO_COMPONENT_URI,
   FOO_TEMPLATE,
   FOO_TEMPLATE_URI,
-  IS_BAZEL,
+  makeTempDir,
   PRE_STANDALONE_PROJECT_PATH,
   PROJECT_PATH,
   TSCONFIG,
@@ -48,8 +44,6 @@ import {
   openTextDocument,
   ServerOptions,
 } from './test_utils';
-
-const setTimeoutP = promisify(setTimeout);
 
 describe('Angular Ivy language server', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
@@ -347,23 +341,36 @@ export class AppComponent {
   });
 
   describe('project reload', () => {
-    const dummy = `${PROJECT_PATH}/node_modules/__foo__`;
+    let newProjectRoot: string;
+    let dummy: string;
+    let APP_COMPONENT_PATH_TMP: string;
+
+    beforeAll(async () => {
+      const tmpDir = makeTempDir();
+      newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+      dummy = `${newProjectRoot}/node_modules/__foo__`;
+      APP_COMPONENT_PATH_TMP = join(newProjectRoot, 'app/app.component.ts');
+      await cp(PROJECT_PATH, newProjectRoot, {
+        recursive: true,
+        mode: fs.constants.COPYFILE_FICLONE,
+      });
+    });
 
     afterEach(() => {
       fs.unlinkSync(dummy);
     });
 
     it('should retain typecheck files', async () => {
-      openTextDocument(client, APP_COMPONENT);
+      openTextDocument(client, APP_COMPONENT_PATH_TMP);
       // Create a file in node_modules, this will trigger a project reload via
       // the directory watcher
       fs.writeFileSync(dummy, '');
       // Project reload happens after 250ms delay
       // https://github.com/microsoft/TypeScript/blob/3c32f6e154ead6749b76ec9c19cbfdd2acad97d6/src/server/editorServices.ts#L957
-      await setTimeoutP(500);
+      await setTimeout(500);
       // The following operation would result in compiler crash if typecheck
       // files are not retained after project reload
-      const diagnostics = await getDiagnosticsForFile(client, APP_COMPONENT);
+      const diagnostics = await getDiagnosticsForFile(client, APP_COMPONENT_PATH_TMP);
       expect(diagnostics.length).toBe(0);
     });
   });
@@ -505,32 +512,39 @@ export class AppComponent {
   });
 
   describe('compiler options', () => {
-    const originalConfig = fs.readFileSync(TSCONFIG, 'utf-8');
-    if (IS_BAZEL) {
-      // Under Bazel, the tsconfig.json file in the output tree is write protected.
-      // We change the file permissions here so that the fs.writeFileSync(TSCONFIG, ...)
-      // calls below don't fail under Bazel. This should be fixed in the future by
-      // use an in-memory FS harness for the server.
-      fs.chmodSync(TSCONFIG, 0o644);
-    }
-
-    afterEach(() => {
-      // TODO(kyliau): Use an in-memory FS harness for the server
-      fs.writeFileSync(TSCONFIG, originalConfig);
-    });
-
     describe('strictTemplates: false', () => {
-      beforeEach(async () => {
+      let newProjectRoot: string;
+      let TSCONFIG_PATH_TMP: string;
+      let APP_COMPONENT_PATH_TMP: string;
+      let FOO_COMPONENT_URI_TMP: string;
+
+      beforeAll(async () => {
+        const tmpDir = makeTempDir();
+        newProjectRoot = join(tmpDir, basename(PROJECT_PATH));
+        TSCONFIG_PATH_TMP = join(newProjectRoot, 'tsconfig.json');
+        APP_COMPONENT_PATH_TMP = join(newProjectRoot, 'app/app.component.ts');
+        FOO_COMPONENT_URI_TMP = pathToFileURL(join(newProjectRoot, 'app/foo.component.ts')).href;
+
+        await cp(PROJECT_PATH, newProjectRoot, {
+          recursive: true,
+          mode: fs.constants.COPYFILE_FICLONE,
+          filter: (src) => src !== TSCONFIG,
+        });
+
+        // set strictTemplates=false;
+        const originalConfig = await readFile(TSCONFIG, 'utf-8');
         const config = JSON.parse(originalConfig);
         config.angularCompilerOptions.strictTemplates = false;
-        fs.writeFileSync(TSCONFIG, JSON.stringify(config, null, 2));
+        await writeFile(TSCONFIG_PATH_TMP, JSON.stringify(config, null, 2));
+      });
 
-        openTextDocument(client, APP_COMPONENT);
+      beforeEach(() => {
+        openTextDocument(client, APP_COMPONENT_PATH_TMP);
       });
 
       it('should suggest strict mode', async () => {
         const configFilePath = await onSuggestStrictMode(client);
-        expect(configFilePath.endsWith('integration/project/tsconfig.json')).toBeTrue();
+        expect(configFilePath).toBe(TSCONFIG_PATH_TMP);
       });
 
       it('should disable renaming when strict mode is disabled', async () => {
@@ -538,7 +552,7 @@ export class AppComponent {
 
         const prepareRenameResponse = (await client.sendRequest(lsp.PrepareRenameRequest.type, {
           textDocument: {
-            uri: FOO_COMPONENT_URI,
+            uri: FOO_COMPONENT_URI_TMP,
           },
           position: {line: 4, character: 25},
         })) as {range: lsp.Range; placeholder: string};
@@ -546,7 +560,7 @@ export class AppComponent {
 
         const renameResponse = await client.sendRequest(lsp.RenameRequest.type, {
           textDocument: {
-            uri: FOO_COMPONENT_URI,
+            uri: FOO_COMPONENT_URI_TMP,
           },
           position: {line: 4, character: 25},
           newName: 'surname',
@@ -977,14 +991,6 @@ function onSuggestStrictMode(client: MessageConnection): Promise<string> {
   return new Promise((resolve) => {
     client.onNotification(SuggestStrictMode, (params: SuggestStrictModeParams) => {
       resolve(params.configFilePath);
-    });
-  });
-}
-
-function onLanguageServiceStateNotification(client: MessageConnection): Promise<boolean> {
-  return new Promise((resolve) => {
-    client.onNotification(ProjectLanguageService, (params: ProjectLanguageServiceParams) => {
-      resolve(params.languageServiceEnabled);
     });
   });
 }

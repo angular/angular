@@ -1,6 +1,9 @@
 load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
 
 ts_config(
     name = "tsconfig",

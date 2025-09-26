@@ -1387,32 +1387,32 @@ importers:
   vscode-ng-language-service/integration/pre_apf_project:
     dependencies:
       '@angular/common':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        specifier: 12.2.16
+        version: 12.2.16(@angular/core@12.2.16(rxjs@6.6.7)(zone.js@0.11.5))(rxjs@6.6.7)
       '@angular/compiler':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5
+        specifier: 12.2.16
+        version: 12.2.16
       '@angular/compiler-cli':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+        specifier: 12.2.16
+        version: 12.2.16(@angular/compiler@12.2.16)
       '@angular/core':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+        specifier: 12.2.16
+        version: 12.2.16(rxjs@6.6.7)(zone.js@0.11.5)
       rxjs:
-        specifier: 7.8.2
-        version: 7.8.2
+        specifier: 6.6.7
+        version: 6.6.7
       zone.js:
-        specifier: 0.15.1
-        version: 0.15.1
+        specifier: 0.11.5
+        version: 0.11.5
 
   vscode-ng-language-service/integration/pre_standalone_project:
     dependencies:
       '@angular/common':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)
+        specifier: 18.2.10
+        version: 18.2.10(@angular/core@18.2.10)
       '@angular/core':
-        specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+        specifier: 18.2.10
+        version: 18.2.10
 
   vscode-ng-language-service/integration/project:
     dependencies:
@@ -1424,7 +1424,7 @@ importers:
         version: 21.0.0-next.5
       '@angular/compiler-cli':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)
       '@angular/core':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
@@ -1434,7 +1434,7 @@ importers:
     devDependencies:
       ng-packagr:
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
+        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -1449,7 +1449,7 @@ importers:
         version: 21.0.0-next.5
       '@angular/compiler-cli':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+        version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)
       '@angular/core':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
@@ -1459,6 +1459,30 @@ importers:
       zone.js:
         specifier: 0.15.1
         version: 0.15.1
+
+  vscode-ng-language-service/server:
+    dependencies:
+      '@angular/language-service':
+        specifier: 21.0.0-next.5
+        version: 21.0.0-next.5
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+      vscode-html-languageservice:
+        specifier: ^5.5.1
+        version: 5.5.1
+      vscode-jsonrpc:
+        specifier: 6.0.0
+        version: 6.0.0
+      vscode-languageserver:
+        specifier: 7.0.0
+        version: 7.0.0
+      vscode-languageserver-textdocument:
+        specifier: ^1.0.12
+        version: 1.0.12
+      vscode-uri:
+        specifier: 3.1.0
+        version: 3.1.0
 
 packages:
 
@@ -1739,6 +1763,19 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     hasBin: true
 
+  '@angular/common@12.2.16':
+    resolution: {integrity: sha512-FEqTXTEsnbDInqV1yFlm97Tz1OFqZS5t0TUkm8gzXRgpIce/F/jLwAg0u1VQkgOsno6cNm0xTWPoZgu85NI4ug==}
+    engines: {node: ^12.14.1 || >=14.0.0}
+    peerDependencies:
+      '@angular/core': 12.2.16
+      rxjs: ^6.5.3 || ^7.0.0
+
+  '@angular/common@18.2.10':
+    resolution: {integrity: sha512-YzTCmuqLiOuT+Yv07vuKymDWiebOVZ8BuXakJiz4EM7FMoOw5gICHJ04jepZSjDNWpA16e7kJSdt5ucnmvCFDQ==}
+    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
+    peerDependencies:
+      '@angular/core': 18.2.10
+
   '@angular/common@21.0.0-next.5':
     resolution: {integrity: sha512-DQ11vRiynQcSXsHBUJAZjF32BAT56re64vzUTodMvhvNgvXnw/kWG0KpKXna10mBB5kc4W7PKLVZnmIuk42LZA==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
@@ -1746,16 +1783,42 @@ packages:
       '@angular/core': 21.0.0-next.5
       rxjs: ^6.5.3 || ^7.4.0
 
+  '@angular/compiler-cli@12.2.16':
+    resolution: {integrity: sha512-tlalh8SJvdCWbUPRUR5GamaP+wSc/GuCsoUZpSbcczGKgSlbaEVXUYtVXm8/wuT6Slk2sSEbRs7tXGF2i7qxVw==}
+    engines: {node: ^12.14.1 || >=14.0.0}
+    hasBin: true
+    peerDependencies:
+      '@angular/compiler': 12.2.16
+
   '@angular/compiler-cli@21.0.0-next.5':
     resolution: {integrity: sha512-IJZJ4B0xMZMsdoM44HghiaGR87arI9kbIDIzjYDIP+vV+yL6o2ZfEs1MqjMt53NDtvYuWqk2/Pg3RZZnfBmjeQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
       '@angular/compiler': 21.0.0-next.5
+      typescript: '>=5.9 <6.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
+  '@angular/compiler@12.2.16':
+    resolution: {integrity: sha512-nsYEw+yu8QyeqPf9nAmG419i1mtGM4v8+U+S3eQHQFXTgJzLymMykWHYu2ETdjUpNSLK6xcIQDBWtWnWSfJjAA==}
+    engines: {node: ^12.14.1 || >=14.0.0}
 
   '@angular/compiler@21.0.0-next.5':
     resolution: {integrity: sha512-pW0bYQm3SZPXrANVYkhEkieZ7npYL6U6UVNLbkAYvCqHr8F0KcO29977yE1RcUUsJlTQKftS2CwwMY5a9iM/Wg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+
+  '@angular/core@12.2.16':
+    resolution: {integrity: sha512-jsmvaRdAfng99z2a9mAmkfcsCE1wm+tBYVDxnc5JquSXznwtncjzcoc2X0J0dzrkCDvzFfpTsZ9vehylytBc+A==}
+    engines: {node: ^12.14.1 || >=14.0.0}
+    peerDependencies:
+      rxjs: ^6.5.3 || ^7.0.0
+      zone.js: ~0.11.4
+
+  '@angular/core@18.2.10':
+    resolution: {integrity: sha512-EfxVz0pLaxnOppOYkdhnaUkk8HZT+uxaAGpJD3ppAa7YAWTE9xIGoNJmtS33cZNNOnvriMkdv7yn6pDtV4ct+Q==}
+    engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
 
   '@angular/core@21.0.0-next.4':
     resolution: {integrity: sha512-z7M/YyV6GapAH/qEz5v4O/HARNXkquIs8rxg2QY1PhZXWueWel9GXmMceIANrP5zv7GZL8oU64oGTSv2icwJVQ==}
@@ -5987,6 +6050,9 @@ packages:
   caniuse-lite@1.0.30001743:
     resolution: {integrity: sha512-e6Ojr7RV14Un7dz6ASD0aZDmQPT/A+eZU+nuTNfjqmRrmkmQlnTNWH0SKmqagx9PeW87UVqapSurtAXifmtdmw==}
 
+  canonical-path@1.0.0:
+    resolution: {integrity: sha512-feylzsbDxi1gPZ1IjystzIQZagYYLvfKrSuygUCgf7z6x790VEzze5QEkdSV1U58RA7Hi0+v6fv4K54atOzATg==}
+
   capital-case@1.0.4:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
 
@@ -6935,6 +7001,10 @@ packages:
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
+
+  dependency-graph@0.11.0:
+    resolution: {integrity: sha512-JeMq7fEshyepOWDfcfHK06N3MhyPhz++vtqWhMT5O9A3K42rdsEDpfdVqjaqaAhsw6a+ZqeDvQVtD0hFHQWrzg==}
+    engines: {node: '>= 0.6.0'}
 
   dependency-graph@1.0.0:
     resolution: {integrity: sha512-cW3gggJ28HZ/LExwxP2B++aiKxhJXMSIt9K48FOXQkm+vuG5gyatXnLsONRJdzO/7VfjDIiaOOa/bs4l464Lwg==}
@@ -10536,7 +10606,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -10644,6 +10713,9 @@ packages:
   rechoir@0.8.0:
     resolution: {integrity: sha512-/vxpCXddiX8NGfGO/mTafwjq4aFa/71pvamip0++IQk3zG8cbCj0fifNPrjjF1XMXUne91jL9OoxmdykoEtifQ==}
     engines: {node: '>= 10.13.0'}
+
+  reflect-metadata@0.1.14:
+    resolution: {integrity: sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==}
 
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
@@ -12844,6 +12916,12 @@ packages:
   zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
+  zone.js@0.11.5:
+    resolution: {integrity: sha512-D1/7VxEuQ7xk6z/kAROe4SUbd9CzxY4zOwVGnGHerd/SgLIVU5f4esDzQUsOCeArn933BZfWMKydH7l7dPEp0g==}
+
+  zone.js@0.14.10:
+    resolution: {integrity: sha512-YGAhaO7J5ywOXW6InXNlLmfU194F8lVgu7bRntUF3TiG8Y3nBK0x1UJJuHUP/e8IyihkjCYqhCScpSwnlaSRkQ==}
+
   zone.js@0.15.1:
     resolution: {integrity: sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==}
 
@@ -13469,13 +13547,46 @@ snapshots:
       - chokidar
       - supports-color
 
+  '@angular/common@12.2.16(@angular/core@12.2.16(rxjs@6.6.7)(zone.js@0.11.5))(rxjs@6.6.7)':
+    dependencies:
+      '@angular/core': 12.2.16(rxjs@6.6.7)(zone.js@0.11.5)
+      rxjs: 6.6.7
+      tslib: 2.8.1
+
+  '@angular/common@18.2.10(@angular/core@18.2.10)':
+    dependencies:
+      '@angular/core': 18.2.10
+      rxjs: 7.8.2
+      tslib: 2.8.1
+
   '@angular/common@21.0.0-next.5(@angular/core@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(rxjs@7.8.2)':
     dependencies:
       '@angular/core': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)':
+  '@angular/compiler-cli@12.2.16(@angular/compiler@12.2.16)':
+    dependencies:
+      '@angular/compiler': 12.2.16
+      '@babel/core': 7.28.4
+      '@babel/types': 7.28.4
+      canonical-path: 1.0.0
+      chokidar: 3.6.0
+      convert-source-map: 1.9.0
+      dependency-graph: 0.11.0
+      magic-string: 0.25.9
+      minimist: 1.2.8
+      reflect-metadata: 0.1.14
+      semver: 7.7.2
+      source-map: 0.6.1
+      sourcemap-codec: 1.4.8
+      tslib: 2.8.1
+      typescript: 5.9.0-beta
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - supports-color
+
+  '@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)':
     dependencies:
       '@angular/compiler': 21.0.0-next.5
       '@babel/core': 7.28.4
@@ -13485,14 +13596,31 @@ snapshots:
       reflect-metadata: 0.2.2
       semver: 7.7.2
       tslib: 2.8.1
-      typescript: 5.9.0-beta
       yargs: 18.0.0
+    optionalDependencies:
+      typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
+
+  '@angular/compiler@12.2.16':
+    dependencies:
+      tslib: 2.8.1
 
   '@angular/compiler@21.0.0-next.5':
     dependencies:
       tslib: 2.8.1
+
+  '@angular/core@12.2.16(rxjs@6.6.7)(zone.js@0.11.5)':
+    dependencies:
+      rxjs: 6.6.7
+      tslib: 2.8.1
+      zone.js: 0.11.5
+
+  '@angular/core@18.2.10':
+    dependencies:
+      rxjs: 7.8.2
+      tslib: 2.8.1
+      zone.js: 0.14.10
 
   '@angular/core@21.0.0-next.4(@angular/compiler@packages+compiler)':
     dependencies:
@@ -18579,6 +18707,8 @@ snapshots:
 
   caniuse-lite@1.0.30001743: {}
 
+  canonical-path@1.0.0: {}
+
   capital-case@1.0.4:
     dependencies:
       no-case: 3.0.4
@@ -19658,6 +19788,8 @@ snapshots:
   depd@1.1.2: {}
 
   depd@2.0.0: {}
+
+  dependency-graph@0.11.0: {}
 
   dependency-graph@1.0.0: {}
 
@@ -23165,10 +23297,10 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
+  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular/compiler-cli': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)
+      '@angular/compiler-cli': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)
       '@rollup/plugin-json': 6.1.0(rollup@4.52.2)
       '@rollup/wasm-node': 4.50.1
       ajv: 8.17.1
@@ -23193,7 +23325,7 @@ snapshots:
       typescript: 5.9.2
     optionalDependencies:
       rollup: 4.52.2
-      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2))
+      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2))
 
   ng-packagr@21.0.0-next.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
@@ -24331,6 +24463,8 @@ snapshots:
   rechoir@0.8.0:
     dependencies:
       resolve: 1.22.10
+
+  reflect-metadata@0.1.14: {}
 
   reflect-metadata@0.2.2: {}
 
@@ -27123,6 +27257,12 @@ snapshots:
   zod@3.25.76: {}
 
   zod@4.1.11: {}
+
+  zone.js@0.11.5:
+    dependencies:
+      tslib: 2.8.1
+
+  zone.js@0.14.10: {}
 
   zone.js@0.15.1: {}
 

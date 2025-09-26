@@ -33,12 +33,5 @@ ts_project(
     deps = [
         "//vscode-ng-language-service:node_modules/@types/node",
         "//vscode-ng-language-service:node_modules/vscode-uri",
-        "//vscode-ng-language-service/integration/pre_standalone_project",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
-        "//vscode-ng-language-service/integration/project",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
-        "//vscode-ng-language-service/server:index",
     ],
 )

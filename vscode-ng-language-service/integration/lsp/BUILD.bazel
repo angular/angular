@@ -4,13 +4,20 @@ jasmine_test(
     name = "test",
     data = [
         ":test_lib",
+        "//vscode-ng-language-service/integration",
+        "//vscode-ng-language-service/integration/pre_standalone_project",
+        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
+        "//vscode-ng-language-service/integration/project",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
+        "//vscode-ng-language-service/server:index",
+        "//vscode-ng-language-service/server:node_modules",
     ],
     flaky = True,
     shard_count = 2,
     tags = [
         "e2e",
-        "no-remote-exec",
-        "no-sandbox",
     ],
 )
 
