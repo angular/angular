@@ -28,6 +28,7 @@ import {
   maxLength,
   min,
   minLength,
+  numeric,
   readonly,
   required,
   type DisabledReason,
@@ -770,6 +771,38 @@ describe('control directive', () => {
         input.dispatchEvent(new Event('input'));
       });
       expect(cmp.f().value()).toBe('#0000ff');
+    });
+
+    it('should set inputmode=numeric for numeric integer field', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="color" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => {
+          numeric(p);
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const inputEl = fix.nativeElement.querySelector('input') as HTMLInputElement;
+      expect(inputEl.getAttribute('inputmode')).toEqual('numeric');
+    });
+
+    it('should set inputmode=decimal for numeric floating point field', () => {
+      @Component({
+        imports: [Control],
+        template: `<input type="color" [control]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => {
+          numeric(p, {float: true});
+        });
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const inputEl = fix.nativeElement.querySelector('input') as HTMLInputElement;
+      expect(inputEl.getAttribute('inputmode')).toEqual('decimal');
     });
   });
 });
