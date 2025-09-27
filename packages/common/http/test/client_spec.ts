@@ -164,6 +164,7 @@ describe('HttpClient', () => {
             timeout: 1000,
             keepalive: true,
             withCredentials: true,
+            referrerPolicy: 'no-referrer',
           },
         )
         .subscribe(() => {
@@ -176,6 +177,7 @@ describe('HttpClient', () => {
       expect(testReq.request.mode).toBe('cors');
       expect(testReq.request.redirect).toBe('follow');
       expect(testReq.request.referrer).toBe('www.example.com');
+      expect(testReq.request.referrerPolicy).toBe('no-referrer');
       expect(testReq.request.integrity).toBe('sha256-abc');
       expect(testReq.request.timeout).toBe(1000);
       expect(testReq.request.keepalive).toBe(true);
