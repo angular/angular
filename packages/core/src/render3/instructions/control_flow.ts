@@ -39,15 +39,15 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareNoDirectiveHostTemplate} from './template';
+import {AnimationLViewData} from '../../animation/interfaces';
+import {removeDehydratedViews} from '../../hydration/cleanup';
 import {
   addLViewToLContainer,
   detachView,
   getLViewFromLContainer,
   removeLViewFromLContainer,
 } from '../view/container';
-import {removeDehydratedViews} from '../../hydration/cleanup';
-import {AnimationLViewData} from '../../animation/interfaces';
+import {declareNoDirectiveHostTemplate} from './template';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -474,6 +474,14 @@ class LiveCollectionLContainerImpl extends LiveCollection<
  * @codeGenApi
  */
 export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): void {
+  // When working with a proxy object such as signal forms' `Field`, accessing the `length` or
+  // `Symbol.iterator` may trigger a reactive read. Therefore we need to read them up front,
+  // before clearing the active consumer.
+  if (Array.isArray(collection)) {
+    collection.length;
+  } else {
+    collection?.[Symbol.iterator];
+  }
   const prevConsumer = setActiveConsumer(null);
   const metadataSlotIdx = getSelectedIndex();
   try {
