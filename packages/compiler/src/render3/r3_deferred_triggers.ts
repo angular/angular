@@ -39,7 +39,16 @@ enum OnTriggerType {
 }
 
 /** Function that validates the structure of a reference-based trigger. */
-type ReferenceTriggerValidator = (type: OnTriggerType, parameters: string[]) => void;
+type ReferenceTriggerValidator = (type: OnTriggerType, parameters: ParsedParameter[]) => void;
+
+/** Parsed information about a defer trigger parameter. */
+interface ParsedParameter {
+  /** Expression of the parameter. */
+  expression: string;
+
+  /** Index within the trigger at which the parameter starts. */
+  start: number;
+}
 
 /** Parses a `when` deferred trigger. */
 export function parseNeverTrigger(
@@ -224,7 +233,7 @@ class OnTriggerParser {
     return this.tokens[Math.min(this.index, this.tokens.length - 1)];
   }
 
-  private consumeTrigger(identifier: Token, parameters: string[]) {
+  private consumeTrigger(identifier: Token, parameters: ParsedParameter[]) {
     const triggerNameStartSpan = this.span.start.moveBy(
       this.start + identifier.index - this.tokens[0].index,
     );
@@ -315,7 +324,6 @@ class OnTriggerParser {
               this.prefetchSpan,
               this.onSourceSpan,
               this.hydrateSpan,
-              this.placeholder,
               this.validator,
             ),
           );
@@ -344,8 +352,8 @@ class OnTriggerParser {
     }
   }
 
-  private consumeParameters(): string[] {
-    const parameters: string[] = [];
+  private consumeParameters(): ParsedParameter[] {
+    const parameters: ParsedParameter[] = [];
 
     if (!this.token().isCharacter(chars.$LPAREN)) {
       this.unexpectedToken(this.token());
@@ -355,7 +363,7 @@ class OnTriggerParser {
     this.advance();
 
     const commaDelimStack: number[] = [];
-    let current = '';
+    let tokens: Token[] = [];
 
     while (this.index < this.tokens.length) {
       const token = this.token();
@@ -364,8 +372,8 @@ class OnTriggerParser {
       // Note that we don't need to account for strings here since the lexer already parsed them
       // into string tokens.
       if (token.isCharacter(chars.$RPAREN) && commaDelimStack.length === 0) {
-        if (current.length) {
-          parameters.push(current);
+        if (tokens.length) {
+          parameters.push({expression: this.tokenRangeText(tokens), start: tokens[0].index});
         }
         break;
       }
@@ -389,15 +397,15 @@ class OnTriggerParser {
 
       // If we hit a comma outside of a comma-delimited syntax, it means
       // that we're at the top level and we're starting a new parameter.
-      if (commaDelimStack.length === 0 && token.isCharacter(chars.$COMMA) && current.length > 0) {
-        parameters.push(current);
-        current = '';
+      if (commaDelimStack.length === 0 && token.isCharacter(chars.$COMMA) && tokens.length > 0) {
+        parameters.push({expression: this.tokenRangeText(tokens), start: tokens[0].index});
         this.advance();
+        tokens = [];
         continue;
       }
 
       // Otherwise treat the token as a plain text character in the current parameter.
-      current += this.tokenText();
+      tokens.push(token);
       this.advance();
     }
 
@@ -415,10 +423,15 @@ class OnTriggerParser {
     return parameters;
   }
 
-  private tokenText(): string {
-    // Tokens have a toString already which we could use, but for string tokens it omits the quotes.
-    // Eventually we could expose this information on the token directly.
-    return this.expression.slice(this.start + this.token().index, this.start + this.token().end);
+  private tokenRangeText(tokens: Token[]): string {
+    if (tokens.length === 0) {
+      return '';
+    }
+
+    return this.expression.slice(
+      this.start + tokens[0].index,
+      this.start + tokens[tokens.length - 1].end,
+    );
   }
 
   private trackTrigger(name: keyof t.DeferredBlockTriggers, trigger: t.DeferredTrigger): void {
@@ -451,7 +464,7 @@ function trackTrigger(
 }
 
 function createIdleTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
@@ -466,7 +479,7 @@ function createIdleTrigger(
 }
 
 function createTimerTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
@@ -477,7 +490,7 @@ function createTimerTrigger(
     throw new Error(`"${OnTriggerType.TIMER}" trigger must have exactly one parameter`);
   }
 
-  const delay = parseDeferredTime(parameters[0]);
+  const delay = parseDeferredTime(parameters[0].expression);
 
   if (delay === null) {
     throw new Error(`Could not parse time value of trigger "${OnTriggerType.TIMER}"`);
@@ -494,7 +507,7 @@ function createTimerTrigger(
 }
 
 function createImmediateTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
@@ -515,18 +528,17 @@ function createImmediateTrigger(
 }
 
 function createHoverTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
-  placeholder: t.DeferredBlockPlaceholder | null,
   validator: ReferenceTriggerValidator,
 ): t.HoverDeferredTrigger {
   validator(OnTriggerType.HOVER, parameters);
   return new t.HoverDeferredTrigger(
-    parameters[0] ?? null,
+    parameters[0]?.expression ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
@@ -536,7 +548,7 @@ function createHoverTrigger(
 }
 
 function createInteractionTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
@@ -546,7 +558,7 @@ function createInteractionTrigger(
 ): t.InteractionDeferredTrigger {
   validator(OnTriggerType.INTERACTION, parameters);
   return new t.InteractionDeferredTrigger(
-    parameters[0] ?? null,
+    parameters[0]?.expression ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
@@ -556,7 +568,7 @@ function createInteractionTrigger(
 }
 
 function createViewportTrigger(
-  parameters: string[],
+  parameters: ParsedParameter[],
   nameSpan: ParseSourceSpan,
   sourceSpan: ParseSourceSpan,
   prefetchSpan: ParseSourceSpan | null,
@@ -566,7 +578,7 @@ function createViewportTrigger(
 ): t.ViewportDeferredTrigger {
   validator(OnTriggerType.VIEWPORT, parameters);
   return new t.ViewportDeferredTrigger(
-    parameters[0] ?? null,
+    parameters[0]?.expression ?? null,
     nameSpan,
     sourceSpan,
     prefetchSpan,
@@ -580,7 +592,7 @@ function createViewportTrigger(
  * @param type Type of the trigger being validated.
  * @param parameters Parameters of the trigger.
  */
-function validatePlainReferenceBasedTrigger(type: OnTriggerType, parameters: string[]) {
+function validatePlainReferenceBasedTrigger(type: OnTriggerType, parameters: ParsedParameter[]) {
   if (parameters.length > 1) {
     throw new Error(`"${type}" trigger can only have zero or one parameters`);
   }
@@ -591,7 +603,7 @@ function validatePlainReferenceBasedTrigger(type: OnTriggerType, parameters: str
  * @param type Type of the trigger being validated.
  * @param parameters Parameters of the trigger.
  */
-function validateHydrateReferenceBasedTrigger(type: OnTriggerType, parameters: string[]) {
+function validateHydrateReferenceBasedTrigger(type: OnTriggerType, parameters: ParsedParameter[]) {
   if (parameters.length > 0) {
     throw new Error(`Hydration trigger "${type}" cannot have parameters`);
   }
