@@ -104,6 +104,49 @@ http.get('/api/config', {
 
 You can instantiate `HttpParams` with a custom `HttpParameterCodec` that determines how `HttpClient` will encode the parameters into the URL.
 
+### Custom parameter encoding
+
+By default, `HttpParams` uses the built-in [`HttpUrlEncodingCodec`](api/common/http/HttpUrlEncodingCodec) to encode and decode parameter keys and values.
+
+You can provide your own implementation of [`HttpParameterCodec`](api/common/http/HttpParameterCodec) to customize how encoding and decoding are applied.
+
+```ts
+import { HttpClient, HttpParams, HttpParameterCodec } from '@angular/common/http';
+import { inject } from '@angular/core';
+
+export class CustomHttpParamEncoder  implements HttpParameterCodec {
+  encodeKey(key: string): string   {
+     return encodeURIComponent(key); 
+  }
+
+  encodeValue(value: string): string {
+    return encodeURIComponent(value);
+  }
+
+  decodeKey(key: string): string {
+    return decodeURIComponent(key);
+  }
+
+  decodeValue(value: string): string {
+    return decodeURIComponent(value);
+  }
+}
+
+export class ApiService {
+  private http = inject(HttpClient);
+
+  search() {
+    const params = new HttpParams({
+      encoder: new CustomHttpParamEncoder(),
+    })
+    .set('email', 'dev+alerts@example.com')
+    .set('q', 'a & b? c/d = e');
+
+    return this.http.get('/api/items', { params });
+  }
+}
+```
+
 ## Setting request headers
 
 Specify request headers that should be included in the request using the `headers` option.
