@@ -6,16 +6,79 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  createSignal,
-  SIGNAL,
-  SignalGetter,
-  SignalNode,
-  signalSetFn,
-  signalUpdateFn,
-} from '../../../primitives/signals';
+import {createSignal, SIGNAL, SignalGetter, SignalNode} from '../../../primitives/signals';
 
 import {isSignal, Signal, ValueEqualityFn} from './api';
+
+/**
+ * Creates a signal of type `T` with an initial value of `undefined`.
+ * Angular will implicitly use `undefined` as initial value.
+ */
+export function signal<T>(): WritableSignal<T | undefined>;
+
+/**
+ * Creates a signal of type `T` with an explicit initial value.
+ */
+export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
+
+/**
+ * Creates a signal of type `T|undefined` with undefined initial value and options.
+ */
+export function signal<T>(
+  initialValue: undefined,
+  options?: CreateSignalOptions<T | undefined>,
+): WritableSignal<T | undefined>;
+
+/**
+ * Create a `Signal` that can be set or updated directly.
+ *
+ * The function supports creating signals with or without initial values:
+ *
+ *   1. **Signals with initial values** - explicitly provided values.
+ *   2. **Signals without initial values** - implicitly `undefined`.
+ *
+ * @usageNotes
+ * To use signals, import `signal` from `@angular/core`.
+ *
+ * ```ts
+ * import {signal} from '@angular/core';
+ * ```
+ *
+ * Create signals with different initialization patterns:
+ *
+ * ```ts
+ * @Component({
+ *   ...
+ * })
+ * export class MyComponent {
+ *   count = signal<number>();          // WritableSignal<number | undefined>
+ *   name = signal('Angular');          // WritableSignal<string>
+ *   data = signal<string>(undefined);  // WritableSignal<string | undefined>
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+export function signal<T>(
+  initialValue?: T,
+  options?: CreateSignalOptions<T>,
+): WritableSignal<T> | WritableSignal<T | undefined> {
+  const [get, set, update] = createSignal(initialValue!, options?.equal);
+
+  const signalFn = get as SignalGetter<T> & WritableSignal<T>;
+  const node = signalFn[SIGNAL];
+
+  signalFn.set = set;
+  signalFn.update = update;
+  signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
+
+  if (ngDevMode) {
+    signalFn.toString = () => `[Signal: ${signalFn()}]`;
+    node.debugName = options?.debugName;
+  }
+
+  return signalFn;
+}
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
 export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
@@ -70,27 +133,6 @@ export interface CreateSignalOptions<T> {
    * A debug name for the signal. Used in Angular DevTools to identify the signal.
    */
   debugName?: string;
-}
-
-/**
- * Create a `Signal` that can be set or updated directly.
- */
-export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T> {
-  const [get, set, update] = createSignal(initialValue, options?.equal);
-
-  const signalFn = get as SignalGetter<T> & WritableSignal<T>;
-  const node = signalFn[SIGNAL];
-
-  signalFn.set = set;
-  signalFn.update = update;
-  signalFn.asReadonly = signalAsReadonlyFn.bind(signalFn as any) as () => Signal<T>;
-
-  if (ngDevMode) {
-    signalFn.toString = () => `[Signal: ${signalFn()}]`;
-    node.debugName = options?.debugName;
-  }
-
-  return signalFn as WritableSignal<T>;
 }
 
 export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
