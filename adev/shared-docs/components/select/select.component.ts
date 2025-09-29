@@ -37,7 +37,7 @@ export class Select implements ControlValueAccessor {
   readonly id = input.required<string>({alias: 'selectId'});
   readonly name = input.required<string>();
   readonly options = input.required<SelectOption[]>();
-  readonly disabled = model<boolean>(false);
+  readonly disabled = model(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: SelectOptionValue) => void = (_: SelectOptionValue) => {};

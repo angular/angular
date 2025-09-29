@@ -14,8 +14,7 @@ import {IconComponent} from '../icon/icon.component';
 import {IsActiveNavigationItem} from '../../pipes';
 import {NgTemplateOutlet, TitleCasePipe} from '@angular/common';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {SlideToggle} from '../slide-toggle/slide-toggle.component';
-import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'docs-navigation-list',
@@ -35,10 +34,10 @@ import {FormControl, ReactiveFormsModule} from '@angular/forms';
 })
 export class NavigationList {
   readonly navigationItems = input.required<NavigationItem[]>();
-  readonly displayItemsToLevel = input<number>(2);
+  readonly displayItemsToLevel = input(2);
   readonly collapsableLevel = input<number | undefined>();
-  readonly expandableLevel = input<number>(2);
-  readonly isDropdownView = input<boolean>(false);
+  readonly expandableLevel = input(2);
+  readonly isDropdownView = input(false);
 
   readonly linkClicked = output<void>();
 
