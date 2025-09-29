@@ -9,7 +9,7 @@
     "declaration": false,
     "experimentalDecorators": true,
     "module": "es2022",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "es2022",
     "typeRoots": ["node_modules/@types"],

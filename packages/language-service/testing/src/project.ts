@@ -45,7 +45,7 @@ function writeTsconfig(
         compilerOptions: {
           strict: true,
           experimentalDecorators: true,
-          moduleResolution: 'node',
+          moduleResolution: 'bundler',
           target: 'es2015',
           rootDir: '.',
           lib: ['dom', 'es2015'],

@@ -905,7 +905,7 @@ describe('find references and rename locations', () => {
 
         it('should find references', () => {
           const refs = getReferencesAtPosition(file)!;
-          assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
+          assertFileNames(refs, ['core.d.ts', 'prefix-pipe.ts', 'app.ts']);
           assertTextSpans(refs, ['transform', 'prefixPipe']);
         });
 
@@ -1830,7 +1830,7 @@ describe('find references and rename locations', () => {
         const refs = getReferencesAtPosition(file)!;
         expect(refs.length).toBe(7);
         assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
-        assertFileNames(refs, ['index.d.ts', 'app.ts']);
+        assertFileNames(refs, ['fake_common.d.ts', 'app.ts']);
       });
 
       it('should not support rename if directive is in a dts file', () => {

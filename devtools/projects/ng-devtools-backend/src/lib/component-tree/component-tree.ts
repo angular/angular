@@ -58,7 +58,9 @@ export function getInjectorId() {
   return `${injectorId++}`;
 }
 
-export function getInjectorMetadata(injector: Injector) {
+export function getInjectorMetadata(
+  injector: Injector,
+): ReturnType<NonNullable<ReturnType<typeof ngDebugClient>['ɵgetInjectorMetadata']>> {
   return ngDebugClient().ɵgetInjectorMetadata?.(injector) ?? null;
 }
 
