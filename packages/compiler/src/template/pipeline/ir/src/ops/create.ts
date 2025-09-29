@@ -1408,6 +1408,7 @@ interface DeferInteractionTrigger extends DeferTriggerWithTargetBase {
 
 interface DeferViewportTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Viewport;
+  options: o.Expression | null;
 }
 
 /**
