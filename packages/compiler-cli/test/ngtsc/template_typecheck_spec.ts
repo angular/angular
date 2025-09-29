@@ -4910,6 +4910,32 @@ suppress
           'Trigger cannot find reference "trigger".',
         );
       });
+
+      it('should check the options of the `viewport` trigger', () => {
+        env.write(
+          'test.ts',
+          `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: \`
+              @defer (on viewport({trigger: target, rootMargin: '10px', doesNotExist: true})) {
+                Content
+              }
+
+              <div #target></div>
+            \`,
+          })
+          export class Main {}
+        `,
+        );
+
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText).toBe(
+          `Object literal may only specify known properties, and '"doesNotExist"' does not exist in type 'IntersectionObserverInit'.`,
+        );
+      });
     });
 
     describe('conditional blocks', () => {
