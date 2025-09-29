@@ -24,6 +24,7 @@ export {
   Reactive,
   ReactiveHookFn,
   ReactiveNode,
+  ReactiveNodeKind,
   SIGNAL,
   consumerAfterComputation,
   consumerBeforeComputation,

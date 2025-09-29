@@ -14,11 +14,17 @@ import {EffectNode, EffectRefImpl} from '../reactivity/effect';
 import {Injector} from '../../di/injector';
 import {R3Injector} from '../../di/r3_injector';
 import {throwError} from '../../util/assert';
-import {ComputedNode, ReactiveNode, SIGNAL, SignalNode} from '../../../primitives/signals';
+import {
+  ComputedNode,
+  ReactiveNode,
+  ReactiveNodeKind,
+  SIGNAL,
+  SignalNode,
+} from '../../../primitives/signals';
 import {isLView} from '../interfaces/type_checks';
 
 export interface DebugSignalGraphNode {
-  kind: string;
+  kind: ReactiveNodeKind;
   id: string;
   epoch: number;
   label?: string;
