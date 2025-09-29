@@ -46,6 +46,7 @@ import {
   TmplAstTextAttribute,
   TmplAstUnknownBlock,
   TmplAstVariable,
+  TmplAstViewportDeferredTrigger,
   tmplAstVisitAll,
   TmplAstVisitor,
 } from '@angular/compiler';
@@ -650,6 +651,8 @@ class TemplateTargetVisitor implements TmplAstVisitor {
   visitDeferredTrigger(trigger: TmplAstDeferredTrigger) {
     if (trigger instanceof TmplAstBoundDeferredTrigger) {
       this.visitBinding(trigger.value);
+    } else if (trigger instanceof TmplAstViewportDeferredTrigger && trigger.options !== null) {
+      this.visitBinding(trigger.options);
     }
   }
 
