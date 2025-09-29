@@ -171,6 +171,11 @@ export interface HttpResourceOptions<TResult, TRaw> {
    * A comparison function which defines equality for the response value.
    */
   equal?: ValueEqualityFn<NoInfer<TResult>>;
+
+  /**
+   * A debug name for the reactive node. Used in Angular DevTools to identify the node.
+   */
+  debugName?: string;
 }
 
 /**
