@@ -70,6 +70,8 @@ export class CombinedRecursiveAstVisitor extends RecursiveAstVisitor implements 
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.visit(trigger.value);
+    } else if (trigger instanceof t.ViewportDeferredTrigger && trigger.options !== null) {
+      this.visit(trigger.options);
     }
   }
 
