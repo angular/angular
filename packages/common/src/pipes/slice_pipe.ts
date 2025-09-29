@@ -28,11 +28,11 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * ### List Example
  *
- * This `ngFor` example:
+ * This `@for` example:
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_list'}
  *
- * produces the following:
+ * produces the following output:
  *
  * ```html
  * <li>b</li>
