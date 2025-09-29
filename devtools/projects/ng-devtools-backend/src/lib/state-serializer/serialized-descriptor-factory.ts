@@ -71,6 +71,7 @@ const typeToDescriptorPreview: Formatter<string> = {
     return `${prop}`;
   },
   [PropType.Unknown]: (_: any) => 'unknown',
+  [PropType.Error]: (_: any) => '[⚠️ Error when retrieving the value]',
 };
 
 type Key = string | number;
@@ -138,6 +139,10 @@ const shallowPropTypeToTreeMetaData: Record<
     expandable: false,
   },
   [PropType.Map]: {
+    editable: false,
+    expandable: false,
+  },
+  [PropType.Error]: {
     editable: false,
     expandable: false,
   },

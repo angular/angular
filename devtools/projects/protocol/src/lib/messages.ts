@@ -150,6 +150,9 @@ export enum PropType {
   Set,
   Map,
   Unknown,
+
+  // Special Type when an error occurs during property access
+  Error,
 }
 
 export interface Descriptor {
