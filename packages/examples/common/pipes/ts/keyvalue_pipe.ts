@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {KeyValuePipe} from '@angular/common';
 import {Component} from '@angular/core';
 
 // #docregion KeyValuePipe
 @Component({
   selector: 'keyvalue-pipe',
+  imports: [KeyValuePipe],
   template: `
   <span>
   <p>Object</p>
@@ -26,7 +28,6 @@ import {Component} from '@angular/core';
     <div>{{ item.key }}:{{ item.value }}</div>
   }
 </span>`,
-  standalone: false,
 })
 export class KeyValuePipeComponent {
   object: {[key: number]: string} = {2: 'foo', 1: 'bar'};

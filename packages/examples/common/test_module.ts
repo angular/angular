@@ -28,7 +28,6 @@ export class TestsAppComponent {}
     ngComponentOutletExample.AppModule,
     ngIfExample.AppModule,
     ngTemplateOutletExample.AppModule,
-    pipesExample.AppModule,
 
     // Router configuration so that the individual e2e tests can load their
     // app components.
