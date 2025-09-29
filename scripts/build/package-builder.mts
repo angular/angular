@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {execSync, spawnSync} from 'child_process';
+import {execSync} from 'child_process';
 import {join, dirname} from 'path';
 import {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
+import {existsSync, lstatSync} from 'fs';
 
 /** Path to the project directory. */
 export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -72,7 +73,7 @@ function buildReleasePackages(
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
-    if (spawnSync(`[ -d ${outputPath} ]`).status !== 0) {
+    if (existsSync(outputPath) && lstatSync(outputPath).isDirectory()) {
       exec(`chmod -R u+w ${outputPath}`);
       exec(`rm -rf ${outputPath}`);
     }
