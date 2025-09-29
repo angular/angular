@@ -1856,6 +1856,20 @@ describe('type check blocks', () => {
 
       expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
     });
+
+    it('should generate options for `viewport` trigger', () => {
+      const TEMPLATE = `
+        @defer (on viewport({rootMargin: '123px'})) {
+          {{main()}}
+        } @placeholder {
+          <div>{{placeholder()}}</div>
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'new IntersectionObserver(null!, { "rootMargin": "123px" }); "" + ((this).main()); "" + ((this).placeholder());',
+      );
+    });
   });
 
   describe('conditional blocks', () => {

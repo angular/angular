@@ -1521,7 +1521,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block',
         );
       });
 
@@ -1539,7 +1539,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block',
         );
       });
 
@@ -1557,7 +1557,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
       });
 
@@ -1575,7 +1575,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
       });
 
@@ -1593,7 +1593,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block',
         );
       });
 
@@ -1611,7 +1611,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
       });
 
@@ -1629,7 +1629,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
       });
 
@@ -1650,7 +1650,7 @@ runInEachFileSystem(() => {
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
         expect(diags[0].messageText).toBe(
-          'Trigger with no parameters can only be placed on an @defer that has a @placeholder block with exactly one root element node',
+          'Trigger with no target can only be placed on an @defer that has a @placeholder block with exactly one root element node',
         );
       });
     });
