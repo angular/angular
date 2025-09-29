@@ -203,13 +203,20 @@ export const enum DeferBlockTrigger {
   Never,
 }
 
-/** * Describes specified delay (in ms) in the `hydrate on timer()` trigger. */
+/** Describes specified delay (in ms) in the `hydrate on timer()` trigger. */
 export interface HydrateTimerTriggerDetails {
-  delay: number;
+  type: DeferBlockTrigger.Timer;
+  delay?: number;
+}
+
+/** Describes the config for a `hydrate on viewport` trigger. */
+export interface HydrateViewportTriggerDetails {
+  type: DeferBlockTrigger.Viewport;
+  intersectionObserverOptions?: IntersectionObserverInit;
 }
 
 /** * Describes all possible hydration trigger details specified in a template. */
-export type HydrateTriggerDetails = HydrateTimerTriggerDetails;
+export type HydrateTriggerDetails = HydrateTimerTriggerDetails | HydrateViewportTriggerDetails;
 
 /**
  * Describes the initial state of this defer block instance.

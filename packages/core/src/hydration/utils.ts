@@ -691,6 +691,22 @@ function getHydrateTimerTrigger(blockData: SerializedDeferBlock): number | null 
   return (trigger as SerializedTriggerDetails)?.delay ?? null;
 }
 
+function getHydrateViewportTrigger(
+  blockData: SerializedDeferBlock,
+): true | IntersectionObserverInit | null {
+  const details = blockData[DEFER_HYDRATE_TRIGGERS];
+  if (details) {
+    for (const current of details) {
+      if (current === DeferBlockTrigger.Viewport) {
+        return true;
+      } else if (typeof current === 'object' && current.trigger === DeferBlockTrigger.Viewport) {
+        return current.intersectionObserverOptions || true;
+      }
+    }
+  }
+  return null;
+}
+
 function hasHydrateTrigger(blockData: SerializedDeferBlock, trigger: DeferBlockTrigger): boolean {
   return blockData[DEFER_HYDRATE_TRIGGERS]?.includes(trigger) ?? false;
 }
@@ -706,7 +722,7 @@ function createBlockSummary(blockInfo: SerializedDeferBlock): BlockSummary {
       idle: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Idle),
       immediate: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Immediate),
       timer: getHydrateTimerTrigger(blockInfo),
-      viewport: hasHydrateTrigger(blockInfo, DeferBlockTrigger.Viewport),
+      viewport: getHydrateViewportTrigger(blockInfo),
     },
   };
 }

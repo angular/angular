@@ -187,6 +187,7 @@ export interface SerializedDeferBlock {
 export interface SerializedTriggerDetails {
   trigger: DeferBlockTrigger;
   delay?: number;
+  intersectionObserverOptions?: IntersectionObserverInit;
 }
 
 /**
@@ -285,7 +286,12 @@ export interface DehydratedIcuData {
  */
 export interface BlockSummary {
   data: SerializedDeferBlock;
-  hydrate: {idle: boolean; immediate: boolean; viewport: boolean; timer: number | null};
+  hydrate: {
+    idle: boolean;
+    immediate: boolean;
+    viewport: true | IntersectionObserverInit | null;
+    timer: number | null;
+  };
 }
 
 /**
@@ -295,4 +301,5 @@ export interface ElementTrigger {
   el: HTMLElement;
   blockName: string;
   delay?: number;
+  intersectionObserverOptions?: IntersectionObserverInit;
 }
