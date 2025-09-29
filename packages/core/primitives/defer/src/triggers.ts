@@ -19,7 +19,7 @@ const hoverTriggers = new WeakMap<Element, DeferEventEntry>();
 const interactionTriggers = new WeakMap<Element, DeferEventEntry>();
 
 /** Currently-registered `viewport` triggers. */
-export const viewportTriggers = new WeakMap<Element, DeferEventEntry>();
+export const viewportTriggers = new WeakMap<Element, Map<string, DeferEventEntry>>();
 
 /** Names of the events considered as interaction events. */
 export const interactionEventNames = ['click', 'keydown'] as const;
@@ -28,10 +28,7 @@ export const interactionEventNames = ['click', 'keydown'] as const;
 export const hoverEventNames = ['mouseenter', 'mouseover', 'focusin'] as const;
 
 /** `IntersectionObserver` used to observe `viewport` triggers. */
-let intersectionObserver: IntersectionObserver | null = null;
-
-/** Number of elements currently observed with `viewport` triggers. */
-let observedViewportElements = 0;
+const intersectionObservers = new Map<string, {observer: IntersectionObserver; count: number}>();
 
 /** Object keeping track of registered callbacks for a deferred block trigger. */
 class DeferEventEntry {
@@ -130,14 +127,15 @@ export function onHover(trigger: Element, callback: VoidFunction): VoidFunction 
  * Used to create an IntersectionObserver instance.
  * @return IntersectionObserver that is used by onViewport
  */
-export function createIntersectionObserver() {
+export function createIntersectionObserver(options?: IntersectionObserverInit) {
+  const key = getIntersectionObserverKey(options);
   return new IntersectionObserver((entries) => {
     for (const current of entries) {
       if (current.isIntersecting && viewportTriggers.has(current.target)) {
-        viewportTriggers.get(current.target)!.listener();
+        viewportTriggers.get(current.target)?.get(key)?.listener();
       }
     }
-  });
+  }, options);
 }
 
 /**
@@ -152,37 +150,71 @@ export function createIntersectionObserver() {
 export function onViewport(
   trigger: Element,
   callback: VoidFunction,
-  observerFactoryFn: () => IntersectionObserver,
+  observerFactoryFn: (options?: IntersectionObserverInit) => IntersectionObserver,
+  options?: IntersectionObserverInit,
 ): VoidFunction {
-  let entry = viewportTriggers.get(trigger);
+  const key = getIntersectionObserverKey(options);
+  let entry = viewportTriggers.get(trigger)?.get(key);
 
-  intersectionObserver = intersectionObserver || observerFactoryFn();
+  if (!intersectionObservers.has(key)) {
+    intersectionObservers.set(key, {observer: observerFactoryFn(options), count: 0});
+  }
+
+  const config = intersectionObservers.get(key)!;
 
   if (!entry) {
     entry = new DeferEventEntry();
-    intersectionObserver!.observe(trigger);
-    viewportTriggers.set(trigger, entry);
-    observedViewportElements++;
+    config.observer.observe(trigger);
+
+    let triggerConfig = viewportTriggers.get(trigger);
+
+    if (triggerConfig) {
+      triggerConfig.set(key, entry);
+    } else {
+      triggerConfig = new Map();
+      viewportTriggers.set(trigger, triggerConfig);
+    }
+
+    triggerConfig.set(key, entry);
+    config.count++;
   }
 
   entry.callbacks.add(callback);
 
   return () => {
-    if (!viewportTriggers.has(trigger)) {
+    if (!viewportTriggers.get(trigger)?.has(key)) {
       return;
     }
 
     entry!.callbacks.delete(callback);
 
     if (entry!.callbacks.size === 0) {
-      intersectionObserver?.unobserve(trigger);
-      viewportTriggers.delete(trigger);
-      observedViewportElements--;
+      config.observer.unobserve(trigger);
+      config.count--;
+
+      const triggerConfig = viewportTriggers.get(trigger);
+
+      if (triggerConfig) {
+        triggerConfig.delete(key);
+
+        if (triggerConfig.size === 0) {
+          viewportTriggers.delete(trigger);
+        }
+      }
     }
 
-    if (observedViewportElements === 0) {
-      intersectionObserver?.disconnect();
-      intersectionObserver = null;
+    if (config.count === 0) {
+      config.observer.disconnect();
+      intersectionObservers.delete(key);
     }
   };
+}
+
+/** Generates a string that can be used to find identical intersection observer option objects. */
+function getIntersectionObserverKey(options: IntersectionObserverInit | undefined): string {
+  if (!options) {
+    return '';
+  }
+
+  return `${options.rootMargin}/${typeof options.threshold === 'number' ? options.threshold : options.threshold?.join('\n')}`;
 }

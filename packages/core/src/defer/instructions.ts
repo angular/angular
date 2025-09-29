@@ -541,7 +541,7 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Timer, {delay});
+  hydrateTriggers.set(DeferBlockTrigger.Timer, {type: DeferBlockTrigger.Timer, delay});
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
@@ -751,15 +751,26 @@ export function ɵɵdeferHydrateOnInteraction() {
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferOnViewport(
+  triggerIndex: number,
+  walkUpTimes?: number | null,
+  options?: IntersectionObserverInit,
+) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
+    const args: string[] = [];
+    if (walkUpTimes !== undefined && walkUpTimes !== -1) {
+      args.push('<target>');
+    }
+    if (options) {
+      args.push(JSON.stringify(options));
+    }
     trackTriggerForDebugging(
       lView[TVIEW],
       tNode,
-      `on viewport${walkUpTimes === -1 ? '' : '(<target>)'}`,
+      `on viewport${args.length === 0 ? '' : `(${args.join(', ')})`}`,
     );
   }
 
@@ -777,6 +788,7 @@ export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) 
       onViewportWrapper,
       () => triggerDeferBlock(TriggerType.Regular, lView, tNode),
       TriggerType.Regular,
+      options,
     );
   }
 }
@@ -787,15 +799,26 @@ export function ɵɵdeferOnViewport(triggerIndex: number, walkUpTimes?: number) 
  * @param walkUpTimes Number of times to walk up/down the tree hierarchy to find the trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: number) {
+export function ɵɵdeferPrefetchOnViewport(
+  triggerIndex: number,
+  walkUpTimes?: number | null,
+  options?: IntersectionObserverInit,
+) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
+    const args: string[] = [];
+    if (walkUpTimes !== undefined && walkUpTimes !== -1) {
+      args.push('<target>');
+    }
+    if (options) {
+      args.push(JSON.stringify(options));
+    }
     trackTriggerForDebugging(
       lView[TVIEW],
       tNode,
-      `prefetch on viewport${walkUpTimes === -1 ? '' : '(<target>)'}`,
+      `prefetch on viewport${args.length === 0 ? '' : `(${args.join(', ')})`}`,
     );
   }
 
@@ -813,6 +836,7 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
       onViewportWrapper,
       () => triggerPrefetching(tDetails, lView, tNode),
       TriggerType.Prefetch,
+      options,
     );
   }
 }
@@ -821,18 +845,30 @@ export function ɵɵdeferPrefetchOnViewport(triggerIndex: number, walkUpTimes?: 
  * Creates runtime data structures for the `on viewport` hydrate trigger.
  * @codeGenApi
  */
-export function ɵɵdeferHydrateOnViewport() {
+export function ɵɵdeferHydrateOnViewport(options?: IntersectionObserverInit) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
   if (ngDevMode) {
-    trackTriggerForDebugging(lView[TVIEW], tNode, 'hydrate on viewport');
+    trackTriggerForDebugging(
+      lView[TVIEW],
+      tNode,
+      `hydrate on viewport${options ? `(${JSON.stringify(options)})` : ''}`,
+    );
   }
 
   if (!shouldAttachTrigger(TriggerType.Hydrate, lView, tNode)) return;
 
   const hydrateTriggers = getHydrateTriggers(getTView(), tNode);
-  hydrateTriggers.set(DeferBlockTrigger.Viewport, null);
+  hydrateTriggers.set(
+    DeferBlockTrigger.Viewport,
+    options
+      ? {
+          type: DeferBlockTrigger.Viewport,
+          intersectionObserverOptions: options,
+        }
+      : null,
+  );
 
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
