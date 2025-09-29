@@ -23,7 +23,7 @@ Existing Angular libraries exist on NPM today and are distributed in the Angular
 
 We will produce two compiler entry-points, `ngtsc` and `ngcc`.
 
-`ngtsc` will be a Typescript-to-Javascript transpiler that reifies Angular decorators into static properties. It is a minimal wrapper around `tsc` which includes a set of Angular transforms. While Ivy is experimental, `ngc` operates as `ngtsc` when the `angularCompilerOption` `enableIvy` flag is set to `true` in the `tsconfig.json` file for the project.
+`ngtsc` will be a TypeScript-to-JavaScript transpiler that reifies Angular decorators into static properties. It is a minimal wrapper around `tsc` which includes a set of Angular transforms. While Ivy is experimental, `ngc` operates as `ngtsc` when the `angularCompilerOption` `enableIvy` flag is set to `true` in the `tsconfig.json` file for the project.
 
 `ngcc` (which stands for Angular compatibility compiler) is designed to process code coming from NPM and produce the equivalent Ivy version, as if the code was compiled with `ngtsc`. It will operate given a `node_modules` directory and a set of packages to compile, and will produce an equivalent directory from which the Ivy equivalents of those modules can be read. `ngcc` is a separate script entry point to `@angular/compiler-cli`.
 
@@ -182,7 +182,7 @@ A Compiler must not depend on any inputs not directly passed to it (for example,
 1. It helps to enforce the Ivy locality principle, since all inputs to the Compiler will be visible.
 2. It protects against incorrect builds during `--watch` mode, since the dependencies between files will be easily traceable.
 
-Compilers will also not take Typescript nodes directly as input, but will operate against information extracted from TS sources by the transformer. In addition to helping enforce the rules above, this restriction also enables Compilers to run at runtime during JIT mode.
+Compilers will also not take TypeScript nodes directly as input, but will operate against information extracted from TS sources by the transformer. In addition to helping enforce the rules above, this restriction also enables Compilers to run at runtime during JIT mode.
 
 For example, the input to the `@Component` compiler will be:
 
@@ -224,7 +224,7 @@ export class Foo {}
 
 `ngc` has a metadata system which attempts to statically understand the "value side" of a program. This allowed it to follow the references and evaluate the expressions required to understand that `FOO_TEMPLATE_URL` evaluates statically to `templates/foo.html`. `ngtsc` will need a similar capability, though the design will be different.
 
-The `ngtsc` metadata evaluator will be built as a partial Typescript interpreter, which visits Typescript nodes and evaluates expressions statically. This allows metadata evaluation to happen on demand. It will have some restrictions that aren't present in the `ngc` model - in particular, evaluation will not cross `node_module` boundaries.
+The `ngtsc` metadata evaluator will be built as a partial TypeScript interpreter, which visits TypeScript nodes and evaluates expressions statically. This allows metadata evaluation to happen on demand. It will have some restrictions that aren't present in the `ngc` model - in particular, evaluation will not cross `node_module` boundaries.
 
 #### Compiling a template
 
@@ -348,7 +348,7 @@ Tsickle also currently converts `ts.Decorator` nodes into static properties on a
 
 Because of the serialization restriction, Tsickle must run first, before the Angular transformer. However, the Angular transformer will operate against `ts.Decorator` nodes, not Tsickle's downleveled format. The Angular transformer will also remove the decorator nodes during compilation, so there is no need for Tsickle decorator downleveling. Thus, Tsickle's downlevel can be disabled for `ngtsc`.
 
-So the Angular transformer will run after the Tsickle transforms, but before the Typescript transforms.
+So the Angular transformer will run after the Tsickle transforms, but before the TypeScript transforms.
 
 ##### Watch mode
 
@@ -362,7 +362,7 @@ This mode works for the Angular transformer and most of the decorator compilers,
 
 #### The compatibility problem
 
-Not all Angular code is compiled at the same time. Applications have dependencies on shared libraries, and those libraries are published on NPM in their compiled form and not as Typescript source code. Even if an application is built using `ngtsc`, its dependencies may not have been.
+Not all Angular code is compiled at the same time. Applications have dependencies on shared libraries, and those libraries are published on NPM in their compiled form and not as TypeScript source code. Even if an application is built using `ngtsc`, its dependencies may not have been.
 
 If a particular library was not compiled with `ngtsc`, it does not have reified decorator properties in its `.js` distribution as described above. Linking it against a dependency that was not compiled in the same way will fail at runtime.
 
@@ -370,11 +370,11 @@ If a particular library was not compiled with `ngtsc`, it does not have reified 
 
 Since Ivy code can only be linked against other Ivy code, to build the application all pre-Ivy dependencies from NPM must be converted to Ivy dependencies. This transformation must happen as a precursor to running `ngtsc` on the application, and future compilation and linking operations need to be made against this transformed version of the dependencies.
 
-It is possible to transpile non-Ivy code in the Angular Package Format (v6) into Ivy code, even though the `.js` files no longer contain the decorator information. This works because the Angular Package Format includes `.metadata.json` files for each `.js` file. These metadata files contain information that was present in the Typescript source but was removed during transpilation to Javascript, and this information is sufficient to generate patched `.js` files which add the Ivy static properties to decorated classes.
+It is possible to transpile non-Ivy code in the Angular Package Format (v6) into Ivy code, even though the `.js` files no longer contain the decorator information. This works because the Angular Package Format includes `.metadata.json` files for each `.js` file. These metadata files contain information that was present in the TypeScript source but was removed during transpilation to JavaScript, and this information is sufficient to generate patched `.js` files which add the Ivy static properties to decorated classes.
 
 #### Metadata from APF
 
-The `.metadata.json` files currently being shipped to NPM includes, among other information, the arguments to the Angular decorators which `ngtsc` downlevels to static properties. For example, the `.metadata.json` file for `CommonModule` contains the information for its `NgModule` decorator which was originally present in the Typescript source:
+The `.metadata.json` files currently being shipped to NPM includes, among other information, the arguments to the Angular decorators which `ngtsc` downlevels to static properties. For example, the `.metadata.json` file for `CommonModule` contains the information for its `NgModule` decorator which was originally present in the TypeScript source:
 
 ```json
 "CommonModule": {
@@ -438,7 +438,7 @@ In this mode, the on-disk `ngcc_node_modules` directory functions as a cache. If
 
 Compiling a package in `ngcc` involves the following steps:
 
-1. Parse the JS files of the package with the Typescript parser.
+1. Parse the JS files of the package with the TypeScript parser.
 2. Invoke the `StaticReflector` system from the legacy `@angular/compiler` to parse the `.metadata.json` files.
 3. Run through each Angular decorator in the Ivy system and compile:
     1. Use the JS AST plus the information from the `StaticReflector` to construct the input to the annotation's Compiler.
@@ -449,10 +449,10 @@ Compiling a package in `ngcc` involves the following steps:
 
 #### Merging with JS output
 
-At first glance it is desirable for each Compiler's output to be patched into the AST for the modules being compiled, and then to generate the resulting JS code and sourcemaps using Typescript's emit on the AST. This is undesirable for several reasons:
+At first glance it is desirable for each Compiler's output to be patched into the AST for the modules being compiled, and then to generate the resulting JS code and sourcemaps using TypeScript's emit on the AST. This is undesirable for several reasons:
 
-* The round-trip through the Typescript parser and emitter might subtly change the input JS code - dropping comments, reformatting code, etc. This is not ideal, as users expect the input code to remain as unchanged as possible.
-* It isn't possible in Typescript to directly emit without going through any of Typescript's own transformations. This may cause expressions to be reformatted, code to be downleveled, and requires configuration of an output module system into which the code will be transformed.
+* The round-trip through the TypeScript parser and emitter might subtly change the input JS code - dropping comments, reformatting code, etc. This is not ideal, as users expect the input code to remain as unchanged as possible.
+* It isn't possible in TypeScript to directly emit without going through any of TypeScript's own transformations. This may cause expressions to be reformatted, code to be downleveled, and requires configuration of an output module system into which the code will be transformed.
 
 For these reasons, `ngcc` will not use the TS emitter to produce the final patched `.js` files. Instead, the JS text will be manipulated directly, with the help of the `magic-string` or similar library to ensure the changes are reflected in the output sourcemaps. The AST which is parsed from the JS files contains position information of all the types in the JS source, and this information can be used to determine the correct insertion points for the Ivy static fields.
 
@@ -473,6 +473,6 @@ For example, if a library ships with commonjs-only code or a UMD bundle that `ng
 
 The `@angular/language-service` is mostly out of scope for this document, and will be treated in a separate design document. However, it's worth a consideration here as the architecture of the compiler impacts the language service's design.
 
-A Language Service is an analysis engine that integrates into an IDE such as Visual Studio Code. It processes code and provides static analysis information regarding that code, as well as enables specific IDE operations such as code completion, tracing of references, and refactoring. The `@angular/language-service` is a wrapper around the Typescript language service (much as `ngtsc` wraps `tsc`) and extends the analysis of Typescript with a specific understanding of Angular concepts. In particular, it also understands the Angular Template Syntax and can bridge between the component class in Typescript and expressions in the templates.
+A Language Service is an analysis engine that integrates into an IDE such as Visual Studio Code. It processes code and provides static analysis information regarding that code, as well as enables specific IDE operations such as code completion, tracing of references, and refactoring. The `@angular/language-service` is a wrapper around the TypeScript language service (much as `ngtsc` wraps `tsc`) and extends the analysis of TypeScript with a specific understanding of Angular concepts. In particular, it also understands the Angular Template Syntax and can bridge between the component class in TypeScript and expressions in the templates.
 
 To provide code completion and other intelligence around template contents, the Angular Language Service must have a similar understanding of the template contents as the `ngtsc` compiler - it must know the selector map associated with the component, and the metadata of each directive or pipe used in the template. Whether the language service consumes the output of `ngcc` or reuses its metadata transformation logic, the data it needs will be available.

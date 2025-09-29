@@ -229,7 +229,7 @@ export class JsonpClientBackend implements HttpBackend {
       };
 
       // onError() is the error callback, which runs if the script returned generates
-      // a Javascript error. It emits the error via the Observable error channel as
+      // a JavaScript error. It emits the error via the Observable error channel as
       // a HttpErrorResponse.
       const onError = (error: Error) => {
         cleanup();

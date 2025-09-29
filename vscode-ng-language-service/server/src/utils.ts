@@ -170,7 +170,7 @@ export class MruTracker {
    * Returns all items sorted by most recently used.
    */
   getAll(): string[] {
-    // Javascript Set maintains insertion order, see
+    // JavaScript Set maintains insertion order, see
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set
     // Since items are sorted from least recently used to most recently used,
     // we reverse the result.

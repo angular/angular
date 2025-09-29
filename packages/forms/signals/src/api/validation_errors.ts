@@ -322,7 +322,7 @@ export interface ValidationError {
  * @experimental 21.0.0
  */
 export class CustomValidationError implements ValidationError {
-  /** Brand the class to avoid Typescript structural matching */
+  /** Brand the class to avoid TypeScript structural matching */
   private __brand = undefined;
 
   /**
@@ -353,7 +353,7 @@ export class CustomValidationError implements ValidationError {
  * @experimental 21.0.0
  */
 abstract class _NgValidationError implements ValidationError {
-  /** Brand the class to avoid Typescript structural matching */
+  /** Brand the class to avoid TypeScript structural matching */
   private __brand = undefined;
 
   /** Identifies the kind of error. */

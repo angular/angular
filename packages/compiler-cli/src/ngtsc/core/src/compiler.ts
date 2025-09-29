@@ -873,7 +873,7 @@ export class NgCompiler {
       });
     }
 
-    // Typescript transformer to add debugName metadata to signal functions.
+    // TypeScript transformer to add debugName metadata to signal functions.
     before.push(signalMetadataTransform(this.inputProgram));
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];

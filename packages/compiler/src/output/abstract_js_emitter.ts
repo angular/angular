@@ -30,7 +30,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
   }
 
   override visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
-    throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
+    throw new Error('Cannot emit a WrappedNodeExpr in JavaScript.');
   }
 
   override visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {

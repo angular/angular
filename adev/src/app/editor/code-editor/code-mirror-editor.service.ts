@@ -212,7 +212,7 @@ export class CodeMirrorEditor {
       });
   }
 
-  // Method is responsible for sending request to Typescript VFS worker.
+  // Method is responsible for sending request to TypeScript VFS worker.
   private sendRequestToTsVfs = <T>(request: ActionMessage<T>) => {
     if (!this.tsVfsWorker) return;
 

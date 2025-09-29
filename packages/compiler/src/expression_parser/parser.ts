@@ -1039,7 +1039,7 @@ class _ParseAST {
     const start = this.inputIndex;
     let result = this.parsePrefix();
     while (this.next.type == TokenType.Operator && this.next.strValue === '**') {
-      // This aligns with Javascript semantics which require any unary operator preceeding the
+      // This aligns with JavaScript semantics which require any unary operator preceeding the
       // exponentiation operation to be explicitly grouped as either applying to the base or result
       // of the exponentiation operation.
       if (

@@ -64,7 +64,7 @@ Possible values are:
 To bundle your schematics together with your library, you must configure the library to build the schematics separately, then add them to the bundle.
 You must build your schematics *after* you build your library, so they are placed in the correct directory.
 
-* Your library needs a custom Typescript configuration file with instructions on how to compile your schematics into your distributed library
+* Your library needs a custom TypeScript configuration file with instructions on how to compile your schematics into your distributed library
 * To add the schematics to the library bundle, add scripts to the library's `package.json` file
 
 Assume you have a library project `my-lib` in your Angular workspace.

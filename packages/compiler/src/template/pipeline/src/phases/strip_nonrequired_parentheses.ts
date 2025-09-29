@@ -12,7 +12,7 @@ import type {CompilationJob} from '../compilation';
 
 /**
  * In most cases we can drop user added parentheses from expressions. However, in some cases
- * parentheses are needed for the expression to be considered valid JavaScript or for Typescript to
+ * parentheses are needed for the expression to be considered valid JavaScript or for TypeScript to
  * generate the correct output. This phases strips all parentheses except in the following
  * siturations where they are required:
  *
@@ -25,12 +25,12 @@ import type {CompilationJob} from '../compilation';
  *    We need (for now) to keep parentheses around the `??` operator when it is used with and/or operators.
  *    For example, `a ?? b && c` is not valid JavaScript, but `(a ?? b) && c` is.
  *
- * 3. Ternary expression used as an operand for nullish coalescing. Typescript generates incorrect
+ * 3. Ternary expression used as an operand for nullish coalescing. TypeScript generates incorrect
  *    code if the parentheses are missing. For example when `(a ? b : c) ?? d` is translated to
  *    typescript AST, the parentheses node is removed, and then the remaining AST is printed, it
  *    incorrectly prints `a ? b : c ?? d`. This is different from how it handles the same situation
  *    with `||` and `&&` where it prints the parentheses even if they are not present in the AST.
- *    Note: We may be able to remove this case if Typescript resolves the following issue:
+ *    Note: We may be able to remove this case if TypeScript resolves the following issue:
  *    https://github.com/microsoft/TypeScript/issues/61369
  */
 export function stripNonrequiredParentheses(job: CompilationJob): void {

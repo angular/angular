@@ -8041,7 +8041,7 @@ On Windows: `npm install @angular/common@next @angular/compiler@next @angular/co
 
 Then run whatever `ng serve` or `npm start` command you normally use, and everything should work.
 
-*Please ensure that you are using Typescript v2.1.6 or higher.*
+*Please ensure that you are using TypeScript v2.1.6 or higher.*
 
 *If you rely on Animations* you’ll also need to install the animations package `@angular/animations` and import the new `BrowserAnimationsModule` from `@angular/platform-browser/animations` in your root NgModule. Without this, your code will compile and run, but animations won’t activate.
 Imports from `@angular/core` were deprecated, use imports from the new package `import { trigger, state, style, transition, animate } from '@angular/animations';`.

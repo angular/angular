@@ -43,7 +43,7 @@ Exporting top level variables should be avoided where possible where performance
 and code size matters:
 
 ```
-// Typescript
+// TypeScript
 export let exported = 0;
 let notExported = 0;
 

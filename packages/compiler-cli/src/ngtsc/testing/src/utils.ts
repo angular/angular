@@ -58,7 +58,7 @@ export function makeProgram(
         }
         return `Error: ${message}`;
       });
-      throw new Error(`Typescript diagnostics failed! ${errors.join(', ')}`);
+      throw new Error(`TypeScript diagnostics failed! ${errors.join(', ')}`);
     }
   }
   return {program, host: compilerHost, options: compilerOptions};
