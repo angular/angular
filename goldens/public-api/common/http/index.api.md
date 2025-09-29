@@ -2892,6 +2892,7 @@ export interface HttpResourceFn {
 
 // @public
 export interface HttpResourceOptions<TResult, TRaw> {
+    debugName?: string;
     defaultValue?: NoInfer<TResult>;
     equal?: ValueEqualityFn<NoInfer<TResult>>;
     injector?: Injector;
