@@ -238,6 +238,7 @@ function makeHttpResourceFn<TRaw>(responseType: ResponseType) {
       injector,
       () => normalizeRequest(request, responseType),
       options?.defaultValue,
+      options?.debugName,
       options?.parse as (value: unknown) => TResult,
       options?.equal as ValueEqualityFn<unknown>,
     ) as HttpResourceRef<TResult>;
@@ -321,6 +322,7 @@ class HttpResourceImpl<T>
     injector: Injector,
     request: () => HttpRequest<T> | undefined,
     defaultValue: T,
+    debugName?: string,
     parse?: (value: unknown) => T,
     equal?: ValueEqualityFn<unknown>,
   ) {
@@ -388,6 +390,7 @@ class HttpResourceImpl<T>
       },
       defaultValue,
       equal,
+      debugName,
       injector,
     );
     this.client = injector.get(HttpClient);
