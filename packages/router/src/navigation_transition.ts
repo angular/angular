@@ -17,6 +17,7 @@ import {
   signal,
   Type,
   untracked,
+  ɵWritable as Writable,
 } from '@angular/core';
 import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
 import {
@@ -306,6 +307,8 @@ export interface Navigation {
   readonly abort: () => void;
 }
 
+const noop = () => {};
+
 export interface NavigationTransition {
   id: number;
   currentUrlTree: UrlTree;
@@ -325,7 +328,6 @@ export interface NavigationTransition {
   targetRouterState: RouterState | null;
   guards: Checks;
   guardsResult: GuardResult | null;
-  abortController: AbortController;
 }
 
 /**
@@ -437,7 +439,6 @@ export class NavigationTransitions {
         targetRouterState: null,
         guards: {canActivateChecks: [], canDeactivateChecks: []},
         guardsResult: null,
-        abortController: new AbortController(),
         id,
       });
     });
@@ -451,6 +452,7 @@ export class NavigationTransitions {
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
         let completedOrAborted = false;
+        const abortController = new AbortController();
         return of(overallTransitionState).pipe(
           switchMap((t) => {
             // It is possible that `switchMap` fails to cancel previous navigations if a new one happens synchronously while the operator
@@ -488,7 +490,7 @@ export class NavigationTransitions {
                     ...lastSuccessfulNavigation,
                     previousNavigation: null,
                   },
-              abort: () => t.abortController.abort(),
+              abort: () => abortController.abort(),
             });
             const urlTransition =
               !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
@@ -540,7 +542,7 @@ export class NavigationTransitions {
                   router.config,
                   this.urlSerializer,
                   this.paramsInheritanceStrategy,
-                  overallTransitionState.abortController.signal,
+                  abortController.signal,
                 ),
 
                 // Update URL if in `eager` update mode
@@ -780,13 +782,13 @@ export class NavigationTransitions {
           take(1),
 
           takeUntil(
-            abortSignalToObservable(overallTransitionState.abortController.signal).pipe(
+            abortSignalToObservable(abortController.signal).pipe(
               // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
               filter(() => !completedOrAborted && !overallTransitionState.targetRouterState),
               tap(() => {
                 this.cancelNavigationTransition(
                   overallTransitionState,
-                  overallTransitionState.abortController.signal.reason + '',
+                  abortController.signal.reason + '',
                   NavigationCancellationCode.Aborted,
                 );
               }),
@@ -796,6 +798,10 @@ export class NavigationTransitions {
           tap({
             next: (t: NavigationTransition) => {
               completedOrAborted = true;
+              this.currentNavigation.update((nav) => {
+                (nav as Writable<Navigation>).abort = noop;
+                return nav;
+              });
               this.lastSuccessfulNavigation.set(untracked(this.currentNavigation));
               this.events.next(
                 new NavigationEnd(
@@ -828,7 +834,7 @@ export class NavigationTransitions {
           ),
 
           finalize(() => {
-            overallTransitionState.abortController.abort();
+            abortController.abort();
             /* When the navigation stream finishes either through error or success,
              * we set the `completed` or `errored` flag. However, there are some
              * situations where we could get here without either of those being set.
