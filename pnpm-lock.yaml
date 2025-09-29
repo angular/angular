@@ -362,8 +362,8 @@ importers:
         specifier: 0.2100.0-next.5
         version: 0.2100.0-next.5(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#388e486d3909cd065e26c368d4e465dfae76a156
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/388e486d3909cd065e26c368d4e465dfae76a156(@modelcontextprotocol/sdk@1.18.2)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#6f8f9b9ad21f8a8386290489377ef73a88bf5aeb
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6f8f9b9ad21f8a8386290489377ef73a88bf5aeb(@modelcontextprotocol/sdk@1.18.2)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -1835,9 +1835,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/388e486d3909cd065e26c368d4e465dfae76a156':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/388e486d3909cd065e26c368d4e465dfae76a156}
-    version: 0.0.0-08d451f9b4e900928b65cd31234693ef9a994492
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6f8f9b9ad21f8a8386290489377ef73a88bf5aeb':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6f8f9b9ad21f8a8386290489377ef73a88bf5aeb}
+    version: 0.0.0-b7672ff60456719e6d9b0cc052abc73a7adc8df2
     hasBin: true
 
   '@angular/ssr@21.0.0-next.5':
@@ -3134,8 +3134,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.20.0':
-    resolution: {integrity: sha512-QdShxO9LX35jFogy3iKprQNqgKKveux4H2QjOnyIvyHRuGi6PHiz3fjNf8Y0VPY8o5V2fHqR2XqiSVoz7yZs0w==}
+  '@google/genai@1.21.0':
+    resolution: {integrity: sha512-k47DECR8BF9z7IJxQd3reKuH2eUnOH5NlJWSe+CKM6nbXx+wH3hmtWQxUQR9M8gzWW1EvFuRVgjQssEIreNZsw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.11.4
@@ -8708,9 +8708,6 @@ packages:
   jasmine-core@4.6.1:
     resolution: {integrity: sha512-VYz/BjjmC3klLJlLwA4Kw8ytk0zDSmbbDLNs794VnWmkcCB7I9aAL/D48VNQtmITyPvea2C3jdUMfc3kAoy0PQ==}
 
-  jasmine-core@5.10.0:
-    resolution: {integrity: sha512-MrChbWV5LBo+EaeKwTM1eZ6oYSz1brvFExnRafraEkJkbJ9evbUxABhnIgGQimhpMxhg+BD6QmOvb/e3NXsNdg==}
-
   jasmine-core@5.11.0:
     resolution: {integrity: sha512-MPJ8L5yyNul0F2SuEsLASwESXQjJvBXnKu31JWFyRZSvuv2B79K4GDWN3pSqvLheUNh7Fyb6dXwd4rsz95O2Kg==}
 
@@ -8719,10 +8716,6 @@ packages:
 
   jasmine@2.8.0:
     resolution: {integrity: sha512-KbdGQTf5jbZgltoHs31XGiChAPumMSY64OZMWLNYnEnMfG5uwGBhffePwuskexjT+/Jea/gU3qAU8344hNohSw==}
-    hasBin: true
-
-  jasmine@5.10.0:
-    resolution: {integrity: sha512-v4FojO8cXQdx15mJXovGhjJOvyIcVf7AC+H0ZahnfLk52vUbwuLxjVgbikc95yLmgwKQsFT47/FGQ3dOrWVxtQ==}
     hasBin: true
 
   jasmine@5.11.0:
@@ -11915,11 +11908,6 @@ packages:
     peerDependencies:
       typescript: '>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta'
 
-  tsx@4.20.5:
-    resolution: {integrity: sha512-+wKjMNU9w/EaQayHXb7WA7ZaHY6hN8WgfvHNQ3t1PnU91/7O8TcTnIhCDYTZwnt8JsO9IBqZ30Ln1r7pPF52Aw==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
-
   tsx@4.20.6:
     resolution: {integrity: sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==}
     engines: {node: '>=18.0.0'}
@@ -13585,11 +13573,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/388e486d3909cd065e26c368d4e465dfae76a156(@modelcontextprotocol/sdk@1.18.2)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6f8f9b9ad21f8a8386290489377ef73a88bf5aeb(@modelcontextprotocol/sdk@1.18.2)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.20.0(@modelcontextprotocol/sdk@1.18.2)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
+      '@google/genai': 1.21.0(@modelcontextprotocol/sdk@1.18.2)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
       '@inquirer/prompts': 7.8.6(@types/node@24.5.2)
       '@inquirer/type': 3.0.8(@types/node@24.5.2)
       '@octokit/auth-app': 8.1.0
@@ -13626,8 +13614,8 @@ snapshots:
       firebase: 12.3.0
       folder-hash: 4.1.1(supports-color@10.2.2)
       git-raw-commits: 5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
-      jasmine: 5.10.0
-      jasmine-core: 5.10.0
+      jasmine: 5.11.0
+      jasmine-core: 5.11.0
       jasmine-reporters: 2.5.2
       jsonc-parser: 3.3.1
       minimatch: 10.0.3
@@ -13635,7 +13623,7 @@ snapshots:
       nock: 14.0.10
       semver: 7.7.2
       supports-color: 10.2.2
-      tsx: 4.20.5
+      tsx: 4.20.6
       typed-graphqlify: 3.1.6
       typescript: 5.9.2
       utf-8-validate: 6.0.5
@@ -15324,7 +15312,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.20.0(@modelcontextprotocol/sdk@1.18.2)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
+  '@google/genai@1.21.0(@modelcontextprotocol/sdk@1.18.2)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)(supports-color@10.2.2)
       ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
@@ -21872,8 +21860,6 @@ snapshots:
 
   jasmine-core@4.6.1: {}
 
-  jasmine-core@5.10.0: {}
-
   jasmine-core@5.11.0: {}
 
   jasmine-reporters@2.5.2:
@@ -21886,11 +21872,6 @@ snapshots:
       exit: 0.1.2
       glob: 7.2.3
       jasmine-core: 2.8.0
-
-  jasmine@5.10.0:
-    dependencies:
-      glob: 10.4.5
-      jasmine-core: 5.10.0
 
   jasmine@5.11.0:
     dependencies:
@@ -25981,13 +25962,6 @@ snapshots:
     dependencies:
       tslib: 1.9.0
       typescript: 5.9.2
-
-  tsx@4.20.5:
-    dependencies:
-      esbuild: 0.25.10
-      get-tsconfig: 4.10.1
-    optionalDependencies:
-      fsevents: 2.3.3
 
   tsx@4.20.6:
     dependencies:
