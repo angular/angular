@@ -927,6 +927,7 @@
       "nodeChildrenAsMap",
       "noop",
       "noop2",
+      "noop3",
       "normalizeQueryParams",
       "notFoundValueOrThrow",
       "observable",
