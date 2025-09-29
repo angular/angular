@@ -3,8 +3,7 @@
     "control-flow-migration": {
       "version": "21.0.0",
       "description": "Converts the entire application to block control flow syntax",
-      "factory": "./bundles/control-flow-migration.cjs#migrate",
-      "optional": true
+      "factory": "./bundles/control-flow-migration.cjs#migrate"
     },
     "router-current-navigation": {
       "version": "21.0.0",
