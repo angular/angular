@@ -9,7 +9,6 @@
 import {DOCUMENT, isPlatformBrowser} from '@angular/common';
 import {Injectable, PLATFORM_ID, inject, signal} from '@angular/core';
 import {LOCAL_STORAGE} from '@angular/docs';
-import {Subject} from 'rxjs';
 
 // Keep these constants in sync with the code in index.html
 
@@ -29,8 +28,6 @@ export class ThemeManager {
   private readonly platformId = inject(PLATFORM_ID);
 
   readonly theme = signal<Theme | null>(this.getThemeFromLocalStorageValue());
-  // Zoneless - it's required to notify that theme was changed. It could be removed when signal-based components will be available.
-  readonly themeChanged$ = new Subject<void>();
 
   constructor() {
     if (!isPlatformBrowser(this.platformId)) {
@@ -67,7 +64,6 @@ export class ThemeManager {
       documentClassList.add(LIGHT_MODE_CLASS_NAME);
       documentClassList.remove(DARK_MODE_CLASS_NAME);
     }
-    this.themeChanged$.next();
   }
 
   private getThemeFromLocalStorageValue(): Theme | null {
