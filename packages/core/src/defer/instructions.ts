@@ -70,6 +70,7 @@ import {
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 import {Console} from '../console';
 import {Injector} from '../di';
+import {composeTimerAndIdle} from './composition_scheduler';
 
 /**
  * Indicates whether we've already produced a warning,
@@ -361,24 +362,24 @@ export function ɵɵdeferHydrateNever() {
  * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferOnIdle() {
+export function ɵɵdeferOnIdle(delay?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
-
   if (ngDevMode) {
     trackTriggerForDebugging(lView[TVIEW], tNode, 'on idle');
   }
 
   if (!shouldAttachTrigger(TriggerType.Regular, lView, tNode)) return;
 
-  scheduleDelayedTrigger(onIdle);
+  const callback = delay ? composeTimerAndIdle(delay) : onIdle;
+  scheduleDelayedTrigger(callback);
 }
 
 /**
  * Sets up logic to handle the `prefetch on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferPrefetchOnIdle() {
+export function ɵɵdeferPrefetchOnIdle(delay?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -387,15 +388,18 @@ export function ɵɵdeferPrefetchOnIdle() {
   }
 
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
-
-  scheduleDelayedPrefetching(onIdle, DeferBlockTrigger.Idle);
+  if (delay) {
+    scheduleDelayedPrefetching(composeTimerAndIdle(delay), DeferBlockTrigger.Timer);
+  } else {
+    scheduleDelayedPrefetching(onIdle, DeferBlockTrigger.Idle);
+  }
 }
 
 /**
  * Sets up logic to handle the `on idle` deferred trigger.
  * @codeGenApi
  */
-export function ɵɵdeferHydrateOnIdle() {
+export function ɵɵdeferHydrateOnIdle(delay?: number) {
   const lView = getLView();
   const tNode = getCurrentTNode()!;
 
@@ -412,7 +416,9 @@ export function ɵɵdeferHydrateOnIdle() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
   } else {
-    scheduleDelayedHydrating(onIdle, lView, tNode);
+    const callback = delay ? composeTimerAndIdle(delay) : onIdle;
+
+    scheduleDelayedHydrating(callback, lView, tNode);
   }
 }
 

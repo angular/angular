@@ -458,11 +458,26 @@ function createIdleTrigger(
   onSourceSpan: ParseSourceSpan | null,
   hydrateSpan: ParseSourceSpan | null,
 ): t.IdleDeferredTrigger {
-  if (parameters.length > 0) {
-    throw new Error(`"${OnTriggerType.IDLE}" trigger cannot have parameters`);
+  if (parameters.length > 1) {
+    throw new Error(`"${OnTriggerType.IDLE}" trigger can only have zero or one parameters`);
   }
 
-  return new t.IdleDeferredTrigger(nameSpan, sourceSpan, prefetchSpan, onSourceSpan, hydrateSpan);
+  let delay: number | null = null;
+  if (parameters[0]) {
+    delay = parseDeferredTime(parameters[0]);
+    if (delay === null) {
+      throw new Error(`Could not parse time value of trigger "${OnTriggerType.IDLE}"`);
+    }
+  }
+
+  return new t.IdleDeferredTrigger(
+    nameSpan,
+    sourceSpan,
+    prefetchSpan,
+    onSourceSpan,
+    hydrateSpan,
+    delay,
+  );
 }
 
 function createTimerTrigger(

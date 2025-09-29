@@ -1381,6 +1381,8 @@ interface DeferTriggerWithTargetBase extends DeferTriggerBase {
 
 interface DeferIdleTrigger extends DeferTriggerBase {
   kind: DeferTriggerKind.Idle;
+
+  delay: number | null;
 }
 
 interface DeferImmediateTrigger extends DeferTriggerBase {

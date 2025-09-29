@@ -754,7 +754,7 @@ function ingestDeferBlock(unit: ViewCompilationUnit, deferBlock: t.DeferredBlock
     deferOnOps.push(
       ir.createDeferOnOp(
         deferXref,
-        {kind: ir.DeferTriggerKind.Idle},
+        {kind: ir.DeferTriggerKind.Idle, delay: null},
         ir.DeferOpModifierKind.NONE,
         null!,
       ),
@@ -783,7 +783,7 @@ function ingestDeferTriggers(
   if (triggers.idle !== undefined) {
     const deferOnOp = ir.createDeferOnOp(
       deferXref,
-      {kind: ir.DeferTriggerKind.Idle},
+      {kind: ir.DeferTriggerKind.Idle, delay: triggers.idle.delay ?? null},
       modifier,
       triggers.idle.sourceSpan,
     );

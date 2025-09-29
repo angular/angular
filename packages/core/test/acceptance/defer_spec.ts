@@ -129,9 +129,13 @@ class FakeTimerScheduler {
   }
 
   invoke() {
-    for (const cb of this.cbs) {
-      cb();
-    }
+    // Ensure timer callbacks run in Angular zone similar to the real TimerScheduler
+    const ngZone = TestBed.inject(NgZone);
+    ngZone.run(() => {
+      for (const cb of this.cbs) {
+        cb();
+      }
+    });
   }
 }
 
@@ -1852,6 +1856,88 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(1);
     });
 
+    it('should support `prefetch on idle(500)` condition', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when deferCond; prefetch on idle(500)) {
+            <nested-cmp [block]="'primary'" />
+          } @placeholder {
+            Placeholder
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          {provide: TimerScheduler, useClass: FakeTimerScheduler},
+        ],
+      });
+
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      fakeScheduler.invoke();
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered.
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder');
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary block content.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML).toContain(
+        '<nested-cmp ng-reflect-block="primary">Rendering primary block.</nested-cmp>',
+      );
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
     it('should trigger prefetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
@@ -1983,6 +2069,82 @@ describe('@defer', () => {
       // Make sure loading function is not yet invoked.
       expect(loadingFnInvokedTimes).toBe(0);
 
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Verify primary blocks content.
+      expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `a` block');
+      expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `b` block');
+      expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `c` block');
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should trigger fetching based on `on idle(100ms)` using timer then idle', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @for (item of items; track item) {
+            @defer (on idle(100ms); prefetch on idle) {
+              <nested-cmp [block]="'primary for \`' + item + '\`'" />
+            } @placeholder {
+              Placeholder \`{{ item }}\`
+            }
+          }
+        `,
+      })
+      class RootCmp {
+        items = ['a', 'b', 'c'];
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor},
+          {provide: TimerScheduler, useClass: FakeTimerScheduler},
+        ],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `a`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `b`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder `c`');
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      // Simulate the timer firing first (the timer part of composeTimerAndIdle)
+      const fakeScheduler = TestBed.inject(TimerScheduler) as unknown as FakeTimerScheduler;
+      fakeScheduler.invoke();
+
+      // Now simulate the browser idle callbacks being delivered
       triggerIdleCallbacks();
       await allPendingDynamicImports();
       fixture.detectChanges();

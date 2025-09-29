@@ -378,11 +378,12 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         let args: (number | null)[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
-          case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;
           case ir.DeferTriggerKind.Timer:
-            args = [op.trigger.delay];
+          case ir.DeferTriggerKind.Idle:
+            // Use delay if specified, otherwise default to null to preserve normal behavior on IDLE
+            args = [op.trigger.delay ?? null];
             break;
           case ir.DeferTriggerKind.Interaction:
           case ir.DeferTriggerKind.Hover:
