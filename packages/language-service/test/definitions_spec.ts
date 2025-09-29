@@ -78,7 +78,7 @@ describe('definitions', () => {
     );
     expect(definitions.length).toEqual(3);
     assertTextSpans(definitions, ['transform']);
-    assertFileNames(definitions, ['index.d.ts']);
+    assertFileNames(definitions, ['fake_common.d.ts']);
   });
 
   it('gets definitions for all inputs when attribute matches more than one', () => {

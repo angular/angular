@@ -10016,7 +10016,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an undecorated class from a declaration file is provided', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
           export declare class Testability {
           }
@@ -10041,7 +10041,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an undecorated class without a constructor from a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             export declare class Testability {
             }
@@ -10097,7 +10097,7 @@ runInEachFileSystem((os: string) => {
       // can be updated.
       xit('should error when an undecorated class with a non-trivial constructor in a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             export declare class NgZone {}
 
@@ -10129,7 +10129,7 @@ runInEachFileSystem((os: string) => {
 
       it('should not error when an class with a factory definition and a non-trivial constructor in a declaration file is provided via useClass', () => {
         env.write(
-          'node_modules/@angular/core/testing/index.d.ts',
+          'node_modules/@angular/core/types/testing.d.ts',
           `
             import * as i0 from '@angular/core';
 

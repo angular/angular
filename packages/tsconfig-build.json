@@ -16,7 +16,7 @@
     "strict": true,
     "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
     "lib": ["es2020", "es2022", "dom", "dom.iterable"],

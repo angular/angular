@@ -173,7 +173,7 @@ export function angularCoreDtsFiles(): TestFile[] {
   const directory = resolveFromRunfiles('_main/packages/core/npm_package');
   const dtsFiles = globSync('**/*.d.ts', {cwd: directory});
 
-  return (_angularCoreDts = dtsFiles.map((fileName) => ({
+  return (_angularCoreDts = ['package.json', ...dtsFiles].map((fileName) => ({
     name: absoluteFrom(`/node_modules/@angular/core/${fileName}`),
     contents: readFileSync(path.join(directory, fileName), 'utf8'),
   })));
