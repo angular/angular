@@ -62,7 +62,7 @@ export class AppScroller {
         this.scroll();
       });
 
-    // This value is primarly intended to offset the scroll position on mobile when the menu is on the top.
+    // This value is primarily intended to offset the scroll position on mobile when the menu is on the top.
     // But on desktop, it doesn't hurt to have a small offset either.
     this.viewportScroller.setOffset([0, 64]);
   }

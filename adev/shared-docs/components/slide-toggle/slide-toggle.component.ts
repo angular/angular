@@ -11,7 +11,6 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
   selector: 'docs-slide-toggle',
-  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './slide-toggle.component.html',
   styleUrls: ['./slide-toggle.component.scss'],
@@ -26,7 +25,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 export class SlideToggle implements ControlValueAccessor {
   readonly buttonId = input.required<string>();
   readonly label = input.required<string>();
-  readonly disabled = model<boolean>(false);
+  readonly disabled = model(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: boolean) => void = (_: boolean) => {};
