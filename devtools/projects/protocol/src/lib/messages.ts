@@ -18,7 +18,7 @@ import {
 
 export interface DebugSignalGraphNode {
   id: string;
-  kind: string;
+  kind: 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'unknown';
   epoch: number;
   label?: string;
   preview: Descriptor;
