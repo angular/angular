@@ -552,7 +552,8 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
   return rootLViews;
 };
 
-function getRootElements(): Element[] {
+/** Gets the all the root components in the Dom, including those outside the application root */
+export function getRootElements(): Element[] {
   if (!ngDebugClient().getComponent) {
     // If the ngDebugClient does not support getComponent, we cannot proceed.
     return [];
@@ -631,6 +632,9 @@ function getRootElements(): Element[] {
  * @param roots A set of root elements found during the traversal.
  */
 function discoverNonApplicationRootComponents(element: Element, roots: Set<Element>): void {
+  if (roots.has(element)) {
+    return;
+  }
   const children = Array.from(element.children);
   for (const child of children) {
     if (roots.has(child)) {
