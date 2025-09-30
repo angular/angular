@@ -20,7 +20,6 @@ import {URI} from 'vscode-uri';
 import {PROJECT_PATH, SERVER_PATH} from '../test_constants';
 
 export interface ServerOptions {
-  ivy: boolean;
   includeAutomaticOptionalChainCompletions?: boolean;
   includeCompletionsWithSnippetText?: boolean;
   angularCoreVersion?: string;
@@ -34,9 +33,6 @@ export function createConnection(serverOptions: ServerOptions): MessageConnectio
     '--ngProbeLocations',
     [SERVER_PATH, PROJECT_PATH].join(','),
   ];
-  if (!serverOptions.ivy) {
-    argv.push('--viewEngine');
-  }
   if (serverOptions.includeAutomaticOptionalChainCompletions) {
     argv.push('--includeAutomaticOptionalChainCompletions');
   }

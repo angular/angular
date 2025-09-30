@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 import {activate, COMPLETION_COMMAND, FOO_TEMPLATE_URI} from './helper';
 
-describe('Angular Ivy LS completions', () => {
+describe('Angular LS completions', () => {
   beforeAll(async () => {
     await activate(FOO_TEMPLATE_URI);
   });
