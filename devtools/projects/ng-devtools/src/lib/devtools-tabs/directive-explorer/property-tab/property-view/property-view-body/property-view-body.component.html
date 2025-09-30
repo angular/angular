@@ -30,6 +30,7 @@
               [treeControl]="panel.controls().treeControl"
               (updateValue)="updateValue($event)"
               (inspect)="handleInspect($event)"
+              (logValue)="logValue($event)"
               (showSignalGraph)="showSignalGraph.emit($event)"
             />
           </mat-expansion-panel>

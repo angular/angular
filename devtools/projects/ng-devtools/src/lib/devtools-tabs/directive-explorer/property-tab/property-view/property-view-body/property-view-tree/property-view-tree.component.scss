@@ -38,7 +38,8 @@
   margin-left: 18px;
 }
 
-.show-signal-btn {
+.show-signal-btn,
+.log-value-btn {
   position: relative;
   border-radius: 50%;
   width: 16px;
@@ -53,6 +54,7 @@
   padding: 0;
   top: -1px;
   margin-left: 0.25rem;
+  margin-right: 0.25rem;
   cursor: pointer;
 
   &:hover {

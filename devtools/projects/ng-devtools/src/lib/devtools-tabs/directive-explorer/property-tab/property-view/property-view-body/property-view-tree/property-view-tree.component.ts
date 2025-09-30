@@ -48,6 +48,7 @@ export class PropertyViewTreeComponent {
   readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
   readonly updateValue = output<any>();
   readonly inspect = output<any>();
+  readonly logValue = output<FlatNode>();
   readonly showSignalGraph = output<DebugSignalGraphNode>();
 
   protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
@@ -75,6 +76,11 @@ export class PropertyViewTreeComponent {
       node,
       newValue,
     });
+  }
+
+  handleLogValue(event: Event, node: FlatNode): void {
+    event.stopPropagation();
+    this.logValue.emit(node);
   }
 
   getSignalNode(node: FlatNode): DebugSignalGraphNode | null {

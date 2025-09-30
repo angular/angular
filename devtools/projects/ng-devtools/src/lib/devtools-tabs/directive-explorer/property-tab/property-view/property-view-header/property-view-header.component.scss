@@ -9,6 +9,11 @@ mat-toolbar {
   line-height: 25px;
   height: auto;
   border-bottom: 1px solid var(--color-separator);
+
+  .button-wrapper {
+    display: flex;
+    gap: 8px;
+  }
 }
 
 .mat-icon-button {
