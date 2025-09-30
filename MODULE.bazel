@@ -96,7 +96,6 @@ npm.npm_translate_lock(
         "//packages/service-worker:package.json",
         "//packages/upgrade:package.json",
         "//tools/bazel/rules_angular_store:package.json",
-        "//vscode-ng-language-service/integration/pre_apf_project:package.json",
         "//vscode-ng-language-service/integration/pre_standalone_project:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
         "//vscode-ng-language-service/integration/workspace:package.json",

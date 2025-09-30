@@ -115,7 +115,7 @@
         "angular.enable-strict-mode-prompt": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options). Note that strict mode is only available when using Ivy."
+          "markdownDescription": "Prompt to enable the [strictTemplates](https://angular.dev/reference/configs/angular-compiler-options#stricttemplates) flag in [angularCompilerOptions](https://angular.dev/reference/configs/angular-compiler-options)."
         },
         "angular.trace.server": {
           "type": "string",

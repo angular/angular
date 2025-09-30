@@ -24,7 +24,6 @@
     {
       "matchFileNames": [
         "modules/ssr-benchmarks/package.json",
-        "vscode-ng-language-service/integration/pre_apf_project/package.json",
         "vscode-ng-language-service/integration/pre_standalone_project/package.json"
       ],
       "enabled": false

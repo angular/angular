@@ -1366,26 +1366,7 @@ importers:
         specifier: 3.1.0
         version: 3.1.0
 
-  vscode-ng-language-service/integration/pre_apf_project:
-    dependencies:
-      '@angular/common':
-        specifier: 12.2.16
-        version: 12.2.16(@angular/core@12.2.16(rxjs@6.6.7)(zone.js@0.11.5))(rxjs@6.6.7)
-      '@angular/compiler':
-        specifier: 12.2.16
-        version: 12.2.16
-      '@angular/compiler-cli':
-        specifier: 12.2.16
-        version: 12.2.16(@angular/compiler@12.2.16)
-      '@angular/core':
-        specifier: 12.2.16
-        version: 12.2.16(rxjs@6.6.7)(zone.js@0.11.5)
-      rxjs:
-        specifier: 6.6.7
-        version: 6.6.7
-      zone.js:
-        specifier: 0.11.5
-        version: 0.11.5
+ 
 
   vscode-ng-language-service/integration/pre_standalone_project:
     dependencies:

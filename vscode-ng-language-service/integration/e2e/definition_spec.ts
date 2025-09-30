@@ -7,7 +7,7 @@ import {activate} from './helper';
 const DEFINITION_COMMAND = 'vscode.executeDefinitionProvider';
 const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
 
-describe('Angular Ivy LS', () => {
+describe('Angular LS', () => {
   beforeAll(async () => {
     await activate(APP_COMPONENT_URI);
   }, 25000 /* 25 seconds */);
