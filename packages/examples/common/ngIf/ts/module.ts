@@ -6,20 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {AsyncPipe, JsonPipe, NgIf} from '@angular/common';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Subject} from 'rxjs';
 
 // #docregion NgIfSimple
 @Component({
   selector: 'ng-if-simple',
+  imports: [NgIf],
   template: `
     <button (click)="show = !show">{{ show ? 'hide' : 'show' }}</button>
     show = {{ show }}
     <br />
     <div *ngIf="show">Text to show</div>
   `,
-  standalone: false,
 })
 export class NgIfSimple {
   show = true;
@@ -29,6 +29,7 @@ export class NgIfSimple {
 // #docregion NgIfElse
 @Component({
   selector: 'ng-if-else',
+  imports: [NgIf],
   template: `
     <button (click)="show = !show">{{ show ? 'hide' : 'show' }}</button>
     show = {{ show }}
@@ -36,7 +37,6 @@ export class NgIfSimple {
     <div *ngIf="show; else elseBlock">Text to show</div>
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
   `,
-  standalone: false,
 })
 export class NgIfElse {
   show = true;
@@ -46,6 +46,7 @@ export class NgIfElse {
 // #docregion NgIfThenElse
 @Component({
   selector: 'ng-if-then-else',
+  imports: [NgIf],
   template: `
     <button (click)="show = !show">{{ show ? 'hide' : 'show' }}</button>
     <button (click)="switchPrimary()">Switch Primary</button>
@@ -56,7 +57,6 @@ export class NgIfElse {
     <ng-template #secondaryBlock>Secondary text to show</ng-template>
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
   `,
-  standalone: false,
 })
 export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any> | null = null;
@@ -78,6 +78,7 @@ export class NgIfThenElse implements OnInit {
 // #docregion NgIfAs
 @Component({
   selector: 'ng-if-as',
+  imports: [NgIf, JsonPipe, AsyncPipe],
   template: `
     <button (click)="nextUser()">Next User</button>
     <br />
@@ -86,7 +87,6 @@ export class NgIfThenElse implements OnInit {
     </div>
     <ng-template #loading let-user>Waiting... (user is {{ user | json }})</ng-template>
   `,
-  standalone: false,
 })
 export class NgIfAs {
   userObservable = new Subject<{first: string; last: string}>();
@@ -107,6 +107,7 @@ export class NgIfAs {
 
 @Component({
   selector: 'example-app',
+  imports: [NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
   template: `
     <ng-if-simple></ng-if-simple>
     <hr />
@@ -117,12 +118,5 @@ export class NgIfAs {
     <ng-if-as></ng-if-as>
     <hr />
   `,
-  standalone: false,
 })
 export class AppComponent {}
-
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [AppComponent, NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
-})
-export class AppModule {}
