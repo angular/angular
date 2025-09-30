@@ -18,8 +18,7 @@
     "vscode-jsonrpc",
     "vscode-languageclient",
     "vscode-languageserver",
-    "vscode-languageserver-protocol",
-    "vscode-languageserver-types"
+    "vscode-languageserver-protocol"
   ],
   "packageRules": [
     {

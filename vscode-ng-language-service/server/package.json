@@ -15,10 +15,12 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "21.0.0-next.5",
+    "@angular/language-service": "21.0.0-next.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
     "typescript": "5.9.2",
-    "vscode-html-languageservice": "^5.5.1",
-    "vscode-jsonrpc": "6.0.0",
+    "vscode-html-languageservice": "5.5.1",
     "vscode-languageserver": "7.0.0",
     "vscode-languageserver-textdocument": "^1.0.12",
     "vscode-uri": "3.1.0"

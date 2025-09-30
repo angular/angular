@@ -18,11 +18,11 @@ ts_project(
     deps = [
         "//:node_modules/@angular/language-service",
         "//:node_modules/typescript",
-        "//vscode-ng-language-service:node_modules/@types/node",
-        "//vscode-ng-language-service:node_modules/vscode-html-languageservice",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver",
-        "//vscode-ng-language-service:node_modules/vscode-languageserver-textdocument",
-        "//vscode-ng-language-service:node_modules/vscode-uri",
         "//vscode-ng-language-service/common",
+        "//vscode-ng-language-service/server:node_modules/@types/node",
+        "//vscode-ng-language-service/server:node_modules/vscode-html-languageservice",
+        "//vscode-ng-language-service/server:node_modules/vscode-languageserver",
+        "//vscode-ng-language-service/server:node_modules/vscode-languageserver-textdocument",
+        "//vscode-ng-language-service/server:node_modules/vscode-uri",
     ],
 )

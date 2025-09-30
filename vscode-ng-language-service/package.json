@@ -245,7 +245,6 @@
   "main": "./bazel-bin/client/src/extension",
   "scripts": {
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
-    "format": "pnpm ng-dev format all",
     "watch": "ibazel build //vscode-ng-language-service:index.js //vscode-ng-language-service/server:index.js",
     "package": "pnpm bazel build //vscode-ng-language-service:npm --config=release",
     "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
@@ -258,11 +257,7 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "21.0.0-next.5",
-    "vscode-html-languageservice": "^5.5.1",
-    "vscode-jsonrpc": "6.0.0",
-    "vscode-languageclient": "7.0.0",
-    "vscode-languageserver-protocol": "3.16.0"
+    "@angular/language-service": "21.0.0-next.5"
   },
   "devDependencies": {
     "@angular/core": "21.0.0-next.5",
@@ -270,15 +265,16 @@
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.74.3",
     "@vscode/vsce": "~3.6.1",
+    "jasmine": "~5.11.0",
     "jasmine-core": "~5.11.0",
     "jasmine-reporters": "~2.5.2",
-    "jasmine": "~5.11.0",
     "source-map-support": "^0.5.21",
     "typescript": "5.9.2",
-    "vscode-html-languageservice": "^5.5.1",
-    "vscode-languageserver-textdocument": "^1.0.12",
-    "vscode-languageserver-types": "3.16.0",
+    "vscode-jsonrpc": "6.0.0",
+    "vscode-languageclient": "7.0.0",
     "vscode-languageserver": "7.0.0",
+    "vscode-languageserver-protocol": "3.16.0",
+    "vscode-languageserver-textdocument": "1.0.12",
     "vscode-test": "1.6.1",
     "vscode-tmgrammar-test": "0.1.3",
     "vscode-uri": "3.1.0"
