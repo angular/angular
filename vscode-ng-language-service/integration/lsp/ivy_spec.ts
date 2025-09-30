@@ -45,7 +45,7 @@ import {
   ServerOptions,
 } from './test_utils';
 
-describe('Angular Ivy language server', () => {
+describe('Angular language server', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; /* 10 seconds */
 
   let client: MessageConnection;
@@ -60,7 +60,6 @@ describe('Angular Ivy language server', () => {
 
   async function initServer(options: Partial<ServerOptions>) {
     client = createConnection({
-      ivy: true,
       ...options,
     });
     // If debugging, set to
@@ -720,7 +719,6 @@ describe('auto-apply optional chaining', () => {
   let client: MessageConnection;
   beforeEach(async () => {
     client = createConnection({
-      ivy: true,
       includeAutomaticOptionalChainCompletions: true,
     });
     // If debugging, set to
@@ -781,7 +779,6 @@ describe('insert snippet text', () => {
   let client: MessageConnection;
   beforeEach(async () => {
     client = createConnection({
-      ivy: true,
       includeCompletionsWithSnippetText: true,
     });
     // If debugging, set to
@@ -831,7 +828,6 @@ describe('code fixes', () => {
   let client: MessageConnection;
   beforeEach(async () => {
     client = createConnection({
-      ivy: true,
       includeCompletionsWithSnippetText: true,
     });
     // If debugging, set to
