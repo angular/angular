@@ -146,10 +146,6 @@ export class Token {
     return this.isOperator('${');
   }
 
-  isTemplateLiteralInterpolationEnd(): boolean {
-    return this.isOperator('}');
-  }
-
   toString(): string | null {
     switch (this.type) {
       case TokenType.Character:
@@ -356,7 +352,7 @@ class _Scanner {
 
     const currentBrace = this.braceStack.pop();
     if (currentBrace === 'interpolation') {
-      this.tokens.push(newOperatorToken(start, this.index, '}'));
+      this.tokens.push(newCharacterToken(start, this.index, chars.$RBRACE));
       return this.scanTemplateLiteralPart(this.index);
     }
 

@@ -18,7 +18,6 @@ import {
   TemplateBinding,
   VariableBinding,
   BindingPipeType,
-  Binary,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -481,10 +480,7 @@ describe('parser', () => {
       });
 
       it('should report error if interpolation is empty', () => {
-        expectBindingError(
-          '`hello ${}`',
-          'Template literal interpolation cannot be empty at the end of the expression',
-        );
+        expectBindingError('`hello ${}`', 'Template literal interpolation cannot be empty');
       });
 
       it('should parse tagged template literals with no interpolations', () => {
@@ -1448,6 +1444,12 @@ describe('parser', () => {
       recover('foo(($event.target as HTMLElement).value)', 'foo(($event.target).value)');
       recover('foo(((($event.target as HTMLElement))).value)', 'foo(((($event.target))).value)');
       recover('foo(((bar as HTMLElement) as Something).value)', 'foo(((bar)).value)');
+    });
+
+    it('should be able to recover from a broken expression in a template literal', () => {
+      recover('`before ${expr.}`', '`before ${expr.}`');
+      recover('`${expr.} after`', '`${expr.} after`');
+      recover('`before ${expr.} after`', '`before ${expr.} after`');
     });
   });
 
