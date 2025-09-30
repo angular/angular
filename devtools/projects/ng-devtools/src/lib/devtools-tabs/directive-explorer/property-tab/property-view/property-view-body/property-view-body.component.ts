@@ -91,6 +91,10 @@ export class PropertyViewBodyComponent {
     this.controller().updateValue(node, newValue);
   }
 
+  logValue(node: FlatNode): void {
+    this.controller().logValue(node);
+  }
+
   drop(event: CdkDragDrop<any, any>): void {
     const panels = this.panels();
     moveItemInArray(panels, event.previousIndex, event.currentIndex);

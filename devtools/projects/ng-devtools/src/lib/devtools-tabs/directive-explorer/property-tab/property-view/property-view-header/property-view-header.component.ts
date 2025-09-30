@@ -23,6 +23,7 @@ import {FrameManager} from '../../../../../application-services/frame_manager';
 export class PropertyViewHeaderComponent {
   readonly directive = input.required<string>();
   readonly viewSource = output<void>();
+  readonly logInstance = output<void>();
 
   private readonly frameManager = inject(FrameManager);
   private readonly platform = inject(Platform);
@@ -43,5 +44,10 @@ export class PropertyViewHeaderComponent {
   handleViewSource(event: MouseEvent): void {
     event.stopPropagation();
     this.viewSource.emit();
+  }
+
+  handlelogInstance(event: MouseEvent): void {
+    event.stopPropagation();
+    this.logInstance.emit();
   }
 }

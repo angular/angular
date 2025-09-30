@@ -43,6 +43,7 @@ import {
   injectorsSeen,
   isElementInjector,
   isOnPushDirective,
+  logValue,
   nodeInjectorToResolutionPath,
   queryDirectiveForest,
   serializeProviderRecord,
@@ -98,6 +99,7 @@ export const subscribeToClientEvents = (
   messageBus.on('getSignalNestedProperties', getSignalNestedPropertiesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
+  messageBus.on('logValue', logValue);
 
   messageBus.on('enableTimingAPI', enableTimingAPI);
   messageBus.on('disableTimingAPI', disableTimingAPI);

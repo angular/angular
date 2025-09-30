@@ -22,6 +22,7 @@ import type {
 import {
   ComponentExplorerViewQuery,
   DirectiveMetadata,
+  DirectivePosition,
   DirectivesProperties,
   ElementPosition,
   PropertyQueryTypes,
@@ -47,6 +48,7 @@ import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
+import {unwrapSignal} from '../utils';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -709,6 +711,48 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
     return;
   }
 };
+
+export function logValue(valueInfo: {
+  directiveId: DirectivePosition;
+  keyPath: string[] | null;
+}): void {
+  const node = queryDirectiveForest(valueInfo.directiveId.element, buildDirectiveForest());
+  if (!node) {
+    console.warn(
+      'Could not log the value of component',
+      valueInfo,
+      'because the directive was not found',
+    );
+    return;
+  }
+
+  if (valueInfo.directiveId.directive !== undefined) {
+    const directiveInstance = node.directives[valueInfo.directiveId.directive].instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(directiveInstance);
+      return;
+    }
+
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], directiveInstance);
+    logToConsole(value);
+    return;
+  }
+  if (node.component) {
+    const compInstance = node.component.instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(compInstance);
+      return;
+    }
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], compInstance);
+    logToConsole(value);
+    return;
+  }
+}
+
+function logToConsole(value: unknown) {
+  // tslint:disable-next-line:no-console
+  console.log(unwrapSignal(value));
+}
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
   const serializedResolutionPath: SerializedInjector[] = [];

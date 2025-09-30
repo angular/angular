@@ -388,6 +388,7 @@ export interface Events {
   latestComponentExplorerView: (view: ComponentExplorerView) => void;
 
   updateState: (value: UpdatedStateData) => void;
+  logValue: (value: {directiveId: DirectivePosition; keyPath: string[] | null}) => void;
 
   startProfiling: () => void;
   stopProfiling: () => void;
