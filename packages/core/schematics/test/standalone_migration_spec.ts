@@ -5123,4 +5123,227 @@ describe('standalone migration', () => {
     `),
     );
   });
+
+  it('should handle shorthand property assignment in module declarations', async () => {
+    writeFile(
+      'module.ts',
+      `
+      import {NgModule, Directive, Component} from '@angular/core';
+
+      @Directive({selector: '[dir]', standalone: false})
+      export class BuzzComponent {}
+
+      @Component({selector: 'fizz', template: 'fizz', standalone: false})
+      export class FizzComponent {}
+
+      @Component({selector: 'bar', template: 'bar', standalone: true})
+      export class BarComponent {}
+
+      @Component({selector: 'foo', template: 'foo', standalone: true})
+      export class FooComponent {}
+
+      const declarations = [BuzzComponent, FizzComponent];
+
+      @NgModule({
+        declarations,
+        imports: [BarComponent, FooComponent],
+        exports: [BarComponent, BuzzComponent, FizzComponent, FooComponent],
+      })
+      export class SharedModule {}
+    `,
+    );
+
+    await runMigration('convert-to-standalone');
+
+    const result = tree.readContent('module.ts');
+
+    expect(stripWhitespace(result)).toContain(stripWhitespace(`@Directive({selector: '[dir]'})`));
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Component({selector: 'fizz', template: 'fizz'})`),
+    );
+
+    expect(result).not.toContain('standalone: false');
+
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@NgModule({
+        imports: [BarComponent, FooComponent, ...declarations],
+        exports: [BarComponent, BuzzComponent, FizzComponent, FooComponent],
+      })`),
+    );
+
+    expect(result).toContain('const declarations = [BuzzComponent, FizzComponent];');
+
+    expect(result).toContain('exports: [BarComponent, BuzzComponent, FizzComponent, FooComponent]');
+  });
+
+  it('should handle shorthand property assignment with mixed imports and declarations', async () => {
+    writeFile(
+      'module.ts',
+      `
+      import {NgModule, Component} from '@angular/core';
+      import {NgIf} from '@angular/common';
+
+      @Component({selector: 'my-comp', template: '<div *ngIf="show">Content</div>', standalone: false})
+      export class MyComponent {}
+
+      @Component({selector: 'other-comp', template: 'other', standalone: false})
+      export class OtherComponent {}
+
+      const declarations = [MyComponent, OtherComponent];
+      const imports = [NgIf];
+
+      @NgModule({
+        declarations,
+        imports,
+        exports: [MyComponent, OtherComponent],
+      })
+      export class TestModule {}
+    `,
+    );
+
+    await runMigration('convert-to-standalone');
+
+    const result = tree.readContent('module.ts');
+
+    expect(result).toContain(`import {NgIf} from '@angular/common'`);
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Component({
+        selector: 'my-comp',
+        template: '<div *ngIf="show">Content</div>',
+        imports: [NgIf]
+      })`),
+    );
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Component({selector: 'other-comp', template: 'other'})`),
+    );
+
+    expect(result).not.toContain('standalone: false');
+
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@NgModule({
+        imports,
+        exports: [MyComponent, OtherComponent],
+      })`),
+    );
+
+    expect(result).toContain('const declarations = [MyComponent, OtherComponent];');
+    expect(result).toContain('const imports = [NgIf];');
+  });
+
+  it('should handle shorthand property assignment with spread elements in declarations', async () => {
+    writeFile(
+      'module.ts',
+      `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({selector: 'comp1', template: 'comp1', standalone: false})
+      export class Component1 {}
+
+      @Component({selector: 'comp2', template: 'comp2', standalone: false})  
+      export class Component2 {}
+
+      const staticDeclarationsA = [Component1];
+      const staticDeclarationsB = [Component2];
+      const declarations = [...staticDeclarationsA, ...staticDeclarationsB];
+
+      @NgModule({
+        declarations,
+        exports: [Component1, Component2],
+      })
+      export class MixedModule {}
+    `,
+    );
+
+    await runMigration('convert-to-standalone');
+
+    const result = tree.readContent('module.ts');
+
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Component({selector: 'comp1', template: 'comp1'})`),
+    );
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@Component({selector: 'comp2', template: 'comp2'})`),
+    );
+    expect(result).not.toContain('standalone: false');
+
+    expect(stripWhitespace(result)).toContain(
+      stripWhitespace(`@NgModule({
+        imports: [...declarations],
+        exports: [Component1, Component2],
+      })`),
+    );
+
+    expect(result).toContain('const staticDeclarationsA = [Component1];');
+    expect(result).toContain('const staticDeclarationsB = [Component2];');
+    expect(result).toContain(
+      'const declarations = [...staticDeclarationsA, ...staticDeclarationsB];',
+    );
+  });
+
+  it('should handle both regular and shorthand property assignments in the same migration', async () => {
+    writeFile(
+      'regular-module.ts',
+      `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({selector: 'regular-comp', template: 'regular', standalone: false})
+      export class RegularComponent {}
+
+      @NgModule({
+        declarations: [RegularComponent],
+        exports: [RegularComponent],
+      })
+      export class RegularModule {}
+    `,
+    );
+
+    writeFile(
+      'shorthand-module.ts',
+      `
+      import {NgModule, Component} from '@angular/core';
+
+      @Component({selector: 'shorthand-comp', template: 'shorthand', standalone: false})
+      export class ShorthandComponent {}
+
+      const declarations = [ShorthandComponent];
+
+      @NgModule({
+        declarations,
+        exports: [ShorthandComponent],
+      })
+      export class ShorthandModule {}
+    `,
+    );
+
+    await runMigration('convert-to-standalone');
+
+    const regularResult = tree.readContent('regular-module.ts');
+    const shorthandResult = tree.readContent('shorthand-module.ts');
+
+    expect(stripWhitespace(regularResult)).toContain(
+      stripWhitespace(`@Component({selector: 'regular-comp', template: 'regular'})`),
+    );
+    expect(stripWhitespace(regularResult)).toContain(
+      stripWhitespace(`@NgModule({
+        imports: [RegularComponent],
+        exports: [RegularComponent],
+      })`),
+    );
+
+    expect(stripWhitespace(shorthandResult)).toContain(
+      stripWhitespace(`@Component({selector: 'shorthand-comp', template: 'shorthand'})`),
+    );
+
+    expect(stripWhitespace(shorthandResult)).toContain(
+      stripWhitespace(`@NgModule({
+        imports: [...declarations],
+        exports: [ShorthandComponent],
+      })`),
+    );
+
+    expect(shorthandResult).toContain('const declarations = [ShorthandComponent];');
+
+    expect(regularResult).not.toContain('standalone: false');
+    expect(shorthandResult).not.toContain('standalone: false');
+  });
 });
