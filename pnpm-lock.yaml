@@ -1447,13 +1447,13 @@ importers:
       '@angular/language-service':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
     devDependencies:
       '@types/node':
         specifier: ^24.5.2
         version: 24.5.2
-      typescript:
-        specifier: 5.9.2
-        version: 5.9.2
       vscode-html-languageservice:
         specifier: 5.5.1
         version: 5.5.1
