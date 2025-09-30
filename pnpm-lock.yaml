@@ -1366,9 +1366,8 @@ importers:
       vscode-uri:
         specifier: 3.1.0
         version: 3.1.0
-      xvfb:
-        specifier: ^0.4.0
-        version: 0.4.0
+
+ 
 
   vscode-ng-language-service/integration/pre_standalone_project:
     dependencies:

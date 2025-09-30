@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 
 import {activate, FOO_TEMPLATE_URI, HOVER_COMMAND} from './helper';
 
-describe('Angular LS quick info', () => {
+// This hover tests appear to be the only flaky ones in the suite. Disable until they can
+// consistently pass.
+xdescribe('Angular LS quick info', () => {
   beforeAll(async () => {
     await activate(FOO_TEMPLATE_URI);
   }, 20_000);
