@@ -19,12 +19,7 @@ esbuild(
     },
     entry_point = "//vscode-ng-language-service/client/src:extension.js",
     external = [
-        "fs",
-        "path",
         "vscode",
-        "vscode-languageclient/node",
-        "vscode-languageserver-protocol",
-        "vscode-jsonrpc",
     ],
     format = "cjs",
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.

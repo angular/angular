@@ -1310,18 +1310,6 @@ importers:
       '@angular/language-service':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
-      vscode-html-languageservice:
-        specifier: ^5.5.1
-        version: 5.5.1
-      vscode-jsonrpc:
-        specifier: 6.0.0
-        version: 6.0.0
-      vscode-languageclient:
-        specifier: 7.0.0
-        version: 7.0.0
-      vscode-languageserver-protocol:
-        specifier: 3.16.0
-        version: 3.16.0
     devDependencies:
       '@angular/core':
         specifier: 21.0.0-next.5
@@ -1353,15 +1341,21 @@ importers:
       typescript:
         specifier: 5.9.2
         version: 5.9.2
+      vscode-jsonrpc:
+        specifier: 6.0.0
+        version: 6.0.0
+      vscode-languageclient:
+        specifier: 7.0.0
+        version: 7.0.0
       vscode-languageserver:
         specifier: 7.0.0
         version: 7.0.0
-      vscode-languageserver-textdocument:
-        specifier: ^1.0.12
-        version: 1.0.12
-      vscode-languageserver-types:
+      vscode-languageserver-protocol:
         specifier: 3.16.0
         version: 3.16.0
+      vscode-languageserver-textdocument:
+        specifier: 1.0.12
+        version: 1.0.12
       vscode-test:
         specifier: 1.6.1
         version: 1.6.1
@@ -1422,7 +1416,7 @@ importers:
     devDependencies:
       ng-packagr:
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
+        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -1453,15 +1447,16 @@ importers:
       '@angular/language-service':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5
+    devDependencies:
+      '@types/node':
+        specifier: ^24.5.2
+        version: 24.5.2
       typescript:
         specifier: 5.9.2
         version: 5.9.2
       vscode-html-languageservice:
-        specifier: ^5.5.1
+        specifier: 5.5.1
         version: 5.5.1
-      vscode-jsonrpc:
-        specifier: 6.0.0
-        version: 6.0.0
       vscode-languageserver:
         specifier: 7.0.0
         version: 7.0.0
@@ -23228,7 +23223,7 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
+  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)
@@ -23256,7 +23251,7 @@ snapshots:
       typescript: 5.9.2
     optionalDependencies:
       rollup: 4.52.3
-      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2))
+      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2))
 
   ng-packagr@21.0.0-next.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
@@ -25960,7 +25955,7 @@ snapshots:
 
   tsutils@3.21.0(typescript@5.9.2):
     dependencies:
-      tslib: 1.9.0
+      tslib: 1.14.1
       typescript: 5.9.2
 
   tsx@4.20.6:
