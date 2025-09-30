@@ -41,6 +41,7 @@
 @include api-item-label.api-item-label();
 @include faceted-list.faceted-list();
 
+@include mq.breakpoints-vars();
 @include mq.for-phone-only();
 @include mq.for-tablet-portrait-up();
 @include mq.for-tablet-landscape-up();

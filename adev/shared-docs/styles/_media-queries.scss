@@ -5,6 +5,18 @@ $screen-lg: 1200px;
 $screen-xl: 1430px;
 $screen-xxl: 1800px;
 
+@mixin breakpoints-vars {
+  // The app-scroller also relies on these values to determine the scroll offset.
+  :root {
+    --screen-xs: #{$screen-xs};
+    --screen-sm: #{$screen-sm};
+    --screen-md: #{$screen-md};
+    --screen-lg: #{$screen-lg};
+    --screen-xl: #{$screen-xl};
+    --screen-xxl: #{$screen-xxl};
+  }
+}
+
 @mixin for-phone-only {
   @media (max-width: $screen-xs) {
     @content;
@@ -12,43 +24,43 @@ $screen-xxl: 1800px;
 }
 
 @mixin for-tablet-portrait-up {
-  @media (min-width: calc($screen-xs + .01px)) {
+  @media (min-width: calc($screen-xs + 0.01px)) {
     @content;
   }
 }
 
 @mixin for-tablet {
-  @media (min-width: calc($screen-xs + .01px)) and (max-width: $screen-md) {
+  @media (min-width: calc($screen-xs + 0.01px)) and (max-width: $screen-md) {
     @content;
   }
 }
 
 @mixin for-tablet-up {
-  @media (min-width: calc($screen-sm + .01px)) {
+  @media (min-width: calc($screen-sm + 0.01px)) {
     @content;
   }
 }
 
 @mixin for-tablet-landscape-up {
-  @media (min-width: calc($screen-md + .01px)) {
+  @media (min-width: calc($screen-md + 0.01px)) {
     @content;
   }
 }
 
 @mixin for-desktop-up {
-  @media (min-width: calc($screen-lg + .01px)) {
+  @media (min-width: calc($screen-lg + 0.01px)) {
     @content;
   }
 }
 
 @mixin for-large-desktop-up {
-  @media (min-width: calc($screen-xl + .01px)) {
+  @media (min-width: calc($screen-xl + 0.01px)) {
     @content;
   }
 }
 
 @mixin for-extra-large-desktop-up {
-  @media (min-width: calc($screen-xxl + .01px)) {
+  @media (min-width: calc($screen-xxl + 0.01px)) {
     @content;
   }
 }
