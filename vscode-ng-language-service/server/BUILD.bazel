@@ -50,14 +50,7 @@ esbuild(
     config = "esbuild.mjs",
     entry_point = "//vscode-ng-language-service/server/src:server.js",
     external = [
-        "fs",
-        "path",
         "typescript/lib/tsserverlibrary",
-        "vscode-languageserver",
-        "vscode-uri",
-        "vscode-jsonrpc",
-        "vscode-languageserver-textdocument",
-        "vscode-html-languageservice",
     ],
     format = "cjs",
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
