@@ -44,10 +44,10 @@ expand_template_rule(
 npm_package(
     name = "vsix_sandbox",
     srcs = [
+        "package_expanded.json",
+        "angular.png",
         "CHANGELOG.md",
         "README.md",
-        "angular.png",
-        "package_expanded.json",
         "//vscode-ng-language-service/client:index.js",
         "//vscode-ng-language-service/server:npm_package",
         "//vscode-ng-language-service/syntaxes:npm_files",
