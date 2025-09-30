@@ -468,7 +468,7 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 7, 'hello ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 7, 9, '${');
         expectIdentifierToken(tokens[2], 9, 13, 'name');
-        expectOperatorToken(tokens[3], 13, 14, '}');
+        expectCharacterToken(tokens[3], 13, 14, '}');
         expectStringToken(tokens[4], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -478,7 +478,7 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 1, '', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 1, 3, '${');
         expectIdentifierToken(tokens[2], 3, 7, 'name');
-        expectOperatorToken(tokens[3], 7, 8, '}');
+        expectCharacterToken(tokens[3], 7, 8, '}');
         expectStringToken(tokens[4], 8, 17, ' Johnson', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -488,7 +488,7 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 4, 'foo', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 4, 6, '${');
         expectIdentifierToken(tokens[2], 6, 9, 'bar');
-        expectOperatorToken(tokens[3], 9, 10, '}');
+        expectCharacterToken(tokens[3], 9, 10, '}');
         expectStringToken(tokens[4], 10, 14, 'baz', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -517,15 +517,15 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 1, '', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 1, 3, '${');
         expectIdentifierToken(tokens[2], 3, 4, 'a');
-        expectOperatorToken(tokens[3], 4, 5, '}');
+        expectCharacterToken(tokens[3], 4, 5, '}');
         expectStringToken(tokens[4], 5, 8, ' - ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[5], 8, 10, '${');
         expectIdentifierToken(tokens[6], 10, 11, 'b');
-        expectOperatorToken(tokens[7], 11, 12, '}');
+        expectCharacterToken(tokens[7], 11, 12, '}');
         expectStringToken(tokens[8], 12, 15, ' - ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[9], 15, 17, '${');
         expectIdentifierToken(tokens[10], 17, 18, 'c');
-        expectOperatorToken(tokens[11], 18, 19, '}');
+        expectCharacterToken(tokens[11], 18, 19, '}');
       });
 
       it('should tokenize template literal with an object literal inside the interpolation', () => {
@@ -538,7 +538,7 @@ describe('lexer', () => {
         expectCharacterToken(tokens[4], 9, 10, ':');
         expectKeywordToken(tokens[5], 11, 15, 'true');
         expectCharacterToken(tokens[6], 15, 16, '}');
-        expectOperatorToken(tokens[7], 16, 17, '}');
+        expectCharacterToken(tokens[7], 16, 17, '}');
         expectStringToken(tokens[8], 17, 22, ' baz', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -552,11 +552,11 @@ describe('lexer', () => {
         expectStringToken(tokens[4], 16, 17, '', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[5], 17, 19, '${');
         expectIdentifierToken(tokens[6], 19, 20, 'a');
-        expectOperatorToken(tokens[7], 20, 21, '}');
+        expectCharacterToken(tokens[7], 20, 21, '}');
         expectStringToken(tokens[8], 21, 26, ' - b', StringTokenKind.TemplateLiteralEnd);
-        expectOperatorToken(tokens[9], 26, 27, '}');
+        expectCharacterToken(tokens[9], 26, 27, '}');
         expectStringToken(tokens[10], 27, 28, '', StringTokenKind.TemplateLiteralEnd);
-        expectOperatorToken(tokens[11], 28, 29, '}');
+        expectCharacterToken(tokens[11], 28, 29, '}');
         expectStringToken(tokens[12], 29, 34, ' baz', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -566,12 +566,12 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 7, 'hello ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 7, 9, '${');
         expectIdentifierToken(tokens[2], 9, 13, 'name');
-        expectOperatorToken(tokens[3], 13, 14, '}');
+        expectCharacterToken(tokens[3], 13, 14, '}');
         expectStringToken(tokens[4], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
         expectStringToken(tokens[5], 15, 20, 'see ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[6], 20, 22, '${');
         expectIdentifierToken(tokens[7], 22, 26, 'name');
-        expectOperatorToken(tokens[8], 26, 27, '}');
+        expectCharacterToken(tokens[8], 26, 27, '}');
         expectStringToken(tokens[9], 27, 34, ' later', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -581,7 +581,7 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 7, 'hello ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 7, 9, '${');
         expectIdentifierToken(tokens[2], 9, 13, 'name');
-        expectOperatorToken(tokens[3], 13, 14, '}');
+        expectCharacterToken(tokens[3], 13, 14, '}');
         expectStringToken(tokens[4], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
         expectOperatorToken(tokens[5], 16, 17, '+');
         expectNumberToken(tokens[6], 18, 21, 123);
@@ -595,7 +595,7 @@ describe('lexer', () => {
         expectIdentifierToken(tokens[2], 9, 13, 'name');
         expectOperatorToken(tokens[3], 14, 15, '|');
         expectIdentifierToken(tokens[4], 16, 26, 'capitalize');
-        expectOperatorToken(tokens[5], 26, 27, '}');
+        expectCharacterToken(tokens[5], 26, 27, '}');
         expectStringToken(tokens[6], 27, 31, '!!!', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -609,7 +609,7 @@ describe('lexer', () => {
         expectOperatorToken(tokens[4], 15, 16, '|');
         expectIdentifierToken(tokens[5], 17, 27, 'capitalize');
         expectCharacterToken(tokens[6], 27, 28, ')');
-        expectOperatorToken(tokens[7], 28, 29, '}');
+        expectCharacterToken(tokens[7], 28, 29, '}');
         expectStringToken(tokens[8], 29, 33, '!!!', StringTokenKind.TemplateLiteralEnd);
       });
 
@@ -622,7 +622,7 @@ describe('lexer', () => {
         expectStringToken(tokens[3], 6, 7, '', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[4], 7, 9, '${');
         expectIdentifierToken(tokens[5], 9, 13, 'name');
-        expectOperatorToken(tokens[6], 13, 14, '}');
+        expectCharacterToken(tokens[6], 13, 14, '}');
         expectStringToken(tokens[7], 14, 15, '', StringTokenKind.TemplateLiteralEnd);
         expectCharacterToken(tokens[8], 15, 16, '}');
       });
@@ -642,7 +642,7 @@ describe('lexer', () => {
         expectStringToken(tokens[0], 0, 7, 'hello ', StringTokenKind.TemplateLiteralPart);
         expectOperatorToken(tokens[1], 7, 9, '${');
         expectIdentifierToken(tokens[2], 9, 13, 'name');
-        expectOperatorToken(tokens[3], 13, 14, '}');
+        expectCharacterToken(tokens[3], 13, 14, '}');
         expectErrorToken(
           tokens[4],
           15,
@@ -681,7 +681,7 @@ describe('lexer', () => {
         expectOperatorToken(tokens[2], 10, 12, '${');
         expectIdentifierToken(tokens[3], 12, 15, 'tag');
         expectStringToken(tokens[4], 15, 22, 'world', StringTokenKind.TemplateLiteralEnd);
-        expectOperatorToken(tokens[5], 22, 23, '}');
+        expectCharacterToken(tokens[5], 22, 23, '}');
         expectStringToken(tokens[6], 23, 24, '', StringTokenKind.TemplateLiteralEnd);
       });
     });
