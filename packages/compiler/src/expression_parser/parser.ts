@@ -1590,12 +1590,14 @@ class _ParseAST {
         }
       } else if (token.isTemplateLiteralInterpolationStart()) {
         this.advance();
+        this.rbracesExpected++;
         const expression = this.parsePipe();
         if (expression instanceof EmptyExpr) {
           this.error('Template literal interpolation cannot be empty');
         } else {
           expressions.push(expression);
         }
+        this.rbracesExpected--;
       } else {
         this.advance();
       }
