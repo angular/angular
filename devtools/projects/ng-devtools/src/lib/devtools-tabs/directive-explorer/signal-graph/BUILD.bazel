@@ -3,8 +3,14 @@ load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "ts_tes
 package(default_visibility = ["//devtools:__subpackages__"])
 
 ng_project(
-    name = "signal-graph-manager",
-    srcs = ["signal-graph-manager.ts"],
+    name = "signal-graph",
+    srcs = [
+        "devtools-signal-graph.ts",
+        "index.ts",
+        "signal-graph-manager.ts",
+        "signal-graph-types.ts",
+        "utils.ts",
+    ],
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/protocol",
@@ -15,7 +21,7 @@ ts_test_library(
     name = "test_lib",
     srcs = glob(["*.spec.ts"]),
     deps = [
-        ":signal-graph-manager",
+        ":signal-graph",
         "//:node_modules/@angular/core",
         "//devtools/projects/protocol",
     ],
