@@ -129,6 +129,12 @@ export class DirectivePropertyResolver {
     node.prop.descriptor.value = newValue;
   }
 
+  logValue(node?: FlatNode): void {
+    const directiveId = this._directivePosition;
+    const keyPath = node ? constructPathOfKeysToPropertyValue(node.prop) : null;
+    this._messageBus.emit('logValue', [{directiveId, keyPath}]);
+  }
+
   private _createDataSourceFromProps(props: {[name: string]: Descriptor}): PropertyDataSource {
     return new PropertyDataSource(
       props,
