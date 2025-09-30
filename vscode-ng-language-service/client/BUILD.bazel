@@ -16,6 +16,10 @@ esbuild(
     config = {
         # Workaround for https://github.com/aspect-build/rules_esbuild/issues/58
         "resolveExtensions": [".js"],
+        "mainFields": [
+            "module",
+            "main",
+        ],
     },
     entry_point = "//vscode-ng-language-service/client/src:extension.js",
     external = [
