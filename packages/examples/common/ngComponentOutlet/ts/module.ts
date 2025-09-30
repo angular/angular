@@ -6,31 +6,29 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {NgComponentOutlet} from '@angular/common';
 import {
   Component,
   effect,
   Injectable,
   Injector,
   input,
-  NgModule,
   TemplateRef,
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
 
 // #docregion SimpleExample
 @Component({
   selector: 'hello-world',
   template: 'Hello World!',
-  standalone: false,
 })
 export class HelloWorld {}
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
+  imports: [NgComponentOutlet],
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`,
-  standalone: false,
 })
 export class NgComponentOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
@@ -47,7 +45,6 @@ export class Greeter {
 @Component({
   selector: 'complete-component',
   template: `{{ label() }}: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`,
-  standalone: false,
 })
 export class CompleteComponent {
   label = input.required<string>();
@@ -57,6 +54,7 @@ export class CompleteComponent {
 
 @Component({
   selector: 'ng-component-outlet-complete-example',
+  imports: [NgComponentOutlet],
   template: ` <ng-template #ahoj>Ahoj</ng-template>
     <ng-template #svet>Svet</ng-template>
     <ng-container
@@ -67,7 +65,6 @@ export class CompleteComponent {
         content: myContent
       "
     ></ng-container>`,
-  standalone: false,
 })
 export class NgComponentOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
@@ -101,21 +98,9 @@ export class NgComponentOutletCompleteExample {
 
 @Component({
   selector: 'example-app',
-  template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
+  imports: [NgComponentOutletSimpleExample, NgComponentOutletCompleteExample],
+  template: `<ng-component-outlet-simple-example />
     <hr />
-    <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`,
-  standalone: false,
+    <ng-component-outlet-complete-example />`,
 })
 export class AppComponent {}
-
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [
-    AppComponent,
-    NgComponentOutletSimpleExample,
-    NgComponentOutletCompleteExample,
-    HelloWorld,
-    CompleteComponent,
-  ],
-})
-export class AppModule {}
