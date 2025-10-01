@@ -30,6 +30,7 @@ describe('Navigation', () => {
 
   const fakeVersionManager = {
     currentDocsVersion: signal('v17'),
+    currentDocsVersionMode: signal('stable'),
     versions: signal<Version[]>([]),
   };
 
