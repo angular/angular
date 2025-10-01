@@ -10,6 +10,9 @@ import {
   computed,
   Directive,
   effect,
+  ElementRef,
+  EventEmitter,
+  inject,
   InjectionToken,
   Injector,
   inject,
@@ -18,7 +21,16 @@ import {
   ɵControl,
 } from '@angular/core';
 import type {FieldNode} from '../field/node';
-import type {FieldTree} from './types';
+import {
+  privateGetComponentInstance,
+  privateIsModelInput,
+  privateIsSignalInput,
+  privateRunEffect,
+  privateSetComponentInput as privateSetInputSignal,
+} from '../util/private';
+import {FormCheckboxControl, FormUiControl, FormValueControl} from './control';
+import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} from './property';
+import type {Field} from './types';
 
 /**
  * Lightweight DI token provided by the {@link Control} directive.
@@ -48,8 +60,21 @@ export const CONTROL = new InjectionToken<Control<unknown>>(
  * @category control
  * @experimental 21.0.0
  */
-@Directive({selector: '[control]', providers: [{provide: CONTROL, useExisting: Control}]})
-export class Control<T> implements ɵControl<T> {
+@Directive({
+  selector: '[control]',
+  providers: [
+    {
+      provide: NgControl,
+      useFactory: () => inject(Control).ngControl,
+    },
+    {
+      provide: CONTROL,
+      useExisting: Control,
+    },
+  ],
+})
+export class Control<T> {
+  /** The injector for this component. */
   private readonly injector = inject(Injector);
   readonly field = input.required<FieldTree<T>>({alias: 'control'});
   readonly state = computed(() => this.field()());
