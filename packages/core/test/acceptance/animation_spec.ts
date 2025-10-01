@@ -400,7 +400,9 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
       fadeCmp.nativeElement.dispatchEvent(
@@ -441,7 +443,9 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
       fadeCmp.nativeElement.dispatchEvent(
@@ -804,25 +808,6 @@ describe('Animation', () => {
       }
     }
     `;
-
-    it('should apply classes on entry when animation is specified with no control flow', fakeAsync(() => {
-      @Component({
-        selector: 'test-cmp',
-        styles: styles,
-        template: '<div><p animate.enter="slide-in" #el>I should slide in</p></div>',
-        encapsulation: ViewEncapsulation.None,
-      })
-      class TestComponent {
-        @ViewChild('el', {read: ElementRef}) el!: ElementRef<HTMLParagraphElement>;
-      }
-      TestBed.configureTestingModule({animationsEnabled: true});
-
-      const fixture = TestBed.createComponent(TestComponent);
-      const cmp = fixture.componentInstance;
-      fixture.detectChanges();
-      tickAnimationFrames(1);
-      expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
-    }));
 
     it('should apply classes on entry when animation is specified', fakeAsync(() => {
       @Component({

@@ -162,17 +162,17 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 /**
  * Retrieves the list of specified enter animations from the lView
  */
-export function getLViewEnterAnimations(lView: LView): Map<number, Function[]> {
+export function getLViewEnterAnimations(lView: LView): Function[] {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.enter ??= new Map<number, Function[]>());
+  return (animationData.enter ??= []);
 }
 
 /**
  * Retrieves the list of specified leave animations from the lView
  */
-export function getLViewLeaveAnimations(lView: LView): Map<number, Function[]> {
+export function getLViewLeaveAnimations(lView: LView): Function[] {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.leave ??= new Map<number, Function[]>());
+  return (animationData.leave ??= []);
 }
 
 /**
@@ -244,18 +244,8 @@ export function isLongestAnimation(
 }
 
 /**
- * Stores a given animation function in the LView's animation map for later execution
- *
- * @param animations Either the enter or leave animation map from the LView
- * @param tNode The TNode the animation is associated with
- * @param fn The animation function to be called later
+ * Determines if a given tNode is a content projection root node.
  */
-export function addAnimationToLView(
-  animations: Map<number, Function[]>,
-  tNode: TNode,
-  fn: Function,
-) {
-  const animationFns = animations.get(tNode.index) ?? [];
-  animationFns.push(fn);
-  animations.set(tNode.index, animationFns);
+export function isTNodeContentProjectionRoot(tNode: TNode): boolean {
+  return Array.isArray(tNode.projection);
 }
