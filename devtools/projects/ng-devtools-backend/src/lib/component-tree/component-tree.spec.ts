@@ -11,9 +11,10 @@ import {getInjectorFromElementNode, getRootElements} from './component-tree';
 
 type Ng = ɵGlobalDevModeUtils['ng'];
 const NG_VERSION = 'ng-version';
+const VERSION = '0.0.0-PLACEHOLDER';
 
 function setNgVersion(element: Element) {
-  element.setAttribute(NG_VERSION, '');
+  element.setAttribute(NG_VERSION, VERSION);
 }
 
 function createRoot() {
