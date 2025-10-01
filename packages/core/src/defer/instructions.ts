@@ -52,7 +52,11 @@ import {
   trackTriggerForDebugging,
 } from './utils';
 import {DEHYDRATED_BLOCK_REGISTRY, DehydratedBlockRegistry} from './registry';
-import {assertIncrementalHydrationIsConfigured, assertSsrIdDefined} from '../hydration/utils';
+import {
+  warnIncrementalHydrationNotConfigured,
+  assertSsrIdDefined,
+  isIncrementalHydrationEnabled,
+} from '../hydration/utils';
 import {ɵɵdeferEnableTimerScheduling, renderPlaceholder} from './rendering';
 
 import {
@@ -136,6 +140,7 @@ export function ɵɵdefer(
   const tNode = declareNoDirectiveHostTemplate(lView, tView, index, null, 0, 0);
   const injector = lView[INJECTOR];
 
+  const incrementalHydrationEnabled = isIncrementalHydrationEnabled(injector);
   if (tView.firstCreatePass) {
     performanceMarkFeature('NgDefer');
 
@@ -143,8 +148,8 @@ export function ɵɵdefer(
       if (typeof ngHmrMode !== 'undefined' && ngHmrMode) {
         logHmrWarning(injector);
       }
-      if (hasHydrateTriggers(flags)) {
-        assertIncrementalHydrationIsConfigured(injector);
+      if (hasHydrateTriggers(flags) && !incrementalHydrationEnabled) {
+        warnIncrementalHydrationNotConfigured();
       }
     }
 
@@ -198,7 +203,7 @@ export function ɵɵdefer(
   setLDeferBlockDetails(lView, adjustedIndex, lDetails);
 
   let registry: DehydratedBlockRegistry | null = null;
-  if (ssrUniqueId !== null) {
+  if (ssrUniqueId !== null && incrementalHydrationEnabled) {
     // Store this defer block in the registry, to have an access to
     // internal data structures from hydration runtime code.
     registry = injector.get(DEHYDRATED_BLOCK_REGISTRY);

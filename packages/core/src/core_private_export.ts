@@ -101,6 +101,7 @@ export {
   HydrationInfo as ɵHydrationInfo,
   readHydrationInfo as ɵreadHydrationInfo,
   SSR_CONTENT_INTEGRITY_MARKER as ɵSSR_CONTENT_INTEGRITY_MARKER,
+  resetIncrementalHydrationEnabledWarnedForTests as ɵresetIncrementalHydrationEnabledWarnedForTests,
 } from './hydration/utils';
 export {
   CurrencyIndex as ɵCurrencyIndex,
