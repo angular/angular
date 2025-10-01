@@ -385,6 +385,75 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(c.hasValidator(Validators.required)).toEqual(false);
       });
 
+      it('should replace same type validators when using addValidators', () => {
+        const c = new FormControl('');
+        
+        // Add required validator
+        c.addValidators(Validators.required);
+        expect(c.errors).toEqual({'required': true});
+        expect(c.validator).toBeTruthy();
+        
+        // Add required again - should replace, not accumulate
+        c.addValidators(Validators.required);
+        expect(c.errors).toEqual({'required': true});
+        
+        // Verify we still have only one validator by testing valid state
+        c.setValue('test');
+        expect(c.valid).toBe(true);
+        expect(c.errors).toBeNull();
+      });
+
+      it('should replace min validators with different values when using addValidators', () => {
+        const c = new FormControl(3);
+        
+        // Add min(5) validator
+        c.addValidators(Validators.min(5));
+        expect(c.errors).toEqual({'min': {'min': 5, 'actual': 3}});
+        
+        // Replace with min(2) - should replace, not accumulate  
+        c.addValidators(Validators.min(2));
+        expect(c.valid).toBe(true);
+        expect(c.errors).toBeNull();
+        
+        // Verify the new min(2) is active, not min(5)
+        c.setValue(1);
+        expect(c.errors).toEqual({'min': {'min': 2, 'actual': 1}});
+      });
+
+      it('should replace max validators with different values when using addValidators', () => {
+        const c = new FormControl(10);
+        
+        // Add max(5) validator
+        c.addValidators(Validators.max(5));
+        expect(c.errors).toEqual({'max': {'max': 5, 'actual': 10}});
+        
+        // Replace with max(15) - should replace, not accumulate
+        c.addValidators(Validators.max(15));
+        expect(c.valid).toBe(true);
+        expect(c.errors).toBeNull();
+        
+        // Verify the new max(15) is active, not max(5)
+        c.setValue(20);
+        expect(c.errors).toEqual({'max': {'max': 15, 'actual': 20}});
+      });
+
+      it('should accumulate different type validators when using addValidators', () => {
+        const c = new FormControl('');
+        
+        // Add required validator
+        c.addValidators(Validators.required);
+        expect(c.errors).toEqual({'required': true});
+        
+        // Add email validator (different type) - should accumulate
+        c.addValidators(Validators.email);
+        c.setValue('invalid-email');
+        expect(c.errors).toEqual({'email': true});
+        
+        // Verify both validators are active
+        c.setValue('');
+        expect(c.errors).toEqual({'required': true});
+      });
+
       it('should not mutate the validators array when adding/removing sync validators', () => {
         const originalValidators = [Validators.required];
         const control = new FormControl('', originalValidators);
