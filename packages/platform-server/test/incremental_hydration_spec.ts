@@ -24,6 +24,7 @@ import {
   ɵJSACTION_BLOCK_ELEMENT_MAP as JSACTION_BLOCK_ELEMENT_MAP,
   ɵJSACTION_EVENT_CONTRACT as JSACTION_EVENT_CONTRACT,
   ɵgetDocument as getDocument,
+  ɵresetIncrementalHydrationEnabledWarnedForTests as resetIncrementalHydrationEnabledWarnedForTests,
   ɵTimerScheduler as TimerScheduler,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -2870,7 +2871,7 @@ describe('platform-server partial hydration integration', () => {
   });
 
   describe('misconfiguration', () => {
-    it('should throw an error when `withIncrementalHydration()` is missing in SSR setup', async () => {
+    it('should log a warning when `withIncrementalHydration()` is missing in SSR setup', async () => {
       @Component({
         selector: 'app',
         template: `
@@ -2886,17 +2887,15 @@ describe('platform-server partial hydration integration', () => {
 
       // Empty list, `withIncrementalHydration()` is not included intentionally.
       const hydrationFeatures = () => [];
+      const consoleSpy = spyOn(console, 'warn');
+      resetIncrementalHydrationEnabledWarnedForTests();
 
-      let producedError;
-      try {
-        await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
-      } catch (error: unknown) {
-        producedError = error;
-      }
-      expect((producedError as Error).message).toContain('NG0508');
+      await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+      expect(consoleSpy).toHaveBeenCalledWith(jasmine.stringMatching('NG0508'));
     });
 
-    it('should throw an error when `withIncrementalHydration()` is missing in hydration setup', async () => {
+    it('should log a warning when `withIncrementalHydration()` is missing in hydration setup', async () => {
       @Component({
         selector: 'app',
         template: `
@@ -2919,18 +2918,18 @@ describe('platform-server partial hydration integration', () => {
 
       ////////////////////////////////
 
-      let producedError;
-      try {
-        const doc = getDocument();
-        await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
-          envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
-          // Empty list, `withIncrementalHydration()` is not included intentionally.
-          hydrationFeatures: () => [],
-        });
-      } catch (error: unknown) {
-        producedError = error;
-      }
-      expect((producedError as Error).message).toContain('NG0508');
+      const consoleSpy = spyOn(console, 'warn');
+      resetIncrementalHydrationEnabledWarnedForTests();
+
+      const doc = getDocument();
+      await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+        envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+        // Empty list, `withIncrementalHydration()` is not included intentionally.
+        hydrationFeatures: () => [],
+      });
+
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+      expect(consoleSpy).toHaveBeenCalledWith(jasmine.stringMatching('NG0508'));
     });
   });
 });

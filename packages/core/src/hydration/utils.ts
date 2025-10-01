@@ -34,7 +34,7 @@ import {
   SerializedView,
 } from './interfaces';
 import {IS_INCREMENTAL_HYDRATION_ENABLED, JSACTION_BLOCK_ELEMENT_MAP} from './tokens';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {DeferBlockTrigger, HydrateTriggerDetails} from '../defer/interfaces';
 import {hoverEventNames, interactionEventNames} from '../../primitives/defer/src/triggers';
 import {DEHYDRATED_BLOCK_REGISTRY} from '../defer/registry';
@@ -411,15 +411,23 @@ export function isIncrementalHydrationEnabled(injector: Injector): boolean {
   });
 }
 
+let incrementalHydrationEnabledWarned = false;
+export function resetIncrementalHydrationEnabledWarnedForTests() {
+  incrementalHydrationEnabledWarned = false;
+}
+
 /** Throws an error if the incremental hydration is not enabled */
-export function assertIncrementalHydrationIsConfigured(injector: Injector) {
-  if (!isIncrementalHydrationEnabled(injector)) {
-    throw new RuntimeError(
-      RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
-      'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
-        'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
-        'call is added as an argument for the `provideClientHydration()` function call ' +
-        'in your application config.',
+export function warnIncrementalHydrationNotConfigured(): void {
+  if (!incrementalHydrationEnabledWarned) {
+    incrementalHydrationEnabledWarned = true;
+    console.warn(
+      formatRuntimeError(
+        RuntimeErrorCode.MISCONFIGURED_INCREMENTAL_HYDRATION,
+        'Angular has detected that some `@defer` blocks use `hydrate` triggers, ' +
+          'but incremental hydration was not enabled. Please ensure that the `withIncrementalHydration()` ' +
+          'call is added as an argument for the `provideClientHydration()` function call ' +
+          'in your application config.',
+      ),
     );
   }
 }
