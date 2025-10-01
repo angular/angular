@@ -184,6 +184,7 @@ export interface AttributeDecorator {
 export interface BaseResourceOptions<T, R> {
     defaultValue?: NoInfer<T>;
     equal?: ValueEqualityFn<T>;
+    equalParams?: ValueEqualityFn<R>;
     injector?: Injector;
     params?: () => R;
 }

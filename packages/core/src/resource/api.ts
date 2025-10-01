@@ -184,6 +184,11 @@ export interface BaseResourceOptions<T, R> {
   equal?: ValueEqualityFn<T>;
 
   /**
+   * Equality function used to compare params values.
+   */
+  equalParams?: ValueEqualityFn<R>;
+
+  /**
    * Overrides the `Injector` used by `resource`.
    */
   injector?: Injector;

@@ -943,6 +943,110 @@ describe('resource', () => {
     expect(echoResource.error()).toEqual(undefined);
   });
 
+  describe('paramsEqual', () => {
+    it('should use paramsEqual to compare params and prevent unnecessary reloads', async () => {
+      const backend = new MockResponseCountingBackend();
+      let loadCount = 0;
+      const params = signal({id: 1, timestamp: Date.now()});
+
+      const res = resource({
+        params: () => params(),
+        // Only compare by id, ignore timestamp
+        equalParams: (prev, curr) => prev.id === curr.id,
+        loader: async ({params}) => {
+          loadCount++;
+          return backend.fetch(params.id);
+        },
+        injector: TestBed.inject(Injector),
+      });
+
+      TestBed.tick();
+      await backend.flush();
+      expect(res.status()).toBe('resolved');
+      expect(loadCount).toBe(1);
+      const firstValue = res.value();
+
+      // Update timestamp but keep same id - should NOT reload
+      params.set({id: 1, timestamp: Date.now() + 1000});
+      TestBed.tick();
+      await flushMicrotasks();
+      expect(loadCount).toBe(1); // Should still be 1, no reload
+      expect(res.value()).toBe(firstValue); // Value should remain the same
+
+      // Update id - should reload
+      params.set({id: 2, timestamp: Date.now()});
+      TestBed.tick();
+      await backend.flush();
+      expect(loadCount).toBe(2); // Should increment
+      expect(res.status()).toBe('resolved');
+    });
+
+    it('should work with complex object comparisons', async () => {
+      const backend = new MockEchoBackend<{filters: string[]; page: number}>();
+      let loadCount = 0;
+      const params = signal({filters: ['a', 'b'], page: 1});
+
+      resource({
+        params: () => params(),
+        // Custom deep equality for arrays
+        equalParams: (prev, curr) => {
+          return (
+            prev.page === curr.page &&
+            prev.filters.length === curr.filters.length &&
+            prev.filters.every((f, i) => f === curr.filters[i])
+          );
+        },
+        loader: async ({params}) => {
+          loadCount++;
+          return backend.fetch(params);
+        },
+        injector: TestBed.inject(Injector),
+      });
+
+      TestBed.tick();
+      await backend.flush();
+      expect(loadCount).toBe(1);
+
+      // Set to equivalent params (different array instance but same content)
+      params.set({filters: ['a', 'b'], page: 1});
+      TestBed.tick();
+      await flushMicrotasks();
+      expect(loadCount).toBe(1); // Should not reload
+
+      // Change filter order - should reload
+      params.set({filters: ['b', 'a'], page: 1});
+      TestBed.tick();
+      await backend.flush();
+      expect(loadCount).toBe(2);
+    });
+
+    it('should still reload when params change without paramsEqual', async () => {
+      const backend = new MockEchoBackend<{id: number}>();
+      let loadCount = 0;
+      const params = signal({id: 1});
+
+      resource({
+        params: () => params(),
+        // No paramsEqual - should use strict equality
+        loader: async ({params}) => {
+          loadCount++;
+          return backend.fetch(params);
+        },
+        injector: TestBed.inject(Injector),
+      });
+
+      TestBed.tick();
+      await backend.flush();
+      expect(loadCount).toBe(1);
+
+      // Set to new object with same content - should reload due to strict equality
+      params.set({id: 1});
+      TestBed.tick();
+      await backend.flush();
+      expect(loadCount).toBe(2);
+    });
+  });
+
   describe('types', () => {
     it('should narrow hasValue() when the value can be undefined', () => {
       const result: ResourceRef<number | undefined> = resource({

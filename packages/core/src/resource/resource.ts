@@ -78,6 +78,7 @@ export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | 
     getLoader(options),
     options.defaultValue,
     options.equal ? wrapEqualityFn(options.equal) : undefined,
+    options.equalParams ? wrapEqualityFn(options.equalParams) : undefined,
     options.injector ?? inject(Injector),
     RESOURCE_VALUE_THROWS_ERRORS_DEFAULT,
   );
@@ -178,6 +179,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     private readonly loaderFn: ResourceStreamingLoader<T, R>,
     defaultValue: T,
     private readonly equal: ValueEqualityFn<T> | undefined,
+    private readonly equalParams: ValueEqualityFn<R> | undefined,
     injector: Injector,
     throwErrorsFromValue: boolean = RESOURCE_VALUE_THROWS_ERRORS_DEFAULT,
   ) {
@@ -215,6 +217,13 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.extRequest = linkedSignal({
       source: request,
       computation: (request) => ({request, reload: 0}),
+      equal: this.equalParams
+        ? (prev, curr) =>
+            prev.request === undefined || curr.request === undefined
+              ? prev.request === curr.request
+              : this.equalParams!(prev.request as R, curr.request as R) &&
+                prev.reload === curr.reload
+        : undefined,
     });
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
