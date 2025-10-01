@@ -9,10 +9,11 @@
 /* tslint:disable:no-console  */
 // #docregion Component
 import {Component} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [ReactiveFormsModule],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       @if(first.invalid) {
@@ -25,7 +26,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
     </form>
     <button (click)="setValue()">Set preset value</button>
   `,
-  standalone: false,
 })
 export class SimpleFormGroup {
   form = new FormGroup({

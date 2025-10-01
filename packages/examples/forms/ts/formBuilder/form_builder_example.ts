@@ -7,12 +7,14 @@
  */
 
 // #docregion disabled-control
+import {JsonPipe} from '@angular/common';
 import {Component, inject} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 // #enddocregion disabled-control
 
 @Component({
-  selector: 'example-app',
+  selector: 'app-form-builder',
+  imports: [ReactiveFormsModule, JsonPipe],
   template: `
     <form [formGroup]="form">
       <div formGroupName="name">
@@ -26,7 +28,6 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
     <p>Value: {{ form.value | json }}</p>
     <p>Validation status: {{ form.status }}</p>
   `,
-  standalone: false,
 })
 export class FormBuilderComp {
   form: FormGroup;
@@ -49,8 +50,8 @@ export class FormBuilderComp {
 // #docregion disabled-control
 @Component({
   selector: 'app-disabled-form-control',
+  imports: [ReactiveFormsModule],
   template: ` <input [formControl]="control" placeholder="First" /> `,
-  standalone: false,
 })
 export class DisabledFormControlComponent {
   control: FormControl;

@@ -7,11 +7,13 @@
  */
 
 // #docregion Reactive
+import {JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [JsonPipe, ReactiveFormsModule],
   template: `
     <form [formGroup]="form">
       <input type="radio" formControlName="food" value="beef" /> Beef
@@ -22,7 +24,6 @@ import {FormControl, FormGroup} from '@angular/forms';
     <p>Form value: {{ form.value | json }}</p>
     <!-- {food: 'lamb' } -->
   `,
-  standalone: false,
 })
 export class ReactiveRadioButtonComp {
   form = new FormGroup({

@@ -9,10 +9,11 @@
 /* tslint:disable:no-console  */
 // #docregion Component
 import {Component} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [ReactiveFormsModule],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       @if(name.invalid) {
@@ -28,7 +29,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 
     <button (click)="setPreset()">Set preset</button>
   `,
-  standalone: false,
 })
 export class NestedFormGroupComp {
   form = new FormGroup({

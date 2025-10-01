@@ -9,10 +9,11 @@
 /* tslint:disable:no-console  */
 // #docregion Component
 import {Component} from '@angular/core';
-import {FormArray, FormControl, FormGroup} from '@angular/forms';
+import {FormArray, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [ReactiveFormsModule],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div formArrayName="cities">
@@ -26,7 +27,6 @@ import {FormArray, FormControl, FormGroup} from '@angular/forms';
     <button (click)="addCity()">Add City</button>
     <button (click)="setPreset()">Set preset</button>
   `,
-  standalone: false,
 })
 export class NestedFormArray {
   form = new FormGroup({

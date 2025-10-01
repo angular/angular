@@ -8,11 +8,13 @@
 
 /* tslint:disable:no-console  */
 // #docregion Component
+import {JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
-import {NgForm} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [FormsModule, JsonPipe],
   template: `
     <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
       <input name="first" ngModel required #first="ngModel" />
@@ -25,7 +27,6 @@ import {NgForm} from '@angular/forms';
     <p>Form value: {{ f.value | json }}</p>
     <p>Form valid: {{ f.valid }}</p>
   `,
-  standalone: false,
 })
 export class SimpleFormComp {
   onSubmit(f: NgForm) {
