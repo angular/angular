@@ -10,6 +10,7 @@ import { ElementRef } from '@angular/core';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
 import { ModelSignal } from '@angular/core';
@@ -63,6 +64,9 @@ export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind exten
 export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
     readonly key: Signal<string>;
 }
+
+// @public
+export const CONTROL: InjectionToken<Control<unknown>>;
 
 // @public
 export class Control<T> {
