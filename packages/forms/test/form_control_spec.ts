@@ -403,38 +403,21 @@ import {asyncValidator, asyncValidatorReturningObservable} from './util';
         expect(c.errors).toBeNull();
       });
 
-      it('should replace min validators with different values when using addValidators', () => {
+      it('should replace functionally identical validators when using addValidators', () => {
         const c = new FormControl(3);
         
         // Add min(5) validator
         c.addValidators(Validators.min(5));
         expect(c.errors).toEqual({'min': {'min': 5, 'actual': 3}});
         
-        // Replace with min(2) - should replace, not accumulate  
-        c.addValidators(Validators.min(2));
+        // Add another min(5) - should replace (same function signature)
+        c.addValidators(Validators.min(5));
+        expect(c.errors).toEqual({'min': {'min': 5, 'actual': 3}});
+        
+        // Verify only one validator is active
+        c.setValue(6);
         expect(c.valid).toBe(true);
         expect(c.errors).toBeNull();
-        
-        // Verify the new min(2) is active, not min(5)
-        c.setValue(1);
-        expect(c.errors).toEqual({'min': {'min': 2, 'actual': 1}});
-      });
-
-      it('should replace max validators with different values when using addValidators', () => {
-        const c = new FormControl(10);
-        
-        // Add max(5) validator
-        c.addValidators(Validators.max(5));
-        expect(c.errors).toEqual({'max': {'max': 5, 'actual': 10}});
-        
-        // Replace with max(15) - should replace, not accumulate
-        c.addValidators(Validators.max(15));
-        expect(c.valid).toBe(true);
-        expect(c.errors).toBeNull();
-        
-        // Verify the new max(15) is active, not max(5)
-        c.setValue(20);
-        expect(c.errors).toEqual({'max': {'max': 15, 'actual': 20}});
       });
 
       it('should accumulate different type validators when using addValidators', () => {

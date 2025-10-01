@@ -777,28 +777,18 @@ export function addValidators<T extends ValidatorFn | AsyncValidatorFn>(
   const validatorsToAdd = makeValidatorsArray(validators);
   
   validatorsToAdd.forEach((v: T) => {
-    // Enhanced validator identification and replacement logic
-    const validatorId = getValidatorIdentity(v);
+    // Attach a "validatorName" for deduplication based on function signature
+    if (!(v as any).validatorName) {
+      const hashName = hashString(v.toString());
+      (v as any).validatorName = `validator_${hashName}`;
+    }
     
-    if (validatorId) {
-      // Find existing validator of the same type
-      const existingIdx = current.findIndex((cv: T) => {
-        const existingId = getValidatorIdentity(cv);
-        return existingId && areValidatorsSameType(validatorId, existingId);
-      });
-      
-      if (existingIdx > -1) {
-        // Replace existing validator of the same type
-        current.splice(existingIdx, 1, v);
-      } else {
-        // Add new validator
-        current.push(v);
-      }
+    const idx = current.findIndex((cv: T) => (cv as any)?.validatorName === (v as any).validatorName);
+    
+    if (idx > -1) {
+      current.splice(idx, 1, v);  // Replace existing validator with same signature
     } else {
-      // Fallback to original behavior for unidentified validators
-      if (!hasValidator(current, v)) {
-        current.push(v);
-      }
+      current.push(v);            // Add new validator
     }
   });
   
@@ -806,100 +796,15 @@ export function addValidators<T extends ValidatorFn | AsyncValidatorFn>(
 }
 
 /**
- * Enhanced validator identity detection
- * Returns an object describing the validator type and parameters
+ * Simple hash function for validator deduplication.
+ * Generates a short hash from validator function string.
  */
-function getValidatorIdentity(validator: ValidatorFn | AsyncValidatorFn): {type: string, signature: string} | null {
-  if (!validator || typeof validator !== 'function') {
-    return null;
+function hashString(str: string): string {
+  let hash = 0 >>> 0;              // unsigned 32-bit
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
   }
-  
-  const validatorStr = validator.toString();
-  
-  // Detect Angular built-in validators with more precision
-  if (validatorStr.includes('control.value == null') || validatorStr.includes('isEmptyInputValue(control.value)')) {
-    if (validatorStr.includes("{'required': true}") || validatorStr.includes('required:true')) {
-      return { type: 'required', signature: 'required' };
-    }
-  }
-  
-  // Min validator: extract the actual min value
-  const minMatch = validatorStr.match(/control\.value\s*<\s*(\d+(?:\.\d+)?)/);
-  if (minMatch) {
-    return { type: 'min', signature: `min_${minMatch[1]}` };
-  }
-  
-  // Max validator: extract the actual max value  
-  const maxMatch = validatorStr.match(/control\.value\s*>\s*(\d+(?:\.\d+)?)/);
-  if (maxMatch) {
-    return { type: 'max', signature: `max_${maxMatch[1]}` };
-  }
-  
-  // MinLength validator
-  if (validatorStr.includes("{'minlength'") || validatorStr.includes('minlength:')) {
-    const minLengthMatch = validatorStr.match(/length\s*<\s*(\d+)/);
-    if (minLengthMatch) {
-      return { type: 'minlength', signature: `minlength_${minLengthMatch[1]}` };
-    }
-    return { type: 'minlength', signature: 'minlength' };
-  }
-  
-  // MaxLength validator
-  if (validatorStr.includes("{'maxlength'") || validatorStr.includes('maxlength:')) {
-    const maxLengthMatch = validatorStr.match(/length\s*>\s*(\d+)/);
-    if (maxLengthMatch) {
-      return { type: 'maxlength', signature: `maxlength_${maxLengthMatch[1]}` };
-    }
-    return { type: 'maxlength', signature: 'maxlength' };
-  }
-  
-  // Pattern validator
-  if (validatorStr.includes('.test(control.value)') || validatorStr.includes("{'pattern'") || validatorStr.includes('pattern:')) {
-    return { type: 'pattern', signature: 'pattern' };
-  }
-  
-  // Email validator
-  if (validatorStr.includes('EMAIL_REGEXP') || validatorStr.includes("{'email': true}") || validatorStr.includes('email:true')) {
-    return { type: 'email', signature: 'email' };
-  }
-  
-  // For custom validators, try to extract function name
-  const funcName = validator.name || 'anonymous';
-  if (funcName !== 'anonymous') {
-    return { 
-      type: 'custom', 
-      signature: `custom_${funcName}` 
-    };
-  }
-  
-  return null;
-}
-
-/**
- * Check if two validator identities represent the same type of validator
- * that should replace each other
- */
-function areValidatorsSameType(id1: {type: string, signature: string}, id2: {type: string, signature: string}): boolean {
-  // Same type validators should replace each other
-  if (id1.type === id2.type) {
-    // For most validators, same type means replacement
-    if (['required', 'email'].includes(id1.type)) {
-      return true;
-    }
-    
-    // For value-based validators (min/max/minlength/maxlength), 
-    // they replace each other regardless of the actual value
-    if (['min', 'max', 'minlength', 'maxlength', 'pattern'].includes(id1.type)) {
-      return true;
-    }
-    
-    // For custom validators, only replace if they have the same function name
-    if (id1.type === 'custom') {
-      return id1.signature === id2.signature;
-    }
-  }
-  
-  return false;
+  return hash.toString(36);
 }
 
 export function removeValidators<T extends ValidatorFn | AsyncValidatorFn>(
