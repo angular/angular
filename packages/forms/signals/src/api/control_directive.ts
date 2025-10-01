@@ -45,7 +45,9 @@ import type {Field} from './types';
 /**
  * Lightweight DI token provided by the {@link Control} directive.
  */
-export const CONTROL = new InjectionToken<Control<unknown>>('CONTROL');
+export const CONTROL = new InjectionToken<Control<unknown>>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'CONTROL' : '',
+);
 
 /**
  * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
