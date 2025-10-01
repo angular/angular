@@ -11,8 +11,13 @@ import 'zone.js/plugins/task-tracking';
 
 // okd
 
-import {platformBrowser} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {routes, TestsAppComponent} from './test_app_component';
+import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
+import {provideRouter} from '@angular/router';
 
-import {TestsAppModule} from './test_module';
+const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes), provideZoneChangeDetection()],
+};
 
-platformBrowser().bootstrapModule(TestsAppModule);
+bootstrapApplication(TestsAppComponent, appConfig).catch((err) => console.error(err));
