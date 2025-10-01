@@ -15,6 +15,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  InjectionToken,
   Injector,
   Input,
   InputSignal,
@@ -42,6 +43,11 @@ import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} 
 import type {Field} from './types';
 
 /**
+ * Lightweight DI token provided by the {@link Control} directive.
+ */
+export const CONTROL = new InjectionToken<Control<unknown>>('CONTROL');
+
+/**
  * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
@@ -65,6 +71,10 @@ import type {Field} from './types';
     {
       provide: NgControl,
       useFactory: () => inject(Control).ngControl,
+    },
+    {
+      provide: CONTROL,
+      useExisting: Control,
     },
   ],
 })
