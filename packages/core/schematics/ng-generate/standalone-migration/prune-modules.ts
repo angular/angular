@@ -113,6 +113,7 @@ export function pruneNgModules(
   replaceInComponentImportsArray(
     componentImportArrays,
     classesToRemove,
+    removalLocations,
     tracker,
     typeChecker,
     templateTypeChecker,
@@ -257,6 +258,7 @@ function collectChangeLocations(
  * Replaces all the leftover modules in component `imports` arrays with their exports.
  * @param componentImportArrays All the imports arrays and their nodes that represent NgModules.
  * @param classesToRemove Set of classes that were marked for removal.
+ * @param removalLocations Tracks the different places from which imports should be removed.
  * @param tracker
  * @param typeChecker
  * @param templateTypeChecker
@@ -265,6 +267,7 @@ function collectChangeLocations(
 function replaceInComponentImportsArray(
   componentImportArrays: UniqueItemTracker<ts.ArrayLiteralExpression, ts.Node>,
   classesToRemove: Set<ts.ClassDeclaration>,
+  removalLocations: RemovalLocations,
   tracker: ChangeTracker,
   typeChecker: ts.TypeChecker,
   templateTypeChecker: TemplateTypeChecker,
@@ -281,6 +284,7 @@ function replaceInComponentImportsArray(
     const usedImports = new Set(
       findTemplateDependencies(closestClass, templateTypeChecker).map((ref) => ref.node),
     );
+    const nodesToRemove = new Set<ts.Node>();
 
     for (const node of toReplace) {
       const moduleDecl = findClassDeclaration(node, typeChecker);
@@ -289,11 +293,29 @@ function replaceInComponentImportsArray(
         const moduleMeta = templateTypeChecker.getNgModuleMetadata(moduleDecl);
 
         if (moduleMeta) {
+          let hasUsedExports = false;
           moduleMeta.exports.forEach((exp) => {
             if (usedImports.has(exp.node as NamedClassDeclaration)) {
               replacements.track(node, exp as Reference<NamedClassDeclaration>);
+              hasUsedExports = true;
             }
           });
+
+          // If none of the module's exports are used, track the node for removal
+          if (!hasUsedExports) {
+            nodesToRemove.add(node);
+          } else if (ts.isIdentifier(node)) {
+            // Track the import statement for removal when replacing with exports
+            const symbol = typeChecker.getSymbolAtLocation(node);
+            const declarations = symbol?.declarations;
+            if (declarations) {
+              for (const declaration of declarations) {
+                if (ts.isImportSpecifier(declaration)) {
+                  removalLocations.imports.track(declaration.parent, declaration);
+                }
+              }
+            }
+          }
         } else {
           // It's unlikely not to have module metadata at this point, but just in
           // case unmark the class for removal to reduce the chance of breakages.
@@ -302,13 +324,21 @@ function replaceInComponentImportsArray(
       }
     }
 
-    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
+    replaceModulesInImportsArray(
+      array,
+      replacements,
+      nodesToRemove,
+      tracker,
+      templateTypeChecker,
+      importRemapper,
+    );
   }
 }
 
 /**
  * Replaces all the leftover modules in testing `imports` arrays with their exports.
  * @param testImportArrays All test `imports` arrays and their nodes that represent modules.
+ * @param removalLocations Tracks the different places from which imports should be removed.
  * @param classesToRemove Classes marked for removal by the migration.
  * @param tracker
  * @param typeChecker
@@ -326,6 +356,7 @@ function replaceInTestImportsArray(
 ) {
   for (const [array, toReplace] of testImportArrays.getEntries()) {
     const replacements = new UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>();
+    const nodesToRemove = new Set<ts.Node>();
 
     for (const node of toReplace) {
       const moduleDecl = findClassDeclaration(node, typeChecker);
@@ -344,6 +375,19 @@ function replaceInTestImportsArray(
             exports.forEach((exp) =>
               replacements.track(node, exp as Reference<NamedClassDeclaration>),
             );
+
+            // Track the import statement for removal when replacing with exports
+            if (ts.isIdentifier(node)) {
+              const symbol = typeChecker.getSymbolAtLocation(node);
+              const declarations = symbol?.declarations;
+              if (declarations) {
+                for (const declaration of declarations) {
+                  if (ts.isImportSpecifier(declaration)) {
+                    removalLocations.imports.track(declaration.parent, declaration);
+                  }
+                }
+              }
+            }
           } else {
             removalLocations.arrays.track(array, node);
           }
@@ -355,7 +399,14 @@ function replaceInTestImportsArray(
       }
     }
 
-    replaceModulesInImportsArray(array, replacements, tracker, templateTypeChecker, importRemapper);
+    replaceModulesInImportsArray(
+      array,
+      replacements,
+      nodesToRemove,
+      tracker,
+      templateTypeChecker,
+      importRemapper,
+    );
   }
 }
 
@@ -363,18 +414,21 @@ function replaceInTestImportsArray(
  * Replaces any leftover modules in an `imports` arrays with a set of specified exports
  * @param array Imports array which is being migrated.
  * @param replacements Map of NgModule references to their exports.
+ * @param nodesToRemove Set of nodes that should be removed without replacement (unused modules).
  * @param tracker
+ * @param typeChecker
  * @param templateTypeChecker
  * @param importRemapper
  */
 function replaceModulesInImportsArray(
   array: ts.ArrayLiteralExpression,
   replacements: UniqueItemTracker<ts.Node, Reference<NamedClassDeclaration>>,
+  nodesToRemove: Set<ts.Node>,
   tracker: ChangeTracker,
   templateTypeChecker: TemplateTypeChecker,
   importRemapper?: DeclarationImportsRemapper,
 ): void {
-  if (replacements.isEmpty()) {
+  if (replacements.isEmpty() && nodesToRemove.size === 0) {
     return;
   }
 
@@ -388,6 +442,11 @@ function replaceModulesInImportsArray(
   }
 
   for (const element of array.elements) {
+    // Check if this element should be removed entirely (unused module)
+    if (nodesToRemove.has(element)) {
+      continue;
+    }
+
     const replacementRefs = replacements.get(element);
 
     if (!replacementRefs) {
