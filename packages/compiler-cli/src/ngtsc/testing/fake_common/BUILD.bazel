@@ -19,5 +19,6 @@ ng_package(
     package = "@angular/common",
     deps = [
         ":fake_common",
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common/http:fake_http",
     ],
 )
