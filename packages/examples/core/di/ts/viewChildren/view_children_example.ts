@@ -19,7 +19,6 @@ import {
 
 @Directive({
   selector: 'pane',
-  standalone: false,
 })
 export class Pane {
   id = input.required<string>();
@@ -27,6 +26,7 @@ export class Pane {
 
 @Component({
   selector: 'example-app',
+  imports: [Pane],
   template: `
     <pane id="1"/>
     <pane id="2"/>
@@ -38,7 +38,6 @@ export class Pane {
 
     <div>panes: {{ serializedPanes }}</div>
   `,
-  standalone: false,
 })
 export class ViewChildrenComp implements AfterViewInit {
   @ViewChildren(Pane) panes!: QueryList<Pane>;

@@ -13,7 +13,6 @@ class CustomDirective {}
 @Component({
   selector: 'greet',
   template: 'Hello {{name}}!',
-  standalone: false,
 })
 class Greet {
   name: string = 'World';
@@ -23,7 +22,6 @@ class Greet {
 @Component({
   selector: 'page',
   template: 'Title: {{title}}',
-  standalone: false,
 })
 class Page {
   title: string;
@@ -36,7 +34,6 @@ class Page {
 // #docregion attributeMetadata
 @Directive({
   selector: 'input',
-  standalone: false,
 })
 class InputAttrDirective {
   constructor(@Attribute('type') type: string) {
@@ -47,7 +44,6 @@ class InputAttrDirective {
 
 @Directive({
   selector: 'input',
-  standalone: false,
 })
 class InputDirective {
   constructor() {
@@ -57,7 +53,6 @@ class InputDirective {
 
 @Pipe({
   name: 'lowercase',
-  standalone: false,
 })
 class Lowercase {
   transform(v: string, args: any[]) {

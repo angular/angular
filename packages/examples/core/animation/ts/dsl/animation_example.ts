@@ -7,8 +7,7 @@
  */
 
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Component, NgModule} from '@angular/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'example-app',
@@ -39,7 +38,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     <hr />
     <div class="toggle-container" [@openClose]="stateExpression">Look at this box</div>
   `,
-  standalone: false,
 })
 export class MyExpandoCmp {
   stateExpression!: string;
@@ -53,10 +51,3 @@ export class MyExpandoCmp {
     this.stateExpression = 'collapsed';
   }
 }
-
-@NgModule({
-  imports: [BrowserAnimationsModule],
-  declarations: [MyExpandoCmp],
-  bootstrap: [MyExpandoCmp],
-})
-export class AppModule {}

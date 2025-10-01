@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgModule} from '@angular/core';
-import {TruncatePipe as SimpleTruncatePipe} from './simple_truncate';
+import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
 import {TruncatePipe} from './truncate';
+import {bootstrapApplication} from '@angular/platform-browser';
 
-@NgModule({declarations: [SimpleTruncatePipe, TruncatePipe]})
-export class TruncateModule {}
+const appConfig: ApplicationConfig = {
+  providers: [provideZoneChangeDetection()],
+};
+
+bootstrapApplication(TruncatePipe, appConfig).catch((err) => console.error(err));

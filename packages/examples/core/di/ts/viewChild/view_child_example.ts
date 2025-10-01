@@ -11,7 +11,6 @@ import {Component, Directive, input, signal, ViewChild} from '@angular/core';
 
 @Directive({
   selector: 'pane',
-  standalone: false,
 })
 export class Pane {
   id = input.required<string>();
@@ -19,6 +18,7 @@ export class Pane {
 
 @Component({
   selector: 'example-app',
+  imports: [Pane],
   template: `
     @if(shouldShow()) {
       <pane id="1"/>
@@ -30,7 +30,6 @@ export class Pane {
 
     <div>Selected: {{ selectedPane() }}</div>
   `,
-  standalone: false,
 })
 export class ViewChildComp {
   @ViewChild(Pane)
