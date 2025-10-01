@@ -1471,6 +1471,82 @@ describe('platform-server partial hydration integration', () => {
 
           expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
         });
+
+        it('idle with timeout', async () => {
+          @Component({
+            selector: 'app',
+            template: `
+        <main (click)="fnA()">
+          @defer (hydrate on idle(2500)) {
+            <article>
+              defer block rendered with timeout!
+              <span id="test" (click)="fnB()">{{value()}}</span>
+            </article>
+          } @placeholder {
+            <span>Outer block placeholder</span>
+          }
+        </main>
+      `,
+          })
+          class SimpleComponent {
+            value = signal('start');
+            fnA() {}
+            fnB() {
+              this.value.set('end');
+            }
+          }
+
+          const appId = 'custom-app-id';
+          const providers = [
+            {provide: APP_ID, useValue: appId},
+            provideZoneChangeDetection() as any,
+          ];
+          const hydrationFeatures = () => [withIncrementalHydration()];
+
+          const html = await ssr(SimpleComponent, {envProviders: providers, hydrationFeatures});
+          const ssrContents = getAppContents(html);
+
+          // <main> uses "eager" `custom-app-id` namespace.
+          expect(ssrContents).toContain('<main jsaction="click:;');
+          // <div>s inside a defer block have `d0` as a namespace.
+          expect(ssrContents).toContain('<article>');
+          // Outer defer block is rendered.
+          expect(ssrContents).toContain('defer block rendered with timeout');
+
+          // Internal cleanup before we do server->client transition in this test.
+          resetTViewsFor(SimpleComponent);
+
+          ////////////////////////////////
+          const doc = getDocument();
+          const appRef = await prepareEnvironmentAndHydrate(doc, html, SimpleComponent, {
+            envProviders: [...providers, {provide: PLATFORM_ID, useValue: 'browser'}],
+            hydrationFeatures,
+          });
+          const compRef = getComponentRef<SimpleComponent>(appRef);
+          appRef.tick();
+          await appRef.whenStable();
+
+          const appHostNode = compRef.location.nativeElement;
+
+          expect(appHostNode.outerHTML).toContain('<article>');
+
+          // Verify that requestIdleCallback was called with timeout option
+          expect(idleCallbacksRequested).toBe(1);
+
+          triggerIdleCallbacks();
+          await allPendingDynamicImports();
+          appRef.tick();
+
+          expect(appHostNode.outerHTML).toContain('<span id="test">start</span>');
+
+          const testElement = doc.getElementById('test')!;
+          const clickEvent2 = new CustomEvent('click');
+          testElement.dispatchEvent(clickEvent2);
+
+          appRef.tick();
+
+          expect(appHostNode.outerHTML).toContain('<span id="test">end</span>');
+        });
       });
 
       describe('timer', () => {

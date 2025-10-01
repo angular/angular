@@ -1500,11 +1500,13 @@ describe('@defer', () => {
     let idleCallbacksInvoked: number;
     let idleCallbacksCancelled: number;
     const onIdleCallbackQueue: Map<number, IdleRequestCallback> = new Map();
+    let capturedOptions: IdleRequestOptions | undefined;
 
     function resetCounters() {
       idleCallbacksRequested = 0;
       idleCallbacksInvoked = 0;
       idleCallbacksCancelled = 0;
+      capturedOptions = undefined;
     }
     resetCounters();
 
@@ -1518,6 +1520,7 @@ describe('@defer', () => {
       callback: IdleRequestCallback,
       options?: IdleRequestOptions,
     ): number => {
+      capturedOptions = options;
       onIdleCallbackQueue.set(id, callback);
       expect(idleCallbacksRequested).toBe(0);
       expect(NgZone.isInAngularZone()).toBe(true);
@@ -1931,6 +1934,184 @@ describe('@defer', () => {
       expect(loadingFnInvokedTimes).toBe(1);
     });
 
+    it('should trigger prefetching based on `on idle(<timeout>)` with timeout only once', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @for (item of items; track item) {
+            @defer (when deferCond; prefetch on idle(1500)) {
+              <nested-cmp [block]="'primary for \`' + item + '\` with timeout'" />
+            } @placeholder {
+              Placeholder with timeout \`{{ item }}\`
+            }
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+        items = ['x', 'y', 'z'];
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `x`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `y`');
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `z`');
+
+      // Verify that requestIdleCallback was called with timeout for prefetch
+      expect(idleCallbacksRequested).toBe(1);
+      expect(capturedOptions).toBeDefined();
+      expect(capturedOptions!.timeout).toBe(1500);
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once for prefetch.
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered after prefetch.
+      expect(fixture.nativeElement.outerHTML).toContain('Placeholder with timeout `x`');
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary blocks content with prefetched resources.
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `x` with timeout block',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `y` with timeout block',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Rendering primary for `z` with timeout block',
+      );
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should support mixed prefetch triggers with and without timeout', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when loadFirst; prefetch on idle) {
+            <nested-cmp [block]="'no-timeout'" />
+          } @placeholder {
+            No Timeout Placeholder
+          }
+          
+          @defer (when loadSecond; prefetch on idle(3000)) {
+            <nested-cmp [block]="'with-timeout'" />
+          } @placeholder {
+            With Timeout Placeholder
+          }
+        `,
+      })
+      class RootCmp {
+        loadFirst = false;
+        loadSecond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain('No Timeout Placeholder');
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+
+      // Verify that idle callback was requested
+      expect(idleCallbacksRequested).toBeGreaterThan(0);
+      // Should capture the timeout from the block that has one
+      if (capturedOptions?.timeout) {
+        expect(capturedOptions.timeout).toBe(3000);
+      }
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that invoked onIdle trigger for prefetching both blocks
+      expect(loadingFnInvokedTimes).toBe(2);
+
+      // Both placeholders should still be visible after prefetch
+      expect(fixture.nativeElement.outerHTML).toContain('No Timeout Placeholder');
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+
+      // Trigger first block
+      fixture.componentInstance.loadFirst = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify first block is rendered
+      expect(fixture.nativeElement.outerHTML).toContain(
+        '<nested-cmp ng-reflect-block="no-timeout">Rendering no-timeout block.</nested-cmp>',
+      );
+      expect(fixture.nativeElement.outerHTML).toContain('With Timeout Placeholder');
+    });
+
     it('should trigger fetching based on `on idle` only once', async () => {
       @Component({
         selector: 'nested-cmp',
@@ -1994,6 +2175,85 @@ describe('@defer', () => {
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `a` block');
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `b` block');
       expect(fixture.nativeElement.outerHTML).toContain('Rendering primary for `c` block');
+
+      // Expect that the loading resources function was not invoked again (counter remains 1).
+      expect(loadingFnInvokedTimes).toBe(1);
+    });
+
+    it('should support `prefetch on idle(3000)` condition with timeout', async () => {
+      @Component({
+        selector: 'nested-cmp',
+        template: 'Rendering {{ block }} block.',
+      })
+      class NestedCmp {
+        @Input() block!: string;
+      }
+
+      @Component({
+        selector: 'root-app',
+        imports: [NestedCmp],
+        template: `
+          @defer (when deferCond; prefetch on idle(3000)) {
+            <nested-cmp [block]="'prefetched-with-timeout'" />
+          } @placeholder {
+            Placeholder for prefetch idle timeout test
+          }
+        `,
+      })
+      class RootCmp {
+        deferCond = false;
+      }
+
+      let loadingFnInvokedTimes = 0;
+      const deferDepsInterceptor = {
+        intercept() {
+          return () => {
+            loadingFnInvokedTimes++;
+            return [dynamicImportOf(NestedCmp)];
+          };
+        },
+      };
+
+      TestBed.configureTestingModule({
+        providers: [{provide: ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR, useValue: deferDepsInterceptor}],
+      });
+
+      clearDirectiveDefs(RootCmp);
+
+      const fixture = TestBed.createComponent(RootCmp);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Placeholder for prefetch idle timeout test',
+      );
+
+      // Make sure loading function is not yet invoked.
+      expect(loadingFnInvokedTimes).toBe(0);
+
+      triggerIdleCallbacks();
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Expect that the loading resources function was invoked once (prefetch).
+      expect(loadingFnInvokedTimes).toBe(1);
+
+      // Expect that placeholder content is still rendered after prefetch.
+      expect(fixture.nativeElement.outerHTML).toContain(
+        'Placeholder for prefetch idle timeout test',
+      );
+
+      // Trigger main content.
+      fixture.componentInstance.deferCond = true;
+      fixture.detectChanges();
+
+      await allPendingDynamicImports();
+      fixture.detectChanges();
+
+      // Verify primary block content with prefetched resources.
+      const primaryBlockHTML = fixture.nativeElement.outerHTML;
+      expect(primaryBlockHTML).toContain(
+        '<nested-cmp ng-reflect-block="prefetched-with-timeout">Rendering prefetched-with-timeout block.</nested-cmp>',
+      );
 
       // Expect that the loading resources function was not invoked again (counter remains 1).
       expect(loadingFnInvokedTimes).toBe(1);

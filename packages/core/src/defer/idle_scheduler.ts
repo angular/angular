@@ -14,12 +14,18 @@ import {NgZone} from '../zone';
  *
  * @param callback A function to be invoked when a browser becomes idle.
  * @param injector injector for the app
+ * @param timeout Optional timeout in milliseconds to pass to requestIdleCallback
  */
-export function onIdle(callback: VoidFunction, injector: Injector) {
+export function onIdle(callback: VoidFunction, injector: Injector, options?: IdleRequestOptions) {
   const scheduler = injector.get(IdleScheduler);
   const cleanupFn = () => scheduler.remove(callback);
-  scheduler.add(callback);
+
+  scheduler.add(callback, options);
   return cleanupFn;
+}
+
+export function onIdleWrapper(options?: IdleRequestOptions) {
+  return (callback: VoidFunction, injector: Injector) => onIdle(callback, injector, options);
 }
 
 /**
@@ -53,14 +59,21 @@ export class IdleScheduler {
   // Those callbacks are scheduled for the next idle period.
   deferred = new Set<VoidFunction>();
 
+  // Options to pass to requestIdleCallback
+  private timeout: number | null = null;
+
   ngZone = inject(NgZone);
 
   requestIdleCallbackFn = _requestIdleCallback().bind(globalThis);
   cancelIdleCallbackFn = _cancelIdleCallback().bind(globalThis);
 
-  add(callback: VoidFunction) {
+  add(callback: VoidFunction, options?: IdleRequestOptions) {
     const target = this.executingCallbacks ? this.deferred : this.current;
     target.add(callback);
+    // Store options if provided, giving precedence to the first non-undefined options
+    if (options) {
+      this.timeout = options.timeout ?? null;
+    }
     if (this.idleId === null) {
       this.scheduleIdleCallback();
     }
@@ -105,13 +118,21 @@ export class IdleScheduler {
     };
     // Ensure that the callback runs in the NgZone since
     // the `requestIdleCallback` is not currently patched by Zone.js.
-    this.idleId = this.requestIdleCallbackFn(() => this.ngZone.run(callback)) as number;
+    const idleCallback = () => this.ngZone.run(callback);
+
+    // Only pass options if we're using the real requestIdleCallback (not setTimeout fallback)
+    if (this.timeout && typeof requestIdleCallback !== 'undefined') {
+      this.idleId = requestIdleCallback(idleCallback, {timeout: this.timeout});
+    } else {
+      this.idleId = this.requestIdleCallbackFn(idleCallback) as number;
+    }
   }
 
   private cancelIdleCallback() {
     if (this.idleId !== null) {
       this.cancelIdleCallbackFn(this.idleId);
       this.idleId = null;
+      this.timeout = null;
     }
   }
 

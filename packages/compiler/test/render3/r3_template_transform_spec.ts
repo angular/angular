@@ -144,7 +144,13 @@ class R3AstHumanizer implements t.Visitor<void> {
     } else if (trigger instanceof t.HoverDeferredTrigger) {
       this.result.push(['HoverDeferredTrigger', trigger.reference]);
     } else if (trigger instanceof t.IdleDeferredTrigger) {
-      this.result.push(['IdleDeferredTrigger']);
+      // Idle triggers may optionally include a delay. Preserve previous
+      // behavior of only reporting the trigger name when no delay is set.
+      if ((trigger as t.IdleDeferredTrigger).timeout != null) {
+        this.result.push(['IdleDeferredTrigger', (trigger as t.IdleDeferredTrigger).timeout]);
+      } else {
+        this.result.push(['IdleDeferredTrigger']);
+      }
     } else if (trigger instanceof t.TimerDeferredTrigger) {
       this.result.push(['TimerDeferredTrigger', trigger.delay]);
     } else if (trigger instanceof t.InteractionDeferredTrigger) {
@@ -1187,6 +1193,28 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse prefetch `on idle(100)` trigger and preserve timeout', () => {
+      const html = '@defer (on idle; prefetch on idle(100)){hello}';
+
+      expectFromHtml(html).toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger'],
+        ['IdleDeferredTrigger', 100],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse hydrate `on idle(100)` trigger and preserve timeout', () => {
+      const html = '@defer (on idle; hydrate on idle(100)){hello}';
+
+      expectFromHtml(html).toEqual([
+        ['DeferredBlock'],
+        ['IdleDeferredTrigger', 100],
+        ['IdleDeferredTrigger'],
+        ['Text', 'hello'],
+      ]);
+    });
+
     it('should allow arbitrary number of spaces after the `prefetch` keyword', () => {
       const html =
         '@defer (on idle; prefetch         on viewport(button), hover(button); prefetch    when shouldPrefetch()){hello}';
@@ -1456,9 +1484,23 @@ describe('R3 template transform', () => {
         expect(() => parse('@defer (on viewport[]) {hello}')).toThrowError(/Unexpected token/);
       });
 
-      it('should report if parameters are passed to `idle` trigger', () => {
-        expect(() => parse('@defer (on idle(1)) {hello}')).toThrowError(
-          /"idle" trigger cannot have parameters/,
+      it('should allow optional parameter on `idle` trigger and parse timeout', () => {
+        expectFromHtml('@defer (on idle(1)) {hello}').toEqual([
+          ['DeferredBlock'],
+          ['IdleDeferredTrigger', 1],
+          ['Text', 'hello'],
+        ]);
+      });
+
+      it('should report if `idle` trigger value cannot be parsed', () => {
+        expect(() => parse('@defer (on idle(123abc)) {hello}')).toThrowError(
+          /Could not parse time value of trigger "idle"/,
+        );
+      });
+
+      it('should report if `idle` trigger has more than one parameter', () => {
+        expect(() => parse('@defer (on idle(a, b)) {hello}')).toThrowError(
+          /"idle" trigger can only have zero or one parameters/,
         );
       });
 
