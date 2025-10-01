@@ -8,7 +8,6 @@
 
 import {
   ANIMATION_QUEUE,
-  ANIMATION_QUEUE,
   AnimationCallbackEvent,
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
