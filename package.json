@@ -178,7 +178,7 @@
     "@types/cldr": "^7.1.4",
     "@types/cldrjs": "^0.4.22",
     "@types/d3": "^7.4.3",
-    "@types/jsdom": "^21.1.5",
+    "@types/jsdom": "^27.0.0",
     "@types/tmp": "^0.2.6",
     "@typescript/vfs": "^1.5.0",
     "@yarnpkg/lockfile": "^1.1.0",
