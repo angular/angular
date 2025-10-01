@@ -36,14 +36,14 @@ type VersionJson = {version: string; url: string};
 export class VersionManager {
   private document = inject(DOCUMENT);
 
-  get currentDocsVersionMode(): VersionMode {
+  readonly currentDocsVersionMode = computed<VersionMode>(() => {
     const hostname = this.document.location.hostname;
     if (hostname.startsWith('v')) return 'deprecated';
     if (hostname.startsWith('rc')) return 'rc';
     if (hostname.startsWith('next')) return 'next';
 
     return 'stable';
-  }
+  });
 
   private localVersions = (versionJson as VersionJson[]).map((v) => {
     return {
