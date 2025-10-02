@@ -40,7 +40,6 @@ js_test(
     # the sandbox. It would need some redesign to allow for sandbox execution.
     tags = [
         "e2e",
-        "no-remote-exec",
         "no-sandbox",
         "requires-network",
     ],
