@@ -125,7 +125,7 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 
     this.isLoading = computed(
       () => this.status() === 'loading' || this.status() === 'reloading',
-      createDebugNameObject(debugName, 'isLoading'),
+      ngDevMode ? createDebugNameObject(debugName, 'isLoading') : undefined,
     );
   }
 
@@ -218,7 +218,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
           return streamValue.value;
         },
-        {equal, ...createDebugNameObject(debugName, 'value')},
+        {equal, ...(ngDevMode ? createDebugNameObject(debugName, 'value') : undefined)},
       ),
       debugName,
     );
@@ -227,7 +227,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
     this.extRequest = linkedSignal({
       source: request,
       computation: (request) => ({request, reload: 0}),
-      ...createDebugNameObject(debugName, 'extRequest'),
+      ...(ngDevMode ? createDebugNameObject(debugName, 'extRequest') : undefined),
     });
 
     // The main resource state is managed in a `linkedSignal`, which allows the resource to change
@@ -258,13 +258,13 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
           };
         }
       },
-      ...createDebugNameObject(debugName, 'state'),
+      ...(ngDevMode ? createDebugNameObject(debugName, 'state') : undefined),
     });
 
     this.effectRef = effect(this.loadEffect.bind(this), {
       injector,
       manualCleanup: true,
-      ...createDebugNameObject(debugName, 'loadEffect'),
+      ...(ngDevMode ? createDebugNameObject(debugName, 'loadEffect') : undefined),
     });
 
     this.pendingTasks = injector.get(PendingTasks);
@@ -274,7 +274,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
 
     this.status = computed(
       () => projectStatusOfState(this.state()),
-      createDebugNameObject(debugName, 'status'),
+      ngDevMode ? createDebugNameObject(debugName, 'status') : undefined,
     );
 
     this.error = computed(
@@ -282,7 +282,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         const stream = this.state().stream?.();
         return stream && !isResolved(stream) ? stream.error : undefined;
       },
-      createDebugNameObject(debugName, 'error'),
+      ngDevMode ? createDebugNameObject(debugName, 'error') : undefined,
     );
   }
 
@@ -312,7 +312,10 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
       extRequest: state.extRequest,
       status: 'local',
       previousStatus: 'local',
-      stream: signal({value}, createDebugNameObject(this.debugName, 'stream')),
+      stream: signal(
+        {value},
+        ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
+      ),
     });
 
     // We're departing from whatever state the resource was in previously, so cancel any in-progress
@@ -418,7 +421,7 @@ export class ResourceImpl<T, R> extends BaseWritableResource<T> implements Resou
         previousStatus: 'error',
         stream: signal(
           {error: encapsulateResourceError(err)},
-          createDebugNameObject(this.debugName, 'stream'),
+          ngDevMode ? createDebugNameObject(this.debugName, 'stream') : undefined,
         ),
       });
     } finally {
@@ -454,12 +457,12 @@ function getLoader<T, R>(options: ResourceOptions<T, R>): ResourceStreamingLoade
     try {
       return signal(
         {value: await options.loader(params)},
-        createDebugNameObject(options.debugName, 'stream'),
+        ngDevMode ? createDebugNameObject(options.debugName, 'stream') : undefined,
       );
     } catch (err) {
       return signal(
         {error: encapsulateResourceError(err)},
-        createDebugNameObject(options.debugName, 'stream'),
+        ngDevMode ? createDebugNameObject(options.debugName, 'stream') : undefined,
       );
     }
   };
@@ -496,12 +499,9 @@ function createDebugNameObject(
   resourceDebugName: string | undefined,
   internalSignalDebugName: string,
 ): {debugName?: string} {
-  if (ngDevMode) {
-    return {
-      debugName: `Resource${resourceDebugName ? '#' + resourceDebugName : ''}.${internalSignalDebugName}`,
-    };
-  }
-  return {};
+  return {
+    debugName: `Resource${resourceDebugName ? '#' + resourceDebugName : ''}.${internalSignalDebugName}`,
+  };
 }
 
 export function encapsulateResourceError(error: unknown): Error {
