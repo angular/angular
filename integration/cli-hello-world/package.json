@@ -30,7 +30,7 @@
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/node": "^20.14.8",
     "ts-node": "^10.9.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "packageManager": "pnpm@10.17.1"
 }
