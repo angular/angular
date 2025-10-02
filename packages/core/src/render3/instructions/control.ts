@@ -35,14 +35,16 @@ export function ɵɵcontrolCreate(): void {
   const lView = getLView<{} | null>();
   const tNode = getCurrentTNode()!;
 
-  // TODO: cache the control directive index or instance for reuse.
+  // TODO(https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274)
+  // * cache the control directive index or instance for reuse.
   const control = getControlDirective(tNode, lView);
   if (!control) {
     return;
   }
 
-  // TODO: cache the custom control component index or instance for reuse.
-  // TODO: cache the control model name for reuse.
+  // TODO(https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274):
+  // * cache the custom control component index or instance for reuse.
+  // * cache the control model name for reuse.
   const customControl = getCustomControlComponent(tNode);
   if (customControl) {
     const [componentIndex, modelName] = customControl;
@@ -51,7 +53,7 @@ export function ɵɵcontrolCreate(): void {
     listenToNativeControl(lView, tNode, control);
   } else {
     // For example, user wrote <div [control]="f">.
-    // TODO: test this.
+    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860276
     const tagName = tNode.value;
     throw new RuntimeError(
       RuntimeErrorCode.INVALID_CONTROL_HOST,
@@ -86,7 +88,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'control', bindingIndex);
   }
 
-  // TODO: only run if this is really a control binding determine in the create pass.
+  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+  // * only run if this is really a control binding determine in the create pass.
   const control = getControlDirective(tNode, lView);
   if (!control) {
     return;
@@ -168,7 +171,8 @@ function getCustomControlComponent(tNode: TNode): [number, ControlModelName] | u
   if (hasModelInput(componentDef, 'checked')) {
     return [componentIndex, 'checked'];
   }
-  // TODO: should we check that any additional field state inputs are signal based?
+  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861022
+  // * should we check that any additional field state inputs are signal based?
   return;
 }
 
@@ -286,7 +290,7 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
   );
 
   const blurListener = () => {
-    // TODO: test this
+    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860538
     control.state().markAsTouched();
   };
   listenToDomEvent(
@@ -319,9 +323,10 @@ function updateCustomControl(
   const component = lView[componentIndex];
   const componentDef = tView.data[componentIndex] as ComponentDef<{}>;
   const state = control.state();
-  // TODO: check if bindings changed before writing
+  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+  // * check if bindings changed before writing.
+  // * cache which inputs exist.
   writeToDirectiveInput(componentDef, component, modelName, state.value());
-  // TODO: cache which inputs exist.
   maybeWriteToDirectiveInput(componentDef, component, 'errors', state.errors);
   maybeWriteToDirectiveInput(componentDef, component, 'disabled', state.disabled);
   maybeWriteToDirectiveInput(componentDef, component, 'disabledReasons', state.disabledReasons);
@@ -366,14 +371,16 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   const renderer = lView[RENDERER];
   const state = control.state();
 
-  // TODO: check if bindings changed before writing
+  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+  // * check if bindings changed before writing.
   setNativeControlValue(input, state.value());
   renderer.setAttribute(input, 'name', state.name());
   setBooleanAttribute(renderer, input, 'disable', state.disabled());
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
   setBooleanAttribute(renderer, input, 'required', state.required());
 
-  // TODO: use tag and type attribute to determine which of these properties to bind.
+  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+  // * use tag and type attribute to determine which of these properties to bind.
   setOptionalAttribute(renderer, input, 'max', state.max());
   setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
   setOptionalAttribute(renderer, input, 'min', state.min());
