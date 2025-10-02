@@ -136,10 +136,10 @@ Either directly install the "Eclipse IDE for Web and JavaScript developers" pack
 The Angular Language Service uses the tsserver, which doesn't follow the LSP specifications exactly. Therefore if you are using neovim or vim with JavaScript or TypeScript or Angular you may find that [Conquer of Completion](https://github.com/neoclide/coc.nvim) (COC) has the fullest implementation of the Angular Language Service and the tsserver. This is because COC ports the VSCode implementation of the tsserver which accommodates the tsserver's implementation.
 
 1. [Setup coc.nvim](https://github.com/neoclide/coc.nvim)
-   
+
 2. Configure the Angular Language Service
 
-    Once installed run the `CocConfig` vim command line command to open the config file `coc-settings.json` and add the angular property. 
+    Once installed run the `CocConfig` vim command line command to open the config file `coc-settings.json` and add the angular property.
 
     Make sure to substitute the correct paths to your global `node_modules` such that they go to directories which contain `tsserver` and the `ngserver` respectively.
 
