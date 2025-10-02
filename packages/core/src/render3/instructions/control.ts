@@ -335,6 +335,7 @@ function updateCustomControl(
   maybeWriteToDirectiveInput(componentDef, component, 'min', state.max);
   maybeWriteToDirectiveInput(componentDef, component, 'minLength', state.minLength);
   maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
+  maybeWriteToDirectiveInput(componentDef, component, 'pattern', state.pattern);
   maybeWriteToDirectiveInput(componentDef, component, 'readOnly', state.readonly);
   maybeWriteToDirectiveInput(componentDef, component, 'required', state.required);
   maybeWriteToDirectiveInput(componentDef, component, 'touched', state.touched);

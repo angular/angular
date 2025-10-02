@@ -84,6 +84,11 @@ export interface ɵFieldState<T> {
   readonly name: Signal<string>;
 
   /**
+   * A signal indicating the patterns the field must match.
+   */
+  readonly pattern: Signal<readonly RegExp[]>;
+
+  /**
    * A signal indicating whether the field is currently readonly.
    */
   readonly readonly: Signal<boolean>;

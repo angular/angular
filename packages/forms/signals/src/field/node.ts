@@ -16,6 +16,7 @@ import {
   MIN_LENGTH,
   Property,
   REQUIRED,
+  PATTERN,
 } from '../api/property';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
@@ -159,6 +160,10 @@ export class FieldNode implements FieldState<unknown> {
 
   get minLength(): Signal<number | undefined> {
     return this.property(MIN_LENGTH);
+  }
+
+  get pattern(): Signal<readonly RegExp[]> {
+    return this.property(PATTERN);
   }
 
   get required(): Signal<boolean> {
