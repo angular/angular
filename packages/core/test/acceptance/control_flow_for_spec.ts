@@ -1112,7 +1112,6 @@ describe('control flow - for', () => {
 
       @Component({
         template: `@for (item of items; track item) {{{item}}|}`,
-        standalone: false,
         changeDetection: ChangeDetectionStrategy.OnPush,
       })
       class TestComponent {
@@ -1140,7 +1139,6 @@ describe('control flow - for', () => {
 
     @Component({
       template: `@for (item of items; track $index) {{{item}}|}`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class TestComponent {
@@ -1170,7 +1168,6 @@ describe('control flow - for', () => {
 
     @Component({
       template: `@for (item of items; track $index) {{{item}}|}`,
-      standalone: false,
       changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class TestComponent {
