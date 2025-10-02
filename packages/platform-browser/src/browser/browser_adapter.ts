@@ -56,18 +56,16 @@ export class BrowserDomAdapter extends DomAdapter {
     return node instanceof DocumentFragment;
   }
 
-  /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
-  override getGlobalEventTarget(doc: Document, target: string): EventTarget | null {
-    if (target === 'window') {
-      return window;
-    }
-    if (target === 'document') {
-      return doc;
-    }
-    if (target === 'body') {
+  override getGlobalEventTarget(doc: Document, key: string): EventTarget | null {
+    if (key === 'body') {
       return doc.body;
     }
-    return null;
+
+    const target = key
+      .split('.')
+      .reduce((obj, prop) => (obj?.[prop]), doc.defaultView as any);
+
+    return 'addEventListener' in target ? target : null;
   }
   override getBaseHref(doc: Document): string | null {
     const href = getBaseElementHref();
