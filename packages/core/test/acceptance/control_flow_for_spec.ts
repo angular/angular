@@ -8,6 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Directive,
@@ -17,6 +18,7 @@ import {
   Pipe,
   PipeTransform,
   provideZoneChangeDetection,
+  signal,
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
@@ -1102,5 +1104,62 @@ describe('control flow - for', () => {
 
       expect(fixture.nativeElement.textContent).toBe('Main: Before  After Slot: 3');
     });
+  });
+
+  describe('reactivity', () => {
+    it('should do a reactive read of length', () => {
+      const len = signal(2);
+
+      @Component({
+        template: `@for (item of items; track item) {{{item}}|}`,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class TestComponent {
+        items = new Proxy([1, 2, 3, 4, 5], {
+          get(target, prop) {
+            if (prop === 'length') {
+              return len();
+            }
+            return target[prop as keyof number[]];
+          },
+        });
+      }
+
+      const fixture = TestBed.createComponent(TestComponent);
+      TestBed.tick();
+      expect(fixture.nativeElement.textContent).toBe('1|2|');
+      len.set(4);
+      TestBed.tick();
+      expect(fixture.nativeElement.textContent).toBe('1|2|3|4|');
+    });
+  });
+
+  it('should do a reactive read of iterator', () => {
+    const iter = signal(() => [1, 2][Symbol.iterator]());
+
+    @Component({
+      template: `@for (item of items; track $index) {{{item}}|}`,
+      changeDetection: ChangeDetectionStrategy.OnPush,
+    })
+    class TestComponent {
+      items = new Proxy(
+        {},
+        {
+          get(target, prop) {
+            if (prop === Symbol.iterator) {
+              return iter();
+            }
+            return target[prop as keyof {}];
+          },
+        },
+      );
+    }
+
+    const fixture = TestBed.createComponent(TestComponent);
+    TestBed.tick();
+    expect(fixture.nativeElement.textContent).toBe('1|2|');
+    iter.set(() => [1, 2, 3, 4][Symbol.iterator]());
+    TestBed.tick();
+    expect(fixture.nativeElement.textContent).toBe('1|2|3|4|');
   });
 });
