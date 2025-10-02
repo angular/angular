@@ -39,7 +39,16 @@ import {
   privateSetComponentInput as privateSetInputSignal,
 } from '../util/private';
 import {FormCheckboxControl, FormUiControl, FormValueControl} from './control';
-import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} from './property';
+import {
+  AggregateProperty,
+  FLOATING_POINT,
+  MAX,
+  MAX_LENGTH,
+  MIN,
+  MIN_LENGTH,
+  PATTERN,
+  REQUIRED,
+} from './property';
 import type {Field} from './types';
 
 /**
@@ -255,6 +264,10 @@ export class Control<T> {
     this.maybeSynchronize(this.propertySource(MIN_LENGTH), this.withAttribute(input, 'minLength'));
     this.maybeSynchronize(this.propertySource(MAX), this.withAttribute(input, 'max'));
     this.maybeSynchronize(this.propertySource(MAX_LENGTH), this.withAttribute(input, 'maxLength'));
+    this.maybeSynchronize(
+      () => (this.propertySource(FLOATING_POINT)() ? 'decimal' : 'numeric'),
+      this.withAttribute(input, 'inputmode'),
+    );
 
     switch (inputType) {
       case 'checkbox':
