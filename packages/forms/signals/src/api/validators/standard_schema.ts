@@ -11,7 +11,7 @@ import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
 import {property, validateTree} from '../logic';
-import {Field, FieldPath} from '../types';
+import {FieldPath, FieldTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
 /**
@@ -101,13 +101,13 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
  * @returns A `ValidationError` representing the issue.
  */
 function standardIssueToFormTreeError(
-  field: Field<unknown>,
+  field: FieldTree<unknown>,
   issue: StandardSchemaV1.Issue,
 ): StandardSchemaValidationError {
-  let target = field as Field<Record<PropertyKey, unknown>>;
+  let target = field as FieldTree<Record<PropertyKey, unknown>>;
   for (const pathPart of issue.path ?? []) {
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
-    target = target[pathKey] as Field<Record<PropertyKey, unknown>>;
+    target = target[pathKey] as FieldTree<Record<PropertyKey, unknown>>;
   }
   return addDefaultField(standardSchemaError(issue), target);
 }

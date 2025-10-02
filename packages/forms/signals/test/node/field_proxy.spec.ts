@@ -10,7 +10,7 @@ import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {form} from '../../public_api';
 
-describe('Field proxy', () => {
+describe('FieldTree proxy', () => {
   it('should not forward methods through the proxy', () => {
     const f = form(signal(new Date()), {injector: TestBed.inject(Injector)});
     // @ts-expect-error

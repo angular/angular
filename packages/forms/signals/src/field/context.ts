@@ -7,7 +7,7 @@
  */
 
 import {computed, Signal, untracked, WritableSignal} from '@angular/core';
-import {Field, FieldContext, FieldPath, FieldState} from '../api/types';
+import {FieldContext, FieldPath, FieldState, FieldTree} from '../api/types';
 import {FieldPathNode} from '../schema/path_node';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
@@ -25,7 +25,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
    * actually change, as they only place we currently track fields moving within the parent
    * structure is for arrays, and paths do not currently support array indexing.
    */
-  private readonly cache = new WeakMap<FieldPath<unknown>, Signal<Field<unknown>>>();
+  private readonly cache = new WeakMap<FieldPath<unknown>, Signal<FieldTree<unknown>>>();
 
   constructor(
     /** The field node this context corresponds to. */
@@ -37,9 +37,9 @@ export class FieldNodeContext implements FieldContext<unknown> {
    * @param target The path to resolve
    * @returns The field corresponding to the target path.
    */
-  private resolve<U>(target: FieldPath<U>): Field<U> {
+  private resolve<U>(target: FieldPath<U>): FieldTree<U> {
     if (!this.cache.has(target)) {
-      const resolver = computed<Field<unknown>>(() => {
+      const resolver = computed<FieldTree<unknown>>(() => {
         const targetPathNode = FieldPathNode.unwrapFieldPath(target);
 
         // First, find the field where the root our target path was merged in.
@@ -77,10 +77,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
 
       this.cache.set(target, resolver);
     }
-    return this.cache.get(target)!() as Field<U>;
+    return this.cache.get(target)!() as FieldTree<U>;
   }
 
-  get field(): Field<unknown> {
+  get field(): FieldTree<unknown> {
     return this.node.fieldProxy;
   }
 

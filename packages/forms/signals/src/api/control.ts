@@ -104,14 +104,14 @@ export interface FormUiControl {
 }
 
 /**
- * A contract for a form control that edits a `Field` of type `TValue`. Any component that
+ * A contract for a form control that edits a `FieldTree` of type `TValue`. Any component that
  * implements this contract can be used with the `Control` directive.
  *
  * Many of the properties declared on this contract are optional. They do not need to be
  * implemented, but if they are will be kept in sync with the field state of the field bound to the
  * `Control` directive.
  *
- * @template TValue The type of `Field` that the implementing component can edit.
+ * @template TValue The type of `FieldTree` that the implementing component can edit.
  *
  * @category control
  * @experimental 21.0.0
@@ -120,7 +120,7 @@ export interface FormValueControl<TValue> extends FormUiControl {
   /**
    * The value is the only required property in this contract. A component that wants to integrate
    * with the `Control` directive via this contract, *must* provide a `model()` that will be kept in
-   * sync with the value of the bound `Field`.
+   * sync with the value of the bound `FieldTree`.
    */
   readonly value: ModelSignal<TValue>;
   // TODO: We currently require that a `checked` input not be present, as we may want to introduce a
@@ -135,7 +135,7 @@ export interface FormValueControl<TValue> extends FormUiControl {
 }
 
 /**
- * A contract for a form control that edits a boolean checkbox `Field`. Any component that
+ * A contract for a form control that edits a boolean checkbox `FieldTree`. Any component that
  * implements this contract can be used with the `Control` directive.
  *
  * Many of the properties declared on this contract are optional. They do not need to be
@@ -149,7 +149,7 @@ export interface FormCheckboxControl extends FormUiControl {
   /**
    * The checked is the only required property in this contract. A component that wants to integrate
    * with the `Control` directive, *must* provide a `model()` that will be kept in sync with the
-   * value of the bound `Field`.
+   * value of the bound `FieldTree`.
    */
   readonly checked: ModelSignal<boolean>;
   // TODO: maybe this doesn't have to be strictly `undefined`? It just can't be a model signal.
