@@ -374,7 +374,6 @@ describe('Animation', () => {
     it('should be host bindable', fakeAsync(() => {
       @Component({
         selector: 'fade-cmp',
-        styles: styles,
         host: {'animate.leave': 'fade'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
@@ -383,6 +382,7 @@ describe('Animation', () => {
 
       @Component({
         selector: 'test-cmp',
+        styles: styles,
         imports: [FadeComponent],
         template: '@if (show()) { <fade-cmp /> }',
         encapsulation: ViewEncapsulation.None,
@@ -400,6 +400,7 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
@@ -413,7 +414,6 @@ describe('Animation', () => {
     it('should be host bindable with brackets', fakeAsync(() => {
       @Component({
         selector: 'fade-cmp',
-        styles: styles,
         host: {'[animate.leave]': 'fade()'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
@@ -424,6 +424,7 @@ describe('Animation', () => {
 
       @Component({
         selector: 'test-cmp',
+        styles: styles,
         imports: [FadeComponent],
         template: '@if (show()) { <fade-cmp /> }',
         encapsulation: ViewEncapsulation.None,
@@ -441,6 +442,7 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
@@ -519,7 +521,6 @@ describe('Animation', () => {
       `;
       @Component({
         selector: 'child-cmp',
-        styles: multiple,
         host: {'[animate.leave]': 'slide()'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
@@ -670,7 +671,6 @@ describe('Animation', () => {
       `;
       @Component({
         selector: 'child-cmp',
-        styles: multiple,
         host: {'animate.leave': 'slide-out'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
@@ -1203,10 +1203,19 @@ describe('Animation', () => {
 
     it('should be host bindable', fakeAsync(() => {
       @Component({
-        selector: 'test-cmp',
-        styles: styles,
+        selector: 'child-cmp',
         host: {'animate.enter': 'slide-in'},
         template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {}
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        host: {'animate.enter': 'slide-in'},
+        template: '<child-cmp />',
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {}
@@ -1227,15 +1236,23 @@ describe('Animation', () => {
 
     it('should be host bindable with brackets', fakeAsync(() => {
       @Component({
-        selector: 'test-cmp',
-        styles: styles,
+        selector: 'child-cmp',
         host: {'[animate.enter]': 'slideIn()'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
       })
-      class TestComponent {
+      class ChildComponent {
         slideIn = signal('slide-in');
       }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        template: '<child-cmp />',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {}
       TestBed.configureTestingModule({animationsEnabled: true});
 
       const fixture = TestBed.createComponent(TestComponent);
@@ -1254,10 +1271,24 @@ describe('Animation', () => {
     it('should be host bindable with events', fakeAsync(() => {
       const slideInCalled = jasmine.createSpy('slideInCalled');
       @Component({
-        selector: 'test-cmp',
-        styles: styles,
+        selector: 'child-cmp',
         host: {'(animate.enter)': 'slideIn($event)'},
         template: '<p>I should fade</p>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class ChildComponent {
+        slideIn(event: AnimationCallbackEvent) {
+          slideInCalled();
+          event.target.classList.add('slide-in');
+          event.animationComplete();
+        }
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        imports: [ChildComponent],
+        template: '<child-cmp />',
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
@@ -1277,7 +1308,6 @@ describe('Animation', () => {
     it('should compose class list when host binding and regular binding', fakeAsync(() => {
       @Component({
         selector: 'child-cmp',
-        styles: styles,
         host: {'[animate.enter]': 'clazz'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,
@@ -1320,7 +1350,6 @@ describe('Animation', () => {
     it('should compose class list when host binding a string and regular class strings', fakeAsync(() => {
       @Component({
         selector: 'child-cmp',
-        styles: styles,
         host: {'animate.enter': 'slide-in'},
         template: '<p>I should fade</p>',
         encapsulation: ViewEncapsulation.None,

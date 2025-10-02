@@ -319,15 +319,18 @@ function animateLeaveClassRunner(
     cleanupFns.push(renderer.listen(el, 'animationend', handleOutAnimationEnd));
     cleanupFns.push(renderer.listen(el, 'transitionend', handleOutAnimationEnd));
   });
+
   trackLeavingNodes(tNode, el);
+
   for (const item of classList) {
     renderer.addClass(el, item);
   }
-  // In the case that the classes added have no animations, we need to remove
-  // the element right away. This could happen because someone is intentionally
-  // preventing an animation via selector specificity.
+
   ngZone.runOutsideAngular(() => {
     requestAnimationFrame(() => {
+      // In the case that the classes added have no animations, we need to remove
+      // the element right away. This could happen because someone is intentionally
+      // preventing an animation via selector specificity.
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
         clearLeavingNodes(tNode, el);
