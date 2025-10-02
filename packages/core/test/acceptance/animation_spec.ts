@@ -400,6 +400,7 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
@@ -441,6 +442,7 @@ describe('Animation', () => {
       expect(fixture.nativeElement.outerHTML).not.toContain('class="fade"');
       cmp.show.set(false);
       fixture.detectChanges();
+      tickAnimationFrames(1);
       expect(cmp.show()).toBeFalsy();
       expect(fixture.nativeElement.outerHTML).toContain('class="fade"');
       fixture.detectChanges();
