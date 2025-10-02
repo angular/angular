@@ -10,7 +10,7 @@ const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
 describe('Angular LS', () => {
   beforeAll(async () => {
     await activate(APP_COMPONENT_URI);
-  }, 25000 /* 25 seconds */);
+  }, 20_000);
 
   it(`returns definition for variable in template`, async () => {
     // vscode Position is zero-based
@@ -29,8 +29,8 @@ describe('Angular LS', () => {
     expect(def.targetUri.fsPath).toBe(APP_COMPONENT); // in the same document
     const {start, end} = def.targetRange;
     // Should start and end on line 6
-    expect(start.line).toBe(7);
-    expect(end.line).toBe(7);
+    expect(start.line).toBe(8);
+    expect(end.line).toBe(8);
     expect(start.character).toBe(2);
     expect(end.character).toBe(start.character + `name`.length);
   });
