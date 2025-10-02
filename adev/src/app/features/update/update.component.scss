@@ -126,10 +126,9 @@ h4 {
 
 .adev-recommendation-item {
   display: flex;
-  align-items: center;
 
-  > div {
-    margin-inline-start: 2rem;
+  mat-checkbox {
+    margin-top: 0.5rem;
   }
 
   // Code blocks are generable from the markdown, we need to opt-out of the scoping
