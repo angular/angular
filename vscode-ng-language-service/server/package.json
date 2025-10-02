@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@angular/language-service": "21.0.0-next.5",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
