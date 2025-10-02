@@ -3,18 +3,20 @@ load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
 
 ts_project(
     name = "e2e",
+    testonly = True,
     srcs = glob(["*.ts"]),
     declaration = True,
     source_map = True,
-    tsconfig = "//vscode-ng-language-service/integration:tsconfig",
+    tsconfig = "//vscode-ng-language-service:tsconfig",
     visibility = [
         "//vscode-ng-language-service/integration:__subpackages__",
     ],
     deps = [
         "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/jasmine-reporters",
         "//vscode-ng-language-service:node_modules/@types/node",
         "//vscode-ng-language-service:node_modules/@types/vscode",
-        "//vscode-ng-language-service:node_modules/vscode-test",
+        "//vscode-ng-language-service:node_modules/@vscode/test-electron",
         "//vscode-ng-language-service/integration",
     ],
 )
@@ -23,21 +25,23 @@ js_test(
     name = "test",
     data = [
         ":e2e",
-        "//vscode-ng-language-service:npm",
-        "//vscode-ng-language-service/integration",
-        "//vscode-ng-language-service/integration/project",
-        # Depend on //:node_modules/jasmine as a temporary work-around for jasmine escaping its
-        # runfiles likely due to esm import issue in rules_js https://github.com/aspect-build/rules_js/issues/362
         "//vscode-ng-language-service:node_modules/jasmine",
+        "//vscode-ng-language-service:node_modules/jasmine-reporters",
+        "//vscode-ng-language-service:node_modules/typescript",
+        "//vscode-ng-language-service:node_modules/xvfb",
+        "//vscode-ng-language-service:npm",
+        "//vscode-ng-language-service/integration/project",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
     ],
     entry_point = ":index.js",
     # This test downloads vscode & installs it which is not allowed in the sandbox
     # due to file system protection. It is tagged local so it runs outside of
     # the sandbox. It would need some redesign to allow for sandbox execution.
-    # Tagged manual so that `bazel test //...` doesn't run it automatically.
     tags = [
         "e2e",
-        "local",
-        "manual",
+        "no-remote-exec",
+        "no-sandbox",
+        "requires-network",
     ],
 )
