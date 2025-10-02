@@ -8,8 +8,13 @@
 
 import 'zone.js';
 
-import {platformBrowser} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
+import {provideRouter} from '@angular/router';
+import {ActivatedRouteComponent} from './activated_route_component';
 
-import {AppModule} from './module';
+const appConfig: ApplicationConfig = {
+  providers: [provideRouter([]), provideZoneChangeDetection()],
+};
 
-platformBrowser().bootstrapModule(AppModule);
+bootstrapApplication(ActivatedRouteComponent, appConfig).catch((err) => console.error(err));

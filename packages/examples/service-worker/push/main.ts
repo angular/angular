@@ -8,8 +8,12 @@
 
 import 'zone.js';
 
-import {platformBrowser} from '@angular/platform-browser';
+import {bootstrapApplication} from '@angular/platform-browser';
+import {AppComponent} from './service_worker_component';
+import {ApplicationConfig, provideZoneChangeDetection} from '@angular/core';
 
-import {AppModule} from './module';
+const appConfig: ApplicationConfig = {
+  providers: [provideZoneChangeDetection()],
+};
 
-platformBrowser().bootstrapModule(AppModule);
+bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));

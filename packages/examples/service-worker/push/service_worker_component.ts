@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 // tslint:disable: no-duplicate-imports
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Component} from '@angular/core';
 import {ServiceWorkerModule} from '@angular/service-worker';
 // #docregion inject-sw-push
 import {SwPush} from '@angular/service-worker';
@@ -18,8 +17,8 @@ const PUBLIC_VAPID_KEY_OF_SERVER = '...';
 
 @Component({
   selector: 'example-app',
+  imports: [ServiceWorkerModule.register('ngsw-worker.js')],
   template: 'SW enabled: {{ swPush.isEnabled }}',
-  standalone: false,
 })
 // #docregion inject-sw-push
 export class AppComponent {
@@ -49,10 +48,3 @@ export class AppComponent {
   // #docregion inject-sw-push
 }
 // #enddocregion inject-sw-push
-
-@NgModule({
-  bootstrap: [AppComponent],
-  declarations: [AppComponent],
-  imports: [BrowserModule, ServiceWorkerModule.register('ngsw-worker.js')],
-})
-export class AppModule {}
