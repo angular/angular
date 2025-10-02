@@ -11,7 +11,7 @@ import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
 
 /**
- * Proxy handler which implements `Field<T>` on top of `FieldNode`.
+ * Proxy handler which implements `FieldTree<T>` on top of `FieldNode`.
  */
 export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
   get(getTgt: () => FieldNode, p: string | symbol) {
@@ -20,8 +20,8 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
     // First, check whether the requested property is a defined child node of this node.
     const child = tgt.structure.getChild(p);
     if (child !== undefined) {
-      // If so, return the child node's `Field` proxy, allowing the developer to continue navigating
-      // the form structure.
+      // If so, return the child node's `FieldTree` proxy, allowing the developer to continue
+      // navigating the form structure.
       return child.fieldProxy;
     }
 

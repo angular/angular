@@ -83,7 +83,7 @@ export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
  */
 export interface DisabledReason {
   /** The field that is disabled. */
-  readonly field: Field<unknown>;
+  readonly field: FieldTree<unknown>;
   /** A user-facing message describing the reason for the disablement. */
   readonly message?: string;
 }
@@ -166,11 +166,11 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
   | 'pending';
 
 /**
- * An object that represents a single field in a form. This includes both primitive value fields
+ * An object that represents a tree of fields in a form. This includes both primitive value fields
  * (e.g. fields that contain a `string` or `number`), as well as "grouping fields" that contain
- * sub-fields. `Field` objects are arranged in a tree whose structure mimics the structure of the
- * underlying data. For example a `Field<{x: number}>` has a property `x` which contains a
- * `Field<number>`. To access the state associated with a field, call it as a function.
+ * sub-fields. `FieldTree` objects are arranged in a tree whose structure mimics the structure of the
+ * underlying data. For example a `FieldTree<{x: number}>` has a property `x` which contains a
+ * `FieldTree<number>`. To access the state associated with a field, call it as a function.
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
@@ -178,25 +178,25 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
  * @category types
  * @experimental 21.0.0
  */
-export type Field<TValue, TKey extends string | number = string | number> = (() => FieldState<
+export type FieldTree<TValue, TKey extends string | number = string | number> = (() => FieldState<
   TValue,
   TKey
 >) &
   (TValue extends Array<infer U>
-    ? ReadonlyArrayLike<MaybeField<U, number>>
+    ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
     : TValue extends Record<string, any>
       ? Subfields<TValue>
       : unknown);
 
 /**
- * The sub-fields that a user can navigate to from a `Field<TValue>`.
+ * The sub-fields that a user can navigate to from a `FieldTree<TValue>`.
  *
  * @template TValue The type of the data which the parent field is wrapped around.
  *
  * @experimental 21.0.0
  */
 export type Subfields<TValue> = {
-  readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeField<
+  readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeFieldTree<
     TValue[K],
     string
   >;
@@ -215,23 +215,23 @@ export type ReadonlyArrayLike<T> = Pick<
 >;
 
 /**
- * Helper type for defining `Field`. Given a type `TValue` that may include `undefined`, it extracts
- * the `undefined` outside the `Field` type.
+ * Helper type for defining `FieldTree`. Given a type `TValue` that may include `undefined`, it extracts
+ * the `undefined` outside the `FieldTree` type.
  *
  * For example `MaybeField<{a: number} | undefined, TKey>` would be equivalent to
- * `undefined | Field<{a: number}, TKey>`.
+ * `undefined | FieldTree<{a: number}, TKey>`.
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TKey The type of the property key which this field resides under in its parent.
  *
  * @experimental 21.0.0
  */
-export type MaybeField<TValue, TKey extends string | number = string | number> =
+export type MaybeFieldTree<TValue, TKey extends string | number = string | number> =
   | (TValue & undefined)
-  | Field<Exclude<TValue, undefined>, TKey>;
+  | FieldTree<Exclude<TValue, undefined>, TKey>;
 
 /**
- * Contains all of the state (e.g. value, statuses, etc.) associated with a `Field`, exposed as
+ * Contains all of the state (e.g. value, statuses, etc.) associated with a `FieldTree`, exposed as
  * signals.
  *
  * @category structure
@@ -369,7 +369,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 }
 
 /**
- * An object that represents a location in the `Field` tree structure and is used to bind logic to a
+ * An object that represents a location in the `FieldTree` tree structure and is used to bind logic to a
  * particular part of the structure prior to the creation of the form. Because the `FieldPath`
  * exists prior to the form's creation, it cannot be used to access any of the field state.
  *
@@ -392,7 +392,7 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
  * extracts the `undefined` outside the `FieldPath` type.
  *
  * For example `MaybeFieldPath<{a: number} | undefined, PathKind.Child>` would be equivalent to
- * `undefined | Field<{a: number}, PathKind.child>`.
+ * `undefined | FieldTree<{a: number}, PathKind.child>`.
  *
  * @template TValue The type of the data which the field is wrapped around.
  * @template TPathKind The kind of path (root field, child field, or item of an array)
@@ -532,13 +532,13 @@ export interface RootFieldContext<TValue> {
   /** The state of the current field. */
   readonly state: FieldState<TValue>;
   /** The current field. */
-  readonly field: Field<TValue>;
+  readonly field: FieldTree<TValue>;
   /** Gets the value of the field represented by the given path. */
   readonly valueOf: <P>(p: FieldPath<P>) => P;
   /** Gets the state of the field represented by the given path. */
   readonly stateOf: <P>(p: FieldPath<P>) => FieldState<P>;
   /** Gets the field represented by the given path. */
-  readonly fieldOf: <P>(p: FieldPath<P>) => Field<P>;
+  readonly fieldOf: <P>(p: FieldPath<P>) => FieldTree<P>;
 }
 
 /**

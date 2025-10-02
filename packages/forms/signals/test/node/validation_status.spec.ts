@@ -10,7 +10,7 @@ import {ApplicationRef, Injector, Resource, resource, signal} from '@angular/cor
 import {TestBed} from '@angular/core/testing';
 import {
   customError,
-  Field,
+  FieldTree,
   form,
   NgValidationError,
   patternError,
@@ -28,7 +28,7 @@ function validateValue(value: string): WithoutField<ValidationError>[] {
 
 function validateValueForChild(
   value: string,
-  field: Field<unknown> | undefined,
+  field: FieldTree<unknown> | undefined,
 ): ValidationError[] {
   return value === 'INVALID' ? [customError({field})] : [];
 }
