@@ -1,3 +1,23 @@
+<a name="20.3.3"></a>
+# 20.3.3 (2025-10-02)
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f51ab32fb3](https://github.com/angular/angular/commit/f51ab32fb3000ae34c077b049ff2f7b8e3e22d14) | fix | recover template literals with broken expressions ([#64150](https://github.com/angular/angular/pull/64150)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [542cd0019a](https://github.com/angular/angular/commit/542cd0019aa509e399282ccf7cb5fa6208cef70e) | fix | do not rename ARIA property bindings to attributes ([#64089](https://github.com/angular/angular/pull/64089)) |
+| [0e928fbc4a](https://github.com/angular/angular/commit/0e928fbc4a351303c4ce081a679f4a38c0acd5e6) | fix | Fixes animations in conjunction with content projection ([#63776](https://github.com/angular/angular/pull/63776)) |
+| [e5157bd933](https://github.com/angular/angular/commit/e5157bd933c41836fb431659f42dfb4cdbe0d2d1) | fix | prevents unintended early termination of leave animations and hoisting ([#64088](https://github.com/angular/angular/pull/64088)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1710cbd7d4](https://github.com/angular/angular/commit/1710cbd7d484ccd5e9ab39b95a44e2d222f4262d) | fix | handle shorthand property declarations in NgModule ([#64160](https://github.com/angular/angular/pull/64160)) |
+| [77b6305a4b](https://github.com/angular/angular/commit/77b6305a4b5db88f9c1130acf80095b502a0eca1) | fix | skip migration for inputs with 'this' references ([#64142](https://github.com/angular/angular/pull/64142)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.5"></a>
 # 21.0.0-next.5 (2025-09-24)
 ### common
