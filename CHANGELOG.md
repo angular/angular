@@ -1,3 +1,45 @@
+<a name="21.0.0-next.6"></a>
+# 21.0.0-next.6 (2025-10-02)
+## Breaking Changes
+### elements
+- Fix signal input getter behavior in custom elements.
+  
+  Before this change, signal inputs in custom elements required function calls to access their values (`elementRef.newInput()`), while decorator inputs were accessed directly (`elementRef.oldInput`). This inconsistency caused confusion and typing difficulties.
+  
+  The getter behavior has been standardized so signal inputs can now be accessed directly, matching the behavior of decorator inputs:
+  
+  Before:
+  - Decorator Input: `elementRef.oldInput`
+  - Signal Input: `elementRef.newInput()`
+  
+  After:
+  - Decorator Input: `elementRef.oldInput`
+  - Signal Input: `elementRef.newInput`
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [99c5269ee8](https://github.com/angular/angular/commit/99c5269ee86bbdfa9026c3a69d21afd6d46c668b) | feat |  Support of optional keys for the KeyValue pipe ([#48814](https://github.com/angular/angular/pull/48814)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [159be56709](https://github.com/angular/angular/commit/159be56709f34e6f996b92929788e49001e3a5d5) | fix | recover template literals with broken expressions ([#64150](https://github.com/angular/angular/pull/64150)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [1cb16fddb5](https://github.com/angular/angular/commit/1cb16fddb58419d3bc2a5855471c67635eec7353) | fix | Fixes animations in conjunction with content projection ([#63776](https://github.com/angular/angular/pull/63776)) |
+| [8a0c9ca8be](https://github.com/angular/angular/commit/8a0c9ca8bee3c3c5ff4a79980a501312b3f94488) | fix | prevents unintended early termination of leave animations and hoisting ([#64088](https://github.com/angular/angular/pull/64088)) |
+### elements
+| Commit | Type | Description |
+| -- | -- | -- |
+| [be0455adda](https://github.com/angular/angular/commit/be0455adda7d92f741105b3599e7922f099cc024) | fix | return value on signal input getter ([#62113](https://github.com/angular/angular/pull/62113)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [51a0b59389](https://github.com/angular/angular/commit/51a0b593898f2d1afd14817405695092ae39d5ea) | fix | handle shorthand property declarations in NgModule ([#64160](https://github.com/angular/angular/pull/64160)) |
+| [31bc9e4111](https://github.com/angular/angular/commit/31bc9e41116a87af37809bd45514d5ec7969d50c) | fix | skip migration for inputs with 'this' references ([#64142](https://github.com/angular/angular/pull/64142)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.3"></a>
 # 20.3.3 (2025-10-02)
 ### compiler
