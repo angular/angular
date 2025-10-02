@@ -16,7 +16,7 @@ async function main() {
 
   try {
     xvfb.start();
-    const result = await runTests({
+    const exitCode = await runTests({
       // Keep version in sync with vscode engine version in package.json
       version: '1.74.3',
       extensionDevelopmentPath: EXT_DEVELOPMENT_PATH,
@@ -35,12 +35,12 @@ async function main() {
       ],
     });
 
-    if (result !== 0) {
-      process.exit(result);
+    if (exitCode !== 0) {
+      process.exitCode = exitCode;
     }
   } catch (err) {
     console.error('Failed to run tests', err);
-    process.exit(1);
+    process.exitCode = 1;
   } finally {
     xvfb.stop();
   }
