@@ -36,7 +36,7 @@
     "@types/dom-navigation": "1.0.6",
     "@types/jasmine": "5.1.9",
     "@types/jsdom": "27.0.0",
-    "@types/node": "24.6.0",
+    "@types/node": "24.6.1",
     "@typescript/vfs": "1.6.1",
     "@webcontainer/api": "1.6.1",
     "@xterm/addon-fit": "0.10.0",
