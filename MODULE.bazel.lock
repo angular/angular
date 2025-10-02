@@ -533,7 +533,7 @@
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
         "bzlTransitiveDigest": "9IJp6IlB/FMHFBJe4MX/DQM4zi3oArC8yqYE/+NyPwk=",
-        "usagesDigest": "vXjWlVY215W1kYADgJxzHrW6dJgUiQbgkwqYp5ENPLc=",
+        "usagesDigest": "vNQ5vb/mICtWqce2XDJFcfdShbb+LDEFZllR5Wuep0A=",
         "recordedFileInputs": {
           "@@rules_browsers~//package.json": "84dc1ba9b1c667a25894e97218bd8f247d54f24bb694efb397a881be3c06a4c5"
         },
