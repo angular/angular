@@ -12,7 +12,9 @@ async function main() {
   const EXT_DEVELOPMENT_PATH = join(PACKAGE_ROOT, 'npm/vscode-ng-language-service/vsix_sandbox');
   const EXT_TESTS_PATH = join(PACKAGE_ROOT, 'integration', 'e2e', 'jasmine');
   const xvfb = new Xvfb();
-  const cacheDir = await mkdtemp(join(tmpdir(), 'vscode-e2e-'));
+
+  // We cannot use `TEST_TMPDIR` as it's longer than 170 characters
+  const vsCodeDataDir = await mkdtemp(join(tmpdir(), 'vscode-e2e-'));
 
   try {
     xvfb.start();
@@ -21,7 +23,8 @@ async function main() {
       version: '1.74.3',
       extensionDevelopmentPath: EXT_DEVELOPMENT_PATH,
       extensionTestsPath: EXT_TESTS_PATH,
-      cachePath: cacheDir,
+      // Avoid redownloading vscode if the test if flaky.
+      cachePath: join(tmpdir(), 'vscode-cache'),
       launchArgs: [
         PROJECT_PATH,
         // This disables all extensions except the one being tested
@@ -30,8 +33,8 @@ async function main() {
         '--no-sandbox',
         '--disable-dev-shm-usage',
         '--disable-software-rasterizer',
-        `--extensions-dir=${cacheDir}/extensions`,
-        `--user-data-dir=${cacheDir}/user-data`,
+        `--extensions-dir=${vsCodeDataDir}/extensions`,
+        `--user-data-dir=${vsCodeDataDir}/user-data`,
       ],
     });
 
