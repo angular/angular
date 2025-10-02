@@ -11,7 +11,7 @@ import {TestBed} from '@angular/core/testing';
 import {customError} from '../../public_api';
 import {disabled, validate} from '../../src/api/logic';
 import {applyEach, applyWhen, applyWhenValue, form, schema} from '../../src/api/structure';
-import type {Field, Schema} from '../../src/api/types';
+import type {FieldTree, Schema} from '../../src/api/types';
 
 interface TreeData {
   level: number;
@@ -19,11 +19,11 @@ interface TreeData {
 }
 
 function narrowed<TValue, TNarrowed extends TValue>(
-  field: Field<TValue> | undefined,
+  field: FieldTree<TValue> | undefined,
   guard: (value: TValue) => value is TNarrowed,
-): Signal<Field<TNarrowed> | undefined> {
+): Signal<FieldTree<TNarrowed> | undefined> {
   return computed(
-    () => field && (guard(field().value()) ? (field as Field<TNarrowed>) : undefined),
+    () => field && (guard(field().value()) ? (field as FieldTree<TNarrowed>) : undefined),
   );
 }
 
