@@ -8,12 +8,11 @@
 
 import {
   Directive,
+  effect,
   EmbeddedViewRef,
+  inject,
   Injector,
-  Input,
-  OnChanges,
-  SimpleChange,
-  SimpleChanges,
+  input,
   TemplateRef,
   ViewContainerRef,
 } from '@angular/core';
@@ -45,7 +44,7 @@ import {
 @Directive({
   selector: '[ngTemplateOutlet]',
 })
-export class NgTemplateOutlet<C = unknown> implements OnChanges {
+export class NgTemplateOutlet<C = unknown> {
   private _viewRef: EmbeddedViewRef<C> | null = null;
 
   /**
@@ -54,39 +53,47 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
    * declarations.
    * Using the key `$implicit` in the context object will set its value as default.
    */
-  @Input() public ngTemplateOutletContext: C | null | undefined = null;
+  public ngTemplateOutletContext = input<C | null | undefined>(null);
 
   /**
    * A string defining the template reference and optionally the context object for the template.
    */
-  @Input() public ngTemplateOutlet: TemplateRef<C> | null | undefined = null;
+  public ngTemplateOutlet = input<TemplateRef<C> | null | undefined>(null);
 
   /** Injector to be used within the embedded view. */
-  @Input() public ngTemplateOutletInjector: Injector | null | undefined = null;
+  public ngTemplateOutletInjector = input<Injector | null | undefined>(null);
 
-  constructor(private _viewContainerRef: ViewContainerRef) {}
+  private readonly _viewContainerRef = inject(ViewContainerRef);
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (this._shouldRecreateView(changes)) {
-      const viewContainerRef = this._viewContainerRef;
+  constructor() {
+    // Set up an effect to react to input changes
+    effect(() => {
+      // Track only the signals that require view recreation
+      const outlet = this.ngTemplateOutlet();
+      const injector = this.ngTemplateOutletInjector();
 
-      if (this._viewRef) {
-        viewContainerRef.remove(viewContainerRef.indexOf(this._viewRef));
+      // Reconstruct the view when outlet or injector changes
+      if (this._shouldRecreateView(outlet, injector)) {
+        const viewContainerRef = this._viewContainerRef;
+
+        if (this._viewRef) {
+          viewContainerRef.remove(viewContainerRef.indexOf(this._viewRef));
+        }
+
+        // If there is no outlet, clear the destroyed view ref.
+        if (!outlet) {
+          this._viewRef = null;
+          return;
+        }
+
+        // Create a context forward `Proxy` that will always bind to the user-specified context,
+        // without having to destroy and re-create views whenever the context changes.
+        const viewContext = this._createContextForwardProxy();
+        this._viewRef = viewContainerRef.createEmbeddedView(outlet, viewContext, {
+          injector: injector ?? undefined,
+        });
       }
-
-      // If there is no outlet, clear the destroyed view ref.
-      if (!this.ngTemplateOutlet) {
-        this._viewRef = null;
-        return;
-      }
-
-      // Create a context forward `Proxy` that will always bind to the user-specified context,
-      // without having to destroy and re-create views whenever the context changes.
-      const viewContext = this._createContextForwardProxy();
-      this._viewRef = viewContainerRef.createEmbeddedView(this.ngTemplateOutlet, viewContext, {
-        injector: this.ngTemplateOutletInjector ?? undefined,
-      });
-    }
+    });
   }
 
   /**
@@ -94,9 +101,22 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
    * - the outlet changed.
    * - the injector changed.
    */
-  private _shouldRecreateView(changes: SimpleChanges): boolean {
-    return !!changes['ngTemplateOutlet'] || !!changes['ngTemplateOutletInjector'];
+  private _shouldRecreateView(
+    outlet: TemplateRef<C> | null | undefined,
+    injector: Injector | null | undefined,
+  ): boolean {
+    // Store previous values to detect changes
+    const outletChanged = this._previousOutlet !== outlet;
+    const injectorChanged = this._previousInjector !== injector;
+
+    this._previousOutlet = outlet;
+    this._previousInjector = injector;
+
+    return outletChanged || injectorChanged;
   }
+
+  private _previousOutlet: TemplateRef<C> | null | undefined = null;
+  private _previousInjector: Injector | null | undefined = null;
 
   /**
    * For a given outlet instance, we create a proxy object that delegates
@@ -108,16 +128,18 @@ export class NgTemplateOutlet<C = unknown> implements OnChanges {
       {},
       {
         set: (_target, prop, newValue) => {
-          if (!this.ngTemplateOutletContext) {
+          const context = this.ngTemplateOutletContext();
+          if (!context) {
             return false;
           }
-          return Reflect.set(this.ngTemplateOutletContext, prop, newValue);
+          return Reflect.set(context, prop, newValue);
         },
         get: (_target, prop, receiver) => {
-          if (!this.ngTemplateOutletContext) {
+          const context = this.ngTemplateOutletContext();
+          if (!context) {
             return undefined;
           }
-          return Reflect.get(this.ngTemplateOutletContext, prop, receiver);
+          return Reflect.get(context, prop, receiver);
         },
       },
     );
