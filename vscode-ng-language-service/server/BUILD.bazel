@@ -5,6 +5,17 @@ load("@npm//:defs.bzl", "npm_link_all_packages")
 
 npm_link_all_packages(name = "node_modules")
 
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    visibility = [
+        "//vscode-ng-language-service/server:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:tsconfig",
+    ],
+)
+
 esbuild(
     name = "banner",
     config = {

@@ -4,11 +4,11 @@ load("//tools:defaults.bzl", "ts_project")
 ts_project(
     name = "e2e",
     testonly = True,
+    testonly = True,
     srcs = glob(["*.ts"]),
-    data = [
-        "//vscode-ng-language-service:node_modules/jasmine",
-        "//vscode-ng-language-service:node_modules/jasmine-reporters",
-    ],
+    declaration = True,
+    source_map = True,
+    tsconfig = "//vscode-ng-language-service:tsconfig",
     visibility = [
         "//vscode-ng-language-service/integration:__subpackages__",
     ],
@@ -18,7 +18,6 @@ ts_project(
         "//vscode-ng-language-service:node_modules/@types/node",
         "//vscode-ng-language-service:node_modules/@types/vscode",
         "//vscode-ng-language-service:node_modules/@vscode/test-electron",
-        "//vscode-ng-language-service:node_modules/xvfb",
         "//vscode-ng-language-service/integration",
     ],
 )
@@ -27,7 +26,14 @@ js_test(
     name = "test",
     data = [
         ":e2e",
-        "//vscode-ng-language-service:development_package",
+        "//vscode-ng-language-service:node_modules/jasmine",
+        "//vscode-ng-language-service:node_modules/jasmine-reporters",
+        "//vscode-ng-language-service:node_modules/typescript",
+        "//vscode-ng-language-service:node_modules/xvfb",
+        "//vscode-ng-language-service:npm",
+        "//vscode-ng-language-service/integration/project",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
+        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
     ],
     entry_point = ":index.js",
     env = {
