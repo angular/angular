@@ -9,7 +9,6 @@ ts_config(
     name = "tsconfig",
     src = "tsconfig.json",
     visibility = [
-        "//vscode-ng-language-service/integration:__subpackages__",
         "//vscode-ng-language-service/server:__subpackages__",
     ],
     deps = [
