@@ -25,6 +25,7 @@ import {
   ɵisViewDirty as isViewDirty,
   ɵmarkForRefresh as markForRefresh,
   OutputRef,
+  isSignal,
 } from '@angular/core';
 import {merge, Observable, ReplaySubject} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -185,7 +186,9 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
    */
   private resetProperties() {
     this.componentFactory.inputs.forEach((input) => {
-      this.initialInputValues.set(input.propName, this.componentRef!.instance[input.propName]);
+      let inputValue = this.getInputValue(input.propName);
+      inputValue = input.isSignal && isSignal(inputValue) ? inputValue() : inputValue;
+      this.initialInputValues.set(input.propName, inputValue);
     });
   }
 
