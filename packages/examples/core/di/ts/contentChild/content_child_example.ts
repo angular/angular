@@ -11,7 +11,6 @@ import {Component, contentChild, Directive, input, signal} from '@angular/core';
 
 @Directive({
   selector: 'pane',
-  standalone: false,
 })
 export class Pane {
   id = input.required<string>();
@@ -20,7 +19,6 @@ export class Pane {
 @Component({
   selector: 'tab',
   template: ` <div>pane: {{ pane()?.id() }}</div> `,
-  standalone: false,
 })
 export class Tab {
   pane = contentChild(Pane);
@@ -28,18 +26,18 @@ export class Tab {
 
 @Component({
   selector: 'example-app',
+  imports: [Tab, Pane],
   template: `
     <tab>
       @if(shouldShow()) {
         <pane id="1"/>
-      } @else { 
+      } @else {
         <pane id="2"/>
       }
     </tab>
 
     <button (click)="toggle()">Toggle</button>
   `,
-  standalone: false,
 })
 export class ContentChildComp {
   shouldShow = signal(true);
