@@ -71,6 +71,9 @@ expand_template_rule(
     stamp_substitutions = {
         "0.0.0-PLACEHOLDER": "{{BUILD_SCM_VERSION}}",
     },
+    substitutions = {
+        "../../dist/bin/vscode-ng-language-service/server/index.js": "./index.js",
+    },
     template = "package.json",
 )
 

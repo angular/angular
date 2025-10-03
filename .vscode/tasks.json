@@ -2,20 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "compile",
-      "group": "build",
-      "presentation": {
-        "panel": "dedicated",
-        "reveal": "never"
-      },
-      "problemMatcher": [
-        "$tsc"
-      ]
-    },
-    {
-      "type": "npm",
-      "script": "vscode:watch",
+      "type": "shell",
+      "label": "vsce: watch bundles",
+      "command": "pnpm --filter=ng-template run watch",
       "isBackground": true,
       "group": {
         "kind": "build",
@@ -36,8 +25,8 @@
     },
     {
       "type": "shell",
-      "label": "build vsix",
-      "command": "pnpm bazel build //vscode-ng-language-service:npm --config=release"
+      "label": "vsce: package",
+      "command": "pnpm --filter=ng-template run package"
     }
   ]
 }
