@@ -397,7 +397,7 @@ function runLeaveAnimationsWithCallback(
   callback: Function,
 ) {
   const animations = lView?.[ANIMATIONS];
-  if (animations == null || (animations.leave && !animations.leave.has(tNode.index)))
+  if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
     return callback(false);
 
   // this is solely for move operations to prevent leave animations from running
