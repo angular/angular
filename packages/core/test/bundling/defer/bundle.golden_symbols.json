@@ -58,6 +58,7 @@
       "shimStylesContent"
     ],
     "lazy": [
+      "DeferComponent",
       "AFTER_RENDER_SEQUENCES_TO_ADD",
       "ANIMATIONS",
       "ANIMATION_QUEUE",
@@ -746,8 +747,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }

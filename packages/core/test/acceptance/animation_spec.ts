@@ -714,6 +714,63 @@ describe('Animation', () => {
       expect(fixture.debugElement.query(By.css('child-cmp'))).toBeNull();
     }));
 
+    it('should await the longest animation when multiple transitions are present', fakeAsync(() => {
+      const multiple = `
+        .slide-out {
+          grid-template-rows: 0fr;
+          overflow: hidden;
+          opacity: 0;
+          translate: 0 -60px;
+          margin-top: -16px;
+          transition: grid-template-rows 1s ease 400ms, margin-top 1s ease 400ms,
+            opacity 400ms ease, translate 400ms ease;
+        }
+      `;
+      @Component({
+        selector: 'test-cmp',
+        styles: multiple,
+        template: '@if (show()) { <div animate.leave="slide-out"><p>Element with text</p></div> }',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      const div = fixture.debugElement.query(By.css('div'));
+
+      expect(div.nativeElement.className).not.toContain('slide-out');
+      cmp.show.set(false);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.show()).toBeFalsy();
+      fixture.detectChanges();
+      expect(div.nativeElement.className).toContain('slide-out');
+      fixture.detectChanges();
+
+      div.nativeElement.dispatchEvent(
+        new TransitionEvent('transitionend', {propertyName: 'opacity'}),
+      );
+      div.nativeElement.dispatchEvent(
+        new TransitionEvent('transitionend', {propertyName: 'translate'}),
+      );
+
+      expect(fixture.nativeElement.outerHTML).toContain('slide-out');
+
+      div.nativeElement.dispatchEvent(
+        new TransitionEvent('transitionend', {propertyName: 'margin-top'}),
+      );
+      div.nativeElement.dispatchEvent(
+        new TransitionEvent('transitionend', {propertyName: 'grid-template-rows'}),
+      );
+      tick();
+      expect(fixture.nativeElement.outerHTML).not.toContain('slide-out');
+      expect(fixture.debugElement.query(By.css('div'))).toBeNull();
+    }));
+
     describe('legacy animations compatibility', () => {
       beforeAll(() => {
         TestBed.resetTestEnvironment();
