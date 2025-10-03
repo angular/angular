@@ -24,28 +24,22 @@ const tick = (ms: number) => {
 describe('Reconnect', () => {
   let testContainer: HTMLDivElement;
 
-  beforeAll((done) => {
+  beforeAll(async () => {
     testContainer = document.createElement('div');
     document.body.appendChild(testContainer);
-    destroyPlatform();
-    platformBrowser()
-      .bootstrapModule(TestModule)
-      .then((ref) => {
-        const injector = ref.injector;
-        const cfr: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+    const ref = await platformBrowser().bootstrapModule(TestModule);
+    const injector = ref.injector;
+    const cfr: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
 
-        testElements.forEach((comp) => {
-          const compFactory = cfr.resolveComponentFactory(comp);
-          customElements.define(compFactory.selector, createCustomElement(comp, {injector}));
-        });
-      })
-      .then(done, done.fail);
+    testElements.forEach((comp) => {
+      const compFactory = cfr.resolveComponentFactory(comp);
+      customElements.define(compFactory.selector, createCustomElement(comp, {injector}));
+    });
   });
 
   afterAll(() => {
     destroyPlatform();
     testContainer.remove();
-    (testContainer as any) = null;
   });
 
   it('should be able to rebuild and reconnect after direct disconnection from parent', async () => {
