@@ -139,6 +139,11 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@b7672ff60456719e6d9b0cc052abc73a7adc8df2
       - name: Install node modules
         run: pnpm install --frozen-lockfile
+      - name: Cache downloaded vscode binary
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: '~/.cache/vscode-test'
+          key: vscode-cache-${{ runner.os }}-${{ hashFiles('vscode-ng-language-service/integration/e2e/index.ts') }} # The version is specified in this file.
       - name: Run tests
         run: pnpm bazel test //vscode-ng-language-service/...
 

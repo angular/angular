@@ -1,5 +1,5 @@
 import {join} from 'node:path';
-import {tmpdir} from 'node:os';
+import {homedir, tmpdir} from 'node:os';
 import {runTests} from '@vscode/test-electron';
 
 import {PACKAGE_ROOT, PROJECT_PATH} from '../test_constants';
@@ -24,7 +24,7 @@ async function main() {
       extensionDevelopmentPath: EXT_DEVELOPMENT_PATH,
       extensionTestsPath: EXT_TESTS_PATH,
       // Avoid redownloading vscode if the test if flaky.
-      cachePath: join(tmpdir(), 'vscode-cache'),
+      cachePath: join(homedir(), '.cache/vscode-test'),
       launchArgs: [
         PROJECT_PATH,
         // This disables all extensions except the one being tested
