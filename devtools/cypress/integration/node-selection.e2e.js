@@ -65,10 +65,10 @@ describe('node selection', () => {
         .last()
         .click({force: true});
 
-      cy.get('ng-property-view').last().find('mat-tree-node:contains("todo")').click();
+      cy.get('ng-property-view').first().find('mat-tree-node:contains("todo")').click();
 
       cy.get('ng-property-view')
-        .last()
+        .first()
         .find('mat-tree-node:contains("Build something fun!")')
         .its('length')
         .should('eq', 1);

@@ -7,6 +7,7 @@
   @include mat.expansion-overrides(
     (
       container-background-color: transparent,
+      container-elevation-shadow: none,
     )
   );
 

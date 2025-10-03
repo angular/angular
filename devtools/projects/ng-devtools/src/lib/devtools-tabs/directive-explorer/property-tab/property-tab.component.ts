@@ -34,10 +34,12 @@ export class PropertyTabComponent {
     if (!selected) {
       return;
     }
-    const directives = [...selected.directives];
+    const directives = [];
     if (selected.component) {
       directives.push(selected.component);
     }
+    directives.push(...selected.directives);
+
     return directives;
   });
 }

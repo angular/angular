@@ -101,7 +101,9 @@ import {
           (mouseup)="clickGutter($event, $index + 1)"
           (touchend)="clickGutter($event, $index + 1)"
         >
+        @if(showGutterIcon()) {  
           <div class="as-split-gutter-icon"></div>
+        }
         </div>
       }
     }`,
@@ -120,6 +122,7 @@ export class SplitComponent implements OnDestroy {
 
   unit = input<Unit>('percent');
 
+  showGutterIcon = input(false, {transform: booleanAttribute});
   gutterSize = input(11, {transform: (v: unknown) => getInputPositiveNumber(v, 11)});
   gutterStep = input(1, {transform: (v: unknown) => getInputPositiveNumber(v, 1)});
   restrictMove = input(false, {transform: booleanAttribute});
