@@ -10,6 +10,11 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -213,7 +218,6 @@ describe('resources', () => {
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
-      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
       customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([]);
