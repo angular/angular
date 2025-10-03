@@ -188,7 +188,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
         },
         {injector},
@@ -233,7 +233,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
@@ -282,7 +282,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
@@ -334,7 +334,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
@@ -383,7 +383,7 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
         },
         {injector},
@@ -443,7 +443,7 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]))),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
         },
         {injector},
@@ -470,7 +470,7 @@ describe('validation status', () => {
                 params,
                 loader: () => promise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
           validateAsync(p, {
             params: () => [],
@@ -479,7 +479,7 @@ describe('validation status', () => {
                 params,
                 loader: () => promise2,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
         },
         {injector},
@@ -514,7 +514,7 @@ describe('validation status', () => {
                 params,
                 loader: () => invalidPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
           validateAsync(p, {
             params: () => [],
@@ -523,7 +523,7 @@ describe('validation status', () => {
                 params,
                 loader: () => validPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
           validateAsync(p, {
             params: () => [],
@@ -532,7 +532,7 @@ describe('validation status', () => {
                 params,
                 loader: () => pendingPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs,
           });
         },
         {injector},

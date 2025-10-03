@@ -49,7 +49,7 @@ describe('submit', () => {
               params,
               loader: () => resolvers.promise,
             }),
-          errors: () => {},
+          onSuccess: () => {},
         });
       },
       {injector: TestBed.inject(Injector)},
