@@ -5,90 +5,44 @@
     {
       "type": "extensionHost",
       "request": "launch",
-      "name": "Launch Dev Client",
+      "name": "VSCE: Launch Dev Client",
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-extensions",
-        "--extensionDevelopmentPath=${workspaceFolder}"
+        "--extensionDevelopmentPath=${workspaceFolder}/vscode-ng-language-service"
       ],
       "outFiles": [
-        "${workspaceFolder}/dist/bin/vscode-ng-language-service/client/src/*.js"
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/client/index.js",
+        "${workspaceFolder}/dist/bin/vscode-ng-language-service/server/index.js"
       ],
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "vscode:watch"
-      }
+      "preLaunchTask": "vsce: watch bundles"
     },
     {
       "type": "extensionHost",
       "request": "launch",
-      "name": "Launch Prod Client",
+      "name": "VSCE: Launch Prod Client",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm"
+        "--disable-extensions",
+        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm/vscode-ng-language-service/vsix_sandbox"
       ],
       "sourceMaps": false,
-      "preLaunchTask": "build vsix"
+      "preLaunchTask": "vsce: package"
     },
     {
       "type": "node",
       "request": "attach",
-      "name": "Attach to Server",
+      "name": "VSCE: Attach to Server",
       "port": 6009,
       "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/dist/bin/vscode-ng-language-service/server/src/*.js"
-      ]
-    },
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "Attach to Jasmine",
-      "port": 9229,
-      "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/dist/bin/vscode-ng-language-service/**/*.js"
-      ],
-    },
-    {
-      "name": "Integration test: Attach to server",
-      "port": 9330,
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/lsp/*.js"
-      ],
-      "type": "node"
-    },
-    {
-      "name": "E2E Test",
-      "type": "extensionHost",
-      "request": "launch",
-      "runtimeExecutable": "${execPath}",
-      "args": [
-        "--disable-extensions",
-        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm",
-        "--extensionTestsPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/e2e/jasmine",
-        "${workspaceFolder}/vscode-ng-language-service/integration/project"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/dist/bin/vscode-ng-language-service/integration/e2e/*.js"
-      ],
-      "preLaunchTask": {
-        "type": "npm",
-        "script": "compile:integration"
-      }
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/dist/bin/vscode-ng-language-service/server/index.js"]
     }
   ],
   "compounds": [
     {
-      "name": "Dev Client + Server",
-      "configurations": [
-        "Launch Dev Client",
-        "Attach to Server"
-      ]
+      "name": "VSCE: Dev Client + Server",
+      "configurations": ["VSCE: Launch Dev Client", "VSCE: Attach to Server"]
     }
   ]
 }
