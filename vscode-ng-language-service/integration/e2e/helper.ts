@@ -11,6 +11,11 @@ export const FOO_TEMPLATE_URI = vscode.Uri.file(FOO_TEMPLATE);
 
 export async function activate(uri: vscode.Uri): Promise<void> {
   await vscode.window.showTextDocument(uri);
+
+  // This is needed for stabilization and to reduce flakes.
+  // The timeout gives the language server time to warm up.
+  await setTimeout(3_000);
+
   await waitForDefinitionsToBeAvailable(20);
 }
 
