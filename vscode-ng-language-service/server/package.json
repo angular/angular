@@ -11,6 +11,7 @@
   "engines": {
     "node": "^20.11.1 || ^22.11.0"
   },
+  "main": "../../dist/bin/vscode-ng-language-service/server/index.js",
   "bin": {
     "ngserver": "./bin/ngserver"
   },
