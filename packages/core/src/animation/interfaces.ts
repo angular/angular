@@ -104,10 +104,10 @@ export interface NodeAnimations {
 
 export interface AnimationLViewData {
   // Enter animations that apply to nodes in this view
-  enter?: Map<number, Function[]>;
+  enter?: Map<number, NodeAnimations>;
 
   // Leave animations that apply to nodes in this view
-  leave?: Map<number, Function[]>;
+  leave?: Map<number, NodeAnimations>;
 
   // Leave animations that apply to nodes in this view
   // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type

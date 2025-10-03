@@ -33,8 +33,10 @@ import {
   cancelAnimationsIfRunning,
   cancelLeavingNodes,
   cleanupAfterLeaveAnimations,
+  cleanupAfterLeaveAnimations,
   cleanupEnterClassData,
   clearLeavingNodes,
+  clearLViewNodeAnimationResolvers,
   clearLViewNodeAnimationResolvers,
   enterClassMap,
   getClassListFromValue,
@@ -248,7 +250,11 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   return ɵɵanimateLeave; // For chaining
 }
 
-function runLeaveAnimations(lView: LView, tNode: TNode, value: string | Function): Promise<void> {
+function runLeaveAnimations(
+  lView: LView,
+  tNode: TNode,
+  value: string | Function,
+): {promise: Promise<void>; resolve: VoidFunction} {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
@@ -287,10 +293,10 @@ function animateLeaveClassRunner(
   classList: string[],
   renderer: Renderer,
   ngZone: NgZone,
-  resolver: VoidFunction,
 ) {
   cancelAnimationsIfRunning(el, renderer);
   const cleanupFns: Function[] = [];
+  const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
     // this early exit case is to prevent issues with bubbling events that are from child element animations
@@ -315,35 +321,26 @@ function animateLeaveClassRunner(
       cleanupAfterLeaveAnimations(resolvers, cleanupFns);
       clearLViewNodeAnimationResolvers(lView, tNode);
     }
-    resolver();
-    for (const fn of cleanupFns) {
-      fn();
-    }
   };
 
   ngZone.runOutsideAngular(() => {
     cleanupFns.push(renderer.listen(el, 'animationend', handleOutAnimationEnd));
     cleanupFns.push(renderer.listen(el, 'transitionend', handleOutAnimationEnd));
   });
-
   trackLeavingNodes(tNode, el);
-
   for (const item of classList) {
     renderer.addClass(el, item);
   }
-
+  // In the case that the classes added have no animations, we need to remove
+  // the element right away. This could happen because someone is intentionally
+  // preventing an animation via selector specificity.
   ngZone.runOutsideAngular(() => {
     requestAnimationFrame(() => {
-      // In the case that the classes added have no animations, we need to remove
-      // the element right away. This could happen because someone is intentionally
-      // preventing an animation via selector specificity.
       determineLongestAnimation(el, longestAnimations, areAnimationSupported);
       if (!longestAnimations.has(el)) {
         clearLeavingNodes(tNode, el);
-        resolver();
-        for (const fn of cleanupFns) {
-          fn();
-        }
+        cleanupAfterLeaveAnimations(resolvers, cleanupFns);
+        clearLViewNodeAnimationResolvers(lView, tNode);
       }
     });
   });
@@ -444,8 +441,8 @@ function queueEnterAnimations(lView: LView) {
   const enterAnimations = lView[ANIMATIONS]?.enter;
   if (enterAnimations) {
     const animationQueue = lView[INJECTOR].get(ANIMATION_QUEUE);
-    for (const [_, animateFns] of enterAnimations) {
-      for (const animateFn of animateFns) {
+    for (const [_, nodeAnimations] of enterAnimations) {
+      for (const animateFn of nodeAnimations.animateFns) {
         animationQueue.queue.add(animateFn);
       }
     }
