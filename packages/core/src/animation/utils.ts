@@ -233,9 +233,11 @@ export function isLongestAnimation(
   nativeElement: HTMLElement,
 ): boolean {
   const longestAnimation = longestAnimations.get(nativeElement);
+  // If we don't have any record of a longest animation, then we shouldn't
+  // block the animationend/transitionend event from doing its work.
+  if (longestAnimation === undefined) return true;
   return (
     nativeElement === event.target &&
-    longestAnimation !== undefined &&
     ((longestAnimation.animationName !== undefined &&
       (event as AnimationEvent).animationName === longestAnimation.animationName) ||
       (longestAnimation.propertyName !== undefined &&
