@@ -8,11 +8,8 @@ export function makeTempDir(): string {
   return mkdtempSync(tmpDir);
 }
 
-export const IS_BAZEL = !!process.env['TEST_TARGET'];
-export const PACKAGE_ROOT = IS_BAZEL ? resolve(__dirname, '..') : resolve(__dirname, '../..');
-export const SERVER_PATH = IS_BAZEL
-  ? join(PACKAGE_ROOT, 'server', 'index.js')
-  : join(PACKAGE_ROOT, 'dist', 'npm', 'server', 'index.js');
+export const PACKAGE_ROOT = resolve(__dirname, '..');
+export const SERVER_PATH = join(PACKAGE_ROOT, 'server', 'index.js');
 export const PROJECT_PATH = join(PACKAGE_ROOT, 'integration', 'project');
 export const PRE_STANDALONE_PROJECT_PATH = join(
   PACKAGE_ROOT,

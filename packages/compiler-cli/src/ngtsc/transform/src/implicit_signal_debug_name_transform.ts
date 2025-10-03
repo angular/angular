@@ -12,18 +12,26 @@ function insertDebugNameIntoCallExpression(
   callExpression: ts.CallExpression,
   debugName: string,
 ): ts.CallExpression {
-  const signalExpressionHasNoArguments = callExpression.arguments.length === 0;
   const signalExpressionIsRequired = isRequiredSignalFunction(callExpression.expression);
   let configPosition = signalExpressionIsRequired ? 0 : 1;
 
-  // If the call expression has no arguments, we pretend that the config object is at position 0.
+  const nodeArgs = Array.from(callExpression.arguments);
+
+  // 1. If the call expression has no arguments, we pretend that the config object is at position 0.
   // We do this so that we can insert a spread element at the start of the args list in a way where
   // undefined can be the first argument but still get tree-shaken out in production builds.
-  if (signalExpressionHasNoArguments) {
+  // or
+  // 2. Since `linkedSignal` with computation uses a single object for both computation logic
+  // and options (unlike other signal-based primitives), we set the argument position to 0, i.e.
+  // reusing the computation logic object.
+  const signalExpressionHasNoArguments = callExpression.arguments.length === 0;
+  const isLinkedSignal = callExpression.expression.getText() === 'linkedSignal';
+  const isComputationLinkedSignal =
+    isLinkedSignal && nodeArgs[0].kind === ts.SyntaxKind.ObjectLiteralExpression;
+  if (signalExpressionHasNoArguments || isComputationLinkedSignal) {
     configPosition = 0;
   }
 
-  const nodeArgs = Array.from(callExpression.arguments);
   let existingArgument = nodeArgs[configPosition];
 
   if (existingArgument === undefined) {
@@ -96,12 +104,15 @@ function insertDebugNameIntoCallExpression(
 
   let transformedSignalArgs: ts.NodeArray<ts.Expression>;
 
-  if (signalExpressionIsRequired || signalExpressionHasNoArguments) {
+  if (signalExpressionIsRequired || signalExpressionHasNoArguments || isComputationLinkedSignal) {
     // 1. If the call expression is a required signal function, there is no args other than the config object.
     // So we just use the spread element as the only argument.
     // or
     // 2. If the call expression has no arguments (ex. input(), model(), etc), we already added the undefined
     // identifier in the spread element above. So we use that spread Element as is.
+    // or
+    // 3. We are transforming a `linkedSignal` with computation (i.e. we have a single object for both
+    // logic and options).
     transformedSignalArgs = ts.factory.createNodeArray([spreadElementContainingUpdatedOptions]);
   } else {
     // 3. Signal expression is not required and has arguments.
@@ -280,6 +291,7 @@ function expressionIsUsingAngularCoreImportedSymbol(
 const signalFunctions: ReadonlySet<string> = new Set([
   'signal',
   'computed',
+  'linkedSignal',
   'input',
   'model',
   'viewChild',

@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {NgTemplateOutlet} from '@angular/common';
+import {Component} from '@angular/core';
 
 // #docregion NgTemplateOutlet
 @Component({
   selector: 'ng-template-outlet-example',
+  imports: [NgTemplateOutlet],
   template: `
     <ng-container *ngTemplateOutlet="greet"></ng-container>
     <hr />
@@ -28,7 +29,6 @@ import {BrowserModule} from '@angular/platform-browser';
       ><span>Ahoj {{ person }}!</span></ng-template
     >
   `,
-  standalone: false,
 })
 export class NgTemplateOutletExample {
   myContext = {$implicit: 'World', localSk: 'Svet'};
@@ -37,13 +37,7 @@ export class NgTemplateOutletExample {
 
 @Component({
   selector: 'example-app',
-  template: `<ng-template-outlet-example></ng-template-outlet-example>`,
-  standalone: false,
+  imports: [NgTemplateOutletExample],
+  template: `<ng-template-outlet-example />`,
 })
 export class AppComponent {}
-
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [AppComponent, NgTemplateOutletExample],
-})
-export class AppModule {}

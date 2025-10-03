@@ -11,6 +11,11 @@
       "name": "help",
       "type": "boolean",
       "description": "Shows a help message for this command in the console."
+    },
+    {
+      "name": "json",
+      "type": "boolean",
+      "description": "Outputs version information in JSON format."
     }
   ]
 }

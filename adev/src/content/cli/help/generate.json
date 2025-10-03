@@ -59,6 +59,7 @@
             "none"
           ],
           "enum": [
+            "agents",
             "claude",
             "copilot",
             "cursor",

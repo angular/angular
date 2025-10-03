@@ -5,7 +5,7 @@ module(
 )
 
 bazel_dep(name = "rules_pkg", version = "1.1.0")
-bazel_dep(name = "rules_nodejs", version = "6.5.0")
+bazel_dep(name = "rules_nodejs", version = "6.5.2")
 bazel_dep(name = "aspect_rules_ts", version = "3.7.0")
 bazel_dep(name = "aspect_rules_js", version = "2.6.0")
 bazel_dep(name = "aspect_rules_esbuild", version = "0.22.1")
@@ -14,11 +14,11 @@ bazel_dep(name = "aspect_rules_rollup", version = "2.0.1")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "aspect_bazel_lib", version = "2.21.2")
 bazel_dep(name = "tar.bzl", version = "0.5.6")
-bazel_dep(name = "yq.bzl", version = "0.2.0")
+bazel_dep(name = "yq.bzl", version = "0.3.1")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "399f782a14ecfd7de7c2736ec7f4f631b6a1b582",
+    commit = "c3721b6ece2050a59a97562e3b95527a3092b03b",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
@@ -96,7 +96,6 @@ npm.npm_translate_lock(
         "//packages/service-worker:package.json",
         "//packages/upgrade:package.json",
         "//tools/bazel/rules_angular_store:package.json",
-        "//vscode-ng-language-service/integration/pre_apf_project:package.json",
         "//vscode-ng-language-service/integration/pre_standalone_project:package.json",
         "//vscode-ng-language-service/integration/project:package.json",
         "//vscode-ng-language-service/integration/workspace:package.json",
@@ -110,9 +109,9 @@ use_repo(npm, "npm")
 rules_ts_ext = use_extension("@aspect_rules_ts//ts:extensions.bzl", "ext")
 rules_ts_ext.deps(
     name = "angular_npm_typescript",
-    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.2 | jq -r '.dist.integrity'
-    ts_integrity = "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==",
-    ts_version = "5.9.2",
+    # Obtained by: curl --silent https://registry.npmjs.org/typescript/5.9.3 | jq -r '.dist.integrity'
+    ts_integrity = "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+    ts_version = "5.9.3",
 )
 use_repo(rules_ts_ext, **{"npm_typescript": "angular_npm_typescript"})
 

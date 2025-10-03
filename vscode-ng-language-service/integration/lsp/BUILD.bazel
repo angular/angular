@@ -12,13 +12,11 @@ jasmine_test(
         "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
         "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
         "//vscode-ng-language-service/server:index",
-        "//vscode-ng-language-service/server:node_modules",
+        "//vscode-ng-language-service/server:node_modules/@angular/language-service",
+        "//vscode-ng-language-service/server:node_modules/typescript",
     ],
     flaky = True,
     shard_count = 2,
-    tags = [
-        "e2e",
-    ],
 )
 
 ts_project(

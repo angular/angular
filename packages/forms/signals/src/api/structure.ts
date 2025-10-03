@@ -16,8 +16,8 @@ import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
 import {isArray} from '../util/type_guards';
 import type {
-  Field,
   FieldPath,
+  FieldTree,
   LogicFn,
   OneOrMany,
   PathKind,
@@ -73,8 +73,8 @@ function normalizeFormArgs<TValue>(
 }
 
 /**
- * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
- * the model data.
+ * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
+ * of the model data.
  *
  * `form` uses the given model as the source of truth and *does not* maintain its own copy of the
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
@@ -92,17 +92,17 @@ function normalizeFormArgs<TValue>(
  * @param model A writable signal that contains the model data for the form. The resulting field
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
- * @return A `Field` representing a form around the data model.
+ * @return A `FieldTree` representing a form around the data model.
  * @template TValue The type of the data model.
  *
  * @category structure
  * @experimental 21.0.0
  */
-export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
+export function form<TValue>(model: WritableSignal<TValue>): FieldTree<TValue>;
 
 /**
- * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
- * the model data.
+ * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
+ * of the model data.
  *
  * `form` uses the given model as the source of truth and *does not* maintain its own copy of the
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
@@ -139,7 +139,7 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
  *   1. A schema or a function used to specify logic for the form (e.g. validation, disabled fields, etc.).
  *      When passing a schema, the form options can be passed as a third argument if needed.
  *   2. The form options
- * @return A `Field` representing a form around the data model
+ * @return A `FieldTree` representing a form around the data model
  * @template TValue The type of the data model.
  *
  * @category structure
@@ -148,11 +148,11 @@ export function form<TValue>(model: WritableSignal<TValue>): Field<TValue>;
 export function form<TValue>(
   model: WritableSignal<TValue>,
   schemaOrOptions: SchemaOrSchemaFn<TValue> | FormOptions,
-): Field<TValue>;
+): FieldTree<TValue>;
 
 /**
- * Creates a form wrapped around the given model data. A form is represented as simply a `Field` of
- * the model data.
+ * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
+ * of the model data.
  *
  * `form` uses the given model as the source of truth and *does not* maintain its own copy of the
  * data. This means that updating the value on a `FieldState` updates the originally passed in model
@@ -187,7 +187,7 @@ export function form<TValue>(
  * the model.
  * @param schema A schema or a function used to specify logic for the form (e.g. validation, disabled fields, etc.)
  * @param options The form options
- * @return A `Field` representing a form around the data model.
+ * @return A `FieldTree` representing a form around the data model.
  * @template TValue The type of the data model.
  *
  * @category structure
@@ -197,9 +197,9 @@ export function form<TValue>(
   model: WritableSignal<TValue>,
   schema: SchemaOrSchemaFn<TValue>,
   options: FormOptions,
-): Field<TValue>;
+): FieldTree<TValue>;
 
-export function form<TValue>(...args: any[]): Field<TValue> {
+export function form<TValue>(...args: any[]): FieldTree<TValue> {
   const [model, schema, options] = normalizeFormArgs<TValue>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
@@ -208,7 +208,7 @@ export function form<TValue>(...args: any[]): Field<TValue> {
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
-  return fieldRoot.fieldProxy as Field<TValue>;
+  return fieldRoot.fieldProxy as FieldTree<TValue>;
 }
 
 /**
@@ -225,8 +225,8 @@ export function form<TValue>(...args: any[]): Field<TValue> {
  * });
  * ```
  *
- * When binding logic to the array items, the `Field` for the array item is passed as an additional
- * argument. This can be used to reference other properties on the item.
+ * When binding logic to the array items, the `FieldTree` for the array item is passed as an
+ * additional argument. This can be used to reference other properties on the item.
  *
  * @example
  * ```
@@ -358,14 +358,14 @@ export function applyWhenValue(
 }
 
 /**
- * Submits a given `Field` using the given action function and applies any server errors resulting
- * from the action to the field. Server errors returned by the `action` will be integrated into the
- * field as a `ValidationError` on the sub-field indicated by the `field` property of the server
- * error.
+ * Submits a given `FieldTree` using the given action function and applies any server errors
+ * resulting from the action to the field. Server errors returned by the `action` will be integrated
+ * into the field as a `ValidationError` on the sub-field indicated by the `field` property of the
+ * server error.
  *
  * @example
  * ```
- * async function registerNewUser(registrationForm: Field<{username: string, password: string}>) {
+ * async function registerNewUser(registrationForm: FieldTree<{username: string, password: string}>) {
  *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
  *     return [{
@@ -392,8 +392,8 @@ export function applyWhenValue(
  * @experimental 21.0.0
  */
 export async function submit<TValue>(
-  form: Field<TValue>,
-  action: (form: Field<TValue>) => Promise<TreeValidationResult>,
+  form: FieldTree<TValue>,
+  action: (form: FieldTree<TValue>) => Promise<TreeValidationResult>,
 ) {
   const node = form() as FieldNode;
   markAllAsTouched(node);
@@ -445,7 +445,7 @@ function setServerErrors(
  * Creates a `Schema` that adds logic rules to a form.
  * @param fn A **non-reactive** function that sets up reactive logic rules for the form.
  * @returns A schema object that implements the given logic.
- * @template TValue The value type of a `Field` that this schema binds to.
+ * @template TValue The value type of a `FieldTree` that this schema binds to.
  *
  * @category structure
  * @experimental 21.0.0

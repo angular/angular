@@ -34,13 +34,18 @@ expand_template_rule(
 npm_package(
     name = "vsix_sandbox",
     srcs = [
+        "package_expanded.json",
+        "angular.png",
         "CHANGELOG.md",
         "README.md",
-        "angular.png",
-        "package_expanded.json",
         "//vscode-ng-language-service/client:index.js",
         "//vscode-ng-language-service/server:npm_files",
         "//vscode-ng-language-service/syntaxes:npm_files",
+        # Transitive closure of npm deps that are marked as "external" in esbuild needed for vsce;
+        # this set was determined manually by running `bazel build //:vsix` and burning down missing packages.
+        # We do this so that we don't have to run an additional `npm install` action to create a node_modules within the
+        # //:npm npm_package where the vsce build takes place.
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
     ],
     exclude_srcs_patterns = [
         "*.map",
@@ -67,11 +72,13 @@ vsce_bin.vsce(
         "package",
         "-o",
         "../ng-template.vsix",
-        "--no-dependencies",
         "--allow-package-env-file",
         "--allow-package-all-secrets",
     ],
     chdir = "vscode-ng-language-service/vsix_sandbox",
+    # vsce requires npm on the PATH; we can get this from the Bazel rules_nodejs but it is not
+    # included by default in rules_js binary rules so we include it here explicitly
+    include_npm = True,
 )
 
 npm_package(

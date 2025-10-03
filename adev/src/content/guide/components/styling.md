@@ -59,10 +59,11 @@ global styles defined outside of a component may still affect elements inside a 
 emulated encapsulation.
 
 In emulated mode, Angular supports
-the [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host)
-and [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context) pseudo
-classes without
-using [Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
+the [`:host`](https://developer.mozilla.org/docs/Web/CSS/:host) pseudo-class.
+While the [`:host-context()`](https://developer.mozilla.org/docs/Web/CSS/:host-context) pseudo-class
+is deprecated in modern browsers, Angular's compiler provides full support for it. Both pseudo-classes
+can be used without relying on native
+[Shadow DOM](https://developer.mozilla.org/docs/Web/Web_Components/Using_shadow_DOM).
 During compilation, the framework transforms these pseudo classes into attributes so it doesn't
 comply with these native pseudo classes' rules at runtime (e.g. browser compatibility, specificity). Angular's
 emulated encapsulation mode does not support any other pseudo classes related to Shadow DOM, such

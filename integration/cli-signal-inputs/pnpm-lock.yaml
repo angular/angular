@@ -41,7 +41,7 @@ importers:
     devDependencies:
       '@angular-devkit/build-angular':
         specifier: 21.0.0-next.5
-        version: 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(protractor@7.0.0)(typescript@5.9.2)
+        version: 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(protractor@7.0.0)(typescript@5.9.3)
       '@angular/cli':
         specifier: 21.0.0-next.5
         version: 21.0.0-next.5(@types/node@20.19.17)(chokidar@4.0.3)
@@ -83,10 +83,10 @@ importers:
         version: 7.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.19.17)(typescript@5.9.2)
+        version: 10.9.2(@types/node@20.19.17)(typescript@5.9.3)
       typescript:
-        specifier: 5.9.2
-        version: 5.9.2
+        specifier: 5.9.3
+        version: 5.9.3
 
 packages:
 
@@ -4500,8 +4500,8 @@ packages:
   typed-assert@1.0.9:
     resolution: {integrity: sha512-KNNZtayBCtmnNmbo5mG47p1XsCyrx6iVqomjcZnec/1Y5GGARaxPs6r49RnSPeUP3YjNYiU9sQHAtY4BBvnZwg==}
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4949,13 +4949,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(protractor@7.0.0)(typescript@5.9.2)':
+  '@angular-devkit/build-angular@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(protractor@7.0.0)(typescript@5.9.3)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.5(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-next.5(chokidar@4.0.3)(webpack-dev-server@5.2.2(webpack@5.101.3))(webpack@5.101.3(esbuild@0.25.10))
       '@angular-devkit/core': 21.0.0-next.5(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(typescript@5.9.2)
+      '@angular/build': 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(typescript@5.9.3)
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
       '@babel/core': 7.28.4
       '@babel/generator': 7.28.3
@@ -4967,7 +4967,7 @@ snapshots:
       '@babel/preset-env': 7.28.3(@babel/core@7.28.4)
       '@babel/runtime': 7.28.4
       '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.2)(webpack@5.101.3(esbuild@0.25.10))
+      '@ngtools/webpack': 21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.3)(webpack@5.101.3(esbuild@0.25.10))
       ansi-colors: 4.1.3
       autoprefixer: 10.4.21(postcss@8.5.6)
       babel-loader: 10.0.0(@babel/core@7.28.4)(webpack@5.101.3(esbuild@0.25.10))
@@ -4989,7 +4989,7 @@ snapshots:
       picomatch: 4.0.3
       piscina: 5.1.3
       postcss: 8.5.6
-      postcss-loader: 8.2.0(postcss@8.5.6)(typescript@5.9.2)(webpack@5.101.3(esbuild@0.25.10))
+      postcss-loader: 8.2.0(postcss@8.5.6)(typescript@5.9.3)(webpack@5.101.3(esbuild@0.25.10))
       resolve-url-loader: 5.0.0
       rxjs: 7.8.2
       sass: 1.93.1
@@ -5001,7 +5001,7 @@ snapshots:
       tinyglobby: 0.2.15
       tree-kill: 1.2.2
       tslib: 2.8.1
-      typescript: 5.9.2
+      typescript: 5.9.3
       webpack: 5.101.3(esbuild@0.25.10)
       webpack-dev-middleware: 7.4.3(webpack@5.101.3)
       webpack-dev-server: 5.2.2(webpack@5.101.3)
@@ -5066,7 +5066,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(typescript@5.9.2)':
+  '@angular/build@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(@angular/compiler@in-existing-linked-by-bazel)(@angular/core@in-existing-linked-by-bazel)(@angular/platform-browser@in-existing-linked-by-bazel)(@types/node@20.19.17)(chokidar@4.0.3)(jiti@2.6.0)(karma@6.4.4)(less@4.4.1)(postcss@8.5.6)(terser@5.44.0)(tslib@2.8.1)(typescript@5.9.3)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-next.5(chokidar@4.0.3)
@@ -5095,7 +5095,7 @@ snapshots:
       source-map-support: 0.5.21
       tinyglobby: 0.2.15
       tslib: 2.8.1
-      typescript: 5.9.2
+      typescript: 5.9.3
       vite: 7.1.7(@types/node@20.19.17)(jiti@2.6.0)(less@4.4.1)(sass@1.93.1)(terser@5.44.0)
       watchpack: 2.4.4
     optionalDependencies:
@@ -6270,10 +6270,10 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@ngtools/webpack@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.2)(webpack@5.101.3(esbuild@0.25.10))':
+  '@ngtools/webpack@21.0.0-next.5(@angular/compiler-cli@in-existing-linked-by-bazel)(typescript@5.9.3)(webpack@5.101.3(esbuild@0.25.10))':
     dependencies:
       '@angular/compiler-cli': link:in-existing-linked-by-bazel
-      typescript: 5.9.2
+      typescript: 5.9.3
       webpack: 5.101.3(esbuild@0.25.10)
 
   '@npmcli/agent@3.0.0':
@@ -7263,14 +7263,14 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@9.0.0(typescript@5.9.2):
+  cosmiconfig@9.0.0(typescript@5.9.3):
     dependencies:
       env-paths: 2.2.1
       import-fresh: 3.3.1
       js-yaml: 4.1.0
       parse-json: 5.2.0
     optionalDependencies:
-      typescript: 5.9.2
+      typescript: 5.9.3
 
   create-require@1.1.1: {}
 
@@ -8855,9 +8855,9 @@ snapshots:
 
   pkce-challenge@5.0.0: {}
 
-  postcss-loader@8.2.0(postcss@8.5.6)(typescript@5.9.2)(webpack@5.101.3(esbuild@0.25.10)):
+  postcss-loader@8.2.0(postcss@8.5.6)(typescript@5.9.3)(webpack@5.101.3(esbuild@0.25.10)):
     dependencies:
-      cosmiconfig: 9.0.0(typescript@5.9.2)
+      cosmiconfig: 9.0.0(typescript@5.9.3)
       jiti: 2.6.0
       postcss: 8.5.6
       semver: 7.7.2
@@ -9611,7 +9611,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2):
+  ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -9625,7 +9625,7 @@ snapshots:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 5.9.2
+      typescript: 5.9.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -9658,7 +9658,7 @@ snapshots:
 
   typed-assert@1.0.9: {}
 
-  typescript@5.9.2: {}
+  typescript@5.9.3: {}
 
   ua-parser-js@0.7.41: {}
 
