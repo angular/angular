@@ -44,6 +44,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
     readonly events: Observable<ControlEvent<TValue>>;
     get<P extends string | readonly (string | number)[]>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
     get<P extends string | Array<string | number>>(path: P): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
+    get<P extends string | Array<string | number>>(path: P): AbstractControl | null;
     getError(errorCode: string, path?: Array<string | number> | string): any;
     getRawValue(): any;
     hasAsyncValidator(validator: AsyncValidatorFn): boolean;
@@ -76,7 +77,7 @@ export abstract class AbstractControl<TValue = any, TRawValue extends TValue = T
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
-    get parent(): FormGroup | FormArray | null;
+    get parent(): FormGroup | FormArray | FormRecord | null;
     abstract patchValue(value: TValue, options?: Object): void;
     get pending(): boolean;
     get pristine(): boolean;
