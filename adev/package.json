@@ -18,14 +18,14 @@
     "@angular/router": "workspace:*",
     "@angular/ssr": "21.0.0-next.5",
     "@codemirror/autocomplete": "6.19.0",
-    "@codemirror/commands": "6.8.1",
+    "@codemirror/commands": "6.9.0",
     "@codemirror/lang-angular": "0.1.4",
     "@codemirror/lang-css": "6.3.1",
-    "@codemirror/lang-html": "6.4.10",
+    "@codemirror/lang-html": "6.4.11",
     "@codemirror/lang-javascript": "6.2.4",
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/language": "6.11.3",
-    "@codemirror/lint": "6.8.5",
+    "@codemirror/lint": "6.9.0",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.38.4",
@@ -36,7 +36,7 @@
     "@types/dom-navigation": "1.0.6",
     "@types/jasmine": "5.1.9",
     "@types/jsdom": "27.0.0",
-    "@types/node": "24.6.1",
+    "@types/node": "24.6.2",
     "@typescript/vfs": "1.6.1",
     "@webcontainer/api": "1.6.1",
     "@xterm/addon-fit": "0.10.0",
@@ -82,6 +82,6 @@
   "devDependencies": {
     "autoprefixer": "10.4.21",
     "postcss": "8.5.6",
-    "tailwindcss": "3.4.17"
+    "tailwindcss": "3.4.18"
   }
 }
