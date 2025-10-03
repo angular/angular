@@ -5,12 +5,6 @@ ts_project(
     srcs = glob(["*.ts"]),
     declaration = True,
     source_map = True,
-    tags = [
-        # Because the testing intentionally reaches into the output directories and crosses the sandbox
-        # boundaries, we need to explicitly make sure that this target is built locally so the testing
-        # can find expected files.
-        "no-remote-exec",
-    ],
     tsconfig = "//vscode-ng-language-service/server:tsconfig",
     visibility = [
         "//vscode-ng-language-service/server:__subpackages__",
