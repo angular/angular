@@ -747,5 +747,30 @@ runInEachFileSystem(() => {
         expect(diagnostics.length).toBe(0);
       });
     });
+
+    it('should capture model input/output pair in the setClassMetadata call', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, model} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          value = model(1);
+        }
+      `,
+      );
+      env.driveMain();
+
+      const js = env.getContents('test.js');
+      expect(js).toContain('import * as i0 from "@angular/core";');
+      expect(js).toContain(
+        `i0.ɵsetClassMetadata(TestDir, [{
+        type: Directive
+    }], null, { value: [` +
+          `{ type: i0.Input, args: [{ isSignal: true, alias: "value", required: false }] }, ` +
+          `{ type: i0.Output, args: ["valueChange"] }] });`,
+      );
+    });
   });
 });
