@@ -6,9 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable, ɵRuntimeError as RuntimeError} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {concatMap, filter, map} from 'rxjs/operators';
+import {
+  DestroyRef,
+  inject,
+  Injectable,
+  ɵRuntimeError as RuntimeError,
+  ɵisInInjectionContext as isInInjectionContext,
+  ɵformatRuntimeError as formatRuntimeError,
+} from '@angular/core';
+import {type Observable, of, Subject} from 'rxjs';
+import {concatMap, filter, map, takeUntil} from 'rxjs/operators';
 
 import {HttpHandler} from './backend';
 import {HttpContext} from './context';
@@ -129,7 +136,24 @@ function addBody<T>(
  */
 @Injectable({providedIn: 'root'})
 export class HttpClient {
-  constructor(private handler: HttpHandler) {}
+  private readonly destroyed$ = new Subject<void>();
+
+  constructor(private handler: HttpHandler) {
+    // Attempt to retrieve a `DestroyRef` optionally.
+    // For backwards compatibility reasons, this cannot be required.
+    if (isInInjectionContext()) {
+      inject(DestroyRef, {optional: true})?.onDestroy(() => this.destroyed$.next());
+    } else if (typeof ngDevMode !== 'undefined' && ngDevMode) {
+      console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.HTTP_CLIENT_MISSING_INJECTION_CONTEXT,
+          'Angular detected that HttpClient is being instantiated outside of an injection context. ' +
+            'As a result, automatic cleanup via DestroyRef will not be performed. ' +
+            'This may lead to memory leaks.',
+        ),
+      );
+    }
+  }
 
   /**
    * Sends an `HttpRequest` and returns a stream of `HttpEvent`s.
@@ -840,6 +864,7 @@ export class HttpClient {
     // subscription (this also makes retries re-run the handler, including interceptors).
     const events$: Observable<HttpEvent<any>> = of(req).pipe(
       concatMap((req: HttpRequest<any>) => this.handler.handle(req)),
+      takeUntil(this.destroyed$),
     );
 
     // If coming via the API signature which accepts a previously constructed HttpRequest,
