@@ -45,6 +45,7 @@ npm_package(
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/migrations/ngstyle-to-style-migration:static_files",
+        "//packages/core/schematics/migrations/router-testing-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
@@ -127,6 +128,10 @@ bundle_entrypoints = [
         "bootstrap-options-migration",
         "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
     ],
+    [
+        "router-testing-migration",
+        "packages/core/schematics/migrations/router-testing-migration/index.js",
+    ],
 ]
 
 rollup.rollup(
@@ -146,6 +151,7 @@ rollup.rollup(
         "//packages/core/schematics/migrations/ngstyle-to-style-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
         "//packages/core/schematics/migrations/router-last-successful-navigation",
+        "//packages/core/schematics/migrations/router-testing-migration",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/inject-migration",
         "//packages/core/schematics/ng-generate/output-migration",
