@@ -137,3 +137,106 @@ export class AdminSettings {
 ```
 
 The example above loads and displays the `AdvancedSettings` upon receiving a button click.
+
+## Providing inputs, outputs, and directives at creation
+
+The `ViewContainerRef.createComponent` API supports binding inputs/outputs and attaching directives in one step. Instead of manually setting inputs and subscribing to outputs after creation, you can pass a `bindings` array with helpers like `inputBinding()`, `outputBinding()`, and `twoWayBinding()`, as well as a `directives` array for any directives to apply. This allows you to programmatically instantiate a component with template-like bindings in a single call.
+
+### Hostview using `ViewportContainerRef.createComponent`
+
+```ts
+import { Component, input, model, output } from "@angular/core";
+
+@Component({
+  selector: 'app-warning',
+  template: `
+      @if(isExpanded()) {
+        <section>
+            <p>Warning: Action needed!</p>
+            <button (click)="close.emit(true)">Close</button>
+        </section>
+      }
+  `
+})
+export class AppWarningComponent {
+  readonly canClose = input.required<boolean>();
+  readonly isExpanded = model<boolean>();
+  readonly close = output<boolean>();
+}
+```
+
+```ts
+import { Component, ViewContainerRef, signal, inputBinding, outputBinding, twoWayBinding, inject } from '@angular/core';
+import { FocusTrap } from "@angular/cdk/a11y";
+import { ThemeDirective } from '../theme.directive';
+
+@Component({
+  template: `<ng-container #container></ng-container>`
+})
+export class HostComponent {
+  private vcr = inject(ViewContainerRef);
+  readonly canClose = signal(true);
+  readonly isExpanded = signal(true);
+
+  showWarning() {
+    const compRef = this.vcr.createComponent(AppWarningComponent, {
+      bindings: [
+        inputBinding('canClose', this.canClose),
+        twoWayBinding('isExpanded', this.isExpanded),
+        outputBinding<boolean>('close', (confirmed) => {
+          console.log('Closed with result:', confirmed);
+        })
+      ],
+      directives: [
+        FocusTrap,
+        { type: ThemeDirective, bindings: [inputBinding('theme', () => 'warning')] }
+      ]
+    });
+  }
+}
+```
+
+In the example above, the dynamic **AppWarningComponent** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
+
+### Popup attached to `document.body` with `createComponent` + `hostElement`
+
+Use this when you need to render outside the current view hierarchy (e.g., overlay to body). Lets you configure **bindings** directly.
+
+```ts
+import {
+  ApplicationRef, createComponent, EnvironmentInjector, Injectable,
+  inputBinding, outputBinding
+} from '@angular/core';
+import { PopupComponent } from './popup.component';
+
+@Injectable({ providedIn: 'root' })
+export class PopupService {
+  constructor(
+    private injector: EnvironmentInjector,
+    private appRef: ApplicationRef,
+  ) {}
+
+  show(message: string) {
+    // Create a host element for the popup
+    const host = document.createElement('popup-host');
+
+    // Create the component and bind in one call
+    const ref = createComponent(PopupComponent, {
+      environmentInjector: this.injector,
+      hostElement: host,
+      bindings: [
+        inputBinding('message', () => message),
+        outputBinding('closed', () => {
+          document.body.removeChild(host);
+          this.appRef.detachView(ref.hostView);
+          ref.destroy();
+        }),
+      ],
+    });
+
+    // Attach to change detection and add to DOM
+    this.appRef.attachView(ref.hostView);
+    document.body.appendChild(host);
+  }
+}
+```
