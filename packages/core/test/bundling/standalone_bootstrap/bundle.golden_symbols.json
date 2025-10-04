@@ -93,6 +93,7 @@
       "InjectionToken",
       "Injector",
       "InputFlags",
+      "IsolatedStyleScopeService",
       "KeyEventsPlugin",
       "LOCALE_ID",
       "LOCALE_ID",

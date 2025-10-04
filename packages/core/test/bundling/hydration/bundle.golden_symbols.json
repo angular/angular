@@ -114,6 +114,7 @@
       "InjectionToken",
       "Injector",
       "InputFlags",
+      "IsolatedStyleScopeService",
       "JSON_CONTENT_TYPE",
       "KeyEventsPlugin",
       "LOCALE_ID",

@@ -131,6 +131,7 @@
       "InjectionToken",
       "Injector",
       "InputFlags",
+      "IsolatedStyleScopeService",
       "KeyEventsPlugin",
       "LEAVE_CLASSNAME",
       "LEAVE_TOKEN",
