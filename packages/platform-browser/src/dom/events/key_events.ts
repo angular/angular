@@ -9,7 +9,7 @@
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
 import {Inject, Injectable, type ListenerOptions, NgZone} from '@angular/core';
 
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin} from './event_manager_plugin';
 
 /**
  * Defines supported modifiers for key events.
