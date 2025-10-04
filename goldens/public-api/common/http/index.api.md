@@ -2677,6 +2677,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2698,6 +2699,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
     });
     constructor(method: 'POST', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -2714,6 +2716,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2735,6 +2738,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
     });
     constructor(method: string, url: string, body: T | null, init?: {
         headers?: HttpHeaders;
@@ -2751,6 +2755,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2776,6 +2781,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
         transferCache?: {
             includeHeaders?: string[];
         } | boolean;
@@ -2804,6 +2810,7 @@ export class HttpRequest<T> {
         redirect?: RequestRedirect;
         referrer?: string;
         integrity?: string;
+        referrerPolicy?: ReferrerPolicy;
         withCredentials?: boolean;
         credentials?: RequestCredentials;
         transferCache?: {
@@ -2832,6 +2839,7 @@ export class HttpRequest<T> {
     readonly priority: RequestPriority;
     readonly redirect: RequestRedirect;
     readonly referrer: string;
+    readonly referrerPolicy: ReferrerPolicy;
     readonly reportProgress: boolean;
     readonly responseType: 'arraybuffer' | 'blob' | 'json' | 'text';
     serializeBody(): ArrayBuffer | Blob | FormData | URLSearchParams | string | null;
