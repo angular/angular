@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ENVIRONMENT_INITIALIZER} from './di/initializer_token';
 import {InjectionToken} from './di/injection_token';
 import {inject} from './di/injector_compatibility';
 import type {EnvironmentProviders} from './di/interface/provider';
@@ -89,7 +88,7 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
 );
 
 export const errorHandlerEnvironmentInitializer = {
-  provide: ENVIRONMENT_INITIALIZER,
+  provide: provideEnvironmentInitializer,
   useValue: () => {
     const handler = inject(ErrorHandler, {optional: true});
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && handler === null) {
