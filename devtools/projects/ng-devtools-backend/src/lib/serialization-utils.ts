@@ -7,31 +7,45 @@
  */
 
 export function sanitizeObject(obj: any): any {
-  if (obj === null || typeof obj !== 'object') {
-    return isPortSerializable(obj) ? obj : '[Non-serializable data]';
+  // Keep track of visited objects to detect circular references.
+  const seen = new WeakSet();
+
+  function recurse(value: any): any {
+    // Primitives and null
+    if (value === null || typeof value !== 'object') {
+      // Some primitives are not serializable
+      if (
+        typeof value === 'function' ||
+        typeof value === 'symbol' ||
+        typeof value === 'bigint' ||
+        value === undefined
+      ) {
+        return '[Non-serializable data]';
+      }
+
+      // Most other primitives are serializable
+      return value;
+    }
+
+    // Down here we only have objects
+    // Check for circular references
+    if (seen.has(value)) {
+      return '[Circular]';
+    }
+    seen.add(value);
+
+    // Recursively serialize arrays
+    if (Array.isArray(value)) {
+      return value.map(recurse);
+    }
+
+    // Recursively serialize objects
+    const result: Record<string, any> = {};
+    for (const [key, propValue] of Object.entries(value)) {
+      result[key] = recurse(propValue);
+    }
+    return result;
   }
 
-  if (Array.isArray(obj)) {
-    return obj.map(sanitizeObject);
-  }
-
-  const result: Record<string, any> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    result[key] = isPortSerializable(value) ? value : '[Non-serializable data]';
-  }
-  return result;
-}
-
-// This is specific to chrome.runtime.Port which like JSON.stringify, cannot serialize cyclic objects
-function isPortSerializable(value: any): boolean {
-  if (typeof value === 'function') {
-    return false; // Functions are not serializable but JSON.stringify doesn't throw, it strips them out
-  }
-
-  try {
-    JSON.stringify(value); // This mimics the runtime's limitations closely
-    return true;
-  } catch {
-    return false;
-  }
+  return recurse(obj);
 }
