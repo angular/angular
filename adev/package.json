@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "@algolia/client-search": "5.39.0",
-    "@angular-devkit/build-angular": "21.0.0-next.5",
+    "@angular-devkit/build-angular": "21.0.0-next.6",
     "@angular/animations": "workspace:*",
-    "@angular/build": "21.0.0-next.5",
+    "@angular/build": "21.0.0-next.6",
     "@angular/cdk": "21.0.0-next.6",
-    "@angular/cli": "21.0.0-next.5",
+    "@angular/cli": "21.0.0-next.6",
     "@angular/common": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
     "@angular/compiler": "workspace:*",
@@ -16,7 +16,7 @@
     "@angular/platform-browser": "workspace:*",
     "@angular/platform-server": "workspace:*",
     "@angular/router": "workspace:*",
-    "@angular/ssr": "21.0.0-next.5",
+    "@angular/ssr": "21.0.0-next.6",
     "@codemirror/autocomplete": "6.19.0",
     "@codemirror/commands": "6.9.0",
     "@codemirror/lang-angular": "0.1.4",
