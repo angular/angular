@@ -15,6 +15,7 @@ import {
   NgValidationError,
   patternError,
   requiredError,
+  TreeValidationResult,
   validate,
   validateAsync,
   validateTree,
@@ -188,7 +189,8 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
         },
         {injector},
@@ -233,11 +235,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+              onError: () => null
           });
         },
         {injector},
@@ -282,11 +285,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+              onError: () => null
           });
         },
         {injector},
@@ -334,11 +338,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
+            onSuccess: (errs, {fieldOf}) =>
               errs.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+            onError: () => null
           });
         },
         {injector},
@@ -383,7 +388,8 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
         },
         {injector},
@@ -443,7 +449,8 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]))),
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
         },
         {injector},
@@ -470,7 +477,8 @@ describe('validation status', () => {
                 params,
                 loader: () => promise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
           validateAsync(p, {
             params: () => [],
@@ -479,7 +487,8 @@ describe('validation status', () => {
                 params,
                 loader: () => promise2,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
         },
         {injector},
@@ -514,7 +523,8 @@ describe('validation status', () => {
                 params,
                 loader: () => invalidPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
           validateAsync(p, {
             params: () => [],
@@ -523,7 +533,8 @@ describe('validation status', () => {
                 params,
                 loader: () => validPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
           validateAsync(p, {
             params: () => [],
@@ -532,7 +543,8 @@ describe('validation status', () => {
                 params,
                 loader: () => pendingPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (errs) => errs as TreeValidationResult,
+            onError: (errs) => errs as TreeValidationResult
           });
         },
         {injector},
