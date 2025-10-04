@@ -25,7 +25,7 @@ describe('sanitizeObject', () => {
       baz: 42,
       qux: true,
       quux: null,
-      corge: undefined,
+      corge: '[Non-serializable data]',
       grault: [1, 2, 3],
       garply: {a: 'a', b: 'b'},
     });
@@ -43,6 +43,22 @@ describe('sanitizeObject', () => {
     });
   });
 
+  it('should remove nested function', () => {
+    const foo = {
+      bar: 'bar',
+      baz: {
+        qux: () => 'qux',
+      },
+    };
+
+    expect(sanitizeObject(foo)).toEqual({
+      bar: 'bar',
+      baz: {
+        qux: '[Non-serializable data]',
+      },
+    });
+  });
+
   it('should strip cyclic references', () => {
     const bar: any = {foo: null};
     const foo = {
@@ -51,7 +67,9 @@ describe('sanitizeObject', () => {
     bar.foo = foo;
 
     expect(sanitizeObject(foo)).toEqual({
-      bar: '[Non-serializable data]',
+      bar: {
+        foo: '[Circular]',
+      },
     });
   });
 });
