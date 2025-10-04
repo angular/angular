@@ -13,7 +13,7 @@ copy_to_bin(
 )
 
 ts_project(
-    name = "router-testing-migration",
+    name = "router-testing-module-migration",
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/@angular-devkit/schematics",

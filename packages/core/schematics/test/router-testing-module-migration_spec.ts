@@ -25,7 +25,7 @@ describe('Router testing migration', () => {
   }
 
   function runMigration(path?: string) {
-    return runner.runSchematic('router-testing-migration', {path}, tree);
+    return runner.runSchematic('router-testing-module-migration', {path}, tree);
   }
 
   function stripWhitespace(content: string): string {
@@ -256,7 +256,7 @@ describe('Router testing migration', () => {
       );
     });
 
-  it('should migrate RouterTestingModule.withRoutes(routes, options) and preserve the options argument', async () => {
+    it('should migrate RouterTestingModule.withRoutes(routes, options) and preserve the options argument', async () => {
       writeFile(
         '/app.component.spec.ts',
         `
@@ -298,7 +298,7 @@ describe('Router testing migration', () => {
       );
     });
 
-  it('should migrate RouterTestingModule.withRoutes([], options) and preserve the options argument', async () => {
+    it('should migrate RouterTestingModule.withRoutes([], options) and preserve the options argument', async () => {
       writeFile(
         '/app.component.spec.ts',
         `
@@ -490,7 +490,7 @@ describe('Router testing migration', () => {
       await runMigration();
       const content = tree.readContent('/app.component.spec.ts');
 
-      expect(content.replace(/\s+/g, ' ')).toBe(original.replace(/\s+/g, ' '));
+      expect(stripWhitespace(content)).toBe(stripWhitespace(original));
     });
 
     it('should not process non-spec files', async () => {
@@ -505,12 +505,12 @@ describe('Router testing migration', () => {
       await runMigration();
       const content = tree.readContent('/helper.ts');
 
-      expect(content.replace(/\s+/g, ' ')).toBe(original.replace(/\s+/g, ' '));
+      expect(stripWhitespace(content)).toBe(stripWhitespace(original));
     });
   });
 
-  describe('Location and LocationStrategy support', () => {
-    it('should add provideLocationMocks when Location is imported', async () => {
+  describe('provideLocationMocks support', () => {
+    it('should not add provideLocationMocks when only `Location` is used', async () => {
       writeFile(
         '/test.spec.ts',
         `
@@ -522,8 +522,13 @@ describe('Router testing migration', () => {
          let mockLocation: Location;
           beforeEach(() => {
             TestBed.configureTestingModule({
-              imports: [RouterTestingModule]
+              imports: [RouterTestingModule],
+              providers: [Location]
             });
+            mockLocation = TestBed.inject(Location);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
           });
         });
       `,
@@ -533,11 +538,11 @@ describe('Router testing migration', () => {
       const content = tree.readContent('/test.spec.ts');
 
       expect(content).not.toContain('RouterTestingModule');
+      expect(content).not.toContain('provideLocationMocks');
 
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { provideLocationMocks } from '@angular/common/testing';
         import { TestBed } from '@angular/core/testing';
         import { Location } from '@angular/common';
 
@@ -546,28 +551,37 @@ describe('Router testing migration', () => {
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [RouterModule],
-              providers: [provideLocationMocks()]
+              providers: [Location]
             });
+            mockLocation = TestBed.inject(Location);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
           });
         });
         `),
       );
     });
 
-    it('should add provideLocationMocks when LocationStrategy is imported', async () => {
+    it('should not add provideLocationMocks when only `LocationStrategy` is used', async () => {
       writeFile(
         '/test.spec.ts',
         `
         import { TestBed } from '@angular/core/testing';
         import { RouterTestingModule } from '@angular/router/testing';
         import { LocationStrategy } from '@angular/common';
-
+ 
         describe('test', () => {
           let mockLocationStrategy: LocationStrategy;
           beforeEach(() => {
             TestBed.configureTestingModule({
-              imports: [RouterTestingModule]
+              imports: [RouterTestingModule],
+              providers: [LocationStrategy]
             });
+            mockLocationStrategy = TestBed.inject(LocationStrategy);
+          });
+          it('test', () => {
+            expect(mockLocationStrategy.path()).toBeDefined();
           });
         });
       `,
@@ -577,11 +591,11 @@ describe('Router testing migration', () => {
       const content = tree.readContent('/test.spec.ts');
 
       expect(content).not.toContain('RouterTestingModule');
+      expect(content).not.toContain('provideLocationMocks');
 
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { provideLocationMocks } from '@angular/common/testing';
         import { TestBed } from '@angular/core/testing';
         import { LocationStrategy } from '@angular/common';
 
@@ -590,15 +604,19 @@ describe('Router testing migration', () => {
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [RouterModule],
-              providers: [provideLocationMocks()]
+              providers: [LocationStrategy]
             });
+            mockLocationStrategy = TestBed.inject(LocationStrategy);
+          });
+          it('test', () => {
+            expect(mockLocationStrategy.path()).toBeDefined();
           });
         });
         `),
       );
     });
 
-    it('should add provideLocationMocks when both Location and LocationStrategy are imported', async () => {
+    it('should not add provideLocationMocks when both `Location` and `LocationStrategy` are provided', async () => {
       writeFile(
         '/test.spec.ts',
         `
@@ -611,8 +629,15 @@ describe('Router testing migration', () => {
           let mockLocationStrategy: LocationStrategy;
           beforeEach(() => {
             TestBed.configureTestingModule({
-              imports: [RouterTestingModule]
+              imports: [RouterTestingModule],
+              providers: [LocationStrategy,Location]
             });
+            mockLocation = TestBed.inject(Location);
+            mockLocationStrategy = TestBed.inject(LocationStrategy);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
+            expect(mockLocationStrategy.path()).toBeDefined();
           });
         });
       `,
@@ -621,11 +646,11 @@ describe('Router testing migration', () => {
       await runMigration();
       const content = tree.readContent('/test.spec.ts');
 
-      expect(content).not.toContain('RouterTestingModule');
+      expect(content).not.toContain('provideLocationMocks');
+
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { provideLocationMocks } from '@angular/common/testing';
         import { TestBed } from '@angular/core/testing';
         import { Location, LocationStrategy } from '@angular/common';
 
@@ -635,15 +660,21 @@ describe('Router testing migration', () => {
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [RouterModule],
-              providers: [provideLocationMocks()]
+              providers: [LocationStrategy,Location]
             });
+            mockLocation = TestBed.inject(Location);
+            mockLocationStrategy = TestBed.inject(LocationStrategy);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
+            expect(mockLocationStrategy.path()).toBeDefined();
           });
         });
         `),
       );
     });
 
-    it('should add provideLocationMocks to existing providers array', async () => {
+    it('should not add provideLocationMocks when `Location` is imported but only other providers are present', async () => {
       writeFile(
         '/test.spec.ts',
         `
@@ -659,6 +690,10 @@ describe('Router testing migration', () => {
               imports: [RouterTestingModule],
               providers: [ViewportScroller]
             });
+            mockLocation = TestBed.inject(Location);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
           });
         });
       `,
@@ -667,11 +702,11 @@ describe('Router testing migration', () => {
       await runMigration();
       const content = tree.readContent('/test.spec.ts');
       expect(content).not.toContain('RouterTestingModule');
+      expect(content).not.toContain('provideLocationMocks');
 
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { provideLocationMocks } from '@angular/common/testing';
         import { TestBed } from '@angular/core/testing';
         import { Location, ViewportScroller } from '@angular/common';
 
@@ -681,214 +716,120 @@ describe('Router testing migration', () => {
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [RouterModule],
-              providers: [ViewportScroller,provideLocationMocks()]
+              providers: [ViewportScroller]
             });
+            mockLocation = TestBed.inject(Location);
+          });
+          it('test', () => {
+            expect(mockLocation.onUrlChange).toBeDefined();
           });
         });
         `),
       );
     });
 
-    it('should add provideLocationMocks with other imports preserved', async () => {
+    it('should add provideLocationMocks when `SpyLocation` is used and its `urlChanges` property is accessed (preserving other imports)', async () => {
       writeFile(
         '/test.spec.ts',
         `
         import { TestBed } from '@angular/core/testing';
         import { RouterTestingModule } from '@angular/router/testing';
         import { HttpClientTestingModule } from '@angular/common/http/testing';
-        import { Location } from '@angular/common';
+        import { SpyLocation } from '@angular/common/testing';
 
-        describe('test', () => {
-          let mockLocation: Location;  
+        describe('SpyLocation with use urlChanges', () => {
+          let spy: SpyLocation;
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [HttpClientTestingModule, RouterTestingModule]
             });
+            spy = TestBed.inject(SpyLocation);
           });
+
+          it('dummy', () => expect(spy.urlChanges).toBeDefined());
         });
       `,
       );
 
       await runMigration();
       const content = tree.readContent('/test.spec.ts');
+
       expect(content).not.toContain('RouterTestingModule');
 
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { provideLocationMocks } from '@angular/common/testing';
         import { TestBed } from '@angular/core/testing';
         import { HttpClientTestingModule } from '@angular/common/http/testing';
-        import { Location } from '@angular/common';
+        import { SpyLocation, provideLocationMocks } from '@angular/common/testing';
 
-        describe('test', () => {
-          let mockLocation: Location;
+        describe('SpyLocation with use urlChanges', () => {
+          let spy: SpyLocation;
           beforeEach(() => {
             TestBed.configureTestingModule({
               imports: [HttpClientTestingModule, RouterModule],
               providers: [provideLocationMocks()]
             });
+            spy = TestBed.inject(SpyLocation);
           });
+
+          it('dummy', () => expect(spy.urlChanges).toBeDefined());
         });
         `),
       );
     });
 
-    it('should not add a provideLocationMocks if already present', async () => {
-      writeFile(
-        '/test.spec.ts',
-        `
+    it('should not add provideLocationMocks again if it is already present and `SpyLocation.urlChanges` is used', async () => {
+      const original = `
         import { TestBed } from '@angular/core/testing';
-        import { provideLocationMocks } from '@angular/common/testing';
+        import { SpyLocation, provideLocationMocks } from '@angular/common/testing';
         import { Location } from '@angular/common';
-
+        
         describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [provideLocationMocks()]
-            });
-          });
-        });
-      `,
-      );
-
-      await runMigration();
-      const content = tree.readContent('/test.spec.ts');
-
-      expect(stripWhitespace(content)).toContain(
-        stripWhitespace(`
-        import { TestBed } from '@angular/core/testing';
-        import { provideLocationMocks } from '@angular/common/testing';
-        import { Location } from '@angular/common';
-
-        describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [provideLocationMocks()]
-            });
-          });
-        });
-        `),
-      );
-    });
-
-  it('should not add provideLocationMocks when Location is already provided', async () => {
-      writeFile(
-        '/test.spec.ts',
-        `
-        import { TestBed } from '@angular/core/testing';
-        import { Location } from '@angular/common';
-
-        describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [{ provide: Location, useValue: { path: () => '/test' } }],
-            });
-          });
-        });
-      `,
-      );
-
-      await runMigration();
-      const content = tree.readContent('/test.spec.ts');
-      expect(content).not.toContain('provideLocationMocks');
-
-      expect(stripWhitespace(content)).toContain(
-        stripWhitespace(`
-        import { TestBed } from '@angular/core/testing';
-        import { Location } from '@angular/common';
-
-        describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [{ provide: Location, useValue: { path: () => '/test' } }],
-            });
-          });
-        });
-        `),
-      );
-    });
-
-  it('should not add provideLocationMocks when LocationStrategy is already provided', async () => {
-      writeFile(
-        '/test.spec.ts',
-        `
-        import { TestBed } from '@angular/core/testing';
-        import { Location } from '@angular/common';
-
-        describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [{ provide: LocationStrategy, useValue: { path: () => '/test' } }]
-            });
-          });
-        });
-      `,
-      );
-
-      await runMigration();
-      const content = tree.readContent('/test.spec.ts');
-      expect(content).not.toContain('provideLocationMocks');
-
-      expect(stripWhitespace(content)).toContain(
-        stripWhitespace(`
-        import { TestBed } from '@angular/core/testing';
-        import { Location } from '@angular/common';
-
-        describe('test', () => {
-          let mockLocation: Location;  
-          beforeEach(() => {
-            TestBed.configureTestingModule({
-              providers: [{ provide: LocationStrategy, useValue: { path: () => '/test' } }]
-            });
-          });
-        });
-        `),
-      );
-    });
-
-  it('should not add provideLocationMocks when both Location and LocationStrategy have custom providers', async () => {
-      writeFile(
-        '/test.spec.ts',
-        `
-        import { RouterTestingModule } from '@angular/router/testing';
-        import { Location, LocationStrategy } from '@angular/common';
-        import { TestBed } from '@angular/core/testing';
-
-        describe('Module route', () => {
-          let mockLocationStrategy: LocationStrategy;
           let mockLocation: Location;
+          let spy: SpyLocation;
           beforeEach(() => {
             TestBed.configureTestingModule({
-              imports: [RouterTestingModule],
-              providers: [
-                {
-                  provide: LocationStrategy,
-                  useValue: {
-                    path: () => {
-                      return '';
-                    },
-                  },
-                },
-                {
-                  provide: Location,
-                  useValue: {
-                    path: () => {
-                      return '';
-                    },
-                  },
-                },
-              ],
+              providers: [provideLocationMocks()]
             });
+            spy = TestBed.inject(SpyLocation);
+            mockLocation = TestBed.inject(Location);
           });
 
-          it('dummy: should be true', () => {
-            expect(true).toBeTrue();
+          it('test', () => {
+            expect(spy.urlChanges).toBeDefined();
+            expect(mockLocation.onUrlChange).toBeDefined();
+          });
+        });
+      `;
+
+      writeFile('/test.spec.ts', original);
+
+      await runMigration();
+
+      const content = tree.readContent('/test.spec.ts');
+
+      expect(stripWhitespace(content)).toContain(stripWhitespace(original));
+    });
+
+    it('should not add provideLocationMocks when `SpyLocation` is imported but `urlChanges` is not accessed', async () => {
+      writeFile(
+        '/test.spec.ts',
+        `
+        import { TestBed } from '@angular/core/testing';
+        import { RouterTestingModule } from '@angular/router/testing';
+        import { SpyLocation } from '@angular/common/testing';
+
+        describe('test', () => {
+          let spyLocation: SpyLocation;
+          beforeEach(() => {
+            TestBed.configureTestingModule({
+              imports: [RouterTestingModule]
+            });
+            spyLocation = TestBed.inject(SpyLocation);
+          });
+          it('test', () => {
+            expect(spyLocation.path()).toBe('/');
           });
         });
       `,
@@ -897,44 +838,82 @@ describe('Router testing migration', () => {
       await runMigration();
       const content = tree.readContent('/test.spec.ts');
 
+      expect(content).not.toContain('RouterTestingModule');
       expect(content).not.toContain('provideLocationMocks');
+
+      expect(stripWhitespace(content)).toContain(
+        stripWhitespace(`
+        import { RouterModule } from '@angular/router';
+        import { TestBed } from '@angular/core/testing';
+        import { SpyLocation } from '@angular/common/testing';
+
+        describe('test', () => {
+          let spyLocation: SpyLocation;
+          beforeEach(() => {
+            TestBed.configureTestingModule({
+              imports: [RouterModule]
+            });
+            spyLocation = TestBed.inject(SpyLocation);
+          });
+          it('test', () => {
+            expect(spyLocation.path()).toBe('/');
+          });
+        });
+        `),
+      );
+    });
+
+    it('should add provideLocationMocks when RouterTestingModule.withRoutes(routes, options) is used and `SpyLocation.urlChanges` is accessed', async () => {
+      writeFile(
+        '/test.spec.ts',
+        `
+        import { TestBed } from '@angular/core/testing';
+        import { RouterTestingModule } from '@angular/router/testing';
+        import { SpyLocation } from '@angular/common/testing';
+
+        const routes = [{path: 'test', component: TestComponent}];
+
+        describe('test', () => {
+          let spy: SpyLocation;
+          beforeEach(() => {
+            TestBed.configureTestingModule({
+              imports: [RouterTestingModule.withRoutes(routes , { useHash: true })]
+            });
+            spy = TestBed.inject(SpyLocation);
+            spy.urlChanges;
+          });
+          it('test', () => {
+            expect(spy.urlChanges).toBeDefined();
+          });
+        });
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/test.spec.ts');
+
       expect(content).not.toContain('RouterTestingModule');
 
       expect(stripWhitespace(content)).toContain(
         stripWhitespace(`
         import { RouterModule } from '@angular/router';
-        import { Location, LocationStrategy } from '@angular/common';
         import { TestBed } from '@angular/core/testing';
+        import { SpyLocation, provideLocationMocks } from '@angular/common/testing';
 
-        describe('Module route', () => {
-          let mockLocationStrategy: LocationStrategy;
-          let mockLocation: Location;
+        const routes = [{path: 'test', component: TestComponent}];
+
+        describe('test', () => {
+          let spy: SpyLocation;
           beforeEach(() => {
             TestBed.configureTestingModule({
-              imports: [RouterModule],
-              providers: [
-                {
-                  provide: LocationStrategy,
-                  useValue: {
-                    path: () => {
-                      return '';
-                    },
-                  },
-                },
-                {
-                  provide: Location,
-                  useValue: {
-                    path: () => {
-                      return '';
-                    },
-                  },
-                },
-              ],
+              imports: [RouterModule.forRoot(routes, { useHash: true })],
+              providers: [provideLocationMocks()]
             });
+            spy = TestBed.inject(SpyLocation);
+            spy.urlChanges;
           });
-
-          it('dummy: should be true', () => {
-            expect(true).toBeTrue();
+          it('test', () => {
+            expect(spy.urlChanges).toBeDefined();
           });
         });
         `),

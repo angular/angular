@@ -64,7 +64,7 @@ export class RouterTestingModuleMigration extends TsurgeFunnelMigration<
         processRouterTestingModuleUsage(usage, sourceFile, info, importManager, replacements);
         migratedUsages.push(usage);
 
-        if (usage.hasLocationOrLocationStrategyImport && !usage.hasExistingLocationProviders) {
+        if (usage.usesSpyLocationUrlChanges) {
           filesWithLocationMocks.set(sourceFile.fileName, true);
         }
       }

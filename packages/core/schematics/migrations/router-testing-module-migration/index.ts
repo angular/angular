@@ -56,7 +56,7 @@ export function migrate(options: Options): Rule {
         );
         if (stats.counters.filesWithLocationMocks > 0) {
           context.logger.info(
-            `  -> Added provideLocationMocks() to ${stats.counters.filesWithLocationMocks} files with Location/LocationStrategy imports.`,
+            `  -> Added provideLocationMocks() to ${stats.counters.filesWithLocationMocks} files with SpyLocation.urlChanges usage.`,
           );
         }
       },

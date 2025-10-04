@@ -70,10 +70,10 @@
       "schema": "./migrations/ngstyle-to-style-migration/schema.json",
       "aliases": ["ngstyle-to-style"]
     },
-    "router-testing-migration": {
+    "router-testing-module-migration": {
       "description": "Replaces deprecated RouterTestingModule with provideRouter() as recommended in the deprecation note",
-      "factory": "./bundles/router-testing-migration.cjs#migrate",
-      "schema": "./migrations/router-testing-migration/schema.json"
+      "factory": "./bundles/router-testing-module-migration.cjs#migrate",
+      "schema": "./migrations/router-testing-module-migration/schema.json"
     }
   }
 }
