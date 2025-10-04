@@ -284,7 +284,7 @@ importers:
         version: 4.52.4
       rollup-plugin-dts:
         specifier: ^6.1.1
-        version: 6.2.3(rollup@4.52.3)(typescript@5.9.3)
+        version: 6.2.3(rollup@4.52.4)(typescript@5.9.3)
       rollup-plugin-preserve-shebang:
         specifier: ^1.0.1
         version: 1.0.1
@@ -25052,6 +25052,14 @@ snapshots:
     optionalDependencies:
       '@babel/code-frame': 7.27.1
 
+  rollup-plugin-dts@6.2.3(rollup@4.52.4)(typescript@5.9.3):
+    dependencies:
+      magic-string: 0.30.19
+      rollup: 4.52.4
+      typescript: 5.9.3
+    optionalDependencies:
+      '@babel/code-frame': 7.27.1
+
   rollup-plugin-node-resolve@4.2.4:
     dependencies:
       '@types/resolve': 0.0.8
@@ -27007,7 +27015,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.52.3
+      rollup: 4.52.4
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 24.6.2

@@ -45,9 +45,10 @@ importers:
       '@rollup/plugin-babel':
         specifier: ^6.0.0
         version: 6.0.4(@babel/core@7.28.4)(rollup@4.52.4)
+        version: 6.0.4(@babel/core@7.28.4)(rollup@4.52.4)
       '@rollup/plugin-node-resolve':
         specifier: ^16.0.0
-        version: 16.0.2(rollup@4.52.4)
+        version: 16.0.1(rollup@4.52.4)
       '@types/jasmine':
         specifier: ^5.0.0
         version: 5.1.9
@@ -1615,8 +1616,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@rollup/plugin-node-resolve@16.0.2(rollup@4.52.4)':
+  '@rollup/plugin-node-resolve@16.0.1(rollup@4.52.4)':
     dependencies:
+      '@rollup/pluginutils': 5.3.0(rollup@4.52.4)
       '@rollup/pluginutils': 5.3.0(rollup@4.52.4)
       '@types/resolve': 1.20.2
       deepmerge: 4.3.1
