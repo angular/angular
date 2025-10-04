@@ -224,4 +224,41 @@ describe('signals', () => {
     expect(producerKindsCreated).toEqual(['signal']);
     setPostProducerCreatedFn(prev);
   });
+
+  describe('signal() with optional initial value', () => {
+    it('should create signal with undefined initial value', () => {
+      const s = signal<string>();
+      expect(s()).toBe(undefined);
+
+      s.set('hello');
+      expect(s()).toBe('hello');
+
+      s.update((val) => val + ' world');
+      expect(s()).toBe('hello world');
+    });
+
+    it('should create signal with explicit initial value', () => {
+      const s = signal('initial');
+      expect(s()).toBe('initial');
+    });
+
+    it('should create signal with explicit undefined and options', () => {
+      const s = signal<string>(undefined, {debugName: 'test-signal'});
+      expect(s()).toBe(undefined);
+
+      if (ngDevMode) {
+        expect(s.toString()).toContain('test-signal');
+      }
+    });
+
+    it('should work with asReadonly()', () => {
+      const s = signal<number>();
+      const readonly = s.asReadonly();
+
+      expect(readonly()).toBe(undefined);
+
+      s.set(42);
+      expect(readonly()).toBe(42);
+    });
+  });
 });

@@ -1717,7 +1717,17 @@ export type Signal<T> = (() => T) & {
 };
 
 // @public
-export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
+export const signal: SignalFunction;
+
+// @public
+export interface SignalFunction {
+  <T>(): WritableSignal<T | undefined>;
+  <T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
+  <T>(
+    initialValue: undefined,
+    options?: CreateSignalOptions<T | undefined>,
+  ): WritableSignal<T | undefined>;
+}
 
 // @public
 export class SimpleChange {
