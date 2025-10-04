@@ -78,12 +78,12 @@ export class Navigation {
   readonly APPLE_SEARCH_LABEL = `⌘`;
   readonly DEFAULT_SEARCH_LABEL = `ctrl`;
 
-  activeRouteItem = this.navigationState.primaryActiveRouteItem;
-  protected theme = this.themeManager.theme;
-  protected openedMenu = signal<MenuType | null>(null);
+  readonly activeRouteItem = this.navigationState.primaryActiveRouteItem;
+  protected readonly theme = this.themeManager.theme;
+  protected readonly openedMenu = signal<MenuType | null>(null);
 
-  protected currentDocsVersion = this.versionManager.currentDocsVersion;
-  protected currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
+  protected readonly currentDocsVersion = this.versionManager.currentDocsVersion;
+  protected readonly currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   protected searchLabel = this.isBrowser
