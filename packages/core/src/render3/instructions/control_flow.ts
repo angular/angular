@@ -39,15 +39,15 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareNoDirectiveHostTemplate} from './template';
+import {AnimationLViewData} from '../../animation/interfaces';
+import {removeDehydratedViews} from '../../hydration/cleanup';
 import {
   addLViewToLContainer,
   detachView,
   getLViewFromLContainer,
   removeLViewFromLContainer,
 } from '../view/container';
-import {removeDehydratedViews} from '../../hydration/cleanup';
-import {AnimationLViewData} from '../../animation/interfaces';
+import {declareNoDirectiveHostTemplate} from './template';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -474,59 +474,59 @@ class LiveCollectionLContainerImpl extends LiveCollection<
  * @codeGenApi
  */
 export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): void {
-  const prevConsumer = setActiveConsumer(null);
   const metadataSlotIdx = getSelectedIndex();
-  try {
-    const hostLView = getLView();
-    const hostTView = hostLView[TVIEW];
-    const metadata = hostLView[metadataSlotIdx] as RepeaterMetadata;
-    const containerIndex = metadataSlotIdx + 1;
-    const lContainer = getLContainer(hostLView, containerIndex);
+  const hostLView = getLView();
+  const hostTView = hostLView[TVIEW];
+  const metadata = hostLView[metadataSlotIdx] as RepeaterMetadata;
+  const containerIndex = metadataSlotIdx + 1;
+  const lContainer = getLContainer(hostLView, containerIndex);
 
-    if (metadata.liveCollection === undefined) {
-      const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
-      metadata.liveCollection = new LiveCollectionLContainerImpl(
-        lContainer,
-        hostLView,
-        itemTemplateTNode,
-      );
-    } else {
-      metadata.liveCollection.reset();
-    }
+  if (metadata.liveCollection === undefined) {
+    const itemTemplateTNode = getExistingTNode(hostTView, containerIndex);
+    metadata.liveCollection = new LiveCollectionLContainerImpl(
+      lContainer,
+      hostLView,
+      itemTemplateTNode,
+    );
+  } else {
+    metadata.liveCollection.reset();
+  }
 
-    const liveCollection = metadata.liveCollection;
-    reconcile(liveCollection, collection, metadata.trackByFn);
+  const liveCollection = metadata.liveCollection;
+  reconcile(liveCollection, collection, metadata.trackByFn);
 
-    // Warn developers about situations where the entire collection was re-created as part of the
-    // reconciliation pass. Note that this warning might be "overreacting" and report cases where
-    // the collection re-creation is the intended behavior. Still, the assumption is that most of
-    // the time it is undesired.
-    if (
-      ngDevMode &&
-      metadata.trackByFn === ɵɵrepeaterTrackByIdentity &&
-      liveCollection.operationsCounter?.wasReCreated(liveCollection.length) &&
-      isViewExpensiveToRecreate(getExistingLViewFromLContainer(lContainer, 0))
-    ) {
-      const message = formatRuntimeError(
-        RuntimeErrorCode.LOOP_TRACK_RECREATE,
-        `The configured tracking expression (track by identity) caused re-creation of the entire collection of size ${liveCollection.length}. ` +
-          'This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. ' +
-          'Please review the "track expression" and make sure that it uniquely identifies items in a collection.',
-      );
-      console.warn(message);
-    }
+  // Warn developers about situations where the entire collection was re-created as part of the
+  // reconciliation pass. Note that this warning might be "overreacting" and report cases where
+  // the collection re-creation is the intended behavior. Still, the assumption is that most of
+  // the time it is undesired.
+  if (
+    ngDevMode &&
+    metadata.trackByFn === ɵɵrepeaterTrackByIdentity &&
+    liveCollection.operationsCounter?.wasReCreated(liveCollection.length) &&
+    isViewExpensiveToRecreate(getExistingLViewFromLContainer(lContainer, 0))
+  ) {
+    const message = formatRuntimeError(
+      RuntimeErrorCode.LOOP_TRACK_RECREATE,
+      `The configured tracking expression (track by identity) caused re-creation of the entire collection of size ${liveCollection.length}. ` +
+        'This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. ' +
+        'Please review the "track expression" and make sure that it uniquely identifies items in a collection.',
+    );
+    console.warn(message);
+  }
 
-    // moves in the container might caused context's index to get out of order, re-adjust if needed
-    liveCollection.updateIndexes();
+  // moves in the container might caused context's index to get out of order, re-adjust if needed
+  liveCollection.updateIndexes();
 
-    // handle empty blocks
-    if (metadata.hasEmptyBlock) {
-      const bindingIndex = nextBindingIndex();
-      const isCollectionEmpty = liveCollection.length === 0;
-      if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
-        const emptyTemplateIndex = metadataSlotIdx + 2;
-        const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
-        if (isCollectionEmpty) {
+  // handle empty blocks
+  if (metadata.hasEmptyBlock) {
+    const bindingIndex = nextBindingIndex();
+    const isCollectionEmpty = liveCollection.length === 0;
+    if (bindingUpdated(hostLView, bindingIndex, isCollectionEmpty)) {
+      const emptyTemplateIndex = metadataSlotIdx + 2;
+      const lContainerForEmpty = getLContainer(hostLView, emptyTemplateIndex);
+      if (isCollectionEmpty) {
+        const prevConsumer = setActiveConsumer(null);
+        try {
           const emptyTemplateTNode = getExistingTNode(hostTView, emptyTemplateIndex);
           const dehydratedView = findAndReconcileMatchingDehydratedViews(
             lContainerForEmpty,
@@ -545,21 +545,21 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
             0,
             shouldAddViewToDom(emptyTemplateTNode, dehydratedView),
           );
-        } else {
-          // we know that an ssrId was generated for the empty template, but
-          // we were unable to match it to a dehydrated view earlier, which
-          // means that we may have changed branches between server and client.
-          // We'll need to find and remove the stale empty template view.
-          if (hostTView.firstUpdatePass) {
-            removeDehydratedViews(lContainerForEmpty);
-          }
-
-          removeLViewFromLContainer(lContainerForEmpty, 0);
+        } finally {
+          setActiveConsumer(prevConsumer);
         }
+      } else {
+        // we know that an ssrId was generated for the empty template, but
+        // we were unable to match it to a dehydrated view earlier, which
+        // means that we may have changed branches between server and client.
+        // We'll need to find and remove the stale empty template view.
+        if (hostTView.firstUpdatePass) {
+          removeDehydratedViews(lContainerForEmpty);
+        }
+
+        removeLViewFromLContainer(lContainerForEmpty, 0);
       }
     }
-  } finally {
-    setActiveConsumer(prevConsumer);
   }
 }
 
