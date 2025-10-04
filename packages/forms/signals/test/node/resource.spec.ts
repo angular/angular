@@ -175,6 +175,7 @@ describe('resources', () => {
             }),
           );
         },
+        onError: () => null
       });
     };
 
@@ -208,6 +209,7 @@ describe('resources', () => {
             field: fieldOf(p)[0],
           });
         },
+        onError: () => null
       });
     };
 

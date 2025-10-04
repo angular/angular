@@ -50,6 +50,7 @@ describe('submit', () => {
               loader: () => resolvers.promise,
             }),
           onSuccess: () => {},
+          onError: () => {}
         });
       },
       {injector: TestBed.inject(Injector)},
