@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {registerLocaleData} from '@angular/common';
+import {registerLocaleData, DatePipe} from '@angular/common';
 import {Component} from '@angular/core';
 // we need to import data for the french locale
 import localeFr from './locale-fr';
@@ -16,6 +16,7 @@ registerLocaleData(localeFr);
 
 @Component({
   selector: 'date-pipe',
+  imports: [DatePipe],
   template: `<div>
     <!--output 'Jun 15, 2015'-->
     <p>Today is {{ today | date }}</p>
@@ -41,7 +42,6 @@ registerLocaleData(localeFr);
       {{ fixedTimezone | date: 'yyyy-MM-dd HH:mm a z' : '+0900' }}
     </p>
   </div>`,
-  standalone: false,
 })
 export class DatePipeComponent {
   today = Date.now();
@@ -49,6 +49,7 @@ export class DatePipeComponent {
 }
 @Component({
   selector: 'deprecated-date-pipe',
+  imports: [DatePipe],
   template: `<div>
     <!--output 'Sep 3, 2010'-->
     <p>Today is {{ today | date }}</p>
@@ -62,7 +63,6 @@ export class DatePipeComponent {
     <!--output '2010-09-03 12:05 PM'-->
     <p>The custom date is {{ today | date: 'yyyy-MM-dd HH:mm a' }}</p>
   </div>`,
-  standalone: false,
 })
 export class DeprecatedDatePipeComponent {
   today = Date.now();

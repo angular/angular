@@ -31,7 +31,7 @@ import {
   readonly,
   required,
   type DisabledReason,
-  type Field,
+  type FieldTree,
   type FormCheckboxControl,
   type FormValueControl,
   type ValidationError,
@@ -44,7 +44,7 @@ import {
   imports: [Control],
 })
 class TestStringControl {
-  readonly control = input.required<Field<string>>();
+  readonly control = input.required<FieldTree<string>>();
   readonly controlDirective = viewChild.required(Control);
 }
 
@@ -333,7 +333,7 @@ describe('control directive', () => {
       template: `{{ control()().value() }}`,
     })
     class WrapperCmp {
-      readonly control = input.required<Field<string>>();
+      readonly control = input.required<FieldTree<string>>();
     }
 
     @Component({

@@ -25,7 +25,7 @@
     "@angular/cli": "21.0.0-next.5",
     "@angular/compiler-cli": "link:./in-existing-linked-by-bazel",
     "@types/node": "^20.14.8",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "packageManager": "pnpm@10.17.1"
 }

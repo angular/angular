@@ -41,6 +41,15 @@ export function convertToSignalInput(
   importManager: ImportManager,
   result: MigrationResult,
 ): Replacement[] {
+  // Check for 'this' references in initializer before doing anything else
+  if (
+    node.initializer &&
+    (ts.isArrowFunction(node.initializer) || ts.isFunctionExpression(node.initializer)) &&
+    containsThisReferences(node.initializer)
+  ) {
+    return []; // Skip migration for this input by returning empty replacements
+  }
+
   let optionsLiteral: ts.ObjectLiteralExpression | null = null;
 
   // We need an options array for the input because:
@@ -137,12 +146,31 @@ export function convertToSignalInput(
     modifiersWithoutInputDecorator.push(ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword));
   }
 
+  // Skip migration if the input is a function that references class members via 'this'
+  if (
+    inputInitializer &&
+    (ts.isArrowFunction(inputInitializer) || ts.isFunctionExpression(inputInitializer))
+  ) {
+    if (containsThisReferences(inputInitializer)) {
+      return []; // Skip migration for this input by returning empty replacements
+    }
+  }
+
+  let finalInitializer: ts.Expression | undefined = inputInitializer;
+  if (inputInitializer === undefined) {
+    if (preferShorthandIfPossible === null) {
+      finalInitializer = ts.factory.createIdentifier('undefined');
+    } else {
+      resolvedType = preferShorthandIfPossible.originalType;
+    }
+  }
+
   const newNode = ts.factory.createPropertyDeclaration(
     modifiersWithoutInputDecorator,
     node.name,
     undefined,
     undefined,
-    inputInitializer,
+    finalInitializer,
   );
 
   const newPropertyText = result.printer.printNode(
@@ -221,4 +249,45 @@ function extractTransformOfInput(
     node: ts.factory.createPropertyAssignment('transform', transformFn),
     leadingTodoText,
   };
+}
+
+/**
+ * Checks if a function node contains any references to 'this'.
+ * This is used to skip migration for functions that reference class members.
+ */
+function containsThisReferences(node: ts.Node): boolean {
+  let hasThis = false;
+
+  const visit = (node: ts.Node) => {
+    if (hasThis) return;
+
+    if (node.kind === ts.SyntaxKind.ThisKeyword) {
+      hasThis = true;
+      return;
+    }
+
+    if (ts.isPropertyAccessExpression(node)) {
+      const expr = node.expression;
+      if (ts.isIdentifier(expr) && expr.text === 'this') {
+        hasThis = true;
+        return;
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
+    if (node.body) {
+      if (node.body.kind === ts.SyntaxKind.Block) {
+        (node.body as ts.Block).statements.forEach(visit);
+      } else {
+        visit(node.body);
+      }
+    }
+  } else {
+    ts.forEachChild(node, visit);
+  }
+
+  return hasThis;
 }

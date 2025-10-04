@@ -1,3 +1,4 @@
+import {setTimeout} from 'node:timers/promises';
 import * as vscode from 'vscode';
 
 import {APP_COMPONENT, FOO_TEMPLATE} from '../test_constants';
@@ -8,20 +9,16 @@ export const DEFINITION_COMMAND = 'vscode.executeDefinitionProvider';
 export const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
 export const FOO_TEMPLATE_URI = vscode.Uri.file(FOO_TEMPLATE);
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export async function activate(uri: vscode.Uri) {
-  // set default timeout to 30 seconds
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 30_000;
+export async function activate(uri: vscode.Uri): Promise<void> {
   await vscode.window.showTextDocument(uri);
   await waitForDefinitionsToBeAvailable(20);
 }
 
-async function waitForDefinitionsToBeAvailable(maxSeconds: number) {
+async function waitForDefinitionsToBeAvailable(maxTries: number) {
+  await vscode.workspace.openTextDocument(APP_COMPONENT_URI);
+
   let tries = 0;
-  while (tries < maxSeconds) {
+  while (tries < maxTries) {
     const position = new vscode.Position(4, 25);
     // For a complete list of standard commands, see
     // https://code.visualstudio.com/api/references/commands
@@ -30,10 +27,12 @@ async function waitForDefinitionsToBeAvailable(maxSeconds: number) {
       APP_COMPONENT_URI,
       position,
     );
-    if (definitions && definitions.length > 0) {
+
+    if (definitions?.length > 0) {
       return;
     }
+
     tries++;
-    await sleep(1000);
+    await setTimeout(500);
   }
 }

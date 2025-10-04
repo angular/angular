@@ -20,7 +20,7 @@
     "@angular/upgrade": "link:./in-existing-linked-by-bazel",
     "@types/jasmine": "^5.0.0",
     "rxjs": "^7.0.0",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "zone.js": "0.15.1"
   },
   "scripts": {

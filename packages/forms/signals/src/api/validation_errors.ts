@@ -7,7 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {Field} from './types';
+import {FieldTree} from './types';
 
 /**
  * Options used to create a `ValidationError`.
@@ -23,7 +23,7 @@ interface ValidationErrorOptions {
  *
  * @experimental 21.0.0
  */
-export type WithField<T> = T & {field: Field<unknown>};
+export type WithField<T> = T & {field: FieldTree<unknown>};
 
 /**
  * A type that allows the given type `T` to optionally have a `field` property.
@@ -31,7 +31,7 @@ export type WithField<T> = T & {field: Field<unknown>};
  *
  * @experimental 21.0.0
  */
-export type WithOptionalField<T> = Omit<T, 'field'> & {field?: Field<unknown>};
+export type WithOptionalField<T> = Omit<T, 'field'> & {field?: FieldTree<unknown>};
 
 /**
  * A type that ensures the given type `T` does not have a `field` property.
@@ -310,7 +310,7 @@ export interface ValidationError {
   /** Identifies the kind of error. */
   readonly kind: string;
   /** The field associated with this error. */
-  readonly field: Field<unknown>;
+  readonly field: FieldTree<unknown>;
   /** Human readable error message. */
   readonly message?: string;
 }
@@ -334,7 +334,7 @@ export class CustomValidationError implements ValidationError {
   readonly kind: string = '';
 
   /** The field associated with this error. */
-  readonly field!: Field<unknown>;
+  readonly field!: FieldTree<unknown>;
 
   /** Human readable error message. */
   readonly message?: string;
@@ -360,7 +360,7 @@ abstract class _NgValidationError implements ValidationError {
   readonly kind: string = '';
 
   /** The field associated with this error. */
-  readonly field!: Field<unknown>;
+  readonly field!: FieldTree<unknown>;
 
   /** Human readable error message. */
   readonly message?: string;

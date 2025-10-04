@@ -12,6 +12,7 @@ import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../prot
 import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body/property-view-body.component';
 import {PropertyViewHeaderComponent} from './property-view-header/property-view-header.component';
+import {CdkAutofill} from '@angular/cdk/text-field';
 
 @Component({
   selector: 'ng-property-view',
@@ -26,6 +27,14 @@ export class PropertyViewComponent {
   readonly inspect = output<{node: FlatNode; directivePosition: DirectivePosition}>();
   readonly viewSource = output<void>();
   readonly showSignalGraph = output<DebugSignalGraphNode>();
+
+  handleLogInstance(): void {
+    const controller = this.controller();
+    if (!controller) {
+      return;
+    }
+    controller.logValue();
+  }
 
   private _nestedProps = inject(ElementPropertyResolver);
 

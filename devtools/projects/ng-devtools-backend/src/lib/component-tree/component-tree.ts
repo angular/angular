@@ -22,6 +22,7 @@ import type {
 import {
   ComponentExplorerViewQuery,
   DirectiveMetadata,
+  DirectivePosition,
   DirectivesProperties,
   ElementPosition,
   PropertyQueryTypes,
@@ -47,6 +48,7 @@ import {mutateNestedProp} from '../property-mutation';
 import {ComponentTreeNode, DirectiveInstanceType, ComponentInstanceType} from '../interfaces';
 import {getAppRoots} from './get-roots';
 import {AcxChangeDetectionStrategy, ChangeDetectionStrategy, Framework} from './core-enums';
+import {unwrapSignal} from '../utils';
 
 export const injectorToId = new WeakMap<Injector | HTMLElement, string>();
 export const nodeInjectorToResolutionPath = new WeakMap<HTMLElement, SerializedInjector[]>();
@@ -550,7 +552,8 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
   return rootLViews;
 };
 
-function getRootElements(): Element[] {
+/** Gets the all the root components in the Dom, including those outside the application root */
+export function getRootElements(): Element[] {
   if (!ngDebugClient().getComponent) {
     // If the ngDebugClient does not support getComponent, we cannot proceed.
     return [];
@@ -629,6 +632,9 @@ function getRootElements(): Element[] {
  * @param roots A set of root elements found during the traversal.
  */
 function discoverNonApplicationRootComponents(element: Element, roots: Set<Element>): void {
+  if (roots.has(element)) {
+    return;
+  }
   const children = Array.from(element.children);
   for (const child of children) {
     if (roots.has(child)) {
@@ -711,6 +717,48 @@ export const updateState = (updatedStateData: UpdatedStateData): void => {
     return;
   }
 };
+
+export function logValue(valueInfo: {
+  directiveId: DirectivePosition;
+  keyPath: string[] | null;
+}): void {
+  const node = queryDirectiveForest(valueInfo.directiveId.element, buildDirectiveForest());
+  if (!node) {
+    console.warn(
+      'Could not log the value of component',
+      valueInfo,
+      'because the directive was not found',
+    );
+    return;
+  }
+
+  if (valueInfo.directiveId.directive !== undefined) {
+    const directiveInstance = node.directives[valueInfo.directiveId.directive].instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(directiveInstance);
+      return;
+    }
+
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], directiveInstance);
+    logToConsole(value);
+    return;
+  }
+  if (node.component) {
+    const compInstance = node.component.instance;
+    if (valueInfo.keyPath === null) {
+      logToConsole(compInstance);
+      return;
+    }
+    const value = valueInfo.keyPath.reduce((obj, key) => obj && obj[key], compInstance);
+    logToConsole(value);
+    return;
+  }
+}
+
+function logToConsole(value: unknown) {
+  // tslint:disable-next-line:no-console
+  console.log(unwrapSignal(value));
+}
 
 export function serializeResolutionPath(resolutionPath: Injector[]): SerializedInjector[] {
   const serializedResolutionPath: SerializedInjector[] = [];

@@ -15,6 +15,7 @@ import {
   ElementRef,
   EventEmitter,
   inject,
+  InjectionToken,
   Injector,
   Input,
   InputSignal,
@@ -39,10 +40,17 @@ import {
 } from '../util/private';
 import {FormCheckboxControl, FormUiControl, FormValueControl} from './control';
 import {AggregateProperty, MAX, MAX_LENGTH, MIN, MIN_LENGTH, PATTERN, REQUIRED} from './property';
-import type {Field} from './types';
+import type {FieldTree} from './types';
 
 /**
- * Binds a form `Field` to a UI control that edits it. A UI control can be one of several things:
+ * Lightweight DI token provided by the {@link Control} directive.
+ */
+export const CONTROL = new InjectionToken<Control<unknown>>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'CONTROL' : '',
+);
+
+/**
+ * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
  * 3. A component that provides a ControlValueAccessor. This should only be used to backwards
@@ -66,6 +74,10 @@ import type {Field} from './types';
       provide: NgControl,
       useFactory: () => inject(Control).ngControl,
     },
+    {
+      provide: CONTROL,
+      useExisting: Control,
+    },
   ],
 })
 export class Control<T> {
@@ -77,7 +89,7 @@ export class Control<T> {
   private initialized = false;
 
   /** The field that is bound to this control. */
-  readonly field = signal<Field<T>>(undefined as any);
+  readonly field = signal<FieldTree<T>>(undefined as any);
 
   // If `[control]` is applied to a custom UI control, it wants to synchronize state in the field w/
   // the inputs of that custom control. This is difficult to do in user-land. We use `effect`, but
@@ -91,7 +103,7 @@ export class Control<T> {
   // before the important lifecycle hooks of the UI control. We can then initialize all our effects
   // and force them to run immediately, ensuring all required inputs have values.
   @Input({required: true, alias: 'control'})
-  set _field(value: Field<T>) {
+  set _field(value: FieldTree<T>) {
     this.field.set(value);
     if (!this.initialized) {
       this.initialize();

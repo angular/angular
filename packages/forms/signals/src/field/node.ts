@@ -9,7 +9,7 @@
 import type {Signal, WritableSignal} from '@angular/core';
 import type {Control} from '../api/control_directive';
 import {AggregateProperty, Property} from '../api/property';
-import type {DisabledReason, Field, FieldContext, FieldState} from '../api/types';
+import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
@@ -58,7 +58,7 @@ export class FieldNode implements FieldState<unknown> {
   /**
    * Proxy to this node which allows navigation of the form graph below it.
    */
-  readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as Field<any>;
+  readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as FieldTree<any>;
 
   constructor(options: FieldNodeOptions) {
     this.fieldAdapter = options.fieldAdapter;

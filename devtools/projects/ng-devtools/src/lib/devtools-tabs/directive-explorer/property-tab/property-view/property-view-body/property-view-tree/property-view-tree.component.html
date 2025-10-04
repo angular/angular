@@ -14,6 +14,9 @@
         />
       }
       <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
+      @if (node.level === 0) {
+        <ng-container [ngTemplateOutlet]="logValueBtn" [ngTemplateOutletContext]="{ node }" />
+      }
     </mat-tree-node>
     <mat-tree-node
       matTreeNodePaddingIndent="14"
@@ -29,6 +32,9 @@
         >:
         <span class="value">{{ node.prop.descriptor.preview }}</span>
         <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
+        @if (node.level === 0) {
+          <ng-container [ngTemplateOutlet]="logValueBtn" [ngTemplateOutletContext]="{ node }" />
+        }
       </div>
     </mat-tree-node>
   </mat-tree>
@@ -49,4 +55,16 @@
       <mat-icon>graph_2</mat-icon>
     </button>
   }
+</ng-template>
+
+<ng-template #logValueBtn let-node="node">
+  <button
+    class="log-value-btn"
+    type="button"
+    matTooltip="Log value to console"
+    aria-label="Log value to console"
+    (click)="handleLogValue($event, node)"
+  >
+    <mat-icon>terminal</mat-icon>
+  </button>
 </ng-template>

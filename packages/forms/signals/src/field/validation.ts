@@ -7,7 +7,7 @@
  */
 
 import {computed, Signal} from '@angular/core';
-import type {Field, Mutable, TreeValidationResult, ValidationResult} from '../api/types';
+import type {FieldTree, Mutable, TreeValidationResult, ValidationResult} from '../api/types';
 import type {ValidationError, WithOptionalField} from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
@@ -359,15 +359,15 @@ function normalizeErrors(error: ValidationResult): readonly ValidationError[] {
  */
 export function addDefaultField<E extends ValidationError>(
   error: WithOptionalField<E>,
-  field: Field<unknown>,
+  field: FieldTree<unknown>,
 ): E;
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  field: Field<unknown>,
+  field: FieldTree<unknown>,
 ): ValidationResult<E>;
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
-  field: Field<unknown>,
+  field: FieldTree<unknown>,
 ): ValidationResult<E> {
   if (isArray(errors)) {
     for (const error of errors) {

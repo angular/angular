@@ -28,9 +28,6 @@ jasmine_test(
     chdir = package_name(),
     data = [
         ":tests",
-        "//vscode-ng-language-service/integration/pre_apf_project",
-        "//vscode-ng-language-service/integration/pre_apf_project:node_modules/@angular/compiler",
-        "//vscode-ng-language-service/integration/pre_apf_project:node_modules/@angular/compiler-cli",
         "//vscode-ng-language-service/integration/workspace",
         "//vscode-ng-language-service/integration/workspace:node_modules/@angular/compiler",
         "//vscode-ng-language-service/integration/workspace:node_modules/@angular/compiler-cli",
