@@ -11,8 +11,8 @@ import {ProgramInfo, projectFile, ProjectFile, Replacement, TextUpdate} from '..
 import {ImportManager} from '@angular/compiler-cli/private/migrations';
 
 export const ROUTER_TESTING_MODULE = 'RouterTestingModule';
-export const LOCATION = 'Location';
-export const LOCATION_STRATEGY = 'LocationStrategy';
+
+export const SPY_LOCATION = 'SpyLocation';
 export const ROUTER_MODULE = 'RouterModule';
 export const PROVIDE_LOCATION_MOCKS = 'provideLocationMocks';
 
@@ -45,8 +45,7 @@ export interface RouterTestingModuleUsage {
   routesNode: ts.Expression | null;
   optionsNode: ts.Expression | null;
   importsArrayElements: ts.Expression[];
-  hasLocationOrLocationStrategyImport: boolean;
-  hasExistingLocationProviders: boolean;
+  usesSpyLocationUrlChanges: boolean;
 }
 
 interface CallPattern {
@@ -93,44 +92,35 @@ function hasImportFromModule(
   return hasImport;
 }
 
-function hasExistingLocationProviders(providersProperty: ts.PropertyAssignment | null): boolean {
-  if (!providersProperty || !ts.isArrayLiteralExpression(providersProperty.initializer)) {
-    return false;
-  }
+function detectSpyLocationUrlChangesUsage(sourceFile: ts.SourceFile): boolean {
+  const hasSpyLocationImport = hasImportFromModule(
+    sourceFile,
+    ANGULAR_COMMON_TESTING,
+    SPY_LOCATION,
+  );
 
-  const providersArray = providersProperty.initializer;
+  let usesUrlChangesFeature = false;
 
-  for (const element of providersArray.elements) {
-    // Check for object literal providers like { provide: Location, ... }
-    if (ts.isObjectLiteralExpression(element)) {
-      for (const prop of element.properties) {
-        if (
-          ts.isPropertyAssignment(prop) &&
-          ts.isIdentifier(prop.name) &&
-          prop.name.text === 'provide'
-        ) {
-          // Check if providing Location or LocationStrategy
-          if (ts.isIdentifier(prop.initializer)) {
-            const providedToken = prop.initializer.text;
-            if (providedToken === LOCATION || providedToken === LOCATION_STRATEGY) {
-              return true;
-            }
-          }
-        }
-      }
+  function walk(node: ts.Node): void {
+    if (usesUrlChangesFeature) {
+      return;
     }
 
-    // Check for provideLocationMocks() call (idempotency check)
     if (
-      ts.isCallExpression(element) &&
-      ts.isIdentifier(element.expression) &&
-      element.expression.text === PROVIDE_LOCATION_MOCKS
+      ts.isPropertyAccessExpression(node) &&
+      ts.isIdentifier(node.name) &&
+      node.name.text === 'urlChanges'
     ) {
-      return true;
+      usesUrlChangesFeature = true;
+      return;
     }
+
+    node.forEachChild(walk);
   }
 
-  return false;
+  walk(sourceFile);
+
+  return hasSpyLocationImport && usesUrlChangesFeature;
 }
 
 function createArrayLiteralReplacement(
@@ -407,7 +397,7 @@ function migrateToRouterModule(
   const routerModuleExpression = createRouterModuleExpression(routesExpression, optionsExpression);
   neededImportsExpressions.add(routerModuleExpression);
 
-  if (usage.hasLocationOrLocationStrategyImport && !usage.hasExistingLocationProviders) {
+  if (usage.usesSpyLocationUrlChanges) {
     const provideLocationMocksExpression = createProviderCallExpression(PROVIDE_LOCATION_MOCKS);
     neededProvidersExpressions.add(provideLocationMocksExpression);
   }
@@ -487,10 +477,10 @@ function analyzeRouterTestingModuleUsage(usage: RouterTestingModuleUsage): Route
   neededImports.add(routerModuleExpression);
 
   // Add location mocks ONLY if:
-  // 1. Location/LocationStrategy is imported from @angular/common
-  // 2. There are NO existing custom providers for Location/LocationStrategy
-  // 3. provideLocationMocks() is not already present (idempotency)
-  if (usage.hasLocationOrLocationStrategyImport && !usage.hasExistingLocationProviders) {
+  // 1. SpyLocation is imported from @angular/common/testing, AND
+  // 2. urlChanges property is accessed in the test
+  // 3. provideLocationMocks() is not already present
+  if (usage.usesSpyLocationUrlChanges) {
     const provideLocationMocksExpression = createProviderCallExpression(PROVIDE_LOCATION_MOCKS);
     neededProviders.add(provideLocationMocksExpression);
     hasLocationMocks = true;
@@ -515,12 +505,8 @@ export function findRouterTestingModuleUsages(
     ANGULAR_ROUTER_TESTING,
     ROUTER_TESTING_MODULE,
   );
-  const hasLocationOrLocationStrategyImport = hasImportFromModule(
-    sourceFile,
-    ANGULAR_COMMON,
-    LOCATION,
-    LOCATION_STRATEGY,
-  );
+
+  const usesSpyLocationUrlChanges = detectSpyLocationUrlChangesUsage(sourceFile);
 
   if (!hasRouterTestingModule) {
     return usages;
@@ -583,8 +569,6 @@ export function findRouterTestingModuleUsages(
       }
 
       if (routerTestingModuleElement) {
-        const hasExistingProviders = hasExistingLocationProviders(providersProperty);
-
         usages.push({
           sourceFile,
           configObject: config,
@@ -594,8 +578,7 @@ export function findRouterTestingModuleUsages(
           routesNode,
           optionsNode,
           importsArrayElements: Array.from(importsArray.elements),
-          hasLocationOrLocationStrategyImport,
-          hasExistingLocationProviders: hasExistingProviders,
+          usesSpyLocationUrlChanges,
         });
       }
     }

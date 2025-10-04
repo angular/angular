@@ -23,7 +23,7 @@ jasmine_test(
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
         "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
         "//packages/core/schematics/migrations/ngstyle-to-style-migration:static_files",
-        "//packages/core/schematics/migrations/router-testing-migration:static_files",
+        "//packages/core/schematics/migrations/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
