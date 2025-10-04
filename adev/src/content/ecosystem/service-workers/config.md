@@ -87,7 +87,7 @@ For example, an asset group that matches `/foo.js` should appear before one that
 Each asset group specifies both a group of resources and a policy that governs them.
 This policy determines when the resources are fetched and what happens when changes are detected.
 
-Asset groups follow the Typescript interface shown here:
+Asset groups follow the TypeScript interface shown here:
 
 <docs-code language="typescript">
 
@@ -185,7 +185,7 @@ The first data group that matches the requested resource handles the request.
 It is recommended that you put the more specific data groups higher in the list.
 For example, a data group that matches `/api/foo.json` should appear before one that matches `/api/*.json`.
 
-Data groups follow this Typescript interface:
+Data groups follow this TypeScript interface:
 
 <docs-code language="typescript">
 

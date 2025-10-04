@@ -29,7 +29,7 @@ const minifiedProdBuildOptions = {
 };
 
 runInEachFileSystem(() => {
-  describe('Debug Info Typescript tranformation', () => {
+  describe('Debug Info TypeScript tranformation', () => {
     let env!: NgtscTestEnvironment;
 
     beforeEach(() => {

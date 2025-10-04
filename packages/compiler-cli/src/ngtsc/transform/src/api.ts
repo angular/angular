@@ -64,12 +64,12 @@ export enum HandlerPrecedence {
 }
 
 /**
- * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
+ * Provides the interface between a decorator compiler from @angular/compiler and the TypeScript
  * compiler/transform.
  *
- * The decorator compilers in @angular/compiler do not depend on Typescript. The handler is
+ * The decorator compilers in @angular/compiler do not depend on TypeScript. The handler is
  * responsible for extracting the information required to perform compilation from the decorators
- * and Typescript source, invoking the decorator compiler, and returning the result.
+ * and TypeScript source, invoking the decorator compiler, and returning the result.
  *
  * @param `D` The type of decorator metadata produced by `detect`.
  * @param `A` The type of analysis metadata produced by `analyze`.

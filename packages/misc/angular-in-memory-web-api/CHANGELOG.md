@@ -400,7 +400,7 @@ The last npm package named "angular2-in-memory-web-api" was v.0.0.21
 <a id="0.0.20"></a>
 ## 0.0.20 (2016-09-15)
 * Angular 2.0.0
-* Typescript 2.0.2
+* TypeScript 2.0.2
 
 <a id="0.0.19"></a>
 ## 0.0.19 (2016-09-13)
