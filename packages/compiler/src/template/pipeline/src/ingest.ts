@@ -849,6 +849,9 @@ function ingestDeferTriggers(
         targetSlot: null,
         targetView: null,
         targetSlotViewSteps: null,
+        options: triggers.viewport.options
+          ? convertAst(triggers.viewport.options, unit.job, triggers.viewport.sourceSpan)
+          : null,
       },
       modifier,
       triggers.viewport.sourceSpan,

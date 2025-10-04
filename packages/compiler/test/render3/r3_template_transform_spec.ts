@@ -150,7 +150,13 @@ class R3AstHumanizer implements t.Visitor<void> {
     } else if (trigger instanceof t.InteractionDeferredTrigger) {
       this.result.push(['InteractionDeferredTrigger', trigger.reference]);
     } else if (trigger instanceof t.ViewportDeferredTrigger) {
-      this.result.push(['ViewportDeferredTrigger', trigger.reference]);
+      const result = ['ViewportDeferredTrigger', trigger.reference];
+
+      if (trigger.options !== null) {
+        result.push(unparse(trigger.options));
+      }
+
+      this.result.push(result);
     } else if (trigger instanceof t.NeverDeferredTrigger) {
       this.result.push(['NeverDeferredTrigger']);
     } else {
@@ -1325,6 +1331,29 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should parse a viewport trigger with an options parameter', () => {
+      expectFromHtml(
+        '@defer (on viewport({trigger: foo, rootMargin: "123px", threshold: [1, 2, 3]})){hello}',
+      ).toEqual([
+        ['DeferredBlock'],
+        ['ViewportDeferredTrigger', 'foo', '{rootMargin: "123px", threshold: [1, 2, 3]}'],
+        ['Text', 'hello'],
+      ]);
+    });
+
+    it('should parse a viewport trigger with an options parameter, but without a trigger', () => {
+      expectFromHtml('@defer (on viewport({rootMargin: "123px"})){hello}').toEqual([
+        ['DeferredBlock'],
+        ['ViewportDeferredTrigger', null, '{rootMargin: "123px"}'],
+        ['Text', 'hello'],
+      ]);
+      expectFromHtml('@defer (on viewport({rootMargin: "123px"})){hello}').toEqual([
+        ['DeferredBlock'],
+        ['ViewportDeferredTrigger', null, '{rootMargin: "123px"}'],
+        ['Text', 'hello'],
+      ]);
+    });
+
     describe('block validations', () => {
       it('should report syntax error in `when` trigger', () => {
         expect(() => parse('@defer (when isVisible#){hello}')).toThrowError(
@@ -1495,6 +1524,26 @@ describe('R3 template transform', () => {
       it('should report if `viewport` trigger has more than one parameter', () => {
         expect(() => parse('@defer (on viewport(a, b)) {hello}')).toThrowError(
           /"viewport" trigger can only have zero or one parameters/,
+        );
+      });
+
+      it('should report if `viewport` trigger with an object literal parameter has a "trigger" that is not an identifier', () => {
+        expect(() => parse('@defer (on viewport({trigger: "str"})) {hello}')).toThrowError(
+          /"trigger" option of the "viewport" trigger must be an identifier/,
+        );
+      });
+
+      it('should report if `viewport` trigger has a variable options parameter', () => {
+        expect(() =>
+          parse('@defer (on viewport({threshold: [1, someVar, 3]})) {hello}'),
+        ).toThrowError(
+          /Options of the "viewport" trigger must be an object literal containing only literal values/,
+        );
+      });
+
+      it('should report if `viewport` trigger options parameter contains the `root` property', () => {
+        expect(() => parse('@defer (on viewport({root: foo})) {hello}')).toThrowError(
+          /The "root" option is not supported in the options parameter of the "viewport" trigger/,
         );
       });
 

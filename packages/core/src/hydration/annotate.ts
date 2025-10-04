@@ -492,8 +492,10 @@ function serializeHydrateTriggers(
     if (serializableDeferBlockTrigger.has(trigger)) {
       if (details === null) {
         triggers.push(trigger);
-      } else {
+      } else if (details.type === DeferBlockTrigger.Timer) {
         triggers.push({trigger, delay: details.delay});
+      } else {
+        triggers.push({trigger, intersectionObserverOptions: details.intersectionObserverOptions});
       }
     }
   }

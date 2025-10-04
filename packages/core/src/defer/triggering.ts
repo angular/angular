@@ -682,6 +682,9 @@ export function processAndInitTriggers(
           timerElements.push(elementTrigger);
         }
         if (blockSummary.hydrate.viewport) {
+          if (typeof blockSummary.hydrate.viewport !== 'boolean') {
+            elementTrigger.intersectionObserverOptions = blockSummary.hydrate.viewport;
+          }
           viewportElements.push(elementTrigger);
         }
       }
@@ -711,6 +714,7 @@ function setViewportTriggers(injector: Injector, elementTriggers: ElementTrigger
         elementTrigger.el,
         () => triggerHydrationFromBlockName(injector, elementTrigger.blockName),
         injector,
+        elementTrigger.intersectionObserverOptions,
       );
       registry.addCleanupFn(elementTrigger.blockName, cleanupFn);
     }
