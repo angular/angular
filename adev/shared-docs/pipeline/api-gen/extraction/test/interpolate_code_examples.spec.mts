@@ -8,7 +8,14 @@
 
 import fs from 'fs';
 import {interpolateCodeExamples} from '../interpolate_code_examples.mjs';
-import {DocEntry} from '@angular/compiler-cli';
+import {
+  ClassEntry,
+  DocEntry,
+  EntryType,
+  FunctionSignatureMetadata,
+  MemberType,
+  MethodEntry,
+} from '@angular/compiler-cli';
 import {mockReadFileSync} from './fake-examples.mjs';
 
 const tsMdBlock = (code: string) => '```angular-ts\n' + code + '\n```';
@@ -155,5 +162,52 @@ class Baz {
     interpolateCodeExamples(entries);
 
     expect(getComment(entries)).toMatch(/^\`\`\`/m);
+  });
+
+  it('should interpolate an example on a method', () => {
+    const entries: ClassEntry[] = [
+      {
+        description: '',
+        rawComment: '',
+        entryType: EntryType.UndecoratedClass,
+        name: 'Test',
+        jsdocTags: [],
+        isAbstract: false,
+        generics: [],
+        implements: [],
+        extends: undefined,
+        members: [
+          {
+            name: 'test',
+            jsdocTags: [],
+            description: '',
+            memberTags: [],
+            memberType: MemberType.Method,
+            signatures: [],
+            entryType: EntryType.Function,
+            rawComment: '',
+            implementation: {
+              name: 'test',
+              entryType: EntryType.Function,
+              rawComment: '',
+              params: [],
+              returnType: 'void',
+              generics: [],
+              isNewType: false,
+              jsdocTags: [{name: '', comment: "{@example dummy/single.ts region='foo'}"}],
+              description: `Example: {@example dummy/single.ts region='foo'}`,
+            } as FunctionSignatureMetadata,
+          } as MethodEntry,
+        ],
+      },
+    ];
+
+    interpolateCodeExamples(entries as DocEntry[]);
+
+    const method = entries[0].members![0] as MethodEntry;
+    expect(method.implementation!.description).toContain(tsMdBlock("foo('Hello world!');"));
+
+    const jsdocTag = method.implementation!.jsdocTags[0];
+    expect(jsdocTag.comment).toEqual(tsMdBlock("foo('Hello world!');"));
   });
 });
