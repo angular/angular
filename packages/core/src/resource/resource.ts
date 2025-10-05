@@ -9,7 +9,7 @@
 import {untracked} from '../render3/reactivity/untracked';
 import {computed} from '../render3/reactivity/computed';
 import {signal, signalAsReadonlyFn, WritableSignal} from '../render3/reactivity/signal';
-import {Signal} from '../render3/reactivity/api';
+import {Signal, ValueEqualityFn} from '../render3/reactivity/api';
 import {effect, EffectRef} from '../render3/reactivity/effect';
 import {
   ResourceOptions,
@@ -22,8 +22,6 @@ import {
   ResourceStreamItem,
   ResourceLoaderParams,
 } from './api';
-
-import {ValueEqualityFn} from '../../primitives/signals';
 
 import {Injector} from '../di/injector';
 import {assertInInjectionContext} from '../di/contextual';
