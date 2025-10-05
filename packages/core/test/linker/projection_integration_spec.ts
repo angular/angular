@@ -974,7 +974,7 @@ class OuterWithIndirectNestedComponent {}
 @Component({
   selector: 'outer',
   template:
-    'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
+    'OUTER(<inner><ng-content select=".left"></ng-content><ng-content></ng-content></inner>)',
   standalone: false,
 })
 class OuterComponent {}
@@ -982,7 +982,7 @@ class OuterComponent {}
 @Component({
   selector: 'inner',
   template:
-    'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
+    'INNER(<innerinner><ng-content select=".left"></ng-content><ng-content></ng-content></innerinner>)',
   standalone: false,
 })
 class InnerComponent {}

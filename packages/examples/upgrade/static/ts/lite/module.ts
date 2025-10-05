@@ -67,8 +67,8 @@ class HeroesService {
   // (Note that because its element is compiled by Angular we must use camelCased attribute names.)
   template: `
     <div class="ng2-heroes">
-      <header><ng-content selector="h1"></ng-content></header>
-      <ng-content selector=".extra"></ng-content>
+      <header><ng-content select="h1"></ng-content></header>
+      <ng-content select=".extra"></ng-content>
       <div *ngFor="let hero of this.heroesService.heroes">
           <ng1-hero [hero]="hero" (onRemove)="onRemoveHero(hero)">
             <strong>Super Hero</strong>

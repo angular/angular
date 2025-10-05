@@ -2786,4 +2786,31 @@ describe('R3 template transform', () => {
     const errors = parse(template, {ignoreError: true}).errors;
     expect(errors.length).toBe(0);
   });
+
+  it('should report an error if an attribute on ng-content is not select', () => {
+    const template = `<ng-content foo="bar"></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(1);
+    expect(errors[0].msg).toBe('The "foo" attribute is not supported on ng-content.');
+  });
+
+  it('should not report an error if select is used on ng-content', () => {
+    const template = `<ng-content select="div"></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(0);
+  });
+
+  it('should not report an error if no attributes are used on ng-content', () => {
+    const template = `<ng-content></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(0);
+  });
+
+  // TODO: reconsider this and maybe throw if a structural directive is applied to ng-content
+  // NgIf *does* work on ng-content in Angular today
+  it('should not report an error is a structural directive is used on a ng-content', () => {
+    const template = `<ng-content *ngIf="cond"></ng-content>`;
+    const errors = parse(template, {ignoreError: true}).errors;
+    expect(errors.length).toBe(0);
+  });
 });

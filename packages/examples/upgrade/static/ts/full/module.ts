@@ -45,8 +45,8 @@ export class TextFormatter {
   selector: 'ng2-heroes',
   // This template uses the upgraded `ng1-hero` component
   // Note that because its element is compiled by Angular we must use camelCased attribute names
-  template: `<header><ng-content selector="h1"></ng-content></header>
-    <ng-content selector=".extra"></ng-content>
+  template: `<header><ng-content select="h1"></ng-content></header>
+    <ng-content select=".extra"></ng-content>
     <div *ngFor="let hero of heroes()">
       <ng1-hero [hero]="hero" (onRemove)="removeHero.emit(hero)"
         ><strong>Super Hero</strong></ng1-hero

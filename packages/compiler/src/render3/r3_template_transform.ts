@@ -73,6 +73,8 @@ const UNSUPPORTED_SELECTORLESS_TAGS = new Set([
 // TODO(crisbeto): any other attributes that should not be allowed here?
 const UNSUPPORTED_SELECTORLESS_DIRECTIVE_ATTRS = new Set(['ngProjectAs', 'ngNonBindable']);
 
+const SUPPORTED_NG_CONTENT_ATTRS = new Set(['select', 'ngprojectas']);
+
 // Result of the html AST to Ivy AST transformation
 export interface Render3ParseResult {
   nodes: t.Node[];
@@ -191,6 +193,19 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       const selector = preparsedElement.selectAttr;
       const attrs: t.TextAttribute[] = element.attrs.map((attr) => this.visitAttribute(attr));
+      for (const attr of attrs) {
+        // TODO: reconsider supporting structural directives here.
+        if (
+          !SUPPORTED_NG_CONTENT_ATTRS.has(attr.name.toLowerCase()) &&
+          !attr.name.startsWith('*')
+        ) {
+          this.reportError(
+            `The "${attr.name}" attribute is not supported on ng-content.`,
+            attr.sourceSpan,
+          );
+        }
+      }
+
       parsedElement = new t.Content(
         selector,
         attrs,
