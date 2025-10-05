@@ -21,7 +21,6 @@ import {
   getLocaleEraNames,
   getLocaleExtraDayPeriodRules,
   getLocaleExtraDayPeriods,
-  getLocaleId,
   getLocaleMonthNames,
   getLocaleNumberSymbol,
   getLocaleTimeFormat,
@@ -188,7 +187,8 @@ function createDate(year: number, month: number, date: number): Date {
 }
 
 function getNamedFormat(locale: string, format: string): string {
-  const localeId = getLocaleId(locale);
+  const localeId = new Intl.Locale(locale).language;
+
   NAMED_FORMATS[localeId] ??= {};
 
   if (NAMED_FORMATS[localeId][format]) {
