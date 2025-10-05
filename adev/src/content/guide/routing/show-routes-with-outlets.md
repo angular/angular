@@ -165,6 +165,46 @@ You can add event listeners with the standard event binding syntax:
 
 Check out the [API docs for RouterOutlet](/api/router/RouterOutlet?tab=api) if you’d like to learn more.
 
+## Passing contextual data to routed components
+
+Passing contextual data to routed components often requires global state or complicated route configurations. To make this easier, each `RouterOutlet` supports a `routerOutletData` input. Routed components and their children can read this data as a signal using the `ROUTER_OUTLET_DATA` injection token, allowing outlet-specific configuration without modifying route definitions.
+
+```ts
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-dashboard',
+  imports: [RouterOutlet],
+  template: `
+    <h2>Dashboard</h2>
+    <router-outlet [routerOutletData]="{ layout: 'sidebar' }" />
+  `,
+})
+export class DashboardComponent {}
+```
+
+The routed component can inject the provided outlet data using `ROUTER_OUTLET_DATA`:
+
+```ts
+import { Component, inject } from '@angular/core';
+import { ROUTER_OUTLET_DATA } from '@angular/router';
+
+@Component({
+  selector: 'app-stats',
+  template: `<p>Stats view (layout: {{ outletData().layout }})</p>`,
+})
+export class StatsComponent {
+  outletData = inject(ROUTER_OUTLET_DATA) as Signal<{ layout: string }>;
+}
+```
+
+When Angular activates the `StatsComponent` in that outlet, it receives `{ layout: 'sidebar' }` as injected data.
+
+NOTE: When the `routerOutletData` input is unset, the injected value is null by default.
+
+---
+
 ## Next steps
 
 Learn how to [navigate to routes](/guide/routing/navigate-to-routes) with Angular Router.

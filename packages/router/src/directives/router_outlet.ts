@@ -55,6 +55,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * ```
  *
  * @publicApi
+ * @see [Page routerOutletData](guide/routing/show-routes-with-outlets#passing-contextual-data-to-routed-components)
  */
 export const ROUTER_OUTLET_DATA = new InjectionToken<Signal<unknown | undefined>>(
   typeof ngDevMode !== undefined && ngDevMode ? 'RouterOutlet data' : '',
