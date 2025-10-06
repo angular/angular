@@ -1502,7 +1502,7 @@ function isAngularCore(path: string): boolean {
 }
 
 function isExternalAngularCore(path: string): boolean {
-  return path.endsWith('@angular/core/core.d.ts') || path.endsWith('@angular/core/index.d.ts');
+  return /@angular\/core\/.+\.d\.ts$/.test(path);
 }
 
 function isInternalAngularCore(path: string): boolean {
@@ -1510,7 +1510,7 @@ function isInternalAngularCore(path: string): boolean {
   return (
     path.endsWith('angular2/rc/packages/core/index.d.ts') ||
     // angular/angular repository direct sources
-    path.indexOf('angular/packages/core/src') !== -1
+    path.includes('angular/packages/core/src')
   );
 }
 
