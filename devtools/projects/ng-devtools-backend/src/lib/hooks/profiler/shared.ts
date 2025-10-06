@@ -61,12 +61,14 @@ type OutputStartHook = (
   componentOrDirective: any,
   outputName: string,
   node: Node,
+  id: number | undefined,
   isComponent: boolean,
 ) => void;
 type OutputEndHook = (
   componentOrDirective: any,
   outputName: string,
   node: Node,
+  id: number | undefined,
   isComponent: boolean,
 ) => void;
 
@@ -112,119 +114,126 @@ export abstract class Profiler {
   /** @internal */
   protected _onCreate(
     _: any,
-    __: Node,
+    hook: Node,
     id: number | undefined,
-    ___: boolean,
+    node: boolean,
     position: ElementPosition | undefined,
   ): void {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onCreate', arguments);
+    this._invokeCallback('onCreate', [_, hook, id, node, position]);
   }
 
   /** @internal */
   protected _onDestroy(
     _: any,
-    __: Node,
+    hook: Node,
     id: number | undefined,
-    ___: boolean,
+    node: boolean,
     position: ElementPosition | undefined,
   ): void {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onDestroy', arguments);
+    this._invokeCallback('onDestroy', [_, hook, id, node, position]);
   }
 
   /** @internal */
   protected _onChangeDetectionStart(
     _: any,
-    __: Node,
+    hook: Node,
     id: number | undefined,
     position: ElementPosition | undefined,
   ): void {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onChangeDetectionStart', arguments);
+    this._invokeCallback('onChangeDetectionStart', [_, hook, id, position]);
   }
 
   /** @internal */
   protected _onChangeDetectionEnd(
     _: any,
-    __: Node,
+    hook: Node,
     id: number | undefined,
     position: ElementPosition | undefined,
   ): void {
     if (id === undefined || position === undefined) {
       return;
     }
-    this._invokeCallback('onChangeDetectionEnd', arguments);
+    this._invokeCallback('onChangeDetectionEnd', [_, hook, id, position]);
   }
 
   /** @internal */
   protected _onLifecycleHookStart(
-    _: any,
-    __: keyof LifecycleProfile | 'unknown',
-    ___: Node,
+    componentOrDirective: any,
+    hook: keyof LifecycleProfile | 'unknown',
+    node: Node,
     id: number | undefined,
-    ____: boolean,
+    isComponent: boolean,
   ): void {
-    if (id === undefined) {
+    if (id === undefined || hook === 'unknown') {
       return;
     }
-    this._invokeCallback('onLifecycleHookStart', arguments);
+    const a = arguments;
+    this._invokeCallback('onLifecycleHookStart', [
+      componentOrDirective,
+      hook,
+      node,
+      id,
+      isComponent,
+    ]);
   }
 
   /** @internal */
   protected _onLifecycleHookEnd(
-    _: any,
-    __: keyof LifecycleProfile | 'unknown',
-    ___: Node,
+    componentOrDirective: any,
+    hook: keyof LifecycleProfile | 'unknown',
+    node: Node,
     id: number | undefined,
-    ____: boolean,
+    isComponent: boolean,
   ): void {
-    if (id === undefined) {
+    if (id === undefined || hook === 'unknown') {
       return;
     }
-    this._invokeCallback('onLifecycleHookEnd', arguments);
+    this._invokeCallback('onLifecycleHookEnd', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
   protected _onOutputStart(
-    _: any,
-    __: string,
-    ___: Node,
+    componentOrDirective: any,
+    hook: string,
+    node: Node,
     id: number | undefined,
-    ____: boolean,
+    isComponent: boolean,
   ): void {
     if (id === undefined) {
       return;
     }
-    this._invokeCallback('onOutputStart', arguments);
+    this._invokeCallback('onOutputStart', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
   protected _onOutputEnd(
-    _: any,
-    __: string,
-    ___: Node,
+    componentOrDirective: any,
+    hook: string,
+    node: Node,
     id: number | undefined,
-    ____: boolean,
+    isComponent: boolean,
   ): void {
     if (id === undefined) {
       return;
     }
-    this._invokeCallback('onOutputEnd', arguments);
+    this._invokeCallback('onOutputEnd', [componentOrDirective, hook, node, id, isComponent]);
   }
 
   /** @internal */
-  private _invokeCallback(name: keyof Hooks, args: IArguments): void {
+  private _invokeCallback<K extends keyof Hooks>(name: K, args: Parameters<Hooks[K]>): void {
     this._hooks.forEach((config) => {
-      const cb = config[name];
+      const cb = (config as Hooks)[name];
       if (typeof cb === 'function') {
-        (cb as any).apply(null, args);
+        (cb as Function).apply(null, args);
       }
     });
   }
