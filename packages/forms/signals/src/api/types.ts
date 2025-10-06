@@ -7,7 +7,7 @@
  */
 
 import {Signal, ɵFieldState} from '@angular/core';
-import type {Control} from './control_directive';
+import type {Control} from './field_directive';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
