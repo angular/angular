@@ -7,16 +7,16 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import type {Control} from '../api/control_directive';
+import type {Control} from '../api/field_directive';
 import {
   AggregateProperty,
   MAX,
   MAX_LENGTH,
   MIN,
   MIN_LENGTH,
+  PATTERN,
   Property,
   REQUIRED,
-  PATTERN,
 } from '../api/property';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
