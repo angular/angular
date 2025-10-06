@@ -6926,9 +6926,7 @@ describe('control flow migration (ng generate)', () => {
   });
 
   describe('path', () => {
-    it('should throw an error if no files match the passed-in path', async () => {
-      let error: string | null = null;
-
+    it('should warn if no files match the passed-in path', async () => {
       writeFile(
         'dir.ts',
         `
@@ -6938,15 +6936,8 @@ describe('control flow migration (ng generate)', () => {
       `,
       );
 
-      try {
-        await runMigration('./foo');
-      } catch (e: any) {
-        error = e.message;
-      }
-
-      expect(error).toMatch(
-        /Could not find any files to migrate under the path .*\/foo\. Cannot run the control flow migration/,
-      );
+      await runMigration('./foo');
+      expect(warnOutput).toContain('Control flow migration did not find any files to migrate');
     });
 
     it('should throw an error if a path outside of the project is passed in', async () => {
