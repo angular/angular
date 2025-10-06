@@ -149,8 +149,7 @@ describe('Angular language server', () => {
     expect(response).toHaveSize(2);
     const {targetUri} = response[0];
 
-    // This can be hashed
-    expect(targetUri).toMatch(/angular\/common\/common_module.*\.d\.ts$/);
+    expect(targetUri).toContain('angular/common/types/_common_module-chunk.d.ts');
 
     // Open the `.d.ts` file
     openTextDocument(client, fileURLToPath(targetUri));
