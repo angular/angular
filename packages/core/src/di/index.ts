@@ -13,7 +13,11 @@
  */
 
 export * from './metadata';
-export {assertInInjectionContext, runInInjectionContext} from './contextual';
+export {
+  assertInInjectionContext,
+  runInInjectionContext,
+  isInInjectionContext as ɵisInInjectionContext,
+} from './contextual';
 export {ɵɵdefineInjectable, ɵɵdefineInjector, InjectableType, InjectorType} from './interface/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
