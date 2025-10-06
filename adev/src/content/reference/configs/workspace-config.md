@@ -41,7 +41,7 @@ The following properties are a set of options that customize the Angular CLI.
 | `analytics`            | Share anonymous usage data with the Angular Team. A boolean value indicates whether or not to share data, while a UUID string shares data using a pseudonymous identifier. | `boolean` \| `string`                       | `false`       |
 | `cache`                | Control [persistent disk cache](cli/cache) used by [Angular CLI Builders](tools/cli/cli-builder).                                                                          | [Cache options](#cache-options)             | `{}`          |
 | `schematicCollections` | List schematics collections to use in `ng generate`.                                                                                                                       | `string[]`                                  | `[]`          |
-| `packageManager`       | The preferred package manager tool to use.                                                                                                                                 | `npm` \| `cnpm` \| `pnpm` \| `yarn`\| `bun` | `npm`         |
+| `packageManager`       | The preferred package manager tool to use.                                                                                                                                 | `npm` \| `pnpm` \| `yarn`\| `bun` | `npm`         |
 | `warnings`             | Control Angular CLI specific console warnings.                                                                                                                             | [Warnings options](#warnings-options)       | `{}`          |
 
 ### Cache options

@@ -128,13 +128,14 @@
     {
       "name": "package-manager",
       "type": "string",
+      "default": "npm",
       "enum": [
         "bun",
         "npm",
         "pnpm",
         "yarn"
       ],
-      "description": "The package manager used to install dependencies."
+      "description": "The package manager used to install dependencies. Defaults to npm if not specified."
     },
     {
       "name": "prefix",
