@@ -39451,7 +39451,7 @@ var RequestError = class extends Error {
 };
 
 // 
-var VERSION2 = "10.0.3";
+var VERSION2 = "10.0.5";
 var defaults_default = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION2} ${getUserAgent()}`
@@ -39781,7 +39781,7 @@ var createTokenAuth = function createTokenAuth2(token) {
 };
 
 // 
-var VERSION4 = "7.0.4";
+var VERSION4 = "7.0.5";
 
 // 
 var noop = () => {
