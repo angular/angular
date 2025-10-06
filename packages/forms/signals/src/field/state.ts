@@ -7,7 +7,7 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
-import type {Control} from '../api/field_directive';
+import type {Field} from '../api/field_directive';
 import type {DisabledReason} from '../api/types';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
@@ -62,7 +62,7 @@ export class FieldNodeState {
   }
 
   /** The UI controls the field is currently bound to. */
-  readonly controls = signal<readonly Control<unknown>[]>([]);
+  readonly controls = signal<readonly Field<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 

@@ -21,10 +21,10 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {
-  TemplateCompilationMode,
   CompilationUnit,
   ComponentCompilationJob,
   HostBindingCompilationJob,
+  TemplateCompilationMode,
   type CompilationJob,
   type ViewCompilationUnit,
 } from './compilation';
@@ -1348,9 +1348,9 @@ function ingestElementBindings(
       ),
     );
 
-    // If the input name is 'control', this could be a form control binding which requires a
+    // If the input name is 'field', this could be a form control binding which requires a
     // `ControlCreateOp` to properly initialize.
-    if (input.type === e.BindingType.Property && input.name === 'control') {
+    if (input.type === e.BindingType.Property && input.name === 'field') {
       unit.create.push(ir.createControlCreateOp(input.sourceSpan));
     }
   }

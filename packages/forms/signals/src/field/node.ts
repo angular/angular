@@ -7,7 +7,7 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import type {Control} from '../api/field_directive';
+import type {Field} from '../api/field_directive';
 import {
   AggregateProperty,
   MAX,
@@ -134,7 +134,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get controls(): Signal<readonly Control<unknown>[]> {
+  get controls(): Signal<readonly Field<unknown>[]> {
     return this.nodeState.controls;
   }
 

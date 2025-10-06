@@ -15,7 +15,7 @@ import {Renderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {LView, RENDERER} from '../interfaces/view';
-import {getLView, getCurrentTNode, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
 import {getNativeByTNode} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
@@ -84,8 +84,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 
   if (bindingUpdated(lView, bindingIndex, value)) {
     const tView = getTView();
-    setPropertyAndInputs(tNode, lView, 'control', value, lView[RENDERER], sanitizer);
-    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'control', bindingIndex);
+    setPropertyAndInputs(tNode, lView, 'field', value, lView[RENDERER], sanitizer);
+    ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
   }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
@@ -114,7 +114,7 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
  * @param lView The `LView` that contains the element.
  */
 function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | undefined {
-  const directiveIndices = tNode.inputs?.['control'];
+  const directiveIndices = tNode.inputs?.['field'];
   if (!directiveIndices) {
     // There are no matching inputs for the `[control]` property binding.
     return;
