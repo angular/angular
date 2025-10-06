@@ -313,7 +313,7 @@ export class AngularLanguageClient implements vscode.Disposable {
             // do not lazily evaluate the code so all breakpoints are respected
             '--nolazy',
             // If debugging port is changed, update .vscode/launch.json as well
-            '--inspect=6009',
+            '--inspect-brk=6009',
           ],
           env: {
             NG_DEBUG: true,

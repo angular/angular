@@ -3,7 +3,7 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "vsce: watch bundles",
+      "label": "VSCE: watch bundles",
       "command": "pnpm --filter=ng-template run watch",
       "isBackground": true,
       "group": {
@@ -25,7 +25,7 @@
     },
     {
       "type": "shell",
-      "label": "vsce: package",
+      "label": "VSCE: package",
       "command": "pnpm --filter=ng-template run package"
     }
   ]

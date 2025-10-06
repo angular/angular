@@ -29,7 +29,7 @@ esbuild(
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
     minify = False,
     platform = "node",
-    sourcemap = "external",
+    sourcemap = "linked",
     visibility = ["//vscode-ng-language-service:__pkg__"],
     deps = [
         "//:node_modules/source-map-support",

@@ -34,7 +34,7 @@ esbuild(
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
     minify = False,
     platform = "node",
-    sourcemap = "external",
+    sourcemap = "linked",
     deps = [
         "//:node_modules/source-map-support",
         "//vscode-ng-language-service/server/src",
@@ -55,7 +55,7 @@ esbuild(
     # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
     minify = False,
     platform = "node",
-    sourcemap = "external",
+    sourcemap = "linked",
     visibility = [
         "//vscode-ng-language-service/integration:__subpackages__",
     ],
@@ -72,7 +72,7 @@ expand_template_rule(
         "0.0.0-PLACEHOLDER": "{{BUILD_SCM_VERSION}}",
     },
     substitutions = {
-        "../../dist/bin/vscode-ng-language-service/server/index.js": "./index.js",
+        "../../dist/bin/vscode-ng-language-service/server/src/server.js": "./index.js",
     },
     template = "package.json",
 )
