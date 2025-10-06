@@ -43,7 +43,7 @@ export type InteropSharedKeys =
   | 'status';
 
 /**
- * A fake version of `NgControl` provided by the `Control` directive. This allows interoperability
+ * A fake version of `NgControl` provided by the `Field` directive. This allows interoperability
  * with a wider range of components designed to work with reactive forms, in particular ones that
  * inject the `NgControl`. The interop control does not implement *all* properties and methods of
  * the real `NgControl`, but does implement some of the most commonly used ones that have a clear

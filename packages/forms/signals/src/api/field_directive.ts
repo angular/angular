@@ -21,10 +21,10 @@ import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
 
 /**
- * Lightweight DI token provided by the {@link Control} directive.
+ * Lightweight DI token provided by the {@link Field} directive.
  */
-export const CONTROL = new InjectionToken<Control<unknown>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'CONTROL' : '',
+export const FIELD = new InjectionToken<Field<unknown>>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'FIELD' : '',
 );
 
 /**
@@ -48,10 +48,10 @@ export const CONTROL = new InjectionToken<Control<unknown>>(
  * @category control
  * @experimental 21.0.0
  */
-@Directive({selector: '[control]', providers: [{provide: CONTROL, useExisting: Control}]})
-export class Control<T> implements ɵControl<T> {
+@Directive({selector: '[field]', providers: [{provide: FIELD, useExisting: Field}]})
+export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
-  readonly field = input.required<FieldTree<T>>({alias: 'control'});
+  readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
   readonly [ɵCONTROL] = undefined;
 
@@ -59,13 +59,18 @@ export class Control<T> implements ɵControl<T> {
   register() {
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
-    // (as opposed to just passing the field through to its `control` input).
+    // (as opposed to just passing the field through to its `field` input).
     effect(
       (onCleanup) => {
         const fieldNode = this.state() as FieldNode;
-        fieldNode.nodeState.controls.update((controls) => [...controls, this as Control<unknown>]);
+        fieldNode.nodeState.fieldBindings.update((controls) => [
+          ...controls,
+          this as Field<unknown>,
+        ]);
         onCleanup(() => {
-          fieldNode.nodeState.controls.update((controls) => controls.filter((c) => c !== this));
+          fieldNode.nodeState.fieldBindings.update((controls) =>
+            controls.filter((c) => c !== this),
+          );
         });
       },
       {injector: this.injector},

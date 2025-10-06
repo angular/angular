@@ -7,6 +7,8 @@
  */
 import {state, style, trigger} from '@angular/animations';
 import {CommonModule} from '@angular/common';
+import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
   Component,
   Directive,
@@ -17,8 +19,6 @@ import {
   ViewContainerRef,
 } from '../../src/core';
 import {TestBed} from '../../testing';
-import {By, DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('property bindings', () => {
   beforeEach(() => {
@@ -611,34 +611,34 @@ describe('property bindings', () => {
       expect(otherDir.id).toBe(3);
     });
 
-    it('should support input bindings named "control"', () => {
-      // Angular has specialized support for binding to form controls (e.g. `[control]="field"`).
-      // This test ensures that `[control]` property bindings can still target other inputs bearing
+    it('should support input bindings named "field"', () => {
+      // Angular has specialized support for binding to form controls (e.g. `[field]="field"`).
+      // This test ensures that `[field]` property bindings can still target other inputs bearing
       // the same name.
 
-      @Directive({selector: '[control]'})
-      class Control {
-        @Input() control = 'Default control value';
+      @Directive({selector: '[field]'})
+      class Field {
+        @Input() field = 'Default control value';
       }
 
       @Component({
         template: `
-          <div [control]="value"></div>
+          <div [field]="value"></div>
         `,
-        imports: [Control],
+        imports: [Field],
       })
       class App {
         value?: string;
       }
 
       const fixture = TestBed.createComponent(App);
-      const control = fixture.debugElement.query(By.directive(Control)).injector.get(Control);
-      expect(control.control).toBe('Default control value');
+      const control = fixture.debugElement.query(By.directive(Field)).injector.get(Field);
+      expect(control.field).toBe('Default control value');
 
       fixture.componentInstance.value = 'Bound control value';
       fixture.detectChanges();
 
-      expect(control.control).toBe('Bound control value');
+      expect(control.field).toBe('Bound control value');
     });
   });
 

@@ -7,7 +7,7 @@
  */
 
 import {computed, signal, Signal} from '@angular/core';
-import type {Control} from '../api/field_directive';
+import type {Field} from '../api/field_directive';
 import type {DisabledReason} from '../api/types';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
@@ -61,8 +61,8 @@ export class FieldNodeState {
     this.selfTouched.set(false);
   }
 
-  /** The UI controls the field is currently bound to. */
-  readonly controls = signal<readonly Control<unknown>[]>([]);
+  /** The {@link Field} directives that bind this field to a UI control. */
+  readonly fieldBindings = signal<readonly Field<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 

@@ -66,25 +66,6 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 }
 
 // @public
-export const CONTROL: InjectionToken<Control<unknown>>;
-
-// @public
-export class Control<T> implements ɵControl<T> {
-    // (undocumented)
-    readonly [ɵCONTROL]: undefined;
-    // (undocumented)
-    readonly field: i0.InputSignal<FieldTree<T>>;
-    // (undocumented)
-    register(): void;
-    // (undocumented)
-    readonly state: i0.Signal<FieldState<T, string | number>>;
-    // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<Control<any>, "[control]", never, { "field": { "alias": "control"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
-    // (undocumented)
-    static ɵfac: i0.ɵɵFactoryDeclaration<Control<any>, never>;
-}
-
-// @public
 export function createProperty<TValue>(): Property<TValue>;
 
 // @public
@@ -127,6 +108,25 @@ export class EmailValidationError extends _NgValidationError {
 }
 
 // @public
+export const FIELD: InjectionToken<Field<unknown>>;
+
+// @public
+export class Field<T> implements ɵControl<T> {
+    // (undocumented)
+    readonly [ɵCONTROL]: undefined;
+    // (undocumented)
+    readonly field: i0.InputSignal<FieldTree<T>>;
+    // (undocumented)
+    register(): void;
+    // (undocumented)
+    readonly state: i0.Signal<FieldState<T, string | number>>;
+    // (undocumented)
+    static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
+}
+
+// @public
 export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = TPathKind extends PathKind.Item ? ItemFieldContext<TValue> : TPathKind extends PathKind.Child ? ChildFieldContext<TValue> : RootFieldContext<TValue>;
 
 // @public
@@ -138,13 +138,13 @@ export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
 
 // @public
 export interface FieldState<TValue, TKey extends string | number = string | number> extends ɵFieldState<TValue> {
-    readonly controls: Signal<readonly Control<unknown>[]>;
     readonly dirty: Signal<boolean>;
     // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
     // (undocumented)
     readonly errors: Signal<ValidationError[]>;
     readonly errorSummary: Signal<ValidationError[]>;
+    readonly fieldBindings: Signal<readonly Field<unknown>[]>;
     hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
     readonly hidden: Signal<boolean>;
     readonly invalid: Signal<boolean>;

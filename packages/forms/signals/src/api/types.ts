@@ -7,7 +7,7 @@
  */
 
 import {Signal, ɵFieldState} from '@angular/core';
-import type {Control} from './field_directive';
+import type {Field} from './field_directive';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
@@ -304,9 +304,9 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
   /**
-   * A signal containing the `Control` directives this field is currently bound to.
+   * The {@link Field} directives that bind this field to a UI control.
    */
-  readonly controls: Signal<readonly Control<unknown>[]>;
+  readonly fieldBindings: Signal<readonly Field<unknown>[]>;
 
   /**
    * Reads an aggregate property value from the field.
