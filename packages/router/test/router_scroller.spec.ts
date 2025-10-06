@@ -96,7 +96,9 @@ describe('RouterScroller', () => {
       events.next(new NavigationStart(3, '/a', 'popstate', {navigationId: 1}));
       events.next(new NavigationEnd(3, '/a', '/a'));
       await nextScrollEvent(events);
-      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([10, 100]);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([10, 100], {
+        behavior: 'instant',
+      });
     });
   });
 
@@ -146,7 +148,7 @@ describe('RouterScroller', () => {
       events.next(new NavigationEnd(3, '/a#anchor', '/a#anchor'));
       await nextScrollEvent(events);
       expect(viewportScroller.scrollToAnchor).not.toHaveBeenCalled();
-      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0], {behavior: 'instant'});
     });
   });
 
