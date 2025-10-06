@@ -139,3 +139,117 @@ export class AdminSettings {
 ```
 
 The example above loads and displays the `AdvancedSettings` upon receiving a button click.
+
+## Binding inputs, outputs and setting host directives at creation
+
+When dynamically creating components, manually setting inputs and subscribing to outputs can be error-prone. You often need to write extra code just to wire up bindings after the component is instantiated.
+
+To simplify this, both `createComponent` and `ViewContainerRef.createComponent` support passing a `bindings` array with helpers like `inputBinding()`, `outputBinding()`, and `twoWayBinding()` to configure inputs and outputs up front. You can also specify a `directives` array to apply any host directives. This enables creating components programmatically with template-like bindings in a single, declarative call.
+
+### Host view using `ViewContainerRef.createComponent`
+
+`ViewContainerRef.createComponent` creates a component and automatically inserts its host view and host element into the container’s view hierarchy at the container’s location. Use this when the dynamic component should become part of the container’s logical and visual structure (for example, adding list items or inline UI).
+
+By contrast, the standalone `createComponent` API does not attach the new component to any existing view or DOM location — it returns a `ComponentRef` and gives you explicit control over where to place the component’s host element.
+
+```angular-ts
+import { Component, input, model, output } from "@angular/core";
+
+@Component({
+  selector: 'app-warning',
+  template: `
+      @if(isExpanded()) {
+        <section>
+            <p>Warning: Action needed!</p>
+            <button (click)="close.emit(true)">Close</button>
+        </section>
+      }
+  `
+})
+export class AppWarningComponent {
+  readonly canClose = input.required<boolean>();
+  readonly isExpanded = model<boolean>();
+  readonly close = output<boolean>();
+}
+```
+
+```ts
+import { Component, ViewContainerRef, signal, inputBinding, outputBinding, twoWayBinding, inject } from '@angular/core';
+import { FocusTrap } from "@angular/cdk/a11y";
+import { ThemeDirective } from '../theme.directive';
+
+@Component({
+  template: `<ng-container #container />`
+})
+export class HostComponent {
+  private vcr = inject(ViewContainerRef);
+  readonly canClose = signal(true);
+  readonly isExpanded = signal(true);
+
+  showWarning() {
+    const compRef = this.vcr.createComponent(AppWarningComponent, {
+      bindings: [
+        inputBinding('canClose', this.canClose),
+        twoWayBinding('isExpanded', this.isExpanded),
+        outputBinding<boolean>('close', (confirmed) => {
+          console.log('Closed with result:', confirmed);
+        })
+      ],
+      directives: [
+        FocusTrap,
+        { type: ThemeDirective, bindings: [inputBinding('theme', () => 'warning')] }
+      ]
+    });
+  }
+}
+```
+
+In the example above, the dynamic **AppWarningComponent** is created with its `canClose` input bound to a reactive signal, a two-way binding on its `isExpanded` state, and an output listener for `close`. The `FocusTrap` and `ThemeDirective` are attached to the host element via `directives`.
+
+### Popup attached to `document.body` with `createComponent` + `hostElement`
+
+Use this when rendering outside the current view hierarchy (e.g., overlays). The provided `hostElement` becomes the component’s host in the DOM, so Angular doesn’t create a new element matching the selector. Lets you configure **bindings** directly.
+
+```ts
+import {
+  ApplicationRef,
+  createComponent,
+  EnvironmentInjector,
+  inject,
+  Injectable,
+  inputBinding,
+  outputBinding,
+} from '@angular/core';
+import { PopupComponent } from './popup.component';
+
+@Injectable({ providedIn: 'root' })
+export class PopupService {
+  private readonly injector = inject(EnvironmentInjector);
+  private readonly appRef = inject(ApplicationRef);
+
+  show(message: string) {
+    // Create a host element for the popup
+    const host = document.createElement('popup-host');
+
+    // Create the component and bind in one call
+    const ref = createComponent(PopupComponent, {
+      environmentInjector: this.injector,
+      hostElement: host,
+      bindings: [
+        inputBinding('message', () => message),
+        outputBinding('closed', () => {
+          document.body.removeChild(host);
+          this.appRef.detachView(ref.hostView);
+          ref.destroy();
+        }),
+      ],
+    });
+
+    // Registers the component’s view so it participates in change detection cycle.
+    this.appRef.attachView(ref.hostView);
+    // Inserts the provided host element into the DOM (outside the normal Angular view hierarchy).
+    // This is what makes the popup visible on screen, typically used for overlays or modals.
+    document.body.appendChild(host);
+  }
+}
+```
