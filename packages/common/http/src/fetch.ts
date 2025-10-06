@@ -367,6 +367,7 @@ export class FetchBackend implements HttpBackend {
       redirect: req.redirect,
       referrer: req.referrer,
       integrity: req.integrity,
+      referrerPolicy: req.referrerPolicy,
     };
   }
 

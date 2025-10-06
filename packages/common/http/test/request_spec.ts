@@ -95,6 +95,10 @@ describe('HttpRequest', () => {
       const req = new HttpRequest('GET', '/test', {referrer: 'about:client'});
       expect(req.referrer).toBe('about:client');
     });
+    it('should allow setting referrerPolicy option', () => {
+      const req = new HttpRequest('GET', '/test', {referrerPolicy: 'no-referrer'});
+      expect(req.referrerPolicy).toBe('no-referrer');
+    });
   });
   describe('clone() copies the request', () => {
     const headers = new HttpHeaders({
@@ -115,6 +119,7 @@ describe('HttpRequest', () => {
       credentials: 'same-origin',
       referrer: 'about:client',
       integrity: 'sha256-...',
+      referrerPolicy: 'no-referrer',
     });
     it('in the base case', () => {
       const clone = req.clone();
@@ -134,6 +139,7 @@ describe('HttpRequest', () => {
       expect(clone.credentials).toBe('same-origin');
       expect(clone.referrer).toBe('about:client');
       expect(clone.integrity).toBe('sha256-...');
+      expect(clone.referrerPolicy).toBe('no-referrer');
     });
     it('and updates the url', () => {
       expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -171,6 +177,9 @@ describe('HttpRequest', () => {
     });
     it('and updates the integrity', () => {
       expect(req.clone({integrity: 'sha512-...'}).integrity).toBe('sha512-...');
+    });
+    it('and updates the referrerPolicy', () => {
+      expect(req.clone({referrerPolicy: 'origin'}).referrerPolicy).toBe('origin');
     });
   });
   describe('content type detection', () => {

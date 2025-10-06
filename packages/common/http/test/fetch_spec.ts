@@ -356,6 +356,20 @@ describe('FetchBackend', async () => {
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
   });
 
+  it('should pass referrerPolicy option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {referrerPolicy: 'no-referrer'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        referrerPolicy: 'no-referrer',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   it('emits an error when a request times out', (done) => {
     backend.handle(TEST_POST).subscribe({
       error: (err: HttpErrorResponse) => {
