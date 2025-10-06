@@ -925,6 +925,9 @@ export interface HostBindingDecorator {
    *
    * @usageNotes
    *
+   * NOTE:  **Always** prefer using the `host` property over `@HostBinding`.
+   * This decorator exist exclusively for backwards compatibility.
+   *
    * The following example creates a directive that sets the `valid` and `invalid`
    * class, a style color, and an id on the DOM element that has an `ngModel` directive on it.
    *
