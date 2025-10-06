@@ -4,7 +4,8 @@
   "version": "0.0.0-PLACEHOLDER",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/vscode-ng-language-service.git"
+    "url": "https://github.com/angular/angular.git",
+    "directory": "vscode-ng-language-service/server"
   },
   "author": "Angular",
   "license": "MIT",
