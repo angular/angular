@@ -43,6 +43,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     REFERRER_NOT_SUPPORTED_WITH_XHR = 2821,
     // (undocumented)
+    REFERRER_POLICY_NOT_SUPPORTED_WITH_XHR = 2823,
+    // (undocumented)
     RESPONSE_IS_NOT_A_BLOB = 2807,
     // (undocumented)
     RESPONSE_IS_NOT_A_STRING = 2808,
