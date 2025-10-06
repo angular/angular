@@ -8,8 +8,6 @@ To use the recommended configurations follow the steps below:
 
 - install the recommended extensions in `.vscode/extensions.json`
 - copy (or link) `.vscode/recommended-settings.json` to `.vscode/settings.json`
-- copy (or link) `.vscode/recommended-launch.json` to `.vscode/launch.json`
-- copy (or link) `.vscode/recommended-tasks.json` to `.vscode/tasks.json`
 - restart the editor
 
 If you already have your custom workspace settings, you should instead manually merge the file contents.

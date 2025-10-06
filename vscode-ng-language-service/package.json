@@ -242,10 +242,10 @@
     "onLanguage:html",
     "onLanguage:typescript"
   ],
-  "main": "../dist/bin/vscode-ng-language-service/client/index",
+  "main": "../dist/bin/vscode-ng-language-service/client/src/extension.js",
   "scripts": {
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
-    "watch": "ibazel build //vscode-ng-language-service/client:index //vscode-ng-language-service/server:index",
+    "watch": "ibazel build //vscode-ng-language-service/client/src //vscode-ng-language-service/server/src",
     "package": "bazel build //vscode-ng-language-service:npm --config=release",
     "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
     "test:watch": "ibazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",

@@ -26,7 +26,7 @@ expand_template_rule(
         "0.0.0-PLACEHOLDER": "{{BUILD_SCM_VERSION}}",
     },
     substitutions = {
-        "../dist/bin/vscode-ng-language-service/client/index": "./index",
+        "../dist/bin/vscode-ng-language-service/client/src/extension.js": "./index",
     },
     template = "package.json",
 )

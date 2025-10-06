@@ -97,22 +97,28 @@ First time setup:
 - Add the following to the `configurations` array:
 
 ```json
-    {
-      "type": "node",
-      "request": "attach",
-      "name": "Attach to Remote",
-      "port": 9229
-    }
+{
+  "name": "Attach to Process",
+  "type": "node",
+  "request": "attach",
+  "port": 9229,
+  "restart": true,
+  "timeout": 600000,
+  "sourceMaps": true,
+  "skipFiles": ["<node_internals>/**"],
+  "sourceMapPathOverrides": {
+    "?:*/bin/*": "${workspaceFolder}/*"
+  },
+  "resolveSourceMapLocations": ["!**/node_modules/**"]
+}
 ```
 
-**Setting breakpoints directly in your code files may not work in VSCode**. This is because the
-files you're actually debugging are built files that exist in a `./private/...` folder.
-The easiest way to debug a test for now is to add a `debugger` statement in the code
-and launch the bazel corresponding test (`pnpm bazel test <target> --config=debug`).
+The easiest way to debug a test for now is to add a `debugger` statement or add a break point
+in the code and launch the bazel corresponding test (`pnpm bazel test <target> --config=debug`).
 
 Bazel will wait on a connection. Go to the debug view (by clicking on the sidebar or
 Apple+Shift+D on Mac) and click on the green play icon next to the configuration name
-(ie `Attach to Remote`).
+(ie `Attach to Process`).
 
 ### Debugging a Karma Test
 
