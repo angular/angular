@@ -14,6 +14,7 @@ import {IndexedNode} from '../../directive-forest/index-forest';
 import {ComponentMetadataComponent} from './component-metadata/component-metadata.component';
 import {ButtonComponent} from '../../../../shared/button/button.component';
 import {Settings} from '../../../../application-services/settings';
+import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
 
 @Component({
   templateUrl: './property-tab-header.component.html',
@@ -24,11 +25,12 @@ import {Settings} from '../../../../application-services/settings';
 })
 export class PropertyTabHeaderComponent {
   private readonly settings = inject(Settings);
+  private readonly supportedApis = inject(SUPPORTED_APIS);
 
   protected readonly currentSelectedElement = input.required<IndexedNode>();
   protected readonly showSignalGraph = output<void>();
 
   protected readonly expanded = signal(false);
 
-  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
+  protected readonly signalGraphEnabled = () => this.supportedApis().signals;
 }
