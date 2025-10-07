@@ -267,6 +267,13 @@ export class MyComponent {
 }
 ```
 
+## Setting providers on the server
+
+On the server side, top level provider values are set once when the application code is initially parsed and evaluated.
+This means that providers configured with `useValue` will keep their value across multiple requests, until the server application is restarted.
+
+If you want to generate a new value for each request, use a factory provider with `useFactory`. The factory function will run for every incoming request, ensuring that a new value is created and assigned to the token each time.
+
 ## Accessing Request and Response via DI
 
 The `@angular/core` package provides several tokens for interacting with the server-side rendering environment. These tokens give you access to crucial information and objects within your Angular application during SSR.
