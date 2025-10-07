@@ -84,7 +84,7 @@ export class DevToolsTabsComponent {
   protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly routerGraphEnabled = this.settings.routerGraphEnabled;
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
-  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
+  protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
   protected readonly activeTab = this.settings.activeTab;
 
@@ -200,10 +200,6 @@ export class DevToolsTabsComponent {
     if (!enabled) {
       this.activeTab.set('Components');
     }
-  }
-
-  protected setSignalGraph(enabled: boolean): void {
-    this.signalGraphEnabled.set(enabled);
   }
 
   protected setTransferStateTab(enabled: boolean): void {

@@ -42,7 +42,6 @@ import {Settings} from '../../../../../../application-services/settings';
 export class PropertyViewTreeComponent {
   protected readonly supportedApis = inject(SUPPORTED_APIS);
   private readonly signalGraph = inject(SignalGraphManager);
-  private readonly settings = inject(Settings);
 
   readonly dataSource = input.required<PropertyDataSource>();
   readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
@@ -51,7 +50,7 @@ export class PropertyViewTreeComponent {
   readonly logValue = output<FlatNode>();
   readonly showSignalGraph = output<DebugSignalGraphNode>();
 
-  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
+  protected readonly signalGraphEnabled = () => this.supportedApis().signals;
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
