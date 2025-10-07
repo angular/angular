@@ -52,7 +52,6 @@ filegroup(
     name = "files_for_docgen",
     srcs = glob([
         "*.ts",
-        "src/**/*.ts",
     ]) + ["PACKAGE.md"],
 )
 
