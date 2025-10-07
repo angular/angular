@@ -11,7 +11,14 @@ import {
   publishSignalConfiguration,
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
-import {InjectionToken, Injector, runInInjectionContext, StaticProvider} from '../di';
+import {
+  EnvironmentProviders,
+  InjectionToken,
+  Injector,
+  makeEnvironmentProviders,
+  runInInjectionContext,
+  StaticProvider,
+} from '../di';
 import {INJECTOR_SCOPE} from '../di/scope';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 
@@ -186,14 +193,14 @@ export function createOrReusePlatformInjector(providers: StaticProvider[] = []):
  *
  * @publicApi
  */
-export function providePlatformInitializer(initializerFn: () => void): StaticProvider[] {
-  return [
+export function providePlatformInitializer(initializerFn: () => void): EnvironmentProviders {
+  return makeEnvironmentProviders([
     {
       provide: PLATFORM_INITIALIZER,
       useValue: initializerFn,
       multi: true,
     },
-  ];
+  ]);
 }
 
 function runPlatformInitializers(injector: Injector): void {
