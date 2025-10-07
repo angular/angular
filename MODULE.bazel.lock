@@ -188,7 +188,8 @@
     "https://bcr.bazel.build/modules/tar.bzl/0.2.1/MODULE.bazel": "52d1c00a80a8cc67acbd01649e83d8dd6a9dc426a6c0b754a04fe8c219c76468",
     "https://bcr.bazel.build/modules/tar.bzl/0.5.1/MODULE.bazel": "7c2eb3dcfc53b0f3d6f9acdfd911ca803eaf92aadf54f8ca6e4c1f3aee288351",
     "https://bcr.bazel.build/modules/tar.bzl/0.5.6/MODULE.bazel": "c5b8bfa6bc7b640883d41bfec4a200fb45c16a2a7b2fb081323f499197cfcc09",
-    "https://bcr.bazel.build/modules/tar.bzl/0.5.6/source.json": "848b3a4eaf2bb4a09ab78533c348e19a6723c7d5f820eb1dceb0eeb5e5914ac1",
+    "https://bcr.bazel.build/modules/tar.bzl/0.6.0/MODULE.bazel": "a3584b4edcfafcabd9b0ef9819808f05b372957bbdff41601429d5fd0aac2e7c",
+    "https://bcr.bazel.build/modules/tar.bzl/0.6.0/source.json": "4a620381df075a16cb3a7ed57bd1d05f7480222394c64a20fa51bdb636fda658",
     "https://bcr.bazel.build/modules/upb/0.0.0-20220923-a547704/MODULE.bazel": "7298990c00040a0e2f121f6c32544bab27d4452f80d9ce51349b1a28f3005c43",
     "https://bcr.bazel.build/modules/yq.bzl/0.1.1/MODULE.bazel": "9039681f9bcb8958ee2c87ffc74bdafba9f4369096a2b5634b88abc0eaefa072",
     "https://bcr.bazel.build/modules/yq.bzl/0.2.0/MODULE.bazel": "6f3a675677db8885be4d607fde14cc51829715e3a879fb016eb9bf336786ce6d",
@@ -232,7 +233,7 @@
     },
     "@@aspect_rules_esbuild~//esbuild:extensions.bzl%esbuild": {
       "general": {
-        "bzlTransitiveDigest": "NeP8heP5Z49UtK5ZkdaSGN2wdf2vyTLxJfpSPeyvV24=",
+        "bzlTransitiveDigest": "kzZXVf0lIRQArtJstiytwibC6m5npERsjNfhP9yJJW4=",
         "usagesDigest": "u8wMZJd6Ovxb3YTmhoM3sMbh11Qwrv5EHaggdNi5Wb8=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -412,7 +413,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%pnpm": {
       "general": {
-        "bzlTransitiveDigest": "eebwHza1XBCmrNmoTUnW56khfYFfcwZpPWjM1Nvu3sk=",
+        "bzlTransitiveDigest": "KMsyoH5ShknUHVmkSHztDMIN0fXSzKZBut4ETq2s/Sw=",
         "usagesDigest": "V9NEIvpQ7jCUoRijc01Vfpgy0m4nBZhW8UadmstKA04=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
