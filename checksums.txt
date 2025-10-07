@@ -1,0 +1,1 @@
+4e511316b3bd7c05525c1c8e18fe0ba070344169be6031e093b1e84c37ef5e2a  fix-angular-xss-patch-semgrep.zip

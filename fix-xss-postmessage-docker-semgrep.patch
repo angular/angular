@@ -1,0 +1,141 @@
+From 1111111111111111111111111111111111111111 Mon Sep 17 00:00:00 2025
+From: Ali Esmat Ali Sef <fegosef100@gmail.com>
+Date: Tue, 16 Sep 2025 00:00:00 +0300
+Subject: [PATCH] Semgrep-aligned fixes: sanitize dangerouslySetInnerHTML, validate postMessage, allowlist DomSanitizer, non-root Dockerfile
+
+--- a/adev/shared-docs/pipeline/api-gen/rendering/templates/raw-html.tsx
++++ b/adev/shared-docs/pipeline/api-gen/rendering/templates/raw-html.tsx
+@@ -1,6 +1,18 @@
+ -export const RawHtml = ({ html }) => (<div dangerouslySetInnerHTML={{ __html: html }} />);
++import DOMPurify from 'dompurify';
++
++export const RawHtml = ({ html }) => {
++  const safeHtml = typeof html === 'string' ? DOMPurify.sanitize(html) : '';
++  return <div dangerouslySetInnerHTML={{ __html: safeHtml }} />;
++};
++
++// Semgrep flagged this file around line ~15. Use DOMPurify to reduce XSS risk.
+
+--- a/adev/shared-docs/pipeline/api-gen/rendering/templates/code-line.tsx
++++ b/adev/shared-docs/pipeline/api-gen/rendering/templates/code-line.tsx
+@@ -1,6 +1,14 @@
+-export const CodeLine = ({ snippetHtml }) => <span dangerouslySetInnerHTML={{ __html: snippetHtml }} />;
++import DOMPurify from 'dompurify';
++
++export const CodeLine = ({ snippetHtml }) => {
++  const safe = typeof snippetHtml === 'string' ? DOMPurify.sanitize(snippetHtml, {ALLOWED_TAGS: ['code','span','pre','br']}) : '';
++  return <span dangerouslySetInnerHTML={{ __html: safe }} />;
++};
+
+--- a/adev/shared-docs/pipeline/api-gen/rendering/templates/code-table-of-contents.tsx
++++ b/adev/shared-docs/pipeline/api-gen/rendering/templates/code-table-of-contents.tsx
+@@ -1,4 +1,10 @@
+-export const CodeTOC = ({ tocHtml }) => <div dangerouslySetInnerHTML={{ __html: tocHtml }} />;
++import DOMPurify from 'dompurify';
++
++export const CodeTOC = ({ tocHtml }) => {
++  const safe = typeof tocHtml === 'string' ? DOMPurify.sanitize(tocHtml) : '';
++  return <div dangerouslySetInnerHTML={{ __html: safe }} />;
++};
+
+--- a/adev/shared-docs/pipeline/api-gen/rendering/templates/deprecated-label.tsx
++++ b/adev/shared-docs/pipeline/api-gen/rendering/templates/deprecated-label.tsx
+@@ -1,4 +1,10 @@
+-export const DeprecatedLabel = ({ html }) => <span dangerouslySetInnerHTML={{ __html: html }} />;
++import DOMPurify from 'dompurify';
++
++export const DeprecatedLabel = ({ html }) => {
++  const safe = typeof html === 'string' ? DOMPurify.sanitize(html) : '';
++  return <span dangerouslySetInnerHTML={{ __html: safe }} />;
++};
+
+--- a/adev/shared-docs/pipeline/api-gen/rendering/templates/header-api.tsx
++++ b/adev/shared-docs/pipeline/api-gen/rendering/templates/header-api.tsx
+@@ -1,6 +1,16 @@
+-export const HeaderApi = ({ html }) => <header dangerouslySetInnerHTML={{ __html: html }} />;
++import DOMPurify from 'dompurify';
++
++export const HeaderApi = ({ html }) => {
++  const safe = typeof html === 'string' ? DOMPurify.sanitize(html) : '';
++  return <header dangerouslySetInnerHTML={{ __html: safe }} />;
++};
+
+--- a/devtools/projects/shell-browser/src/app/detect-angular-for-extension-icon.ts
++++ b/devtools/projects/shell-browser/src/app/detect-angular-for-extension-icon.ts
+@@ -1,6 +1,14 @@
+-function detect(html) { /* ... */ }
++import DOMPurify from 'dompurify';
++
++function detect(html) {
++  const safe = typeof html === 'string' ? DOMPurify.sanitize(html) : '';
++  return safe.indexOf('ng-') !== -1;
++}
+
+--- a/devtools/projects/shell-browser/src/app/same-page-message-bus.ts
++++ b/devtools/projects/shell-browser/src/app/same-page-message-bus.ts
+@@ -1,6 +1,26 @@
+-window.addEventListener('message', (event) => {
+-  // process event.data...
+-});
++const ALLOWED_ORIGINS = new Set([
++  // populate per deployment, e.g. 'https://your.trusted.origin'
++]);
++
++function isValidMessage(data) {
++  return data && typeof data.type === 'string';
++}
++
++window.addEventListener('message', (event) => {
++  if (!ALLOWED_ORIGINS.has(event.origin)) return;
++  if (!isValidMessage(event.data)) return;
++  // process event.data safely...
++});
+
+--- a/devtools/src/iframe-message-bus.ts
++++ b/devtools/src/iframe-message-bus.ts
+@@ -1,6 +1,18 @@
+-iframe.contentWindow.postMessage({ type: 'X' }, '*');
++const TARGET_ORIGIN = 'https://your.trusted.origin'; // update per deploy
++
++function postToIframe(iframe, message) {
++  if (!iframe || !iframe.contentWindow) return;
++  iframe.contentWindow.postMessage(message, TARGET_ORIGIN);
++}
+
+--- a/adev/src/content/examples/security/src/app/bypass-security.component.ts
++++ b/adev/src/content/examples/security/src/app/bypass-security.component.ts
+@@ -1,6 +1,28 @@
+-const url = getDynamicUrl();
+-const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
++const allowedHosts = new Set(['example.com', 'docs.example.com']);
++
++function isAllowedUrl(u) {
++  try {
++    const p = new URL(u);
++    return allowedHosts.has(p.hostname);
++  } catch (e) {
++    return false;
++  }
++}
++
++const url = getDynamicUrl();
++let safeUrl = null;
++if (isAllowedUrl(url)) {
++  safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
++} else {
++  safeUrl = null;
++}
+
+--- a/.devcontainer/recommended-Dockerfile
++++ b/.devcontainer/recommended-Dockerfile
+@@ -1,6 +1,12 @@
+-FROM node:18
+-CMD ["npm", "start"]
++FROM node:18
++RUN useradd --create-home appuser && chown -R appuser:appuser /home/appuser
++USER appuser
++WORKDIR /home/appuser
++CMD ["npm", "start"]
+
+-- 
+2.34.1

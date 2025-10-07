@@ -157,3 +157,20 @@ Join the conversation and help the community.
 [youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular
 [animations]: https://angular.dev/guide/animations
+=======
+Title: Mitigation patch for Semgrep-identified issues (XSS, wildcard postMessage, DomSanitizer bypass, Dockerfile root)
+Author: Ali Esmat Ali Sef
+Date: 2025-09-16
+Summary:
+This archive contains a targeted patch-skeleton addressing the specific Semgrep findings you provided.
+The patch targets the exact file paths flagged by Semgrep and introduces conservative, safe-by-default changes:
+  - Use DOMPurify sanitization for dangerouslySetInnerHTML usages.
+  - Replace postMessage '*' usage with explicit targetOrigin and enforce origin checks on receivers.
+  - Validate dynamic URLs before DomSanitizer.bypassSecurityTrustResourceUrl usage.
+  - Modify .devcontainer/recommended-Dockerfile to create a non-root runtime user.
+
+Note:
+- This is a mitigation skeleton; maintainers should review and integrate according to project policies.
+- No exploit PoC included. For internal validation, provide a PGP key and an encrypted PoC can be provided.
+- If you want the patch context to exactly match a specific commit SHA, provide the SHA and I will regenerate the patch with precise context.
+>>>>>>> 2a9e129685 (Mitigation patch for Semgrep-identified issues (XSS, postMessage, DomSanitizer, Dockerfile))

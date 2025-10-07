@@ -1,0 +1,4 @@
+PGP exchange instructions:
+Provide an ASCII-armored public PGP key and I will encrypt PoC for internal verification.
+Example encryption I will use:
+  gpg --encrypt --recipient 'KeyID' -o poc.zip.gpg poc.zip
