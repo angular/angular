@@ -6,11 +6,11 @@
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@10.17.1",
+  "packageManager": "pnpm@10.18.0",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "10.17.1"
+    "pnpm": "10.18.0"
   },
   "repository": {
     "type": "git",
@@ -135,13 +135,13 @@
     "open-in-idx": "^0.1.1",
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.2.0",
-    "rollup": "4.52.3",
+    "rollup": "4.52.4",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-preserve-shebang": "^1.0.1",
     "rollup-plugin-sourcemaps": "^0.6.3",
     "rxjs": "^7.0.0",
     "selenium-webdriver": "3.5.0",
-    "selenium-webdriver4": "npm:selenium-webdriver@4.35.0",
+    "selenium-webdriver4": "npm:selenium-webdriver@4.36.0",
     "semver-dsl": "^1.0.1",
     "source-map": "0.7.6",
     "source-map-support": "0.5.21",

@@ -111,7 +111,7 @@ function maybeQueueEnterAnimation(
   const enterAnimations = parentLView?.[ANIMATIONS]?.enter;
   if (parent !== null && enterAnimations && enterAnimations.has(tNode.index)) {
     const animationQueue = injector.get(ANIMATION_QUEUE);
-    for (const animateFn of enterAnimations.get(tNode.index)!) {
+    for (const animateFn of enterAnimations.get(tNode.index)!.animateFns) {
       animationQueue.queue.add(animateFn);
     }
   }
@@ -416,9 +416,10 @@ function runLeaveAnimationsWithCallback(
       const leaveAnimations = leaveAnimationMap.get(tNode.index);
       const runningAnimations = [];
       if (leaveAnimations) {
-        for (let index = 0; index < leaveAnimations.length; index++) {
-          const animationFn = leaveAnimations[index];
-          runningAnimations.push(animationFn());
+        for (let index = 0; index < leaveAnimations.animateFns.length; index++) {
+          const animationFn = leaveAnimations.animateFns[index];
+          const {promise} = animationFn();
+          runningAnimations.push(promise);
         }
       }
       animations.running = Promise.allSettled(runningAnimations);

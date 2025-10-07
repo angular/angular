@@ -1,0 +1,18 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate control instruction for `control` property bindings",
+      "inputFiles": [
+        "control_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            "control_bindings.js"
+          ]
+        }
+      ]
+    }
+  ]
+}
