@@ -14,6 +14,7 @@ import {
   ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   PlatformRef,
+  EnvironmentProviders,
 } from '@angular/core';
 import {TestComponentRenderer} from '@angular/core/testing';
 import {BrowserModule, platformBrowser} from '../../index';
@@ -26,8 +27,9 @@ const ZONELESS_BY_DEFAULT = true;
  *
  * @publicApi
  */
-export const platformBrowserTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
-  createPlatformFactory(platformBrowser, 'browserTesting');
+export const platformBrowserTesting: (
+  extraProviders?: Array<StaticProvider | EnvironmentProviders>,
+) => PlatformRef = createPlatformFactory(platformBrowser, 'browserTesting');
 
 /**
  * NgModule for testing.

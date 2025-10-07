@@ -8,6 +8,7 @@
 
 import {
   createPlatformFactory,
+  EnvironmentProviders,
   NgModule,
   platformCore,
   PlatformRef,
@@ -29,12 +30,13 @@ const INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS: StaticProvider[] = [
  * @publicApi
  * @deprecated from v20.0.0, use e2e testing to verify SSR behavior.
  */
-export const platformServerTesting: (extraProviders?: StaticProvider[]) => PlatformRef =
-  createPlatformFactory(
-    platformCore,
-    'serverTesting',
-    INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS,
-  );
+export const platformServerTesting: (
+  extraProviders?: Array<StaticProvider | EnvironmentProviders>,
+) => PlatformRef = createPlatformFactory(
+  platformCore,
+  'serverTesting',
+  INTERNAL_SERVER_DYNAMIC_PLATFORM_TESTING_PROVIDERS,
+);
 
 /**
  * NgModule for testing.

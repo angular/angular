@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {StaticProvider} from '../di';
+import {EnvironmentProviders, StaticProvider} from '../di';
 
 import {createPlatformFactory} from './platform';
 import {PlatformRef} from './platform_ref';
@@ -16,5 +16,6 @@ import {PlatformRef} from './platform_ref';
  *
  * @publicApi
  */
-export const platformCore: (extraProviders?: StaticProvider[] | undefined) => PlatformRef =
-  createPlatformFactory(null, 'core', []);
+export const platformCore: (
+  extraProviders?: Array<StaticProvider | EnvironmentProviders>,
+) => PlatformRef = createPlatformFactory(null, 'core', []);

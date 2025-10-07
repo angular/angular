@@ -65,16 +65,18 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @publicApi
  */
 export function createPlatformFactory(
-  parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
+  parentPlatformFactory:
+    | ((extraProviders?: Array<StaticProvider | EnvironmentProviders>) => PlatformRef)
+    | null,
   name: string,
-  providers: StaticProvider[] = [],
-): (extraProviders?: StaticProvider[]) => PlatformRef {
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+): (extraProviders?: Array<StaticProvider | EnvironmentProviders>) => PlatformRef {
   const desc = `Platform: ${name}`;
   const marker = new InjectionToken(desc);
-  return (extraProviders: StaticProvider[] = []) => {
+  return (extraProviders: Array<StaticProvider | EnvironmentProviders> = []) => {
     let platform = getPlatform();
     if (!platform) {
-      const platformProviders: StaticProvider[] = [
+      const platformProviders: Array<StaticProvider | EnvironmentProviders> = [
         ...providers,
         ...extraProviders,
         {provide: marker, useValue: true},
@@ -93,7 +95,10 @@ export function createPlatformFactory(
  * Helper function to create an instance of a platform injector (that maintains the 'platform'
  * scope).
  */
-function createPlatformInjector(providers: StaticProvider[] = [], name?: string): Injector {
+function createPlatformInjector(
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+  name?: string,
+): Injector {
   return Injector.create({
     name,
     providers: [
@@ -159,7 +164,9 @@ export function destroyPlatform(): void {
  * but avoid referencing `PlatformRef` class.
  * This function is needed for bootstrapping a Standalone Component.
  */
-export function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
+export function createOrReusePlatformInjector(
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+): Injector {
   // If a platform injector already exists, it means that the platform
   // is already bootstrapped and no additional actions are required.
   if (_platformInjector) return _platformInjector;
