@@ -1406,27 +1406,6 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  vscode-ng-language-service/integration/workspace:
-    dependencies:
-      '@angular/common':
-        specifier: 21.0.0-next.6
-        version: 21.0.0-next.6(@angular/core@21.0.0-next.6(@angular/compiler@21.0.0-next.6))(rxjs@7.8.2)
-      '@angular/compiler':
-        specifier: 21.0.0-next.6
-        version: 21.0.0-next.6
-      '@angular/compiler-cli':
-        specifier: 21.0.0-next.6
-        version: 21.0.0-next.6(@angular/compiler@21.0.0-next.6)(typescript@5.9.3)
-      '@angular/core':
-        specifier: 21.0.0-next.6
-        version: 21.0.0-next.6(@angular/compiler@21.0.0-next.6)
-      rxjs:
-        specifier: 7.8.2
-        version: 7.8.2
-      zone.js:
-        specifier: 0.15.1
-        version: 0.15.1
-
   vscode-ng-language-service/server:
     dependencies:
       '@angular/language-service':
@@ -10572,7 +10551,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:

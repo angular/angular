@@ -29,7 +29,6 @@ packages:
   - vscode-ng-language-service
   - vscode-ng-language-service/server
   - vscode-ng-language-service/integration/pre_standalone_project
-  - vscode-ng-language-service/integration/workspace
   - vscode-ng-language-service/integration/project
 
 allowedDeprecatedVersions:

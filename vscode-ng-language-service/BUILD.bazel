@@ -87,6 +87,9 @@ npm_package(
         ":vsix",
         ":vsix_sandbox",
     ],
+    data = [
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
+    ],
     root_paths = [
         "vsix_sandbox",
     ],
