@@ -16,6 +16,7 @@ pubspec.lock
 !.devcontainer/recommended-devcontainer.json
 !.devcontainer/recommended-Dockerfile
 .settings/
+.vscode/settings.json
 *.swo
 *.swp
 modules/.settings
