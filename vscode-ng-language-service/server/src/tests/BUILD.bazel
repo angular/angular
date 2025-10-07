@@ -28,9 +28,6 @@ jasmine_test(
     chdir = package_name(),
     data = [
         ":tests",
-        "//vscode-ng-language-service/integration/workspace",
-        "//vscode-ng-language-service/integration/workspace:node_modules/@angular/compiler",
-        "//vscode-ng-language-service/integration/workspace:node_modules/@angular/compiler-cli",
     ],
     node_modules = "//vscode-ng-language-service:node_modules",
     tags = ["unit_test"],

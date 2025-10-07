@@ -47,6 +47,10 @@ esbuild(
         ":banner",
     ],
     config = "esbuild.mjs",
+    data = [
+        "//vscode-ng-language-service/server:node_modules/@angular/language-service",
+        "//vscode-ng-language-service/server:node_modules/typescript",
+    ],
     entry_point = "//vscode-ng-language-service/server/src:server.js",
     external = [
         "typescript/lib/tsserverlibrary",

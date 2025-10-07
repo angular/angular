@@ -1,30 +1,15 @@
 load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
-jasmine_test(
-    name = "test",
-    data = [
-        ":test_lib",
-        "//vscode-ng-language-service/integration",
-        "//vscode-ng-language-service/integration/pre_standalone_project",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
-        "//vscode-ng-language-service/integration/project",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
-        "//vscode-ng-language-service/server:index",
-        "//vscode-ng-language-service/server:node_modules/@angular/language-service",
-        "//vscode-ng-language-service/server:node_modules/typescript",
-    ],
-    flaky = True,
-    shard_count = 2,
-)
-
 ts_project(
     name = "test_lib",
     testonly = True,
     srcs = glob([
         "*.ts",
     ]),
+    data = [
+        "//vscode-ng-language-service/integration",
+        "//vscode-ng-language-service/server:index",
+    ],
     tsconfig = "//vscode-ng-language-service/integration:tsconfig-test",
     deps = [
         "//vscode-ng-language-service:node_modules/@types/jasmine",
@@ -35,4 +20,13 @@ ts_project(
         "//vscode-ng-language-service/common",
         "//vscode-ng-language-service/integration",
     ],
+)
+
+jasmine_test(
+    name = "test",
+    data = [
+        ":test_lib",
+    ],
+    flaky = True,
+    shard_count = 2,
 )

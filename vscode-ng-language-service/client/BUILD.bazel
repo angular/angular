@@ -21,6 +21,9 @@ esbuild(
             "main",
         ],
     },
+    data = [
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
+    ],
     entry_point = "//vscode-ng-language-service/client/src:extension.js",
     external = [
         "vscode",
