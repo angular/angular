@@ -24,11 +24,23 @@ interface Options {
 
 export function migrate(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
+    const resolvedOptions = {
+      path: options.path ?? './',
+      format: options.format ?? true,
+    };
+
     let allPaths = [];
     const basePath = process.cwd();
     let pathToMigrate: string | undefined;
-    if (options.path) {
-      pathToMigrate = normalizePath(join(basePath, options.path));
+
+    if (resolvedOptions.path) {
+      if (resolvedOptions.path.startsWith('..')) {
+        throw new SchematicsException(
+          'Cannot run control flow migration outside of the current project.',
+        );
+      }
+
+      pathToMigrate = normalizePath(join(basePath, resolvedOptions.path));
       if (pathToMigrate.trim() !== '') {
         allPaths.push(pathToMigrate);
       }
