@@ -1,3 +1,19 @@
+<a name="20.3.4"></a>
+# 20.3.4 (2025-10-08)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [853ed169a8](https://github.com/angular/angular/commit/853ed169a8a1392ef2da7790181fb8e100f59519) | fix | ensure missing leave animations don't queue leave animations ([#64226](https://github.com/angular/angular/pull/64226)) |
+| [6fed986b7a](https://github.com/angular/angular/commit/6fed986b7a8f22dfe81d94b1e55490a278e6d82a) | fix | Fixes animations in conjunction with content projection ([#63776](https://github.com/angular/angular/pull/63776)) |
+| [76fe5599fe](https://github.com/angular/angular/commit/76fe5599fe8e034c2a5a432608785a53018e23d2) | fix | handle undefined CSS time values in parseCssTimeUnitsToMs function ([#64181](https://github.com/angular/angular/pull/64181)) |
+| [3b959105be](https://github.com/angular/angular/commit/3b959105be04d7b11a1eb1035f1938bd0c43fe8b) | fix | prevent early exit from leave animations when multiple transitions are present ([#64225](https://github.com/angular/angular/pull/64225)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [65884895ff](https://github.com/angular/angular/commit/65884895fff5bc499974849e9ec5a5792eb9e36c) | fix | preserve component imports when pruning NgModules in standalone migration ([#64186](https://github.com/angular/angular/pull/64186)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.3"></a>
 # 20.3.3 (2025-10-02)
 ### compiler
