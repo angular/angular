@@ -26,17 +26,24 @@ interface Options {
 
 export function migrate(options: Options): Rule {
   return async (tree: Tree, context: SchematicContext) => {
+    // Apply default values from schema when not provided by the migration system
+    const resolvedOptions = {
+      path: options.path ?? './',
+      format: options.format ?? true,
+    };
+
     let allPaths = [];
     const basePath = process.cwd();
     let pathToMigrate: string | undefined;
-    if (options.path) {
-      if (options.path.startsWith('..')) {
+
+    if (resolvedOptions.path) {
+      if (resolvedOptions.path.startsWith('..')) {
         throw new SchematicsException(
           'Cannot run control flow migration outside of the current project.',
         );
       }
 
-      pathToMigrate = normalizePath(join(basePath, options.path));
+      pathToMigrate = normalizePath(join(basePath, resolvedOptions.path));
       if (pathToMigrate.trim() !== '') {
         allPaths.push(pathToMigrate);
       }
