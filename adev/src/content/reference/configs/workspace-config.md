@@ -396,7 +396,7 @@ This option enables various optimizations of the build output, including:
 - Minification of scripts and styles
 - Tree-shaking
 - Dead-code elimination
-- Inlining of critical CSS
+- [Inlining of critical CSS](#critical-css-inlining)
 - Fonts inlining
 
 Several options can be used to fine-tune the optimization of an application.
@@ -510,3 +510,10 @@ Several options can be used to fine-tune the output structure of an application.
 | `browser` | The output directory name for your browser build is within the base output path. This can be safely served to users.                                              | `string`   | `browser`     |
 | `server`  | The output directory name of your server build within the output path base.                                                                                       | `string`   | `server`      |
 | `media`   | The output directory name for your media files located within the output browser directory. These media files are commonly referred to as resources in CSS files. | `string`   | `media`       |
+
+## Critical CSS inlining
+
+Angular can inline the critical CSS definitions of your application to improve [First Contentful Paint (FCP)](https://web.dev/first-contentful-paint).
+This option is enabled default and can be desibled in the [styles customization options](#styles-optimization-options).
+
+This optimization extracts the CSS needed to render the initial viewport and inlines it directly into the generated HTML, allowing the browser to display content faster without waiting for the full stylesheets to load. The remaining CSS is then loaded asynchronously in the background. The CLI uses [Beasties](https://github.com/danielroe/beasties) to analyze your application’s HTML and styles and determine which rules are essential for above-the-fold content.
