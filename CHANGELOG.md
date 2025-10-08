@@ -1,3 +1,36 @@
+<a name="21.0.0-next.7"></a>
+# 21.0.0-next.7 (2025-10-08)
+## Deprecations
+### http
+- `HttpResponseBase.statusText` is deprecated
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9eac43cf46](https://github.com/angular/angular/commit/9eac43cf46993442e9de5764e2ccca98e3837939) | feat | Support of optional keys for the KeyValue pipe ([#48814](https://github.com/angular/angular/pull/48814)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [548ea027f6](https://github.com/angular/angular/commit/548ea027f6abb967151ae1f330512e53248a1f73) | fix | ensure missing leave animations don't queue leave animations ([#64226](https://github.com/angular/angular/pull/64226)) |
+| [dd7c4cd9d1](https://github.com/angular/angular/commit/dd7c4cd9d1421849efb1e197a8e1390510bcbbf3) | fix | Fixes animations in conjunction with content projection ([#63776](https://github.com/angular/angular/pull/63776)) |
+| [cb56fbfddb](https://github.com/angular/angular/commit/cb56fbfddb30b58d20566aa1cd34d970ea59ddfc) | fix | handle undefined CSS time values in parseCssTimeUnitsToMs function ([#64181](https://github.com/angular/angular/pull/64181)) |
+| [e279f30199](https://github.com/angular/angular/commit/e279f301992a65d2378f10076ca79304b3a774de) | fix | prevent early exit from leave animations when multiple transitions are present ([#64225](https://github.com/angular/angular/pull/64225)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5cbdefcf11](https://github.com/angular/angular/commit/5cbdefcf118e9c228bc887be30114afc84a4db2a) | feat | add support for fetch referrerPolicy option in HttpClient ([#64116](https://github.com/angular/angular/pull/64116)) |
+| [0e4e17cd97](https://github.com/angular/angular/commit/0e4e17cd97d7a5f7ccc40405ba2103a78e1e1298) | refactor | `HttpResponseBase.statusText` ([#64176](https://github.com/angular/angular/pull/64176)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [d3e76b1956](https://github.com/angular/angular/commit/d3e76b195608aa91d35f7b18923b110db88152d1) | fix | preserve component imports when pruning NgModules in standalone migration ([#64186](https://github.com/angular/angular/pull/64186)) |
+| [62bbce63b7](https://github.com/angular/angular/commit/62bbce63b7abcb22f1fd453c59e0063aae3b189c) | fix | remove error for no matching files in control flow migration ([#64253](https://github.com/angular/angular/pull/64253)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [5e61e8d3c3](https://github.com/angular/angular/commit/5e61e8d3c3a80b21116e3188805de556e4f0c496) | fix | Fix memory leak through Navigation.abort and canDeactivate guards ([#64141](https://github.com/angular/angular/pull/64141)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.4"></a>
 # 20.3.4 (2025-10-08)
 ### core
