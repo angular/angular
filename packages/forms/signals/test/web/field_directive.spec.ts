@@ -49,7 +49,7 @@ class TestStringControl {
   readonly controlDirective = viewChild.required(Field);
 }
 
-describe('control directive', () => {
+describe('field directive', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
@@ -834,7 +834,7 @@ describe('control directive', () => {
     expect(cmp.f().value()).toBe(false);
   });
 
-  it('does not interfere with a component which accepts a control input directly', () => {
+  it('does not interfere with a component which accepts a field input directly', () => {
     @Component({
       selector: 'my-wrapper',
       template: `{{ field()().value() }}`,

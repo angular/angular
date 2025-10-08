@@ -59,7 +59,7 @@ export class Field<T> implements ɵControl<T> {
   register() {
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
-    // (as opposed to just passing the field through to its `control` input).
+    // (as opposed to just passing the field through to its `field` input).
     effect(
       (onCleanup) => {
         const fieldNode = this.state() as FieldNode;

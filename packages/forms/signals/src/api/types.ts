@@ -304,7 +304,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly keyInParent: Signal<TKey>;
   /**
-   * A signal containing the `Control` directives this field is currently bound to.
+   * A signal containing the `Field` directives this field is currently bound to.
    */
   readonly controls: Signal<readonly Field<unknown>[]>;
 

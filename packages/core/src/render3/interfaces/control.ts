@@ -24,8 +24,8 @@ export interface ɵControl<T> {
    * Registers this directive as a control of its associated form field.
    *
    * The presence of this directive alone is not sufficient to determine whether it'll control
-   * the bound field. If this directive's host is a component with a `control` input, we assume
-   * the component will forward the bound field to another control directive in its own template,
+   * the bound field. If this directive's host is a component with a `field` input, we assume
+   * the component will forward the bound field to another field directive in its own template,
    * and do nothing.
    */
   register(): void;

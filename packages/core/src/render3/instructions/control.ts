@@ -25,8 +25,8 @@ import {writeToDirectiveInput} from './write_to_directive_input';
 /**
  * Possibly sets up a {@link ɵControl} to manage a native or custom form control.
  *
- * Setup occurs if a `control` input is bound to a {@link ɵControl} directive on the current node,
- * but not to a component. If a `control` input is bound to a component, we assume the component
+ * Setup occurs if a `field` input is bound to a {@link ɵControl} directive on the current node,
+ * but not to a component. If a `field` input is bound to a component, we assume the component
  * will manage the control in its own template.
  *
  * @codeGenApi
@@ -36,7 +36,7 @@ export function ɵɵcontrolCreate(): void {
   const tNode = getCurrentTNode()!;
 
   // TODO(https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274)
-  // * cache the control directive index or instance for reuse.
+  // * cache the field directive index or instance for reuse.
   const control = getControlDirective(tNode, lView);
   if (!control) {
     return;
@@ -67,7 +67,7 @@ export function ɵɵcontrolCreate(): void {
 }
 
 /**
- * Updates a `control` property, and possibly other form control properties, on the current element.
+ * Updates a `field` property, and possibly other form control properties, on the current element.
  *
  * This is a specialized version of the `ɵɵproperty` instruction that handles updating additional
  * form control properties, if set up to do so by {@link ɵɵcontrolCreate} during creation.
@@ -105,8 +105,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 }
 
 /**
- * Returns the {@link ɵControl} directive on the specified node, if one is present and a `control`
- * input is bound to it, but not to a component. If a `control` input is bound to a component, we
+ * Returns the {@link ɵControl} directive on the specified node, if one is present and a `field`
+ * input is bound to it, but not to a component. If a `field` input is bound to a component, we
  * assume the component will manage the control in its own template and return nothing to indicate
  * that the directive should not be set up.
  *
@@ -123,14 +123,14 @@ function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | unde
   if (isComponentHost(tNode)) {
     const componentIndex = tNode.directiveStart + tNode.componentOffset;
     if (directiveIndices.includes(componentIndex)) {
-      // If component has a `control` input, we assume that it will handle binding the field to the
+      // If component has a `field` input, we assume that it will handle binding the field to the
       // appropriate native/custom control in its template, so we do not attempt to bind any inputs
       // on this component.
       return;
     }
   }
 
-  // Search for the `Control` directive.
+  // Search for the `Field` directive.
   for (let index of directiveIndices) {
     const directive = lView[index];
     if (ɵCONTROL in directive) {
@@ -138,7 +138,7 @@ function getControlDirective<T>(tNode: TNode, lView: LView): ɵControl<T> | unde
     }
   }
 
-  // The `Control` directive was not imported by this component.
+  // The `Field` directive was not imported by this component.
   return;
 }
 
@@ -193,7 +193,7 @@ function hasOutput(componentDef: ComponentDef<unknown>, name: string): boolean {
 }
 
 /**
- * Adds event listeners to a custom form control component to notify the `control` of changes.
+ * Adds event listeners to a custom form control component to notify the `field` of changes.
  *
  * @param lView The `LView` that contains the custom form control.
  * @param tNode The `TNode` of the custom form control.
@@ -264,7 +264,7 @@ function isNativeControl(lView: LView<unknown>, tNode: TNode): boolean {
 }
 
 /**
- * Adds event listeners to a native form control element to notify the `control` of changes.
+ * Adds event listeners to a native form control element to notify the `field` of changes.
  *
  * @param lView The `LView` that contains the native form control.
  * @param tNode The `TNode` of the native form control.
@@ -306,7 +306,7 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
 }
 
 /**
- * Updates the inputs of a custom form control component with the latest state from the `control`.
+ * Updates the inputs of a custom form control component with the latest state from the `field`.
  *
  * @param lView The `LView` that contains the custom form control.
  * @param componentIndex The index of the custom form control component in the `LView`.
@@ -361,7 +361,7 @@ function maybeWriteToDirectiveInput(
 }
 
 /**
- * Updates the properties of a native form control element with the latest state from the `control`.
+ * Updates the properties of a native form control element with the latest state from the `field`.
  *
  * @param tNode The `TNode` of the native form control.
  * @param lView The `LView` that contains the native form control.
