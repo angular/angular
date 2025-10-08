@@ -32,7 +32,7 @@ git_override(
 bazel_dep(name = "rules_sass")
 git_override(
     module_name = "rules_sass",
-    commit = "4a54e0e4e75fc6456ff874e53fb4a78bdfeb44b9",
+    commit = "1184a80751a21af8348f308abc5b38a41f26850e",
     remote = "https://github.com/devversion/rules_sass.git",
 )
 
