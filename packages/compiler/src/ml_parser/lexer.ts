@@ -692,7 +692,7 @@ class _Tokenizer {
       this._cursor.advance();
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
-        this._endToken([String.fromCharCode(charCode), this._cursor.getChars(start)]);
+        this._endToken([String.fromCodePoint(charCode), this._cursor.getChars(start)]);
       } catch {
         throw this._createError(
           _unknownEntityErrorMsg(this._cursor.getChars(start)),
