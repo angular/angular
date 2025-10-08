@@ -12,7 +12,7 @@ import {InjectorMarkers} from './injector_marker';
 import {INJECTOR} from './injector_token';
 import {ɵɵdefineInjectable} from './interface/defs';
 import {InjectOptions} from './interface/injector';
-import {EnvironmentProviders, Provider, StaticProvider} from './interface/provider';
+import {Provider, StaticProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
 import {ProviderToken} from './provider_token';
 
@@ -96,7 +96,7 @@ export abstract class Injector {
    *
    */
   static create(options: {
-    providers: Array<Provider | StaticProvider | EnvironmentProviders>;
+    providers: Array<Provider | StaticProvider>;
     parent?: Injector;
     name?: string;
   }): DestroyableInjector;
@@ -104,11 +104,7 @@ export abstract class Injector {
   static create(
     options:
       | StaticProvider[]
-      | {
-          providers: Array<Provider | StaticProvider | EnvironmentProviders>;
-          parent?: Injector;
-          name?: string;
-        },
+      | {providers: Array<Provider | StaticProvider>; parent?: Injector; name?: string},
     parent?: Injector,
   ): Injector {
     if (Array.isArray(options)) {
