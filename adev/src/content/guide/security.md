@@ -173,7 +173,7 @@ If an attacker can predict future nonces, they can circumvent the protections of
 
 </docs-callout>
 
-NOTE: If you want to inline the critical CSS of your application, you can not use the `CSP_NONCE` Injection token, and should prefer the `autoCsp` option.
+NOTE: If you want to [inline the critical CSS](/tools/cli/build#critical-css-inlining) of your application, you can not use the `CSP_NONCE` token, and should prefer the `autoCsp` option or set the `ngCspNonce` attribute on the root application element.
 
 If you cannot generate nonces in your project, you can allow inline styles by adding `'unsafe-inline'` to the `style-src` section of the CSP header.
 
