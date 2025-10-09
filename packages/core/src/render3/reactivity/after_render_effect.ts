@@ -38,7 +38,10 @@ import {
 import {LView} from '../interfaces/view';
 import {ViewContext} from '../view_context';
 import {assertNotInReactiveContext} from './asserts';
-import {emitEffectCreatedEvent, setInjectorProfilerContext} from '../debug/injector_profiler';
+import {
+  emitAfterRenderEffectPhaseCreatedEvent,
+  setInjectorProfilerContext,
+} from '../debug/injector_profiler';
 
 const NOT_SET = /* @__PURE__ */ Symbol('NOT_SET');
 const EMPTY_CLEANUP_SET = /* @__PURE__ */ new Set<() => void>();
@@ -57,7 +60,7 @@ type AfterRenderPhaseEffectHook = (
  * This node type extends `SignalNode` because `afterRenderEffect` phases effects produce a value
  * which is consumed as a `Signal` by subsequent phases.
  */
-interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
+export interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
   /** The phase of the effect implemented by this node */
   phase: AfterRenderPhase;
   /** The sequence of phases to which this node belongs, used for state of the whole sequence */
@@ -76,6 +79,7 @@ interface AfterRenderPhaseEffectNode extends SignalNode<unknown> {
 
 const AFTER_RENDER_PHASE_EFFECT_NODE = /* @__PURE__ */ (() => ({
   ...SIGNAL_NODE,
+  kind: 'afterRenderEffectPhase',
   consumerIsAlwaysLive: true,
   consumerAllowSignalWrites: true,
   value: NOT_SET,
@@ -420,7 +424,7 @@ function setupDebugInfo(node: AfterRenderPhaseEffectNode, injector: Injector): v
   node.debugName = `afterRenderEffect - ${phaseDebugName(node.phase)} phase`;
   const prevInjectorProfilerContext = setInjectorProfilerContext({injector, token: null});
   try {
-    emitEffectCreatedEvent({[SIGNAL]: node, destroy() {}} as any);
+    emitAfterRenderEffectPhaseCreatedEvent(node);
   } finally {
     setInjectorProfilerContext(prevInjectorProfilerContext);
   }

@@ -14,6 +14,7 @@ const KIND_CLASS_MAP: {[key: string]: string} = {
   'signal': 'kind-signal',
   'computed': 'kind-computed',
   'effect': 'kind-effect',
+  'afterRenderEffectPhase': 'kind-effect',
   'template': 'kind-template',
   'linkedSignal': 'kind-linked-signal',
 };
