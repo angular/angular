@@ -9,7 +9,7 @@ HELPFUL: The compiler encountered an expression it didn't understand while evalu
 Language features outside of the compiler's [restricted expression syntax](tools/cli/aot-compiler#expression-syntax)
 can produce this error, as seen in the following example:
 
-<docs-code language="typescript">
+```ts
 // ERROR
 export class Fooish { … }
 …
@@ -18,7 +18,7 @@ const prop = typeof Fooish; // typeof is not valid in metadata
   // bracket notation is not valid in metadata
   { provide: 'token', useValue: { [prop]: 'value' } };
   …
-</docs-code>
+```
 
 You can use `typeof` and bracket notation in normal application code.
 You just can't use those features within expressions that define Angular metadata.
@@ -35,7 +35,7 @@ The compiler encountered a reference to a locally defined symbol that either was
 
 Here's a `provider` example of the problem.
 
-<docs-code language="typescript">
+```ts
 
 // ERROR
 let foo: number; // neither exported nor initialized
@@ -49,27 +49,27 @@ let foo: number; // neither exported nor initialized
 })
 export class MyComponent {}
 
-</docs-code>
+```
 
-The compiler generates the component factory, which includes the `useValue` provider code, in a separate module. *That* factory module can't reach back to *this* source module to access the local \(non-exported\) `foo` variable.
+The compiler generates the component factory, which includes the `useValue` provider code, in a separate module. _That_ factory module can't reach back to _this_ source module to access the local \(non-exported\) `foo` variable.
 
 You could fix the problem by initializing `foo`.
 
-<docs-code language="typescript">
+```ts
 let foo = 42; // initialized
-</docs-code>
+```
 
 The compiler will [fold](tools/cli/aot-compiler#code-folding) the expression into the provider as if you had written this.
 
-<docs-code language="typescript">
+```ts
 providers: [
   { provide: Foo, useValue: 42 }
 ]
-</docs-code>
+```
 
 Alternatively, you can fix it by exporting `foo` with the expectation that `foo` will be assigned at runtime when you actually know its value.
 
-<docs-code language="typescript">
+```ts
 // CORRECTED
 export let foo: number; // exported
 
@@ -81,16 +81,15 @@ export let foo: number; // exported
   ]
 })
 export class MyComponent {}
-</docs-code>
+```
 
-Adding `export` often works for variables referenced in metadata such as `providers` and `animations` because the compiler can generate *references* to the exported variables in these expressions. It doesn't need the *values* of those variables.
+Adding `export` often works for variables referenced in metadata such as `providers` and `animations` because the compiler can generate _references_ to the exported variables in these expressions. It doesn't need the _values_ of those variables.
 
-Adding `export` doesn't work when the compiler needs the *actual value*
+Adding `export` doesn't work when the compiler needs the _actual value_
 in order to generate code.
 For example, it doesn't work for the `template` property.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 export let someTemplate: string; // exported but not initialized
 
@@ -99,24 +98,22 @@ export let someTemplate: string; // exported but not initialized
   template: someTemplate
 })
 export class MyComponent {}
+```
 
-</docs-code>
-
-The compiler needs the value of the `template` property *right now* to generate the component factory.
+The compiler needs the value of the `template` property _right now_ to generate the component factory.
 The variable reference alone is insufficient.
-Prefixing the declaration with `export` merely produces a new error, "[`Only initialized variables and constants can be referenced`](#only-initialized-variables)".
+Prefixing the declaration with `export` merely produces a new error, "[`Only initialized variables and constants can be referenced`](#only-initialized-variables-and-constants)".
 
 ## Only initialized variables and constants
 
-HELPFUL: *Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler.*
+HELPFUL: _Only initialized variables and constants can be referenced because the value of this variable is needed by the template compiler._
 
 The compiler found a reference to an exported variable or static field that wasn't initialized.
 It needs the value of that variable to generate code.
 
-The following example tries to set the component's `template` property to the value of the exported `someTemplate` variable which is declared but *unassigned*.
+The following example tries to set the component's `template` property to the value of the exported `someTemplate` variable which is declared but _unassigned_.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 export let someTemplate: string;
 
@@ -125,13 +122,11 @@ export let someTemplate: string;
   template: someTemplate
 })
 export class MyComponent {}
-
-</docs-code>
+```
 
 You'd also get this error if you imported `someTemplate` from some other module and neglected to initialize it there.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR - not initialized there either
 import { someTemplate } from './config';
 
@@ -140,16 +135,14 @@ import { someTemplate } from './config';
   template: someTemplate
 })
 export class MyComponent {}
-
-</docs-code>
+```
 
 The compiler cannot wait until runtime to get the template information.
 It must statically derive the value of the `someTemplate` variable from the source code so that it can generate the component factory, which includes instructions for building the element based on the template.
 
-To correct this error, provide the initial value of the variable in an initializer clause *on the same line*.
+To correct this error, provide the initial value of the variable in an initializer clause _on the same line_.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 export let someTemplate = '<h1>Greetings from Angular</h1>';
 
@@ -158,20 +151,18 @@ export let someTemplate = '<h1>Greetings from Angular</h1>';
   template: someTemplate
 })
 export class MyComponent {}
-
-</docs-code>
+```
 
 ## Reference to a non-exported class
 
-HELPFUL: *Reference to a non-exported class `<class name>`.*
-*Consider exporting the class.*
+HELPFUL: _Reference to a non-exported class `<class name>`._
+_Consider exporting the class._
 
 Metadata referenced a class that wasn't exported.
 
 For example, you may have defined a class and used it as an injection token in a providers array but neglected to export that class.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 abstract class MyStrategy { }
 
@@ -180,14 +171,12 @@ abstract class MyStrategy { }
     { provide: MyStrategy, useValue: … }
   ]
   …
-
-</docs-code>
+```
 
 Angular generates a class factory in a separate module and that factory [can only access exported classes](tools/cli/aot-compiler#exported-symbols).
 To correct this error, export the referenced class.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 export abstract class MyStrategy { }
 
@@ -196,17 +185,15 @@ export abstract class MyStrategy { }
     { provide: MyStrategy, useValue: … }
   ]
   …
-
-</docs-code>
+```
 
 ## Reference to a non-exported function
 
-HELPFUL: *Metadata referenced a function that wasn't exported.*
+HELPFUL: _Metadata referenced a function that wasn't exported._
 
 For example, you may have set a providers `useFactory` property to a locally defined function that you neglected to export.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 function myStrategy() { … }
 
@@ -215,14 +202,12 @@ function myStrategy() { … }
     { provide: MyStrategy, useFactory: myStrategy }
   ]
   …
-
-</docs-code>
+```
 
 Angular generates a class factory in a separate module and that factory [can only access exported functions](tools/cli/aot-compiler#exported-symbols).
 To correct this error, export the function.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 export function myStrategy() { … }
 
@@ -231,18 +216,16 @@ export function myStrategy() { … }
     { provide: MyStrategy, useFactory: myStrategy }
   ]
   …
-
-</docs-code>
+```
 
 ## Function calls are not supported
 
-HELPFUL: *Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function.*
+HELPFUL: _Function calls are not supported. Consider replacing the function or lambda with a reference to an exported function._
 
 The compiler does not currently support [function expressions or lambda functions](tools/cli/aot-compiler#function-expression).
 For example, you cannot set a provider's `useFactory` to an anonymous function or arrow function like this.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
   …
   providers: [
@@ -250,13 +233,11 @@ For example, you cannot set a provider's `useFactory` to an anonymous function o
     { provide: OtherStrategy, useFactory: () => { … } }
   ]
   …
-
-</docs-code>
+```
 
 You also get this error if you call a function or method in a provider's `useValue`.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 import { calculateValue } from './utilities';
 
@@ -265,13 +246,11 @@ import { calculateValue } from './utilities';
     { provide: SomeValue, useValue: calculateValue() }
   ]
   …
-
-</docs-code>
+```
 
 To correct this error, export a function from the module and refer to the function in a `useFactory` provider instead.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 import { calculateValue } from './utilities';
 
@@ -287,19 +266,17 @@ export function someValueFactory() {
     { provide: SomeValue, useFactory: someValueFactory }
   ]
   …
-
-</docs-code>
+```
 
 ## Destructured variable or constant not supported
 
-HELPFUL: *Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring.*
+HELPFUL: _Referencing an exported destructured variable or constant is not supported by the template compiler. Consider simplifying this to avoid destructuring._
 
 The compiler does not support references to variables assigned by [destructuring](https://www.typescriptlang.org/docs/handbook/variable-declarations.html#destructuring).
 
 For example, you cannot write something like this:
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 import { configuration } from './configuration';
 
@@ -311,13 +288,11 @@ const {foo, bar} = configuration;
     {provide: Bar, useValue: bar},
   ]
   …
-
-</docs-code>
+```
 
 To correct this error, refer to non-destructured values.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 import { configuration } from './configuration';
   …
@@ -326,27 +301,24 @@ import { configuration } from './configuration';
     {provide: Bar, useValue: configuration.bar},
   ]
   …
-
-</docs-code>
+```
 
 ## Could not resolve type
 
-HELPFUL: *The compiler encountered a type and can't determine which module exports that type.*
+HELPFUL: _The compiler encountered a type and can't determine which module exports that type._
 
 This can happen if you refer to an ambient type.
 For example, the `Window` type is an ambient type declared in the global `.d.ts` file.
 
 You'll get an error if you reference it in the component constructor, which the compiler must statically analyze.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 @Component({ })
 export class MyComponent {
   constructor (private win: Window) { … }
 }
-
-</docs-code>
+```
 
 TypeScript understands ambient types so you don't import them.
 The Angular compiler does not understand a type that you neglect to export or import.
@@ -365,8 +337,7 @@ you can finesse the problem in four steps:
 
 Here's an illustrative example.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 import { Inject } from '@angular/core';
 
@@ -382,16 +353,14 @@ export function _window() { return window; }
 export class MyComponent {
   constructor (@Inject(WINDOW) private win: Window) { … }
 }
-
-</docs-code>
+```
 
 The `Window` type in the constructor is no longer a problem for the compiler because it
 uses the `@Inject(WINDOW)` to generate the injection code.
 
 Angular does something similar with the `DOCUMENT` token so you can inject the browser's `document` object \(or an abstraction of it, depending upon the platform in which the application runs\).
 
-<docs-code language="typescript">
-
+```ts
 import { Inject }   from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
@@ -399,39 +368,33 @@ import { DOCUMENT } from '@angular/common';
 export class MyComponent {
   constructor (@Inject(DOCUMENT) private doc: Document) { … }
 }
-
-</docs-code>
+```
 
 ## Name expected
 
-HELPFUL: *The compiler expected a name in an expression it was evaluating.*
+HELPFUL: _The compiler expected a name in an expression it was evaluating._
 
 This can happen if you use a number as a property name as in the following example.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 provider: [{ provide: Foo, useValue: { 0: 'test' } }]
-
-</docs-code>
+```
 
 Change the name of the property to something non-numeric.
 
-<docs-code language="typescript">
-
+```ts
 // CORRECTED
 provider: [{ provide: Foo, useValue: { '0': 'test' } }]
-
-</docs-code>
+```
 
 ## Unsupported enum member name
 
-HELPFUL: *Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html) that you referenced in metadata.*
+HELPFUL: _Angular couldn't determine the value of the [enum member](https://www.typescriptlang.org/docs/handbook/enums.html) that you referenced in metadata._
 
 The compiler can understand simple enum values but not complex values such as those derived from computed properties.
 
-<docs-code language="typescript">
-
+```ts
 // ERROR
 enum Colors {
   Red = 1,
@@ -446,18 +409,17 @@ enum Colors {
     { provide: StrongColor, useValue: Colors.Blue }  // bad
   ]
   …
-
-</docs-code>
+```
 
 Avoid referring to enums with complicated initializers or computed properties.
 
 ## Tagged template expressions are not supported
 
-HELPFUL: *Tagged template expressions are not supported in metadata.*
+HELPFUL: _Tagged template expressions are not supported in metadata._
 
 The compiler encountered a JavaScript ES2015 [tagged template expression](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Template_literals#Tagged_template_literals) such as the following.
 
-<docs-code language="typescript">
+```ts
 
 // ERROR
 const expression = 'funky';
@@ -466,15 +428,15 @@ const raw = String.raw`A tagged template ${expression} string`;
  template: '<div>' + raw + '</div>'
  …
 
-</docs-code>
+```
 
-[`String.raw()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/raw) is a *tag function* native to JavaScript ES2015.
+[`String.raw()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/raw) is a _tag function_ native to JavaScript ES2015.
 
 The AOT compiler does not support tagged template expressions; avoid them in metadata expressions.
 
 ## Symbol reference expected
 
-HELPFUL: *The compiler expected a reference to a symbol at the location specified in the error message.*
+HELPFUL: _The compiler expected a reference to a symbol at the location specified in the error message._
 
 This error can occur if you use an expression in the `extends` clause of a class.
 
