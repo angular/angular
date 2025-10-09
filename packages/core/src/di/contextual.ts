@@ -68,6 +68,8 @@ export function isInInjectionContext(): boolean {
  *
  * @param debugFn a reference to the function making the assertion (used for the error message).
  *
+ * @see [Asserts the context](guide/di/dependency-injection-context#asserts-the-context)
+ *
  * @publicApi
  */
 export function assertInInjectionContext(debugFn: Function): void {
