@@ -89,90 +89,20 @@ If you set `showCount` to `true` and then read `conditionalCount` again, the der
 
 Note that dependencies can be removed during a derivation as well as added. If you later set `showCount` back to `false`, then `count` will no longer be considered a dependency of `conditionalCount`.
 
+## Advanced derivations
+
+While `computed` handles simple readonly derivations, you might find youself needing a writable state that is dependant on other signals.
+For more information see the [Dependent state with linkedSignal](/guide/signals/linked-signal) guide.
+
+All signal APIs are synchronous— `signal`, `computed`, `input`, etc. However, applications often need to deal with data that is available asynchronously. A `Resource` gives you a way to incorporate async data into your application's signal-based code and still allow you to access its data synchronously. For more information see the [Async reactivity with resources](/guide/signals/resource) guide.
+
+## Executing side effects on non-reactive APIs
+
+Synchronous or asynchronous derivations are recommended when we want to react to state changes. However this doesn't cover all the usecase and you'll sometime find yourself in a situation where you need to react on signal changes on non-reactive apis. Use `effect` or `afterRenderEffect` for those specific usecases. For more information see [Side effects for non-reactives APIs](/guide/effect) guide.
+
 ## Reading signals in `OnPush` components
 
 When you read a signal within an `OnPush` component's template, Angular tracks the signal as a dependency of that component. When the value of that signal changes, Angular automatically [marks](api/core/ChangeDetectorRef#markforcheck) the component to ensure it gets updated the next time change detection runs. Refer to the [Skipping component subtrees](best-practices/skipping-subtrees) guide for more information about `OnPush` components.
-
-## Effects
-
-Signals are useful because they notify interested consumers when they change. An **effect** is an operation that runs whenever one or more signal values change. You can create an effect with the `effect` function:
-
-```ts
-effect(() => {
-  console.log(`The current count is: ${count()}`);
-});
-```
-
-Effects always run **at least once.** When an effect runs, it tracks any signal value reads. Whenever any of these signal values change, the effect runs again. Similar to computed signals, effects keep track of their dependencies dynamically, and only track signals which were read in the most recent execution.
-
-Effects always execute **asynchronously**, during the change detection process.
-
-### Use cases for effects
-
-Effects are rarely needed in most application code, but may be useful in specific circumstances. Here are some examples of situations where an `effect` might be a good solution:
-
-- Logging data being displayed and when it changes, either for analytics or as a debugging tool.
-- Keeping data in sync with `window.localStorage`.
-- Adding custom DOM behavior that can't be expressed with template syntax.
-- Performing custom rendering to a `<canvas>`, charting library, or other third party UI library.
-
-<docs-callout critical title="When not to use effects">
-Avoid using effects for propagation of state changes. This can result in `ExpressionChangedAfterItHasBeenChecked` errors, infinite circular updates, or unnecessary change detection cycles.
-
-Instead, use `computed` signals to model state that depends on other state.
-</docs-callout>
-
-### Injection context
-
-By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the [`inject`](/api/core/inject) function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
-
-```ts
-@Component({...})
-export class EffectiveCounterComponent {
-  readonly count = signal(0);
-  constructor() {
-    // Register a new effect.
-    effect(() => {
-      console.log(`The count is: ${this.count()}`);
-    });
-  }
-}
-```
-
-Alternatively, you can assign the effect to a field (which also gives it a descriptive name).
-
-```ts
-@Component({...})
-export class EffectiveCounterComponent {
-  readonly count = signal(0);
-
-  private loggingEffect = effect(() => {
-    console.log(`The count is: ${this.count()}`);
-  });
-}
-```
-
-To create an effect outside the constructor, you can pass an `Injector` to `effect` via its options:
-
-```ts
-@Component({...})
-export class EffectiveCounterComponent {
-  readonly count = signal(0);
-  private injector = inject(Injector);
-
-  initializeLogging(): void {
-    effect(() => {
-      console.log(`The count is: ${this.count()}`);
-    }, {injector: this.injector});
-  }
-}
-```
-
-### Destroying effects
-
-When you create an effect, it is automatically destroyed when its enclosing context is destroyed. This means that effects created within components are destroyed when the component is destroyed. The same goes for effects within directives, services, etc.
-
-Effects return an `EffectRef` that you can use to destroy them manually, by calling the `.destroy()` method. You can combine this with the `manualCleanup` option to create an effect that lasts until it is manually destroyed. Be careful to actually clean up such effects when they're no longer required.
 
 ## Advanced topics
 
@@ -249,24 +179,6 @@ effect(() => {
     // If the `loggingService` reads signals, they won't be counted as
     // dependencies of this effect.
     this.loggingService.log(`User set to ${user}`);
-  });
-});
-```
-
-### Effect cleanup functions
-
-Effects might start long-running operations, which you should cancel if the effect is destroyed or runs again before the first operation finished. When you create an effect, your function can optionally accept an `onCleanup` function as its first parameter. This `onCleanup` function lets you register a callback that is invoked before the next run of the effect begins, or when the effect is destroyed.
-
-```ts
-effect((onCleanup) => {
-  const user = currentUser();
-
-  const timer = setTimeout(() => {
-    console.log(`1 second ago, the user became ${user}`);
-  }, 1000);
-
-  onCleanup(() => {
-    clearTimeout(timer);
   });
 });
 ```
