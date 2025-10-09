@@ -13,7 +13,7 @@ Control.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Control, decorators: [{
             type: Directive,
             args: [{ selector: '[control]' }]
-        }] });
+        }], propDecorators: { control: [{ type: i0.Input, args: [{ isSignal: true, alias: "control", required: false }] }] } });
 export class MyComponent {
     constructor() {
         this.value = 'Hello, world!';
