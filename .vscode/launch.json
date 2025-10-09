@@ -20,7 +20,7 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--disable-extensions",
-        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/npm/vscode-ng-language-service/vsix_sandbox"
+        "--extensionDevelopmentPath=${workspaceFolder}/dist/bin/vscode-ng-language-service/development_package"
       ],
       "preLaunchTask": "VSCE: package"
     },

@@ -2,7 +2,8 @@
   "name": "ng-template",
   "displayName": "Angular Language Service",
   "description": "Editor services for Angular templates",
-  "version": "20.2.2",
+  "version": "0.0.0",
+  "private": true,
   "publisher": "Angular",
   "icon": "angular.png",
   "license": "MIT",
@@ -246,7 +247,7 @@
   "scripts": {
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
     "watch": "ibazel build //vscode-ng-language-service/client/src //vscode-ng-language-service/server/src",
-    "package": "bazel build //vscode-ng-language-service:npm --config=release",
+    "package": "bazel build //vscode-ng-language-service:development_package --config=release",
     "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
     "test:watch": "ibazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
     "test:lsp": "bazel test --test_output=streamed //vscode-ng-language-service/integration/lsp:test",
@@ -257,10 +258,9 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "21.0.0-next.7"
+    "@angular/language-service": "workspace:*"
   },
   "devDependencies": {
-    "@angular/core": "21.0.0-next.7",
     "@types/jasmine": "~5.1.9",
     "@types/jasmine-reporters": "~2.5.3",
     "@types/node": "^24.5.2",
