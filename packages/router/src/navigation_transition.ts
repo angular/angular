@@ -715,7 +715,7 @@ export class NavigationTransitions {
               if (route.routeConfig?.loadComponent) {
                 const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
                 loaders.push(
-                  this.configLoader.loadComponent(injector, route.routeConfig).pipe(
+                  from(this.configLoader.loadComponent(injector, route.routeConfig)).pipe(
                     tap((loadedComponent) => {
                       route.component = loadedComponent;
                     }),

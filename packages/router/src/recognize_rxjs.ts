@@ -522,7 +522,7 @@ export class Recognizer {
       return runCanLoadGuards(injector, route, segments, this.urlSerializer).pipe(
         mergeMap((shouldLoadResult: boolean) => {
           if (shouldLoadResult) {
-            return this.configLoader.loadChildren(injector, route).pipe(
+            return from(this.configLoader.loadChildren(injector, route)).pipe(
               tap((cfg: LoadedRouterConfig) => {
                 route._loadedRoutes = cfg.routes;
                 route._loadedInjector = cfg.injector;

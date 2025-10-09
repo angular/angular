@@ -8,6 +8,7 @@
 
 import {ɵisPromise as isPromise} from '@angular/core';
 import {from, isObservable, Observable, of} from 'rxjs';
+import {firstValueFrom} from './first_value_from';
 
 export function shallowEqualArrays(a: readonly any[], b: readonly any[]): boolean {
   if (a.length !== b.length) return false;
@@ -82,4 +83,11 @@ export function wrapIntoObservable<T>(value: T | Promise<T> | Observable<T>): Ob
   }
 
   return of(value);
+}
+
+export function wrapIntoPromise<T>(value: T | Promise<T> | Observable<T>): Promise<T> {
+  if (isObservable(value)) {
+    return firstValueFrom(value);
+  }
+  return Promise.resolve(value);
 }
