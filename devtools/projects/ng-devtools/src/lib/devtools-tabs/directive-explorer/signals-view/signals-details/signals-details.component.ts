@@ -23,6 +23,7 @@ const TYPE_CLASS_MAP: {[key: string]: string} = {
   'signal': 'type-signal',
   'computed': 'type-computed',
   'effect': 'type-effect',
+  'afterRenderEffectPhase': 'type-effect',
   'template': 'type-template',
   'linkedSignal': 'type-linked-signal',
 };

@@ -163,13 +163,17 @@ function extractEffectsFromInjector(injector: Injector): ReactiveNode[] {
     diResolver = lView;
   }
 
-  const resolverToEffects = getFrameworkDIDebugData().resolverToEffects as Map<
-    Injector | LView<unknown>,
-    EffectRefImpl[]
-  >;
+  const resolverToEffects = getFrameworkDIDebugData().resolverToEffects;
   const effects = resolverToEffects.get(diResolver) ?? [];
 
-  return effects.map((effect: EffectRefImpl) => effect[SIGNAL]);
+  return effects.map((effect) => {
+    if ('signal' in effect) {
+      // Narrowing down afterRenderEffect phases
+      return effect.signal[SIGNAL] as ReactiveNode;
+    } else {
+      return effect[SIGNAL] as ReactiveNode;
+    }
+  });
 }
 
 function extractSignalNodesAndEdgesFromRoots(
