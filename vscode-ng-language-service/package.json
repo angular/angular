@@ -257,10 +257,10 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "21.0.0-next.6"
+    "@angular/language-service": "21.0.0-next.7"
   },
   "devDependencies": {
-    "@angular/core": "21.0.0-next.6",
+    "@angular/core": "21.0.0-next.7",
     "@types/jasmine": "~5.1.9",
     "@types/jasmine-reporters": "~2.5.3",
     "@types/node": "^24.5.2",
