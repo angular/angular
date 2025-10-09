@@ -86,15 +86,15 @@ You can update your workspace schema file to set a different default for a sub-c
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"schematics": {
-"@schematics/angular:component": {
-"standalone": false
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "schematics": {
+        "@schematics/angular:component": {
+          "standalone": false
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -148,18 +148,18 @@ For example, to configure a build with optimizations disabled:
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": false
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": false
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -182,23 +182,23 @@ For example, to configure a build where optimization is enabled only for product
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": false
-},
-"configurations": {
-"production": {
-"optimization": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": false
+          },
+          "configurations": {
+            "production": {
+              "optimization": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -262,29 +262,29 @@ For example, the default asset paths can be represented in more detail using the
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"assets": [
-{
-"glob": "**/*",
-"input": "src/assets/",
-"output": "/assets/"
-},
-{
-"glob": "favicon.ico",
-"input": "src/",
-"output": "/"
-}
-]
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src/",
+                "output": "/"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -294,25 +294,27 @@ The following example uses the `ignore` field to exclude certain files in the as
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"assets": [
-{
-"glob": "**/\*",
-"input": "src/assets/",
-"ignore": ["**/\*.svg"],
-"output": "/assets/"
-}
-]
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "assets": [
+              {
+                "glob": "**/\*",
+                "input": "src/assets/",
+                "ignore": [
+                  "**/\*.svg"
+                ],
+                "output": "/assets/"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -329,31 +331,31 @@ For example, the following object values create and name a bundle that contains 
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"styles": [
-{
-"input": "src/external-module/styles.scss",
-"inject": false,
-"bundleName": "external-module"
-}
-],
-"scripts": [
-{
-"input": "src/external-module/main.js",
-"inject": false,
-"bundleName": "external-module"
-}
-]
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "styles": [
+              {
+                "input": "src/external-module/styles.scss",
+                "inject": false,
+                "bundleName": "external-module"
+              }
+            ],
+            "scripts": [
+              {
+                "input": "src/external-module/main.js",
+                "inject": false,
+                "bundleName": "external-module"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -367,22 +369,22 @@ To add paths, use the `stylePreprocessorOptions` option:
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"stylePreprocessorOptions": {
-"includePaths": [
-"src/style-paths"
-]
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/style-paths"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -441,25 +443,25 @@ You can supply a value such as the following to apply optimization to one or the
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": {
-"scripts": true,
-"styles": {
-"minify": true,
-"inlineCritical": true
-},
-"fonts": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": {
+              "scripts": true,
+              "styles": {
+                "minify": true,
+                "inlineCritical": true
+              },
+              "fonts": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
@@ -480,23 +482,23 @@ The example below shows how to toggle one or more values to configure the source
 <docs-code language="json">
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"sourceMap": {
-"scripts": true,
-"styles": false,
-"hidden": true,
-"vendor": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "sourceMap": {
+              "scripts": true,
+              "styles": false,
+              "hidden": true,
+              "vendor": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 </docs-code>
