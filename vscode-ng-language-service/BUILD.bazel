@@ -14,9 +14,18 @@ js_library(
 )
 
 ts_config(
-    name = "tsconfig",
+    name = "tsconfig_build",
     src = "tsconfig.json",
     visibility = ["//visibility:public"],
+)
+
+ts_config(
+    name = "tsconfig_test",
+    src = "tsconfig-test.json",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":tsconfig_build",
+    ],
 )
 
 expand_template_rule(

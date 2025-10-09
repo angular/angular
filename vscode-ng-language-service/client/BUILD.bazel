@@ -1,15 +1,4 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
-
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig.json",
-    visibility = ["//vscode-ng-language-service/client:__subpackages__"],
-    deps = [
-        "//vscode-ng-language-service:tsconfig",
-        "//vscode-ng-language-service/common:tsconfig",
-    ],
-)
 
 esbuild(
     name = "index",

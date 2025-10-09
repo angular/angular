@@ -1,5 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_test")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "e2e",
@@ -8,11 +8,7 @@ ts_project(
     data = [
         "//vscode-ng-language-service:node_modules/jasmine",
         "//vscode-ng-language-service:node_modules/jasmine-reporters",
-        "//vscode-ng-language-service:node_modules/xvfb",
     ],
-    declaration = True,
-    source_map = True,
-    tsconfig = "//vscode-ng-language-service:tsconfig",
     visibility = [
         "//vscode-ng-language-service/integration:__subpackages__",
     ],
@@ -22,6 +18,7 @@ ts_project(
         "//vscode-ng-language-service:node_modules/@types/node",
         "//vscode-ng-language-service:node_modules/@types/vscode",
         "//vscode-ng-language-service:node_modules/@vscode/test-electron",
+        "//vscode-ng-language-service:node_modules/xvfb",
         "//vscode-ng-language-service/integration",
     ],
 )

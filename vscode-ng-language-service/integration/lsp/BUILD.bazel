@@ -10,7 +10,6 @@ ts_project(
         "//vscode-ng-language-service/integration",
         "//vscode-ng-language-service/server:index",
     ],
-    tsconfig = "//vscode-ng-language-service/integration:tsconfig-test",
     deps = [
         "//vscode-ng-language-service:node_modules/@types/jasmine",
         "//vscode-ng-language-service:node_modules/@types/node",

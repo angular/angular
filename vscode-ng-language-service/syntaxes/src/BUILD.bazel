@@ -1,12 +1,9 @@
 load("@aspect_rules_js//js:defs.bzl", "js_binary")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "src",
     srcs = glob(["*.ts"]),
-    declaration = True,
-    source_map = True,
-    tsconfig = "//vscode-ng-language-service/syntaxes:tsconfig",
     deps = [
         "//vscode-ng-language-service:node_modules/@types/node",
     ],
