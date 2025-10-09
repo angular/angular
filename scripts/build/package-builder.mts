@@ -24,7 +24,7 @@ const releaseTargetTag = 'release-with-framework';
 /** Command that queries Bazel for all release package targets. */
 const queryPackagesCmd =
   `${bazelCmd} query --output=label "filter(':npm_package$', ` +
-  `attr('tags', '\\[.*${releaseTargetTag}.*\\]', //packages/...))"`;
+  `attr('tags', '\\[.*${releaseTargetTag}.*\\]', //packages/... + //vscode-ng-language-service/...))"`;
 
 /** Path for the default distribution output directory. */
 const defaultDistPath = join(projectDir, 'dist/packages-dist');
@@ -59,8 +59,12 @@ function buildReleasePackages(
   const targets = exec(queryPackagesCmd, true).split(/\r?\n/).concat(additionalTargets);
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
-  const getBazelOutputPath = (pkgName: string) =>
-    join(bazelBinPath, 'packages', pkgName, 'npm_package');
+  const getBazelOutputPath = (pkgName: string) => {
+    return pkgName === 'language-server'
+      ? join(bazelBinPath, 'vscode-ng-language-service/server/npm_package')
+      : join(bazelBinPath, 'packages', pkgName, 'npm_package');
+  };
+
   const getDistPath = (pkgName: string) => join(distPath, pkgName);
 
   // Build with "--config=release" or `--config=snapshot-build` so that Bazel
@@ -109,6 +113,10 @@ function buildReleasePackages(
  */
 function getPackageNamesOfTargets(targets: string[]): string[] {
   return targets.map((targetName) => {
+    if (targetName === '//vscode-ng-language-service/server:npm_package') {
+      return 'language-server';
+    }
+
     const matches = targetName.match(/\/\/packages\/(.*):npm_package/);
     if (matches === null) {
       throw Error(
@@ -116,6 +124,7 @@ function getPackageNamesOfTargets(targets: string[]): string[] {
           `determine release output name: ${targetName}`,
       );
     }
+
     return matches[1];
   });
 }

@@ -96,5 +96,8 @@ npm_package(
     replace_prefixes = {
         "package_expanded.json": "package.json",
     },
+    tags = [
+        "release-with-framework",
+    ],
     visibility = ["//vscode-ng-language-service:__pkg__"],
 )
