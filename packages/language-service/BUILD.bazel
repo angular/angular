@@ -63,8 +63,5 @@ npm_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = [
-        "//integration:__subpackages__",
-        "//modules/ssr-benchmarks:__subpackages__",
-    ],
+    visibility = [],
 )
