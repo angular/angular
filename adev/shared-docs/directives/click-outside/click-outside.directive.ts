@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Directive, ElementRef, Input, inject, output} from '@angular/core';
+import {Directive, ElementRef, inject, input, output} from '@angular/core';
 
 @Directive({
   selector: '[docsClickOutside]',
@@ -16,8 +16,7 @@ import {Directive, ElementRef, Input, inject, output} from '@angular/core';
   },
 })
 export class ClickOutside {
-  // TODO: Understand why replacing this @Input with a signal input breaks the tests
-  @Input('docsClickOutsideIgnore') public ignoredElementsIds: string[] = [];
+  readonly ignoredElementsIds = input<string[]>([], {alias: 'docsClickOutsideIgnore'});
   public readonly clickOutside = output<void>({alias: 'docsClickOutside'});
 
   private readonly document = inject(DOCUMENT);
@@ -33,11 +32,11 @@ export class ClickOutside {
   }
 
   private wasClickedOnIgnoredElement(event: MouseEvent): boolean {
-    if (this.ignoredElementsIds.length === 0) {
+    if (this.ignoredElementsIds().length === 0) {
       return false;
     }
 
-    return this.ignoredElementsIds.some((elementId) => {
+    return this.ignoredElementsIds().some((elementId) => {
       const element = this.document.getElementById(elementId);
       const target = event.target as Node;
       const contains = element?.contains(target);
