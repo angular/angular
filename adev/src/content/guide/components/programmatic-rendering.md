@@ -2,16 +2,16 @@
 
 TIP: This guide assumes you've already read the [Essentials Guide](essentials). Read that first if you're new to Angular.
 
-In addition to using a component directly in a template, you can also dynamically render components 
-programmatically. This is helpful for situations when a component is unknown initially (thus can not 
+In addition to using a component directly in a template, you can also dynamically render components
+programmatically. This is helpful for situations when a component is unknown initially (thus can not
 be referenced in a template directly) and it depends on some conditions.
 
 There are two main ways to render a component programmatically: in a template using `NgComponentOutlet`,
-or in your TypeScript code using `ViewContainerRef`. 
+or in your TypeScript code using `ViewContainerRef`.
 
-HELPFUL: for lazy-loading use-cases (for example if you want to delay loading of a heavy component), consider 
-using the built-in [`@defer` feature](/guide/templates/defer) instead. The `@defer` feature allows the code 
-of any components, directives, and pipes inside the `@defer` block to be extracted into separate JavaScript 
+HELPFUL: for lazy-loading use-cases (for example if you want to delay loading of a heavy component), consider
+using the built-in [`@defer` feature](/guide/templates/defer) instead. The `@defer` feature allows the code
+of any components, directives, and pipes inside the `@defer` block to be extracted into separate JavaScript
 chunks automatically and loaded only when necessary, based on the configured triggers.
 
 ## Using NgComponentOutlet
@@ -103,10 +103,10 @@ In the example above, clicking the "Load content" button results in the followin
 
 ## Lazy-loading components
 
-HELPFUL: if you want to lazy-load some components, you may consider using the built-in [`@defer` feature](/guide/templates/defer) 
+HELPFUL: if you want to lazy-load some components, you may consider using the built-in [`@defer` feature](/guide/templates/defer)
 instead.
 
-If your use-case is not covered by the `@defer` feature, you can use either `NgComponentOutlet` or 
+If your use-case is not covered by the `@defer` feature, you can use either `NgComponentOutlet` or
 `ViewContainerRef` with a standard JavaScript [dynamic import](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/import).
 
 ```angular-ts
@@ -119,9 +119,11 @@ If your use-case is not covered by the `@defer` feature, you can use either `NgC
     </section>
     <section>
       <h2>Advanced settings</h2>
-      <button (click)="loadAdvanced()" *ngIf="!advancedSettings">
-        Load advanced settings
-      </button>
+      @if(!advancedSettings) {
+        <button (click)="loadAdvanced()">
+          Load advanced settings
+        </button>
+      }
       <ng-container *ngComponentOutlet="advancedSettings" />
     </section>
   `
