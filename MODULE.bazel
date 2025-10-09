@@ -132,14 +132,14 @@ register_toolchains(
     "@devinfra//bazel/git-toolchain:git_windows_toolchain",
 )
 
-CLDR_VERSION = "41"
+CLDR_VERSION = "47"
 
 cldr_json_data = use_repo_rule("//packages/common/locales/generate-locales-tool:cldr-data.bzl", "cldr_json_data_repository")
 
 cldr_json_data(
     name = "cldr_json_data",
     urls = {
-        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (CLDR_VERSION, CLDR_VERSION): "649b76647269e32b1b0a5f7b6eed52e9e63a1581f1afdcf4f6771e49c9713614",
+        "https://github.com/unicode-org/cldr-json/releases/download/%s.0.0/cldr-%s.0.0-json-full.zip" % (CLDR_VERSION, CLDR_VERSION): "bbb9a9aac2dfc534bd18288678a5984023d11d22f712f3c33425f3214bd1def6",
     },
 )
 
@@ -148,7 +148,7 @@ cldr_xml_data = use_repo_rule("//packages/common/locales/generate-locales-tool:c
 cldr_xml_data(
     name = "cldr_xml_data",
     urls = {
-        "https://github.com/unicode-org/cldr/releases/download/release-%s/cldr-common-%s.0.zip" % (CLDR_VERSION, CLDR_VERSION): "823c6170c41e2de2c229574e8a436332d25f1c9723409867fe721e00bc92d853",
+        "https://github.com/unicode-org/cldr/releases/download/release-%s/core.zip" % CLDR_VERSION: "d5ee2abac64158c04884a722f8ef4830ea22b6c74aac20185be2838db8eda788",
     },
 )
 
