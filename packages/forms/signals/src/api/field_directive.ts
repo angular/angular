@@ -51,7 +51,7 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 @Directive({selector: '[field]', providers: [{provide: FIELD, useExisting: Field}]})
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
-  readonly field = input.required<FieldTree<T>>({alias: 'field'});
+  readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
   readonly [ɵCONTROL] = undefined;
 
@@ -63,9 +63,14 @@ export class Field<T> implements ɵControl<T> {
     effect(
       (onCleanup) => {
         const fieldNode = this.state() as FieldNode;
-        fieldNode.nodeState.controls.update((controls) => [...controls, this as Field<unknown>]);
+        fieldNode.nodeState.fieldBindings.update((controls) => [
+          ...controls,
+          this as Field<unknown>,
+        ]);
         onCleanup(() => {
-          fieldNode.nodeState.controls.update((controls) => controls.filter((c) => c !== this));
+          fieldNode.nodeState.fieldBindings.update((controls) =>
+            controls.filter((c) => c !== this),
+          );
         });
       },
       {injector: this.injector},

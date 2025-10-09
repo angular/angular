@@ -134,8 +134,8 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get controls(): Signal<readonly Field<unknown>[]> {
-    return this.nodeState.controls;
+  get fieldBindings(): Signal<readonly Field<unknown>[]> {
+    return this.nodeState.fieldBindings;
   }
 
   get submitting(): Signal<boolean> {

@@ -61,8 +61,8 @@ export class FieldNodeState {
     this.selfTouched.set(false);
   }
 
-  /** The UI controls the field is currently bound to. */
-  readonly controls = signal<readonly Field<unknown>[]>([]);
+  /** The {@link Field} directives that bind this field to a UI control. */
+  readonly fieldBindings = signal<readonly Field<unknown>[]>([]);
 
   constructor(private readonly node: FieldNode) {}
 

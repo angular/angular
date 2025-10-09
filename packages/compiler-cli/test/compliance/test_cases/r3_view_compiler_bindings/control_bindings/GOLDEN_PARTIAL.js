@@ -1,8 +1,8 @@
 /****************************************************************************************************
  * PARTIAL FILE: control_bindings.js
  ****************************************************************************************************/
-import * as i0 from "@angular/core";
 import { Component, Directive, input } from '@angular/core';
+import * as i0 from "@angular/core";
 export class Field {
     constructor() {
         this.field = input(...(ngDevMode ? [undefined, { debugName: "field" }] : []));
@@ -13,7 +13,7 @@ Field.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "0.0.0-
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Field, decorators: [{
             type: Directive,
             args: [{ selector: '[field]' }]
-        }], propDecorators: { control: [{ type: i0.Input, args: [{ isSignal: true, alias: "control", required: false }] }] } });
+        }], propDecorators: { field: [{ type: i0.Input, args: [{ isSignal: true, alias: "field", required: false }] }] } });
 export class MyComponent {
     constructor() {
         this.value = 'Hello, world!';
@@ -40,6 +40,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
 /****************************************************************************************************
  * PARTIAL FILE: control_bindings.d.ts
  ****************************************************************************************************/
+import * as i0 from "@angular/core";
 export declare class Field {
     readonly field: import("@angular/core").InputSignal<string | undefined>;
     static ɵfac: i0.ɵɵFactoryDeclaration<Field, never>;
