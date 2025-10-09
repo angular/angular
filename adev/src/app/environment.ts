@@ -13,7 +13,9 @@ export default {
   algolia: {
     appId: 'L1XWT2UJ7F',
     apiKey: 'dfca7ed184db27927a512e5c6668b968',
-    indexName: 'angular_v17',
+    // The indexName value must match the branch it's on.
+    // So it needs to be updated on release of the new major on the patch branch.
+    indexName: 'angular_next_dev',
   },
   googleAnalyticsId: 'G-XB6NEVW32B',
 };
