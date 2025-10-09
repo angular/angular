@@ -5,11 +5,11 @@ This means that injectors can only work when code is executed in such a context.
 
 The injection context is available in these situations:
 
-* During construction (via the `constructor`) of a class being instantiated by the DI system, such as an `@Injectable` or `@Component`.
-* In the initializer for fields of such classes.
-* In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
-* In the `factory` function specified for an `InjectionToken`.
-* Within a stack frame that runs in an injection context.
+- During construction (via the `constructor`) of a class being instantiated by the DI system, such as an `@Injectable` or `@Component`.
+- In the initializer for fields of such classes.
+- In the factory function specified for `useFactory` of a `Provider` or an `@Injectable`.
+- In the `factory` function specified for an `InjectionToken`.
+- Within a stack frame that runs in an injection context.
 
 Knowing when you are in an injection context will allow you to use the [`inject`](api/core/inject) function to inject instances.
 
@@ -66,7 +66,32 @@ Note that `inject` will return an instance only if the injector can resolve the 
 
 ## Asserts the context
 
-Angular provides the `assertInInjectionContext` helper function to assert that the current context is an injection context.
+Angular provides the `assertInInjectionContext` helper function to assert that the current context is an injection context and throws a clear error if not. Pass a reference to the calling function so the error message points to the correct API entry point. This produces a clearer, more actionable message than the default generic injection error.
+
+```ts
+import { ElementRef, assertInInjectionContext, inject } from '@angular/core';
+
+export function injectNativeElement<T extends Element>(): T {
+    assertInInjectionContext(injectNativeElement);
+    return inject(ElementRef).nativeElement;
+}
+```
+
+You can then call this helper **from an injection context** (constructor, field initializer, provider factory, or code executed via `runInInjectionContext`):
+
+```ts
+import { Component, inject } from '@angular/core';
+import { injectNativeElement } from './dom-helpers';
+
+@Component({ /* … */ })
+export class PreviewCard {
+  readonly hostEl = injectNativeElement<HTMLElement>(); // Field initializer runs in an injection context.
+
+  onAction() {
+    const anotherRef = injectNativeElement<HTMLElement>(); // Fails: runs outside an injection context.
+  }
+}
+```
 
 ## Using DI outside of a context
 
