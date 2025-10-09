@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, ElementRef, viewChild} from '@angular/core';
+import {Component, ElementRef, signal, viewChild} from '@angular/core';
 
 import {IFrameMessageBus} from '../../iframe-message-bus';
 import {DevToolsComponent} from '../../../projects/ng-devtools';
@@ -21,4 +21,5 @@ import {SplitComponent} from '../../../projects/ng-devtools/src/lib/shared/split
 export class AppDevToolsComponent {
   messageBus: IFrameMessageBus | null = null;
   readonly iframe = viewChild<ElementRef>('ref');
+  readonly resizingDevtools = signal(false);
 }
