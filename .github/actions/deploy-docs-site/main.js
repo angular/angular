@@ -15779,6 +15779,9 @@ var require_identifiers = __commonJS({
     "use strict";
     var numeric = /^[0-9]+$/;
     var compareIdentifiers = (a7, b3) => {
+      if (typeof a7 === "number" && typeof b3 === "number") {
+        return a7 === b3 ? 0 : a7 < b3 ? -1 : 1;
+      }
       const anum = numeric.test(a7);
       const bnum = numeric.test(b3);
       if (anum && bnum) {
@@ -15885,7 +15888,25 @@ var require_semver = __commonJS({
         if (!(other instanceof _SemVer)) {
           other = new _SemVer(other, this.options);
         }
-        return compareIdentifiers(this.major, other.major) || compareIdentifiers(this.minor, other.minor) || compareIdentifiers(this.patch, other.patch);
+        if (this.major < other.major) {
+          return -1;
+        }
+        if (this.major > other.major) {
+          return 1;
+        }
+        if (this.minor < other.minor) {
+          return -1;
+        }
+        if (this.minor > other.minor) {
+          return 1;
+        }
+        if (this.patch < other.patch) {
+          return -1;
+        }
+        if (this.patch > other.patch) {
+          return 1;
+        }
+        return 0;
       }
       comparePre(other) {
         if (!(other instanceof _SemVer)) {
@@ -16642,6 +16663,7 @@ var require_range = __commonJS({
       return result;
     };
     var parseComparator = (comp, options) => {
+      comp = comp.replace(re3[t3.BUILD], "");
       debug("comp", comp, options);
       comp = replaceCarets(comp, options);
       debug("caret", comp);
