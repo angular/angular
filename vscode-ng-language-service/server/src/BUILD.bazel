@@ -1,11 +1,8 @@
-load("@aspect_rules_ts//ts:defs.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "src",
     srcs = glob(["*.ts"]),
-    declaration = True,
-    source_map = True,
-    tsconfig = "//vscode-ng-language-service/server:tsconfig",
     visibility = [
         "//vscode-ng-language-service/server:__subpackages__",
     ],

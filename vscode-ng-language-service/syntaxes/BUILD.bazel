@@ -1,6 +1,5 @@
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("@aspect_rules_js//js:defs.bzl", "js_library", "js_run_binary")
-load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
 
 js_run_binary(
     name = "build",
@@ -40,18 +39,8 @@ js_library(
     visibility = ["//vscode-ng-language-service/syntaxes:__subpackages__"],
 )
 
-ts_config(
-    name = "tsconfig",
-    src = "tsconfig.json",
-    visibility = ["//vscode-ng-language-service/syntaxes:__subpackages__"],
-    deps = ["//vscode-ng-language-service:tsconfig"],
-)
-
 filegroup(
     name = "npm_files",
-    srcs = glob(
-        ["*.json"],
-        exclude = ["tsconfig.json"],
-    ),
+    srcs = glob(["*.json"]),
     visibility = ["//vscode-ng-language-service:__pkg__"],
 )

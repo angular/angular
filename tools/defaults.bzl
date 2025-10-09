@@ -78,6 +78,9 @@ def _determine_tsconfig(testonly):
     if native.package_name().startswith("tools"):
         return "//tools:tsconfig_test" if testonly else "//tools:tsconfig_build"
 
+    if native.package_name().startswith("vscode-ng-language-service"):
+        return "//vscode-ng-language-service:tsconfig_test" if testonly else "//vscode-ng-language-service:tsconfig_build"
+
     fail("Failing... a tsconfig value must be provided.")
 
 def ts_project(

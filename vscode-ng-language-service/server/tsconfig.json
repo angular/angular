@@ -1,6 +1,0 @@
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "useUnknownInCatchVariables": false
-  }
-}

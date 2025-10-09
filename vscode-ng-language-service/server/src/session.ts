@@ -948,7 +948,7 @@ export class Session {
         this.isProjectLoading = false;
         this.connection.sendNotification(ProjectLoadingFinish);
       }
-      if (error.stack) {
+      if (error instanceof Error && error.stack) {
         this.error(error.stack);
       }
       throw error;
