@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ASTWithSource, EmptyExpr} from '../expression_parser/ast';
+import {
+  ASTWithSource,
+  EmptyExpr,
+  BindingPipe,
+  RecursiveAstVisitor,
+  AST,
+} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';
@@ -195,6 +201,7 @@ export function createForLoop(
         ast.sourceSpan.start,
         endSpan?.end ?? ast.sourceSpan.end,
       );
+      validateTrackByExpression(params.trackBy.expression, params.trackBy.keywordSpan, errors);
       node = new t.ForLoopBlock(
         params.itemName,
         params.expression,
@@ -394,6 +401,18 @@ function parseForLoopParameters(
   }
 
   return result;
+}
+
+function validateTrackByExpression(
+  expression: ASTWithSource<AST>,
+  parseSourceSpan: ParseSourceSpan,
+  errors: ParseError[],
+): void {
+  const visitor = new PipeVisitor();
+  expression.ast.visit(visitor);
+  if (visitor.hasPipe) {
+    errors.push(new ParseError(parseSourceSpan, 'Cannot use pipes in track expressions'));
+  }
 }
 
 /** Parses the `let` parameter of a `for` loop block. */
@@ -696,4 +715,11 @@ function stripOptionalParentheses(param: html.BlockParameter, errors: ParseError
   }
 
   return expression.slice(start, end);
+}
+
+class PipeVisitor extends RecursiveAstVisitor {
+  hasPipe = false;
+  override visitPipe(): any {
+    this.hasPipe = true;
+  }
 }
