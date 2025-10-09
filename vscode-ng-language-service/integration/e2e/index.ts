@@ -1,5 +1,6 @@
 import {join} from 'node:path';
 import {homedir, tmpdir} from 'node:os';
+import {promisify} from 'node:util';
 import {runTests} from '@vscode/test-electron';
 
 import {PACKAGE_ROOT, PROJECT_PATH} from '../test_constants';
@@ -17,7 +18,8 @@ async function main() {
   const vsCodeDataDir = await mkdtemp(join(tmpdir(), 'vscode-e2e-'));
 
   try {
-    xvfb.start();
+    await promisify(xvfb.start).call(xvfb);
+
     const exitCode = await runTests({
       // Keep version in sync with vscode engine version in package.json
       version: '1.74.3',
@@ -45,7 +47,7 @@ async function main() {
     console.error('Failed to run tests', err);
     process.exitCode = 1;
   } finally {
-    xvfb.stop();
+    await promisify(xvfb.stop).call(xvfb);
   }
 }
 
