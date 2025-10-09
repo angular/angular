@@ -9,7 +9,7 @@ import {mkdtemp} from 'node:fs/promises';
 import Xvfb from 'xvfb';
 
 async function main() {
-  const EXT_DEVELOPMENT_PATH = join(PACKAGE_ROOT, 'npm/vscode-ng-language-service/vsix_sandbox');
+  const EXT_DEVELOPMENT_PATH = join(PACKAGE_ROOT, 'development_package');
   const EXT_TESTS_PATH = join(PACKAGE_ROOT, 'integration', 'e2e', 'jasmine');
   const xvfb = new Xvfb();
 

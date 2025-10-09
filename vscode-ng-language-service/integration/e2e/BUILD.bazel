@@ -30,7 +30,7 @@ js_test(
     name = "test",
     data = [
         ":e2e",
-        "//vscode-ng-language-service:npm",
+        "//vscode-ng-language-service:development_package",
     ],
     entry_point = ":index.js",
     env = {

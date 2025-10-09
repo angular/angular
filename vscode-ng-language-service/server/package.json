@@ -17,7 +17,7 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "21.0.0-next.7",
+    "@angular/language-service": "workspace:*",
     "typescript": "5.9.3"
   },
   "devDependencies": {

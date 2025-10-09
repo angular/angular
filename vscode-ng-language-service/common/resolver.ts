@@ -70,7 +70,8 @@ export class Version {
   }
 
   isVersionZero() {
-    return this.versionStr === '0.0.0';
+    // Handle both `0.0.0`, `0.0.0-PLACEHOLDER` and similar
+    return this.major === 0 && this.minor === 0 && this.patch === 0;
   }
 
   toString(): string {
