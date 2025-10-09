@@ -8,7 +8,6 @@
     "@angular/core": "workspace:*",
     "@angular/elements": "workspace:*",
     "@angular/forms": "workspace:*",
-    "@angular/language-service": "workspace: *",
     "@angular/localize": "workspace: *",
     "@angular/platform-browser-dynamic": "workspace:*",
     "@angular/platform-browser": "workspace:*",

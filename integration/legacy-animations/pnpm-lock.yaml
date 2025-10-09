@@ -45,9 +45,6 @@ importers:
       '@angular/compiler-cli':
         specifier: link:./in-existing-linked-by-bazel
         version: link:in-existing-linked-by-bazel
-      '@angular/language-service':
-        specifier: link:./in-existing-linked-by-bazel
-        version: link:in-existing-linked-by-bazel
       '@types/jasmine':
         specifier: ^5.0.0
         version: 5.1.9
