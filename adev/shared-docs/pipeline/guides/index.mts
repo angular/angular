@@ -10,6 +10,7 @@ import {readFileSync, writeFileSync} from 'fs';
 import path from 'path';
 import {initHighlighter} from '../shared/shiki.mjs';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
+import {hasUnknownAnchors} from './helpers.mjs';
 
 type ApiManifest = ApiManifestPackage[];
 interface ApiManifestPackage {
@@ -51,6 +52,13 @@ async function main() {
     // The expected file name structure is the [name of the file].md.html.
     const htmlFileName = filePath + '.html';
     const htmlOutputPath = path.join(outputFilenameExecRootRelativePath, htmlFileName);
+
+    const unknownAnchor = hasUnknownAnchors(htmlOutputContent);
+    if (unknownAnchor) {
+      throw new Error(
+        `The file "${filePath}" contains an anchor link to "${unknownAnchor}" which does not exist in the document.`,
+      );
+    }
 
     writeFileSync(htmlOutputPath, htmlOutputContent, {encoding: 'utf8'});
   }
