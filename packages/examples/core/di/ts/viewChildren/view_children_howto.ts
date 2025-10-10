@@ -11,14 +11,12 @@ import {AfterViewInit, Component, Directive, QueryList, ViewChildren} from '@ang
 
 @Directive({
   selector: 'child-directive',
-  standalone: false,
 })
 class ChildDirective {}
 
 @Component({
   selector: 'someCmp',
   templateUrl: 'someCmp.html',
-  standalone: false,
 })
 class SomeCmp implements AfterViewInit {
   @ViewChildren(ChildDirective) viewChildren!: QueryList<ChildDirective>;
