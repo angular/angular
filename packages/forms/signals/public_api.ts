@@ -13,7 +13,7 @@
  */
 export * from './src/api/async';
 export * from './src/api/control';
-export * from './src/api/control_directive';
+export * from './src/api/field_directive';
 export * from './src/api/logic';
 export * from './src/api/property';
 export * from './src/api/structure';

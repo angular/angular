@@ -7,16 +7,16 @@
  */
 
 import type {Signal, WritableSignal} from '@angular/core';
-import type {Control} from '../api/control_directive';
+import type {Field} from '../api/field_directive';
 import {
   AggregateProperty,
   MAX,
   MAX_LENGTH,
   MIN,
   MIN_LENGTH,
+  PATTERN,
   Property,
   REQUIRED,
-  PATTERN,
 } from '../api/property';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
@@ -134,8 +134,8 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.readonly;
   }
 
-  get controls(): Signal<readonly Control<unknown>[]> {
-    return this.nodeState.controls;
+  get fieldBindings(): Signal<readonly Field<unknown>[]> {
+    return this.nodeState.fieldBindings;
   }
 
   get submitting(): Signal<boolean> {
