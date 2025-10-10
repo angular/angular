@@ -6322,9 +6322,7 @@ suppress
 
         const diags = env.driveDiagnostics();
         expect(diags.length).toBe(1);
-        expect(diags[0].messageText).toContain(
-          'Error: Illegal State: Pipes are not allowed in this context',
-        );
+        expect(diags[0].messageText).toContain('Cannot use pipes in track expressions');
       });
 
       it('should allow nullable values in loop expression', () => {

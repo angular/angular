@@ -2251,6 +2251,12 @@ describe('R3 template transform', () => {
         );
       });
 
+      it('should report a pipe in a track expression', () => {
+        expect(() => parse(`@for (item of items; track item.id | json) {}`)).toThrowError(
+          /Cannot use pipes in track expressions/,
+        );
+      });
+
       it('should report an empty `let` parameter', () => {
         expect(() => parse(`@for (item of items.foo.bar; track item.id; let ) {}`)).toThrowError(
           /Invalid @for loop "let" parameter. Parameter should match the pattern "<name> = <variable name>"/,
