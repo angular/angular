@@ -3055,6 +3055,7 @@ export interface HttpResourceRequest {
     priority?: RequestPriority | (string & {});
     redirect?: RequestRedirect | (string & {});
     referrer?: string;
+    referrerPolicy?: ReferrerPolicy | (string & {});
     reportProgress?: boolean;
     timeout?: number;
     transferCache?: {

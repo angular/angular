@@ -114,6 +114,7 @@ describe('httpResource', () => {
         credentials: 'include',
         integrity: 'sha256-abc123',
         referrer: 'https://example.com',
+        referrerPolicy: 'strict-origin-when-cross-origin',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -131,6 +132,7 @@ describe('httpResource', () => {
     expect(req.request.credentials).toBe('include');
     expect(req.request.integrity).toBe('sha256-abc123');
     expect(req.request.referrer).toBe('https://example.com');
+    expect(req.request.referrerPolicy).toBe('strict-origin-when-cross-origin');
 
     req.flush([]);
 
@@ -220,7 +222,14 @@ describe('httpResource', () => {
         withCredentials: true,
         keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
+        referrerPolicy: 'no-referrer',
         timeout: 1234,
+        priority: 'high',
+        integrity: 'sha256-abc123',
+        mode: 'cors',
+        redirect: 'follow',
+        credentials: 'include',
+        cache: 'no-store',
       }),
       {
         injector: TestBed.inject(Injector),
@@ -237,6 +246,13 @@ describe('httpResource', () => {
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
     expect(req.request.timeout).toBe(1234);
+    expect(req.request.referrerPolicy).toBe('no-referrer');
+    expect(req.request.priority).toBe('high');
+    expect(req.request.integrity).toBe('sha256-abc123');
+    expect(req.request.mode).toBe('cors');
+    expect(req.request.redirect).toBe('follow');
+    expect(req.request.credentials).toBe('include');
+    expect(req.request.cache).toBe('no-store');
   });
 
   it('should allow mapping data to an arbitrary type', async () => {

@@ -46,7 +46,8 @@ user = httpResource(() => ({
   cache : 'force-cache',
   credentials: 'include',
   referrer: 'no-referrer',
-  integrity: 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GhEXAMPLEKEY='
+  integrity: 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GhEXAMPLEKEY=',
+  referrerPolicy: 'no-referrer'
 }));
 ```
 

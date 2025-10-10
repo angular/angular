@@ -8,15 +8,15 @@ Through an options object passed to the request method, various properties of th
 
 ## Fetching JSON data
 
-Fetching data from a backend often requires making a GET request using the [`HttpClient.get()`](api/common/http/HttpClient#get) method. This method takes two arguments: the string endpoint URL from which to fetch, and an *optional options* object to configure the request.
+Fetching data from a backend often requires making a GET request using the [`HttpClient.get()`](api/common/http/HttpClient#get) method. This method takes two arguments: the string endpoint URL from which to fetch, and an _optional options_ object to configure the request.
 
 For example, to fetch configuration data from a hypothetical API using the `HttpClient.get()` method:
 
-<docs-code language="ts">
+```ts
 http.get<Config>('/api/config').subscribe(config => {
   // process the configuration.
 });
-</docs-code>
+```
 
 Note the generic type argument which specifies that the data returned by the server will be of type `Config`. This argument is optional, and if you omit it then the returned data will have type `Object`.
 
@@ -28,20 +28,20 @@ CRITICAL: The generic type of request methods is a type **assertion** about the 
 
 By default, `HttpClient` assumes that servers will return JSON data. When interacting with a non-JSON API, you can tell `HttpClient` what response type to expect and return when making the request. This is done with the `responseType` option.
 
-| **`responseType` value** | **Returned response type** |
-| - | - |
-| `'json'` (default) | JSON data of the given generic type |
-| `'text'` | string data |
-| `'arraybuffer'` | [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) containing the raw response bytes |
-| `'blob'` | [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob) instance |
+| **`responseType` value** | **Returned response type**                                                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `'json'` (default)       | JSON data of the given generic type                                                                                                       |
+| `'text'`                 | string data                                                                                                                               |
+| `'arraybuffer'`          | [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) containing the raw response bytes |
+| `'blob'`                 | [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob) instance                                                                        |
 
 For example, you can ask `HttpClient` to download the raw bytes of a `.jpeg` image into an `ArrayBuffer`:
 
-<docs-code language="ts">
+```ts
 http.get('/images/dog.jpg', {responseType: 'arraybuffer'}).subscribe(buffer => {
   console.log('The image is ' + buffer.byteLength + ' bytes large');
 });
-</docs-code>
+```
 
 <docs-callout important title="Literal value for `responseType`">
 Because the value of `responseType` affects the type returned by `HttpClient`, it must have a literal type and not a `string` type.
@@ -55,21 +55,21 @@ Server APIs which perform mutations often require making POST requests with a re
 
 The [`HttpClient.post()`](api/common/http/HttpClient#post) method behaves similarly to `get()`, and accepts an additional `body` argument before its options:
 
-<docs-code language="ts">
+```ts
 http.post<Config>('/api/config', newConfig).subscribe(config => {
   console.log('Updated config:', config);
 });
-</docs-code>
+```
 
 Many different types of values can be provided as the request's `body`, and `HttpClient` will serialize them accordingly:
 
-| **`body` type** | **Serialized as** |
-| - | - |
-| string | Plain text |
-| number, boolean, array, or plain object | JSON |
-| [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer) | raw data from the buffer |
-| [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob) | raw data with the `Blob`'s content type |
-| [`FormData`](https://developer.mozilla.org/docs/Web/API/FormData) | `multipart/form-data` encoded data |
+| **`body` type**                                                                                                               | **Serialized as**                                    |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| string                                                                                                                        | Plain text                                           |
+| number, boolean, array, or plain object                                                                                       | JSON                                                 |
+| [`ArrayBuffer`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)                       | raw data from the buffer                             |
+| [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob)                                                                     | raw data with the `Blob`'s content type              |
+| [`FormData`](https://developer.mozilla.org/docs/Web/API/FormData)                                                             | `multipart/form-data` encoded data                   |
 | [`HttpParams`](api/common/http/HttpParams) or [`URLSearchParams`](https://developer.mozilla.org/docs/Web/API/URLSearchParams) | `application/x-www-form-urlencoded` formatted string |
 
 IMPORTANT: Remember to `.subscribe()` to mutation request `Observable`s in order to actually fire the request.
@@ -80,19 +80,19 @@ Specify request parameters that should be included in the request URL using the 
 
 Passing an object literal is the simplest way of configuring URL parameters:
 
-<docs-code language="ts">
+```ts
 http.get('/api/config', {
   params: {filter: 'all'},
 }).subscribe(config => {
   // ...
 });
-</docs-code>
+```
 
 Alternatively, pass an instance of `HttpParams` if you need more control over the construction or serialization of the parameters.
 
 IMPORTANT: Instances of `HttpParams` are _immutable_ and cannot be directly changed. Instead, mutation methods such as `append()` return a new instance of `HttpParams` with the mutation applied.
 
-<docs-code language="ts">
+```ts
 const baseParams = new HttpParams().set('filter', 'all');
 
 http.get('/api/config', {
@@ -100,7 +100,7 @@ http.get('/api/config', {
 }).subscribe(config => {
   // ...
 });
-</docs-code>
+```
 
 You can instantiate `HttpParams` with a custom `HttpParameterCodec` that determines how `HttpClient` will encode the parameters into the URL.
 
@@ -116,7 +116,7 @@ import { inject } from '@angular/core';
 
 export class CustomHttpParamEncoder  implements HttpParameterCodec {
   encodeKey(key: string): string   {
-     return encodeURIComponent(key); 
+    return encodeURIComponent(key);
   }
 
   encodeValue(value: string): string {
@@ -153,7 +153,7 @@ Specify request headers that should be included in the request using the `header
 
 Passing an object literal is the simplest way of configuring request headers:
 
-<docs-code language="ts">
+```ts
 http.get('/api/config', {
   headers: {
     'X-Debug-Level': 'verbose',
@@ -161,13 +161,13 @@ http.get('/api/config', {
 }).subscribe(config => {
   // ...
 });
-</docs-code>
+```
 
 Alternatively, pass an instance of `HttpHeaders` if you need more control over the construction of headers
 
 IMPORTANT: Instances of `HttpHeaders` are _immutable_ and cannot be directly changed. Instead, mutation methods such as `append()` return a new instance of `HttpHeaders` with the mutation applied.
 
-<docs-code language="ts">
+```ts
 const baseHeaders = new HttpHeaders().set('X-Debug-Level', 'minimal');
 
 http.get<Config>('/api/config', {
@@ -175,7 +175,7 @@ http.get<Config>('/api/config', {
 }).subscribe(config => {
   // ...
 });
-</docs-code>
+```
 
 ## Interacting with the server response events
 
@@ -183,12 +183,12 @@ For convenience, `HttpClient` by default returns an `Observable` of the data ret
 
 To access the entire response, set the `observe` option to `'response'`:
 
-<docs-code language="ts">
+```ts
 http.get<Config>('/api/config', {observe: 'response'}).subscribe(res => {
   console.log('Response status:', res.status);
   console.log('Body:', res.body);
 });
-</docs-code>
+```
 
 <docs-callout important title="Literal value for `observe`">
 Because the value of `observe` affects the type returned by `HttpClient`, it must have a literal type and not a `string` type.
@@ -206,7 +206,7 @@ NOTE: The optional `fetch` implementation of `HttpClient` does not report _uploa
 
 To observe the event stream, set the `observe` option to `'events'`:
 
-<docs-code language="ts">
+```ts
 http.post('/api/upload', myData, {
   reportProgress: true,
   observe: 'events',
@@ -220,7 +220,7 @@ http.post('/api/upload', myData, {
       break;
   }
 });
-</docs-code>
+```
 
 <docs-callout important title="Literal value for `observe`">
 Because the value of `observe` affects the type returned by `HttpClient`, it must have a literal type and not a `string` type.
@@ -230,22 +230,22 @@ This happens automatically if the options object passed to the request method is
 
 Each `HttpEvent` reported in the event stream has a `type` which distinguishes what the event represents:
 
-| **`type` value** | **Event meaning** |
-| - | - |
-| `HttpEventType.Sent` | The request has been dispatched to the server |
-| `HttpEventType.UploadProgress` | An `HttpUploadProgressEvent` reporting progress on uploading the request body |
-| `HttpEventType.ResponseHeader` | The head of the response has been received, including status and headers |
+| **`type` value**                 | **Event meaning**                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| `HttpEventType.Sent`             | The request has been dispatched to the server                                      |
+| `HttpEventType.UploadProgress`   | An `HttpUploadProgressEvent` reporting progress on uploading the request body      |
+| `HttpEventType.ResponseHeader`   | The head of the response has been received, including status and headers           |
 | `HttpEventType.DownloadProgress` | An `HttpDownloadProgressEvent` reporting progress on downloading the response body |
-| `HttpEventType.Response` | The entire response has been received, including the response body |
-| `HttpEventType.User` | A custom event from an Http interceptor.
+| `HttpEventType.Response`         | The entire response has been received, including the response body                 |
+| `HttpEventType.User`             | A custom event from an Http interceptor.                                           |
 
 ## Handling request failure
 
 There are three ways an HTTP request can fail:
 
-* A network or connection error can prevent the request from reaching the backend server.
-* A request didn't respond in time when the timeout option was set.
-* The backend can receive the request but fail to process it, and return an error response.
+- A network or connection error can prevent the request from reaching the backend server.
+- A request didn't respond in time when the timeout option was set.
+- The backend can receive the request but fail to process it, and return an error response.
 
 `HttpClient` captures all of the above kinds of errors in an `HttpErrorResponse` which it returns through the `Observable`'s error channel. Network and timeout errors have a `status` code of `0` and an `error` which is an instance of [`ProgressEvent`](https://developer.mozilla.org/docs/Web/API/ProgressEvent). Backend errors have the failing `status` code returned by the backend, and the error response as the `error`. Inspect the response to identify the error's cause and the appropriate action to handle the error.
 
@@ -253,7 +253,7 @@ The [RxJS library](https://rxjs.dev/) offers several operators which can be usef
 
 You can use the `catchError` operator to transform an error response into a value for the UI. This value can tell the UI to display an error page or value, and capture the error's cause if necessary.
 
-Sometimes transient errors such as network interruptions can cause a request to fail unexpectedly, and simply retrying the request will allow it to succeed. RxJS provides several *retry* operators which automatically re-subscribe to a failed `Observable` under certain conditions. For example, the `retry()` operator will automatically attempt to re-subscribe a specified number of times.
+Sometimes transient errors such as network interruptions can cause a request to fail unexpectedly, and simply retrying the request will allow it to succeed. RxJS provides several _retry_ operators which automatically re-subscribe to a failed `Observable` under certain conditions. For example, the `retry()` operator will automatically attempt to re-subscribe a specified number of times.
 
 ### Timeouts
 
@@ -261,7 +261,7 @@ To set a timeout for a request, you can set the `timeout` option to a number of 
 
 NOTE: The timeout will only apply to the backend HTTP request itself. It is not a timeout for the entire request handling chain. Therefore, this option is not affected by any delay introduced by interceptors.
 
-<docs-code language="ts">
+```ts
 http.get('/api/config', {
   timeout: 3000,
 }).subscribe({
@@ -272,7 +272,7 @@ http.get('/api/config', {
     // If the request times out, an error will have been emitted.
   }
 });
-</docs-code>
+```
 
 ## Advanced fetch options
 
@@ -286,17 +286,17 @@ The following options provide fine-grained control over request behavior when us
 
 The `keepalive` option allows a request to outlive the page that initiated it. This is particularly useful for analytics or logging requests that need to complete even if the user navigates away from the page.
 
-<docs-code language="ts">
+```ts
 http.post('/api/analytics', analyticsData, {
   keepalive: true
 }).subscribe();
-</docs-code>
+```
 
 #### HTTP caching control
 
 The `cache` option controls how the request interacts with the browser's HTTP cache, which can significantly improve performance for repeated requests.
 
-<docs-code language="ts">
+```ts
 //  Use cached response regardless of freshness
 http.get('/api/config', {
   cache: 'force-cache'
@@ -317,13 +317,13 @@ http.get('/api/static-data', {
 }).subscribe(data => {
   // ...
 });
-</docs-code>
+```
 
 #### Request priority for Core Web Vitals
 
 The `priority` option allows you to indicate the relative importance of a request, helping browsers optimize resource loading for better Core Web Vitals scores.
 
-<docs-code language="ts">
+```ts
 // High priority for critical resources
 http.get('/api/user-profile', {
   priority: 'high'
@@ -344,9 +344,10 @@ http.get('/api/settings', {
 }).subscribe(settings => {
   // ...
 });
-</docs-code>
+```
 
 Available `priority` values:
+
 - `'high'`: High priority, loaded early (e.g., critical user data, above-the-fold content)
 - `'low'`: Low priority, loaded when resources are available (e.g., analytics, prefetch data)
 - `'auto'`: Browser determines priority based on request context (default)
@@ -357,7 +358,7 @@ TIP: Use `priority: 'high'` for requests that affect Largest Contentful Paint (L
 
 The `mode` option controls how the request handles cross-origin requests and determines the response type.
 
-<docs-code language="ts">
+```ts
 // Same-origin requests only
 http.get('/api/local-data', {
   mode: 'same-origin'
@@ -378,9 +379,10 @@ http.get('https://external-api.com/public-data', {
 }).subscribe(data => {
   // ...
 });
-</docs-code>
+```
 
 Available `mode` values:
+
 - `'same-origin'`: Only allow same-origin requests, fail for cross-origin requests
 - `'cors'`: Allow cross-origin requests with CORS (default)
 - `'no-cors'`: Allow simple cross-origin requests without CORS, response is opaque
@@ -391,7 +393,7 @@ TIP: Use `mode: 'same-origin'` for sensitive requests that should never go cross
 
 The `redirect` option specifies how to handle redirect responses from the server.
 
-<docs-code language="ts">
+```ts
 // Follow redirects automatically (default behavior)
 http.get('/api/resource', {
   redirect: 'follow'
@@ -417,9 +419,10 @@ http.get('/api/resource', {
     // Redirect responses will trigger this error handler
   }
 });
-</docs-code>
+```
 
 Available `redirect` values:
+
 - `'follow'`: Automatically follow redirects (default)
 - `'error'`: Treat redirects as errors
 - `'manual'`: Don't follow redirects automatically, return redirect response
@@ -430,7 +433,7 @@ TIP: Use `redirect: 'manual'` when you need to handle redirects with custom logi
 
 The `credentials` option controls whether cookies, authorization headers, and other credentials are sent with cross-origin requests. This is particularly important for authentication scenarios.
 
-<docs-code language="ts">
+```ts
 // Include credentials for cross-origin requests
 http.get('https://api.example.com/protected-data', {
   credentials: 'include'
@@ -466,11 +469,12 @@ http.get('https://api.example.com/data', {
 }).subscribe(data => {
   // Equivalent to credentials: 'include'
 });
-</docs-code>
+```
 
 IMPORTANT: The `withCredentials` option takes precedence over the `credentials` option. If both are specified, `withCredentials: true` will always result in `credentials: 'include'`, regardless of the explicit `credentials` value.
 
 Available `credentials` values:
+
 - `'omit'`: Never send credentials
 - `'same-origin'`: Send credentials only for same-origin requests (default)
 - `'include'`: Always send credentials, even for cross-origin requests
@@ -481,7 +485,7 @@ TIP: Use `credentials: 'include'` when you need to send authentication cookies o
 
 The `referrer` option allows you to control what referrer information is sent with the request. This is important for privacy and security considerations.
 
-<docs-code language="ts">
+```ts
 // Send a specific referrer URL
 http.get('/api/data', {
   referrer: 'https://example.com/page'
@@ -495,20 +499,50 @@ http.get('/api/analytics', {
 }).subscribe(data => {
   // ...
 });
-</docs-code>
+```
 
 The `referrer` option accepts:
+
 - A valid URL string: Sets the specific referrer URL to send
 - An empty string `''`: Sends no referrer information
 - `'about:client'`: Uses the default referrer (current page URL)
 
 TIP: Use `referrer: ''` for sensitive requests where you don't want to leak the referring page URL.
 
+#### Referrer policy
+
+The `referrerPolicy` option controls how much referrer information , the URL of the page making the request is sent along with an HTTP request. This setting affects both privacy and analytics, allowing you to balance data visibility with security considerations.
+
+```ts
+// Send no referrer information regardless of the current page
+http.get('/api/data', {
+  referrerPolicy: 'no-referrer'
+}).subscribe();
+
+// Send origin only (e.g. https://example.com)
+http.get('/api/analytics', {
+  referrerPolicy: 'origin'
+}).subscribe();
+```
+
+The `referrerPolicy` option accepts:
+
+- `'no-referrer'` Never send the `Referer` header.
+- `'no-referrer-when-downgrade'` Sends the referrer for same-origin and secure (HTTPS→HTTPS) requests, but omits it when navigating from a secure to a less secure origin (HTTPS→HTTP).
+- `'origin'` Sends only the origin (scheme, host, port) of the referrer, omitting path and query information.
+- `'origin-when-cross-origin'` Sends the full URL for same-origin requests, but only the origin for cross-origin requests.
+- `'same-origin'` Sends the full URL for same-origin requests and no referrer for cross-origin requests.
+- `'strict-origin'` Sends only the origin, and only if the protocol security level is not downgraded (e.g., HTTPS→HTTPS). Omits the referrer on downgrade.
+- `'strict-origin-when-cross-origin'` Default browser behavior. Sends the full URL for same-origin requests, the origin for cross-origin requests when not downgraded, and omits the referrer on downgrade.
+- `'unsafe-url'`Always sends the full URL (including path and query). This can expose sensitive data and should be used with caution.
+
+TIP: Prefer conservative values such as `'no-referrer'`, `'origin'`, or `'strict-origin-when-cross-origin'` for privacy-sensitive requests.
+
 #### Integrity
 
 The `integrity` option allows you to verify that the response hasn't been tampered with by providing a cryptographic hash of the expected content. This is particularly useful for loading scripts or other resources from CDNs.
 
-<docs-code language="ts">
+```ts
 // Verify response integrity with SHA-256 hash
 http.get('/api/script.js', {
   integrity: 'sha256-ABC123...',
@@ -516,7 +550,7 @@ http.get('/api/script.js', {
 }).subscribe(script => {
   // Script content is verified against the hash
 });
-</docs-code>
+```
 
 IMPORTANT: The `integrity` option requires an exact match between the response content and the provided hash. If the content doesn't match, the request will fail with a network error.
 
@@ -542,7 +576,7 @@ TIP: Using the `async` pipe or the `toSignal` operation to subscribe to `Observa
 
 While `HttpClient` can be injected and used directly from components, generally we recommend you create reusable, injectable services which isolate and encapsulate data access logic. For example, this `UserService` encapsulates the logic to request data for a user by their id:
 
-<docs-code language="ts">
+```ts
 @Injectable({providedIn: 'root'})
 export class UserService {
   private http = inject(HttpClient);
@@ -551,11 +585,11 @@ export class UserService {
     return this.http.get<User>(`/api/user/${id}`);
   }
 }
-</docs-code>
+```
 
 Within a component, you can combine `@if` with the `async` pipe to render the UI for the data only after it's finished loading:
 
-<docs-code language="ts">
+```ts
 import { AsyncPipe } from '@angular/common';
 @Component({
   imports: [AsyncPipe],
@@ -578,4 +612,4 @@ export class UserProfileComponent {
     });
   }
 }
-</docs-code>
+```
