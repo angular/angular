@@ -543,6 +543,7 @@
       "fromPromise",
       "fromReadableStreamLike",
       "getActiveConsumer",
+      "getAndClearAdditionalProviders",
       "getBaseElementHref",
       "getBeforeNodeForView",
       "getBindingsEnabled",

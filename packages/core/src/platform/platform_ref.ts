@@ -33,6 +33,11 @@ let _additionalApplicationProviders: StaticProvider[] | undefined = undefined;
 export function setZoneProvidersForNextBootstrap(): void {
   _additionalApplicationProviders = internalProvideZoneChangeDetection({});
 }
+function getAndClearAdditionalProviders(): StaticProvider[] | undefined {
+  const providers = _additionalApplicationProviders;
+  _additionalApplicationProviders = undefined;
+  return providers;
+}
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -62,6 +67,18 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions,
   ): Promise<NgModuleRef<M>> {
+    return this.bootstrapModuleFactoryWithApplicationProviders(
+      moduleFactory,
+      options,
+      getAndClearAdditionalProviders(),
+    );
+  }
+
+  private bootstrapModuleFactoryWithApplicationProviders<M>(
+    moduleFactory: NgModuleFactory<M>,
+    options?: BootstrapOptions,
+    applicationProviders?: StaticProvider[],
+  ): Promise<NgModuleRef<M>> {
     const defaultZoneCdProviders = [];
     if (!ZONELESS_BY_DEFAULT) {
       const ngZoneFactory = () =>
@@ -76,11 +93,10 @@ export class PlatformRef {
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
       ...defaultZoneCdProviders,
-      ...(_additionalApplicationProviders ?? []),
+      ...(applicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
       ...(ngDevMode ? [validAppIdInitializer] : []),
     ];
-    _additionalApplicationProviders = undefined;
     const moduleRef = createNgModuleRefWithProviders(
       moduleFactory.moduleType,
       this.injector,
@@ -117,10 +133,15 @@ export class PlatformRef {
       | (CompilerOptions & BootstrapOptions)
       | Array<CompilerOptions & BootstrapOptions> = [],
   ): Promise<NgModuleRef<M>> {
+    const additionalApplicationProviders = getAndClearAdditionalProviders();
     const options = optionsReducer({}, compilerOptions);
     setModuleBootstrapImpl();
     return compileNgModuleFactory(this.injector, options, moduleType).then((moduleFactory) =>
-      this.bootstrapModuleFactory(moduleFactory, options),
+      this.bootstrapModuleFactoryWithApplicationProviders(
+        moduleFactory,
+        options,
+        additionalApplicationProviders,
+      ),
     );
   }
 
