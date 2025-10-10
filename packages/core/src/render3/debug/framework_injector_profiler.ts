@@ -10,12 +10,14 @@ import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
+import {AfterRenderRef} from '../after_render/api';
 import {assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../def_getters';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
 import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
-import {EffectRef} from '../reactivity/effect';
+import {AfterRenderPhaseEffectNode} from '../reactivity/after_render_effect';
+import {EffectRefImpl} from '../reactivity/effect';
 
 import {
   InjectedService,
@@ -69,7 +71,10 @@ class DIDebugData {
     WeakMap<Type<unknown>, InjectedService[]>
   >();
   resolverToProviders = new WeakMap<Injector | TNode, ProviderRecord[]>();
-  resolverToEffects = new WeakMap<Injector | LView, EffectRef[]>();
+  resolverToEffects = new WeakMap<
+    Injector | LView,
+    (EffectRefImpl | AfterRenderPhaseEffectNode)[]
+  >();
   standaloneInjectorToComponent = new WeakMap<Injector, Type<unknown>>();
 
   reset() {
@@ -116,10 +121,15 @@ function injectorProfilerEventHandler(injectorProfilerEvent: InjectorProfilerEve
     handleProviderConfiguredEvent(context, injectorProfilerEvent.providerRecord);
   } else if (type === InjectorProfilerEventType.EffectCreated) {
     handleEffectCreatedEvent(context, injectorProfilerEvent.effect);
+  } else if (type === InjectorProfilerEventType.AfterRenderEffectPhaseCreated) {
+    handleEffectCreatedEvent(context, injectorProfilerEvent.effectPhase);
   }
 }
 
-function handleEffectCreatedEvent(context: InjectorProfilerContext, effect: EffectRef): void {
+function handleEffectCreatedEvent(
+  context: InjectorProfilerContext,
+  effect: EffectRefImpl | AfterRenderPhaseEffectNode,
+): void {
   const diResolver = getDIResolver(context.injector);
   if (diResolver === null) {
     throwError('An EffectCreated event must be run within an injection context.');

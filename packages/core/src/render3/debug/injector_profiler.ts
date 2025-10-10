@@ -16,7 +16,8 @@ import {Type} from '../../interface/type';
 import {throwError} from '../../util/assert';
 import type {TNode} from '../interfaces/node';
 import type {LView} from '../interfaces/view';
-import type {EffectRef} from '../reactivity/effect';
+import type {AfterRenderPhaseEffectNode} from '../reactivity/after_render_effect';
+import type {EffectRefImpl} from '../reactivity/effect';
 
 /**
  * An enum describing the types of events that can be emitted from the injector profiler
@@ -41,6 +42,11 @@ export const enum InjectorProfilerEventType {
    * Emits when an effect is created.
    */
   EffectCreated,
+
+  /**
+   * Emits when an after render effect phase is created.
+   */
+  AfterRenderEffectPhaseCreated,
 
   /**
    * Emits when an Angular DI system is about to create an instance corresponding to a given token.
@@ -94,7 +100,13 @@ export interface ProviderConfiguredEvent {
 export interface EffectCreatedEvent {
   type: InjectorProfilerEventType.EffectCreated;
   context: InjectorProfilerContext;
-  effect: EffectRef;
+  effect: EffectRefImpl;
+}
+
+export interface AfterRenderEffectPhaseCreatedEvent {
+  type: InjectorProfilerEventType.AfterRenderEffectPhaseCreated;
+  context: InjectorProfilerContext;
+  effectPhase: AfterRenderPhaseEffectNode;
 }
 
 /**
@@ -106,7 +118,8 @@ export type InjectorProfilerEvent =
   | InjectorToCreateInstanceEvent
   | InjectorCreatedInstanceEvent
   | ProviderConfiguredEvent
-  | EffectCreatedEvent;
+  | EffectCreatedEvent
+  | AfterRenderEffectPhaseCreatedEvent;
 
 /**
  * An object that contains information about a provider that has been configured
@@ -339,13 +352,25 @@ export function emitInjectEvent(
   });
 }
 
-export function emitEffectCreatedEvent(effect: EffectRef): void {
+export function emitEffectCreatedEvent(effect: EffectRefImpl): void {
   !ngDevMode && throwError('Injector profiler should never be called in production mode');
 
   injectorProfiler({
     type: InjectorProfilerEventType.EffectCreated,
     context: getInjectorProfilerContext(),
     effect,
+  });
+}
+
+export function emitAfterRenderEffectPhaseCreatedEvent(
+  effectPhase: AfterRenderPhaseEffectNode,
+): void {
+  !ngDevMode && throwError('Injector profiler should never be called in production mode');
+
+  injectorProfiler({
+    type: InjectorProfilerEventType.AfterRenderEffectPhaseCreated,
+    context: getInjectorProfilerContext(),
+    effectPhase,
   });
 }
 
