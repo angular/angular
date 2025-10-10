@@ -146,7 +146,7 @@ export class UserProfile {
   protected userId = input<string>();
 
   private userResource = rxResource({
-    params: () => this.userId(),
+    params: () => ({ userId: this.userId() }),
 
     // The `stream` property expects a factory function that returns
     // a data stream as an RxJS Observable.
