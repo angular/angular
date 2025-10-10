@@ -1,22 +1,36 @@
 @use '../../../../../../../../styles/typography';
 
-.editor {
+:host {
   cursor: text;
-  border: none;
-  outline: none;
-  white-space: pre;
-  width: fit-content;
-}
+  display: inline;
 
-.editor-input {
-  box-shadow: 0 0 0 1px var(--dynamic-transparent-01);
-}
+  .value-input {
+    position: relative;
+    display: inline-block;
+    margin-right: 0.25rem;
+    text-indent: 0;
 
-input {
-  @extend %monospaced;
-  line-height: 1rem;
-  letter-spacing: normal;
-  width: fit-content;
-  border: none;
-  outline: none;
+    .text-span,
+    input {
+      @extend %monospaced;
+      line-height: 1rem;
+      letter-spacing: normal;
+    }
+
+    input {
+      position: absolute;
+      background: none;
+      outline: 1px solid var(--dynamic-blue-02);
+      border-radius: 0.125rem;
+      width: 100%;
+      border: none;
+      padding: 0;
+      height: 100%;
+      top: -0.25px;
+    }
+
+    .text-span {
+      visibility: hidden;
+    }
+  }
 }

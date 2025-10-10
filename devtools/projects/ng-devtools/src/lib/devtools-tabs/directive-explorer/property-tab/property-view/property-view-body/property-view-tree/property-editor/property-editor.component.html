@@ -1,33 +1,29 @@
-<div class="editor" (click)="onClick()">
-  <span class="state-container">
-    @switch (currentPropertyState()) {
-      @case (readState) {
-        <span>
-          @switch (containerType()) {
-            @case ('WritableSignal') {
-              <span class="editable">Signal({{valueToSubmit()}})</span>
-            }
-            @default {
-              <span class="editable">{{ valueToSubmit() }}</span>
-            }
-          }
-        </span>
+@switch (currentPropertyState()) {
+  @case (readState) {
+    @switch (containerType()) {
+      @case ('WritableSignal') {
+        <span class="editable">Signal({{valueToSubmit()}})</span>
       }
-      @case (writeState) {
-        <span>
-          <input
-            #inputEl
-            matInput
-            type="text"
-            class="editor-input editable"
-            (mousedown)="$event.stopPropagation()"
-            [(ngModel)]="valueToSubmit"
-            (keydown.enter)="accept()"
-            (keydown.escape)="reject()"
-            (blur)="onBlur()"
-          />
-        </span>
+      @default {
+        <span class="editable">{{ valueToSubmit() }}</span>
       }
     }
-  </span>
-</div>
+  }
+  @case (writeState) {
+    <div class="value-input">
+      <input
+        #inputEl
+        matInput
+        type="text"
+        (mousedown)="$event.stopPropagation()"
+        [(ngModel)]="valueToSubmit"
+        (keydown.enter)="accept()"
+        (keydown.escape)="reject()"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        placeholder="Property value"
+      />
+      <span class="text-span">{{valueToSubmit()}}</span>
+    </div>
+  }
+}

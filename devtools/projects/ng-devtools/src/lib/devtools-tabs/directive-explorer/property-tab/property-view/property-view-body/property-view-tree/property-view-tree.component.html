@@ -1,33 +1,35 @@
 @if (treeControl()) {
   <mat-tree class="property-list" [dataSource]="dataSource()" [treeControl]="treeControl()">
     <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
-      <span class="name non-expandable">{{ node.prop.name }}</span
-      >:&nbsp;
-      @if (!node.prop.descriptor.editable) {
-        <ng-property-preview (inspect)="inspect.emit(node)" [node]="node"></ng-property-preview>
-      } @else {
-        <ng-property-editor
-          [key]="node.prop.name"
-          [initialValue]="node.prop.descriptor.value ?? node.prop.descriptor.preview"
-          [containerType]="node.prop.descriptor.containerType"
-          (updateValue)="handleUpdate(node, $event)"
-        />
-      }
-      <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
-      @if (node.level === 0) {
-        <ng-container [ngTemplateOutlet]="logValueBtn" [ngTemplateOutletContext]="{ node }" />
-      }
+      <div class="prop-row non-expandable-row">
+        <span class="name">{{ node.prop.name }}</span
+        >:
+        @if (!node.prop.descriptor.editable) {
+          <ng-property-preview class="value" (inspect)="inspect.emit(node)" [node]="node" />
+        } @else {
+          <ng-property-editor
+            class="value"
+            [key]="node.prop.name"
+            [initialValue]="node.prop.descriptor.value ?? node.prop.descriptor.preview"
+            [containerType]="node.prop.descriptor.containerType"
+            (updateValue)="handleUpdate(node, $event)"
+          />
+        }
+        <ng-container [ngTemplateOutlet]="signalBtn" [ngTemplateOutletContext]="{ node }" />
+        @if (node.level === 0) {
+          <ng-container [ngTemplateOutlet]="logValueBtn" [ngTemplateOutletContext]="{ node }" />
+        }
+      </div>
     </mat-tree-node>
     <mat-tree-node
       matTreeNodePaddingIndent="14"
       *matTreeNodeDef="let node; when: hasChild"
       matTreeNodePadding
     >
-      <div (click)="toggle(node)">
-        <mat-icon class="mat-icon-rtl-mirror">
+      <button (click)="toggle(node)" class="prop-row expandable-row">
+        <mat-icon class="expand-icon">
           {{ treeControl().isExpanded(node) ? 'expand_more' : 'chevron_right' }}
         </mat-icon>
-        &nbsp;
         <span class="name">{{ node.prop.name }}</span
         >:
         <span class="value">{{ node.prop.descriptor.preview }}</span>
@@ -35,7 +37,7 @@
         @if (node.level === 0) {
           <ng-container [ngTemplateOutlet]="logValueBtn" [ngTemplateOutletContext]="{ node }" />
         }
-      </div>
+      </button>
     </mat-tree-node>
   </mat-tree>
 }
@@ -45,11 +47,12 @@
     supportedApis().signalPropertiesInspection && signalGraphEnabled() && getSignalNode(node);
     as signalNode
   ) {
+    @let tooltip = 'Show \'' + node.prop.name + '\' signal graph';
     <button
-      class="show-signal-btn"
+      class="prop-action-btn show-signal"
       type="button"
-      matTooltip="Show signal graph"
-      aria-label="Show signal graph"
+      [matTooltip]="tooltip"
+      [ariaLabel]="tooltip"
       (click)="showGraph($event, signalNode)"
     >
       <mat-icon>graph_2</mat-icon>
@@ -58,11 +61,12 @@
 </ng-template>
 
 <ng-template #logValueBtn let-node="node">
+  @let tooltip = 'Log \'' + node.prop.name + '\' to console';
   <button
-    class="log-value-btn"
+    class="prop-action-btn log-value"
     type="button"
-    matTooltip="Log value to console"
-    aria-label="Log value to console"
+    [matTooltip]="tooltip"
+    [ariaLabel]="tooltip"
     (click)="handleLogValue($event, node)"
   >
     <mat-icon>terminal</mat-icon>

@@ -42,6 +42,9 @@ const parseValue = (value: EditorResult): EditorResult => {
   styleUrls: ['./property-editor.component.scss'],
   imports: [FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(click)': 'onClick()',
+  },
 })
 export class PropertyEditorComponent {
   readonly key = input.required<string>();
@@ -69,7 +72,6 @@ export class PropertyEditorComponent {
       const editor = this.inputEl()?.nativeElement;
       if (editor && this.currentPropertyState() === this.writeState) {
         editor.focus();
-        editor.select();
       }
     });
   }
@@ -89,6 +91,13 @@ export class PropertyEditorComponent {
     if (this.currentPropertyState() === this.readState) {
       this.currentPropertyState.set(this.writeState);
     }
+  }
+
+  onFocus() {
+    // A slight timeout is required for text selection.
+    setTimeout(() => {
+      this.inputEl()?.nativeElement.select();
+    });
   }
 
   onBlur(): void {
