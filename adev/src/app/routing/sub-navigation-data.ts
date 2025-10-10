@@ -1503,6 +1503,12 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/ngstyle-to-style',
         status: 'new',
       },
+      {
+        label: 'Router Testing Module Migration',
+        path: 'reference/migrations/router-testing-module-migration',
+        contentPath: 'reference/migrations/router-testing-module-migration',
+        status: 'new',
+      },
     ],
   },
 ];
