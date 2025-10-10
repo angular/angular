@@ -32,7 +32,7 @@ describe('change of the state should reflect in property update', () => {
     cy.contains(
       '.explorer-panel:contains("app-todo") ' +
         'ng-property-view mat-tree-node:contains("completed") ' +
-        'ng-property-editor .editor',
+        'ng-property-editor',
       'true',
     );
   });

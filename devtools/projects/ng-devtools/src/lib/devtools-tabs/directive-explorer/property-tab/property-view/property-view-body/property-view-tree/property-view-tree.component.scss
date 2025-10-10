@@ -5,80 +5,93 @@
   display: block;
   overflow: auto;
 
-  mat-tree {
-    display: table;
+  .property-list {
+    margin: 0.5rem;
   }
 
-  ::ng-deep {
-    .mat-tree-node,
-    .mat-nested-tree-node {
-      @extend %monospaced;
-    }
+  .prop-row {
+    $margin-left: 1.25rem;
+    $second-row-text-indent: 1rem;
 
-    .mat-tree-node {
-      min-height: 20px !important;
-      cursor: default;
+    @extend %monospaced;
+    display: inline;
+    text-indent: -$second-row-text-indent;
+    margin-left: $margin-left + $second-row-text-indent;
 
-      .mat-icon {
-        font-size: 11px;
-        width: 8px;
-        height: 16px;
-        position: relative;
-        top: 6px;
+    &.expandable-row {
+      position: relative;
+      border: none;
+      background: none;
+      padding: 0;
+      text-align: left;
+
+      .expand-icon {
+        position: absolute;
+        font-size: 12px;
+        width: 12px;
+        height: 12px;
+        top: 0.175rem;
+        left: -0.875rem - $second-row-text-indent;
+        text-indent: 0;
+        cursor: pointer;
       }
     }
   }
-}
 
-.name {
-  margin-left: -9px;
-}
-
-.non-expandable {
-  margin-left: 18px;
-}
-
-.show-signal-btn,
-.log-value-btn {
-  position: relative;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--dynamic-blue-02);
-  color: var(--septenary-contrast);
-  vertical-align: middle;
-  padding: 0;
-  top: -1px;
-  margin-left: 0.25rem;
-  margin-right: 0.25rem;
-  cursor: pointer;
-
-  &:hover {
-    background: color-mix(in srgb, var(--dynamic-blue-02) 80%, var(--full-contrast) 20%);
-  }
-
-  mat-icon {
-    width: 11px;
-    height: 11px;
-    font-size: 11px;
-    top: 0;
-  }
-}
-
-.property-list {
-  margin: 5px 5px 5px 15px;
   mat-tree-node {
-    .name {
-      color: var(--color-tree-node-element-name);
+    min-height: 1.375rem !important;
+    cursor: default;
+  }
+
+  .name {
+    color: var(--color-tree-node-element-name);
+  }
+
+  .value:not(:last-child) {
+    margin-right: 0.25rem;
+  }
+
+  .prop-action-btn {
+    position: relative;
+    border-radius: 50%;
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--quaternary-contrast);
+    background-color: transparent;
+    vertical-align: middle;
+    padding: 0;
+    top: -1px;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      margin-right: 0.25rem;
+    }
+
+    &:hover {
+      $color: color-mix(in srgb, var(--dynamic-blue-02) 80%, var(--full-contrast) 20%);
+      background: $color;
+      outline: 2px solid $color;
+      color: var(--septenary-contrast);
+    }
+
+    mat-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      top: 0;
+    }
+
+    &.show-signal {
+      mat-icon {
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+      }
     }
   }
-}
-
-.property-list mat-tree-node.disabled .name,
-.disabled {
-  color: var(--secondary-contrast);
 }
