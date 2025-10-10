@@ -38,23 +38,6 @@ allowedDeprecatedVersions:
   protractor: '7'
   '@babel/plugin-proposal-async-generator-functions': '7'
 
-overrides:
-  '@angular/compiler': 'workspace:*'
-  '@angular/compiler-cli': 'workspace:*'
-  '@angular/core': 'workspace:*'
-  '@angular/common': 'workspace:*'
-  '@angular/router': 'workspace:*'
-  '@angular/platform-browser': 'workspace:*'
-  '@angular/platform-browser-dynamic': 'workspace:*'
-  '@angular/platform-server': 'workspace:*'
-  '@angular/forms': 'workspace:*'
-  '@angular/elements': 'workspace:*'
-  '@angular/animations': 'workspace:*'
-  '@angular/benchpress': 'workspace: *'
-  '@angular/language-service': 'workspace: *'
-  '@angular/localize': 'workspace: *'
-  '@angular/upgrade': 'workspace: *'
-
 # The minimum age of a release to be considered for dependency installation.
 # The value is in minutes (1440 minutes = 1 day).
 minimumReleaseAge: 1440
