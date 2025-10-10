@@ -227,7 +227,15 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 /**
  * @experimental
  */
-export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
+export type ResourceOptions<T, R> = (
+  | PromiseResourceOptions<T, R>
+  | StreamingResourceOptions<T, R>
+) & {
+  /**
+   * A debug name for the reactive node. Used in Angular DevTools to identify the node.
+   */
+  debugName?: string;
+};
 
 /**
  * @experimental
