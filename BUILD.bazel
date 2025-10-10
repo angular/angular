@@ -1,4 +1,5 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@devinfra//bazel/validation:defs.bzl", "validate_ts_version_matching")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("//tools:defaults.bzl", "copy_to_bin")
@@ -70,4 +71,19 @@ alias(
         "@devinfra//bazel/constraints:macos_x64": "@sauce_connect_mac//:bin/sc",
         "@devinfra//bazel/constraints:macos_arm64": "@sauce_connect_mac//:bin/sc",
     }),
+)
+
+# When enabled, this flag substitutes dependency versions with snapshot repositories
+# for all packages in this repository. Note that this does not apply to peer
+# dependencies, as they must be installed directly.
+bool_flag(
+    name = "enable_language_server_snapshot_repo_deps",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "language_server_package_json_use_snapshot_repo_deps",
+    flag_values = {
+        ":enable_language_server_snapshot_repo_deps": "true",
+    },
 )
