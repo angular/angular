@@ -13,7 +13,7 @@ import {
   PlatformRef,
   StaticProvider,
   Type,
-  ɵsetZoneProvidersForNextBootstrap,
+  ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
 } from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
@@ -384,20 +384,19 @@ export function downgradeModule<T>(
   if (ɵutil.isNgModuleType(moduleOrBootstrapFn)) {
     // NgModule class
     bootstrapFn = (extraProviders: StaticProvider[]) =>
-      platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn);
+      platformBrowser(extraProviders).bootstrapModule(moduleOrBootstrapFn, {
+        applicationProviders: [internalProvideZoneChangeDetection({})],
+      });
   } else if (!ɵutil.isFunction(moduleOrBootstrapFn)) {
     // NgModule factory
     bootstrapFn = (extraProviders: StaticProvider[]) =>
-      platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn);
+      platformBrowser(extraProviders).bootstrapModuleFactory(moduleOrBootstrapFn, {
+        applicationProviders: [internalProvideZoneChangeDetection({})],
+      });
   } else {
     // bootstrap function
     bootstrapFn = moduleOrBootstrapFn;
   }
-
-  const wrappedBootstrapFn = (extraProviders: StaticProvider[]) => {
-    ɵsetZoneProvidersForNextBootstrap();
-    return bootstrapFn(extraProviders);
-  };
 
   let injector: Injector;
 
@@ -421,7 +420,7 @@ export function downgradeModule<T>(
       ($injector: ɵangular1.IInjectorService) => {
         setTempInjectorRef($injector);
         const result: ɵutil.LazyModuleRef = {
-          promise: wrappedBootstrapFn(angular1Providers).then((ref) => {
+          promise: bootstrapFn(angular1Providers).then((ref) => {
             injector = result.injector = new NgAdapterInjector(ref.injector);
             injector.get(ɵconstants.$INJECTOR);
 
