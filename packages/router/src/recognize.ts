@@ -495,10 +495,7 @@ export class Recognizer {
         runCanLoadGuards(injector, route, segments, this.urlSerializer, this.abortSignal),
       );
       if (shouldLoadResult) {
-        const cfg = await firstValueFrom(this.configLoader.loadChildren(injector, route));
-        if (!cfg) {
-          throw canLoadFails(route);
-        }
+        const cfg = await this.configLoader.loadChildren(injector, route);
         route._loadedRoutes = cfg.routes;
         route._loadedInjector = cfg.injector;
         return cfg;
