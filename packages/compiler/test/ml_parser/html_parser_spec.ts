@@ -52,6 +52,22 @@ describe('HtmlParser', () => {
         ]);
       });
 
+      it('should parse text nodes with HTML entities (5+ hex digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(humanizeDom(parser.parse('<div>&#x1F6C8;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u{1F6C8}', 1, [''], ['\u{1F6C8}', '&#x1F6C8;'], ['']],
+        ]);
+      });
+
+      it('should parse text nodes with decimal HTML entities (5+ digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source) as decimal 128712
+        expect(humanizeDom(parser.parse('<div>&#128712;</div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Text, '\u{1F6C8}', 1, [''], ['\u{1F6C8}', '&#128712;'], ['']],
+        ]);
+      });
+
       it('should normalize line endings within CDATA', () => {
         const parsed = parser.parse('<![CDATA[ line 1 \r\n line 2 ]]>', 'TestComp');
         expect(humanizeDom(parsed)).toEqual([
@@ -323,6 +339,22 @@ describe('HtmlParser', () => {
         expect(humanizeDom(parser.parse('<div foo="&amp;"></div>', 'TestComp'))).toEqual([
           [html.Element, 'div', 0],
           [html.Attribute, 'foo', '&', [''], ['&', '&amp;'], ['']],
+        ]);
+      });
+
+      it('should parse attributes containing encoded entities (5+ hex digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(humanizeDom(parser.parse('<div foo="&#x1F6C8;"></div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Attribute, 'foo', '\u{1F6C8}', [''], ['\u{1F6C8}', '&#x1F6C8;'], ['']],
+        ]);
+      });
+
+      it('should parse attributes containing encoded decimal entities (5+ digits)', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source) as decimal 128712
+        expect(humanizeDom(parser.parse('<div foo="&#128712;"></div>', 'TestComp'))).toEqual([
+          [html.Element, 'div', 0],
+          [html.Attribute, 'foo', '\u{1F6C8}', [''], ['\u{1F6C8}', '&#128712;'], ['']],
         ]);
       });
 
@@ -1628,6 +1660,25 @@ describe('HtmlParser', () => {
               '{{&amp (no semi-colon)}}' +
               '{{&#xyz; (invalid hex)}}' +
               '{{&#25BE; (invalid decimal)}}',
+          ],
+        ]);
+      });
+
+      it('should decode HTML entities with 5+ hex digits in interpolations', () => {
+        // Test with 🛈 (U+1F6C8 - Circled Information Source)
+        expect(
+          humanizeDomSourceSpans(parser.parse('{{&#x1F6C8;}}' + '{{&#128712;}}', 'TestComp')),
+        ).toEqual([
+          [
+            html.Text,
+            '{{\u{1F6C8}}}' + '{{\u{1F6C8}}}',
+            0,
+            [''],
+            ['{{', '&#x1F6C8;', '}}'],
+            [''],
+            ['{{', '&#128712;', '}}'],
+            [''],
+            '{{&#x1F6C8;}}' + '{{&#128712;}}',
           ],
         ]);
       });

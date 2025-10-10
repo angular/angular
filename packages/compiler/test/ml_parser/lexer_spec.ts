@@ -2136,6 +2136,26 @@ describe('HtmlLexer', () => {
       ]);
     });
 
+    it('should parse entities with more than 4 hex digits', () => {
+      // Test 5 hex digit entity: &#x1F6C8; (🛈 - Circled Information Source)
+      expect(tokenizeAndHumanizeParts('&#x1F6C8;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u{1F6C8}', '&#x1F6C8;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
+    it('should parse entities with more than 4 decimal digits', () => {
+      // Test decimal entity: &#128712; (🛈 - Circled Information Source)
+      expect(tokenizeAndHumanizeParts('&#128712;')).toEqual([
+        [TokenType.TEXT, ''],
+        [TokenType.ENCODED_ENTITY, '\u{1F6C8}', '&#128712;'],
+        [TokenType.TEXT, ''],
+        [TokenType.EOF],
+      ]);
+    });
+
     it('should store the locations', () => {
       expect(tokenizeAndHumanizeSourceSpans('a&amp;b')).toEqual([
         [TokenType.TEXT, 'a'],
