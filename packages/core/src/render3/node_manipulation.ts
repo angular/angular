@@ -407,6 +407,8 @@ function runLeaveAnimationsWithCallback(
     return callback(false);
   }
 
+  if (lView) allLeavingAnimations.add(lView);
+
   addToAnimationQueue(injector, () => {
     // it's possible that in the time between when the leave animation was
     // and the time it was executed, the data structure changed. So we need
