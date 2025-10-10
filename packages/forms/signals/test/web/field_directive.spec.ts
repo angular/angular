@@ -1364,3 +1364,254 @@ function act<T>(fn: () => T): T {
     TestBed.tick();
   }
 }
+
+// Tests for issue #63910 - FormUiControl via DI
+describe('FormUiControl via directive (issue #63910)', () => {
+  it('should support FormValueControl provided via directive on native input', () => {
+    @Directive({
+      selector: '[dateInput]',
+      standalone: true,
+    })
+    class DateInputDirective implements FormValueControl<Date> {
+      value = model.required<Date>();
+      disabled = input<boolean>(false);
+    }
+
+    @Component({
+      imports: [Control, DateInputDirective],
+      template: `<input dateInput [control]="f">`,
+    })
+    class TestCmp {
+      f = form(signal(new Date('2024-01-01')));
+      dateDirective = viewChild.required(DateInputDirective);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+    const directive = cmp.dateDirective();
+
+    // Initial state
+    expect(directive.value()).toEqual(new Date('2024-01-01'));
+
+    // Model -> View (directive)
+    act(() => cmp.f().value.set(new Date('2025-02-02')));
+    expect(directive.value()).toEqual(new Date('2025-02-02'));
+
+    // View (directive) -> Model
+    act(() => directive.value.set(new Date('2026-03-03')));
+    expect(cmp.f().value()).toEqual(new Date('2026-03-03'));
+  });
+
+  it('should support FormCheckboxControl provided via directive', () => {
+    @Directive({
+      selector: '[customCheckbox]',
+      standalone: true,
+    })
+    class CustomCheckboxDirective implements FormCheckboxControl {
+      checked = model.required<boolean>();
+      disabled = input<boolean>(false);
+    }
+
+    @Component({
+      imports: [Control, CustomCheckboxDirective],
+      template: `<input type="checkbox" customCheckbox [control]="f">`,
+    })
+    class TestCmp {
+      f = form(signal(false));
+      checkboxDirective = viewChild.required(CustomCheckboxDirective);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+    const directive = cmp.checkboxDirective();
+
+    // Initial state
+    expect(directive.checked()).toBe(false);
+
+    // Model -> View
+    act(() => cmp.f().value.set(true));
+    expect(directive.checked()).toBe(true);
+
+    // View -> Model
+    act(() => directive.checked.set(false));
+    expect(cmp.f().value()).toBe(false);
+  });
+
+  it('should synchronize all optional properties with directive', () => {
+    @Directive({
+      selector: '[customInput]',
+      standalone: true,
+    })
+    class CustomInputDirective implements FormValueControl<string> {
+      value = model.required<string>();
+      disabled = input<boolean>(false);
+      readonly = input<boolean>(false);
+      required = input<boolean>(false);
+      errors = input<readonly WithOptionalField<ValidationError>[]>([]);
+      disabledReasons = input<readonly WithOptionalField<DisabledReason>[]>([]);
+    }
+
+    @Component({
+      imports: [Control, CustomInputDirective],
+      template: `<input customInput [control]="f">`,
+    })
+    class TestCmp {
+      readonly disabledSignal = signal(false);
+      readonly readonlySignal = signal(false);
+      f = form(signal('test'), (p) => {
+        required(p);
+        disabled(p, this.disabledSignal);
+        readonly(p, this.readonlySignal);
+      });
+      customDirective = viewChild.required(CustomInputDirective);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+    const directive = cmp.customDirective();
+
+    // Check initial states
+    expect(directive.required()).toBe(true);
+    expect(directive.disabled()).toBe(false);
+    expect(directive.readonly()).toBe(false);
+
+    // Update disabled
+    act(() => cmp.disabledSignal.set(true));
+    expect(directive.disabled()).toBe(true);
+
+    // Update readonly
+    act(() => cmp.readonlySignal.set(true));
+    expect(directive.readonly()).toBe(true);
+  });
+
+  it('should support touched status synchronization with directive', () => {
+    @Directive({
+      selector: '[customInput]',
+      standalone: true,
+    })
+    class CustomInputDirective implements FormValueControl<string> {
+      value = model.required<string>();
+      touched = model<boolean>(false);
+
+      touchIt() {
+        this.touched.set(true);
+      }
+    }
+
+    @Component({
+      imports: [Control, CustomInputDirective],
+      template: `<input customInput [control]="f">`,
+    })
+    class TestCmp {
+      f = form(signal('test'));
+      customDirective = viewChild.required(CustomInputDirective);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+    const directive = cmp.customDirective();
+
+    // Initial state
+    expect(cmp.f().touched()).toBe(false);
+
+    // View -> Model
+    act(() => directive.touchIt());
+    expect(cmp.f().touched()).toBe(true);
+
+    // Model -> View
+    act(() => cmp.f().reset());
+    expect(directive.touched()).toBe(false);
+  });
+
+  it('should work with value transformation directive (real-world use case)', () => {
+    // This simulates a directive that transforms user input (string) to a typed value (number)
+    @Directive({
+      selector: '[numberInput]',
+      standalone: true,
+    })
+    class NumberInputDirective implements FormValueControl<number> {
+      value = model.required<number>();
+
+      private inputEl = inject(ElementRef<HTMLInputElement>);
+
+      constructor() {
+        // Listen to native input and transform string to number
+        this.inputEl.nativeElement.addEventListener('input', () => {
+          const numValue = parseFloat(this.inputEl.nativeElement.value);
+          if (!isNaN(numValue)) {
+            this.value.set(numValue);
+          }
+        });
+
+        // Update native input when model changes
+        effect(() => {
+          this.inputEl.nativeElement.value = this.value().toString();
+        });
+      }
+    }
+
+    @Component({
+      imports: [Control, NumberInputDirective],
+      template: `<input numberInput [control]="f">`,
+    })
+    class TestCmp {
+      f = form(signal(42));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+    const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+    // Initial state - directive should format the number
+    expect(input.value).toBe('42');
+
+    // Model -> View
+    act(() => cmp.f().value.set(100));
+    expect(input.value).toBe('100');
+
+    // View -> Model (user types)
+    act(() => {
+      input.value = '256';
+      input.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe(256);
+  });
+
+  it('should prefer component FormValueControl over directive when both present', () => {
+    @Directive({
+      selector: '[directiveControl]',
+      standalone: true,
+    })
+    class DirectiveControl implements FormValueControl<string> {
+      value = model.required<string>();
+    }
+
+    @Component({
+      selector: 'component-control',
+      template: `{{value()}}`,
+      standalone: true,
+    })
+    class ComponentControl implements FormValueControl<string> {
+      value = model.required<string>();
+    }
+
+    @Component({
+      imports: [Control, DirectiveControl, ComponentControl],
+      template: `<component-control directiveControl [control]="f" />`,
+    })
+    class TestCmp {
+      f = form(signal('test'));
+      componentControl = viewChild.required(ComponentControl);
+      directiveControl = viewChild.required(DirectiveControl);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fixture.componentInstance;
+
+    // Component should take precedence
+    expect(cmp.componentControl().value()).toBe('test');
+
+    act(() => cmp.f().value.set('updated'));
+    expect(cmp.componentControl().value()).toBe('updated');
+  });
+});
