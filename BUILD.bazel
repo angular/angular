@@ -73,15 +73,17 @@ alias(
     }),
 )
 
-# If set will replace dependency versions with snapshot repos for packages in this repo
+# When enabled, this flag substitutes dependency versions with snapshot repositories
+# for all packages in this repository. Note that this does not apply to peer
+# dependencies, as they must be installed directly.
 bool_flag(
-    name = "enable_snapshot_repo_deps",
+    name = "enable_language_server_snapshot_repo_deps",
     build_setting_default = False,
 )
 
 config_setting(
-    name = "package_json_use_snapshot_repo_deps",
+    name = "language_server_package_json_use_snapshot_repo_deps",
     flag_values = {
-        ":enable_snapshot_repo_deps": "true",
+        ":enable_language_server_snapshot_repo_deps": "true",
     },
 )

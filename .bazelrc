@@ -69,7 +69,9 @@ build:release --stamp
 # Snapshots should also be stamped with version control information.
 build:snapshot-build --workspace_status_command="pnpm --silent ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
-build:snapshot-build --//:enable_snapshot_repo_deps
+# @angular/language-server package depends directly on other Angular framework packages.
+# This flag ensures that the language server uses the snapshot-built framework packages from the repository.
+build:snapshot-build --//:enable_language_server_snapshot_repo_deps
 
 # Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
 # This is because Mozilla requires add-on source code to be uploaded and then they manually reproduce the build.

@@ -64,7 +64,7 @@ expand_template_rule(
     # We only have a single dependency now, which makes this safe.
     # In the case we add more we should consider adding a JQ filter.
     stamp_substitutions = select({
-        "//:package_json_use_snapshot_repo_deps": {
+        "//:language_server_package_json_use_snapshot_repo_deps": {
             "0.0.0-PLACEHOLDER": "{{STABLE_PROJECT_VERSION}}",
             "workspace:*": "github:angular/language-server-builds#{{BUILD_SCM_ABBREV_HASH}}",
         },
