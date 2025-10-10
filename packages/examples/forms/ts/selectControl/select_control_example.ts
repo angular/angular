@@ -7,10 +7,13 @@
  */
 
 // #docregion Component
+import {JsonPipe} from '@angular/common';
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [FormsModule, JsonPipe],
   template: `
     <form #f="ngForm">
       <select name="state" ngModel>
@@ -24,7 +27,6 @@ import {Component} from '@angular/core';
     <p>Form value: {{ f.value | json }}</p>
     <!-- example value: {state: {name: 'New York', abbrev: 'NY'} } -->
   `,
-  standalone: false,
 })
 export class SelectControlComp {
   states = [

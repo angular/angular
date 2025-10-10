@@ -8,9 +8,11 @@
 
 // #docregion Component
 import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [FormsModule],
   template: `
     <input [(ngModel)]="name" #ctrl="ngModel" required />
 
@@ -19,7 +21,6 @@ import {Component} from '@angular/core';
 
     <button (click)="setValue()">Set value</button>
   `,
-  standalone: false,
 })
 export class SimpleNgModelComp {
   name: string = '';
