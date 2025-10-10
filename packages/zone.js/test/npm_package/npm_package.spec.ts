@@ -137,8 +137,6 @@ describe('Zone.js npm_package', () => {
         'zone-bluebird.min.js',
         'zone-error.js',
         'zone-error.min.js',
-        'zone-legacy.js',
-        'zone-legacy.min.js',
         'zone-mix.js',
         'zone-mix.min.js',
         'zone-node.js',
