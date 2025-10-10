@@ -5,27 +5,20 @@ set -x -u -e -o pipefail
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
 
-# Find the most recent tag that is reachable from the current commit.
-# This is shallow clone of the repo, so we might need to fetch more commits to
-# find the tag.
-function getLatestTag {
-  local depth=`git log --oneline | wc -l`
-  local latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
+function getBuildVersion {
+  # Example of `STABLE_PROJECT_VERSION` for snapshots is: `21.0.0-next.7+sha-7134dfe`
+  local buildVersion=$(
+    pnpm --silent ng-dev release build-env-stamp --mode=snapshot |
+      grep STABLE_PROJECT_VERSION |
+      sed 's/STABLE_PROJECT_VERSION //'
+  )
 
-  while [ "$latestTag" == "NOT_FOUND" ]; do
-    # Avoid infinite loop.
-    if [ "$depth" -gt "1000" ]; then
-      echo "Error: Unable to find the latest tag." 1>&2
-      exit 1;
-    fi
+  if [[ -z "${buildVersion}" ]]; then
+    echo "Error: Unable to find the build version." 1>&2
+    exit 1;
+  fi
 
-    # Increase the clone depth and look for a tag.
-    depth=$((depth + 50))
-    git fetch --depth=$depth
-    latestTag=`git describe --tags --abbrev=0 || echo NOT_FOUND`
-  done
-
-  echo $latestTag;
+  echo $buildVersion;
 }
 
 function publishRepo {
@@ -138,10 +131,9 @@ function publishAllBuilds() {
   COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
   PACKAGES_DIST="$(pwd)/dist/packages-dist"
 
-  local shortSha=`git rev-parse --short HEAD`
-  local latestTag=`getLatestTag`
+  local buildVersion=`getBuildVersion`
 
-  publishPackages $GIT_SCHEME $PACKAGES_DIST $CUR_BRANCH "${latestTag}+${shortSha}"
+  publishPackages $GIT_SCHEME $PACKAGES_DIST $CUR_BRANCH $buildVersion
 }
 
 # See docs/DEVELOPER.md for help

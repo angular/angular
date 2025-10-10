@@ -184,13 +184,13 @@ First time, you need to create the GitHub repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [GitHub username]
+$ CREATE_REPOS=1 ./scripts/ci/publish-snapshot-build-artifacts.sh [GitHub username]
 ```
 
 For subsequent snapshots, just run:
 
 ``` shell
-$ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
+$ ./scripts/ci/publish-snapshot-build-artifacts.sh [GitHub username]
 ```
 
 The script will publish the build snapshot to a branch with the same name as your current branch,

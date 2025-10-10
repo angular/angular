@@ -157,7 +157,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: echo "https://${{secrets.SNAPSHOT_BUILDS_GITHUB_TOKEN}}:@github.com" > ${HOME}/.git_credentials
       - run: pnpm build
-      - run: ./scripts/ci/publish-build-artifacts.sh
+      - run: ./scripts/ci/publish-snapshot-build-artifacts.sh
 
   zone-js:
     runs-on:
