@@ -175,4 +175,3 @@ export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
 export {ɵassertType} from './type_checking';
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
 export {allLeavingAnimations as ɵallLeavingAnimations} from './animation/longest_animation';
-export {setZoneProvidersForNextBootstrap as ɵsetZoneProvidersForNextBootstrap} from './platform/platform_ref';

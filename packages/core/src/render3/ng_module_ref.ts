@@ -67,7 +67,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   constructor(
     private readonly ngModuleType: Type<T>,
     public _parent: Injector | null,
-    additionalProviders: StaticProvider[],
+    additionalProviders: Array<Provider | EnvironmentProviders>,
     runInjectorInitializers = true,
   ) {
     super();
@@ -137,7 +137,7 @@ export class NgModuleFactory<T> extends viewEngine_NgModuleFactory<T> {
 export function createNgModuleRefWithProviders<T>(
   moduleType: Type<T>,
   parentInjector: Injector | null,
-  additionalProviders: StaticProvider[],
+  additionalProviders: Array<Provider | EnvironmentProviders>,
 ): InternalNgModuleRef<T> {
   return new NgModuleRef(moduleType, parentInjector, additionalProviders, false);
 }
