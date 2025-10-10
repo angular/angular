@@ -145,6 +145,8 @@ export function ngswCommChannelFactory(
  * {@example service-worker/registration-options/module.ts region="registration-options"
  *     header="app.module.ts"}
  *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  * @publicApi
  */
 export abstract class SwRegistrationOptions {
@@ -228,6 +230,11 @@ export abstract class SwRegistrationOptions {
  *   ],
  * });
  * ```
+ *
+ * @see [Custom service worker script](ecosystem/service-workers/custom-service-worker-scripts)
+ *
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  */
 export function provideServiceWorker(
   script: string,
