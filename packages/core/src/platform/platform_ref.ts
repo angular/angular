@@ -10,7 +10,7 @@ import {compileNgModuleFactory} from '../application/application_ngmodule_factor
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {validAppIdInitializer} from '../application/application_tokens';
 import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
-import {Injectable, Injector, StaticProvider} from '../di';
+import {EnvironmentProviders, Injectable, Injector, Provider, StaticProvider} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -26,13 +26,6 @@ import {
 import {getNgZone} from '../zone/ng_zone';
 
 const ZONELESS_BY_DEFAULT = true;
-
-// Holds the set of providers to be used for the *next* application to be bootstrapped.
-// Used only for providing the zone related providers by default with `downgradeModule`.
-let _additionalApplicationProviders: StaticProvider[] | undefined = undefined;
-export function setZoneProvidersForNextBootstrap(): void {
-  _additionalApplicationProviders = internalProvideZoneChangeDetection({});
-}
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -60,7 +53,7 @@ export class PlatformRef {
    */
   bootstrapModuleFactory<M>(
     moduleFactory: NgModuleFactory<M>,
-    options?: BootstrapOptions,
+    options?: BootstrapOptions & {applicationProviders?: Array<Provider | EnvironmentProviders>},
   ): Promise<NgModuleRef<M>> {
     const defaultZoneCdProviders = [];
     if (!ZONELESS_BY_DEFAULT) {
@@ -76,11 +69,10 @@ export class PlatformRef {
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
       ...defaultZoneCdProviders,
-      ...(_additionalApplicationProviders ?? []),
+      ...(options?.applicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
       ...(ngDevMode ? [validAppIdInitializer] : []),
     ];
-    _additionalApplicationProviders = undefined;
     const moduleRef = createNgModuleRefWithProviders(
       moduleFactory.moduleType,
       this.injector,
@@ -114,8 +106,12 @@ export class PlatformRef {
   bootstrapModule<M>(
     moduleType: Type<M>,
     compilerOptions:
-      | (CompilerOptions & BootstrapOptions)
-      | Array<CompilerOptions & BootstrapOptions> = [],
+      | (CompilerOptions &
+          BootstrapOptions & {applicationProviders?: Array<Provider | EnvironmentProviders>})
+      | Array<
+          CompilerOptions &
+            BootstrapOptions & {applicationProviders?: Array<Provider | EnvironmentProviders>}
+        > = [],
   ): Promise<NgModuleRef<M>> {
     const options = optionsReducer({}, compilerOptions);
     setModuleBootstrapImpl();
