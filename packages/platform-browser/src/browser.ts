@@ -37,6 +37,7 @@ import {
   ɵTESTABILITY_GETTER as TESTABILITY_GETTER,
   inject,
   ɵresolveComponentResources as resolveComponentResources,
+  EnvironmentProviders,
 } from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
@@ -216,8 +217,13 @@ const INTERNAL_BROWSER_PLATFORM_PROVIDERS: StaticProvider[] = [
  *
  * @publicApi
  */
-export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
-  createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
+export const platformBrowser: (
+  extraProviders?: Array<StaticProvider | EnvironmentProviders>,
+) => PlatformRef = createPlatformFactory(
+  platformCore,
+  'browser',
+  INTERNAL_BROWSER_PLATFORM_PROVIDERS,
+);
 
 /**
  * Internal marker to signal whether providers from the `BrowserModule` are already present in DI.

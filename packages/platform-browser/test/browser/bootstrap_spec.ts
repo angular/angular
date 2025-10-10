@@ -909,7 +909,7 @@ describe('providePlatformInitializer', () => {
   it('should call the provided function when platform is initialized', () => {
     let initialized = false;
 
-    createPlatformInjector([providePlatformInitializer(() => (initialized = true))]);
+    createOrReusePlatformInjector([providePlatformInitializer(() => (initialized = true))]);
 
     expect(initialized).toBe(true);
   });
@@ -918,7 +918,7 @@ describe('providePlatformInitializer', () => {
     const TEST_TOKEN = new InjectionToken<string>('TEST_TOKEN');
     let injectedValue!: string;
 
-    createPlatformInjector([
+    createOrReusePlatformInjector([
       {provide: TEST_TOKEN, useValue: 'test'},
       providePlatformInitializer(() => {
         injectedValue = _inject(TEST_TOKEN);
@@ -927,12 +927,6 @@ describe('providePlatformInitializer', () => {
 
     expect(injectedValue).toBe('test');
   });
-
-  function createPlatformInjector(providers: Array<EnvironmentProviders | Provider>) {
-    /* TODO: should we change `createOrReusePlatformInjector` type to allow `EnvironmentProviders`?
-     */
-    return createOrReusePlatformInjector(providers as any);
-  }
 });
 
 /**

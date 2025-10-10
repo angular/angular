@@ -10,7 +10,7 @@ import {compileNgModuleFactory} from '../application/application_ngmodule_factor
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {validAppIdInitializer} from '../application/application_tokens';
 import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
-import {Injectable, Injector, StaticProvider} from '../di';
+import {EnvironmentInjector, Injectable, StaticProvider} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -50,7 +50,7 @@ export class PlatformRef {
   private _destroyed: boolean = false;
 
   /** @internal */
-  constructor(private _injector: Injector) {}
+  constructor(private _injector: EnvironmentInjector) {}
 
   /**
    * Creates an instance of an `@NgModule` for the given platform.
@@ -132,10 +132,10 @@ export class PlatformRef {
   }
 
   /**
-   * Retrieves the platform {@link Injector}, which is the parent injector for
+   * Retrieves the platform {@link EnvironmentInjector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
-  get injector(): Injector {
+  get injector(): EnvironmentInjector {
     return this._injector;
   }
 

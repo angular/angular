@@ -28,6 +28,7 @@ import {
   ɵTESTABILITY as TESTABILITY,
   inject,
   StaticProvider,
+  EnvironmentProviders,
 } from '@angular/core';
 import {
   BrowserModule,
@@ -121,7 +122,9 @@ function _document() {
  *
  * @publicApi
  */
-export function platformServer(extraProviders?: StaticProvider[] | undefined): PlatformRef {
+export function platformServer(
+  extraProviders?: Array<StaticProvider | EnvironmentProviders>,
+): PlatformRef {
   const noServerModeSet = typeof ngServerMode === 'undefined';
   if (noServerModeSet) {
     globalThis['ngServerMode'] = true;

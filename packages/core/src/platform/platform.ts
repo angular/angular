@@ -12,6 +12,7 @@ import {
 } from '../application/application_ref';
 import {PLATFORM_INITIALIZER} from '../application/application_tokens';
 import {
+  EnvironmentInjector,
   EnvironmentProviders,
   InjectionToken,
   Injector,
@@ -24,8 +25,9 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 
 import {PlatformRef} from './platform_ref';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
+import {EnvironmentNgModuleRefAdapter} from '../render3/ng_module_ref';
 
-let _platformInjector: Injector | null = null;
+let _platformInjector: EnvironmentInjector | Injector | null = null;
 
 /**
  * Creates a platform.
@@ -33,7 +35,22 @@ let _platformInjector: Injector | null = null;
  *
  * @publicApi
  */
-export function createPlatform(injector: Injector): PlatformRef {
+export function createPlatform(injector: EnvironmentInjector): PlatformRef;
+/**
+ * Creates a platform.
+ * Platforms must be created on launch using this function.
+ *
+ * @publicApi
+ * @deprecated todo
+ */
+export function createPlatform(injector: Injector): PlatformRef;
+/**
+ * Creates a platform.
+ * Platforms must be created on launch using this function.
+ *
+ * @publicApi
+ */
+export function createPlatform(injector: EnvironmentInjector | Injector): PlatformRef {
   if (getPlatform()) {
     throw new RuntimeError(
       RuntimeErrorCode.MULTIPLE_PLATFORMS,
@@ -65,16 +82,18 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @publicApi
  */
 export function createPlatformFactory(
-  parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
+  parentPlatformFactory:
+    | ((extraProviders?: Array<StaticProvider | EnvironmentProviders>) => PlatformRef)
+    | null,
   name: string,
-  providers: StaticProvider[] = [],
-): (extraProviders?: StaticProvider[]) => PlatformRef {
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+): (extraProviders?: Array<StaticProvider | EnvironmentProviders>) => PlatformRef {
   const desc = `Platform: ${name}`;
   const marker = new InjectionToken(desc);
-  return (extraProviders: StaticProvider[] = []) => {
+  return (extraProviders: Array<StaticProvider | EnvironmentProviders> = []) => {
     let platform = getPlatform();
     if (!platform) {
-      const platformProviders: StaticProvider[] = [
+      const platformProviders: Array<StaticProvider | EnvironmentProviders> = [
         ...providers,
         ...extraProviders,
         {provide: marker, useValue: true},
@@ -93,15 +112,21 @@ export function createPlatformFactory(
  * Helper function to create an instance of a platform injector (that maintains the 'platform'
  * scope).
  */
-function createPlatformInjector(providers: StaticProvider[] = [], name?: string): Injector {
-  return Injector.create({
-    name,
+function createPlatformInjector(
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+  debugName: string = '',
+): EnvironmentInjector {
+  const adapter = new EnvironmentNgModuleRefAdapter({
     providers: [
       {provide: INJECTOR_SCOPE, useValue: 'platform'},
       {provide: PLATFORM_DESTROY_LISTENERS, useValue: new Set([() => (_platformInjector = null)])},
       ...providers,
     ],
+    parent: null,
+    debugName,
+    runEnvironmentInitializers: true,
   });
+  return adapter.injector;
 }
 
 /**
@@ -159,10 +184,12 @@ export function destroyPlatform(): void {
  * but avoid referencing `PlatformRef` class.
  * This function is needed for bootstrapping a Standalone Component.
  */
-export function createOrReusePlatformInjector(providers: StaticProvider[] = []): Injector {
+export function createOrReusePlatformInjector(
+  providers: Array<StaticProvider | EnvironmentProviders> = [],
+): EnvironmentInjector {
   // If a platform injector already exists, it means that the platform
   // is already bootstrapped and no additional actions are required.
-  if (_platformInjector) return _platformInjector;
+  if (_platformInjector) return _platformInjector as EnvironmentInjector;
 
   publishDefaultGlobalUtils();
 
