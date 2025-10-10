@@ -66,7 +66,8 @@ expand_template_rule(
     stamp_substitutions = select({
         "//:language_server_package_json_use_snapshot_repo_deps": {
             "0.0.0-PLACEHOLDER": "{{STABLE_PROJECT_VERSION}}",
-            "workspace:*": "github:angular/language-service-builds#{{BUILD_SCM_ABBREV_HASH}}",
+            # Example of `STABLE_PROJECT_VERSION` for snapshots is: `21.0.0-next.7+sha-7134dfe`
+            "workspace:*": "github:angular/language-service-builds#{{STABLE_PROJECT_VERSION}}",
         },
         "//conditions:default": {
             "0.0.0-PLACEHOLDER": "{{STABLE_PROJECT_VERSION}}",
