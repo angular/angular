@@ -1503,6 +1503,12 @@ const REFERENCE_SUB_NAVIGATION_DATA: NavigationItem[] = [
         contentPath: 'reference/migrations/ngstyle-to-style',
         status: 'new',
       },
+      {
+        label: 'CommonModule to Standalone',
+        path: 'reference/migrations/common-to-standalone',
+        contentPath: 'reference/migrations/common-to-standalone',
+        status: 'new',
+      },
     ],
   },
 ];
