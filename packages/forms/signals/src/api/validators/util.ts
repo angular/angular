@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, OneOrMany, PathKind, type FieldContext} from '../types';
-import {ValidationError, WithoutField} from '../validation_errors';
+import {LogicFn, OneOrMany, PathKind, type FieldContext, ValidationResult} from '../types';
+import {customError, ValidationError, WithoutField} from '../validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -59,4 +59,32 @@ export function isEmpty(value: unknown): boolean {
     return isNaN(value);
   }
   return value === '' || value === false || value == null;
+}
+
+function isPlainError(value: ValidationError) {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
+  );
+}
+
+function makeValidationErrorCustomIfNeeded(error: ValidationError) {
+  if (isPlainError(error)) {
+    return customError(error);
+  }
+  return error;
+}
+
+export function makeValidationResultCustomIfNeeded(result: ValidationResult): ValidationResult {
+  if (result === null || result === undefined) {
+    return result;
+  }
+
+  if (Array.isArray(result)) {
+    return result.map(makeValidationErrorCustomIfNeeded);
+  }
+
+  // TOOD: why doesn't the type narrowing work here?
+  return makeValidationErrorCustomIfNeeded(result as ValidationError);
 }

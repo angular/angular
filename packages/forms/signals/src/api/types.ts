@@ -9,7 +9,7 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Control} from './control_directive';
 import {AggregateProperty, Property} from './property';
-import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
+import type {ValidationError, WithOptionalField} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -112,7 +112,7 @@ export type ValidationSuccess = null | undefined | void;
  */
 export type FieldValidationResult<E extends ValidationError = ValidationError> =
   | ValidationSuccess
-  | OneOrMany<WithoutField<E>>;
+  | OneOrMany<E>;
 
 /**
  * The result of running a tree validation function.
