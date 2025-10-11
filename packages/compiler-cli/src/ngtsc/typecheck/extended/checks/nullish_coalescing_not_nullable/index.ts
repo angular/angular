@@ -12,7 +12,12 @@ import ts from 'typescript';
 import {NgCompilerOptions} from '../../../../core/api';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * Ensures the left side of a nullish coalescing operation is nullable.
@@ -58,7 +63,10 @@ class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCo
     }
     const diagnostic = ctx.makeTemplateDiagnostic(
       templateMapping.span,
-      `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`,
+      formatExtendedError(
+        ErrorCode.NULLISH_COALESCING_NOT_NULLABLE,
+        `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`,
+      ),
     );
     return [diagnostic];
   }
