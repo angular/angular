@@ -93,7 +93,8 @@ function assertExpressionInvoked(
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
     if (symbol.tsType.getCallSignatures()?.length > 0) {
       const fullExpressionText = generateStringFromExpression(expression, expressionText);
-      const errorString = `Function in event binding should be invoked: ${fullExpressionText}()`;
+      const errorString = `Function in event binding should be invoked: ${fullExpressionText}().
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING}`;
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
     }
   }

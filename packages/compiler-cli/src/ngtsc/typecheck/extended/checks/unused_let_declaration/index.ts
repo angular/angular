@@ -40,7 +40,8 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSE
         diagnostics.push(
           ctx.makeTemplateDiagnostic(
             decl.sourceSpan,
-            `@let ${decl.name} is declared but its value is never read.`,
+            `@let ${decl.name} is declared but its value is never read.
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.UNUSED_LET_DECLARATION}`,
           ),
         );
       }

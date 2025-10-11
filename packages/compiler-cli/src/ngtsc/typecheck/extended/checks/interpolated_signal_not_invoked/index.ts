@@ -143,7 +143,8 @@ function buildDiagnosticForSignal(
     const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
       symbol.tcbLocation,
     )!;
-    const errorString = `${node.name} is a function and should be invoked: ${node.name}()`;
+    const errorString = `${node.name} is a function and should be invoked: ${node.name}().
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED}`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
   }
@@ -166,7 +167,8 @@ function buildDiagnosticForSignal(
 
     const errorString = `${
       (node.receiver as PropertyRead).name
-    } is a function and should be invoked: ${(node.receiver as PropertyRead).name}()`;
+    } is a function and should be invoked: ${(node.receiver as PropertyRead).name}().
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED}`;
     const diagnostic = ctx.makeTemplateDiagnostic(templateMapping.span, errorString);
     return [diagnostic];
   }

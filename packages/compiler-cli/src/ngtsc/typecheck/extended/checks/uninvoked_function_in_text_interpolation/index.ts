@@ -41,7 +41,8 @@ function assertExpressionInvoked(
 
   if (symbol !== null && symbol.kind === SymbolKind.Expression) {
     if (symbol.tsType.getCallSignatures()?.length > 0) {
-      const errorString = `Function in text interpolation should be invoked: ${expression.name}()`;
+      const errorString = `Function in text interpolation should be invoked: ${expression.name}().
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.UNINVOKED_FUNCTION_IN_TEXT_INTERPOLATION}`;
       const templateMapping = ctx.templateTypeChecker.getSourceMappingAtTcbLocation(
         symbol.tcbLocation,
       )!;

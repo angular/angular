@@ -41,7 +41,8 @@ class MissingNgForOfLetCheck extends TemplateCheckWithVisitor<ErrorCode.MISSING_
     if (node.variables.length > 0) {
       return [];
     }
-    const errorString = 'Your ngFor is missing a value. Did you forget to add the `let` keyword?';
+    const errorString = `Your ngFor is missing a value. Did you forget to add the \`let\` keyword?
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.MISSING_NGFOROF_LET}`;
     const diagnostic = ctx.makeTemplateDiagnostic(attr.sourceSpan, errorString);
     return [diagnostic];
   }

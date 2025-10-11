@@ -61,7 +61,8 @@ class UninvokedTrackFunctionCheck extends TemplateCheckWithVisitor<ErrorCode.UNI
         node.trackBy.ast,
         node.trackBy.source || '',
       );
-      const errorString = `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)`;
+      const errorString = `The track function in the @for block should be invoked: ${fullExpressionText}(/* arguments */)\n
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.UNINVOKED_TRACK_FUNCTION}`;
       return [ctx.makeTemplateDiagnostic(node.sourceSpan, errorString)];
     }
 

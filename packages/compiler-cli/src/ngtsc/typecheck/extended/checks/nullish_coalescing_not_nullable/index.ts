@@ -59,7 +59,8 @@ class NullishCoalescingNotNullableCheck extends TemplateCheckWithVisitor<ErrorCo
     }
     const diagnostic = ctx.makeTemplateDiagnostic(
       templateMapping.span,
-      `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.`,
+      `The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed.\n` +
+        `        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.NULLISH_COALESCING_NOT_NULLABLE}`,
     );
     return [diagnostic];
   }

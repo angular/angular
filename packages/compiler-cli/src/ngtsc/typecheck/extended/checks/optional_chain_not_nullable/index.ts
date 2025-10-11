@@ -86,7 +86,8 @@ class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.O
         : `the '?.' operator can be safely removed`;
     const diagnostic = ctx.makeTemplateDiagnostic(
       templateMapping.span,
-      `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${advice}.`,
+      `The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore ${advice}.\n` +
+        `        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE}`,
     );
     return [diagnostic];
   }

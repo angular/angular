@@ -40,7 +40,8 @@ class SuffixNotSupportedCheck extends TemplateCheckWithVisitor<ErrorCode.SUFFIX_
       node.keySpan,
       `The ${STYLE_SUFFIXES.map((suffix) => `'.${suffix}'`).join(
         ', ',
-      )} suffixes are only supported on style bindings.`,
+      )} suffixes are only supported on style bindings.\n` +
+        `        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.SUFFIX_NOT_SUPPORTED}`,
     );
     return [diagnostic];
   }
