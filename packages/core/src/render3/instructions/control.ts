@@ -49,18 +49,25 @@ export function ɵɵcontrolCreate(): void {
   if (customControl) {
     const [componentIndex, modelName] = customControl;
     listenToCustomControl(lView, tNode, control, componentIndex, modelName);
-  } else if (isNativeControl(lView, tNode)) {
-    listenToNativeControl(lView, tNode, control);
   } else {
-    // For example, user wrote <div [control]="f">.
-    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860276
-    const tagName = tNode.value;
-    throw new RuntimeError(
-      RuntimeErrorCode.INVALID_CONTROL_HOST,
-      `'<${tagName}>' is an invalid control host. The host must be a native form control (such ` +
-        `as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
-        `'value' or 'checked' model.`,
-    );
+    // Check if a directive provides FormUiControl via DI (addresses #63910)
+    const customControlDirective = getCustomControlDirective(tNode, lView);
+    if (customControlDirective) {
+      const [directiveIndex, modelName] = customControlDirective;
+      listenToCustomControl(lView, tNode, control, directiveIndex, modelName);
+    } else if (isNativeControl(lView, tNode)) {
+      listenToNativeControl(lView, tNode, control);
+    } else {
+      // For example, user wrote <div [control]="f">.
+      // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860276
+      const tagName = tNode.value;
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_CONTROL_HOST,
+        `'<${tagName}>' is an invalid control host. The host must be a native form control (such ` +
+          `as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
+          `'value' or 'checked' model.`,
+      );
+    }
   }
 
   control.register();
@@ -100,7 +107,14 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     const [componentIndex, modelName] = customControl;
     updateCustomControl(lView, componentIndex, modelName, control);
   } else {
-    updateNativeControl(tNode, lView, control);
+    // Check if a directive provides FormUiControl via DI (addresses #63910)
+    const customControlDirective = getCustomControlDirective(tNode, lView);
+    if (customControlDirective) {
+      const [directiveIndex, modelName] = customControlDirective;
+      updateCustomControl(lView, directiveIndex, modelName, control);
+    } else {
+      updateNativeControl(tNode, lView, control);
+    }
   }
 }
 
@@ -173,6 +187,42 @@ function getCustomControlComponent(tNode: TNode): [number, ControlModelName] | u
   }
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861022
   // * should we check that any additional field state inputs are signal based?
+  return;
+}
+
+/**
+ * Returns information about a directive on the specified node that provides a FormUiControl via DI.
+ *
+ * This allows directives (not just components) to provide custom form control implementations by
+ * injecting FORM_UI_CONTROL token. This addresses issue #63910.
+ *
+ * @param tNode The `TNode` of the element to check.
+ * @param lView The `LView` that contains the element.
+ * @returns an array containing the directive index and model input name if a directive provides
+ *  FormUiControl, or undefined.
+ */
+function getCustomControlDirective(tNode: TNode, lView: LView): [number, ControlModelName] | undefined {
+  const tView = getTView();
+  const directiveEnd = tNode.directiveEnd;
+
+  // Search through all directives on this node
+  for (let i = tNode.directiveStart; i < directiveEnd; i++) {
+    const directiveDef = tView.data[i] as ComponentDef<unknown>;
+
+    // Skip if it's the component itself (already checked in getCustomControlComponent)
+    if (isComponentHost(tNode) && i === tNode.directiveStart + tNode.componentOffset) {
+      continue;
+    }
+
+    // Check if this directive has model inputs for form control
+    if (hasModelInput(directiveDef, 'value')) {
+      return [i, 'value'];
+    }
+    if (hasModelInput(directiveDef, 'checked')) {
+      return [i, 'checked'];
+    }
+  }
+
   return;
 }
 
