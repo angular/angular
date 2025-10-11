@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {computed, ResourceRef, Signal} from '@angular/core';
-import {FieldNode} from '../field/node';
-import {addDefaultField} from '../field/validation';
-import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent} from '../schema/schema';
-import {property} from './logic';
-import {FieldContext, FieldPath, PathKind, TreeValidationResult} from './types';
+import { httpResource, HttpResourceOptions, HttpResourceRequest } from '@angular/common/http';
+import { computed, ResourceRef, Signal } from '@angular/core';
+import { FieldNode } from '../field/node';
+import { addDefaultField } from '../field/validation';
+import { FieldPathNode } from '../schema/path_node';
+import { assertPathIsCurrent } from '../schema/schema';
+import { property } from './logic';
+import { FieldContext, FieldPath, PathKind, TreeValidationResult } from './types';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -73,6 +73,11 @@ export interface AsyncValidatorOptions<
   readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
 
   /**
+   * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
+   * Receives the error and the field context, returns a list of validation errors.
+   */
+  readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+  /**
    * A function that takes the resource result, and the current field context and maps it to a list
    * of validation errors.
    *
@@ -83,7 +88,7 @@ export interface AsyncValidatorOptions<
    *   A targeted error will show up as an error on its target field rather than the field being validated.
    *   If a field is not given, the error is assumed to apply to the field being validated.
    */
-  readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
+  readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
 }
 
 /**
@@ -120,8 +125,13 @@ export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKin
    *   A targeted error will show up as an error on its target field rather than the field being validated.
    *   If a field is not given, the error is assumed to apply to the field being validated.
    */
-  readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
+  readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
 
+  /**
+   * A function to handle errors thrown by httpResource (HTTP errors, network errors, etc.).
+   * Receives the error and the field context, returns a list of validation errors.
+   */
+  readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
   /**
    * The options to use when creating the httpResource.
    */
@@ -163,6 +173,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
     const res = ctx.state.property(RESOURCE)!;
+    let errors;
     switch (res.status()) {
       case 'idle':
         return undefined;
@@ -174,11 +185,11 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
         if (!res.hasValue()) {
           return undefined;
         }
-        const errors = opts.errors(res.value()!, ctx as FieldContext<TValue, TPathKind>);
+        errors = opts.onSuccess(res.value()!, ctx as FieldContext<TValue, TPathKind>);
         return addDefaultField(errors, ctx.field);
       case 'error':
-        // TODO: Design error handling for async validation. For now, just throw the error.
-        throw res.error();
+        errors = opts.onError(res.error(), ctx as FieldContext<TValue, TPathKind>);
+        return addDefaultField(errors, ctx.field);
     }
   });
 }
@@ -203,6 +214,7 @@ export function validateHttp<TValue, TResult = unknown, TPathKind extends PathKi
   validateAsync(path, {
     params: opts.request,
     factory: (request: Signal<any>) => httpResource(request, opts.options),
-    errors: opts.errors,
+    onSuccess: opts.onSuccess,
+    onError: opts.onError,
   });
 }

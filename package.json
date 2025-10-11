@@ -1,16 +1,16 @@
 {
   "name": "angular-srcs",
-  "version": "21.0.0-next.7",
+  "version": "21.0.0-next.6",
   "private": true,
   "description": "Angular - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "pnpm@10.18.0",
   "engines": {
     "npm": "Please use pnpm instead of NPM to install dependencies",
     "yarn": "Please use pnpm instead of Yarn to install dependencies",
-    "pnpm": "10.18.1"
+    "pnpm": "10.18.0"
   },
   "repository": {
     "type": "git",
@@ -54,9 +54,9 @@
     "@angular-devkit/schematics": "21.0.0-next.7",
     "@angular/animations": "workspace:*",
     "@angular/benchpress": "workspace: *",
-    "@angular/build": "21.0.0-next.7",
-    "@angular/cdk": "21.0.0-next.8",
-    "@angular/cli": "21.0.0-next.7",
+    "@angular/build": "21.0.0-next.5",
+    "@angular/cdk": "21.0.0-next.6",
+    "@angular/cli": "21.0.0-next.5",
     "@angular/common": "workspace:*",
     "@angular/compiler": "workspace:*",
     "@angular/compiler-cli": "workspace:*",
@@ -65,7 +65,7 @@
     "@angular/forms": "workspace:*",
     "@angular/language-service": "workspace: *",
     "@angular/localize": "workspace: *",
-    "@angular/material": "21.0.0-next.8",
+    "@angular/material": "21.0.0-next.6",
     "@angular/platform-browser": "workspace:*",
     "@angular/platform-browser-dynamic": "workspace:*",
     "@angular/platform-server": "workspace:*",

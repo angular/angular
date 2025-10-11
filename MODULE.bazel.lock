@@ -54,6 +54,8 @@
     "https://bcr.bazel.build/modules/bazel_features/1.9.0/MODULE.bazel": "885151d58d90d8d9c811eb75e3288c11f850e1d6b481a8c9f766adee4712358b",
     "https://bcr.bazel.build/modules/bazel_lib/3.0.0-beta.1/MODULE.bazel": "407729e232f611c3270005b016b437005daa7b1505826798ea584169a476e878",
     "https://bcr.bazel.build/modules/bazel_lib/3.0.0-beta.1/source.json": "72bfbe19a3936675719157798de64631e9ac54c2b41f13b544b821d094f4840a",
+    "https://bcr.bazel.build/modules/bazel_lib/3.0.0-beta.1/MODULE.bazel": "407729e232f611c3270005b016b437005daa7b1505826798ea584169a476e878",
+    "https://bcr.bazel.build/modules/bazel_lib/3.0.0-beta.1/source.json": "72bfbe19a3936675719157798de64631e9ac54c2b41f13b544b821d094f4840a",
     "https://bcr.bazel.build/modules/bazel_skylib/1.0.3/MODULE.bazel": "bcb0fd896384802d1ad283b4e4eb4d718eebd8cb820b0a2c3a347fb971afd9d8",
     "https://bcr.bazel.build/modules/bazel_skylib/1.1.1/MODULE.bazel": "1add3e7d93ff2e6998f9e118022c84d163917d912f5afafb3058e3d2f1545b5e",
     "https://bcr.bazel.build/modules/bazel_skylib/1.2.0/MODULE.bazel": "44fe84260e454ed94ad326352a698422dbe372b21a1ac9f3eab76eb531223686",
@@ -531,7 +533,7 @@
     "@@aspect_rules_ts~//ts:extensions.bzl%ext": {
       "general": {
         "bzlTransitiveDigest": "9IJp6IlB/FMHFBJe4MX/DQM4zi3oArC8yqYE/+NyPwk=",
-        "usagesDigest": "vXjWlVY215W1kYADgJxzHrW6dJgUiQbgkwqYp5ENPLc=",
+        "usagesDigest": "vNQ5vb/mICtWqce2XDJFcfdShbb+LDEFZllR5Wuep0A=",
         "recordedFileInputs": {
           "@@rules_browsers~//package.json": "84dc1ba9b1c667a25894e97218bd8f247d54f24bb694efb397a881be3c06a4c5"
         },
@@ -1112,7 +1114,7 @@
     "@@rules_nodejs~//nodejs:extensions.bzl%node": {
       "general": {
         "bzlTransitiveDigest": "FmfMiNXAxRoLWw3NloQbssosE1egrSvzirbQnso7j7E=",
-        "usagesDigest": "gj5TARtK0gTGB1qjjp2jJe1Msc70mpF80SrnuX6OmHI=",
+        "usagesDigest": "xHkFztDWYtKJ37XnwOK4sKovvRwpnGtzZns6k+dDdyI=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},

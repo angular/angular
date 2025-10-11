@@ -258,6 +258,9 @@ export class Identifiers {
   static control: o.ExternalReference = {name: 'ɵɵcontrol', moduleName: CORE};
   static controlCreate: o.ExternalReference = {name: 'ɵɵcontrolCreate', moduleName: CORE};
 
+  static control: o.ExternalReference = {name: 'ɵɵcontrol', moduleName: CORE};
+  static controlCreate: o.ExternalReference = {name: 'ɵɵcontrolCreate', moduleName: CORE};
+
   static animationEnterListener: o.ExternalReference = {
     name: 'ɵɵanimateEnterListener',
     moduleName: CORE,

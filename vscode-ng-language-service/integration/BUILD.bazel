@@ -1,20 +1,22 @@
-load("//tools:defaults.bzl", "ts_project")
+load("@aspect_rules_ts//ts:defs.bzl", "ts_config", "ts_project")
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    visibility = ["//vscode-ng-language-service/integration:__subpackages__"],
+    deps = [
+        "//vscode-ng-language-service:tsconfig",
+    ],
+)
 
 ts_project(
     name = "integration",
-    testonly = True,
     srcs = [
         "test_constants.ts",
     ],
-    data = [
-        "//vscode-ng-language-service/integration/pre_standalone_project",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/pre_standalone_project:node_modules/@angular/core",
-        "//vscode-ng-language-service/integration/project",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/common",
-        "//vscode-ng-language-service/integration/project:node_modules/@angular/core",
-        "//vscode-ng-language-service/server:index",
-    ],
+    declaration = True,
+    source_map = True,
+    tsconfig = "//vscode-ng-language-service:tsconfig",
     visibility = ["//vscode-ng-language-service/integration:__subpackages__"],
     deps = [
         "//vscode-ng-language-service:node_modules/@types/node",

@@ -69,11 +69,11 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
   });
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = state.property(VALIDATOR_MEMO)!();
+    const result:any = state.property(VALIDATOR_MEMO)!();
     if (ɵisPromise(result)) {
       return [];
     }
-    return result.issues?.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
+    return result.issues?.map((issue:any) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
   });
   validateAsync(path, {
     params: ({state}) => {
@@ -87,8 +87,11 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
         loader: async ({params}) => (await params)?.issues ?? [],
       });
     },
-    errors: (issues, {fieldOf}) => {
-      return issues.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue));
+    onError:  (issues:any, {fieldOf}) => {
+      return issues.map((issue:any) => standardIssueToFormTreeError(fieldOf(path), issue));
+    },
+    onSuccess: (issues, {fieldOf}) => {
+      return issues.map((issue:any) => standardIssueToFormTreeError(fieldOf(path), issue));
     },
   });
 }

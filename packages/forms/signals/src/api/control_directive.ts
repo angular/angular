@@ -29,6 +29,7 @@ export const CONTROL = new InjectionToken<Control<unknown>>(
 
 /**
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
+ * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
  * 3. TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274. A

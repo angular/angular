@@ -246,8 +246,8 @@
   "main": "../dist/bin/vscode-ng-language-service/client/src/extension.js",
   "scripts": {
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
-    "watch": "ibazel build //vscode-ng-language-service/client/src //vscode-ng-language-service/server/src",
-    "package": "bazel build //vscode-ng-language-service:development_package --config=release",
+    "watch": "ibazel build //vscode-ng-language-service:index.js //vscode-ng-language-service/server:index.js",
+    "package": "pnpm bazel build //vscode-ng-language-service:npm --config=release",
     "test": "bazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
     "test:watch": "ibazel test --test_tag_filters=unit_test //vscode-ng-language-service/...",
     "test:lsp": "bazel test --test_output=streamed //vscode-ng-language-service/integration/lsp:test",
@@ -258,7 +258,7 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "workspace:*"
+    "@angular/language-service": "21.0.0-next.5"
   },
   "devDependencies": {
     "@types/jasmine": "~5.1.9",
@@ -267,8 +267,8 @@
     "@types/vscode": "^1.74.3",
     "@vscode/test-electron": "~2.5.2",
     "@vscode/vsce": "~3.6.1",
-    "jasmine": "~5.12.0",
-    "jasmine-core": "~5.12.0",
+    "jasmine": "~5.11.0",
+    "jasmine-core": "~5.11.0",
     "jasmine-reporters": "~2.5.2",
     "source-map-support": "^0.5.21",
     "typescript": "5.9.3",
