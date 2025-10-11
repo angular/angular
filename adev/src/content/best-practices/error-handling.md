@@ -16,12 +16,32 @@ Angular does _not_ catch errors inside of APIs that are called directly by your 
 
 Angular catches _asynchronous_ errors from user promises or observables only when:
 
-* There is an explicit contract for Angular to wait for and use the result of the asynchronous operation, and
-* When errors are not presented in the return value or state.
+- There is an explicit contract for Angular to wait for and use the result of the asynchronous operation, and
+- When errors are not presented in the return value or state.
 
 For example, `AsyncPipe` and `PendingTasks.run` forward errors to the `ErrorHandler`, whereas `resource` presents the error in the `status` and `error` properties.
 
 Errors that Angular reports to the `ErrorHandler` are _unexpected_ errors. These errors may be unrecoverable or an indication that the state of the application is corrupted. Applications should provide error handling using `try` blocks or appropriate error handling operators (like `catchError` in RxJS) where the error occurs whenever possible rather than relying on the `ErrorHandler`, which is most frequently and appropriately used only as a mechanism to report potentially fatal errors to the error tracking and logging infrastructure.
+
+```ts
+export class GlobalErrorHandler implements ErrorHandler {
+  private readonly analyticsService = inject(AnalyticsService);
+  private readonly router = inject(Router);
+
+  handleError(error: any) {
+    const url = this.router.url;
+    const errorMessage = error?.message ?? 'unknown';
+
+    this.analyticsService.trackEvent({
+      eventName: 'exception',
+      description: `Screen: ${url} | ${errorMessage}`,
+    });
+
+    console.error(GlobalErrorHandler.name, { error });
+  }
+}
+
+```
 
 ### `TestBed` rethrows errors by default
 

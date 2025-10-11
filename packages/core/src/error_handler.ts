@@ -47,6 +47,9 @@ import {NgZone} from './zone/ng_zone';
  * ```
  *
  * @publicApi
+ *
+ * @see [Unhandled errors in Angular](best-practices/error-handling)
+ *
  */
 export class ErrorHandler {
   /**
