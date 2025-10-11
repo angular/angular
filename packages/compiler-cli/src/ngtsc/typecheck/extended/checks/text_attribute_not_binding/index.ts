@@ -52,6 +52,8 @@ class TextAttributeNotBindingSpec extends TemplateCheckWithVisitor<ErrorCode.TEX
       if (node.value) {
         errorString += ` For example, '${expectedKey}="${expectedValue}"'.`;
       }
+
+      errorString += `\n        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.TEXT_ATTRIBUTE_NOT_BINDING}`;
     }
     const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
     return [diagnostic];

@@ -79,7 +79,8 @@ class MissingControlFlowDirectiveCheck extends TemplateCheckWithVisitor<ErrorCod
       `but neither the \`${directiveAndBuiltIn?.directive}\` directive nor the \`CommonModule\` was imported. ` +
       `Use Angular's built-in control flow ${directiveAndBuiltIn?.builtIn} or ` +
       `make sure that either the \`${directiveAndBuiltIn?.directive}\` directive or the \`CommonModule\` ` +
-      `is included in the \`@Component.imports\` array of this component.`;
+      `is included in the \`@Component.imports\` array of this component.
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.MISSING_CONTROL_FLOW_DIRECTIVE}`;
     const diagnostic = ctx.makeTemplateDiagnostic(sourceSpan, errorMessage);
     return [diagnostic];
   }

@@ -73,7 +73,8 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode
     const errorMessage =
       `A structural directive \`${customStructuralDirective.name}\` was used in the template ` +
       `without a corresponding import in the component. ` +
-      `Make sure that the directive is included in the \`@Component.imports\` array of this component.`;
+      `Make sure that the directive is included in the \`@Component.imports\` array of this component.\n` +
+      `        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.MISSING_STRUCTURAL_DIRECTIVE}`;
     return [ctx.makeTemplateDiagnostic(sourceSpan, errorMessage)];
   }
 }

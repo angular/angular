@@ -42,7 +42,8 @@ class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<ErrorCod
           }
           const diagnostic = ctx.makeTemplateDiagnostic(
             sourceMapping.span,
-            `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'.`,
+            `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'.
+        Find more at https://angular.dev/extended-diagnostics/${ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING}`,
           );
           return [diagnostic];
         }
