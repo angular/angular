@@ -153,7 +153,7 @@ export interface FormCheckboxControl extends FormUiControl {
    */
   readonly checked: ModelSignal<boolean>;
   // TODO: maybe this doesn't have to be strictly `undefined`? It just can't be a model signal.
-  // Typescript doesn't really have a way to do any-but, but we could maybe introduce an optional
+  // TypeScript doesn't really have a way to do any-but, but we could maybe introduce an optional
   // generic for it?
   /**
    * The implementing component *must not* define a `value` property. This is reserved for

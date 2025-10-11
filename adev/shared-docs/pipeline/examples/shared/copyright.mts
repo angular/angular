@@ -16,7 +16,7 @@ Copyright Google LLC All Rights Reserved.
 Use of this source code is governed by an MIT-style license that can be
 found in the LICENSE file at https://angular.dev/license
 `;
-/** Copyright comment for CSS and Javascript/Typescript files. */
+/** Copyright comment for CSS and JavaScript/TypeScript files. */
 const CSS_TS_COPYRIGHT = `/*${COPYRIGHT}*/${PAD}`;
 /** Copyright comment for HTML files. */
 const HTML_COPYRIGHT = `<!--${COPYRIGHT}-->${PAD}`;
