@@ -18,8 +18,8 @@ import {ValidationError, type WithOptionalField} from './validation_errors';
  */
 export interface FormUiControl {
   // TODO: `ValidationError` and `DisabledReason` are inherently tied to the signal forms system.
-  // They don't make sense when using a ccontrol separately from the forms system and setting the
-  // inputs individually. Givn that, should they still be part of this interface?
+  // They don't make sense when using a control separately from the forms system and setting the
+  // inputs individually. Given that, should they still be part of this interface?
 
   /**
    * An input to receive the errors for the field. If implemented, the `Control` directive will

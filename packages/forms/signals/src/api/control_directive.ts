@@ -24,7 +24,7 @@ import type {FieldTree} from './types';
  * Lightweight DI token provided by the {@link Control} directive.
  */
 export const CONTROL = new InjectionToken<Control<unknown>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'CONTROL' : '',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'CONTROL' : '',
 );
 
 /**
