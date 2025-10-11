@@ -187,7 +187,7 @@ const routes: Routes = [
     children: [
       // /users/list - PROTECTED
       { path: 'list', component: UserListComponent },
-      // /useres/detail/:id - PROTECTED
+      // /users/detail/:id - PROTECTED
       { path: 'detail/:id', component: UserDetailComponent }
     ]
   },
