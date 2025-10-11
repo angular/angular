@@ -15,6 +15,7 @@ import {getSourceCodeForDiagnostic} from '../../../../../testing';
 import {getClass, setup} from '../../../../testing';
 import {factory as uninvokedFunctionInEventBindingFactory} from '../../../checks/uninvoked_function_in_event_binding';
 import {ExtendedTemplateCheckerImpl} from '../../../src/extended_template_checker';
+import {formatExtendedError} from '@angular/compiler-cli/src/ngtsc/typecheck/extended/api';
 
 runInEachFileSystem(() => {
   describe('UninvokedFunctionInEventBindingFactoryCheck', () => {
@@ -229,5 +230,8 @@ function setupTestComponent(template: string, classField: string) {
 }
 
 function generateDiagnosticText(text: string): string {
-  return `Function in event binding should be invoked: ${text}`;
+  return formatExtendedError(
+    ErrorCode.UNINVOKED_FUNCTION_IN_EVENT_BINDING,
+    `Function in event binding should be invoked: ${text}`,
+  );
 }
