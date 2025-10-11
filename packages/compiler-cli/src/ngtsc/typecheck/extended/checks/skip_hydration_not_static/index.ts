@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 const NG_SKIP_HYDRATION_ATTR_NAME = 'ngSkipHydration';
 
@@ -29,7 +34,11 @@ class NgSkipHydrationSpec extends TemplateCheckWithVisitor<ErrorCode.SKIP_HYDRAT
   ): NgTemplateDiagnostic<ErrorCode.SKIP_HYDRATION_NOT_STATIC>[] {
     /** Binding should always error */
     if (node instanceof TmplAstBoundAttribute && node.name === NG_SKIP_HYDRATION_ATTR_NAME) {
-      const errorString = `ngSkipHydration should not be used as a binding.`;
+      const errorString = formatExtendedError(
+        ErrorCode.SKIP_HYDRATION_NOT_STATIC,
+        `ngSkipHydration should not be used as a binding`,
+      );
+
       const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
       return [diagnostic];
     }
@@ -42,7 +51,11 @@ class NgSkipHydrationSpec extends TemplateCheckWithVisitor<ErrorCode.SKIP_HYDRAT
       !acceptedValues.includes(node.value) &&
       node.value !== undefined
     ) {
-      const errorString = `ngSkipHydration only accepts "true" or "" as value or no value at all. For example 'ngSkipHydration="true"' or 'ngSkipHydration'`;
+      const errorString = formatExtendedError(
+        ErrorCode.SKIP_HYDRATION_NOT_STATIC,
+        `ngSkipHydration only accepts "true" or "" as value or no value at all. For example 'ngSkipHydration="true"' or 'ngSkipHydration'`,
+      );
+
       const diagnostic = ctx.makeTemplateDiagnostic(node.sourceSpan, errorString);
       return [diagnostic];
     }
