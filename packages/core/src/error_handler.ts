@@ -45,6 +45,9 @@ import {DestroyRef} from './linker/destroy_ref';
  * ```
  *
  * @publicApi
+ *
+ * @see [Unhandled errors in Angular](best-practices/error-handling)
+ *
  */
 export class ErrorHandler {
   /**
