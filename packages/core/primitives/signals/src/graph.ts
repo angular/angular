@@ -88,6 +88,14 @@ interface ReactiveLink {
   nextProducer: ReactiveLink | undefined;
 }
 
+export type ReactiveNodeKind =
+  | 'signal'
+  | 'computed'
+  | 'effect'
+  | 'template'
+  | 'linkedSignal'
+  | 'unknown';
+
 /**
  * A producer and/or consumer which participates in the reactive graph.
  *
@@ -186,7 +194,7 @@ export interface ReactiveNode {
    *
    * Used in Angular DevTools to identify the kind of signal.
    */
-  kind: string;
+  kind: ReactiveNodeKind;
 }
 
 /**

@@ -144,7 +144,7 @@ export interface ReactiveNode {
     consumersTail: ReactiveLink | undefined;
     debugName?: string;
     dirty: boolean;
-    kind: string;
+    kind: ReactiveNodeKind;
     lastCleanEpoch: Version;
     producerMustRecompute(node: unknown): boolean;
     // (undocumented)
@@ -154,6 +154,9 @@ export interface ReactiveNode {
     recomputing: boolean;
     version: Version;
 }
+
+// @public (undocumented)
+export type ReactiveNodeKind = 'signal' | 'computed' | 'effect' | 'template' | 'linkedSignal' | 'unknown';
 
 // @public
 export function resetConsumerBeforeComputation(node: ReactiveNode): void;

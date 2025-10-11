@@ -5,30 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  REACTIVE_LVIEW_CONSUMER_NODE,
-  ReactiveLViewConsumer,
-  TEMPORARY_CONSUMER_NODE,
-} from '../reactive_lview_consumer';
+import {ReactiveLViewConsumer} from '../reactive_lview_consumer';
 import {assertTNode, assertLView} from '../assert';
 import {getFrameworkDIDebugData} from '../debug/framework_injector_profiler';
 import {NodeInjector, getNodeInjectorTNode, getNodeInjectorLView} from '../di';
 import {REACTIVE_TEMPLATE_CONSUMER, HOST, LView, CONTEXT} from '../interfaces/view';
-import {EffectNode, EffectRefImpl, ROOT_EFFECT_NODE, VIEW_EFFECT_NODE} from '../reactivity/effect';
+import {EffectNode, EffectRefImpl} from '../reactivity/effect';
 import {Injector} from '../../di/injector';
 import {R3Injector} from '../../di/r3_injector';
 import {throwError} from '../../util/assert';
 import {
   ComputedNode,
   ReactiveNode,
+  ReactiveNodeKind,
   SIGNAL,
-  SIGNAL_NODE,
   SignalNode,
 } from '../../../primitives/signals';
 import {isLView} from '../interfaces/type_checks';
 
 export interface DebugSignalGraphNode {
-  kind: string;
+  kind: ReactiveNodeKind;
   id: string;
   epoch: number;
   label?: string;
