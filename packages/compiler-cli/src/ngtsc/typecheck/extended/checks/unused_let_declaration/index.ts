@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 interface ClassAnalysis {
   allLetDeclarations: Set<TmplAstLetDeclaration>;
@@ -40,7 +45,10 @@ class UnusedLetDeclarationCheck extends TemplateCheckWithVisitor<ErrorCode.UNUSE
         diagnostics.push(
           ctx.makeTemplateDiagnostic(
             decl.sourceSpan,
-            `@let ${decl.name} is declared but its value is never read.`,
+            formatExtendedError(
+              ErrorCode.UNUSED_LET_DECLARATION,
+              `@let ${decl.name} is declared but its value is never read.`,
+            ),
           ),
         );
       }

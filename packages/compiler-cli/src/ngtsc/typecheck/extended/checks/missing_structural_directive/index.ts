@@ -11,7 +11,12 @@ import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * The list of known control flow directives present in the `CommonModule`.
@@ -76,10 +81,13 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode
     if (hasStructuralDirective) return [];
 
     const sourceSpan = customStructuralDirective.keySpan || customStructuralDirective.sourceSpan;
-    const errorMessage =
+    const errorMessage = formatExtendedError(
+      ErrorCode.MISSING_STRUCTURAL_DIRECTIVE,
       `A structural directive \`${customStructuralDirective.name}\` was used in the template ` +
-      `without a corresponding import in the component. ` +
-      `Make sure that the directive is included in the \`@Component.imports\` array of this component.`;
+        `without a corresponding import in the component. ` +
+        `Make sure that the directive is included in the \`@Component.imports\` array of this component.`,
+    );
+
     return [ctx.makeTemplateDiagnostic(sourceSpan, errorMessage)];
   }
 }

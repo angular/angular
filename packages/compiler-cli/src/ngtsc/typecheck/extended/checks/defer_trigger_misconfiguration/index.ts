@@ -20,7 +20,12 @@ import {
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  formatExtendedError,
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+} from '../../api';
 
 /**
  * This check implements warnings for unreachable or redundant @defer triggers.
@@ -58,11 +63,21 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
     if (hasImmediateMain) {
       if (mains.length > 1) {
         const msg = `The 'immediate' trigger makes additional triggers redundant.`;
-        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, msg));
+        diags.push(
+          ctx.makeTemplateDiagnostic(
+            node.sourceSpan,
+            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+          ),
+        );
       }
       if (prefetches.length > 0) {
         const msg = `Prefetch triggers have no effect because 'immediate' executes earlier.`;
-        diags.push(ctx.makeTemplateDiagnostic(node.sourceSpan, msg));
+        diags.push(
+          ctx.makeTemplateDiagnostic(
+            node.sourceSpan,
+            formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+          ),
+        );
       }
     }
 
@@ -79,7 +94,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           const preDelay = pre.delay;
           if (preDelay >= mainDelay) {
             const msg = `The Prefetch 'timer(${preDelay}ms)' is not scheduled before the main 'timer(${mainDelay}ms)', so it won’t run prior to rendering. Lower the prefetch delay or remove it.`;
-            diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
+            diags.push(
+              ctx.makeTemplateDiagnostic(
+                pre.sourceSpan ?? node.sourceSpan,
+                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+              ),
+            );
           }
         }
 
@@ -105,7 +125,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
           if (mainRef && preRef && mainRef === preRef) {
             const kindName = main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
             const msg = `Prefetch '${kindName}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
-            diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
+            diags.push(
+              ctx.makeTemplateDiagnostic(
+                pre.sourceSpan ?? node.sourceSpan,
+                formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+              ),
+            );
           }
           // otherwise, different references or missing reference => no warning
           continue;
@@ -121,7 +146,12 @@ class DeferTriggerMisconfiguration extends TemplateCheckWithVisitor<ErrorCode.DE
               ? 'immediate'
               : main.constructor.name.replace('DeferredTrigger', '').toLowerCase();
           const msg = `Prefetch '${kind}' matches the main trigger and provides no benefit. Remove the prefetch modifier.`;
-          diags.push(ctx.makeTemplateDiagnostic(pre.sourceSpan ?? node.sourceSpan, msg));
+          diags.push(
+            ctx.makeTemplateDiagnostic(
+              pre.sourceSpan ?? node.sourceSpan,
+              formatExtendedError(ErrorCode.DEFER_TRIGGER_MISCONFIGURATION, msg),
+            ),
+          );
         }
       }
     }

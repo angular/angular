@@ -3,7 +3,7 @@ load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 ts_project(
     name = "test_lib",
     testonly = True,
-    srcs = ["uninvoked_function_in_text_interpolation_spec.ts"],
+    srcs = ["format_extended_error_spec.ts"],
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler",
@@ -14,7 +14,6 @@ ts_project(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended",
         "//packages/compiler-cli/src/ngtsc/typecheck/extended/api",
-        "//packages/compiler-cli/src/ngtsc/typecheck/extended/checks/uninvoked_function_in_text_interpolation",
         "//packages/compiler-cli/src/ngtsc/typecheck/testing",
     ],
 )
