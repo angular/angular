@@ -23,8 +23,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  Field,
   disabled,
+  Field,
   form,
   hidden,
   max,
@@ -736,6 +736,62 @@ describe('field directive', () => {
     act(() => cmp.f().value.set('two'));
     expect(fix.componentInstance.select()).not.toBeUndefined();
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('two');
+  });
+
+  it('should assign correct value when unhiding select with implicit option values', () => {
+    @Component({
+      imports: [Field],
+      template: `
+        @if (!f().hidden()) {
+          <select #select [field]="f">
+            @for(opt of options; track opt) {
+              <option>{{opt}}</option>
+            }
+          </select>
+        }
+      `,
+    })
+    class TestCmp {
+      f = form(signal(''), (p) => hidden(p, ({value}) => value() === ''));
+      select = viewChild<ElementRef<HTMLSelectElement>>('select');
+      options = ['one', 'two', 'three'];
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(fix.componentInstance.select()).toBeUndefined();
+
+    act(() => cmp.f().value.set('two'));
+    expect(fix.componentInstance.select()).not.toBeUndefined();
+    expect(fix.componentInstance.select()!.nativeElement.value).toEqual('two');
+  });
+
+  it('should resync the select value when an option is added', () => {
+    @Component({
+      imports: [Field],
+      template: `
+        <select #select [field]="f">
+          @for(opt of options(); track opt) {
+            <option>{{opt}}</option>
+          }
+        </select>
+      `,
+    })
+    class TestCmp {
+      f = form(signal('four'));
+      select = viewChild<ElementRef<HTMLSelectElement>>('select');
+      options = signal(['one', 'two', 'three']);
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const cmp = fix.componentInstance as TestCmp;
+
+    expect(fix.componentInstance.select()!.nativeElement.value).toEqual('');
+
+    act(() => cmp.options.update((o) => [...o, 'four']));
+
+    expect(fix.componentInstance.select()!.nativeElement.value).toEqual('four');
   });
 
   it('synchronizes with a custom value control', () => {
