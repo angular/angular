@@ -582,6 +582,8 @@ export const UntypedFormArray: UntypedFormArrayCtor = FormArray;
  * @description
  * Asserts that the given control is an instance of `FormArray`
  *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
+ *
  * @publicApi
  */
 export const isFormArray = (control: unknown): control is FormArray => control instanceof FormArray;
