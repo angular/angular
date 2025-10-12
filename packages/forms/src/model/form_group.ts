@@ -709,6 +709,8 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
  * @description
  * Asserts that the given control is an instance of `FormGroup`
  *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
+ *
  * @publicApi
  */
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
@@ -826,6 +828,8 @@ export interface FormRecord<TControl> {
 /**
  * @description
  * Asserts that the given control is an instance of `FormRecord`
+ *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
  *
  * @publicApi
  */

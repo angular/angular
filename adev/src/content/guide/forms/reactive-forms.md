@@ -490,6 +490,33 @@ control.events.subscribe((e) => {
 
 NOTE: On value change, the emit happens right after a value of this control is updated. The value of a parent control (for example if this FormControl is a part of a FormGroup) is updated later, so accessing a value of a parent control (using the `value` property) from the callback of this event might result in getting a value that has not been updated yet. Subscribe to the `events` of the parent control instead.
 
+## Utility functions for narrowing form control types
+
+Angular provides four utility functions that help determine the concrete type of an `AbstractControl`. These functions act as **type guards** and narrow the control type when they return `true`, which lets you safely access subtype-specific properties inside the same block.
+
+| Utility function | Details                                             |
+| :--------------- | :-------------------------------------------------- |
+| `isFormControl`  | Returns `true` when the control is a `FormControl`. |
+| `isFormGroup`    | Returns `true` when the control is a `FormGroup`    |
+| `isFormRecord`   | Returns `true` when the control is a `FormRecord`   |
+| `isFormArray`    | Returns `true` when the control is a `FormArray`    |
+
+These helpers are particularly useful in **custom validators**, where the function signature receives an `AbstractControl`, but the logic is intended for a specific control kind.
+
+```ts
+import { AbstractControl, isFormArray } from '@angular/forms';
+
+export function positiveValues(control: AbstractControl) {
+    if (!isFormArray(control)) {
+        return null; // Not a FormArray: validator is not applicable.
+    }
+
+    // Safe to access FormArray-specific API after narrowing.
+    const hasNegative = control.controls.some(c => c.value < 0);
+    return hasNegative ? { positiveValues: true } : null;
+}
+```
+
 ## Reactive forms API summary
 
 The following table lists the base classes and services used to create and manage reactive form controls.
