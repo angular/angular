@@ -621,6 +621,8 @@ export const UntypedFormControl: UntypedFormControlCtor = FormControl;
  * @description
  * Asserts that the given control is an instance of `FormControl`
  *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
+ *
  * @publicApi
  */
 export const isFormControl = (control: unknown): control is FormControl =>
