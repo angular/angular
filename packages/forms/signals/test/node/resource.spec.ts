@@ -10,6 +10,11 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {ApplicationRef, Injector, resource, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
+import {provideHttpClient} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {ApplicationRef, Injector, resource, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
@@ -161,7 +166,7 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        errors: (cats, {fieldOf}) => {
+        onSuccess: (cats, {fieldOf}) => {
           return cats.map((cat, index) =>
             customError({
               kind: 'meows_too_much',
@@ -196,7 +201,7 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        errors: (cats, {fieldOf}) => {
+        onSuccess: (cats, {fieldOf}) => {
           return customError({
             kind: 'meows_too_much',
             name: cats[0].name,
@@ -208,9 +213,12 @@ describe('resources', () => {
 
     const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
     const f = form(cats, s, {injector});
+    const cats = signal([{name: 'Fluffy'}, {name: 'Ziggy'}]);
+    const f = form(cats, s, {injector});
 
     await appRef.whenStable();
     expect(f[0]().errors()).toEqual([
+      customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
       customError({kind: 'meows_too_much', name: 'Fluffy', field: f[0]}),
     ]);
     expect(f[1]().errors()).toEqual([]);
@@ -222,8 +230,9 @@ describe('resources', () => {
       (p) => {
         validateHttp(p, {
           request: ({value}) => `/api/check?username=${value()}`,
-          errors: (available: boolean) =>
+          onSuccess: (available: boolean) =>
             available ? undefined : customError({kind: 'username-taken'}),
+          onError: () => null,
         });
       },
       {injector},
@@ -259,15 +268,16 @@ describe('resources', () => {
     expect(usernameForm().invalid()).toBe(true);
     expect(usernameForm().pending()).toBe(false);
   });
-  //when async validation fails
+
   it('should only run async validation when synchronously valid', async () => {
     const addressModel = signal<Address>({street: '', city: '', zip: ''});
     const addressSchema = schema<Address>((address) => {
       required(address.street);
       validateHttp(address, {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
-        errors: (message: string, {fieldOf}) =>
+        onSuccess: (message: string, {fieldOf}) =>
           customError({message, field: fieldOf(address.street)}),
+        onError: () => null,
       });
     });
     const addressForm = form(addressModel, addressSchema, {injector});
@@ -284,6 +294,38 @@ describe('resources', () => {
 
     expect(addressForm.street().errors()).toEqual([
       customError({message: 'Invalid!', field: addressForm.street}),
+    ]);
+  });
+  it('should call onError handler when http validation fails', async () => {
+    const addressModel = signal<Address>({street: '123 Main St', city: '', zip: ''});
+    const addressSchema = schema<Address>((address) => {
+      required(address.street);
+      validateHttp(address, {
+        request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
+        onSuccess: () => undefined,
+        onError: () => [
+          customError({kind: 'address-api-failed', message: 'API is down', field: addressForm}),
+        ],
+      });
+    });
+
+    const addressForm = form(addressModel, addressSchema, {injector});
+
+    TestBed.tick();
+
+    const req = backend.expectOne('/checkaddress?street=123%20Main%20St&city=&zip=');
+    req.flush(null, {status: 500, statusText: 'Server Error'});
+
+    await appRef.whenStable();
+
+    expect(addressForm().pending()).toBe(false);
+    expect(addressForm().invalid()).toBe(true);
+    expect(addressForm().errors()).toEqual([
+      customError({
+        kind: 'address-api-failed',
+        message: 'API is down',
+        field: addressForm,
+      }),
     ]);
   });
 });
