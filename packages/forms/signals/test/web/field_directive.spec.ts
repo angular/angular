@@ -8,7 +8,9 @@
 
 import {
   Component,
+  Directive,
   ElementRef,
+  inject,
   Injector,
   input,
   inputBinding,
@@ -17,6 +19,7 @@ import {
   signal,
   viewChild,
   viewChildren,
+  ViewContainerRef,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -1077,6 +1080,39 @@ describe('field directive', () => {
     expect(
       [...fix.nativeElement.querySelectorAll('.disabled-reason')].map((e) => e.textContent),
     ).toEqual(['manual disabled', 'schema disabled']);
+  });
+
+  it('should bind to native control that has directive injecting ViewContainerRef', () => {
+    @Directive({selector: 'input'})
+    class InputDirective {
+      vcr = inject(ViewContainerRef);
+    }
+
+    @Component({
+      imports: [Field, InputDirective],
+      template: `<input [field]="f">`,
+    })
+    class TestCmp {
+      f = form(signal('test'));
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const input = fix.nativeElement.firstChild as HTMLInputElement;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Initial state
+    expect(input.value).toBe('test');
+
+    // Model -> View
+    act(() => cmp.f().value.set('testing'));
+    expect(input.value).toBe('testing');
+
+    // View -> Model
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+    expect(cmp.f().value()).toBe('typing');
   });
 
   describe('should work with different input types', () => {
