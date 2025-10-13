@@ -34,7 +34,6 @@ import {CdkDrag} from '@angular/cdk/drag-drop';
 @Component({
   selector: 'my-custom-component',
   templateUrl: 'my-custom-component.html',
-  standalone: true,
   imports: [CdkDrag],
 })
 export class DragDropExample {}
