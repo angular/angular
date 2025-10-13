@@ -10,12 +10,13 @@ import {bindingUpdated} from '../bindings';
 import {ɵCONTROL, ɵControl} from '../interfaces/control';
 import {ComponentDef} from '../interfaces/definition';
 import {InputFlags} from '../interfaces/input_flags';
-import {TNode, TNodeFlags} from '../interfaces/node';
+import {TElementNode, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {Renderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TView} from '../interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {isNameOnlyAttributeMarker} from '../util/attrs_utils';
 import {getNativeByTNode} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
@@ -131,12 +132,11 @@ function getControlDirectiveFirstCreatePass<T>(
     }
   }
 
-  const nativeElement = lView[tNode.index];
-  if (isNativeControl(nativeElement)) {
-    if (isNumericInput(nativeElement)) {
+  if (isNativeControl(tNode)) {
+    if (isNumericInput(tNode)) {
       tNode.flags |= TNodeFlags.isNativeNumericControl;
     }
-    if (isTextControl(nativeElement)) {
+    if (isTextControl(tNode)) {
       tNode.flags |= TNodeFlags.isNativeTextControl;
     }
     return control;
@@ -259,12 +259,12 @@ interface HTMLTextAreaElementNarrowed extends HTMLTextAreaElement {
  */
 type NativeControlElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElementNarrowed;
 
-function isNativeControl(element: unknown): element is NativeControlElement {
-  return (
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLSelectElement ||
-    element instanceof HTMLTextAreaElement
-  );
+function isNativeControl(tNode: TNode): tNode is TElementNode {
+  if (tNode.type !== TNodeType.Element) {
+    return false;
+  }
+  const tagName = tNode.value;
+  return tagName === 'input' || tagName === 'textarea' || tagName === 'select';
 }
 
 /**
@@ -402,17 +402,33 @@ function isDateOrNull(value: unknown): value is Date | null {
 }
 
 /** Returns whether `control` has a numeric input type. */
-function isNumericInput(control: NativeControlElement) {
-  switch (control.type) {
-    case 'date':
-    case 'datetime-local':
-    case 'month':
-    case 'number':
-    case 'range':
-    case 'time':
-    case 'week':
-      return true;
+function isNumericInput(tNode: TElementNode): boolean {
+  if (!tNode.attrs || tNode.value !== 'input') {
+    return false;
   }
+
+  for (let i = 0; i < tNode.attrs.length; i += 2) {
+    const name = tNode.attrs[i];
+
+    if (isNameOnlyAttributeMarker(name)) {
+      break;
+    }
+
+    if (name === 'type') {
+      const value = tNode.attrs[i + 1];
+
+      return (
+        value === 'date' ||
+        value === 'datetime-local' ||
+        value === 'month' ||
+        value === 'number' ||
+        value === 'range' ||
+        value === 'time' ||
+        value === 'week'
+      );
+    }
+  }
+
   return false;
 }
 
@@ -422,10 +438,8 @@ function isNumericInput(control: NativeControlElement) {
  * This is not the same as an input with `type="text"`, but rather any input that accepts
  * text-based input which includes numeric types.
  */
-function isTextControl(
-  control: NativeControlElement,
-): control is Exclude<NativeControlElement, HTMLSelectElement> {
-  return !(control instanceof HTMLSelectElement);
+function isTextControl(tNode: TElementNode): boolean {
+  return tNode.value !== 'select';
 }
 
 /**
