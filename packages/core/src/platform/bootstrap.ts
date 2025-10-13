@@ -28,7 +28,6 @@ import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
 import {PendingTasksInternal} from '../pending_tasks_internal';
 
-const REQUIRE_ONE_CD_PROVIDER_CREATE_APPLICATION = false;
 const REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE = false;
 
 /**
@@ -106,10 +105,7 @@ export function bootstrap<M>(
         );
       }
       if (!envInjector.get(PROVIDED_ZONELESS) && !envInjector.get(PROVIDED_NG_ZONE)) {
-        if (
-          (REQUIRE_ONE_CD_PROVIDER_CREATE_APPLICATION && isApplicationBootstrapConfig(config)) ||
-          (REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE && !isApplicationBootstrapConfig(config))
-        ) {
+        if (REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE && !isApplicationBootstrapConfig(config)) {
           throw new Error(
             'Missing change detection configuration: ' +
               'please add either `provideZoneChangeDetection()` or `provideZonelessChangeDetection()` ' +
