@@ -1,6 +1,6 @@
 {
   "scopeName": "template.ng",
-  "injectionSelector": "L:text.html -comment",
+  "injectionSelector": "L:text.html -comment -control.block.ng",
   "patterns": [
     {
       "include": "#interpolation"
