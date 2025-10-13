@@ -2889,13 +2889,9 @@
               {
                 "name": "param",
                 "comment": "Value to be set on the element."
-              },
-              {
-                "name": "breaking-change",
-                "comment": "16.0.0 Will become a required method."
               }
             ],
-            "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   * @breaking-change 16.0.0 Will become a required method.\n   */"
+            "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */"
           },
           "entryType": "function",
           "description": "Sets the value of a `contenteditable` element.",
@@ -2903,17 +2899,11 @@
             {
               "name": "param",
               "comment": "Value to be set on the element."
-            },
-            {
-              "name": "breaking-change",
-              "comment": "16.0.0 Will become a required method."
             }
           ],
-          "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   * @breaking-change 16.0.0 Will become a required method.\n   */",
+          "rawComment": "/**\n   * Sets the value of a `contenteditable` element.\n   * @param value Value to be set on the element.\n   */",
           "memberType": "method",
-          "memberTags": [
-            "optional"
-          ]
+          "memberTags": []
         },
         {
           "name": "getAttribute",
@@ -3191,7 +3181,7 @@
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
         "startLine": 75,
-        "endLine": 181
+        "endLine": 180
       }
     },
     {
@@ -4047,8 +4037,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
-        "startLine": 186,
-        "endLine": 189
+        "startLine": 185,
+        "endLine": 188
       }
     },
     {
