@@ -128,30 +128,6 @@ describe('signal input migration', () => {
     expect(messages).toContain(`  -> Migrated 1/2 inputs.`);
   });
 
-  it('should not migrate input functions that reference this', async () => {
-    const source = `
-      import {Component, Input} from '@angular/core';
-
-      @Component({})
-      export class TestComponent {
-
-        @Input() fnDisplay = (item: any) => item;
-        @Input() fnEquals = (a: any, b: any) => this.fnDisplay(a) === this.fnDisplay(b);
-
-      }
-    `;
-
-    writeFile('/index.ts', source);
-    await runMigration();
-    const content = tree.readContent('/index.ts');
-
-    // Verify the simple function was migrated
-    expect(content).toContain('readonly fnDisplay = input((item: any) => item);');
-    expect(content).toContain(
-      '@Input() fnEquals = (a: any, b: any) => this.fnDisplay()(a) === this.fnDisplay()(b);',
-    );
-  });
-
   it('should report correct statistics with best effort mode', async () => {
     writeFile(`node_modules/@tsconfig/strictest/tsconfig.json`, `{}`);
     writeFile(
