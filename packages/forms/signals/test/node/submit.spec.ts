@@ -274,7 +274,7 @@ describe('submit', () => {
 });
 
 /**
- * Replace with `Promise.withResolvers()` once it's available.
+ * Replace with  `Promise.withResolvers()` once it's available.
  *
  * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
  */

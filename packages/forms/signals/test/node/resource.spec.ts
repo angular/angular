@@ -259,7 +259,7 @@ describe('resources', () => {
     expect(usernameForm().invalid()).toBe(true);
     expect(usernameForm().pending()).toBe(false);
   });
-
+  //when async validation fails
   it('should only run async validation when synchronously valid', async () => {
     const addressModel = signal<Address>({street: '', city: '', zip: ''});
     const addressSchema = schema<Address>((address) => {

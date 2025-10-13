@@ -98,7 +98,7 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
  *
  * @param field The root field to which the issue's path is relative.
  * @param issue The `StandardSchemaV1.Issue` to convert.
- * @returns A `ValidationError` representing the issue.
+ * @returns A `ValidationError`representing the issue.
  */
 function standardIssueToFormTreeError(
   field: FieldTree<unknown>,

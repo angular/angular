@@ -185,7 +185,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
 
 /**
  * Adds async validation to the field corresponding to the given path based on an httpResource.
- * Async validation for a field only runs once all synchronous validation is passing.
+ * Async validation for a field only runs once all synchronous validation is passing .
  *
  * @param path A path indicating the field to bind the async validation logic to.
  * @param opts The http validation options.
