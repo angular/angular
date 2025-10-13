@@ -16,9 +16,9 @@ You don't need to set up your local environment until you're ready.
 To use Angular CLI, you should be familiar with the following:
 
 <docs-pill-row>
-  <docs-pill href="https://developer.mozilla.org/docs/Web/JavaScript/A_re-introduction_to_JavaScript" title="JavaScript"/>
-  <docs-pill href="https://developer.mozilla.org/docs/Learn/HTML/Introduction_to_HTML" title="HTML"/>
-  <docs-pill href="https://developer.mozilla.org/docs/Learn/CSS/First_steps" title="CSS"/>
+  <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" title="JavaScript"/>
+  <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/HTML" title="HTML"/>
+  <docs-pill href="https://developer.mozilla.org/en-US/docs/Web/CSS" title="CSS"/>
 </docs-pill-row>
 
 You should also be familiar with usage of command line interface (CLI) tools and have a general understanding of command shells.
