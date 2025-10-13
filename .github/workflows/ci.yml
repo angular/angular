@@ -147,8 +147,6 @@ jobs:
     steps:
       - name: Initialize environment
         uses: angular/dev-infra/github-actions/npm/checkout-and-setup-node@56543b10ddb9941c76b4413cc24ec3fa7a43cf5c
-        with:
-          cache-node-modules: true
       - name: Setup Bazel
         uses: angular/dev-infra/github-actions/bazel/setup@56543b10ddb9941c76b4413cc24ec3fa7a43cf5c
       - name: Setup Bazel RBE
