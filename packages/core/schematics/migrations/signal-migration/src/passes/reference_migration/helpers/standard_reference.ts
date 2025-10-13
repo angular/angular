@@ -11,7 +11,7 @@ import {analyzeControlFlow, ControlFlowAnalysisNode} from '../../../flow_analysi
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../../utils/tsurge';
 import {traverseAccess} from '../../../utils/traverse_access';
 import {UniqueNamesGenerator} from '../../../utils/unique_names';
-import {createNewBlockToInsertVariable} from '../helpers/create_block_arrow_function';
+import {createNewBlockToInsertVariable} from './create_block_arrow_function';
 import assert from 'assert';
 
 export interface NarrowableTsReferences {
@@ -123,6 +123,23 @@ export function migrateStandardTsReference(
         replacements.push(
           ...createNewBlockToInsertVariable(parent, filePath, temporaryVariableStr),
         );
+      } else if (shouldInsertAtMethodStart(reference, recommendedNode, referenceNodeInBlock)) {
+        const blockNode = recommendedNode as ts.Block;
+        const firstStatement = blockNode.statements[0];
+        const leadingSpace = firstStatement
+          ? ts.getLineAndCharacterOfPosition(sf, firstStatement.getStart())
+          : ts.getLineAndCharacterOfPosition(sf, referenceNodeInBlock.getStart());
+
+        replacements.push(
+          new Replacement(
+            filePath,
+            new TextUpdate({
+              position: firstStatement.getStart(),
+              end: firstStatement.getStart(),
+              toInsert: `${temporaryVariableStr}\n${' '.repeat(leadingSpace.character)}`,
+            }),
+          ),
+        );
       } else {
         const leadingSpace = ts.getLineAndCharacterOfPosition(sf, referenceNodeInBlock.getStart());
 
@@ -150,4 +167,44 @@ export function migrateStandardTsReference(
       );
     }
   }
+}
+
+/**
+ * Determines if a temporary variable should be inserted at the start of a method.
+ *
+ * This function performs several checks to ensure it's safe to insert a temporary variable:
+ * 1. Verifies the recommended node is a method declaration block
+ * 2. Ensures all references are contained within the method body
+ * 3. Confirms the reference node is the first statement in the method
+ * 4. Validates the reference node is an expression statement with an assignment operation
+ */
+function shouldInsertAtMethodStart(
+  references: NarrowableTsReferences,
+  recommendedNode: ts.Node,
+  referenceNodeInBlock: ts.Node,
+): boolean {
+  if (!ts.isBlock(recommendedNode) || !ts.isMethodDeclaration(recommendedNode.parent)) {
+    return false;
+  }
+
+  const methodBody = recommendedNode;
+  const allReferencesInMethod = references.accesses.every((access) => {
+    let current: ts.Node | undefined = access;
+    while (current && current !== methodBody) {
+      current = current.parent;
+    }
+    return current === methodBody;
+  });
+
+  if (!allReferencesInMethod) {
+    return false;
+  }
+
+  return (
+    methodBody.statements.length > 0 &&
+    ts.isExpressionStatement(referenceNodeInBlock) &&
+    methodBody.statements[0] === referenceNodeInBlock &&
+    ts.isBinaryExpression(referenceNodeInBlock.expression) &&
+    referenceNodeInBlock.expression.operatorToken.kind === ts.SyntaxKind.EqualsToken
+  );
 }
