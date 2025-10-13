@@ -815,6 +815,21 @@ class ModifierScenarios {
   @CustomDecorator()
 protected readonly usingCustomDecorator = input(true);
 }
+@@@@@@ multiple_references_in_method.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestMigrationComponent {
+  public readonly model = input<any>();
+
+  public onSaveClick(): void {
+    const model = this.model();
+    model.requisitionId = 145;
+    model.comment = 'value';
+  }
+}
 @@@@@@ mutate.ts @@@@@@
 
 // tslint:disable
