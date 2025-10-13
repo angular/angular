@@ -111,6 +111,7 @@
       "DeferBlockBehavior",
       "DeferBlockInternalState",
       "DeferBlockState",
+      "DeferComponent",
       "DeferDependenciesLoadingState",
       "DestroyRef",
       "EFFECTS",
