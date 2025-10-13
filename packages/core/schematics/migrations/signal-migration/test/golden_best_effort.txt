@@ -719,6 +719,16 @@ import {Component, input} from '@angular/core';
 export class InlineTmpl {
   readonly justify = input<'start' | 'end'>('end');
 }
+@@@@@@ input_function_that_reference_this.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestComponent {
+  readonly fnDisplay = input((item: any) => item);
+  @Input() fnEquals = (a: any, b: any) => this.fnDisplay()(a) === this.fnDisplay()(b);
+}
 @@@@@@ jit_true_component_external_tmpl.html @@@@@@
 
 {{test()}}
