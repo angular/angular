@@ -110,6 +110,7 @@
       "DeferBlockBehavior",
       "DeferBlockInternalState",
       "DeferBlockState",
+      "DeferComponent",
       "DeferDependenciesLoadingState",
       "DestroyRef",
       "EFFECTS",
@@ -746,8 +747,7 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput",
-      "DeferComponent"
+      "writeToDirectiveInput"
     ]
   }
 }
