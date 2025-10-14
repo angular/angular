@@ -44,13 +44,13 @@ ng update @angular/cli --name use-application-builder
 
 The migration does the following:
 
-* Converts existing `browser` or `browser-esbuild` target to `application`
-* Removes any previous SSR builders (because `application` does that now).
-* Updates configuration accordingly.
-* Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
-* Updates application server code to use new bootstrapping and output directory structure.
-* Removes any webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
-* Converts to use the new lower dependency `@angular/build` Node.js package if no other `@angular-devkit/build-angular` usage is found.
+- Converts existing `browser` or `browser-esbuild` target to `application`
+- Removes any previous SSR builders (because `application` does that now).
+- Updates configuration accordingly.
+- Merges `tsconfig.server.json` with `tsconfig.app.json` and adds the TypeScript option `"esModuleInterop": true` to ensure `express` imports are [ESM compliant](#esm-default-imports-vs-namespace-imports).
+- Updates application server code to use new bootstrapping and output directory structure.
+- Removes any webpack-specific builder stylesheet usage such as the tilde or caret in `@import`/`url()` and updates the configuration to provide equivalent behavior
+- Converts to use the new lower dependency `@angular/build` Node.js package if no other `@angular-devkit/build-angular` usage is found.
 
 ### Manual migration
 
@@ -59,7 +59,7 @@ Both options are considered stable and fully supported by the Angular team.
 The choice of which option to use is a factor of how many changes you will need to make to migrate and what new features you would like to use in the project.
 
 - The `browser-esbuild` builder builds only the client-side bundle of an application designed to be compatible with the existing `browser` builder that provides the preexisting build system.
-This builder provides equivalent build options, and in many cases, it serves as a drop-in replacement for existing `browser` applications.
+  This builder provides equivalent build options, and in many cases, it serves as a drop-in replacement for existing `browser` applications.
 - The `application` builder covers an entire application, such as the client-side bundle, as well as optionally building a server for server-side rendering and performing build-time prerendering of static pages.
 
 The `application` builder is generally preferred as it improves server-side rendered (SSR) builds, and makes it easier for client-side rendered projects to adopt SSR in the future.
@@ -78,23 +78,23 @@ You can update the `build` target for any application target to migrate to the n
 
 The following is what you would typically find in `angular.json` for an application:
 
-<docs-code language="json">
+```json
 ...
 "architect": {
   "build": {
     "builder": "@angular-devkit/build-angular:browser",
 ...
-</docs-code>
+```
 
 Changing the `builder` field is the only change you will need to make.
 
-<docs-code language="json">
+```json
 ...
 "architect": {
   "build": {
     "builder": "@angular-devkit/build-angular:browser-esbuild",
 ...
-</docs-code>
+```
 
 #### Manual migration to the new `application` builder
 
@@ -103,23 +103,23 @@ This builder is the default for all new applications created via `ng new`.
 
 The following is what you would typically find in `angular.json` for an application:
 
-<docs-code language="json">
+```json
 ...
 "architect": {
   "build": {
     "builder": "@angular-devkit/build-angular:browser",
 ...
-</docs-code>
+```
 
 Changing the `builder` field is the first change you will need to make.
 
-<docs-code language="json">
+```json
 ...
 "architect": {
   "build": {
     "builder": "@angular-devkit/build-angular:application",
 ...
-</docs-code>
+```
 
 Once the builder name has been changed, options within the `build` target will need to be updated.
 The following list discusses all the `browser` builder options that will need to be adjusted.
@@ -160,22 +160,22 @@ Depending on the choice of builder migration, some of the command line options m
 If the build command is contained in any `npm` or other scripts, ensure they are reviewed and updated.
 For applications that have migrated to the `application` builder and that use SSR and/or prererending, you also may be able to remove extra `ng run` commands from scripts now that `ng build` has integrated SSR support.
 
-<docs-code language="shell">
+```shell
 
 ng build
 
-</docs-code>
+```
 
 ## Starting the development server
 
 The development server will automatically detect the new build system and use it to build the application.
 To start the development server no changes are necessary to the `dev-server` builder configuration or command line.
 
-<docs-code language="shell">
+```shell
 
 ng serve
 
-</docs-code>
+```
 
 You can continue to use the [command line options](/cli/serve) you have used in the past with the development server.
 
@@ -188,6 +188,7 @@ This will not occur in builds outside the development server.
 Hot Module Replacement (HMR) is a technique used by development servers to avoid reloading the entire page when only part of an application is changed.
 The changes in many cases can be immediately shown in the browser which allows for an improved edit/refresh cycle while developing an application.
 While general JavaScript-based hot module replacement (HMR) is currently not supported, several more specific forms of HMR are available:
+
 - **global stylesheet** (`styles` build option)
 - **component stylesheet** (inline and file-based)
 - **component template** (inline and file-based)
@@ -199,11 +200,11 @@ The build system will attempt to compile and process the minimal amount of appli
 If preferred, the HMR capabilities can be disabled by setting the `hmr` development server option to `false`.
 This can also be changed on the command line via:
 
-<docs-code language="shell">
+```shell
 
 ng serve --no-hmr
 
-</docs-code>
+```
 
 ### Vite as a development server
 
@@ -217,6 +218,7 @@ The prebundling process analyzes all the third-party project dependencies within
 This process removes the need to rebuild and bundle the project's dependencies each time a rebuild occurs or the development server is executed.
 
 In most cases, no additional customization is required. However, some situations where it may be needed include:
+
 - Customizing loader behavior for imports within the dependency such as the [`loader` option](#file-extension-loader-customization)
 - Symlinking a dependency to local code for development such as [`npm link`](https://docs.npmjs.com/cli/v10/commands/npm-link)
 - Working around an error encountered during prebundling of a dependency
@@ -225,7 +227,7 @@ The prebundling process can be fully disabled or individual dependencies can be 
 The `dev-server` builder's `prebundle` option can be used for these customizations.
 To exclude specific dependencies, the `prebundle.exclude` option is available:
 
-<docs-code language="json">
+```json
     "serve": {
       "builder": "@angular/build:dev-server",
       "options": {
@@ -233,18 +235,18 @@ To exclude specific dependencies, the `prebundle.exclude` option is available:
           "exclude": ["some-dep"]
         }
       },
-</docs-code>
+```
 
 By default, `prebundle` is set to `true` but can be set to `false` to fully disable prebundling.
 However, excluding specific dependencies is recommended instead since rebuild times will increase with prebundling disabled.
 
-<docs-code language="json">
+```json
     "serve": {
       "builder": "@angular/build:dev-server",
       "options": {
         "prebundle": false
       },
-</docs-code>
+```
 
 ## New features
 
@@ -267,7 +269,7 @@ Within the configuration file, the option is in the form of an object.
 The keys of the object represent the identifier to replace and the values of the object represent the corresponding replacement value for the identifier.
 An example is as follows:
 
-<docs-code language="json">
+```json
   "build": {
     "builder": "@angular/build:application",
     "options": {
@@ -279,7 +281,7 @@ An example is as follows:
       }
     }
   }
-</docs-code>
+```
 
 HELPFUL: All replacement values are defined as strings within the configuration file.
 If the replacement is intended to be an actual string literal, it should be enclosed in single quote marks.
@@ -290,19 +292,19 @@ The CLI will merge `--define` values from the command line with `define` values 
 Command line usage takes precedence if the same identifier is present for both.
 For command line usage, the `--define` option uses the format of `IDENTIFIER=VALUE`.
 
-<docs-code language="shell">
+```shell
 ng build --define SOME_NUMBER=5 --define "ANOTHER='these will overwrite existing'"
-</docs-code>
+```
 
 Environment variables can also be selectively included in a build.
 For non-Windows shells, the quotes around the hash literal can be escaped directly if preferred.
 This example assumes a bash-like shell but similar behavior is available for other shells as well.
 
-<docs-code language="shell">
+```shell
 export MY_APP_API_HOST="http://example.com"
 export API_RETRY=3
 ng build --define API_HOST=\'$MY_APP_API_HOST\' --define API_RETRY=$API_RETRY
-</docs-code>
+```
 
 For either usage, TypeScript needs to be aware of the types for the identifiers to prevent type-checking errors during the build.
 This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with similar content:
@@ -329,10 +331,13 @@ When using the `application` builder, the `loader` option can be used to handle 
 The option allows a project to define the type of loader to use with a specified file extension.
 A file with the defined extension can then be used within the application code via an import statement or dynamic import expression.
 The available loaders that can be used are:
-* `text` - inlines the content as a `string` available as the default export
-* `binary` - inlines the content as a `Uint8Array` available as the default export
-* `file` - emits the file at the application output path and provides the runtime location of the file as the default export
-* `empty` - considers the content to be empty and will not include it in bundles
+
+- `text` - inlines the content as a `string` available as the default export
+- `binary` - inlines the content as a `Uint8Array` available as the default export
+- `file` - emits the file at the application output path and provides the runtime location of the file as the default export
+- `dataurl` - inlines the content as a [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
+- `base64` - inlines the content as a Base64-encoded string.
+- `empty` - considers the content to be empty and will not include it in bundles
 
 The `empty` value, while less common, can be useful for compatibility of third-party libraries that may contain bundler-specific import usage that needs to be removed.
 One case for this is side-effect imports (`import 'my.css';`) of CSS files which has no effect in a browser.
@@ -342,7 +347,7 @@ The loader option is an object-based option with the keys used to define the fil
 
 An example of the build option usage to inline the content of SVG files into the bundled application would be as follows:
 
-<docs-code language="json">
+```json
   "build": {
     "builder": "@angular/build:application",
     "options": {
@@ -352,9 +357,10 @@ An example of the build option usage to inline the content of SVG files into the
       }
     }
   }
-</docs-code>
+```
 
 An SVG file can then be imported:
+
 ```ts
 import contents from './some-file.svg';
 
@@ -362,6 +368,7 @@ console.log(contents); // <svg>...</svg>
 ```
 
 Additionally, TypeScript needs to be aware of the module type for the import to prevent type-checking errors during the build. This can be accomplished with an additional type definition file within the application source code (`src/types.d.ts`, for example) with the following or similar content:
+
 ```ts
 declare module "*.svg" {
   const content: string;
@@ -379,9 +386,12 @@ The presence of the import attribute takes precedence over all other loading beh
 For general loading for all files of an otherwise unsupported file type, the [`loader`](#file-extension-loader-customization) build option is recommended.
 
 For the import attribute, the following loader values are supported:
-* `text` - inlines the content as a `string` available as the default export
-* `binary` - inlines the content as a `Uint8Array` available as the default export
-* `file` - emits the file at the application output path and provides the runtime location of the file as the default export
+
+- `text` - inlines the content as a `string` available as the default export
+- `binary` - inlines the content as a `Uint8Array` available as the default export
+- `file` - emits the file at the application output path and provides the runtime location of the file as the default export
+- `dataurl` - inlines the content as a [data URL](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
+- `base64` - inlines the content as a Base64-encoded string.
 
 An additional requirement to use import attributes is that the TypeScript `module` option must be set to `esnext` to allow TypeScript to successfully build the application code.
 Once `ES2025` is available within TypeScript, this change will no longer be needed.
@@ -389,28 +399,51 @@ Once `ES2025` is available within TypeScript, this change will no longer be need
 At this time, TypeScript does not support type definitions that are based on import attribute values.
 The use of `@ts-expect-error`/`@ts-ignore` or the use of individual type definition files (assuming the file is only imported with the same loader attribute) is currently required.
 As an example, an SVG file can be imported as text via:
+
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
 import contents from './some-file.svg' with { loader: 'text' };
 ```
 
 The same can be accomplished with an import expression inside an async function.
+
 ```ts
 async function loadSvg(): Promise<string> {
   // @ts-expect-error TypeScript cannot provide types based on attributes yet
   return import('./some-file.svg', { with: { loader: 'text' } }).then((m) => m.default);
 }
 ```
+
 For the import expression, the `loader` value must be a string literal to be statically analyzed.
 A warning will be issued if the value is not a string literal.
 
 The `file` loader is useful when a file will be loaded at runtime through either a `fetch()`, setting to an image elements `src`, or other similar method.
+
 ```ts
 // @ts-expect-error TypeScript cannot provide types based on attributes yet
 import imagePath from './image.webp' with { loader: 'file' };
 
 console.log(imagePath); // media/image-ULK2SIIB.webp
 ```
+
+The `base64` loader is useful when a file needs to be embedded directly into the bundle as an encoded string that can later be used to construct a Data URL.
+
+```ts
+// @ts-expect-error TypeScript cannot provide types based on attributes yet
+import logo from './logo.png' with { loader: 'base64' };
+
+console.log(logo) // "iVBORw0KGgoAAAANSUhEUgAA..."
+```
+
+The `dataurl` loader to inline assets as complete Data URLs.
+
+```ts
+// @ts-expect-error TypeScript cannot provide types based on attributes yet
+import icon from './icon.svg' with { loader: 'dataurl' };
+
+console.log(icon);// "data:image/svg+xml;..."
+```
+
 For production builds as shown in the code comment above, hashing will be automatically added to the path for long-term caching.
 
 HELPFUL: When using the development server and using a `loader` attribute to import a file from a Node.js package, that package must be excluded from prebundling via the development server `prebundle` option.
@@ -420,9 +453,10 @@ HELPFUL: When using the development server and using a `loader` attribute to imp
 Projects may need to map certain import paths to different files based on the type of build.
 This can be particularly useful for cases such as `ng serve` needing to use debug/development specific code but `ng build` needing to use code without any development features/information.
 Several import/export [conditions](https://nodejs.org/api/packages.html#community-conditions-definitions) are automatically applied to support these project needs:
-* For optimized builds, the `production` condition is enabled.
-* For non-optimized builds, the `development` condition is enabled.
-* For browser output code, the `browser` condition is enabled.
+
+- For optimized builds, the `production` condition is enabled.
+- For non-optimized builds, the `development` condition is enabled.
+- For browser output code, the `browser` condition is enabled.
 
 An optimized build is determined by the value of the `optimization` option.
 When `optimization` is set to `true` or more specifically if `optimization.scripts` is set to `true`, then the build is considered optimized.
@@ -431,13 +465,14 @@ In a new project, `ng build` defaults to optimized and `ng serve` defaults to no
 
 A useful method to leverage these conditions within application code is to combine them with [subpath imports](https://nodejs.org/api/packages.html#subpath-imports).
 By using the following import statement:
+
 ```ts
 import {verboseLogging} from '#logger';
 ```
 
 The file can be switched in the `imports` field in `package.json`:
 
-<docs-code language="json">
+```json
 {
   ...
   "imports": {
@@ -447,11 +482,11 @@ The file can be switched in the `imports` field in `package.json`:
     }
   }
 }
-</docs-code>
+```
 
 For applications that are also using SSR, browser and server code can be switched by using the `browser` condition:
 
-<docs-code language="json">
+```json
 {
   ...
   "imports": {
@@ -461,7 +496,7 @@ For applications that are also using SSR, browser and server code can be switche
     }
   }
 }
-</docs-code>
+```
 
 These conditions also apply to Node.js packages and any defined [`exports`](https://nodejs.org/api/packages.html#conditional-exports) within the packages.
 
@@ -497,7 +532,7 @@ console.log(moment().format());
 
 The build will generate a warning to notify you that there is a potential problem. The warning will be similar to:
 
-<docs-code language="text">
+```text
 ▲ [WARNING] Calling "moment" will crash at run-time because it's an import namespace object, not a function [call-import-namespace]
 
     src/main.ts:2:12:
@@ -511,7 +546,7 @@ Consider changing "moment" to a default import instead:
         │        ~~~~~~~~~~~
         ╵        moment
 
-</docs-code>
+```
 
 However, you can avoid the runtime errors and the warning by enabling the `esModuleInterop` TypeScript option for the application and changing the import to the following:
 
@@ -529,7 +564,7 @@ This is caused by a [defect](https://github.com/evanw/esbuild/issues/399) in the
 
 IMPORTANT: Avoiding the use of modules with non-local side effects (outside of polyfills) is recommended whenever possible regardless of the build system being used and avoids this particular issue. Modules with non-local side effects can have a negative effect on both application size and runtime performance as well.
 
-### Output location changes 
+### Output location changes
 
 By default, after a successful build by the application builder the bundle is located in a `dist/<project-name>/browser` directory (instead of `dist/<project-name>` for the browser builder).
 This might break some of the toolchains that rely the previous location. In this case, you can [configure the output path](reference/configs/workspace-config#output-path-configuration) to suit your needs.
