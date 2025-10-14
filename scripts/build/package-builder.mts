@@ -10,6 +10,7 @@ import {execSync, spawnSync} from 'child_process';
 import {join, dirname} from 'path';
 import {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
+import {existsSync} from 'fs';
 
 /** Path to the project directory. */
 export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -72,9 +73,9 @@ function buildReleasePackages(
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
-    if (spawnSync(`[ -d ${outputPath} ]`).status !== 0) {
-      exec(`chmod -R u+w ${outputPath}`);
-      exec(`rm -rf ${outputPath}`);
+    if (existsSync(outputPath)) {
+      exec(`chmod -R u+w "${outputPath}"`);
+      exec(`rm -rf "${outputPath}"`);
     }
   });
 
