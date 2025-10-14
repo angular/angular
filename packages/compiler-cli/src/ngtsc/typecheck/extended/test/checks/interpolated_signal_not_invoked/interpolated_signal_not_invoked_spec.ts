@@ -634,29 +634,39 @@ runInEachFileSystem(() => {
       {
         fileName,
         templates: {
-          'TestCmp': `<child /> <div [id]="title"></div>`,
+          'TestCmp': `
+          <!-- The below "myInput" binding should be ignored, as it corresponds with TestDir -->
+          <div dir [myInput]="dirSignal"></div>
+
+          <!-- The below "myInput" binding should be reported, as it does not correspond with TestDir -->
+          <div [myInput]="divSignal"></div>
+
+          <!-- The below "myInput" binding applies to the "div" element so it should be reported -->
+          <div *dir [myInput]="structuralSignal"></div>
+          `,
         },
         source: `
           import {signal, input} from '@angular/core';
 
-          export class Child {
-            id = input(0);
+          export class TestDir {
+            myInput = input.required();
           }
-
           export class TestCmp {
-            title = signal('');
+            dirSignal = signal(0);
+            divSignal = signal(0);
+            structuralSignal = signal(0);
           }`,
         declarations: [
           {
             type: 'directive',
-            name: 'Child',
-            selector: 'child',
+            name: 'TestDir',
+            selector: '[dir]',
             inputs: {
-              id: {
+              myInput: {
                 isSignal: true,
-                bindingPropertyName: 'id',
-                classPropertyName: 'id',
-                required: false,
+                bindingPropertyName: 'myInput',
+                classPropertyName: 'myInput',
+                required: true,
                 transform: null,
               },
             },
@@ -670,11 +680,17 @@ runInEachFileSystem(() => {
       templateTypeChecker,
       program.getTypeChecker(),
       [interpolatedSignalFactory],
-      {} /* options */,
+      {},
+      /* options */
     );
     const diags = extendedTemplateChecker.getDiagnosticsForComponent(component);
-    expect(diags.length).toBe(1);
-    expect(diags[0].messageText).toBe('title is a function and should be invoked: title()');
+    expect(diags.length).toBe(2);
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[0])).toBe(`divSignal`);
+    expect(diags[1].category).toBe(ts.DiagnosticCategory.Warning);
+    expect(diags[1].code).toBe(ngErrorCode(ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED));
+    expect(getSourceCodeForDiagnostic(diags[1])).toBe(`structuralSignal`);
   });
 
   [
