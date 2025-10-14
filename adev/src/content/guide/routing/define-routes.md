@@ -229,6 +229,29 @@ The `loadComponent` property accepts a loader function that returns a Promise th
 
 Lazily loading routes can significantly improve the load speed of your Angular application by removing large portions of JavaScript from the initial bundle. These portions of your code compile into separate JavaScript "chunks" that the router requests only when the user visits the corresponding route.
 
+### Injection context lazy loading
+
+The Router executes `loadComponent` and `loadChildren` within the **injection context of the current route**, allowing you to call `inject` inside these loader functions to access providers declared on that route, inherited from parent routes through hierarchical dependency injection, or available globally. This enables context-aware lazy loading.
+
+```ts
+import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { FeatureFlags } from './feature-flags';
+
+export const routes: Routes = [
+  {
+    path: 'dashboard',
+    // Runs inside the route's injection context
+    loadComponent: () => {
+      const flags = inject(FeatureFlags);
+      return flags.isPremium
+        ? import('./dashboard/premium-dashboard').then(c => c.PremiumDashboard)
+        : import('./dashboard/basic-dashboard').then(c => c.BasicDashboard);
+    },
+  },
+];
+```
+
 ### Should I use an eager or a lazy route?
 
 There are many factors to consider when deciding on whether a route should be eager or lazy.
