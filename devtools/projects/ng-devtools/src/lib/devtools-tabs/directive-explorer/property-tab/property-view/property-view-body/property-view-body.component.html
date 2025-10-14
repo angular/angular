@@ -20,7 +20,7 @@
     }
     @for (panel of panels(); track $index) {
       @if (panel.controls().dataSource.data.length > 0) {
-        <div class="mat-accordion-content">
+        <div class="mat-accordion-content" [id]="panel.title()">
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
               <mat-panel-title>{{ panel.title() }}</mat-panel-title>
