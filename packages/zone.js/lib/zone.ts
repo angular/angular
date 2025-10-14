@@ -27,6 +27,7 @@ import {
   ZoneType as _ZoneType,
 } from './zone-impl';
 
+export {};
 declare global {
   const Zone: ZoneType;
   type Zone = _Zone;

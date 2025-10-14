@@ -1,0 +1,21 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+declare const _default: {
+  format: string;
+  keepNames: boolean;
+  resolveExtensions: string[];
+  mainFields: string[];
+  conditions: string[];
+  define:
+    | {
+        [key: string]: string;
+      }
+    | undefined;
+  plugins: any[];
+};
+export default _default;

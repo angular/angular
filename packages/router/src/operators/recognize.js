@@ -1,0 +1,60 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {InjectionToken, makeEnvironmentProviders} from '@angular/core';
+import {of} from 'rxjs';
+import {map, mergeMap, switchMap} from 'rxjs/operators';
+import {recognize as recognizeFn} from '../recognize';
+import {recognize as recognizeFnRxjs} from '../recognize_rxjs';
+const USE_ASYNC_RECOGNIZE = true;
+const RECOGNIZE_IMPL = new InjectionToken('RECOGNIZE_IMPL', {
+  providedIn: 'root',
+  factory: () => {
+    if (!USE_ASYNC_RECOGNIZE) {
+      return recognizeFnRxjs;
+    }
+    return recognizeFn;
+  },
+});
+/**
+ * Provides a way to use the synchronous version of the recognize function using rxjs.
+ */
+export function provideSometimesSyncRecognize() {
+  return makeEnvironmentProviders([{provide: RECOGNIZE_IMPL, useValue: recognizeFnRxjs}]);
+}
+export function recognize(
+  injector,
+  configLoader,
+  rootComponentType,
+  config,
+  serializer,
+  paramsInheritanceStrategy,
+  abortSignal,
+) {
+  // TODO(atscott): Simplify once we do not need to support both forms of recognize
+  const recognizeImpl = injector.get(RECOGNIZE_IMPL);
+  return mergeMap((t) =>
+    of(t).pipe(
+      switchMap((t) =>
+        recognizeImpl(
+          injector,
+          configLoader,
+          rootComponentType,
+          config,
+          t.extractedUrl,
+          serializer,
+          paramsInheritanceStrategy,
+          abortSignal,
+        ),
+      ),
+      map(({state: targetSnapshot, tree: urlAfterRedirects}) => {
+        return {...t, targetSnapshot, urlAfterRedirects};
+      }),
+    ),
+  );
+}
+//# sourceMappingURL=recognize.js.map

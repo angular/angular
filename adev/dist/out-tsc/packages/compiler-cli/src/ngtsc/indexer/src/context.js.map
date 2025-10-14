@@ -1,0 +1,1 @@
+{"version":3,"file":"context.js","sourceRoot":"","sources":["../../../../../../../../../packages/compiler-cli/src/ngtsc/indexer/src/context.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAyCH;;;;;GAKG;AACH,MAAM,OAAO,eAAe;IACjB,UAAU,GAAG,IAAI,GAAG,EAAiB,CAAC;IAE/C;;OAEG;IACH,YAAY,CAAC,IAAmB;QAC9B,IAAI,CAAC,UAAU,CAAC,GAAG,CAAC,IAAI,CAAC,CAAC;IAC5B,CAAC;CACF"}

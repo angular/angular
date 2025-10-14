@@ -1,0 +1,1 @@
+{"version":3,"file":"program.js","sourceRoot":"","sources":["../../../../../../../packages/compiler-cli/src/transformers/program.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,OAAO,EAAC,YAAY,EAAC,MAAM,kBAAkB,CAAC;AAI9C,MAAM,UAAU,aAAa,CAAC,EAC5B,SAAS,EACT,OAAO,EACP,IAAI,EACJ,UAAU,GAMX;IACC,OAAO,IAAI,YAAY,CAAC,SAAS,EAAE,OAAO,EAAE,IAAI,EAAE,UAAsC,CAAC,CAAC;AAC5F,CAAC"}

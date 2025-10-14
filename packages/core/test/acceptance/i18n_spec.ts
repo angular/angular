@@ -10,8 +10,8 @@
 import '@angular/localize/init';
 
 import {CommonModule, DOCUMENT, registerLocaleData} from '@angular/common';
-import localeEs from '@angular/common/locales/es';
-import localeRo from '@angular/common/locales/ro';
+import localeEs from '../../../dist/packages-dist/@angular/common/locales/es';
+import localeRo from '../../../dist/packages-dist/@angular/common/locales/ro';
 import {computeMsgId} from '@angular/compiler';
 import {
   Attribute,

@@ -1,0 +1,378 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {__decorate} from 'tslib';
+import {
+  CdkVirtualScrollViewport,
+  CdkFixedSizeVirtualScroll,
+  CdkVirtualForOf,
+} from '@angular/cdk/scrolling';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {
+  afterRenderEffect,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
+import {MessageBus} from '../../../../../../protocol';
+import {TabUpdate} from '../../tab-update/index';
+import {ComponentDataSource} from './component-data-source';
+import {getFullNodeNameString, isChildOf, parentCollapsed} from './directive-forest-utils';
+import {FilterComponent} from './filter/filter.component';
+import {TreeNodeComponent} from './tree-node/tree-node.component';
+import {directiveForestFilterFnGenerator} from './filter/directive-forest-filter-fn-generator';
+import {Debouncer} from '../../../shared/utils/debouncer';
+const NODE_ITEM_HEIGHT = 18; // px; Required for CDK Virtual Scroll
+const RESIZE_OBSERVER_DEBOUNCE = 250; // ms
+let DirectiveForestComponent = class DirectiveForestComponent {
+  constructor() {
+    this.tabUpdate = inject(TabUpdate);
+    this.messageBus = inject(MessageBus);
+    this.elementRef = inject(ElementRef);
+    this.forest = input([]);
+    this.showCommentNodes = input(false);
+    this.currentSelectedElement = input.required();
+    this.selectNode = output();
+    this.selectDomElement = output();
+    this.setParents = output();
+    this.highlightComponent = output();
+    this.removeComponentHighlight = output();
+    this.toggleInspector = output();
+    this.viewport = viewChild.required(CdkVirtualScrollViewport);
+    this.selectedNode = signal(null);
+    this.highlightIdInTreeFromElement = signal(null);
+    this.matchedNodes = signal(new Map()); // Node index, NodeTextMatch
+    this.matchesCount = computed(() => this.matchedNodes().size);
+    this.currentlyMatchedIndex = signal(-1);
+    this.selectedNodeIdx = computed(() => {
+      const node = this.selectedNode();
+      if (node) {
+        return this.dataSource.data.indexOf(node);
+      }
+      return -1;
+    });
+    this.treeControl = new FlatTreeControl(
+      (node) => node.level,
+      (node) => node.expandable,
+    );
+    this.dataSource = new ComponentDataSource(this.treeControl);
+    this.itemHeight = NODE_ITEM_HEIGHT;
+    this.filterGenerator = directiveForestFilterFnGenerator;
+    this.initialized = false;
+    this.forestRoot = null;
+    this.subscribeToInspectorEvents();
+    afterRenderEffect({
+      read: () => {
+        // Listen for tab updates to reset the scroll position to the top
+        // This ensures the viewport is properly updated when switching tabs
+        this.tabUpdate.tabUpdate();
+        const viewport = this.viewport();
+        viewport.scrollToIndex(0);
+        viewport.checkViewportSize();
+      },
+    });
+    effect(() => {
+      const result = this.updateForest(this.forest());
+      const changed =
+        result.movedItems.length || result.newItems.length || result.removedItems.length;
+      if (changed) {
+        this.reselectNodeOnUpdate();
+      }
+    });
+    this.handleViewportResize();
+  }
+  handleSelectDomElement(node) {
+    this.selectDomElement.emit(node.original);
+  }
+  highlightNode(node) {
+    this.highlightIdInTreeFromElement.set(null);
+    this.highlightComponent.emit(node.position);
+  }
+  removeHighlight() {
+    this.removeComponentHighlight.emit();
+  }
+  selectAndEnsureVisible(node) {
+    this.select(node);
+    const scrollParent = this.viewport().elementRef.nativeElement;
+    // The top most point we see an element
+    const top = scrollParent.scrollTop;
+    // That's the bottom most point we currently see an element.
+    const parentHeight = scrollParent.offsetHeight;
+    const bottom = top + parentHeight;
+    const idx = this.dataSource.expandedDataValues.findIndex((el) => el.id === node.id);
+    // The node might be hidden.
+    if (idx < 0) {
+      return;
+    }
+    const itemTop = idx * this.itemHeight;
+    if (itemTop < top) {
+      scrollParent.scrollTo({top: itemTop});
+    } else if (bottom < itemTop + this.itemHeight) {
+      scrollParent.scrollTo({top: itemTop - parentHeight + this.itemHeight});
+    }
+  }
+  select(node) {
+    this.populateParents(node.position);
+    this.selectNode.emit(node.original);
+    this.selectedNode.set(node);
+  }
+  clearSelectedNode() {
+    this.selectNode.emit(null);
+    this.selectedNode.set(null);
+    this.parents = [];
+    this.setParents.emit(null);
+  }
+  navigateUp(event) {
+    if (this.isEditingDirectiveState(event)) {
+      return;
+    }
+    event.preventDefault();
+    const data = this.dataSource.expandedDataValues;
+    const selectedNode = this.selectedNode();
+    let prevIdx = data.findIndex((e) => selectedNode && e.id === selectedNode.id) - 1;
+    if (prevIdx < 0) {
+      return;
+    }
+    let prevNode = data[prevIdx];
+    const currentNode = data[prevIdx + 1];
+    if (prevNode.position.length <= currentNode.position.length) {
+      return this.selectAndEnsureVisible(data[prevIdx]);
+    }
+    while (prevIdx >= 0 && parentCollapsed(prevIdx, data, this.treeControl)) {
+      prevIdx--;
+      prevNode = data[prevIdx];
+    }
+    this.selectAndEnsureVisible(data[prevIdx]);
+  }
+  navigateDown(event) {
+    if (this.isEditingDirectiveState(event)) {
+      return;
+    }
+    event.preventDefault();
+    const data = this.dataSource.expandedDataValues;
+    const selectedNode = this.selectedNode();
+    let idx = data.findIndex((e) => selectedNode && e.id === selectedNode.id);
+    const currentNode = data[idx];
+    if (!this.treeControl.isExpanded(currentNode) && currentNode.expandable) {
+      for (let i = idx + 1; i < data.length; i++) {
+        const node = data[i];
+        if (!isChildOf(node.position, currentNode.position)) {
+          idx = i;
+          break;
+        }
+      }
+    } else {
+      idx++;
+    }
+    if (idx >= data.length) {
+      return;
+    }
+    this.selectAndEnsureVisible(data[idx]);
+  }
+  collapseCurrent(event) {
+    if (this.isEditingDirectiveState(event)) {
+      return;
+    }
+    const selectedNode = this.selectedNode();
+    if (!selectedNode) {
+      return;
+    }
+    this.treeControl.collapse(selectedNode);
+    event.preventDefault();
+  }
+  expandCurrent(event) {
+    if (this.isEditingDirectiveState(event)) {
+      return;
+    }
+    const selectedNode = this.selectedNode();
+    if (!selectedNode) {
+      return;
+    }
+    this.treeControl.expand(selectedNode);
+    event.preventDefault();
+  }
+  isEditingDirectiveState(event) {
+    return event.target.tagName === 'INPUT' || !this.selectedNode;
+  }
+  handleFilter(filterFn) {
+    this.currentlyMatchedIndex.set(-1);
+    this.matchedNodes.set(new Map());
+    for (let i = 0; i < this.dataSource.data.length; i++) {
+      const node = this.dataSource.data[i];
+      const fullName = getFullNodeNameString(node);
+      const matches = filterFn(fullName);
+      if (matches.length) {
+        this.matchedNodes.update((matched) => {
+          const map = new Map(matched);
+          map.set(i, matches);
+          return map;
+        });
+      }
+    }
+    // Select the first match, if there are any.
+    if (this.matchesCount()) {
+      this.navigateMatchedNode('next');
+    }
+  }
+  navigateMatchedNode(dir) {
+    const dirIdx = dir === 'next' ? 1 : -1;
+    const indexesOfMatchedNodes = Array.from(this.matchedNodes());
+    const newMatchedIndex =
+      (this.currentlyMatchedIndex() + dirIdx + indexesOfMatchedNodes.length) %
+      indexesOfMatchedNodes.length;
+    const [nodeIdxToSelect] = indexesOfMatchedNodes[newMatchedIndex];
+    const nodeToSelect = this.dataSource.data[nodeIdxToSelect];
+    if (nodeIdxToSelect !== undefined) {
+      this.treeControl.expand(nodeToSelect);
+      this.selectAndEnsureVisible(nodeToSelect);
+      // Set the `currentlyMatchedIndex` after `selectAndEnsureVisible` since it resets it.
+      this.currentlyMatchedIndex.set(newMatchedIndex);
+    }
+    const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
+    if (!nodeIsVisible) {
+      this.expandParents();
+    }
+  }
+  reselectNodeOnUpdate() {
+    const nodeThatStillExists = this.dataSource.getFlatNodeFromIndexedNode(
+      this.currentSelectedElement(),
+    );
+    if (nodeThatStillExists) {
+      this.select(nodeThatStillExists);
+    } else if (this.forestRoot) {
+      this.select(this.forestRoot);
+    } else {
+      this.clearSelectedNode();
+    }
+  }
+  updateForest(forest) {
+    const result = this.dataSource.update(forest, this.showCommentNodes());
+    this.forestRoot = this.dataSource.data[0];
+    if (!this.initialized && forest && forest.length) {
+      this.treeControl.expandAll();
+      this.initialized = true;
+      result.newItems.forEach((item) => (item.newItem = false));
+    }
+    // We want to expand them once they are rendered.
+    result.newItems.forEach((item) => {
+      this.treeControl.expand(item);
+    });
+    return result;
+  }
+  populateParents(position) {
+    this.parents = [];
+    for (let i = 1; i <= position.length; i++) {
+      const current = position.slice(0, i);
+      const selectedNode = this.dataSource.data.find(
+        (item) => item.position.toString() === current.toString(),
+      );
+      // We might not be able to find the parent if the user has hidden the comment nodes.
+      if (selectedNode) {
+        this.parents.push(selectedNode);
+      }
+    }
+    this.setParents.emit(this.parents);
+  }
+  subscribeToInspectorEvents() {
+    this.messageBus.on('selectComponent', (id) => {
+      this.selectNodeByComponentId(id);
+      this.toggleInspector.emit();
+      this.expandParents();
+    });
+    this.messageBus.on('highlightComponent', (id) => {
+      this.highlightIdInTreeFromElement.set(id);
+    });
+    this.messageBus.on('removeComponentHighlight', () => {
+      this.highlightIdInTreeFromElement.set(null);
+    });
+  }
+  selectNodeByComponentId(id) {
+    const foundNode = this.dataSource.data.find((node) => node.original.component?.id === id);
+    if (foundNode) {
+      this.selectAndEnsureVisible(foundNode);
+    }
+  }
+  expandParents() {
+    this.parents.forEach((parent) => this.treeControl.expand(parent));
+  }
+  handleViewportResize() {
+    // In some cases there a height changes, we need to recalculate the viewport size.
+    let lastHeight = this.elementRef.nativeElement.clientHeight;
+    const debouncer = new Debouncer();
+    const resizeObserver = new ResizeObserver(
+      debouncer.debounce(([entry]) => {
+        const currHeight = entry.contentRect.height;
+        // Perform check and scroll only if the height changes.
+        if (currHeight !== lastHeight) {
+          this.viewport().checkViewportSize();
+          // Scroll a few elements above the selected one for better UX.
+          const scrollItemIdx = Math.max(0, this.selectedNodeIdx() - 2);
+          this.viewport().scrollToIndex(scrollItemIdx);
+          lastHeight = currHeight;
+        }
+      }, RESIZE_OBSERVER_DEBOUNCE),
+    );
+    resizeObserver.observe(this.elementRef.nativeElement);
+    inject(DestroyRef).onDestroy(() => {
+      debouncer.cancel();
+      resizeObserver.disconnect();
+    });
+  }
+};
+__decorate(
+  [HostListener('document:keydown.ArrowUp', ['$event'])],
+  DirectiveForestComponent.prototype,
+  'navigateUp',
+  null,
+);
+__decorate(
+  [HostListener('document:keydown.ArrowDown', ['$event'])],
+  DirectiveForestComponent.prototype,
+  'navigateDown',
+  null,
+);
+__decorate(
+  [HostListener('document:keydown.ArrowLeft', ['$event'])],
+  DirectiveForestComponent.prototype,
+  'collapseCurrent',
+  null,
+);
+__decorate(
+  [HostListener('document:keydown.ArrowRight', ['$event'])],
+  DirectiveForestComponent.prototype,
+  'expandCurrent',
+  null,
+);
+DirectiveForestComponent = __decorate(
+  [
+    Component({
+      selector: 'ng-directive-forest',
+      templateUrl: './directive-forest.component.html',
+      styleUrls: ['./directive-forest.component.scss'],
+      changeDetection: ChangeDetectionStrategy.OnPush,
+      imports: [
+        FilterComponent,
+        CdkVirtualScrollViewport,
+        CdkFixedSizeVirtualScroll,
+        CdkVirtualForOf,
+        TreeNodeComponent,
+      ],
+    }),
+  ],
+  DirectiveForestComponent,
+);
+export {DirectiveForestComponent};
+//# sourceMappingURL=directive-forest.component.js.map

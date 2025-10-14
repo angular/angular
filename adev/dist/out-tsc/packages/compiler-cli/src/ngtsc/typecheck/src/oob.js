@@ -1,0 +1,506 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {
+  AbsoluteSourceSpan,
+  TmplAstBoundEvent,
+  TmplAstComponent,
+  TmplAstDirective,
+  TmplAstElement,
+} from '@angular/compiler';
+import ts from 'typescript';
+import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
+import {makeTemplateDiagnostic} from '../diagnostics';
+export class OutOfBandDiagnosticRecorderImpl {
+  resolver;
+  _diagnostics = [];
+  /**
+   * Tracks which `BindingPipe` nodes have already been recorded as invalid, so only one diagnostic
+   * is ever produced per node.
+   */
+  recordedPipes = new Set();
+  /** Common pipes that can be suggested to users. */
+  pipeSuggestions = new Map([
+    ['async', 'AsyncPipe'],
+    ['uppercase', 'UpperCasePipe'],
+    ['lowercase', 'LowerCasePipe'],
+    ['json', 'JsonPipe'],
+    ['slice', 'SlicePipe'],
+    ['number', 'DecimalPipe'],
+    ['percent', 'PercentPipe'],
+    ['titlecase', 'TitleCasePipe'],
+    ['currency', 'CurrencyPipe'],
+    ['date', 'DatePipe'],
+    ['i18nPlural', 'I18nPluralPipe'],
+    ['i18nSelect', 'I18nSelectPipe'],
+    ['keyvalue', 'KeyValuePipe'],
+  ]);
+  constructor(resolver) {
+    this.resolver = resolver;
+  }
+  get diagnostics() {
+    return this._diagnostics;
+  }
+  missingReferenceTarget(id, ref) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const value = ref.value.trim();
+    const errorMsg = `No directive found with exportAs '${value}'.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        ref.valueSpan || ref.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_REFERENCE_TARGET),
+        errorMsg,
+      ),
+    );
+  }
+  missingPipe(id, ast, isStandalone) {
+    if (this.recordedPipes.has(ast)) {
+      return;
+    }
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, ast.nameSpan);
+    if (sourceSpan === null) {
+      throw new Error(
+        `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`,
+      );
+    }
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    let errorMsg = `No pipe found with name '${ast.name}'.`;
+    if (this.pipeSuggestions.has(ast.name)) {
+      const suggestedClassName = this.pipeSuggestions.get(ast.name);
+      const suggestedImport = '@angular/common';
+      if (isStandalone) {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the component.`;
+      } else {
+        errorMsg +=
+          `\nTo fix this, import the "${suggestedClassName}" class from "${suggestedImport}"` +
+          ` and add it to the "imports" array of the module declaring the component.`;
+      }
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_PIPE),
+        errorMsg,
+      ),
+    );
+    this.recordedPipes.add(ast);
+  }
+  deferredPipeUsedEagerly(id, ast) {
+    if (this.recordedPipes.has(ast)) {
+      return;
+    }
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg =
+      `Pipe '${ast.name}' was imported  via \`@Component.deferredImports\`, ` +
+      `but was used outside of a \`@defer\` block in a template. To fix this, either ` +
+      `use the '${ast.name}' pipe inside of a \`@defer\` block or import this dependency ` +
+      `using the \`@Component.imports\` field.`;
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, ast.nameSpan);
+    if (sourceSpan === null) {
+      throw new Error(
+        `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`,
+      );
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFERRED_PIPE_USED_EAGERLY),
+        errorMsg,
+      ),
+    );
+    this.recordedPipes.add(ast);
+  }
+  deferredComponentUsedEagerly(id, element) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg =
+      `Element '${element.name}' contains a component or a directive that ` +
+      `was imported  via \`@Component.deferredImports\`, but the element itself is located ` +
+      `outside of a \`@defer\` block in a template. To fix this, either ` +
+      `use the '${element.name}' element inside of a \`@defer\` block or ` +
+      `import referenced component/directive dependency using the \`@Component.imports\` field.`;
+    const {start, end} = element.startSourceSpan;
+    const absoluteSourceSpan = new AbsoluteSourceSpan(start.offset, end.offset);
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, absoluteSourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(
+        `Assertion failure: no SourceLocation found for usage of pipe '${element.name}'.`,
+      );
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFERRED_DIRECTIVE_USED_EAGERLY),
+        errorMsg,
+      ),
+    );
+  }
+  duplicateTemplateVar(id, variable, firstDecl) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg = `Cannot redeclare variable '${variable.name}' as it was previously declared elsewhere for the same template.`;
+    // The allocation of the error here is pretty useless for variables declared in microsyntax,
+    // since the sourceSpan refers to the entire microsyntax property, not a span for the specific
+    // variable in question.
+    //
+    // TODO(alxhub): allocate to a tighter span once one is available.
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        variable.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DUPLICATE_VARIABLE_DECLARATION),
+        errorMsg,
+        [
+          {
+            text: `The variable '${firstDecl.name}' was first declared here.`,
+            start: firstDecl.sourceSpan.start.offset,
+            end: firstDecl.sourceSpan.end.offset,
+            sourceFile: mapping.node.getSourceFile(),
+          },
+        ],
+      ),
+    );
+  }
+  requiresInlineTcb(id, node) {
+    this._diagnostics.push(
+      makeInlineDiagnostic(
+        id,
+        ErrorCode.INLINE_TCB_REQUIRED,
+        node.name,
+        `This component requires inline template type-checking, which is not supported by the current environment.`,
+      ),
+    );
+  }
+  requiresInlineTypeConstructors(id, node, directives) {
+    let message;
+    if (directives.length > 1) {
+      message = `This component uses directives which require inline type constructors, which are not supported by the current environment.`;
+    } else {
+      message = `This component uses a directive which requires an inline type constructor, which is not supported by the current environment.`;
+    }
+    this._diagnostics.push(
+      makeInlineDiagnostic(
+        id,
+        ErrorCode.INLINE_TYPE_CTOR_REQUIRED,
+        node.name,
+        message,
+        directives.map((dir) =>
+          makeRelatedInformation(dir.name, `Requires an inline type constructor.`),
+        ),
+      ),
+    );
+  }
+  suboptimalTypeInference(id, variables) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    // Select one of the template variables that's most suitable for reporting the diagnostic. Any
+    // variable will do, but prefer one bound to the context's $implicit if present.
+    let diagnosticVar = null;
+    for (const variable of variables) {
+      if (diagnosticVar === null || variable.value === '' || variable.value === '$implicit') {
+        diagnosticVar = variable;
+      }
+    }
+    if (diagnosticVar === null) {
+      // There is no variable on which to report the diagnostic.
+      return;
+    }
+    let varIdentification = `'${diagnosticVar.name}'`;
+    if (variables.length === 2) {
+      varIdentification += ` (and 1 other)`;
+    } else if (variables.length > 2) {
+      varIdentification += ` (and ${variables.length - 1} others)`;
+    }
+    const message = `This structural directive supports advanced type inference, but the current compiler configuration prevents its usage. The variable ${varIdentification} will have type 'any' as a result.\n\nConsider enabling the 'strictTemplates' option in your tsconfig.json for better type inference within this template.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        diagnosticVar.keySpan,
+        ts.DiagnosticCategory.Suggestion,
+        ngErrorCode(ErrorCode.SUGGEST_SUBOPTIMAL_TYPE_INFERENCE),
+        message,
+      ),
+    );
+  }
+  splitTwoWayBinding(id, input, output, inputConsumer, outputConsumer) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg = `The property and event halves of the two-way binding '${input.name}' are not bound to the same target.
+            Find more at https://angular.dev/guide/templates/two-way-binding#how-two-way-binding-works`;
+    const relatedMessages = [];
+    relatedMessages.push({
+      text: `The property half of the binding is to the '${inputConsumer.name.text}' component.`,
+      start: inputConsumer.name.getStart(),
+      end: inputConsumer.name.getEnd(),
+      sourceFile: inputConsumer.name.getSourceFile(),
+    });
+    if (outputConsumer instanceof TmplAstElement) {
+      let message = `The event half of the binding is to a native event called '${input.name}' on the <${outputConsumer.name}> DOM element.`;
+      if (!mapping.node.getSourceFile().isDeclarationFile) {
+        message += `\n \n Are you missing an output declaration called '${output.name}'?`;
+      }
+      relatedMessages.push({
+        text: message,
+        start: outputConsumer.sourceSpan.start.offset + 1,
+        end: outputConsumer.sourceSpan.start.offset + outputConsumer.name.length + 1,
+        sourceFile: mapping.node.getSourceFile(),
+      });
+    } else {
+      relatedMessages.push({
+        text: `The event half of the binding is to the '${outputConsumer.name.text}' component.`,
+        start: outputConsumer.name.getStart(),
+        end: outputConsumer.name.getEnd(),
+        sourceFile: outputConsumer.name.getSourceFile(),
+      });
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        input.keySpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.SPLIT_TWO_WAY_BINDING),
+        errorMsg,
+        relatedMessages,
+      ),
+    );
+  }
+  missingRequiredInputs(id, element, directiveName, isComponent, inputAliases) {
+    const message = `Required input${inputAliases.length === 1 ? '' : 's'} ${inputAliases
+      .map((n) => `'${n}'`)
+      .join(
+        ', ',
+      )} from ${isComponent ? 'component' : 'directive'} ${directiveName} must be specified.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        element.startSourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_REQUIRED_INPUTS),
+        message,
+      ),
+    );
+  }
+  illegalForLoopTrackAccess(id, block, access) {
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, access.sourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property read.`);
+    }
+    const messageVars = [block.item, ...block.contextVariables.filter((v) => v.value === '$index')]
+      .map((v) => `'${v.name}'`)
+      .join(', ');
+    const message =
+      `Cannot access '${access.name}' inside of a track expression. ` +
+      `Only ${messageVars} and properties on the containing component are available to this expression.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.ILLEGAL_FOR_LOOP_TRACK_ACCESS),
+        message,
+      ),
+    );
+  }
+  inaccessibleDeferredTriggerElement(id, trigger) {
+    let message;
+    if (trigger.reference === null) {
+      message =
+        `Trigger cannot find reference. Make sure that the @defer block has a ` +
+        `@placeholder with at least one root element node.`;
+    } else {
+      message =
+        `Trigger cannot find reference "${trigger.reference}".\nCheck that an element with #${trigger.reference} exists in the same template and it's accessible from the ` +
+        `@defer block.\nDeferred blocks can only access triggers in same view, a parent ` +
+        `embedded view or the root view of the @placeholder block.`;
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.INACCESSIBLE_DEFERRED_TRIGGER_ELEMENT),
+        message,
+      ),
+    );
+  }
+  controlFlowPreventingContentProjection(
+    id,
+    category,
+    projectionNode,
+    componentName,
+    slotSelector,
+    controlFlowNode,
+    preservesWhitespaces,
+  ) {
+    const blockName = controlFlowNode.nameSpan.toString().trim();
+    const lines = [
+      `Node matches the "${slotSelector}" slot of the "${componentName}" component, but will not be projected into the specific slot because the surrounding ${blockName} has more than one node at its root. To project the node in the right slot, you can:\n`,
+      `1. Wrap the content of the ${blockName} block in an <ng-container/> that matches the "${slotSelector}" selector.`,
+      `2. Split the content of the ${blockName} block across multiple ${blockName} blocks such that each one only has a single projectable node at its root.`,
+      `3. Remove all content from the ${blockName} block, except for the node being projected.`,
+    ];
+    if (preservesWhitespaces) {
+      lines.push(
+        'Note: the host component has `preserveWhitespaces: true` which may ' +
+          'cause whitespace to affect content projection.',
+      );
+    }
+    lines.push(
+      '',
+      'This check can be disabled using the `extendedDiagnostics.checks.' +
+        'controlFlowPreventingContentProjection = "suppress" compiler option.`',
+    );
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        projectionNode.startSourceSpan,
+        category,
+        ngErrorCode(ErrorCode.CONTROL_FLOW_PREVENTING_CONTENT_PROJECTION),
+        lines.join('\n'),
+      ),
+    );
+  }
+  illegalWriteToLetDeclaration(id, node, target) {
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, node.sourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property write.`);
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.ILLEGAL_LET_WRITE),
+        `Cannot assign to @let declaration '${target.name}'.`,
+      ),
+    );
+  }
+  letUsedBeforeDefinition(id, node, target) {
+    const sourceSpan = this.resolver.toTemplateParseSourceSpan(id, node.sourceSpan);
+    if (sourceSpan === null) {
+      throw new Error(`Assertion failure: no SourceLocation found for property read.`);
+    }
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.LET_USED_BEFORE_DEFINITION),
+        `Cannot read @let declaration '${target.name}' before it has been defined.`,
+      ),
+    );
+  }
+  conflictingDeclaration(id, decl) {
+    const mapping = this.resolver.getTemplateSourceMapping(id);
+    const errorMsg = `Cannot declare @let called '${decl.name}' as there is another symbol in the template with the same name.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        mapping,
+        decl.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.CONFLICTING_LET_DECLARATION),
+        errorMsg,
+      ),
+    );
+  }
+  missingNamedTemplateDependency(id, node) {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.startSourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.MISSING_NAMED_TEMPLATE_DEPENDENCY),
+        // Wording is meant to mimic the wording TS uses in their diagnostic for missing symbols.
+        `Cannot find name "${node instanceof TmplAstDirective ? node.name : node.componentName}". ` +
+          `Selectorless references are only supported to classes or non-type import statements.`,
+      ),
+    );
+  }
+  incorrectTemplateDependencyType(id, node) {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.startSourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.INCORRECT_NAMED_TEMPLATE_DEPENDENCY_TYPE),
+        `Incorrect reference type. Type must be a standalone ${node instanceof TmplAstComponent ? '@Component' : '@Directive'}.`,
+      ),
+    );
+  }
+  unclaimedDirectiveBinding(id, directive, node) {
+    const errorMsg =
+      `Directive ${directive.name} does not have an ` +
+      `${node instanceof TmplAstBoundEvent ? 'output' : 'input'} named "${node.name}". ` +
+      `Bindings to directives must target existing inputs or outputs.`;
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.keySpan || node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.UNCLAIMED_DIRECTIVE_BINDING),
+        errorMsg,
+      ),
+    );
+  }
+  deferImplicitTriggerMissingPlaceholder(id, trigger) {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+      ),
+    );
+  }
+  deferImplicitTriggerInvalidPlaceholder(id, trigger) {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        trigger.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
+        'Trigger with no parameters can only be placed on an @defer that has a ' +
+          '@placeholder block with exactly one root element node',
+      ),
+    );
+  }
+}
+function makeInlineDiagnostic(id, code, node, messageText, relatedInformation) {
+  return {
+    ...makeDiagnostic(code, node, messageText, relatedInformation),
+    sourceFile: node.getSourceFile(),
+    typeCheckId: id,
+  };
+}
+//# sourceMappingURL=oob.js.map

@@ -1422,7 +1422,7 @@ importers:
     devDependencies:
       ng-packagr:
         specifier: 21.0.0-next.3
-        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
+        version: 21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2)
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -5387,11 +5387,6 @@ packages:
 
   ajv-formats@2.1.1:
     resolution: {integrity: sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA==}
-    peerDependencies:
-      ajv: ^8.0.0
-    peerDependenciesMeta:
-      ajv:
-        optional: true
 
   ajv-formats@3.0.1:
     resolution: {integrity: sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==}
@@ -17934,8 +17929,8 @@ snapshots:
     optionalDependencies:
       ajv: 8.13.0
 
-  ajv-formats@2.1.1(ajv@8.17.1):
-    optionalDependencies:
+  ajv-formats@2.1.1:
+    dependencies:
       ajv: 8.17.1
 
   ajv-formats@3.0.1:
@@ -20244,7 +20239,7 @@ snapshots:
     dependencies:
       '@apidevtools/json-schema-ref-parser': 9.1.2
       ajv: 8.17.1
-      ajv-formats: 2.1.1(ajv@8.17.1)
+      ajv-formats: 2.1.1
       body-parser: 1.20.3
       content-type: 1.0.5
       deep-freeze: 0.0.1
@@ -23274,7 +23269,7 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
+  ng-packagr@21.0.0-next.3(@angular/compiler-cli@21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2))(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': 21.0.0-next.5(@angular/compiler@21.0.0-next.5)(typescript@5.9.2)
@@ -23302,7 +23297,7 @@ snapshots:
       typescript: 5.9.2
     optionalDependencies:
       rollup: 4.52.2
-      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2))
+      tailwindcss: 3.4.17(ts-node@10.9.2(@types/node@24.5.2)(typescript@5.9.2))
 
   ng-packagr@21.0.0-next.3(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.17(ts-node@10.9.2(@types/node@20.19.17)(typescript@5.9.2)))(tslib@2.8.1)(typescript@5.9.2):
     dependencies:
@@ -24842,7 +24837,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.17.1
-      ajv-formats: 2.1.1(ajv@8.17.1)
+      ajv-formats: 2.1.1
       ajv-keywords: 5.1.0(ajv@8.17.1)
 
   secretlint@10.2.2:

@@ -1,0 +1,232 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {__esDecorate, __runInitializers} from 'tslib';
+import {Injectable, InjectionToken, inject, linkedSignal, resource, signal} from '@angular/core';
+import {ENVIRONMENT} from '../providers/index';
+import {liteClient as algoliasearch} from 'algoliasearch/lite';
+export const SEARCH_DELAY = 200;
+// Maximum number of facet values to return for each facet during a regular search.
+export const MAX_VALUE_PER_FACET = 5;
+export const ALGOLIA_CLIENT = new InjectionToken('Search service');
+export const provideAlgoliaSearchClient = (config) => {
+  return {
+    provide: ALGOLIA_CLIENT,
+    useFactory: () => algoliasearch(config.algolia.appId, config.algolia.apiKey),
+  };
+};
+let Search = (() => {
+  let _classDecorators = [
+    Injectable({
+      providedIn: 'root',
+    }),
+  ];
+  let _classDescriptor;
+  let _classExtraInitializers = [];
+  let _classThis;
+  var Search = class {
+    static {
+      _classThis = this;
+    }
+    static {
+      const _metadata =
+        typeof Symbol === 'function' && Symbol.metadata ? Object.create(null) : void 0;
+      __esDecorate(
+        null,
+        (_classDescriptor = {value: _classThis}),
+        _classDecorators,
+        {kind: 'class', name: _classThis.name, metadata: _metadata},
+        null,
+        _classExtraInitializers,
+      );
+      Search = _classThis = _classDescriptor.value;
+      if (_metadata)
+        Object.defineProperty(_classThis, Symbol.metadata, {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: _metadata,
+        });
+      __runInitializers(_classThis, _classExtraInitializers);
+    }
+    searchQuery = signal('');
+    config = inject(ENVIRONMENT);
+    client = inject(ALGOLIA_CLIENT);
+    resultsResource = resource({
+      params: () => this.searchQuery() || undefined, // coerces empty string to undefined
+      loader: async ({params: query, abortSignal}) => {
+        // Until we have a better alternative we debounce by awaiting for a short delay.
+        await wait(SEARCH_DELAY, abortSignal);
+        return this.client
+          .search([
+            {
+              indexName: this.config.algolia.indexName,
+              params: {
+                query: query,
+                maxValuesPerFacet: MAX_VALUE_PER_FACET,
+                attributesToRetrieve: [
+                  'hierarchy.lvl0',
+                  'hierarchy.lvl1',
+                  'hierarchy.lvl2',
+                  'hierarchy.lvl3',
+                  'hierarchy.lvl4',
+                  'hierarchy.lvl5',
+                  'hierarchy.lvl6',
+                  'content',
+                  'type',
+                  'url',
+                ],
+                hitsPerPage: 20,
+                snippetEllipsisText: '…',
+                highlightPreTag: '<ɵ>',
+                highlightPostTag: '</ɵ>',
+                attributesToHighlight: [],
+                attributesToSnippet: [
+                  'hierarchy.lvl1:10',
+                  'hierarchy.lvl2:10',
+                  'hierarchy.lvl3:10',
+                  'hierarchy.lvl4:10',
+                  'hierarchy.lvl5:10',
+                  'hierarchy.lvl6:10',
+                  'content:10',
+                ],
+              },
+              type: 'default',
+            },
+          ])
+          .then((response) => {
+            return this.parseResult(response);
+          });
+      },
+    });
+    searchResults = linkedSignal({
+      source: this.resultsResource.value,
+      computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
+    });
+    getUniqueSearchResultItems(items) {
+      const uniqueUrls = new Set();
+      return items.filter((item) => {
+        if (item.type === 'content' && !item._snippetResult.content) {
+          return false;
+        }
+        // Ensure that this result actually matched on the type.
+        // If not, this is going to be a duplicate. There should be another result in
+        // the list that already matched on its type.
+        // A lvl2 match will also return all its lvl3 results as well, even if those
+        // values don't also match the query.
+        if (
+          item.type.indexOf('lvl') === 0 &&
+          item._snippetResult.hierarchy?.[item.type]?.matchLevel === 'none'
+        ) {
+          return false;
+        }
+        if (item['url'] && typeof item['url'] === 'string' && !uniqueUrls.has(item['url'])) {
+          uniqueUrls.add(item['url']);
+          return true;
+        }
+        return false;
+      });
+    }
+    parseResult(response) {
+      if (!response) {
+        return;
+      }
+      const result = response.results[0];
+      if (!result || !('hits' in result)) {
+        return;
+      }
+      const items = result.hits;
+      return this.getUniqueSearchResultItems(items).map((hitItem) => {
+        const content = hitItem._snippetResult.content;
+        const hierarchy = hitItem._snippetResult.hierarchy;
+        const category = hitItem.hierarchy?.lvl0 ?? null;
+        const hasSubLabel = hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
+        return {
+          id: hitItem.objectID,
+          type: hitItem.hierarchy.lvl0 === 'Tutorials' ? 'code' : 'doc',
+          url: hitItem.url,
+          labelHtml: this.parseLabelToHtml(hitItem._snippetResult.hierarchy?.lvl1?.value ?? ''),
+          subLabelHtml: this.parseLabelToHtml(
+            hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
+          ),
+          contentHtml: content ? this.parseLabelToHtml(content.value) : null,
+          package: category === 'Reference' ? extractPackageNameFromUrl(hitItem.url) : null,
+          category: hitItem.hierarchy?.lvl0 ?? null,
+        };
+      });
+    }
+    getBestSnippetForMatch(result) {
+      const hierarchy = result._snippetResult.hierarchy;
+      if (hierarchy === undefined) {
+        return '';
+      }
+      // return the most specific subheader match
+      if (matched(hierarchy.lvl4)) {
+        return hierarchy.lvl4.value;
+      }
+      if (matched(hierarchy.lvl3)) {
+        return hierarchy.lvl3.value;
+      }
+      if (matched(hierarchy.lvl2)) {
+        return hierarchy.lvl2.value;
+      }
+      // if no subheader matched the query, fall back to just returning the most specific one
+      return hierarchy.lvl3?.value ?? hierarchy.lvl2?.value ?? '';
+    }
+    /**
+     * Returns an HTML string with marked text for the matches
+     */
+    parseLabelToHtml(label) {
+      if (label === null) {
+        return null;
+      }
+      const parts = [];
+      while (label.indexOf('<ɵ>') !== -1) {
+        const beforeMatch = label.substring(0, label.indexOf('<ɵ>'));
+        const match = label.substring(label.indexOf('<ɵ>') + 3, label.indexOf('</ɵ>'));
+        parts.push({highlight: false, text: beforeMatch});
+        parts.push({highlight: true, text: match});
+        label = label.substring(label.indexOf('</ɵ>') + 4);
+      }
+      parts.push({highlight: false, text: label});
+      return parts
+        .map((part) => {
+          return part.highlight ? `<mark>${part.text}</mark>` : `<span>${part.text}</span>`;
+        })
+        .join('');
+    }
+  };
+  return (Search = _classThis);
+})();
+export {Search};
+function matched(snippet) {
+  return snippet?.matchLevel !== undefined && snippet.matchLevel !== 'none';
+}
+/**
+ * Temporary helper to implement the debounce functionality on the search resource
+ */
+function wait(ms, signal) {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => resolve(), ms);
+    signal.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(timeout);
+        reject(new Error('Operation aborted'));
+      },
+      {once: true},
+    );
+  });
+}
+function extractPackageNameFromUrl(url) {
+  const extractedSegment = url.match(/\/api\/(.*)\/.*#?/);
+  if (extractedSegment == null) {
+    return null;
+  }
+  return `<code>@angular/${extractedSegment[1]}</code>`;
+}
+//# sourceMappingURL=search.service.js.map

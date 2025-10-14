@@ -1,0 +1,10 @@
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { GrammarDefinition } from './types';
+/** Highlighting definition for the `host` object of a directive or component. */
+export declare const HostObjectLiteral: GrammarDefinition;

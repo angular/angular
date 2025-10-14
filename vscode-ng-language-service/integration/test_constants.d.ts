@@ -1,0 +1,17 @@
+export declare function makeTempDir(): string;
+export declare const IS_BAZEL: boolean;
+export declare const PACKAGE_ROOT: string;
+export declare const SERVER_PATH: string;
+export declare const PROJECT_PATH: string;
+export declare const PRE_STANDALONE_PROJECT_PATH: string;
+export declare const APP_COMPONENT: string;
+export declare const APP_COMPONENT_URI: string;
+export declare const BAR_COMPONENT: string;
+export declare const BAR_COMPONENT_URI: string;
+export declare const APP_COMPONENT_MODULE: string;
+export declare const APP_COMPONENT_MODULE_URI: string;
+export declare const FOO_TEMPLATE: string;
+export declare const FOO_TEMPLATE_URI: string;
+export declare const FOO_COMPONENT: string;
+export declare const FOO_COMPONENT_URI: string;
+export declare const TSCONFIG: string;

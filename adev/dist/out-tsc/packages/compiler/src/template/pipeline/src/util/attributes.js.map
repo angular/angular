@@ -1,0 +1,1 @@
+{"version":3,"file":"attributes.js","sourceRoot":"","sources":["../../../../../../../../../../packages/compiler/src/template/pipeline/src/util/attributes.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,MAAM,WAAW,GAAG,OAAO,CAAC;AAE5B;;;;GAIG;AACH,MAAM,UAAU,eAAe,CAAC,IAAY;IAC1C,OAAO,IAAI,CAAC,UAAU,CAAC,WAAW,CAAC,IAAI,IAAI,CAAC,MAAM,GAAG,WAAW,CAAC,MAAM,CAAC;AAC1E,CAAC"}

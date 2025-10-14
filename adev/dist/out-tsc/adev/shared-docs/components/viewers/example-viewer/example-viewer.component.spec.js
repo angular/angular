@@ -1,0 +1,323 @@
+/*!
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {__esDecorate, __runInitializers} from 'tslib';
+import {TestBed} from '@angular/core/testing';
+import {ExampleViewer} from './example-viewer.component';
+import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
+import {Component, provideZonelessChangeDetection} from '@angular/core';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {Clipboard} from '@angular/cdk/clipboard';
+import {By} from '@angular/platform-browser';
+import {MatTabGroupHarness} from '@angular/material/tabs/testing';
+import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {ActivatedRoute} from '@angular/router';
+describe('ExampleViewer', () => {
+  let component;
+  let componentRef;
+  let fixture;
+  let loader;
+  let exampleContentSpy;
+  beforeEach(() => {
+    exampleContentSpy = jasmine.createSpyObj('ExampleContentLoader', ['loadPreview']);
+  });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ExampleViewer],
+      providers: [
+        provideZonelessChangeDetection(),
+        {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
+        {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
+      ],
+    });
+    fixture = TestBed.createComponent(ExampleViewer);
+    component = fixture.componentInstance;
+    componentRef = fixture.componentRef;
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    fixture.detectChanges();
+  });
+  it('should set file extensions as tab names when all files have different extension', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {name: 'file.ts', sanitizedContent: ''},
+          {name: 'file.html', sanitizedContent: ''},
+          {name: 'file.css', sanitizedContent: ''},
+        ],
+      }),
+    );
+    await component.renderExample();
+    expect(component.tabs().length).toBe(3);
+    expect(component.tabs()[0].name).toBe('TS');
+    expect(component.tabs()[1].name).toBe('HTML');
+    expect(component.tabs()[2].name).toBe('CSS');
+  });
+  it('should generate correct code content for multi file mode when it is expanded', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {name: 'file.ts', sanitizedContent: 'typescript file'},
+          {name: 'file.html', sanitizedContent: 'html file'},
+          {name: 'file.css', sanitizedContent: 'css file'},
+        ],
+      }),
+    );
+    await component.renderExample();
+    expect(component.tabs().length).toBe(3);
+    expect(component.tabs()[0].code).toBe('typescript file');
+    expect(component.tabs()[1].code).toBe('html file');
+    expect(component.tabs()[2].code).toBe('css file');
+  });
+  it('should set file names as tab names when there is at least one duplication', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {name: 'example.ts', sanitizedContent: 'typescript file'},
+          {name: 'example.html', sanitizedContent: 'html file'},
+          {name: 'another-example.ts', sanitizedContent: 'css file'},
+        ],
+      }),
+    );
+    await component.renderExample();
+    expect(component.tabs().length).toBe(3);
+    expect(component.tabs()[0].name).toBe('example.ts');
+    expect(component.tabs()[1].name).toBe('example.html');
+    expect(component.tabs()[2].name).toBe('another-example.ts');
+  });
+  it('should expand button not appear when there is no hidden line', async () => {
+    componentRef.setInput('metadata', getMetadata());
+    await component.renderExample();
+    const button = fixture.debugElement.query(By.css('button[aria-label="Expand code example"]'));
+    expect(button).toBeNull();
+  });
+  it('should have line with hidden line class when expand button is present', async () => {
+    const expectedCodeSnippetContent =
+      'typescript code<br/>' + '<div class="line">hidden line</div>';
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            visibleLinesRange: '[1]',
+          },
+        ],
+      }),
+    );
+    await component.renderExample();
+    fixture.detectChanges();
+    const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
+    expect(hiddenLine).toBeTruthy();
+  });
+  it('should have no more line with hidden line class when expand button is clicked', async () => {
+    const expectedCodeSnippetContent =
+      'typescript code<br/>' + '<div class="line">hidden line</div>';
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            visibleLinesRange: '[1]',
+          },
+        ],
+      }),
+    );
+    await component.renderExample();
+    fixture.detectChanges();
+    const expandButton = fixture.debugElement.query(
+      By.css('button[aria-label="Expand code example"]'),
+    );
+    expandButton.nativeElement.click();
+    fixture.detectChanges();
+    const hiddenLine = fixture.debugElement.query(By.css('div[class="line hidden"]'));
+    expect(hiddenLine).toBeNull();
+  });
+  it('should set exampleComponent when metadata contains path and preview is true', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    await component.renderExample();
+    expect(component.exampleComponent).toBe(ExampleComponent);
+  });
+  it('should display GitHub button when githubUrl is provided and there is preview', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    componentRef.setInput('githubUrl', 'https://github.com/');
+    await component.renderExample();
+    fixture.detectChanges();
+    const githubButton = fixture.debugElement.query(
+      By.css('a[aria-label="Open example on GitHub"]'),
+    );
+    expect(githubButton).toBeTruthy();
+    expect(githubButton.nativeElement.href).toBe(component.githubUrl());
+  });
+  it('should display StackBlitz button when stackblitzUrl is provided and there is preview', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    componentRef.setInput('stackblitzUrl', 'https://stackblitz.com/');
+    await component.renderExample();
+    fixture.detectChanges();
+    const stackblitzButton = fixture.debugElement.query(
+      By.css('a[aria-label="Edit example in StackBlitz"]'),
+    );
+    expect(stackblitzButton).toBeTruthy();
+    expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
+  });
+  it('should set expanded flag in metadata after toggleExampleVisibility', async () => {
+    componentRef.setInput('metadata', getMetadata());
+    await component.renderExample();
+    component.toggleExampleVisibility();
+    expect(component.expanded()).toBeTrue();
+    const tabGroup = await loader.getHarness(MatTabGroupHarness);
+    const tab = await tabGroup.getSelectedTab();
+    expect(await tab.getLabel()).toBe('TS');
+    component.toggleExampleVisibility();
+    expect(component.expanded()).toBeFalse();
+  });
+  // TODO(josephperrott): enable once the docs-viewer/example-viewer circle is sorted out.
+  xit('should call clipboard service when clicked on copy source code', async () => {
+    const expectedCodeSnippetContent = 'typescript code';
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        files: [
+          {
+            name: 'example.ts',
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+          },
+          {name: 'example.css', sanitizedContent: ''},
+        ],
+      }),
+    );
+    const clipboardService = TestBed.inject(Clipboard);
+    const spy = spyOn(clipboardService, 'copy');
+    await component.renderExample();
+    const button = fixture.debugElement.query(By.directive(CopySourceCodeButton)).nativeElement;
+    button.click();
+    expect(spy.calls.argsFor(0)[0]?.trim()).toBe(expectedCodeSnippetContent);
+  });
+  it('should call clipboard service when clicked on copy example link', async () => {
+    componentRef.setInput('metadata', getMetadata());
+    component.expanded.set(true);
+    fixture.detectChanges();
+    const clipboardService = TestBed.inject(Clipboard);
+    const spy = spyOn(clipboardService, 'copy');
+    await component.renderExample();
+    const button = fixture.debugElement.query(
+      By.css('button.docs-example-copy-link'),
+    ).nativeElement;
+    button.click();
+    expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
+  });
+  it('should hide code content when `hideCode` is true', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        hideCode: true,
+      }),
+    );
+    await component.renderExample();
+    fixture.detectChanges();
+    // Initially, the code should be hidden.
+    expect(component.showCode()).toBeFalse();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+  });
+  it('should expand/collapse code content with toggle button.', async () => {
+    componentRef.setInput('metadata', getMetadata());
+    await component.renderExample();
+    fixture.detectChanges();
+    // Initially, the code should be visible.
+    expect(component.showCode()).toBeTrue();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+    const codeToggleButton = fixture.debugElement.query(By.css('.docs-example-code-toggle'));
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+    expect(component.showCode()).toBeFalse();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+    expect(component.showCode()).toBeTrue();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+  });
+});
+const getMetadata = (value = {}) => {
+  return {
+    id: 1,
+    files: [
+      {name: 'example.ts', sanitizedContent: ''},
+      {name: 'example.css', sanitizedContent: ''},
+    ],
+    preview: false,
+    hideCode: false,
+    ...value,
+  };
+};
+let ExampleComponent = (() => {
+  let _classDecorators = [
+    Component({
+      template: '',
+    }),
+  ];
+  let _classDescriptor;
+  let _classExtraInitializers = [];
+  let _classThis;
+  var ExampleComponent = class {
+    static {
+      _classThis = this;
+    }
+    static {
+      const _metadata =
+        typeof Symbol === 'function' && Symbol.metadata ? Object.create(null) : void 0;
+      __esDecorate(
+        null,
+        (_classDescriptor = {value: _classThis}),
+        _classDecorators,
+        {kind: 'class', name: _classThis.name, metadata: _metadata},
+        null,
+        _classExtraInitializers,
+      );
+      ExampleComponent = _classThis = _classDescriptor.value;
+      if (_metadata)
+        Object.defineProperty(_classThis, Symbol.metadata, {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: _metadata,
+        });
+      __runInitializers(_classThis, _classExtraInitializers);
+    }
+  };
+  return (ExampleComponent = _classThis);
+})();
+//# sourceMappingURL=example-viewer.component.spec.js.map

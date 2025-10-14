@@ -8,7 +8,7 @@
 
 /** Debounces a callback/handler. */
 export class Debouncer {
-  private handle?: number;
+  private handle?: ReturnType<typeof setTimeout>;
   private initialized: boolean = false;
 
   /**
@@ -46,8 +46,9 @@ export class Debouncer {
 
   /** Cancel the currently debounced handler, if not resolved. */
   cancel() {
-    if (this.handle) {
-      clearTimeout(this.handle);
+    if (this.handle !== undefined) {
+      clearTimeout(this.handle as unknown as number);
+      this.handle = undefined;
     }
   }
 }

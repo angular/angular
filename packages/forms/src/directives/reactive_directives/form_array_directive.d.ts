@@ -1,0 +1,49 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { EventEmitter } from '@angular/core';
+import { FormArray } from '../../model/form_array';
+import { AbstractFormDirective } from './abstract_form.directive';
+/**
+ * @description
+ *
+ * Binds an existing `FormArray` to a DOM element.
+ *
+ * This directive accepts an existing `FormArray` instance. It will then use this
+ * `FormArray` instance to match any child `FormControl`, `FormGroup`/`FormRecord`,
+ * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
+ * and `FormArrayName` directives.
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see {@link AbstractControl}
+ *
+ * @usageNotes
+ * ### Register Form Array
+ *
+ * The following example registers a `FormArray` with first name and last name controls,
+ * and listens for the *ngSubmit* event when the button is clicked.
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+export declare class FormArrayDirective extends AbstractFormDirective {
+    /**
+     * @description
+     * Tracks the `FormArray` bound to this directive.
+     */
+    form: FormArray;
+    /**
+     * @description
+     * Emits an event when the form submission has been triggered.
+     */
+    ngSubmit: EventEmitter<any>;
+    /**
+     * @description
+     * Returns the `FormArray` bound to this directive.
+     */
+    get control(): FormArray;
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"di_attr.js","sourceRoot":"","sources":["../../../../../../../../packages/core/src/render3/instructions/di_attr.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AACH,OAAO,EAAC,mBAAmB,EAAC,MAAM,OAAO,CAAC;AAC1C,OAAO,EAAC,eAAe,EAAC,MAAM,UAAU,CAAC;AAEzC;;;;GAIG;AACH,MAAM,UAAU,iBAAiB,CAAC,gBAAwB;IACxD,OAAO,mBAAmB,CAAC,eAAe,EAAG,EAAE,gBAAgB,CAAC,CAAC;AACnE,CAAC"}
