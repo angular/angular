@@ -1,3 +1,5 @@
+@use '../../styles/media-queries' as mq;
+
 :host {
   &:not(:empty) {
     z-index: var(--z-index-top-level-banner);
@@ -7,25 +9,33 @@
     justify-content: center;
     height: auto;
     width: 100vw;
-    padding: .5rem;
     border-bottom: 1px solid var(--septenary-contrast);
     text-align: center;
     align-content: center;
     backdrop-filter: blur(16px);
     background-color: color-mix(in srgb, var(--page-background) 70%, transparent);
+
+    @include mq.for-tablet-landscape-down {
+      position: initial;
+    }
+  }
+
+  .spacer {
+    flex: 1;
   }
 
   a.docs-top-level-banner {
     display: grid;
     width: auto;
-    margin: 0rem 2.5rem;
+    margin: 0.5rem 2.5rem;
 
-    &:hover{
-      h1.docs-top-level-banner-cta.background{ 
-        span.docs-top-level-banner-cta__text::after{ 
+    &:hover {
+      h1.docs-top-level-banner-cta.background {
+        span.docs-top-level-banner-cta__text::after {
           transform: scaleX(1);
           transform-origin: bottom left;
-        }}
+        }
+      }
     }
   }
 
@@ -39,9 +49,9 @@
 
     &.background {
       color: var(--tertiary-contrast);
-      
-      & .docs-top-level-banner-cta__text{
-        position:relative;
+
+      & .docs-top-level-banner-cta__text {
+        position: relative;
 
         &::after {
           content: '';
@@ -57,9 +67,7 @@
             transition: transform 0.3s ease;
           }
         }
-
       }
-      
     }
 
     &:not(.background) {
@@ -68,11 +76,8 @@
   }
 
   .docs-top-level-banner-close {
-    position: absolute;
-    top: 0.25rem;
-    right: 1.4rem;
+    margin: 0 1rem;
     color: var(--tertiary-contrast);
-    padding-left: 0rem;
   }
 }
 

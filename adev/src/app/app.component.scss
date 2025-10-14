@@ -7,24 +7,6 @@
   align-items: flex-start;
   min-height: 100vh;
 
-  // Display top level banner below the navigation.
-  docs-top-level-banner {
-    @include mq.for-tablet {
-      top: 4.6875rem;
-    }
-
-    @include mq.for-phone-only {
-      top: 3.75rem;
-      transform: translateY(0);
-      transition: transform 0.3s ease-out 0.6s;
-    }
-
-    // show it under the navbar.
-    @include mq.for-tablet-landscape-down {
-      z-index: calc(var(--z-index-nav) - 1);
-    }
-  }
-
   // Case: If secondary navigation exists, display banner below secondary navigation for tablets.
   &:has(adev-secondary-navigation) {
     docs-top-level-banner {
