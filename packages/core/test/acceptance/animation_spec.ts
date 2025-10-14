@@ -1641,6 +1641,179 @@ describe('Animation', () => {
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
     }));
 
+    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @for (item of items(); track item) {
+              <p id="item-{{item}}" animate.enter="slide-in" animate.leave="fade">I should slide in {{item}}.</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = signal([1, 2, 3]);
+
+        addremove() {
+          this.items.update((l) => l.slice(1).concat([l.at(-1)! + 1]));
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      const first = fixture.debugElement.query(By.css('p#item-1'));
+      const last = fixture.debugElement.query(By.css('p#item-4'));
+      first.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      last.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+
+      last.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      first.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      tick();
+
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(0);
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(0);
+    }));
+
+    it('should run leave and enter animations for `@for` loops when adding / removing simultaneously with leave function', fakeAsync(() => {
+      const animateStyles = `
+        .slide-in {
+          animation: slide-in 500ms;
+        }
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes slide-in {
+          from {
+            transform: translateX(-10px);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: `
+          <div>
+            @for (item of items(); track item) {
+              <p id="item-{{item}}" animate.enter="slide-in" (animate.leave)="fadeOut($event)">I should slide in {{item}}.</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = signal([1, 2, 3]);
+
+        addremove() {
+          this.items.update((l) => l.slice(1).concat([l.at(-1)! + 1]));
+        }
+
+        fadeOut(event: AnimationCallbackEvent) {
+          event.target.classList.add('fade');
+          setTimeout(() => event.animationComplete(), 500);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      paragraphs.forEach((p) => {
+        p.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+        p.nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'slide-in'}),
+        );
+      });
+      cmp.addremove();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      const first = fixture.debugElement.query(By.css('p#item-1'));
+      const last = fixture.debugElement.query(By.css('p#item-4'));
+      first.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      last.nativeElement.dispatchEvent(new AnimationEvent('animationstart'));
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(1);
+
+      last.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'slide-in'}),
+      );
+      first.nativeElement.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out'}),
+      );
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      tick();
+
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
+      expect(fixture.debugElement.queryAll(By.css('p.slide-in')).length).toBe(0);
+      expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(0);
+    }));
+
     it('should always run animations for custom repeater loops when adding and removing quickly', fakeAsync(() => {
       const animateStyles = `
         .slide-in {
