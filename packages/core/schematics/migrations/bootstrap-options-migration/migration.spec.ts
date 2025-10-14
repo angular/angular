@@ -798,16 +798,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection()]})
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -818,10 +815,13 @@ describe('bootstrap options migration', () => {
 
           const mainActual = fs.readFile(absoluteFrom('/main.ts'));
           const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
-          ${platformBrowserFn}().bootstrapModule(AppModule);
+          ${platformBrowserFn}().bootstrapModule(AppModule, {
+            applicationProviders: [provideZoneChangeDetection()],
+          });
         `;
           expect(mainActual.replace(/\s+/g, ''))
             .withContext(diffText(mainExpected, mainActual))
@@ -1008,16 +1008,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection({ eventCoalescing: true })] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             providers: [],
             bootstrap: [AppComponent]
           })
@@ -1026,6 +1023,20 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, {
+            applicationProviders: [provideZoneChangeDetection({ eventCoalescing: true })],
+          });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should migrate ngZoneRunCoalescing', async () => {
@@ -1070,16 +1081,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({providers: [provideZoneChangeDetection({runCoalescing: true})]})
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             providers: [],
             bootstrap: [AppComponent]
           })
@@ -1088,6 +1096,18 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, {applicationProviders: [provideZoneChangeDetection({runCoalescing: true})], });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should not add provideZoneChangeDetection if provideZonelessChangeDetection is present', async () => {
@@ -1263,16 +1283,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({providers: [provideZoneChangeDetection() ]})
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1280,6 +1297,18 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, {applicationProviders: [provideZoneChangeDetection()],});
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should migrate ngZone with a custom class', async () => {
@@ -1331,22 +1360,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { MyZone } from "./my-zone";
-          import { NgModule, NgZone, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
           @NgModule({
-            providers: [
-              provideZoneChangeDetection(),
-              {provide: NgZone, useClass: MyZone}
-            ]
-          })
-          export class ZoneChangeDetectionModule {}
-
-          @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1354,6 +1374,19 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+          import { MyZone } from './app/my-zone';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, {applicationProviders: [provideZoneChangeDetection(), { provide: NgZone, useClass: MyZone }],});
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should remove ignoreChangesOutsideZone', async () => {
@@ -1397,16 +1430,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection()] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1414,6 +1444,18 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, {applicationProviders: [provideZoneChangeDetection()],});
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should not add provideZoneChangeDetection if it is already present', async () => {
@@ -1545,6 +1587,75 @@ describe('bootstrap options migration', () => {
             .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
+        it('should keep compiler options if present', async () => {
+          const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
+            ...typeFiles,
+            {
+              name: absoluteFrom('/main.ts'),
+              isProgramRootFile: true,
+              contents: `
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { preserveWhitespaces: true, ngZoneRunCoalescing: true });
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.module.ts'),
+              contents: `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.component.ts'),
+              contents: `
+          import { Component } from '@angular/core';
+
+          @Component({selector: 'app-root', template: ''})
+          export class AppComponent {}
+        `,
+            },
+          ]);
+
+          const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
+          const expected = `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `;
+          expect(actual.replace(/\s+/g, ''))
+            .withContext(diffText(expected, actual))
+            .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection({ runCoalescing: true })], preserveWhitespaces: true, });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
+        });
+
         it('should migrate imports when it is a variable identifier', async () => {
           const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
             ...typeFiles,
@@ -1588,18 +1699,15 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
           const myImports = [BrowserModule];
 
-          @NgModule({ providers: [ provideZoneChangeDetection({ runCoalescing: true }) ] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, ...myImports],
+            imports: myImports,
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1607,6 +1715,18 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection({ runCoalescing: true })], });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should add provideZoneChangeDetection if no bootstrap options are present', async () => {
@@ -1650,16 +1770,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection()] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1670,10 +1787,11 @@ describe('bootstrap options migration', () => {
 
           const mainActual = fs.readFile(absoluteFrom('/main.ts'));
           const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
-          ${platformBrowserFn}().bootstrapModule(AppModule);
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], });
         `;
           expect(mainActual.replace(/\s+/g, ''))
             .withContext(diffText(mainExpected, mainActual))
@@ -1687,25 +1805,23 @@ describe('bootstrap options migration', () => {
               name: absoluteFrom('/main.ts'),
               isProgramRootFile: true,
               contents: `
+          import { provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
-          ${platformBrowserFn}().bootstrapModule(AppModule);
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [ provideZoneChangeDetection() ] });
         `,
             },
             {
               name: absoluteFrom('/app/app.module.ts'),
               contents: `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [ provideZoneChangeDetection() ] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1724,16 +1840,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [ provideZoneChangeDetection() ] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1744,10 +1857,11 @@ describe('bootstrap options migration', () => {
 
           const mainActual = fs.readFile(absoluteFrom('/main.ts'));
           const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
-          ${platformBrowserFn}().bootstrapModule(AppModule);
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [ provideZoneChangeDetection() ] });
         `;
           expect(mainActual.replace(/\s+/g, '')).withContext(diffText(mainExpected, mainActual));
         });
@@ -1797,19 +1911,16 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
-
-          @NgModule({ providers: [provideZoneChangeDetection()] })
-          export class ZoneChangeDetectionModule {}
 
           /**
            * This is a comment.
            */
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1817,6 +1928,18 @@ describe('bootstrap options migration', () => {
           expect(actual.replace(/\s+/g, ''))
             .withContext(diffText(expected, actual))
             .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
         });
 
         it('should gracefuly fail with a TODO when having non-string ngZone', async () => {
@@ -1860,16 +1983,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection()] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1880,11 +2000,12 @@ describe('bootstrap options migration', () => {
 
           const mainActual = fs.readFile(absoluteFrom('/main.ts'));
           const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
           // TODO: BootstrapOptions are deprecated & ignored. Configure NgZone in the providers array of the application module instead.
-          ${platformBrowserFn}().bootstrapModule(AppModule, { ngZone: new NgZone({}) });
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], ngZone: new NgZone({}), });
           `;
           expect(mainActual.replace(/\s+/g, ''))
             .withContext(diffText(mainExpected, mainActual))
@@ -1898,6 +2019,7 @@ describe('bootstrap options migration', () => {
               name: absoluteFrom('/main.ts'),
               isProgramRootFile: true,
               contents: `
+          import { NgZone } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
@@ -1934,16 +2056,13 @@ describe('bootstrap options migration', () => {
 
           const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
           const expected = `
-          import { NgModule, provideZoneChangeDetection } from '@angular/core';
+          import { NgModule } from '@angular/core';
           import { BrowserModule } from '@angular/platform-browser';
           import { AppComponent } from './app.component';
 
-          @NgModule({ providers: [provideZoneChangeDetection()] })
-          export class ZoneChangeDetectionModule {}
-
           @NgModule({
             declarations: [AppComponent],
-            imports: [ZoneChangeDetectionModule, BrowserModule],
+            imports: [BrowserModule],
             bootstrap: [AppComponent]
           })
           export class AppModule {}
@@ -1954,14 +2073,153 @@ describe('bootstrap options migration', () => {
 
           const mainActual = fs.readFile(absoluteFrom('/main.ts'));
           const mainExpected = `
+          import { NgZone, provideZoneChangeDetection } from "@angular/core";
           import { ${platformBrowserFn} } from '@angular/${packageName}';
           import { AppModule } from './app/app.module';
 
           const ngZone = new NgZone({});
 
           // TODO: BootstrapOptions are deprecated & ignored. Configure NgZone in the providers array of the application module instead.
-          ${platformBrowserFn}().bootstrapModule(AppModule, { ngZone: ngZone });
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection()], ngZone, });
           `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
+        });
+
+        it('should migrate option array with multiple items', async () => {
+          const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
+            ...typeFiles,
+            {
+              name: absoluteFrom('/main.ts'),
+              isProgramRootFile: true,
+              contents: `
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, [{ preserveWhitespaces: true},{ngZoneRunCoalescing: true }]);
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.module.ts'),
+              contents: `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.component.ts'),
+              contents: `
+          import { Component } from '@angular/core';
+
+          @Component({selector: 'app-root', template: ''})
+          export class AppComponent {}
+        `,
+            },
+          ]);
+
+          const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
+          const expected = `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `;
+          expect(actual.replace(/\s+/g, ''))
+            .withContext(diffText(expected, actual))
+            .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection({ runCoalescing: true })], preserveWhitespaces: true, });
+        `;
+          expect(mainActual.replace(/\s+/g, ''))
+            .withContext(diffText(mainExpected, mainActual))
+            .toEqual(mainExpected.replace(/\s+/g, ''));
+        });
+
+        it('should migrate option array with a single item', async () => {
+          const {fs} = await runTsurgeMigration(new BootstrapOptionsMigration(), [
+            ...typeFiles,
+            {
+              name: absoluteFrom('/main.ts'),
+              isProgramRootFile: true,
+              contents: `
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, [{ngZoneRunCoalescing: true }]);
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.module.ts'),
+              contents: `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `,
+            },
+            {
+              name: absoluteFrom('/app/app.component.ts'),
+              contents: `
+          import { Component } from '@angular/core';
+
+          @Component({selector: 'app-root', template: ''})
+          export class AppComponent {}
+        `,
+            },
+          ]);
+
+          const actual = fs.readFile(absoluteFrom('/app/app.module.ts'));
+          const expected = `
+          import { NgModule } from '@angular/core';
+          import { BrowserModule } from '@angular/platform-browser';
+          import { AppComponent } from './app.component';
+
+          @NgModule({
+            declarations: [AppComponent],
+            imports: [BrowserModule],
+            bootstrap: [AppComponent]
+          })
+          export class AppModule {}
+        `;
+          expect(actual.replace(/\s+/g, ''))
+            .withContext(diffText(expected, actual))
+            .toEqual(expected.replace(/\s+/g, ''));
+
+          const mainActual = fs.readFile(absoluteFrom('/main.ts'));
+          const mainExpected = `
+          import { provideZoneChangeDetection } from "@angular/core";
+          import { ${platformBrowserFn} } from '@angular/${packageName}';
+          import { AppModule } from './app/app.module';
+
+          ${platformBrowserFn}().bootstrapModule(AppModule, { applicationProviders: [provideZoneChangeDetection({ runCoalescing: true })], });
+        `;
           expect(mainActual.replace(/\s+/g, ''))
             .withContext(diffText(mainExpected, mainActual))
             .toEqual(mainExpected.replace(/\s+/g, ''));
