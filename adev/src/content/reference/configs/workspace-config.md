@@ -83,21 +83,20 @@ For example, the schematic for generating a component with `ng generate componen
 The fields given in the schematic's schema correspond to the allowed command-line argument values and defaults for the Angular CLI sub-command options.
 You can update your workspace schema file to set a different default for a sub-command option. For example, to disable `standalone` in `ng generate component` by default:
 
-<docs-code language="json">
-
+```json
 {
-"projects": {
-"my-app": {
-"schematics": {
-"@schematics/angular:component": {
-"standalone": false
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "schematics": {
+        "@schematics/angular:component": {
+          "standalone": false
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 ## Configuring CLI builders
 
@@ -145,24 +144,23 @@ Each target under `architect` has the following properties:
 
 For example, to configure a build with optimizations disabled:
 
-<docs-code language="json">
-
+```json
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": false
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": false
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 ### Alternate build configurations
 
@@ -179,29 +177,24 @@ You can select an alternate configuration by passing its name to the `--configur
 
 For example, to configure a build where optimization is enabled only for production builds (`ng build --configuration production`):
 
-<docs-code language="json">
+```json
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": false
-},
-"configurations": {
-"production": {
-"optimization": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": false
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 You can also pass in more than one configuration name as a comma-separated list.
 For example, to apply both `staging` and `french` build configurations, use the command `ng build --configuration staging,french`.
@@ -259,63 +252,60 @@ An asset specification object can have the following fields.
 
 For example, the default asset paths can be represented in more detail using the following objects.
 
-<docs-code language="json">
-
+```json
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"assets": [
-{
-"glob": "**/*",
-"input": "src/assets/",
-"output": "/assets/"
-},
-{
-"glob": "favicon.ico",
-"input": "src/",
-"output": "/"
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "src/",
+                "output": "/"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
-]
-}
-}
-}
-}
-}
-}
-
-</docs-code>
+```
 
 The following example uses the `ignore` field to exclude certain files in the assets directory from being copied into the build:
 
-<docs-code language="json">
-
+```json
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"assets": [
-{
-"glob": "**/\*",
-"input": "src/assets/",
-"ignore": ["**/\*.svg"],
-"output": "/assets/"
-}
-]
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "ignore": ["**/*.svg"],
+                "output": "/assets/"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 ### Styles and scripts configuration
 
@@ -326,37 +316,37 @@ With a configuration object, you have the option of naming the bundle for the en
 The bundle is injected by default, but you can set `inject` to `false` to exclude the bundle from injection.
 For example, the following object values create and name a bundle that contains styles and scripts, and excludes it from injection:
 
-<docs-code language="json">
+```json
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"styles": [
-{
-"input": "src/external-module/styles.scss",
-"inject": false,
-"bundleName": "external-module"
-}
-],
-"scripts": [
-{
-"input": "src/external-module/main.js",
-"inject": false,
-"bundleName": "external-module"
-}
-]
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "styles": [
+              {
+                "input": "src/external-module/styles.scss",
+                "inject": false,
+                "bundleName": "external-module"
+              }
+            ],
+            "scripts": [
+              {
+                "input": "src/external-module/main.js",
+                "inject": false,
+                "bundleName": "external-module"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 #### Style preprocessor options
 
@@ -364,32 +354,31 @@ In Sass, you can make use of the `includePaths` feature for both component and g
 
 To add paths, use the `stylePreprocessorOptions` option:
 
-<docs-code language="json">
+```json
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"stylePreprocessorOptions": {
-"includePaths": [
-"src/style-paths"
-]
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src/style-paths"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
 }
-}
-}
-}
-}
-}
-}
-
-</docs-code>
+```
 
 Files in that directory, such as `src/style-paths/_variables.scss`, can be imported from anywhere in your project without the need for a relative path:
 
-<docs-code language="scss">
+```scss
 
 // src/app/app.component.scss
 // A relative path works
@@ -398,7 +387,7 @@ Files in that directory, such as `src/style-paths/_variables.scss`, can be impor
 // But now this works as well
 @import 'variables';
 
-</docs-code>
+```
 
 HELPFUL: You also need to add any styles or scripts to the `test` builder if you need them for unit tests.
 See also [Using runtime-global libraries inside your application](tools/libraries/using-libraries#using-runtime-global-libraries-inside-your-app).
@@ -438,31 +427,31 @@ Several options can be used to fine-tune the optimization of an application.
 
 You can supply a value such as the following to apply optimization to one or the other:
 
-<docs-code language="json">
+```json
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"optimization": {
-"scripts": true,
-"styles": {
-"minify": true,
-"inlineCritical": true
-},
-"fonts": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "optimization": {
+              "scripts": true,
+              "styles": {
+                "minify": true,
+                "inlineCritical": true
+              },
+              "fonts": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 ### Source map configuration
 
@@ -477,29 +466,29 @@ The `sourceMap` builder option can be either a boolean or an object for more fin
 
 The example below shows how to toggle one or more values to configure the source map outputs:
 
-<docs-code language="json">
+```json
 
 {
-"projects": {
-"my-app": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:application",
-"options": {
-"sourceMap": {
-"scripts": true,
-"styles": false,
-"hidden": true,
-"vendor": true
-}
-}
-}
-}
-}
-}
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "sourceMap": {
+              "scripts": true,
+              "styles": false,
+              "hidden": true,
+              "vendor": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-</docs-code>
+```
 
 HELPFUL: When using hidden source maps, source maps are not referenced in the bundle.
 These are useful if you only want source maps to map stack traces in error reporting tools without showing up in browser developer tools.
