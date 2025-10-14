@@ -1535,4 +1535,18 @@ export interface NavigationBehaviorOptions {
    * state, such as `skipLocationChange`.
    */
   readonly browserUrl?: UrlTree | string;
+
+  /**
+   * Configures how scrolling is handled for an individual navigation when scroll restoration
+   * is enabled in the router.
+   *
+   * - When 'manual', the router will not perform scrolling when the navigation is complete,
+   * even if scroll restoration is enabled.
+   * - When 'after-transition', scrolling will be performed after the `NavigationEnd` event,
+   * according to the behavior configured in the router scrolling feature.
+   *
+   * @see withInMemoryRouterScroller
+   * @see InMemoryScrollingOptions
+   */
+  readonly scroll?: 'manual' | 'after-transition';
 }
