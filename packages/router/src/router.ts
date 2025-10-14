@@ -496,7 +496,13 @@ export class Router {
       }
       relativeToUrlSegmentGroup = this.currentUrlTree.root;
     }
-    return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, q, f ?? null);
+    return createUrlTreeFromSegmentGroup(
+      relativeToUrlSegmentGroup,
+      commands,
+      q,
+      f ?? null,
+      this.urlSerializer,
+    );
   }
 
   /**
