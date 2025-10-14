@@ -140,7 +140,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
   }
 
   /** @internal */
-  triggerMicrotask() {}
+  override triggerMicrotask() {}
 
   override play(): void {
     super.play();

@@ -24,11 +24,11 @@ describe('ngTemplateOutlet', () => {
     it('should render', () => {
       browser.get(URL);
       waitForElement('ng-template-outlet-example');
-      expect(element.all(by.css('ng-template-outlet-example span')).getText()).toEqual([
+      expect(element.all(by.css('ng-template-outlet-example span')).getText()).toEqual(Promise.resolve([
         'Hello',
         'Hello World!',
         'Ahoj Svet!',
-      ]);
+      ]));
     });
   });
 });

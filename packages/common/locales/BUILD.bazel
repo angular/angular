@@ -21,13 +21,9 @@ ts_project(
     srcs = [file for l in LOCALES for file in [
         "%s.ts" % l,
         "extra/%s.ts" % l,
-    ]] + glob(
-        [
-            "*.ts",
-            "extra/*.ts",
-        ],
-        exclude = ["closure-locale.ts"],
-    ),
+    ]] + [
+        "closure-locale.ts",
+    ],
 )
 
 npm_package(
