@@ -28,9 +28,9 @@ function checkEmptyNodes() {
 
 function clickSearchArrows(upwards) {
   if (upwards) {
-    cy.get('#up-button').click();
+    cy.get('.prev-btn').click();
   } else {
-    cy.get('#down-button').click();
+    cy.get('.next-btn').click();
   }
 }
 

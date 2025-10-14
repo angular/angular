@@ -18,10 +18,20 @@
     }
   </div>
   <div class="prev-next-buttons">
-    <button (click)="emitPrevMatched()" matTooltip="Previous match" aria-label="Previous match">
+    <button
+      (click)="emitPrevMatched()"
+      class="prev-btn"
+      matTooltip="Previous match"
+      aria-label="Previous match"
+    >
       <mat-icon> expand_less </mat-icon>
     </button>
-    <button (click)="emitNextMatched()" matTooltip="Next match" aria-label="Next match">
+    <button
+      (click)="emitNextMatched()"
+      class="next-btn"
+      matTooltip="Next match"
+      aria-label="Next match"
+    >
       <mat-icon> expand_more </mat-icon>
     </button>
   </div>
