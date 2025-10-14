@@ -371,8 +371,8 @@ importers:
         specifier: 0.2003.5
         version: 0.2003.5(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#88fadb5235577583689a2b0979b9b724b383b963
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/88fadb5235577583689a2b0979b9b724b383b963(@modelcontextprotocol/sdk@1.20.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5bc20a4e93121044583b7e295ed99777e0a39457
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5bc20a4e93121044583b7e295ed99777e0a39457(@modelcontextprotocol/sdk@1.20.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.3)
@@ -1514,9 +1514,9 @@ packages:
       '@angular/cdk': 20.2.8
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/88fadb5235577583689a2b0979b9b724b383b963':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/88fadb5235577583689a2b0979b9b724b383b963}
-    version: 0.0.0-06bada8d42711ac8db590552fa8103777baa7ccf
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5bc20a4e93121044583b7e295ed99777e0a39457':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5bc20a4e93121044583b7e295ed99777e0a39457}
+    version: 0.0.0-9b8eb9494aa8ad5c9fab8e13de90d43160f66384
     hasBin: true
 
   '@angular/ssr@20.3.5':
@@ -13138,7 +13138,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/88fadb5235577583689a2b0979b9b724b383b963(@modelcontextprotocol/sdk@1.20.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5bc20a4e93121044583b7e295ed99777e0a39457(@modelcontextprotocol/sdk@1.20.0)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -15296,7 +15296,7 @@ snapshots:
   '@jest/console@30.1.1':
     dependencies:
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       chalk: 4.1.2
       jest-message-util: 30.1.0
       jest-util: 30.0.5
@@ -15391,7 +15391,7 @@ snapshots:
 
   '@jest/pattern@30.0.1':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       jest-regex-util: 30.0.1
 
   '@jest/reporters@30.1.1':
@@ -15402,7 +15402,7 @@ snapshots:
       '@jest/transform': 30.1.1
       '@jest/types': 30.0.5
       '@jridgewell/trace-mapping': 0.3.31
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       chalk: 4.1.2
       collect-v8-coverage: 1.0.2
       exit-x: 0.2.2
@@ -16642,17 +16642,17 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/bonjour@3.5.13':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/cacheable-request@6.0.3':
     dependencies:
       '@types/http-cache-semantics': 4.0.4
       '@types/keyv': 3.1.4
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       '@types/responselike': 1.0.3
 
   '@types/caseless@0.12.5': {}
@@ -16675,11 +16675,11 @@ snapshots:
   '@types/connect-history-api-fallback@1.5.4':
     dependencies:
       '@types/express-serve-static-core': 4.19.7
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/convert-source-map@2.0.3': {}
 
@@ -16832,7 +16832,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.7':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       '@types/qs': 6.14.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.0
@@ -16874,7 +16874,7 @@ snapshots:
 
   '@types/http-proxy@1.17.16':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/istanbul-lib-coverage@2.0.6': {}
 
@@ -16902,7 +16902,7 @@ snapshots:
 
   '@types/keyv@3.1.4':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/live-server@1.2.3': {}
 
@@ -16916,7 +16916,7 @@ snapshots:
 
   '@types/node-forge@1.3.14':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/node@11.15.54': {}
 
@@ -16988,7 +16988,7 @@ snapshots:
 
   '@types/responselike@1.0.3':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/retry@0.12.2': {}
 
@@ -17004,11 +17004,11 @@ snapshots:
   '@types/send@0.17.5':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/send@1.2.0':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/serve-index@1.9.4':
     dependencies:
@@ -17017,7 +17017,7 @@ snapshots:
   '@types/serve-static@1.15.9':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       '@types/send': 0.17.5
 
   '@types/shelljs@0.8.17':
@@ -17031,7 +17031,7 @@ snapshots:
 
   '@types/sockjs@0.3.36':
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
 
   '@types/stack-trace@0.0.33': {}
 
@@ -21486,7 +21486,7 @@ snapshots:
       '@jest/expect': 30.1.1
       '@jest/test-result': 30.1.1
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       chalk: 4.1.2
       co: 4.6.0
       dedent: 1.7.0
@@ -21602,7 +21602,7 @@ snapshots:
   jest-haste-map@30.1.0:
     dependencies:
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -21675,7 +21675,7 @@ snapshots:
       '@jest/test-result': 30.1.1
       '@jest/transform': 30.1.1
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       chalk: 4.1.2
       emittery: 0.13.1
       exit-x: 0.2.2
@@ -21704,7 +21704,7 @@ snapshots:
       '@jest/test-result': 30.1.1
       '@jest/transform': 30.1.1
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       chalk: 4.1.2
       cjs-module-lexer: 2.1.0
       collect-v8-coverage: 1.0.2
@@ -21770,7 +21770,7 @@ snapshots:
     dependencies:
       '@jest/test-result': 30.1.1
       '@jest/types': 30.0.5
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.13.1
@@ -21785,13 +21785,13 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
   jest-worker@30.1.0:
     dependencies:
-      '@types/node': 24.3.0
+      '@types/node': 18.19.130
       '@ungap/structured-clone': 1.3.0
       jest-util: 30.0.5
       merge-stream: 2.0.0
