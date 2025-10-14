@@ -14,14 +14,16 @@ import {
   PrefixNot,
   PropertyRead,
   TmplAstBoundAttribute,
+  TmplAstElement,
   TmplAstIfBlock,
   TmplAstNode,
   TmplAstSwitchBlock,
+  TmplAstTemplate,
 } from '@angular/compiler';
 import ts from 'typescript';
 
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
-import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
+import {NgTemplateDiagnostic, SymbolKind, TypeCheckableDirectiveMeta} from '../../../api';
 import {isSignalReference} from '../../../src/symbol_util';
 import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
 
@@ -52,37 +54,24 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
         .filter((item): item is PropertyRead => item instanceof PropertyRead)
         .flatMap((item) => buildDiagnosticForSignal(ctx, item, component));
     }
-    // bound properties like `[prop]="mySignal"`
-    else if (node instanceof TmplAstBoundAttribute) {
-      const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-
-      if (
-        symbol?.kind === SymbolKind.Input &&
-        symbol.bindings.length > 0 &&
-        symbol.bindings.some((binding) => binding.target.kind === SymbolKind.Directive)
-      ) {
-        return [];
-      }
-
-      // otherwise, we check if the node is
-      const nodeAst = isPropertyReadNodeAst(node);
-      if (
-        // a bound property like `[prop]="mySignal"`
-        (node.type === BindingType.Property ||
-          // or a class binding like `[class.myClass]="mySignal"`
-          node.type === BindingType.Class ||
-          // or a style binding like `[style.width]="mySignal"`
-          node.type === BindingType.Style ||
-          // or an attribute binding like `[attr.role]="mySignal"`
-          node.type === BindingType.Attribute ||
-          // or an animation binding like `[animate.enter]="mySignal"`
-          node.type === BindingType.Animation ||
-          // or an animation binding like `[@myAnimation]="mySignal"`
-          node.type === BindingType.LegacyAnimation) &&
-        nodeAst
-      ) {
-        return buildDiagnosticForSignal(ctx, nodeAst, component);
-      }
+    // check bound inputs like `[prop]="mySignal"` on an element or inline template
+    else if (node instanceof TmplAstElement && node.inputs.length > 0) {
+      const directivesOfElement = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
+      return node.inputs.flatMap((input) =>
+        checkBoundAttribute(ctx, component, directivesOfElement, input),
+      );
+    } else if (node instanceof TmplAstTemplate && node.tagName === 'ng-template') {
+      const directivesOfElement = ctx.templateTypeChecker.getDirectivesOfNode(component, node);
+      const inputDiagnostics = node.inputs.flatMap((input) => {
+        return checkBoundAttribute(ctx, component, directivesOfElement, input);
+      });
+      const templateAttrDiagnostics = node.templateAttrs.flatMap((attr) => {
+        if (!(attr instanceof TmplAstBoundAttribute)) {
+          return [];
+        }
+        return checkBoundAttribute(ctx, component, directivesOfElement, attr);
+      });
+      return inputDiagnostics.concat(templateAttrDiagnostics);
     }
     // if blocks like `@if(mySignal) { ... }`
     else if (node instanceof TmplAstIfBlock) {
@@ -109,6 +98,43 @@ class InterpolatedSignalCheck extends TemplateCheckWithVisitor<ErrorCode.INTERPO
 
     return [];
   }
+}
+
+function checkBoundAttribute(
+  ctx: TemplateContext<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>,
+  component: ts.ClassDeclaration,
+  directivesOfElement: Array<TypeCheckableDirectiveMeta> | null,
+  node: TmplAstBoundAttribute,
+): Array<NgTemplateDiagnostic<ErrorCode.INTERPOLATED_SIGNAL_NOT_INVOKED>> {
+  // we skip the check if the node is an input binding
+  if (
+    directivesOfElement !== null &&
+    directivesOfElement.some((dir) => dir.inputs.getByBindingPropertyName(node.name) !== null)
+  ) {
+    return [];
+  }
+
+  // otherwise, we check if the node is
+  const nodeAst = isPropertyReadNodeAst(node);
+  if (
+    // a bound property like `[prop]="mySignal"`
+    (node.type === BindingType.Property ||
+      // or a class binding like `[class.myClass]="mySignal"`
+      node.type === BindingType.Class ||
+      // or a style binding like `[style.width]="mySignal"`
+      node.type === BindingType.Style ||
+      // or an attribute binding like `[attr.role]="mySignal"`
+      node.type === BindingType.Attribute ||
+      // or an animation binding like `[animate.enter]="mySignal"`
+      node.type === BindingType.Animation ||
+      // or an animation binding like `[@myAnimation]="mySignal"`
+      node.type === BindingType.LegacyAnimation) &&
+    nodeAst
+  ) {
+    return buildDiagnosticForSignal(ctx, nodeAst, component);
+  }
+
+  return [];
 }
 
 function isPropertyReadNodeAst(node: TmplAstBoundAttribute): PropertyRead | undefined {
@@ -153,9 +179,11 @@ function buildDiagnosticForSignal(
   // error.
   // We also check for `{{ mySignal.set }}` or `{{ mySignal.update }}` or
   // `{{ mySignal.asReadonly }}` as these are the names of instance properties of Signal
+  if (!isFunctionInstanceProperty(node.name) && !isSignalInstanceProperty(node.name)) {
+    return [];
+  }
   const symbolOfReceiver = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
   if (
-    (isFunctionInstanceProperty(node.name) || isSignalInstanceProperty(node.name)) &&
     symbolOfReceiver !== null &&
     symbolOfReceiver.kind === SymbolKind.Expression &&
     isSignalReference(symbolOfReceiver)
