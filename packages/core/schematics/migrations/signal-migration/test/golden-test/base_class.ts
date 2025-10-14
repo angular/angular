@@ -18,7 +18,7 @@ class BaseWithAngular {
 
 @Directive()
 class Sub2 extends BaseWithAngular {
-  @Input() disabled = '';
+  @Input() override disabled = '';
 }
 
 interface BaseNonAngularInterface {

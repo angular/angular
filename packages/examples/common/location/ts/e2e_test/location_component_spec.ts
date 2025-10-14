@@ -22,7 +22,7 @@ describe('Location', () => {
   it('should verify paths', () => {
     browser.get('/location/#/bar/baz');
     waitForElement('hash-location');
-    expect(element.all(by.css('path-location code')).get(0).getText()).toEqual('/location');
-    expect(element.all(by.css('hash-location code')).get(0).getText()).toEqual('/bar/baz');
+    expect(element.all(by.css('path-location code')).get(0).getText()).toEqual(Promise.resolve('/location'));
+    expect(element.all(by.css('hash-location code')).get(0).getText()).toEqual(Promise.resolve('/bar/baz'));
   });
 });

@@ -25,11 +25,11 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('async-promise-pipe');
       expect(element.all(by.css('async-promise-pipe span')).get(0).getText()).toEqual(
-        'Wait for it...',
+        Promise.resolve('Wait for it...'),
       );
       element(by.css('async-promise-pipe button')).click();
       expect(element.all(by.css('async-promise-pipe span')).get(0).getText()).toEqual(
-        'Wait for it... hi there!',
+        Promise.resolve('Wait for it... hi there!'),
       );
     });
   });
@@ -39,8 +39,8 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('lowerupper-pipe');
       element(by.css('lowerupper-pipe input')).sendKeys('Hello World!');
-      expect(element.all(by.css('lowerupper-pipe pre')).get(0).getText()).toEqual("'hello world!'");
-      expect(element.all(by.css('lowerupper-pipe pre')).get(1).getText()).toEqual("'HELLO WORLD!'");
+      expect(element.all(by.css('lowerupper-pipe pre')).get(0).getText()).toEqual(Promise.resolve("'hello world!'"));
+      expect(element.all(by.css('lowerupper-pipe pre')).get(1).getText()).toEqual(Promise.resolve("'HELLO WORLD!'"));
     });
   });
 
@@ -48,16 +48,16 @@ describe('pipe', () => {
     it('should work properly', () => {
       browser.get(URL);
       waitForElement('titlecase-pipe');
-      expect(element.all(by.css('titlecase-pipe p')).get(0).getText()).toEqual('Some String');
+      expect(element.all(by.css('titlecase-pipe p')).get(0).getText()).toEqual(Promise.resolve('Some String'));
       expect(element.all(by.css('titlecase-pipe p')).get(1).getText()).toEqual(
-        'This Is Mixed Case',
+        Promise.resolve('This Is Mixed Case'),
       );
       expect(element.all(by.css('titlecase-pipe p')).get(2).getText()).toEqual(
-        "It's Non-trivial Question",
+        Promise.resolve("It's Non-trivial Question"),
       );
-      expect(element.all(by.css('titlecase-pipe p')).get(3).getText()).toEqual('One,two,three');
-      expect(element.all(by.css('titlecase-pipe p')).get(4).getText()).toEqual('True|false');
-      expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual('Foo-vs-bar');
+      expect(element.all(by.css('titlecase-pipe p')).get(3).getText()).toEqual(Promise.resolve('One,two,three'));
+      expect(element.all(by.css('titlecase-pipe p')).get(4).getText()).toEqual(Promise.resolve('True|false'));
+      expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual(Promise.resolve('Foo-vs-bar'));
     });
   });
 
@@ -65,10 +65,10 @@ describe('pipe', () => {
     it('should work properly', () => {
       browser.get(URL);
       waitForElement('keyvalue-pipe');
-      expect(element.all(by.css('keyvalue-pipe div')).get(0).getText()).toEqual('1:bar');
-      expect(element.all(by.css('keyvalue-pipe div')).get(1).getText()).toEqual('2:foo');
-      expect(element.all(by.css('keyvalue-pipe div')).get(2).getText()).toEqual('1:bar');
-      expect(element.all(by.css('keyvalue-pipe div')).get(3).getText()).toEqual('2:foo');
+      expect(element.all(by.css('keyvalue-pipe div')).get(0).getText()).toEqual(Promise.resolve('1:bar'));
+      expect(element.all(by.css('keyvalue-pipe div')).get(1).getText()).toEqual(Promise.resolve('2:foo'));
+      expect(element.all(by.css('keyvalue-pipe div')).get(2).getText()).toEqual(Promise.resolve('1:bar'));
+      expect(element.all(by.css('keyvalue-pipe div')).get(3).getText()).toEqual(Promise.resolve('2:foo'));
     });
   });
 
@@ -77,10 +77,10 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('number-pipe');
       const examples = element.all(by.css('number-pipe p'));
-      expect(examples.get(0).getText()).toEqual('No specified formatting: 3.142');
-      expect(examples.get(1).getText()).toEqual('With digitsInfo parameter specified: 0,003.14159');
+      expect(examples.get(0).getText()).toEqual(Promise.resolve('No specified formatting: 3.142'));
+      expect(examples.get(1).getText()).toEqual(Promise.resolve('With digitsInfo parameter specified: 0,003.14159'));
       expect(examples.get(2).getText()).toEqual(
-        'With digitsInfo and locale parameters specified: 0\u202f003,14159',
+        Promise.resolve('With digitsInfo and locale parameters specified: 0\u202f003,14159'),
       );
     });
   });
@@ -90,9 +90,9 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('percent-pipe');
       const examples = element.all(by.css('percent-pipe p'));
-      expect(examples.get(0).getText()).toEqual('A: 26%');
-      expect(examples.get(1).getText()).toEqual('B: 0,134.950%');
-      expect(examples.get(2).getText()).toEqual('B: 0\u202f134,950 %');
+      expect(examples.get(0).getText()).toEqual(Promise.resolve('A: 26%'));
+      expect(examples.get(1).getText()).toEqual(Promise.resolve('B: 0,134.950%'));
+      expect(examples.get(2).getText()).toEqual(Promise.resolve('B: 0\u202f134,950 %'));
     });
   });
 
@@ -101,13 +101,13 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('currency-pipe');
       const examples = element.all(by.css('currency-pipe p'));
-      expect(examples.get(0).getText()).toEqual('A: $0.26');
-      expect(examples.get(1).getText()).toEqual('A: CA$0.26');
-      expect(examples.get(2).getText()).toEqual('A: CAD0.26');
-      expect(examples.get(3).getText()).toEqual('B: CA$0,001.35');
-      expect(examples.get(4).getText()).toEqual('B: $0,001.35');
-      expect(examples.get(5).getText()).toEqual('B: 0\u202f001,35 $CA');
-      expect(examples.get(6).getText()).toEqual('B: CLP1');
+      expect(examples.get(0).getText()).toEqual(Promise.resolve('A: $0.26'));
+      expect(examples.get(1).getText()).toEqual(Promise.resolve('A: CA$0.26'));
+      expect(examples.get(2).getText()).toEqual(Promise.resolve('A: CAD0.26'));
+      expect(examples.get(3).getText()).toEqual(Promise.resolve('B: CA$0,001.35'));
+      expect(examples.get(4).getText()).toEqual(Promise.resolve('B: $0,001.35'));
+      expect(examples.get(5).getText()).toEqual(Promise.resolve('B: 0\u202f001,35 $CA'));
+      expect(examples.get(6).getText()).toEqual(Promise.resolve('B: CLP1'));
     });
   });
 });

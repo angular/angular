@@ -24,7 +24,7 @@ describe('ngComponentOutlet', () => {
     it('should render simple', () => {
       browser.get(URL);
       waitForElement('ng-component-outlet-simple-example');
-      expect(element.all(by.css('hello-world')).getText()).toEqual(['Hello World!']);
+      expect(element.all(by.css('hello-world')).getText()).toEqual(Promise.resolve(['Hello World!']));
     });
   });
 });

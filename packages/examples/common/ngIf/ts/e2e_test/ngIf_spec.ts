@@ -25,9 +25,9 @@ describe('ngIf', () => {
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('hide show = true\nText to show');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(Promise.resolve('hide show = true\nText to show'));
       element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('show show = false');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(Promise.resolve('show show = false'));
     });
   });
 
@@ -36,10 +36,10 @@ describe('ngIf', () => {
     it('should hide/show content', () => {
       browser.get(URL);
       waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('hide show = true\nText to show');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(Promise.resolve('hide show = true\nText to show'));
       element(by.css(comp + ' button')).click();
       expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'show show = false\nAlternate text while primary text is hidden',
+        Promise.resolve('show show = false\nAlternate text while primary text is hidden'),
       );
     });
   });
@@ -51,21 +51,21 @@ describe('ngIf', () => {
       browser.get(URL);
       waitForElement(comp);
       expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'hideSwitch Primary show = true\nPrimary text to show',
+        Promise.resolve('hideSwitch Primary show = true\nPrimary text to show'),
       );
       element
         .all(by.css(comp + ' button'))
         .get(1)
         .click();
       expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'hideSwitch Primary show = true\nSecondary text to show',
+        Promise.resolve('hideSwitch Primary show = true\nSecondary text to show'),
       );
       element
         .all(by.css(comp + ' button'))
         .get(0)
         .click();
       expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'showSwitch Primary show = false\nAlternate text while primary text is hidden',
+        Promise.resolve('showSwitch Primary show = false\nAlternate text while primary text is hidden'),
       );
     });
   });
@@ -76,10 +76,10 @@ describe('ngIf', () => {
       browser.get(URL);
       waitForElement(comp);
       expect(element.all(by.css(comp)).get(0).getText()).toEqual(
-        'Next User\nWaiting... (user is null)',
+        Promise.resolve('Next User\nWaiting... (user is null)'),
       );
       element(by.css(comp + ' button')).click();
-      expect(element.all(by.css(comp)).get(0).getText()).toEqual('Next User\nHello Smith, John!');
+      expect(element.all(by.css(comp)).get(0).getText()).toEqual(Promise.resolve('Next User\nHello Smith, John!'));
     });
   });
 });

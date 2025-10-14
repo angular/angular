@@ -20,5 +20,5 @@ class Base {
 
 @Directive({})
 class Option extends Base {
-  _items = new QueryList<Group>();
+  override _items = new QueryList<Group>();
 }
