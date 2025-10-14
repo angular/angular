@@ -26,6 +26,9 @@ ng_project(
 sass_binary(
     name = "style",
     src = "top-level-banner.component.scss",
+    deps = [
+        "//adev/shared-docs/styles",
+    ],
 )
 
 ts_project(
