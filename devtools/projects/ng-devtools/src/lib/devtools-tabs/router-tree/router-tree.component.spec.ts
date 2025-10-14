@@ -109,7 +109,7 @@ describe('RouterTreeComponent', () => {
       const unsupportedMsg = fixture.nativeElement.querySelector('.unsupported-version');
       expect(unsupportedMsg).toBeTruthy();
       expect(unsupportedMsg.textContent).toContain(
-        'Router tree visualization is available for Angular applications using the latest Angular 20.2.x release and above.',
+        'Router tree visualization is available for Angular applications using the latest Angular 20.3.5 release and above.',
       );
     });
   });
