@@ -1,5 +1,5 @@
 @if (controlsLoaded()) {
-  <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" [multi]="true">
+  <mat-accordion [multi]="true">
     @let deps = dependencies();
     @if (deps && deps.length > 0) {
       <div class="mat-accordion-content">
@@ -19,8 +19,8 @@
       </div>
     }
     @for (panel of panels(); track $index) {
-      <div class="mat-accordion-content" [id]="panel.title()" cdkDrag>
-        @if (panel.controls().dataSource.data.length > 0) {
+      @if (panel.controls().dataSource.data.length > 0) {
+        <div class="mat-accordion-content" [id]="panel.title()">
           <mat-expansion-panel [expanded]="true">
             <mat-expansion-panel-header collapsedHeight="28px" expandedHeight="28px">
               <mat-panel-title>{{ panel.title() }}</mat-panel-title>
@@ -34,8 +34,8 @@
               (showSignalGraph)="showSignalGraph.emit($event)"
             />
           </mat-expansion-panel>
-        }
-      </div>
+        </div>
+      }
     }
   </mat-accordion>
 }
