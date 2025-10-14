@@ -223,6 +223,7 @@ export class Router {
               currentTransition.currentRawUrl,
             );
             const extras = {
+              scroll: currentTransition.extras.scroll,
               browserUrl: currentTransition.extras.browserUrl,
               info: currentTransition.extras.info,
               skipLocationChange: currentTransition.extras.skipLocationChange,

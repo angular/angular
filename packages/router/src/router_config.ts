@@ -124,9 +124,11 @@ export interface RouterConfigOptions {
 
 /**
  * Configuration options for the scrolling feature which can be used with `withInMemoryScrolling`
- * function.
+ * function or `RouterModule.forRoot`.
  *
  * @publicApi
+ * @see withInMemoryScrolling
+ * @see RouterModule#forRoot
  */
 export interface InMemoryScrollingOptions {
   /**
