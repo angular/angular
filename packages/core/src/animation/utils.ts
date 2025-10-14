@@ -280,3 +280,15 @@ export function clearLViewNodeAnimationResolvers(lView: LView, tNode: TNode) {
   const nodeAnimations = getLViewLeaveAnimations(lView).get(tNode.index);
   if (nodeAnimations) nodeAnimations.resolvers = undefined;
 }
+
+export function leaveAnimationFunctionCleanup(
+  lView: LView,
+  tNode: TNode,
+  nativeElement: HTMLElement,
+  resolvers: VoidFunction[] | undefined,
+  cleanupFns: Function[],
+) {
+  clearLeavingNodes(tNode, nativeElement as HTMLElement);
+  cleanupAfterLeaveAnimations(resolvers, cleanupFns);
+  clearLViewNodeAnimationResolvers(lView, tNode);
+}

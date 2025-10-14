@@ -41,6 +41,7 @@ import {
   getLViewEnterAnimations,
   getLViewLeaveAnimations,
   isLongestAnimation,
+  leaveAnimationFunctionCleanup,
   longestAnimations,
   noOpAnimationComplete,
   trackEnterClasses,
@@ -388,50 +389,81 @@ function runLeaveAnimationFunction(
   lView: LView,
   tNode: TNode,
   value: AnimationFunction,
-): Promise<void> {
+): {promise: Promise<void>; resolve: VoidFunction} {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
+  const cleanupFns: Function[] = [];
   const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
   const ngZone = lView[INJECTOR]!.get(NgZone);
   const maxAnimationTimeout = lView[INJECTOR]!.get(MAX_ANIMATION_TIMEOUT);
 
+  (getLViewLeaveAnimations(lView).get(tNode.index)!.resolvers ??= []).push(resolve);
+  const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
+
   if (animationsDisabled) {
-    resolve();
+    leaveAnimationFunctionCleanup(
+      lView,
+      tNode,
+      nativeElement as HTMLElement,
+      resolvers,
+      cleanupFns,
+    );
   } else {
-    const timeoutId = setTimeout(() => {
-      clearLeavingNodes(tNode, nativeElement as HTMLElement);
-      resolve();
-    }, maxAnimationTimeout);
+    const timeoutId = setTimeout(
+      () =>
+        leaveAnimationFunctionCleanup(
+          lView,
+          tNode,
+          nativeElement as HTMLElement,
+          resolvers,
+          cleanupFns,
+        ),
+      maxAnimationTimeout,
+    );
 
     const event: AnimationCallbackEvent = {
       target: nativeElement,
       animationComplete: () => {
-        clearLeavingNodes(tNode, nativeElement as HTMLElement);
+        leaveAnimationFunctionCleanup(
+          lView,
+          tNode,
+          nativeElement as HTMLElement,
+          resolvers,
+          cleanupFns,
+        );
         clearTimeout(timeoutId);
-        resolve();
       },
     };
     trackLeavingNodes(tNode, nativeElement as HTMLElement);
 
     ngZone.runOutsideAngular(() => {
-      renderer.listen(
-        nativeElement,
-        'animationend',
-        () => {
-          resolve();
-        },
-        {once: true},
+      cleanupFns.push(
+        renderer.listen(
+          nativeElement,
+          'animationend',
+          () => {
+            leaveAnimationFunctionCleanup(
+              lView,
+              tNode,
+              nativeElement as HTMLElement,
+              resolvers,
+              cleanupFns,
+            );
+            clearTimeout(timeoutId);
+          },
+          {once: true},
+        ),
       );
     });
     value.call(lView[CONTEXT], event);
   }
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
-  return promise;
+  return {promise, resolve};
 }
 
 function queueEnterAnimations(lView: LView) {
