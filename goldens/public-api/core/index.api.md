@@ -1660,9 +1660,7 @@ export interface ResourceLoaderParams<R> {
 }
 
 // @public (undocumented)
-export type ResourceOptions<T, R> = (PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>) & {
-    debugName?: string;
-};
+export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingResourceOptions<T, R>;
 
 // @public
 export interface ResourceRef<T> extends WritableResource<T> {
