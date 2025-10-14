@@ -186,6 +186,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return data?.hostElement ?? null;
   }
 
+  getDirectivesOfNode(
+    component: ts.ClassDeclaration,
+    node: TmplAstElement | TmplAstTemplate,
+  ): TypeCheckableDirectiveMeta[] | null {
+    return (
+      this.getLatestComponentState(component).data?.boundTarget.getDirectivesOfNode(node) ?? null
+    );
+  }
+
   getUsedDirectives(component: ts.ClassDeclaration): TypeCheckableDirectiveMeta[] | null {
     return this.getLatestComponentState(component).data?.boundTarget.getUsedDirectives() ?? null;
   }
