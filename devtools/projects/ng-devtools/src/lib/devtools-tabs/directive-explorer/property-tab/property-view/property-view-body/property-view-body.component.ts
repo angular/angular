@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -34,8 +34,6 @@ import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs
   styleUrls: ['./property-view-body.component.scss'],
   imports: [
     MatExpansionModule,
-    CdkDropList,
-    CdkDrag,
     PropertyViewTreeComponent,
     DocsRefButtonComponent,
     DependencyViewerComponent,
@@ -93,12 +91,6 @@ export class PropertyViewBodyComponent {
 
   logValue(node: FlatNode): void {
     this.controller().logValue(node);
-  }
-
-  drop(event: CdkDragDrop<any, any>): void {
-    const panels = this.panels();
-    moveItemInArray(panels, event.previousIndex, event.currentIndex);
-    this.panels.set(Array.from(panels)); // Clone array for immutable update.
   }
 
   handleInspect(node: FlatNode): void {
