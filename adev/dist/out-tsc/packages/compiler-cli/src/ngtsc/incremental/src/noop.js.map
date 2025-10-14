@@ -1,0 +1,1 @@
+{"version":3,"file":"noop.js","sourceRoot":"","sources":["../../../../../../../../../packages/compiler-cli/src/ngtsc/incremental/src/noop.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAIH,MAAM,CAAC,MAAM,sBAAsB,GAA+B;IAChE,gBAAgB,EAAE,GAAG,EAAE,CAAC,IAAI;IAC5B,2BAA2B,EAAE,GAAG,EAAE,CAAC,IAAI;IACvC,yBAAyB,EAAE,GAAG,EAAE,GAAE,CAAC;CACpC,CAAC"}

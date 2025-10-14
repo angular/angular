@@ -1,0 +1,1 @@
+{"version":3,"file":"algolia-synonyms.mjs","sourceRoot":"","sources":["../../../../../scripts/synonyms/algolia-synonyms.mts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAIH;;;;;GAKG;AACH,MAAM,QAAQ,GAAiB;IAC7B;QACE,QAAQ,EAAE,aAAa;QACvB,IAAI,EAAE,SAAS;QACf,QAAQ,EAAE,CAAC,IAAI,EAAE,sBAAsB,CAAC;KACzC;CACF,CAAC;AAEF,eAAe,QAAQ,CAAC"}

@@ -1,0 +1,11 @@
+'use strict';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+// eslint-disable-next-line
+const x = 1;
+//# sourceMappingURL=example-with-eslint-comment.js.map

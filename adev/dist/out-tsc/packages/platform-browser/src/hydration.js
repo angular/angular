@@ -1,0 +1,225 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+import {ɵwithHttpTransferCache} from '@angular/common/http';
+import {
+  ENVIRONMENT_INITIALIZER,
+  inject,
+  makeEnvironmentProviders,
+  ɵConsole as Console,
+  ɵRuntimeError as RuntimeError,
+  ɵformatRuntimeError as formatRuntimeError,
+  ɵwithDomHydration as withDomHydration,
+  ɵwithEventReplay,
+  ɵwithI18nSupport,
+  ɵwithIncrementalHydration,
+  ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
+} from '@angular/core';
+/**
+ * The list of features as an enum to uniquely type each `HydrationFeature`.
+ * @see {@link HydrationFeature}
+ *
+ * @publicApi
+ */
+export var HydrationFeatureKind;
+(function (HydrationFeatureKind) {
+  HydrationFeatureKind[(HydrationFeatureKind['NoHttpTransferCache'] = 0)] = 'NoHttpTransferCache';
+  HydrationFeatureKind[(HydrationFeatureKind['HttpTransferCacheOptions'] = 1)] =
+    'HttpTransferCacheOptions';
+  HydrationFeatureKind[(HydrationFeatureKind['I18nSupport'] = 2)] = 'I18nSupport';
+  HydrationFeatureKind[(HydrationFeatureKind['EventReplay'] = 3)] = 'EventReplay';
+  HydrationFeatureKind[(HydrationFeatureKind['IncrementalHydration'] = 4)] = 'IncrementalHydration';
+})(HydrationFeatureKind || (HydrationFeatureKind = {}));
+/**
+ * Helper function to create an object that represents a Hydration feature.
+ */
+function hydrationFeature(ɵkind, ɵproviders = [], ɵoptions = {}) {
+  return {ɵkind, ɵproviders};
+}
+/**
+ * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
+ * server and other one on the browser.
+ *
+ * @publicApi
+ */
+export function withNoHttpTransferCache() {
+  // This feature has no providers and acts as a flag that turns off
+  // HTTP transfer cache (which otherwise is turned on by default).
+  return hydrationFeature(HydrationFeatureKind.NoHttpTransferCache);
+}
+/**
+ * The function accepts an object, which allows to configure cache parameters,
+ * such as which headers should be included (no headers are included by default),
+ * whether POST requests should be cached or a callback function to determine if a
+ * particular request should be cached.
+ *
+ * @publicApi
+ */
+export function withHttpTransferCacheOptions(options) {
+  // This feature has no providers and acts as a flag to pass options to the HTTP transfer cache.
+  return hydrationFeature(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+    ɵwithHttpTransferCache(options),
+  );
+}
+/**
+ * Enables support for hydrating i18n blocks.
+ *
+ * @publicApi 20.0
+ */
+export function withI18nSupport() {
+  return hydrationFeature(HydrationFeatureKind.I18nSupport, ɵwithI18nSupport());
+}
+/**
+ * Enables support for replaying user events (e.g. `click`s) that happened on a page
+ * before hydration logic has completed. Once an application is hydrated, all captured
+ * events are replayed and relevant event listeners are executed.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable event replay in your application when
+ * `bootstrapApplication` function is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withEventReplay())]
+ * });
+ * ```
+ * @publicApi
+ * @see {@link provideClientHydration}
+ */
+export function withEventReplay() {
+  return hydrationFeature(HydrationFeatureKind.EventReplay, ɵwithEventReplay());
+}
+/**
+ * Enables support for incremental hydration using the `hydrate` trigger syntax.
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable incremental hydration in your application when
+ * the `bootstrapApplication` function is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration(withIncrementalHydration())]
+ * });
+ * ```
+ * @publicApi 20.0
+ * @see {@link provideClientHydration}
+ */
+export function withIncrementalHydration() {
+  return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
+}
+/**
+ * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
+ * that verifies whether enabledBlocking initial navigation is used in an application
+ * and logs a warning in a console if it's not compatible with hydration.
+ */
+function provideEnabledBlockingInitialNavigationDetector() {
+  return [
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        const isEnabledBlockingInitialNavigation = inject(IS_ENABLED_BLOCKING_INITIAL_NAVIGATION, {
+          optional: true,
+        });
+        if (isEnabledBlockingInitialNavigation) {
+          const console = inject(Console);
+          const message = formatRuntimeError(
+            5001 /* RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES */,
+            'Configuration error: found both hydration and enabledBlocking initial navigation ' +
+              'in the same application, which is a contradiction.',
+          );
+          console.warn(message);
+        }
+      },
+      multi: true,
+    },
+  ];
+}
+/**
+ * Sets up providers necessary to enable hydration functionality for the application.
+ *
+ * By default, the function enables the recommended set of features for the optimal
+ * performance for most of the applications. It includes the following features:
+ *
+ * * Reconciling DOM hydration. Learn more about it [here](guide/hydration).
+ * * [`HttpClient`](api/common/http/HttpClient) response caching while running on the server and
+ * transferring this cache to the client to avoid extra HTTP requests. Learn more about data caching
+ * [here](guide/ssr#caching-data-when-using-httpclient).
+ *
+ * These functions allow you to disable some of the default features or enable new ones:
+ *
+ * * {@link withNoHttpTransferCache} to disable HTTP transfer cache
+ * * {@link withHttpTransferCacheOptions} to configure some HTTP transfer cache options
+ * * {@link withI18nSupport} to enable hydration support for i18n blocks
+ * * {@link withEventReplay} to enable support for replaying user events
+ *
+ * @usageNotes
+ *
+ * Basic example of how you can enable hydration in your application when
+ * `bootstrapApplication` function is used:
+ * ```ts
+ * bootstrapApplication(AppComponent, {
+ *   providers: [provideClientHydration()]
+ * });
+ * ```
+ *
+ * Alternatively if you are using NgModules, you would add `provideClientHydration`
+ * to your root app module's provider list.
+ * ```ts
+ * @NgModule({
+ *   declarations: [RootCmp],
+ *   bootstrap: [RootCmp],
+ *   providers: [provideClientHydration()],
+ * })
+ * export class AppModule {}
+ * ```
+ *
+ * @see {@link withNoHttpTransferCache}
+ * @see {@link withHttpTransferCacheOptions}
+ * @see {@link withI18nSupport}
+ * @see {@link withEventReplay}
+ *
+ * @param features Optional features to configure additional hydration behaviors.
+ * @returns A set of providers to enable hydration.
+ *
+ * @publicApi 17.0
+ */
+export function provideClientHydration(...features) {
+  const providers = [];
+  const featuresKind = new Set();
+  for (const {ɵproviders, ɵkind} of features) {
+    featuresKind.add(ɵkind);
+    if (ɵproviders.length) {
+      providers.push(ɵproviders);
+    }
+  }
+  const hasHttpTransferCacheOptions = featuresKind.has(
+    HydrationFeatureKind.HttpTransferCacheOptions,
+  );
+  if (
+    typeof ngDevMode !== 'undefined' &&
+    ngDevMode &&
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) &&
+    hasHttpTransferCacheOptions
+  ) {
+    throw new RuntimeError(
+      5001 /* RuntimeErrorCode.HYDRATION_CONFLICTING_FEATURES */,
+      'Configuration error: found both withHttpTransferCacheOptions() and withNoHttpTransferCache() in the same call to provideClientHydration(), which is a contradiction.',
+    );
+  }
+  return makeEnvironmentProviders([
+    typeof ngDevMode !== 'undefined' && ngDevMode
+      ? provideEnabledBlockingInitialNavigationDetector()
+      : [],
+    withDomHydration(),
+    featuresKind.has(HydrationFeatureKind.NoHttpTransferCache) || hasHttpTransferCacheOptions
+      ? []
+      : ɵwithHttpTransferCache({}),
+    providers,
+  ]);
+}
+//# sourceMappingURL=hydration.js.map

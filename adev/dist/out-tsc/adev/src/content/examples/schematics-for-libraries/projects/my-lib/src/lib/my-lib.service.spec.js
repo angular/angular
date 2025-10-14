@@ -1,0 +1,10 @@
+import {TestBed} from '@angular/core/testing';
+import {MyLibService} from './my-lib.service';
+describe('MyLibService', () => {
+  beforeEach(() => TestBed.configureTestingModule({}));
+  it('should be created', () => {
+    const service = TestBed.inject(MyLibService);
+    expect(service).toBeTruthy();
+  });
+});
+//# sourceMappingURL=my-lib.service.spec.js.map

@@ -7,8 +7,8 @@
  */
 
 import {DATE_PIPE_DEFAULT_OPTIONS, DatePipe} from '../../index';
-import localeEn from '../../locales/en';
-import localeEnExtra from '../../locales/extra/en';
+import localeEn from '../../../dist/packages-dist/@angular/common/locales/en';
+import localeEnExtra from '../../../dist/packages-dist/@angular/common/locales/extra/en';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

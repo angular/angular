@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HighlighterGeneric} from 'shiki';
+// Shiki does not export HighlighterGeneric in v11; use a minimal compatible type.
+type HighlighterGeneric<T, U> = {
+  codeToHtml: (code: string, options?: unknown) => string;
+};
 
 /**
  * Singleton instance of the Shiki highlighter used during API page generation.

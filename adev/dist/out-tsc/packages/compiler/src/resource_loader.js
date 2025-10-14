@@ -1,0 +1,16 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+/**
+ * An interface for retrieving documents by URL that the compiler uses to
+ * load templates.
+ *
+ * This is an abstract class, rather than an interface, so that it can be used
+ * as injection token.
+ */
+export class ResourceLoader {}
+//# sourceMappingURL=resource_loader.js.map

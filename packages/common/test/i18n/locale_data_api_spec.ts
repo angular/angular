@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import localeEn from '../../locales/en';
-import localeEnAU from '../../locales/en-AU';
-import localeFr from '../../locales/fr';
-import localeHe from '../../locales/he';
-import localeZh from '../../locales/zh';
+import localeEn from '../../../dist/packages-dist/@angular/common/locales/en';
+import localeEnAU from '../../../dist/packages-dist/@angular/common/locales/en-AU';
+import localeFr from '../../../dist/packages-dist/@angular/common/locales/fr';
+import localeHe from '../../../dist/packages-dist/@angular/common/locales/he';
+import localeZh from '../../../dist/packages-dist/@angular/common/locales/zh';
 import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 import {

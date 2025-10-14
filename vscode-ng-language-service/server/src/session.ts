@@ -943,13 +943,15 @@ export class Session {
       (project as any).markAsDirty();
       // Show initial diagnostics
       this.requestDiagnosticsOnOpenOrChangeFile(filePath, `Opening ${filePath}`);
-    } catch (error) {
+    } catch (error: unknown) {
       if (this.isProjectLoading) {
         this.isProjectLoading = false;
         this.connection.sendNotification(ProjectLoadingFinish);
       }
-      if (error.stack) {
+      if (error instanceof Error && error.stack) {
         this.error(error.stack);
+      } else {
+        this.error(String(error));
       }
       throw error;
     }

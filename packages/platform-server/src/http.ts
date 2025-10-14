@@ -18,7 +18,7 @@ import {Observable} from 'rxjs';
 
 @Injectable()
 export class ServerXhr implements XhrFactory {
-  private xhrImpl: typeof import('xhr2') | undefined;
+  private xhrImpl: any | undefined;
 
   // The `xhr2` dependency has a side-effect of accessing and modifying a
   // global scope. Loading `xhr2` dynamically allows us to delay the loading
@@ -26,8 +26,9 @@ export class ServerXhr implements XhrFactory {
   // server platform (via shims, etc).
   private async ɵloadImpl(): Promise<void> {
     if (!this.xhrImpl) {
-      const {default: xhr} = await import('xhr2');
-      this.xhrImpl = xhr;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const xhr: any = await import('xhr2');
+      this.xhrImpl = (xhr as any).default ?? xhr;
     }
   }
 
@@ -37,7 +38,7 @@ export class ServerXhr implements XhrFactory {
       throw new Error('Unexpected state in ServerXhr: XHR implementation is not loaded.');
     }
 
-    return new impl.XMLHttpRequest();
+    return new (impl as any).XMLHttpRequest();
   }
 }
 

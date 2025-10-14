@@ -7,12 +7,12 @@
  */
 
 import {CurrencyPipe, DecimalPipe, PercentPipe} from '../../index';
-import localeAr from '../../locales/ar';
-import localeDa from '../../locales/da';
-import localeDeAt from '../../locales/de-AT';
-import localeEn from '../../locales/en';
-import localeEsUS from '../../locales/es-US';
-import localeFr from '../../locales/fr';
+import localeAr from '../../../dist/packages-dist/@angular/common/locales/ar';
+import localeDa from '../../../dist/packages-dist/@angular/common/locales/da';
+import localeDeAt from '../../../dist/packages-dist/@angular/common/locales/de-AT';
+import localeEn from '../../../dist/packages-dist/@angular/common/locales/en';
+import localeEsUS from '../../../dist/packages-dist/@angular/common/locales/es-US';
+import localeFr from '../../../dist/packages-dist/@angular/common/locales/fr';
 import {Component, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

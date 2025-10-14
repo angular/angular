@@ -7,10 +7,10 @@
  */
 
 import {formatCurrency, formatNumber, formatPercent} from '../../index';
-import localeAr from '../../locales/ar';
-import localeEn from '../../locales/en';
-import localeEsUS from '../../locales/es-US';
-import localeFr from '../../locales/fr';
+import localeAr from '../../../dist/packages-dist/@angular/common/locales/ar';
+import localeEn from '../../../dist/packages-dist/@angular/common/locales/en';
+import localeEsUS from '../../../dist/packages-dist/@angular/common/locales/es-US';
+import localeFr from '../../../dist/packages-dist/@angular/common/locales/fr';
 import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format number', () => {
