@@ -18,27 +18,6 @@ export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
   },
 );
 
-export interface AnimationQueue {
-  queue: Set<Function>;
-  isScheduled: boolean;
-}
-
-/**
- * A [DI token](api/core/InjectionToken) for the queue of all animations.
- */
-export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
-  typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationQueue' : '',
-  {
-    providedIn: 'root',
-    factory: () => {
-      return {
-        queue: new Set(),
-        isScheduled: false,
-      };
-    },
-  },
-);
-
 /**
  * The event type for when `animate.enter` and `animate.leave` are used with function
  * callbacks.

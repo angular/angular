@@ -748,6 +748,7 @@
       "providerToFactory",
       "providerToRecord",
       "publishSignalConfiguration",
+      "queueEnterAnimations",
       "refreshContentQueries",
       "refreshView",
       "registerFailed",

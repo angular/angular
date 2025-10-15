@@ -545,6 +545,7 @@
       "providerToFactory",
       "providerToRecord",
       "publishSignalConfiguration",
+      "queueEnterAnimations",
       "refreshContentQueries",
       "refreshView",
       "registerHostBindingOpCodes",

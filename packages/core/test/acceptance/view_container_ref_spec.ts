@@ -48,7 +48,7 @@ import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
-import {ANIMATION_QUEUE} from '../../src/animation/interfaces';
+import {ANIMATION_QUEUE} from '../../src/animation/queue';
 
 describe('ViewContainerRef', () => {
   /**

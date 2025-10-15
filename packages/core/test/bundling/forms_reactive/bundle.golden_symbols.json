@@ -865,6 +865,7 @@
       "providerToRecord",
       "providersResolver",
       "publishSignalConfiguration",
+      "queueEnterAnimations",
       "readableStreamLikeToAsyncGenerator",
       "refreshContentQueries",
       "refreshView",
