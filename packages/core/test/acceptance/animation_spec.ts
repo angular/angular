@@ -9,15 +9,19 @@
 import {NgFor} from '@angular/common';
 import {ViewEncapsulation} from '@angular/compiler';
 import {
+  AfterViewInit,
   AnimationCallbackEvent,
+  ChangeDetectionStrategy,
   Component,
   computed,
   Directive,
   ElementRef,
   NgModule,
+  OnDestroy,
   provideZonelessChangeDetection,
   signal,
   ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -25,6 +29,7 @@ import {isNode} from '@angular/private/testing';
 import {tickAnimationFrames} from '../animation_utils/tick_animation_frames';
 import {BrowserTestingModule, platformBrowserTesting} from '@angular/platform-browser/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {ComponentRef} from '@angular/core/src/render3';
 
 @NgModule({
   providers: [provideZonelessChangeDetection()],
@@ -2020,6 +2025,123 @@ describe('Animation', () => {
         );
       tick();
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(0);
+    }));
+  });
+
+  describe('animation queue timing', () => {
+    it('should run animations with a fresh componentRef after destroy', fakeAsync(() => {
+      const animateStyles = `
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'app-control-panel',
+        template: `
+        @if (step() === 0) {
+        <p class="not-here" [animate.leave]="'fade-out'">
+          THIS SHOULD NOT BE HERE
+        </p>
+        }
+        @if (step() === 1) {
+          <p class="all-there-is">THIS SHOULD BE ALL THERE IS</p>
+        }
+      `,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class StepperComponent {
+        readonly step = signal(0);
+      }
+
+      @Component({
+        selector: 'app-dynamic',
+        template: `<ng-container #dynamicComponent></ng-container>`,
+        changeDetection: ChangeDetectionStrategy.OnPush,
+      })
+      class DynamicComponent implements AfterViewInit, OnDestroy {
+        @ViewChild('dynamicComponent', {read: ViewContainerRef})
+        dynamicComponent!: ViewContainerRef;
+
+        constructor() {
+          this.componentRef = null;
+        }
+
+        protected componentRef: ComponentRef<StepperComponent> | null;
+
+        ngAfterViewInit(): void {
+          this.componentRef = this.dynamicComponent.createComponent(
+            StepperComponent,
+          ) as ComponentRef<StepperComponent>;
+          this.componentRef!.changeDetectorRef.detectChanges();
+
+          this.componentRef!.instance.step.set(1);
+        }
+
+        ngOnDestroy(): void {
+          this.componentRef?.destroy();
+        }
+      }
+
+      @Component({
+        selector: 'test-cmp',
+        imports: [DynamicComponent],
+        template: `
+          <div>
+            @if (show()) {
+              <app-dynamic/>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(true);
+
+        toggleOverlay() {
+          this.show.update((show) => !show);
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
+      expect(fixture.debugElement.query(By.css('p.not-here.fade-out'))).not.toBeNull();
+
+      // Finish the leave animation to ensure it is removed
+      tickAnimationFrames(1);
+
+      // verify element is removed post animation
+      expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
+
+      cmp.toggleOverlay();
+      fixture.detectChanges();
+
+      // show is false. Nothing should be present.
+      expect(fixture.debugElement.query(By.css('p.all-there-is'))).toBeNull();
+      expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
+
+      cmp.toggleOverlay();
+      fixture.detectChanges();
+
+      expect(fixture.debugElement.query(By.css('p.not-here'))).not.toBeNull();
+
+      tickAnimationFrames(1);
+
+      // show is true. Only one element should be present.
+      expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
+      expect(fixture.debugElement.query(By.css('p.not-here'))).toBeNull();
     }));
   });
 });
