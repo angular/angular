@@ -354,11 +354,6 @@ export class MinValidationError extends _NgValidationError {
 }
 
 // @public
-export type Mutable<T> = {
-    -readonly [P in keyof T]: T[P];
-};
-
-// @public
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)
