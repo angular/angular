@@ -82,8 +82,8 @@ import {profiler} from './profiler';
 import {ProfilerEvent} from './profiler_types';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
 import {allLeavingAnimations} from '../animation/longest_animation';
-import {ANIMATION_QUEUE} from '../animation/interfaces';
 import {Injector} from '../di';
+import {addToAnimationQueue, queueEnterAnimations} from '../animation/queue';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -110,10 +110,7 @@ function maybeQueueEnterAnimation(
 ): void {
   const enterAnimations = parentLView?.[ANIMATIONS]?.enter;
   if (parent !== null && enterAnimations && enterAnimations.has(tNode.index)) {
-    const animationQueue = injector.get(ANIMATION_QUEUE);
-    for (const animateFn of enterAnimations.get(tNode.index)!.animateFns) {
-      animationQueue.queue.add(animateFn);
-    }
+    queueEnterAnimations(injector, enterAnimations);
   }
 }
 
@@ -179,17 +176,6 @@ function applyToElementOrContainer(
     if (lContainer != null) {
       applyContainer(renderer, action, injector, lContainer, tNode, parent, beforeNode);
     }
-  }
-}
-
-function addToAnimationQueue(injector: Injector, animationFns: Function | Function[]) {
-  const animationQueue = injector.get(ANIMATION_QUEUE);
-  if (Array.isArray(animationFns)) {
-    for (const animateFn of animationFns) {
-      animationQueue.queue.add(animateFn);
-    }
-  } else {
-    animationQueue.queue.add(animationFns);
   }
 }
 

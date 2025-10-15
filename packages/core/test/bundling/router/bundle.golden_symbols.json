@@ -973,6 +973,7 @@
       "providerToFactory",
       "providerToRecord",
       "publishSignalConfiguration",
+      "queueEnterAnimations",
       "readableStreamLikeToAsyncGenerator",
       "recognize",
       "recognize",

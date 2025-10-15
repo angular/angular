@@ -688,6 +688,7 @@
       "providerToFactory",
       "providerToRecord",
       "publishSignalConfiguration",
+      "queueEnterAnimations",
       "readableStreamLikeToAsyncGenerator",
       "refreshContentQueries",
       "refreshView",

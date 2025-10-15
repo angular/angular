@@ -7,13 +7,12 @@
  */
 
 import {
-  ANIMATION_QUEUE,
   AnimationCallbackEvent,
   AnimationFunction,
   MAX_ANIMATION_TIMEOUT,
 } from '../../animation/interfaces';
 import {getLView, getCurrentTNode} from '../state';
-import {RENDERER, INJECTOR, CONTEXT, LView, ANIMATIONS} from '../interfaces/view';
+import {RENDERER, INJECTOR, CONTEXT, LView} from '../interfaces/view';
 import {getNativeByTNode} from '../util/view_utils';
 import {performanceMarkFeature} from '../../util/performance';
 import {Renderer} from '../interfaces/renderer';
@@ -21,8 +20,6 @@ import {NgZone} from '../../zone';
 import {determineLongestAnimation, allLeavingAnimations} from '../../animation/longest_animation';
 import {TNode} from '../interfaces/node';
 import {promiseWithResolvers} from '../../util/promise_with_resolvers';
-import {Injector} from '../../di';
-import {afterEveryRender} from '../after_render/hooks';
 
 import {
   addAnimationToLView,
@@ -47,6 +44,7 @@ import {
   trackEnterClasses,
   trackLeavingNodes,
 } from '../../animation/utils';
+import {initializeAnimationQueueScheduler, queueEnterAnimations} from '../../animation/queue';
 
 /**
  * Instruction to handle the `animate.enter` behavior for class bindings.
@@ -77,7 +75,11 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
     runEnterAnimation(lView, tNode, value),
   );
 
-  queueEnterAnimations(lView);
+  initializeAnimationQueueScheduler(lView[INJECTOR]);
+
+  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
+  // animating through host bindings fails
+  queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
 
   return ɵɵanimateEnter; // For chaining
 }
@@ -198,7 +200,11 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
     runEnterAnimationFunction(lView, tNode, value),
   );
 
-  queueEnterAnimations(lView);
+  initializeAnimationQueueScheduler(lView[INJECTOR]);
+
+  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
+  // animating through host bindings fails
+  queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
 
   return ɵɵanimateEnterListener;
 }
@@ -244,7 +250,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
     runLeaveAnimations(lView, tNode, value),
   );
 
-  enableAnimationQueueScheduler(lView[INJECTOR]);
+  initializeAnimationQueueScheduler(lView[INJECTOR]);
 
   return ɵɵanimateLeave; // For chaining
 }
@@ -377,7 +383,7 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
     runLeaveAnimationFunction(lView, tNode, value),
   );
 
-  enableAnimationQueueScheduler(lView[INJECTOR]);
+  initializeAnimationQueueScheduler(lView[INJECTOR]);
 
   return ɵɵanimateLeaveListener; // For chaining
 }
@@ -464,39 +470,4 @@ function runLeaveAnimationFunction(
 
   // Ensure cleanup if the LView is destroyed before the animation runs.
   return {promise, resolve};
-}
-
-function queueEnterAnimations(lView: LView) {
-  enableAnimationQueueScheduler(lView[INJECTOR]);
-  const enterAnimations = lView[ANIMATIONS]?.enter;
-  if (enterAnimations) {
-    const animationQueue = lView[INJECTOR].get(ANIMATION_QUEUE);
-    for (const [_, nodeAnimations] of enterAnimations) {
-      for (const animateFn of nodeAnimations.animateFns) {
-        animationQueue.queue.add(animateFn);
-      }
-    }
-  }
-}
-
-function enableAnimationQueueScheduler(injector: Injector) {
-  const animationQueue = injector.get(ANIMATION_QUEUE);
-  // We only need to schedule the animation queue runner once per application.
-  if (!animationQueue.isScheduled) {
-    afterEveryRender(
-      () => {
-        runQueuedAnimations(injector);
-      },
-      {injector},
-    );
-    animationQueue.isScheduled = true;
-  }
-}
-
-function runQueuedAnimations(injector: Injector) {
-  const animationQueue = injector.get(ANIMATION_QUEUE);
-  for (let animateFn of animationQueue.queue) {
-    animateFn();
-  }
-  animationQueue.queue.clear();
 }
