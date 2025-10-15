@@ -163,7 +163,7 @@
         "media",
         "none"
       ],
-      "description": "Define the output filename cache-busting hashing mode."
+      "description": "Define the output filename cache-busting hashing mode.\n\n- `none`: No hashing.\n- `all`: Hash for all output bundles. \n- `media`: Hash for all output media (e.g., images, fonts, etc. that are referenced in CSS files).\n- `bundles`: Hash for output of lazy and main bundles."
     },
     {
       "name": "output-mode",
