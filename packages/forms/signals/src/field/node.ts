@@ -146,28 +146,32 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  get max(): Signal<number | undefined> {
-    return this.property(MAX);
+  private propertyOrUndefined<M>(prop: AggregateProperty<M, any>): Signal<M> | undefined {
+    return this.hasProperty(prop) ? this.property(prop) : undefined;
   }
 
-  get maxLength(): Signal<number | undefined> {
-    return this.property(MAX_LENGTH);
+  get max(): Signal<number | undefined> | undefined {
+    return this.propertyOrUndefined(MAX);
   }
 
-  get min(): Signal<number | undefined> {
-    return this.property(MIN);
+  get maxLength(): Signal<number | undefined> | undefined {
+    return this.propertyOrUndefined(MAX_LENGTH);
   }
 
-  get minLength(): Signal<number | undefined> {
-    return this.property(MIN_LENGTH);
+  get min(): Signal<number | undefined> | undefined {
+    return this.propertyOrUndefined(MIN);
   }
 
-  get pattern(): Signal<readonly RegExp[]> {
-    return this.property(PATTERN);
+  get minLength(): Signal<number | undefined> | undefined {
+    return this.propertyOrUndefined(MIN_LENGTH);
   }
 
-  get required(): Signal<boolean> {
-    return this.property(REQUIRED);
+  get pattern(): Signal<readonly RegExp[]> | undefined {
+    return this.propertyOrUndefined(PATTERN);
+  }
+
+  get required(): Signal<boolean> | undefined {
+    return this.propertyOrUndefined(REQUIRED);
   }
 
   property<M>(prop: AggregateProperty<M, any>): Signal<M>;
@@ -175,7 +179,7 @@ export class FieldNode implements FieldState<unknown> {
   property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
     return this.propertyState.get(prop);
   }
-  hasProperty(prop: Property<unknown> | AggregateProperty<unknown, any>): boolean {
+  hasProperty(prop: Property<any> | AggregateProperty<any, any>): boolean {
     return this.propertyState.has(prop);
   }
 

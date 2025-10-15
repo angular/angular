@@ -346,15 +346,16 @@ function updateCustomControl(
   maybeWriteToDirectiveInput(componentDef, component, 'errors', state.errors);
   maybeWriteToDirectiveInput(componentDef, component, 'disabled', state.disabled);
   maybeWriteToDirectiveInput(componentDef, component, 'disabledReasons', state.disabledReasons);
+  maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
+  maybeWriteToDirectiveInput(componentDef, component, 'readonly', state.readonly);
+  maybeWriteToDirectiveInput(componentDef, component, 'touched', state.touched);
+
   maybeWriteToDirectiveInput(componentDef, component, 'max', state.max);
   maybeWriteToDirectiveInput(componentDef, component, 'maxLength', state.maxLength);
   maybeWriteToDirectiveInput(componentDef, component, 'min', state.min);
   maybeWriteToDirectiveInput(componentDef, component, 'minLength', state.minLength);
-  maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
   maybeWriteToDirectiveInput(componentDef, component, 'pattern', state.pattern);
-  maybeWriteToDirectiveInput(componentDef, component, 'readonly', state.readonly);
   maybeWriteToDirectiveInput(componentDef, component, 'required', state.required);
-  maybeWriteToDirectiveInput(componentDef, component, 'touched', state.touched);
 }
 
 /**
@@ -369,9 +370,9 @@ function maybeWriteToDirectiveInput(
   componentDef: ComponentDef<unknown>,
   component: unknown,
   inputName: string,
-  source: () => unknown,
+  source?: () => unknown,
 ) {
-  if (inputName in componentDef.inputs) {
+  if (source && inputName in componentDef.inputs) {
     writeToDirectiveInput(componentDef, component, inputName, source());
   }
 }
@@ -394,16 +395,17 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   renderer.setAttribute(input, 'name', state.name());
   setBooleanAttribute(renderer, input, 'disabled', state.disabled());
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
-  setBooleanAttribute(renderer, input, 'required', state.required());
+
+  state.required && setBooleanAttribute(renderer, input, 'required', state.required());
 
   if (tNode.flags & TNodeFlags.isNativeNumericControl) {
-    setOptionalAttribute(renderer, input, 'max', state.max());
-    setOptionalAttribute(renderer, input, 'min', state.min());
+    state.max && setOptionalAttribute(renderer, input, 'max', state.max());
+    state.min && setOptionalAttribute(renderer, input, 'min', state.min());
   }
 
   if (tNode.flags & TNodeFlags.isNativeTextControl) {
-    setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-    setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+    state.maxLength && setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
+    state.minLength && setOptionalAttribute(renderer, input, 'minLength', state.minLength());
   }
 }
 
