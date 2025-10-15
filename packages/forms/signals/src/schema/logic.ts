@@ -284,7 +284,7 @@ export class LogicContainer {
   }
 
   /** Checks whether there is logic for the given aggregate property. */
-  hasAggregateProperty(prop: AggregateProperty<unknown, unknown>) {
+  hasAggregateProperty(prop: AggregateProperty<any, any>) {
     return this.aggregateProperties.has(prop);
   }
 
