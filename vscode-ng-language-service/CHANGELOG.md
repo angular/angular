@@ -1,3 +1,7 @@
+# 20.3.0
+
+This release upgrades `@angular/language-service` to v20.3.5
+
 # 20.2.2
 
 This release upgrades `@angular/language-service` to v20.2.0-rc.1.
