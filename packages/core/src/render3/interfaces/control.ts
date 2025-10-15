@@ -29,6 +29,29 @@ export interface ɵControl<T> {
    * and do nothing.
    */
   register(): void;
+
+  /**
+   * Indicates whether this field is bound to an interoperable control.
+   *
+   * This is used for interoperability between signal forms and reactive forms.
+   */
+  readonly hasInteropControl: boolean;
+
+  /**
+   * Adds event listeners to the associated interoperable control.
+   *
+   * This method should only be called from a template function in create mode if this
+   * {@link hasInteropControl}.
+   */
+  interopControlCreate(): void;
+
+  /**
+   * Updates the associated interoperable control.
+   *
+   * This method should only be called from a template function in update mode if this
+   * {@link hasInteropControl}.
+   */
+  interopControlUpdate(): void;
 }
 
 /**

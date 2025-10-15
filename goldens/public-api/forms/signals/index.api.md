@@ -4,7 +4,10 @@
 
 ```ts
 
+import { AbstractControl } from '@angular/forms';
+import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
+import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -12,10 +15,13 @@ import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
 import { ModelSignal } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { ValidationErrors } from '@angular/forms';
+import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
@@ -116,6 +122,13 @@ export class Field<T> implements ɵControl<T> {
     readonly [ɵCONTROL]: undefined;
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
+    getOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    get hasInteropControl(): boolean;
+    // (undocumented)
+    interopControlCreate(): void;
+    // (undocumented)
+    interopControlUpdate(): void;
     // (undocumented)
     register(): void;
     // (undocumented)

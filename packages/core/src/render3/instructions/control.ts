@@ -48,6 +48,8 @@ export function ɵɵcontrolCreate(): void {
     listenToCustomControl(lView, tNode, control, 'value');
   } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
     listenToCustomControl(lView, tNode, control, 'checked');
+  } else if (tNode.flags & TNodeFlags.isInteropControl) {
+    control.interopControlCreate();
   } else {
     listenToNativeControl(lView, tNode, control);
   }
@@ -83,6 +85,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
       updateCustomControl(tNode, lView, control, 'value');
     } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
       updateCustomControl(tNode, lView, control, 'checked');
+    } else if (tNode.flags & TNodeFlags.isInteropControl) {
+      control.interopControlUpdate();
     } else {
       updateNativeControl(tNode, lView, control);
     }
@@ -130,6 +134,11 @@ function getControlDirectiveFirstCreatePass<T>(
       tNode.flags |= TNodeFlags.isFormCheckboxControl;
       return control;
     }
+  }
+
+  if (control.hasInteropControl) {
+    tNode.flags |= TNodeFlags.isInteropControl;
+    return control;
   }
 
   if (isNativeControl(tNode)) {

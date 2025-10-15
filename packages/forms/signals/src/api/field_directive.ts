@@ -17,6 +17,8 @@ import {
   ɵCONTROL,
   ɵControl,
 } from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
+import {InteropNgControl} from '../controls/interop_ng_control';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
 
@@ -31,16 +33,14 @@ export const FIELD = new InjectionToken<Field<unknown>>(
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
- * 3. TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274. A
- *    component that provides a ControlValueAccessor. This should only be used to backwards
+ * 3. A component that provides a `ControlValueAccessor`. This should only be used to backwards
  *    compatibility with reactive forms. Prefer options (1) and (2).
  *
  * This directive has several responsibilities:
  * 1. Two-way binds the field's value with the UI control's value
  * 2. Binds additional forms related state on the field to the UI control (disabled, required, etc.)
  * 3. Relays relevant events on the control to the field (e.g. marks field touched on blur)
- * 4. TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274.
- *    Provides a fake `NgControl` that implements a subset of the features available on the
+ * 4. Provides a fake `NgControl` that implements a subset of the features available on the
  *    reactive forms `NgControl`. This is provided to improve interoperability with controls
  *    designed to work with reactive forms. It should not be used by controls written for signal
  *    forms.
@@ -48,12 +48,52 @@ export const FIELD = new InjectionToken<Field<unknown>>(
  * @category control
  * @experimental 21.0.0
  */
-@Directive({selector: '[field]', providers: [{provide: FIELD, useExisting: Field}]})
+@Directive({
+  selector: '[field]',
+  providers: [
+    {provide: FIELD, useExisting: Field},
+    {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
+  ],
+})
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
   readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
   readonly [ɵCONTROL] = undefined;
+
+  /** Any `ControlValueAccessor` instances provided on the host element. */
+  private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
+
+  /** A lazily instantiated fake `NgControl`. */
+  private interopNgControl: InteropNgControl | undefined;
+
+  /** Lazily instantiates a fake `NgControl` for this field. */
+  getOrCreateNgControl(): InteropNgControl {
+    return (this.interopNgControl ??= new InteropNgControl(this.state));
+  }
+
+  /** A `ControlValueAccessor`, if configured, for the host component. */
+  private get controlValueAccessor(): ControlValueAccessor | undefined {
+    return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
+  }
+
+  get hasInteropControl() {
+    return this.controlValueAccessor !== undefined;
+  }
+
+  interopControlCreate() {
+    const controlValueAccessor = this.controlValueAccessor!;
+    controlValueAccessor.registerOnChange((value: T) => this.state().value.set(value));
+    controlValueAccessor.registerOnTouched(() => this.state().markAsTouched());
+  }
+
+  interopControlUpdate() {
+    const controlValueAccessor = this.controlValueAccessor!;
+    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+    // * check if values changed since last update before writing.
+    controlValueAccessor.writeValue(this.state().value());
+    controlValueAccessor.setDisabledState?.(this.state().disabled());
+  }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
   register() {
