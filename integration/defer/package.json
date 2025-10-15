@@ -30,5 +30,5 @@
     "ts-node": "10.9.1",
     "typescript": "5.9.2"
   },
-  "packageManager": "pnpm@10.18.2"
+  "packageManager": "pnpm@10.18.3"
 }
