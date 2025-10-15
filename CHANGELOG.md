@@ -1,3 +1,27 @@
+<a name="20.3.5"></a>
+# 20.3.5 (2025-10-15)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [8dec92ff9f](https://github.com/angular/angular/commit/8dec92ff9f1055c6b4fc4e767d8b1b408ac28e67) | fix | capture metadata for undecorated fields ([#63957](https://github.com/angular/angular/pull/63957)) ([#64317](https://github.com/angular/angular/pull/64317)) |
+| [c2e817b0ef](https://github.com/angular/angular/commit/c2e817b0efb6f617312936b756ace2c85139d1fc) | perf | fix performance of "interpolated signal not invoked" check ([#64410](https://github.com/angular/angular/pull/64410)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f15cfa4cc4](https://github.com/angular/angular/commit/f15cfa4cc414f1d2f4b126bdfc26d74922732672) | fix | fixes regression in `animate.leave` function bindings ([#64413](https://github.com/angular/angular/pull/64413)) |
+| [d54dd674ca](https://github.com/angular/angular/commit/d54dd674ca9db874c95027161b8080bd37250af6) | fix | Prevents early style pruning with leave animations ([#64335](https://github.com/angular/angular/pull/64335)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [554573e524](https://github.com/angular/angular/commit/554573e5248a72f73df1468e992da08ce5f6112d) | fix | migrating input with more than 1 usage in a method ([#64367](https://github.com/angular/angular/pull/64367)) |
+| [2c79ca0b57](https://github.com/angular/angular/commit/2c79ca0b579d99346c267e6b61789699e8656dc5) | fix | remove error for no matching files in control flow migration ([#64253](https://github.com/angular/angular/pull/64253)) ([#64314](https://github.com/angular/angular/pull/64314)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [6e4bcc7d22](https://github.com/angular/angular/commit/6e4bcc7d22d4699a33d6648e628fb65a38d0ad8f) | fix | Scroll restoration should use instant scroll behavior for traversals ([#64299](https://github.com/angular/angular/pull/64299)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.4"></a>
 # 20.3.4 (2025-10-08)
 ### core
