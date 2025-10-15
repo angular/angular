@@ -194,18 +194,25 @@ export const enum TNodeFlags {
   isFormCheckboxControl = 0x1000,
 
   /**
-   * Bit #14 - This bit is set if the node is a native control with a numeric type.
+   * Bit #14 - This bit is set if the node hosts an interoperable control implementation.
+   *
+   * This is used to bind to a `ControlValueAccessor` from `@angular/forms`.
+   */
+  isInteropControl = 0x2000,
+
+  /**
+   * Bit #15 - This bit is set if the node is a native control with a numeric type.
    *
    * This is used to determine whether the control supports the `min` and `max` properties.
    */
-  isNativeNumericControl = 0x2000,
+  isNativeNumericControl = 0x4000,
 
   /**
-   * Bit #15 - This bit is set if the node is a native text control.
+   * Bit #16 - This bit is set if the node is a native text control.
    *
    * This is used to determine whether control supports the `minLength` and `maxLength` properties.
    */
-  isNativeTextControl = 0x4000,
+  isNativeTextControl = 0x8000,
 }
 
 /**
