@@ -385,7 +385,6 @@
       "_stripOrigin",
       "_wasLastNodeCreated",
       "abortSignalToObservable",
-      "activateRoutes",
       "activeConsumer",
       "addAfterRenderSequencesForView",
       "addEmptyPathsToChildrenIfNeeded",
