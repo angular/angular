@@ -15,6 +15,8 @@ import type {EventManager} from './event_manager';
  * It can be used as a base class to create custom manager plugins, i.e. you can create your own
  * class that extends the `EventManagerPlugin` one.
  *
+ * @see [Extend event handling](guide/templates/event-listeners#extend-event-handling)
+ *
  * @publicApi
  */
 export abstract class EventManagerPlugin {

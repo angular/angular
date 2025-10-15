@@ -27,6 +27,8 @@ import {DomEventsPlugin} from './dom_events';
 /**
  * The injection token for plugins of the `EventManager` service.
  *
+ * @see [Extend event handling](guide/templates/event-listeners#extend-event-handling)
+ *
  * @publicApi
  */
 export const EVENT_MANAGER_PLUGINS = new InjectionToken<EventManagerPlugin[]>(
