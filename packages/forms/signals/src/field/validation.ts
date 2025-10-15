@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Signal} from '@angular/core';
-import type {FieldTree, Mutable, TreeValidationResult, ValidationResult} from '../api/types';
+import {computed, Signal, ɵWritable} from '@angular/core';
+import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/types';
 import type {ValidationError, WithOptionalField} from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
@@ -371,10 +371,10 @@ export function addDefaultField<E extends ValidationError>(
 ): ValidationResult<E> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as Mutable<ValidationError>).field ??= field;
+      (error as ɵWritable<ValidationError>).field ??= field;
     }
   } else if (errors) {
-    (errors as Mutable<ValidationError>).field ??= field;
+    (errors as ɵWritable<ValidationError>).field ??= field;
   }
   return errors as ValidationResult<E>;
 }
