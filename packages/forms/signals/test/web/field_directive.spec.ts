@@ -37,7 +37,6 @@ import {
   type DisabledReason,
   type FieldTree,
   type FormCheckboxControl,
-  type FormUiControl,
   type FormValueControl,
   type ValidationError,
   type WithOptionalField,
@@ -84,7 +83,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<boolean> {
           readonly value = model(false);
           readonly disabled = input(false);
         }
@@ -158,7 +157,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: `{{value()}}`})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly name = input('');
         }
@@ -230,7 +229,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly readonly = input(false);
         }
@@ -279,7 +278,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly required = input(false);
         }
@@ -328,7 +327,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
           readonly max = input<number>();
         }
@@ -393,7 +392,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
           readonly min = input<number>();
         }
@@ -458,7 +457,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly maxLength = input<number>();
         }
@@ -523,7 +522,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly minLength = input<number>();
         }
