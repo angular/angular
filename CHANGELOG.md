@@ -1,3 +1,43 @@
+<a name="21.0.0-next.8"></a>
+# 21.0.0-next.8 (2025-10-15)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [563dbd998c](https://github.com/angular/angular/commit/563dbd998c86e850b3c4dde4c7cee00d7c9d7581) | feat | Adds diagnostic for misconfigured `@defer` triggers ([#64069](https://github.com/angular/angular/pull/64069)) |
+| [ab98b2425f](https://github.com/angular/angular/commit/ab98b2425f4c4cb59927aa686818ecee99e634c7) | fix | capture metadata for undecorated fields ([#63957](https://github.com/angular/angular/pull/63957)) |
+| [49377d274a](https://github.com/angular/angular/commit/49377d274afb2ae039d6ac81184104f448e01d8e) | perf | fix performance of "interpolated signal not invoked" check ([#64410](https://github.com/angular/angular/pull/64410)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2a7a5de53f](https://github.com/angular/angular/commit/2a7a5de53fd6fb5714c06c63dd1dad5718086083) | feat | Allow passing application providers in `bootstrapModule` options ([#64354](https://github.com/angular/angular/pull/64354)) |
+| [ad2376435b](https://github.com/angular/angular/commit/ad2376435b4bcfdb695d841272f8234ab2a7cca5) | feat | support IntersectionObserver options in viewport triggers ([#64130](https://github.com/angular/angular/pull/64130)) |
+| [ab415f3d7f](https://github.com/angular/angular/commit/ab415f3d7f23cef8e00595e9cf6af2c8b764a8ae) | fix | control not recognized when input has directive injecting ViewContainerRef ([#64368](https://github.com/angular/angular/pull/64368)) |
+| [0ed6c93960](https://github.com/angular/angular/commit/0ed6c9396049adde45ac8707a9dc7f9a7f4b7b01) | fix | fixes regression in `animate.leave` function bindings ([#64413](https://github.com/angular/angular/pull/64413)) |
+| [e228102378](https://github.com/angular/angular/commit/e2281023780297f29cfff087aeea913bfc686cd7) | fix | Prevents early style pruning with leave animations ([#64335](https://github.com/angular/angular/pull/64335)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [f4d1017c25](https://github.com/angular/angular/commit/f4d1017c25813b290697d8e1a829983a7b1bca27) | fix | test that common field states are propagated to controls ([#63884](https://github.com/angular/angular/pull/63884)) |
+| [acd7c83597](https://github.com/angular/angular/commit/acd7c83597ad376ec9a48421b3b291951ca2d75e) | fix | test that min/max properties are propagated to controls ([#63884](https://github.com/angular/angular/pull/63884)) |
+| [71e8672837](https://github.com/angular/angular/commit/71e8672837eb6c2da2570eb2341e896fbf7ca5a3) | fix | test that minLength/maxLength properties are propagated to controls ([#63884](https://github.com/angular/angular/pull/63884)) |
+| [32f86d35f7](https://github.com/angular/angular/commit/32f86d35f7cd177b6e4525a7ae97909888d9fee4) | perf | optimize `[field]` binding instructions ([#64351](https://github.com/angular/angular/pull/64351)) |
+### http
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2739b7975b](https://github.com/angular/angular/commit/2739b7975ba40a8cfc3b00f0c444a3a147f7f553) | feat | add referrerPolicy option to HttpResource ([#64283](https://github.com/angular/angular/pull/64283)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [861cee34e0](https://github.com/angular/angular/commit/861cee34e0e9b5562cfe70d245f30b7ddea7d8fd) | feat | Adds migration for deprecated router testing module ([#64217](https://github.com/angular/angular/pull/64217)) |
+| [1ffcfb625a](https://github.com/angular/angular/commit/1ffcfb625a0417faba091ae9dbd0156e9f241b43) | feat | Adds migration for deprecated router testing module ([#64217](https://github.com/angular/angular/pull/64217)) |
+| [e99bbd3d2a](https://github.com/angular/angular/commit/e99bbd3d2a391b5d531be65f534cbabdcf0be516) | fix | migrating input with more than 1 usage in a method ([#64367](https://github.com/angular/angular/pull/64367)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1da41ffdf](https://github.com/angular/angular/commit/e1da41ffdfd984f844c9528ead2d66fd83749aed) | fix | Scroll restoration should use instant scroll behavior for traversals ([#64299](https://github.com/angular/angular/pull/64299)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.5"></a>
 # 20.3.5 (2025-10-15)
 ### compiler-cli
