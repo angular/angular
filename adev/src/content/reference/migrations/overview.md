@@ -39,4 +39,7 @@ Learn about how you can migrate your existing angular project to the latest feat
   <docs-card title="RouterTestingModule migration" link="Migrate now" href="reference/migrations/router-testing-module-migration">
     Convert `RouterTestingModule` usages to `RouterModule` in TestBed configurations and add `provideLocationMocks()` when appropriate.
   </docs-card>
+  <docs-card title="CommonModule to standalone imports" link="Migrate now" href="reference/migrations/common-to-standalone">
+    Replace imports of the `CommonModule` with imports of the individual directives and pipes used in the templates when possible.
+  </docs-card>
 </docs-card-container>
