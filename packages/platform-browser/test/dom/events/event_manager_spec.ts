@@ -29,14 +29,14 @@ import type {} from 'zone.js';
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
       runInInjectionContext(() => {
-        domEventPlugin = new DomEventsPlugin(doc);
+        domEventPlugin = new DomEventsPlugin();
       });
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one', () => {
       const element = el('<div></div>');
       const handler = (e: Event) => e;
-      const plugin = new FakeEventManagerPlugin(doc, ['click']);
+      const plugin = new FakeEventManagerPlugin(['click']);
       const manager = new EventManager([domEventPlugin, plugin], new FakeNgZone());
       manager.addEventListener(element, 'click', handler);
       expect(plugin.eventHandler['click']).toBe(handler);
@@ -46,8 +46,8 @@ import type {} from 'zone.js';
       const element = el('<div></div>');
       const clickHandler = (e: Event) => e;
       const dblClickHandler = (e: Event) => e;
-      const plugin1 = new FakeEventManagerPlugin(doc, ['dblclick']);
-      const plugin2 = new FakeEventManagerPlugin(doc, ['click', 'dblclick']);
+      const plugin1 = new FakeEventManagerPlugin(['dblclick']);
+      const plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
       const manager = new EventManager([plugin2, plugin1], new FakeNgZone());
       manager.addEventListener(element, 'click', clickHandler);
       manager.addEventListener(element, 'dblclick', dblClickHandler);
@@ -57,7 +57,7 @@ import type {} from 'zone.js';
 
     it('should throw when no plugin can handle the event', () => {
       const element = el('<div></div>');
-      const plugin = new FakeEventManagerPlugin(doc, ['dblclick']);
+      const plugin = new FakeEventManagerPlugin(['dblclick']);
       const manager = new EventManager([plugin], new FakeNgZone());
       expect(() => manager.addEventListener(element, 'click', null!)).toThrowError(
         'NG05101: No event manager plugin found for event click',
@@ -333,7 +333,7 @@ import type {} from 'zone.js';
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
       runInInjectionContext(() => {
-        domEventPlugin = new DomEventsPlugin(doc);
+        domEventPlugin = new DomEventsPlugin();
       });
       const element = el('<div></div>');
       const child = el('<div></div>');
@@ -371,7 +371,7 @@ import type {} from 'zone.js';
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceRunChangeDetection: true});
       runInInjectionContext(() => {
-        domEventPlugin = new DomEventsPlugin(doc);
+        domEventPlugin = new DomEventsPlugin();
       });
       const element = el('<div></div>');
       const child = el('<div></div>');
@@ -409,7 +409,7 @@ import type {} from 'zone.js';
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceEventChangeDetection: true});
       runInInjectionContext(() => {
-        domEventPlugin = new DomEventsPlugin(doc);
+        domEventPlugin = new DomEventsPlugin();
       });
       const element = el('<div></div>');
       const child = el('<div></div>');
@@ -457,7 +457,7 @@ import type {} from 'zone.js';
       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
       zone = new NgZone({shouldCoalesceRunChangeDetection: true});
       runInInjectionContext(() => {
-        domEventPlugin = new DomEventsPlugin(doc);
+        domEventPlugin = new DomEventsPlugin();
       });
       const element = el('<div></div>');
       const child = el('<div></div>');
@@ -507,11 +507,8 @@ import type {} from 'zone.js';
 class FakeEventManagerPlugin extends EventManagerPlugin {
   eventHandler: {[event: string]: Function} = {};
 
-  constructor(
-    doc: Document,
-    public supportedEvents: string[],
-  ) {
-    super(doc);
+  constructor(public supportedEvents: string[]) {
+    super();
   }
 
   override supports(eventName: string): boolean {

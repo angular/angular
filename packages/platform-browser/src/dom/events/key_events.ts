@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Inject, Injectable, type ListenerOptions, NgZone} from '@angular/core';
+import {ɵgetDOM as getDOM} from '@angular/common';
+import {Injectable, type ListenerOptions, NgZone} from '@angular/core';
 
 import {EventManagerPlugin} from './event_manager_plugin';
 
@@ -49,12 +49,8 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
-  /**
-   * Initializes an instance of the browser plug-in.
-   * @param doc The document in which key events will be detected.
-   */
-  constructor(@Inject(DOCUMENT) doc: any) {
-    super(doc);
+  constructor() {
+    super();
   }
 
   /**

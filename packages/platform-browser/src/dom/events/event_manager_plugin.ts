@@ -18,9 +18,6 @@ import type {EventManager} from './event_manager';
  * @publicApi
  */
 export abstract class EventManagerPlugin {
-  // TODO: remove (has some usage in G3)
-  constructor(private _doc: any) {}
-
   // Using non-null assertion because it's set by EventManager's constructor
   manager!: EventManager;
 

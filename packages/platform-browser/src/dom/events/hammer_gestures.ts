@@ -187,12 +187,11 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   private _loaderPromise: Promise<void> | null = null;
 
   constructor(
-    @Inject(DOCUMENT) doc: any,
     @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig,
     private _injector: Injector,
     @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader | null,
   ) {
-    super(doc);
+    super();
   }
 
   override supports(eventName: string): boolean {

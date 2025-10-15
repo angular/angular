@@ -22,11 +22,7 @@ describe('HammerGesturesPlugin', () => {
 
   describe('with no custom loader', () => {
     beforeEach(() => {
-      plugin = new HammerGesturesPlugin(
-        document,
-        new HammerGestureConfig(),
-        TestBed.inject(Injector),
-      );
+      plugin = new HammerGesturesPlugin(new HammerGestureConfig(), TestBed.inject(Injector));
     });
 
     it('should warn user and do nothing when Hammer.js not loaded', () => {
@@ -88,7 +84,7 @@ describe('HammerGesturesPlugin', () => {
       const hammerConfig = new HammerGestureConfig();
       spyOn(hammerConfig, 'buildHammer').and.returnValue(fakeHammerInstance);
 
-      plugin = new HammerGesturesPlugin(document, hammerConfig, TestBed.inject(Injector), loader);
+      plugin = new HammerGesturesPlugin(hammerConfig, TestBed.inject(Injector), loader);
 
       // Use a fake EventManager that has access to the NgZone.
       plugin.manager = {getZone: () => ngZone} as EventManager;
