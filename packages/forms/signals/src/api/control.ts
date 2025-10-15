@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InjectionToken, InputSignal, ModelSignal, OutputRef} from '@angular/core';
+import {InputSignal, ModelSignal, OutputRef} from '@angular/core';
 import type {DisabledReason} from './types';
 import {ValidationError, type WithOptionalField} from './validation_errors';
 
@@ -161,44 +161,3 @@ export interface FormCheckboxControl extends FormUiControl {
    */
   readonly value?: undefined;
 }
-
-/**
- * An injection token that can be used to provide a `FormUiControl` implementation for signal forms.
- * This is useful when you want to provide a custom control implementation via a directive applied
- * to a native element or when the control logic is separated from the component.
- *
- * The `Control` directive will check for a control provided via this token before falling back to
- * other control detection mechanisms (native inputs, ControlValueAccessor, etc.).
- *
- * @usageNotes
- * ### Providing FormValueControl via a Directive
- *
- * You can create a directive that transforms or enhances a native input while participating in
- * signal forms:
- *
- * ```typescript
- * @Directive({
- *   selector: '[dateTimeInput]',
- *   providers: [{
- *     provide: FORM_UI_CONTROL,
- *     useExisting: DateTimeInputDirective
- *   }]
- * })
- * export class DateTimeInputDirective implements FormValueControl<Date> {
- *   readonly value = model.required<Date>();
- *   readonly disabled = input<boolean>(false);
- *   // ... other optional properties
- * }
- * ```
- *
- * Then use it in your template:
- *
- * ```html
- * <input dateTimeInput [control]="myDateField" />
- * ```
- *
- * @category control
- * @experimental 21.0.0
- * @publicApi
- */
-export const FORM_UI_CONTROL = new InjectionToken<FormUiControl>('FormUiControl');
