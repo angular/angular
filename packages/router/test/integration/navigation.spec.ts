@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, inject, NgModule} from '@angular/core';
+import {ApplicationRef, Component, inject, NgModule} from '@angular/core';
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {
@@ -27,6 +27,9 @@ import {
   RedirectCommand,
   NavigationCancellationCode,
   ActivationStart,
+  GuardsCheckStart,
+  GuardsCheckEnd,
+  ResolveStart,
 } from '../../src';
 import {
   RootCmp,
@@ -42,6 +45,21 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {timeout} from '../helpers';
 
 export function navigationIntegrationTestSuite() {
+  function setup(routes?: Routes): Router {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          routes ?? [
+            {
+              path: '**',
+              component: class {},
+            },
+          ],
+        ),
+      ],
+    });
+    return TestBed.inject(Router);
+  }
   describe('navigation', () => {
     it('should navigate to the current URL', async () => {
       TestBed.configureTestingModule({
@@ -446,6 +464,143 @@ export function navigationIntegrationTestSuite() {
        */
       expect(router.url).toEqual('/b?b=true');
     });
+
+    it('cancels navigation immediately if navigation happens during activation', async () => {
+      @Component({template: ''})
+      class NavigatingComponent {
+        constructor() {
+          inject(Router).navigateByUrl('/b');
+        }
+      }
+      const router = setup([
+        {path: 'a', component: NavigatingComponent},
+        {path: 'b', component: SimpleCmp},
+      ]);
+      const events: Event[] = [];
+      router.events.subscribe((e: Event) => {
+        events.push(e);
+      });
+
+      await RouterTestingHarness.create('/a');
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(router.url).toEqual('/b');
+      const navigationCancel = events.find(
+        (e) => e instanceof NavigationCancel,
+      ) as NavigationCancel;
+      expect(navigationCancel).toBeDefined();
+      expect(navigationCancel.url).toEqual('/a');
+      expect(navigationCancel.code).toEqual(NavigationCancellationCode.SupersededByNewNavigation);
+    });
+
+    it('cancels navigation immediately if navigation happens during guard execution', async () => {
+      const router = setup([
+        {
+          path: 'a',
+          component: SimpleCmp,
+          canActivate: [
+            () => {
+              inject(Router).navigateByUrl('/b');
+              return true;
+            },
+          ],
+        },
+        {path: 'b', component: SimpleCmp},
+      ]);
+      const events: Event[] = [];
+      router.events.subscribe((e: Event) => {
+        events.push(e);
+      });
+
+      await RouterTestingHarness.create('/a');
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(router.url).toEqual('/b');
+      const navigationCancel = events.find(
+        (e) => e instanceof NavigationCancel,
+      ) as NavigationCancel;
+      expect(navigationCancel).toBeDefined();
+      // bizarrely, the ActivationStart fires during guard execution and before GuardsCheckEnd...
+      expect(events[events.indexOf(navigationCancel) - 1]).toBeInstanceOf(ActivationStart);
+      expect(navigationCancel.url).toEqual('/a');
+      expect(navigationCancel.code).toEqual(NavigationCancellationCode.SupersededByNewNavigation);
+    });
+
+    it('cancels navigation immediately if navigation happens during guard event', async () => {
+      // Note, this isn't exactly a spec of how it _should_ work, but a spec of how it _does_ work today
+      // so we don't unintentionally break it.
+      const guardSpy = jasmine.createSpy('guard spy');
+      guardSpy.and.returnValue(true);
+      const router = setup([
+        {
+          path: 'a',
+          component: SimpleCmp,
+          canActivate: [guardSpy],
+        },
+        {path: 'b', component: SimpleCmp},
+      ]);
+      const events: Event[] = [];
+      router.events.subscribe((e: Event) => {
+        events.push(e);
+        if (
+          e instanceof GuardsCheckStart &&
+          router.currentNavigation()?.initialUrl.toString() === '/a'
+        ) {
+          router.navigateByUrl('/b');
+        }
+      });
+
+      await RouterTestingHarness.create('/a');
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(router.url).toEqual('/b');
+      const navigationCancel = events.find(
+        (e) => e instanceof NavigationCancel,
+      ) as NavigationCancel;
+      expect(navigationCancel).toBeDefined();
+      expect(events[events.indexOf(navigationCancel) - 1]).toBeInstanceOf(GuardsCheckStart);
+      expect(guardSpy).not.toHaveBeenCalled();
+      expect(navigationCancel.url).toEqual('/a');
+      expect(navigationCancel.code).toEqual(NavigationCancellationCode.SupersededByNewNavigation);
+    });
+
+    it('cancels navigation immediately if navigation happens during ResolveStart event', async () => {
+      // Note, this isn't exactly a spec of how it _should_ work, but a spec of how it _does_ work today
+      // so we don't unintentionally break it.
+      const resolveSpy = jasmine.createSpy('resolve spy');
+      resolveSpy.and.returnValue(true);
+      const router = setup([
+        {
+          path: 'a',
+          component: SimpleCmp,
+          resolve: {d: resolveSpy},
+        },
+        {path: 'b', component: SimpleCmp},
+      ]);
+      const events: Event[] = [];
+      router.events.subscribe((e: Event) => {
+        events.push(e);
+        if (
+          e instanceof ResolveStart &&
+          router.currentNavigation()?.initialUrl.toString() === '/a'
+        ) {
+          router.navigateByUrl('/b');
+        }
+      });
+
+      await RouterTestingHarness.create('/a');
+      await TestBed.inject(ApplicationRef).whenStable();
+
+      expect(router.url).toEqual('/b');
+      const navigationCancel = events.find(
+        (e) => e instanceof NavigationCancel,
+      ) as NavigationCancel;
+      expect(navigationCancel).toBeDefined();
+      expect(events[events.indexOf(navigationCancel) - 1]).toBeInstanceOf(ResolveStart);
+      expect(resolveSpy).not.toHaveBeenCalled();
+      expect(navigationCancel.url).toEqual('/a');
+      expect(navigationCancel.code).toEqual(NavigationCancellationCode.SupersededByNewNavigation);
+    });
   });
 
   describe('should execute navigations serially', () => {
@@ -712,25 +867,8 @@ export function navigationIntegrationTestSuite() {
   });
 
   describe('abort an ongoing navigation', () => {
-    let router: Router;
-    function setup(routes?: Routes) {
-      TestBed.configureTestingModule({
-        providers: [
-          provideRouter(
-            routes ?? [
-              {
-                path: '**',
-                component: class {},
-              },
-            ],
-          ),
-        ],
-      });
-      router = TestBed.inject(Router);
-    }
-
     it('resolves the promise, clears current navigation, and send NavigationCancel', async () => {
-      setup();
+      const router = setup();
       const replay = new BehaviorSubject<Event | null>(null);
       router.events.subscribe(replay);
 
@@ -750,7 +888,7 @@ export function navigationIntegrationTestSuite() {
           inject(Router).getCurrentNavigation()!.abort();
         }
       }
-      setup([{path: '**', component: Aborting}]);
+      const router = setup([{path: '**', component: Aborting}]);
       const events = [] as Event[];
       router.events.subscribe({next: (e) => void events.push(e)});
 
@@ -773,7 +911,7 @@ export function navigationIntegrationTestSuite() {
     });
 
     it('does not result in errors if the navigation enters navigation already canceled from guards', async () => {
-      setup([{path: '**', component: class {}, canActivate: [() => false]}]);
+      const router = setup([{path: '**', component: class {}, canActivate: [() => false]}]);
       const events = [] as Event[];
       router.events.subscribe({next: (e) => void events.push(e)});
 
@@ -793,7 +931,7 @@ export function navigationIntegrationTestSuite() {
     });
 
     it('does not result in double cancellation if activate guard aborts and returns', async () => {
-      setup([
+      const router = setup([
         {
           path: '**',
           component: class {},
@@ -815,7 +953,7 @@ export function navigationIntegrationTestSuite() {
     });
 
     it('does not result in double cancellation if match guard aborts and returns', async () => {
-      setup([
+      const router = setup([
         {
           path: '**',
           component: class {},
@@ -838,7 +976,7 @@ export function navigationIntegrationTestSuite() {
     });
 
     it('does not result in cancelation if the navigation was already redirected', async () => {
-      setup([
+      const router = setup([
         {
           path: 'initial',
           component: class {},
@@ -871,7 +1009,7 @@ export function navigationIntegrationTestSuite() {
     it('can abort in while guards are executing and prevents later guards and resolvers from running', async () => {
       let canActivateCalled = false;
       let resolveCalled = false;
-      setup([
+      const router = setup([
         {
           path: '**',
           canMatch: [() => new Promise<boolean>(() => {})],
