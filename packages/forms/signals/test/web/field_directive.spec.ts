@@ -994,6 +994,28 @@ describe('field directive', () => {
     ]);
   });
 
+  it(`should mark field as touched on native control 'blur' event`, () => {
+    @Component({
+      imports: [Field],
+      template: `<input [field]="f">`,
+    })
+    class TestCmp {
+      f = form(signal(''));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.firstChild as HTMLInputElement;
+    const field = fixture.componentInstance.f;
+
+    expect(field().touched()).toBe(false);
+
+    act(() => {
+      input.dispatchEvent(new Event('blur'));
+    });
+
+    expect(field().touched()).toBe(true);
+  });
+
   it('should synchronize with custom control touched status', () => {
     @Component({
       selector: 'my-input',
