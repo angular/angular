@@ -168,7 +168,7 @@
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.0",
     "@angular-devkit/architect-cli": "0.2003.6",
-    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#2feb4d5082bd3322d64282894b81809c1cf93ca9",
+    "@angular/ng-dev": "https://github.com/angular/dev-infra-private-ng-dev-builds.git#5cd66227d38bb0feed0989254757ca51077a8607",
     "@babel/plugin-proposal-async-generator-functions": "7.20.7",
     "@babel/plugin-transform-async-generator-functions": "^7.27.1",
     "@bazel/bazelisk": "^1.7.5",
