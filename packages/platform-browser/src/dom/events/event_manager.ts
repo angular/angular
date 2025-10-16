@@ -19,9 +19,6 @@ import {RuntimeErrorCode} from '../../errors';
 
 import type {EventManagerPlugin} from './event_manager_plugin';
 
-// Temporart re-export until we can change files that import from this file in G3.
-export {EventManagerPlugin} from './event_manager_plugin';
-
 import {DomEventsPlugin} from './dom_events';
 
 /**
