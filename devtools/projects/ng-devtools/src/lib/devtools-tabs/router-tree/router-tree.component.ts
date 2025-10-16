@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
@@ -52,6 +53,7 @@ const SEARCH_DEBOUNCE = 250;
     SplitComponent,
     SplitAreaDirective,
     MatIconModule,
+    MatSnackBarModule,
     RouteDetailsRowComponent,
     ButtonComponent,
   ],
@@ -64,6 +66,7 @@ export class RouterTreeComponent {
   private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected selectedRoute = signal<RouterTreeD3Node | null>(null);
   protected routeData = computed<RouterTreeNode | undefined>(() => {
@@ -121,8 +124,8 @@ export class RouterTreeComponent {
     // Check if the selected route is a lazy loaded route or a redirecting route.
     // These routes have no component associated with them.
     if (data?.isLazy || data?.isRedirect) {
-      // todo: replace with UI notification.
-      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       return;
     }
 
@@ -134,8 +137,8 @@ export class RouterTreeComponent {
     // Check if the selected route is a lazy loaded route or a redirecting route.
     // These routes have no component associated with them.
     if (data?.isLazy || data?.isRedirect) {
-      // todo: replace with UI notification.
-      console.warn('Cannot view source for lazy loaded routes or redirecting routes.');
+      const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       return;
     }
 
