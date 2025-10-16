@@ -294,7 +294,6 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: É
   );
 
   const blurListener = () => {
-    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131860538
     control.state().markAsTouched();
   };
   listenToDomEvent(
