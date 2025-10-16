@@ -34,7 +34,7 @@
     "@lezer/javascript": "1.5.4",
     "@stackblitz/sdk": "1.11.0",
     "@types/dom-navigation": "1.0.6",
-    "@types/jasmine": "5.1.9",
+    "@types/jasmine": "5.1.10",
     "@types/jsdom": "27.0.0",
     "@types/node": "24.7.2",
     "@typescript/vfs": "1.6.1",
