@@ -11,7 +11,7 @@ To edit an item, users click an Edit button, which opens an `EditGroceryItem` co
 You want that component to retrieve the `id` for the grocery item so it can display the right information to the user.
 
 Use a route to pass this type of information to your application components.
-To do so, you use the [`withComponentInputBinding`](api/router/withComponentInputBinding) feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
+To do so, you use the `withComponentInputBinding` feature with `provideRouter` or the `bindToComponentInputs` option of `RouterModule.forRoot`.
 
 To get information from a route:
 
@@ -103,6 +103,8 @@ Provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 ```angular-html
 <a [routerLink]="['/crisis-center', { foo: 'foo' }]">Crisis Center</a>
 ```
+
+This syntax passes matrix parameters, which are optional parameters associated with a specific URL segment. Learn more about [matrix parameters](/guide/routing/read-route-state#matrix-parameters).
 
 These three examples cover the needs of an application with one level of routing.
 However, with a child router, such as in the crisis center, you create new link array possibilities.
