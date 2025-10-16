@@ -52,7 +52,7 @@ export const FIELD = new InjectionToken<Field<unknown>>(
   selector: '[field]',
   providers: [
     {provide: FIELD, useExisting: Field},
-    {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
+    {provide: NgControl, useFactory: () => inject(Field).ɵgetOrCreateNgControl()},
   ],
 })
 export class Field<T> implements ɵControl<T> {
@@ -67,27 +67,27 @@ export class Field<T> implements ɵControl<T> {
   /** A lazily instantiated fake `NgControl`. */
   private interopNgControl: InteropNgControl | undefined;
 
-  /** Lazily instantiates a fake `NgControl` for this field. */
-  getOrCreateNgControl(): InteropNgControl {
-    return (this.interopNgControl ??= new InteropNgControl(this.state));
-  }
-
   /** A `ControlValueAccessor`, if configured, for the host component. */
   private get controlValueAccessor(): ControlValueAccessor | undefined {
     return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
   }
 
-  get hasInteropControl() {
+  get ɵhasInteropControl() {
     return this.controlValueAccessor !== undefined;
   }
 
-  interopControlCreate() {
+  /** Lazily instantiates a fake `NgControl` for this field. */
+  ɵgetOrCreateNgControl(): InteropNgControl {
+    return (this.interopNgControl ??= new InteropNgControl(this.state));
+  }
+
+  ɵinteropControlCreate() {
     const controlValueAccessor = this.controlValueAccessor!;
     controlValueAccessor.registerOnChange((value: T) => this.state().value.set(value));
     controlValueAccessor.registerOnTouched(() => this.state().markAsTouched());
   }
 
-  interopControlUpdate() {
+  ɵinteropControlUpdate() {
     const controlValueAccessor = this.controlValueAccessor!;
     // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
     // * check if values changed since last update before writing.
@@ -96,7 +96,7 @@ export class Field<T> implements ɵControl<T> {
   }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
-  register() {
+  ɵregister() {
     // Register this control on the field it is currently bound to. We do this at the end of
     // initialization so that it only runs if we are actually syncing with this control
     // (as opposed to just passing the field through to its `field` input).
