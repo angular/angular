@@ -104,10 +104,11 @@ export function isSchemaOrSchemaFn(value: unknown): value is SchemaOrSchemaFn<un
 
 /** Checks that a path node belongs to the schema function currently being compiled. */
 export function assertPathIsCurrent(path: FieldPath<unknown>): void {
-  if (currentCompilingNode !== FieldPathNode.unwrapFieldPath(path).root) {
+  const fieldPathNode = FieldPathNode.unwrapFieldPath(path);
+  if (currentCompilingNode !== fieldPathNode.root) {
     throw new Error(
       `A FieldPath can only be used directly within the Schema that owns it,` +
-        ` **not** outside of it or within a sub-schema.`,
+        ` **not** outside of it or within a sub-schema: ${fieldPathNode.keys.join('.')}`,
     );
   }
 }

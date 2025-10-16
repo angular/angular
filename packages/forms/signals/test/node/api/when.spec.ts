@@ -47,15 +47,19 @@ describe('when', () => {
   });
 
   it('Disallows using non-local paths', () => {
-    const data = signal({first: '', needLastName: false, last: ''});
+    const data = signal({first: '', needLastName: false, inside: {last: ''}});
 
     const f = form(
       data,
       (path) => {
         applyWhen(path, needsLastNamePredicate, (/* UNUSED */) => {
           expect(() => {
-            validate(path.last, ({value}) => (value().length > 0 ? undefined : requiredError()));
-          }).toThrowError();
+            validate(path.inside.last, ({value}) =>
+              value().length > 0 ? undefined : requiredError(),
+            );
+          }).toThrowError(
+            'A FieldPath can only be used directly within the Schema that owns it, **not** outside of it or within a sub-schema: inside.last',
+          );
         });
       },
       {injector: TestBed.inject(Injector)},
