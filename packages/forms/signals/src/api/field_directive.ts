@@ -83,7 +83,11 @@ export class Field<T> implements ɵControl<T> {
 
   ɵinteropControlCreate() {
     const controlValueAccessor = this.controlValueAccessor!;
-    controlValueAccessor.registerOnChange((value: T) => this.state().value.set(value));
+    controlValueAccessor.registerOnChange((value: T) => {
+      const state = this.state();
+      state.value.set(value);
+      state.markAsDirty();
+    });
     controlValueAccessor.registerOnTouched(() => this.state().markAsTouched());
   }
 

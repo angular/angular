@@ -92,6 +92,29 @@ describe('ControlValueAccessor', () => {
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
 
+  it('should mark field dirty on changes', () => {
+    @Component({
+      imports: [Field, CustomControl],
+      template: `<custom-control [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal(''));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const field = fixture.componentInstance.f;
+
+    expect(field().dirty()).toBe(false);
+
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(field().dirty()).toBe(true);
+  });
+
   it('should propagate touched events to field', () => {
     @Component({
       imports: [Field, CustomControl],
