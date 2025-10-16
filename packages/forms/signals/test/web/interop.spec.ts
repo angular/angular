@@ -75,7 +75,7 @@ describe('ControlValueAccessor', () => {
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const control = fixture.componentInstance.control;
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
 
     // Initial state
     expect(control().value).toBe('test');
@@ -92,6 +92,29 @@ describe('ControlValueAccessor', () => {
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
 
+  it('should mark field dirty on changes', () => {
+    @Component({
+      imports: [Field, CustomControl],
+      template: `<custom-control [field]="f" />`,
+    })
+    class TestCmp {
+      f = form<string>(signal(''));
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input');
+    const field = fixture.componentInstance.f;
+
+    expect(field().dirty()).toBe(false);
+
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+
+    expect(field().dirty()).toBe(true);
+  });
+
   it('should propagate touched events to field', () => {
     @Component({
       imports: [Field, CustomControl],
@@ -102,7 +125,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
     expect(fixture.componentInstance.f().touched()).toBe(false);
 
     act(() => input.dispatchEvent(new Event('blur')));
@@ -122,7 +145,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
     expect(input.disabled).toBe(false);
 
     act(() => enabled.set(false));
@@ -181,7 +204,7 @@ describe('ControlValueAccessor', () => {
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const control = fixture.componentInstance.control;
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
 
     // Initial state
     expect(control().value).toBe('test');

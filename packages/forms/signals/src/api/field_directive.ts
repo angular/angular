@@ -33,7 +33,7 @@ export const FIELD = new InjectionToken<Field<unknown>>(
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
- * 3. A component that provides a `ControlValueAccessor`. This should only be used to backwards
+ * 3. A component that provides a `ControlValueAccessor`. This should only be used for backwards
  *    compatibility with reactive forms. Prefer options (1) and (2).
  *
  * This directive has several responsibilities:
@@ -83,7 +83,11 @@ export class Field<T> implements ɵControl<T> {
 
   ɵinteropControlCreate() {
     const controlValueAccessor = this.controlValueAccessor!;
-    controlValueAccessor.registerOnChange((value: T) => this.state().value.set(value));
+    controlValueAccessor.registerOnChange((value: T) => {
+      const state = this.state();
+      state.value.set(value);
+      state.markAsDirty();
+    });
     controlValueAccessor.registerOnTouched(() => this.state().markAsTouched());
   }
 
