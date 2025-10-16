@@ -362,8 +362,8 @@ importers:
         specifier: 0.2100.0-next.8
         version: 0.2100.0-next.8(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#5cd66227d38bb0feed0989254757ca51077a8607
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5cd66227d38bb0feed0989254757ca51077a8607(@modelcontextprotocol/sdk@1.20.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#30d1e560545a188ecaeb868b901a5055370d1c88
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/30d1e560545a188ecaeb868b901a5055370d1c88(@modelcontextprotocol/sdk@1.20.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -1713,9 +1713,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5cd66227d38bb0feed0989254757ca51077a8607':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5cd66227d38bb0feed0989254757ca51077a8607}
-    version: 0.0.0-c776985eeff8f041f142d85577210976c98a2922
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/30d1e560545a188ecaeb868b901a5055370d1c88':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/30d1e560545a188ecaeb868b901a5055370d1c88}
+    version: 0.0.0-aa7eafce1e85690dadfd8019d44ceadfb94851b8
     hasBin: true
 
   '@angular/ssr@21.0.0-next.8':
@@ -3175,8 +3175,8 @@ packages:
     resolution: {integrity: sha512-IJn+8A3QZJfe7FUtWqHVNo3xJs7KFpurCWGWCiCz3oEh+BkRymKZ1QxfAbU2yGMDzTytLGQ2IV6T2r3cuo75/w==}
     engines: {node: '>=18'}
 
-  '@google/genai@1.24.0':
-    resolution: {integrity: sha512-e3jZF9Dx3dDaDCzygdMuYByHI2xJZ0PaD3r2fRgHZe2IOwBnmJ/Tu5Lt/nefTCxqr1ZnbcbQK9T13d8U/9UMWg==}
+  '@google/genai@1.25.0':
+    resolution: {integrity: sha512-IBNyel/umavam98SQUfvQSvh/Rp6Ql2fysQLqPyWZr5K8d768X9AO+JZU4o+3qvFDUBA0dVYUSkxyYonVcICvA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.11.4
@@ -13689,11 +13689,11 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/5cd66227d38bb0feed0989254757ca51077a8607(@modelcontextprotocol/sdk@1.20.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/30d1e560545a188ecaeb868b901a5055370d1c88(@modelcontextprotocol/sdk@1.20.0)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
-      '@google/genai': 1.24.0(@modelcontextprotocol/sdk@1.20.0)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
+      '@google/genai': 1.25.0(@modelcontextprotocol/sdk@1.20.0)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)
       '@inquirer/prompts': 7.9.0(@types/node@24.7.2)
       '@inquirer/type': 3.0.9(@types/node@24.7.2)
       '@octokit/auth-app': 8.1.1
@@ -13712,7 +13712,7 @@ snapshots:
       '@types/events': 3.0.3
       '@types/folder-hash': 4.0.4
       '@types/git-raw-commits': 5.0.0
-      '@types/jasmine': 5.1.9
+      '@types/jasmine': 5.1.10
       '@types/node': 24.7.2
       '@types/semver': 7.7.1
       '@types/which': 3.0.4
@@ -15522,7 +15522,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@google/genai@1.24.0(@modelcontextprotocol/sdk@1.20.0)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
+  '@google/genai@1.25.0(@modelcontextprotocol/sdk@1.20.0)(bufferutil@4.0.9)(encoding@0.1.13)(supports-color@10.2.2)(utf-8-validate@6.0.5)':
     dependencies:
       google-auth-library: 9.15.1(encoding@0.1.13)(supports-color@10.2.2)
       ws: 8.18.3(bufferutil@4.0.9)(utf-8-validate@6.0.5)
