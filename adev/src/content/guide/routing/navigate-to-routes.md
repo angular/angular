@@ -5,6 +5,7 @@ The RouterLink directive is Angular's declarative approach to navigation. It all
 ## How to use RouterLink
 
 Instead of using regular anchor elements `<a>` with an `href` attribute, you add a RouterLink directive with the appropriate path in order to leverage Angular routing.
+
 ```angular-ts
 import {RouterLink} from '@angular/router';
 @Component({
@@ -99,6 +100,9 @@ export class AppDashboard {
     this.router.navigate(['/search'], {
       queryParams: { category: 'books', sort: 'price' }
     });
+
+    // With matrix parameters
+    this.router.navigate(['/products', { featured: true, onSale: true }]);
   }
 }
 ```
@@ -143,7 +147,7 @@ export class UserDetailComponent {
 
 The `router.navigateByUrl()` method provides a direct way to programmatically navigate using URL path strings rather than array segments. This method is ideal when you have a full URL path and need to perform absolute navigation, especially when working with externally provided URLs or deep linking scenarios.
 
-```angular-ts
+```ts
 // Standard route navigation
 router.navigateByUrl('/products);
 
@@ -155,11 +159,14 @@ router.navigateByUrl('/products/123?view=details#reviews');
 
 // Navigate with query parameters
 router.navigateByUrl('/search?category=books&sortBy=price');
+
+// With matrix parameters
+router.navigateByUrl('/sales-awesome;isOffer=true;showModal=false')
 ```
 
 In the event you need to replace the current URL in history, `navigateByUrl` also accepts a configuration object that has a `replaceUrl` option.
 
-```angular-ts
+```ts
 // Replace current URL in history
 router.navigateByUrl('/checkout', {
   replaceUrl: true

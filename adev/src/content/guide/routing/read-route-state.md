@@ -181,6 +181,43 @@ In this example, users can use a select element to sort the product list by name
 
 For more information, check out the [official docs on QueryParamsHandling](/api/router/QueryParamsHandling).
 
+### Matrix Parameters
+
+Matrix parameters are optional parameters that belong to a specific URL segment, rather than applying to the entire route. Unlike query parameters which appear after a `?` and apply globally, matrix parameters use semicolons (`;`) and are scoped to individual path segments.
+
+Matrix parameters are useful when you need to pass auxiliary data to a specific route segment without affecting the route definition or matching behavior. Like query parameters, they don't need to be defined in your route configuration.
+
+```ts
+// URL format: /path;key=value
+// Multiple parameters: /path;key1=value1;key2=value2
+
+// Navigate with matrix parameters
+this.router.navigate(['/awesome-products', { view: 'grid', filter: 'new' }]);
+// Results in URL: /awesome-products;view=grid;filter=new
+```
+
+**Using ActivatedRoute**
+
+```ts
+import { Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+
+@Component(/* ... */)
+export class AwesomeProducts  {
+  private route = inject(ActivatedRoute);
+
+  constructor() {
+    // Access matrix parameters via params
+    this.route.params.subscribe((params) => {
+      const view = params['view']; // e.g., 'grid'
+      const filter = params['filter']; // e.g., 'new'
+    });
+  }
+}
+```
+
+NOTE: As an alternative to using `ActivatedRoute`, matrix parameters are also bound to component inputs when using the `withComponentInputBinding`.
+
 ## Detect active current route with RouterLinkActive
 
 You can use the `RouterLinkActive` directive to dynamically style navigation elements based on the current active route. This is common in navigation elements to inform users what the active route is.
