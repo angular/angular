@@ -45,7 +45,7 @@ export interface InjectableDecorator {
    * provided and injected as a dependency.
    *
    * @see [Introduction to Services and DI](guide/di)
-   * @see [Dependency Injection Guide](guide/di/dependency-injection
+   * @see [Dependency Injection Guide](guide/di/dependency-injection)
    *
    * @usageNotes
    *
