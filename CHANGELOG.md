@@ -1,3 +1,16 @@
+<a name="20.3.6"></a>
+# 20.3.6 (2025-10-16)
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [911d6822cb](https://github.com/angular/angular/commit/911d6822cb18dabf4f72312dfc2e2ef9904bf6c2) | fix | update animation scheduling ([#64441](https://github.com/angular/angular/pull/64441)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2ece42866d](https://github.com/angular/angular/commit/2ece42866d0ee8240e73ebcef79ba47378777368) | fix | `DomEventsPlugin` should always be the last plugin to be called for `supports()`. ([#50394](https://github.com/angular/angular/pull/50394)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.8"></a>
 # 21.0.0-next.8 (2025-10-15)
 ### compiler-cli
