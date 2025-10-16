@@ -1283,6 +1283,62 @@ describe('field directive', () => {
     });
   });
 
+  describe('should be marked dirty by user interaction', () => {
+    it('native control', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+      })
+      class TestCmp {
+        f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+      const field = fixture.componentInstance.f;
+
+      expect(field().dirty()).toBe(false);
+
+      act(() => {
+        input.value = 'typing';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(field().dirty()).toBe(true);
+    });
+
+    it('custom control', () => {
+      @Component({
+        selector: 'my-input',
+        template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+      })
+      class CustomInput implements FormValueControl<string> {
+        value = model('');
+      }
+
+      @Component({
+        imports: [Field, CustomInput],
+        template: `<my-input [field]="f" />`,
+      })
+      class TestCmp {
+        f = form<string>(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+      const field = fixture.componentInstance.f;
+
+      expect(field().dirty()).toBe(false);
+
+      act(() => {
+        input.value = 'typing';
+        input.dispatchEvent(new Event('input'));
+      });
+
+      expect(field().dirty()).toBe(true);
+    });
+  });
+
   it('should throw for invalid field directive host', () => {
     @Component({
       imports: [Field],

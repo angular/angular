@@ -221,7 +221,9 @@ function listenToCustomControl(
     outputName,
     outputName,
     wrapListener(tNode, lView, (newValue: unknown) => {
-      control.state().value.set(newValue);
+      const state = control.state();
+      state.value.set(newValue);
+      state.markAsDirty();
     }),
   );
 
@@ -279,8 +281,9 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: É
   const renderer = lView[RENDERER];
   const inputListener = () => {
     const element = getNativeByTNode(tNode, lView) as NativeControlElement;
-    const value = control.state().value;
-    value.set(getNativeControlValue(element, value));
+    const state = control.state();
+    state.value.set(getNativeControlValue(element, state.value));
+    state.markAsDirty();
   };
   listenToDomEvent(
     tNode,
