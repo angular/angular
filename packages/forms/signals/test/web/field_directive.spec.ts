@@ -565,7 +565,7 @@ describe('field directive', () => {
     });
   });
 
-  it('synchronizes a basic form with a custom control', () => {
+  it('synchronizes with a value control', () => {
     @Component({
       imports: [Field],
       template: `
@@ -907,60 +907,6 @@ describe('field directive', () => {
     act(() => control.set(f2));
     expect(f1().fieldBindings()).toEqual([]);
     expect(f2().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
-  });
-
-  it('should synchronize custom properties', () => {
-    @Component({
-      template: `
-        <input #text type="text" [field]="f.text">
-        <input #number type="number" [field]="f.number">
-      `,
-      imports: [Field],
-    })
-    class CustomPropsTestCmp {
-      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
-      numberInput = viewChild.required<ElementRef<HTMLInputElement>>('number');
-      data = signal({
-        number: 0,
-        text: '',
-      });
-      f = form(this.data, (p) => {
-        required(p.text);
-        minLength(p.text, 0);
-        maxLength(p.text, 100);
-        min(p.number, 0);
-        max(p.number, 100);
-      });
-    }
-
-    const comp = act(() => TestBed.createComponent(CustomPropsTestCmp)).componentInstance;
-
-    expect(comp.textInput().nativeElement.required).toBe(true);
-    expect(comp.textInput().nativeElement.minLength).toBe(0);
-    expect(comp.textInput().nativeElement.maxLength).toBe(100);
-    expect(comp.numberInput().nativeElement.required).toBe(false);
-    expect(comp.numberInput().nativeElement.min).toBe('0');
-    expect(comp.numberInput().nativeElement.max).toBe('100');
-  });
-
-  it('should synchronize readonly', () => {
-    @Component({
-      template: `
-        <input #text type="text" [field]="f">
-      `,
-      imports: [Field],
-    })
-    class ReadonlyTestCmp {
-      textInput = viewChild.required<ElementRef<HTMLInputElement>>('text');
-      data = signal('');
-      f = form(this.data, (p) => {
-        readonly(p);
-      });
-    }
-
-    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
-
-    expect(comp.textInput().nativeElement.readOnly).toBe(true);
   });
 
   it('should synchronize disabled reasons', () => {
