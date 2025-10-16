@@ -448,12 +448,13 @@ You can supply a value such as the following to apply optimization to one or the
 
 The `sourceMap` builder option can be either a boolean or an object for more fine-tune configuration to control the source maps of an application.
 
-| Options   | Details                                             | Value type | Default value |
-| :-------- | :-------------------------------------------------- | :--------- | :------------ |
-| `scripts` | Output source maps for all scripts.                 | `boolean`  | `true`        |
-| `styles`  | Output source maps for all styles.                  | `boolean`  | `true`        |
-| `vendor`  | Resolve vendor packages source maps.                | `boolean`  | `false`       |
-| `hidden`  | Omit link to sourcemaps from the output JavaScript. | `boolean`  | `false`       |
+| Options          | Details                                                      | Value type | Default value |
+| :--------------- | :----------------------------------------------------------- | :--------- | :------------ |
+| `scripts`        | Output source maps for all scripts.                          | `boolean`  | `true`        |
+| `styles`         | Output source maps for all styles.                           | `boolean`  | `true`        |
+| `vendor`         | Resolve vendor packages source maps.                         | `boolean`  | `false`       |
+| `hidden`         | Omit link to sourcemaps from the output JavaScript.          | `boolean`  | `false`       |
+| `sourcesContent` | Output original source content for files within source maps. | `boolean`  | `true`        |
 
 The example below shows how to toggle one or more values to configure the source map outputs:
 
@@ -482,6 +483,34 @@ The example below shows how to toggle one or more values to configure the source
 HELPFUL: When using hidden source maps, source maps are not referenced in the bundle.
 These are useful if you only want source maps to map stack traces in error reporting tools without showing up in browser developer tools.
 Note that even though `hidden` prevents the source map from being linked in the output bundle, your deployment process must take care not to serve the generated sourcemaps in production, or else the information is still leaked.
+
+#### Source maps without sources content
+
+You can generate source maps without the `sourcesContent` field, which contains the original source code.
+This allows you to deploy source maps to production for better error reporting with original source names while protecting your source code from exposure.
+
+To exclude sources content from source maps, set the `sourcesContent` option to `false`:
+
+```json
+{
+  "projects": {
+    "my-app": {
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "sourcesContent": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### Index configuration
 
