@@ -31,6 +31,21 @@ describe('UrlTree', () => {
       const tree = serializer.parse('/path/to?first=http://foo/bar?baz=true&second=123');
       expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
     });
+
+    it('should parse a url with outlet and children', () => {
+      const url =
+        '/Home(app:Welcome//dock:left(1:One;pinned//2:Two;below=1//3:Three;pinned;above=2//4:Four))';
+      const tree = serializer.parse(url);
+      const dock = tree.root.children['dock'];
+      const dockChildren = dock.children;
+      expect(dockChildren['1'].segments[0].path).toEqual('One');
+      expect(dockChildren['1'].segments[0].parameters).toEqual({pinned: ''});
+      expect(dockChildren['2'].segments[0].path).toEqual('Two');
+      expect(dockChildren['2'].segments[0].parameters).toEqual({below: '1'});
+      expect(dockChildren['3'].segments[0].path).toEqual('Three');
+      expect(dockChildren['3'].segments[0].parameters).toEqual({pinned: '', above: '2'});
+      expect(dockChildren['4'].segments[0].path).toEqual('Four');
+    });
   });
 
   describe('containsTree', () => {

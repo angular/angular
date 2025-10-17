@@ -710,7 +710,7 @@ class UrlParser {
 
       // if is is not one of these characters, then the segment was unescaped
       // or the group was not closed
-      if (next !== '/' && next !== ')' && next !== ';') {
+      if (next !== '/' && next !== ')' && next !== ';' && next !== '(') {
         throw new RuntimeError(
           RuntimeErrorCode.UNPARSABLE_URL,
           (typeof ngDevMode === 'undefined' || ngDevMode) && `Cannot parse url '${this.url}'`,
