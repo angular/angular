@@ -7,7 +7,7 @@
  */
 
 import {ZoneType} from '../zone-impl';
-import {type ProxyZoneSpec} from './proxy';
+import {throwProxyZoneError, type ProxyZoneSpec} from './proxy';
 
 const global: any =
   (typeof window === 'object' && window) || (typeof self === 'object' && self) || globalThis.global;
@@ -954,10 +954,7 @@ export function fakeAsync(fn: Function, options: {flush?: boolean} = {}): (...ar
   const fakeAsyncFn: any = function (this: unknown, ...args: any[]) {
     const ProxyZoneSpec = getProxyZoneSpec();
     if (!ProxyZoneSpec) {
-      throw new Error(
-        'ProxyZoneSpec is needed for the fakeAsync() test helper but could not be found. ' +
-          'Make sure that your environment includes zone-testing.js',
-      );
+      throwProxyZoneError();
     }
     const proxyZoneSpec = ProxyZoneSpec.assertPresent();
     if (Zone.current.get('FakeAsyncTestZoneSpec')) {
