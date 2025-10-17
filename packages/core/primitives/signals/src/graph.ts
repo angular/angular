@@ -94,6 +94,7 @@ export type ReactiveNodeKind =
   | 'effect'
   | 'template'
   | 'linkedSignal'
+  | 'afterRenderEffectPhase'
   | 'unknown';
 
 /**
