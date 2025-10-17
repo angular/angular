@@ -169,6 +169,20 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should transform :host-context with nested pseudo selectors', () => {
+      expect(shim(':host-context(:where(.foo:not(.bar))) {}', 'contenta', 'hosta')).toEqualCss(
+        ':where(.foo:not(.bar))[hosta], :where(.foo:not(.bar)) [hosta] {}',
+      );
+      expect(shim(':host-context(:is(.foo:not(.bar))) {}', 'contenta', 'hosta')).toEqualCss(
+        ':is(.foo:not(.bar))[hosta], :is(.foo:not(.bar)) [hosta] {}',
+      );
+      expect(
+        shim(':host-context(:where(.foo:not(.bar, .baz))) .inner {}', 'contenta', 'hosta'),
+      ).toEqualCss(
+        ':where(.foo:not(.bar, .baz))[hosta] .inner[contenta], :where(.foo:not(.bar, .baz)) [hosta] .inner[contenta] {}',
+      );
+    });
+
     it('should handle tag selector', () => {
       expect(shim(':host-context(div) {}', 'contenta', 'a-host')).toEqualCss(
         'div[a-host], div [a-host] {}',
