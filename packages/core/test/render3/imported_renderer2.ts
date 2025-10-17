@@ -21,10 +21,6 @@ import {type ListenerOptions, NgZone, RendererFactory2, RendererType2} from '../
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
-  constructor(doc: any) {
-    super(doc);
-  }
-
   override supports(eventName: string): boolean {
     return true;
   }
@@ -50,9 +46,9 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
   }
 }
 
-export function getRendererFactory2(document: any): RendererFactory2 {
+export function getRendererFactory2(): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
-  const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
+  const eventManager = new EventManager([new SimpleDomEventsPlugin()], fakeNgZone);
   const appId = 'appid';
   const rendererFactory = new ɵDomRendererFactory2(
     eventManager,

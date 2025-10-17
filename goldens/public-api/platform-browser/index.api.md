@@ -90,7 +90,6 @@ export class EventManager {
 
 // @public
 export abstract class EventManagerPlugin {
-    constructor(_doc: any);
     abstract addEventListener(element: HTMLElement, eventName: string, handler: Function, options?: ListenerOptions): Function;
     // (undocumented)
     manager: EventManager;

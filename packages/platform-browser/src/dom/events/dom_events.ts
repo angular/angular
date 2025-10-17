@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, type ListenerOptions} from '@angular/core';
+import {Injectable, type ListenerOptions} from '@angular/core';
 import {EventManagerPlugin} from './event_manager_plugin';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any) {
-    super(doc);
+  constructor() {
+    super();
   }
 
   // This plugin should come last in the list of plugins, because it accepts all

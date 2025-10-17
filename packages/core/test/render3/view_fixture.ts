@@ -87,8 +87,7 @@ export class ViewFixture {
     this.createFn = create;
     this.updateFn = update;
 
-    const document = (((typeof global == 'object' && global) || window) as any).document;
-    const rendererFactory = getRendererFactory2(document);
+    const rendererFactory = getRendererFactory2();
 
     const hostRenderer = rendererFactory.createRenderer(null, null);
     this.host = hostRenderer.createElement('host-element') as HTMLElement;
