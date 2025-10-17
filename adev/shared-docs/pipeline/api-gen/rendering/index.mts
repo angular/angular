@@ -51,7 +51,7 @@ function parseEntryData(srcs: string[]): EntryCollection[] {
       const command = fileContentJson as CliCommand;
       return [
         {
-          repo: 'anglar/cli',
+          repo: 'angular/cli',
           moduleName: 'unknown',
           normalizedModuleName: 'unknown',
           entries: [fileContentJson as DocEntry],
