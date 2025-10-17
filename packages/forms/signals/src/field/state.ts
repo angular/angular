@@ -9,6 +9,7 @@
 import {computed, signal, Signal} from '@angular/core';
 import type {Field} from '../api/field_directive';
 import type {DisabledReason} from '../api/types';
+import {DEBOUNCER} from './debounce';
 import type {FieldNode} from './node';
 import {reduceChildren, shortCircuitTrue} from './util';
 
@@ -156,6 +157,24 @@ export class FieldNodeState {
 
     return `${parent.name()}.${this.node.structure.keyInParent()}`;
   });
+
+  debouncer(): Promise<void> | void {
+    if (this.node.logicNode.logic.hasAggregateMetadata(DEBOUNCER)) {
+      const debouncerLogic = this.node.logicNode.logic.getAggregateMetadata(DEBOUNCER);
+
+      // Even if this field has a `debounce()` rule, it could be applied conditionally and currently
+      // inactive, in which case `compute()` will return undefined.
+      const debouncer = debouncerLogic.compute(this.node.context);
+      if (debouncer) {
+        return debouncer(this.node.context);
+      }
+    }
+
+    // Inherit its parent's debouncer, if any. If there is no debouncer configured all the way up
+    // to the root field, this simply returns `undefined` indicating that the operation should not
+    // be debounced.
+    return this.node.structure.parent?.nodeState.debouncer();
+  }
 
   /** Whether this field is considered non-interactive.
    *
