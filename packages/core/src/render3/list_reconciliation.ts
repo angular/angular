@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {setActiveConsumer} from '../../primitives/signals';
 import {TrackByFunction} from '../change_detection';
 import {formatRuntimeError, RuntimeErrorCode} from '../errors';
 
@@ -224,14 +225,14 @@ export function reconcile<T, V>(
     // Final cleanup steps:
     // - more items in the new collection => insert
     while (liveStartIdx <= newEndIdx) {
-      createOrAttach(
-        liveCollection,
-        detachedItems,
-        trackByFn,
-        liveStartIdx,
-        newCollection[liveStartIdx],
-      );
-      liveStartIdx++;
+      const newItem = newCollection[liveStartIdx];
+      const prevConsumer = setActiveConsumer(null);
+      try {
+        createOrAttach(liveCollection, detachedItems, trackByFn, liveStartIdx, newItem);
+        liveStartIdx++;
+      } finally {
+        setActiveConsumer(prevConsumer);
+      }
     }
   } else if (newCollection != null) {
     // iterable - immediately fallback to the slow path
@@ -292,13 +293,18 @@ export function reconcile<T, V>(
     // this is a new item as we run out of the items in the old collection - create or attach a
     // previously detached one
     while (!newIterationResult.done) {
-      createOrAttach(
-        liveCollection,
-        detachedItems,
-        trackByFn,
-        liveCollection.length,
-        newIterationResult.value,
-      );
+      const prevConsumer = setActiveConsumer(null);
+      try {
+        createOrAttach(
+          liveCollection,
+          detachedItems,
+          trackByFn,
+          liveCollection.length,
+          newIterationResult.value,
+        );
+      } finally {
+        setActiveConsumer(prevConsumer);
+      }
       newIterationResult = newCollectionIterator.next();
     }
   }
