@@ -353,14 +353,14 @@ function normalizeErrors(error: ValidationResult): readonly ValidationError[] {
 
 /**
  * Sets the given field on the given error(s) if it does not already have a field.
- * @param errors The error(s) to add the field to
+ * @param error The error(s) to add the field to
  * @param field The default field to add
  * @returns The passed in error(s), with its field set.
  */
 export function addDefaultField<E extends ValidationError>(
   error: WithOptionalField<E>,
   field: FieldTree<unknown>,
-): E;
+): E & {field: FieldTree<unknown>};
 export function addDefaultField<E extends ValidationError>(
   errors: TreeValidationResult<E>,
   field: FieldTree<unknown>,

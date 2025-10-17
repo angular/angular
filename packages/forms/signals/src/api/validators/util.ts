@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, OneOrMany, PathKind, type FieldContext} from '../types';
-import {ValidationError, WithoutField} from '../validation_errors';
+import {LogicFn, OneOrMany, PathKind, type FieldContext, ValidationResult} from '../types';
+import {customError, ValidationError} from '../validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -24,9 +24,7 @@ export type BaseValidatorConfig<TValue, TPathKind extends PathKind = PathKind.Ro
        * Custom validation error(s) to report instead of the default,
        * or a function that receives the `FieldContext` and returns custom validation error(s).
        */
-      error?:
-        | OneOrMany<WithoutField<ValidationError>>
-        | LogicFn<TValue, OneOrMany<WithoutField<ValidationError>>, TPathKind>;
+      error?: OneOrMany<ValidationError> | LogicFn<TValue, OneOrMany<ValidationError>, TPathKind>;
       message?: never;
     };
 
@@ -59,4 +57,44 @@ export function isEmpty(value: unknown): boolean {
     return isNaN(value);
   }
   return value === '' || value === false || value == null;
+}
+
+/**
+ * Whether the value is a plain object, as opposed to being an instance of Validation error.
+ * @param value
+ */
+function isPlainError(value: ValidationError) {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null)
+  );
+}
+
+/**
+ * If the value provided is a plain object, it wraps it into a custom error.
+ * @param error
+ */
+function ensureCustomValidationError(error: ValidationError) {
+  if (isPlainError(error)) {
+    return customError(error);
+  }
+  return error;
+}
+
+/**
+ * Makes sure every provided error is wrapped as a custom error.
+ * @param result
+ */
+export function ensureCustomValidationResult(result: ValidationResult): ValidationResult {
+  if (result === null || result === undefined) {
+    return result;
+  }
+
+  if (Array.isArray(result)) {
+    return result.map(ensureCustomValidationError);
+  }
+
+  // TOOD: why doesn't the type narrowing work here?
+  return ensureCustomValidationError(result as ValidationError);
 }

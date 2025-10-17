@@ -19,10 +19,9 @@ import {
   validateAsync,
   validateTree,
   ValidationError,
-  type WithoutField,
 } from '../../public_api';
 
-function validateValue(value: string): WithoutField<ValidationError>[] {
+function validateValue(value: string): ValidationError[] {
   return value === 'INVALID' ? [customError()] : [];
 }
 
