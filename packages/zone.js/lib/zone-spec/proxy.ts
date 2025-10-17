@@ -8,6 +8,22 @@
 
 import {ZoneType} from '../zone-impl';
 
+declare let jest: any;
+
+export function throwProxyZoneError(): never {
+  const jestPatched = typeof jest !== 'undefined' && jest['__zone_patch__'];
+  if (jestPatched) {
+    throw new Error(
+      'Only globals are patched with zone-testing. If you import `it`, `describe`, etc. directly, you cannot use `fakeAsync` or `waitForAsync`.',
+    );
+  } else {
+    throw new Error(
+      'ProxyZoneSpec is needed for the fakeAsync and waitForAsync test helpers but could not be found. ' +
+        'Make sure that your environment includes zone-testing.js',
+    );
+  }
+}
+
 export class ProxyZoneSpec implements ZoneSpec {
   name: string = 'ProxyZone';
 
