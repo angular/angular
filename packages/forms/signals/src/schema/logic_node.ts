@@ -132,7 +132,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override addAggregateMetadataRule<T>(
-    key: AggregateMetadataKey<unknown, T>,
+    key: AggregateMetadataKey<any, T>,
     logic: LogicFn<any, T>,
   ): void {
     this.getCurrent().addAggregateMetadataRule(key, logic);

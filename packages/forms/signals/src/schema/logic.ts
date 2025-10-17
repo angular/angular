@@ -311,7 +311,7 @@ export class LogicContainer {
    * @param key The `AggregateMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getAggregateMetadata<T>(key: AggregateMetadataKey<unknown, T>): AbstractLogic<T> {
+  getAggregateMetadata<T>(key: AggregateMetadataKey<any, T>): AbstractLogic<T> {
     if (!this.aggregateMetadataKeys.has(key as AggregateMetadataKey<unknown, unknown>)) {
       this.aggregateMetadataKeys.set(
         key as AggregateMetadataKey<unknown, unknown>,
