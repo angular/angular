@@ -84,6 +84,7 @@ import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
 import {allLeavingAnimations} from '../animation/longest_animation';
 import {Injector} from '../di';
 import {addToAnimationQueue, queueEnterAnimations} from '../animation/queue';
+import {getLViewEnterAnimations} from '../animation/utils';
 
 const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
@@ -705,6 +706,10 @@ export function appendChild(
   const parentTNode: TNode = childTNode.parent || lView[T_HOST]!;
   const anchorNode = getInsertInFrontOfRNode(parentTNode, childTNode, lView);
   if (parentRNode != null) {
+    const targetLView = getLViewEnterAnimations(lView).size > 0 ? lView : getLViewParent(lView);
+    if (targetLView && getLViewEnterAnimations(targetLView).size > 0)
+      queueEnterAnimations(targetLView[INJECTOR], getLViewEnterAnimations(targetLView));
+
     if (Array.isArray(childRNode)) {
       for (let i = 0; i < childRNode.length; i++) {
         nativeAppendOrInsertBefore(renderer, parentRNode, childRNode[i], anchorNode, false);
