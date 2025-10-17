@@ -29,7 +29,14 @@ export const release: ReleaseConfig = {
     return performNpmReleaseBuild();
   },
   releaseNotes: {
-    hiddenScopes: ['bazel', 'dev-infra', 'docs-infra', 'zone.js', 'devtools'],
+    hiddenScopes: [
+      'dev-infra',
+      'docs-infra',
+      'zone.js',
+      'devtools',
+      'vscode-extension',
+      'benchpress',
+    ],
   },
   releasePrLabels: ['area: build & ci', 'action: merge', 'PullApprove: disable'],
 };

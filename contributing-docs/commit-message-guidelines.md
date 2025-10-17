@@ -63,9 +63,7 @@ The scope should be the name of the npm package affected (as perceived by the pe
 The following is the list of supported scopes:
 
 * `animations`
-* `bazel`
 * `benchpress`
-* `changelog`
 * `common`
 * `compiler`
 * `compiler-cli`
@@ -77,22 +75,19 @@ The following is the list of supported scopes:
 * `forms`
 * `http`
 * `language-service`
+* `language-server`
 * `localize`
 * `migrations`
-* `packaging`
 * `platform-browser`
 * `platform-browser-dynamic`
 * `platform-server`
 * `router`
 * `service-worker`
 * `upgrade`
+* `vscode-extension`
 * `zone.js`
 
 There are currently a few exceptions to the "use package name" rule:
-
-* `packaging`: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
-
-* `changelog`: used for updating the release notes in CHANGELOG.md
 
 * `dev-infra`: used for dev-infra related changes within the directories /scripts and /tools
 
