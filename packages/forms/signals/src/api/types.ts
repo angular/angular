@@ -611,3 +611,18 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
  * @experimental 21.0.0
  */
 export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
+
+/**
+ * A function that defines custom debounce logic for a field.
+ *
+ * This function receives the {@link FieldContext} for the field and should return a `Promise<void>`
+ * to delay an update, or `void` to apply an update immediately.
+ *
+ * @template TValue The type of value stored in the field.
+ * @template TPathKind The kind of path the debouncer is applied to (root field, child field, or item of an array).
+ *
+ * @experimental 21.0.0
+ */
+export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (
+  context: FieldContext<TValue, TPathKind>,
+) => Promise<void> | void;

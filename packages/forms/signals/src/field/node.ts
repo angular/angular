@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, type Signal, type WritableSignal} from '@angular/core';
+import {computed, linkedSignal, type Signal, type WritableSignal} from '@angular/core';
 import type {Field} from '../api/field_directive';
 import {
   AggregateMetadataKey,
@@ -57,10 +57,9 @@ export class FieldNode implements FieldState<unknown> {
   readonly metadataState: FieldMetadataState;
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
-
-  private _context: FieldContext<unknown> | undefined = undefined;
   readonly fieldAdapter: FieldAdapter;
 
+  private _context: FieldContext<unknown> | undefined = undefined;
   get context(): FieldContext<unknown> {
     return (this._context ??= new FieldNodeContext(this));
   }
@@ -79,12 +78,26 @@ export class FieldNode implements FieldState<unknown> {
     this.submitState = new FieldSubmitState(this);
   }
 
+  /**
+   * The most recent promise returned by the debouncer, or `undefined` if no debounce is active.
+   * This is used to ensure that only the most recent debounce operation updates the field's value.
+   */
+  private readonly pendingSync: WritableSignal<Promise<void> | undefined> = linkedSignal({
+    source: () => this.value(),
+    computation: () => undefined,
+  });
+
   get logicNode(): LogicNode {
     return this.structure.logic;
   }
 
   get value(): WritableSignal<unknown> {
     return this.structure.value;
+  }
+
+  private _controlValue = linkedSignal(() => this.value());
+  get controlValue(): Signal<unknown> {
+    return this._controlValue.asReadonly();
   }
 
   get keyInParent(): Signal<string | number> {
@@ -189,6 +202,7 @@ export class FieldNode implements FieldState<unknown> {
    */
   markAsTouched(): void {
     this.nodeState.markAsTouched();
+    this.sync();
   }
 
   /**
@@ -209,6 +223,48 @@ export class FieldNode implements FieldState<unknown> {
 
     for (const child of this.structure.children()) {
       child.reset();
+    }
+  }
+
+  /**
+   * Sets the control value of the field. This value may be debounced before it is synchronized with
+   * the field's {@link value} signal, depending on the debounce configuration.
+   */
+  setControlValue(newValue: unknown): void {
+    this._controlValue.set(newValue);
+    this.markAsDirty();
+    this.debounceSync();
+  }
+
+  /**
+   * Synchronizes the {@link controlValue} with the {@link value} signal immediately.
+   *
+   * This also clears any pending debounce operations.
+   */
+  private sync() {
+    this.value.set(this.controlValue());
+    this.pendingSync.set(undefined);
+  }
+
+  /**
+   * Initiates a debounced {@link sync}.
+   *
+   * If a debouncer is configured, the synchronization will occur after the debouncer. If no
+   * debouncer is configured, the synchronization happens immediately. If a new
+   * {@link setControlValue} call occurs while a debounce is pending, the previous debounce
+   * operation is ignored in favor of the new one.
+   */
+  private debounceSync() {
+    const promise = this.nodeState.debouncer();
+    if (promise) {
+      promise.then(() => {
+        if (promise === this.pendingSync()) {
+          this.sync();
+        }
+      });
+      this.pendingSync.set(promise);
+    } else {
+      this.sync();
     }
   }
 
