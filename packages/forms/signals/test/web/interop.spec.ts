@@ -75,7 +75,7 @@ describe('ControlValueAccessor', () => {
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const control = fixture.componentInstance.control;
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
 
     // Initial state
     expect(control().value).toBe('test');
@@ -102,7 +102,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const input = fixture.nativeElement.querySelector('input');
     const field = fixture.componentInstance.f;
 
     expect(field().dirty()).toBe(false);
@@ -125,7 +125,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
     expect(fixture.componentInstance.f().touched()).toBe(false);
 
     act(() => input.dispatchEvent(new Event('blur')));
@@ -145,7 +145,7 @@ describe('ControlValueAccessor', () => {
     }
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
     expect(input.disabled).toBe(false);
 
     act(() => enabled.set(false));
@@ -204,7 +204,7 @@ describe('ControlValueAccessor', () => {
 
     const fixture = act(() => TestBed.createComponent(TestCmp));
     const control = fixture.componentInstance.control;
-    const input = fixture.nativeElement.firstChild.firstChild;
+    const input = fixture.nativeElement.querySelector('input');
 
     // Initial state
     expect(control().value).toBe('test');
