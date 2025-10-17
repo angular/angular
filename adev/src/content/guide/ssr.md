@@ -330,18 +330,85 @@ To configure this, update your `angular.json` file as follows:
 
 ## Caching data when using HttpClient
 
-[`HttpClient`](api/common/http/HttpClient) cached outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+`HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
 
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
+### Configuring the caching options
 
-```typescript
+You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
+This configuration is provided globally using `withHttpTransferCacheOptions` inside `provideClientHydration()`.
+
+By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+
 bootstrapApplication(AppComponent, {
   providers: [
-    provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
-    }))
-  ]
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includeHeaders: ['ETag', 'Cache-Control'],
+        filter: (req) => !req.url.includes('/api/profile'),
+        includePostRequests: true,
+        includeRequestsWithAuthHeaders: false,
+      }),
+    ),
+  ],
 });
+```
+
+---
+
+### `includeHeaders`
+
+Specifies which headers from the server response should be included in cached entries.  
+No headers are included by default.
+
+```ts
+withHttpTransferCacheOptions({
+  includeHeaders: ['ETag', 'Cache-Control'],
+});
+```
+
+IMPORTANT: Avoid including sensitive headers like authentication tokens. These can leak user‑specific data between requests.
+
+---
+
+### `includePostRequests`
+
+By default, only `GET` and `HEAD` requests are cached.  
+You can enable caching for `POST` requests when they are used as read operations such as GraphQL queries.
+
+```ts
+withHttpTransferCacheOptions({
+  includePostRequests: true,
+});
+```
+
+Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
+
+---
+
+### `includeRequestsWithAuthHeaders`
+
+Determines whether requests containing `Authorization` or `Proxy‑Authorization` headers are eligible for caching.  
+By default, these are excluded to prevent caching user‑specific responses.
+
+```ts
+withHttpTransferCacheOptions({
+  includeRequestsWithAuthHeaders: true,
+});
+```
+
+Enable only when authentication headers do **not** affect the response content (for example, public tokens for analytics APIs).
+
+### Per‑request overrides
+
+You can override caching behavior for a specific request using the `transferCache` request option.
+
+```ts
+// Include specific headers for this request
+http.get('/api/profile', { transferCache: { includeHeaders: ['CustomHeader'] } });
 ```
 
 ### Disabling caching
@@ -362,6 +429,8 @@ bootstrapApplication(AppComponent, {
 });
 ```
 
+#### `filter`
+
 You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
 
 ```ts
@@ -375,6 +444,8 @@ bootstrapApplication(AppComponent, {
   ]
 });
 ```
+
+Use this option to exclude endpoints with user‑specific or dynamic data (for example `/api/profile`).
 
 #### Individually
 
