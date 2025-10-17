@@ -28,6 +28,24 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 );
 
 /**
+ * CSS classes that reflect the status of the control.
+ * These classes are applied to the host element of the {@link Field} directive.
+ * They mirror the classes applied by Angular's reactive forms and template-driven forms.
+ * @internal
+ * @category control
+ * @experimental 21.0.0
+ */
+export const ngControlStatusHost = {
+  '[class.ng-untouched]': 'isUntouched',
+  '[class.ng-touched]': 'isTouched',
+  '[class.ng-pristine]': 'isPristine',
+  '[class.ng-dirty]': 'isDirty',
+  '[class.ng-valid]': 'isValid',
+  '[class.ng-invalid]': 'isInvalid',
+  '[class.ng-pending]': 'isPending',
+};
+
+/**
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
  * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
@@ -48,7 +66,13 @@ export const FIELD = new InjectionToken<Field<unknown>>(
  * @category control
  * @experimental 21.0.0
  */
-@Directive({selector: '[field]', providers: [{provide: FIELD, useExisting: Field}]})
+@Directive({
+  selector: '[field]',
+  host: {
+    ...ngControlStatusHost,
+  },
+  providers: [{provide: FIELD, useExisting: Field}],
+})
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
   readonly field = input.required<FieldTree<T>>();
@@ -75,5 +99,33 @@ export class Field<T> implements ɵControl<T> {
       },
       {injector: this.injector},
     );
+  }
+
+  protected get isTouched() {
+    return this.state().touched();
+  }
+
+  protected get isUntouched() {
+    return !this.state().touched();
+  }
+
+  protected get isDirty() {
+    return this.state().dirty();
+  }
+
+  protected get isPristine() {
+    return !this.state().dirty();
+  }
+
+  protected get isValid() {
+    return this.state().valid();
+  }
+
+  protected get isInvalid() {
+    return !this.state().valid();
+  }
+
+  protected get isPending() {
+    return this.state().pending();
   }
 }

@@ -1328,6 +1328,99 @@ describe('field directive', () => {
       /'<div>' is an invalid \[field\] directive host\./,
     );
   });
+
+  describe('field status classes', () => {
+    it('should apply initial status classes', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => required(p));
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+
+      const input = fixture.nativeElement.querySelector('input');
+      expect(input.classList.contains('ng-untouched')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(true);
+      expect(input.classList.contains('ng-invalid')).toBe(true);
+    });
+
+    it('should update touched classes on blur', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => required(p));
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      const input = fixture.nativeElement.querySelector('input');
+
+      input.dispatchEvent(new Event('blur'));
+      fixture.detectChanges();
+
+      expect(input.classList.contains('ng-touched')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(false);
+    });
+
+    it('should update dirty classes on value change', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => required(p));
+      }
+
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+      input.value = 'test';
+      input.dispatchEvent(new Event('input'));
+      fixture.componentInstance.f().markAsDirty();
+      fixture.detectChanges();
+
+      expect(input.classList.contains('ng-dirty')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(false);
+    });
+
+    it('should reset classes when reset() is called', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f" />`,
+      })
+      class TestCmp {
+        f = form(signal(''), (p) => required(p));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const field = fix.componentInstance.f;
+
+      // Make it dirty and touched
+      act(() => {
+        input.value = 'test';
+        input.dispatchEvent(new Event('input'));
+        field().markAsDirty();
+        input.dispatchEvent(new Event('blur'));
+      });
+
+      expect(input.classList.contains('ng-dirty')).toBe(true);
+      expect(input.classList.contains('ng-touched')).toBe(true);
+
+      // Reset
+      act(() => field().reset());
+
+      expect(input.classList.contains('ng-pristine')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(true);
+    });
+  });
 });
 
 function setupRadioGroup() {
