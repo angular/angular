@@ -17,6 +17,7 @@ import {
   Type,
   untracked,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER,
+  ɵformatRuntimeError as formatRuntimeError,
 } from '@angular/core';
 import {Observable, Subject, Subscription, SubscriptionLike} from 'rxjs';
 
@@ -580,7 +581,13 @@ export class Router {
   parseUrl(url: string): UrlTree {
     try {
       return this.urlSerializer.parse(url);
-    } catch {
+    } catch (e) {
+      this.console.warn(
+        formatRuntimeError(
+          RuntimeErrorCode.ERROR_PARSING_URL,
+          ngDevMode && `Error parsing URL ${url}. Falling back to '/' instead. \n` + e,
+        ),
+      );
       return this.urlSerializer.parse('/');
     }
   }
