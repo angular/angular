@@ -64,8 +64,16 @@ export class FakeEmbeddedTutorialManager {
   }
 }
 
+class MockWorker {
+  addEventListener = jasmine.createSpy('addEventListener');
+  postMessage = jasmine.createSpy('postMessage');
+  removeEventListener = jasmine.createSpy('removeEventListener');
+  terminate = jasmine.createSpy('terminate');
+}
+
 describe('CodeMirrorEditor', () => {
   let service: CodeMirrorEditor;
+  let mockWorker: MockWorker;
 
   const fakeNodeRuntimeSandbox = new FakeNodeRuntimeSandbox();
   const fakeEmbeddedTutorialManager = new FakeEmbeddedTutorialManager();
@@ -80,6 +88,8 @@ describe('CodeMirrorEditor', () => {
   }
 
   beforeEach(() => {
+    mockWorker = new MockWorker();
+
     TestBed.configureTestingModule({
       providers: [
         CodeMirrorEditor,
