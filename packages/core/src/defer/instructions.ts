@@ -393,7 +393,7 @@ export function ɵɵdeferPrefetchOnIdle() {
 
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
-  scheduleDelayedPrefetching(onIdle, DeferBlockTrigger.Idle);
+  scheduleDelayedPrefetching(onIdle);
 }
 
 /**
@@ -527,7 +527,7 @@ export function ɵɵdeferPrefetchOnTimer(delay: number) {
 
   if (!shouldAttachTrigger(TriggerType.Prefetch, lView, tNode)) return;
 
-  scheduleDelayedPrefetching(onTimer(delay), DeferBlockTrigger.Timer);
+  scheduleDelayedPrefetching(onTimer(delay));
 }
 
 /**
