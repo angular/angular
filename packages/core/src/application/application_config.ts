@@ -11,6 +11,8 @@ import {EnvironmentProviders, Provider} from '../di';
 /**
  * Set of config options available during the application bootstrap operation.
  *
+ * @see [At the application root level using ApplicationConfig](guide/di/dependency-injection#at-the-application-root-level-using-applicationconfig)
+ *
  * @publicApi
  */
 export interface ApplicationConfig {
