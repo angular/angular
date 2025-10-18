@@ -155,7 +155,7 @@ export function form<TModel>(
  * ```
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
- *   error(name.last, ({value}) => !/^[a-z]+$/i.test(value()), 'Alphabet characters only');
+ *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? customError({kind: 'alphabet-only'}) : undefined);
  * });
  * nameForm().valid(); // false
  * nameForm().value.set({first: 'John', last: 'Doe'});
@@ -202,22 +202,6 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * });
  * const namesForm = form(signal([{first: '', last: ''}]), (names) => {
  *   applyEach(names, nameSchema);
- * });
- * ```
- *
- * When binding logic to the array items, the `FieldTree` for the array item is passed as an
- * additional argument. This can be used to reference other properties on the item.
- *
- * @example
- * ```
- * const namesForm = form(signal([{first: '', last: ''}]), (names) => {
- *   applyEach(names, (name) => {
- *     error(
- *       name.last,
- *       (value, nameField) => value === nameField.first().value(),
- *       'Last name must be different than first name',
- *     );
- *   });
  * });
  * ```
  *
