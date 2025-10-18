@@ -77,10 +77,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
 
-  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
-  // animating through host bindings fails
-  queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
-
   return ɵɵanimateEnter; // For chaining
 }
 
@@ -201,10 +197,6 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
   );
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
-
-  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
-  // animating through host bindings fails
-  queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
 
   return ɵɵanimateEnterListener;
 }
