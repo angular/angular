@@ -205,7 +205,7 @@ export type ComponentInputBindingFeature = RouterFeature<RouterFeatureKind.Compo
 export function convertToParamMap(params: Params): ParamMap;
 
 // @public
-export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: readonly any[], queryParams?: Params | null, fragment?: string | null, urlSerializer?: DefaultUrlSerializer): UrlTree;
+export function createUrlTreeFromSnapshot(relativeTo: ActivatedRouteSnapshot, commands: readonly any[], queryParams?: Params | null, fragment?: string | null): UrlTree;
 
 // @public
 export type Data = {

@@ -11,15 +11,7 @@ import {ɵRuntimeError as RuntimeError} from '@angular/core';
 import {RuntimeErrorCode} from './errors';
 import {ActivatedRouteSnapshot} from './router_state';
 import {Params, PRIMARY_OUTLET} from './shared';
-import {
-  createRoot,
-  DefaultUrlSerializer,
-  squashSegmentGroup,
-  UrlSegment,
-  UrlSegmentGroup,
-  UrlSerializer,
-  UrlTree,
-} from './url_tree';
+import {createRoot, squashSegmentGroup, UrlSegment, UrlSegmentGroup, UrlTree} from './url_tree';
 import {last, shallowEqual} from './utils/collection';
 
 /**
@@ -36,9 +28,6 @@ import {last, shallowEqual} from './utils/collection';
  * @param queryParams The query parameters for the `UrlTree`. `null` if the `UrlTree` does not have
  *     any query parameters.
  * @param fragment The fragment for the `UrlTree`. `null` if the `UrlTree` does not have a fragment.
- * @param urlSerializer The `UrlSerializer` to use for handling query parameter normalization.
- * You should provide your application's custom `UrlSerializer` if one is configured to parse and
- * serialize query parameter values to and from objects other than strings/string arrays.
  *
  * @usageNotes
  *
@@ -81,16 +70,9 @@ export function createUrlTreeFromSnapshot(
   commands: readonly any[],
   queryParams: Params | null = null,
   fragment: string | null = null,
-  urlSerializer = new DefaultUrlSerializer(),
 ): UrlTree {
   const relativeToUrlSegmentGroup = createSegmentGroupFromRoute(relativeTo);
-  return createUrlTreeFromSegmentGroup(
-    relativeToUrlSegmentGroup,
-    commands,
-    queryParams,
-    fragment,
-    urlSerializer,
-  );
+  return createUrlTreeFromSegmentGroup(relativeToUrlSegmentGroup, commands, queryParams, fragment);
 }
 
 export function createSegmentGroupFromRoute(route: ActivatedRouteSnapshot): UrlSegmentGroup {
@@ -121,7 +103,6 @@ export function createUrlTreeFromSegmentGroup(
   commands: readonly any[],
   queryParams: Params | null,
   fragment: string | null,
-  urlSerializer: UrlSerializer,
 ): UrlTree {
   let root = relativeTo;
   while (root.parent) {
@@ -131,20 +112,20 @@ export function createUrlTreeFromSegmentGroup(
   // `UrlSegmentGroup`. All we need to do is update the `queryParams` and `fragment` without
   // applying any other logic.
   if (commands.length === 0) {
-    return tree(root, root, root, queryParams, fragment, urlSerializer);
+    return tree(root, root, root, queryParams, fragment);
   }
 
   const nav = computeNavigation(commands);
 
   if (nav.toRoot()) {
-    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment, urlSerializer);
+    return tree(root, root, new UrlSegmentGroup([], {}), queryParams, fragment);
   }
 
   const position = findStartingPositionForTargetGroup(nav, root, relativeTo);
   const newSegmentGroup = position.processChildren
     ? updateSegmentGroupChildren(position.segmentGroup, position.index, nav.commands)
     : updateSegmentGroup(position.segmentGroup, position.index, nav.commands);
-  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment, urlSerializer);
+  return tree(root, position.segmentGroup, newSegmentGroup, queryParams, fragment);
 }
 
 function isMatrixParams(command: any): boolean {
@@ -159,43 +140,18 @@ function isCommandWithOutlets(command: any): command is {outlets: {[key: string]
   return typeof command === 'object' && command != null && command.outlets;
 }
 
-/**
- * Normalizes a query parameter value by using the `UrlSerializer` to serialize then parse the value.
- *
- * This ensures that the value is consistent between parsing a URL in the browser on a fresh page load (or page refresh)
- * and a navigation where the query parameter value is passed directly to the router.
- *
- * This also allows custom `UrlSerializer` implementations to define how query parameter values are represented
- * in a `UrlTree`. Since `UrlSerializer` already has a `parse` that takes a string, it already has control
- * over how a browser URL is parsed into a `UrlTree` on initial load/page refresh.
- */
-function normalizeQueryParams(k: string, v: unknown, urlSerializer: UrlSerializer): unknown {
-  const tree = new UrlTree();
-  tree.queryParams = {[k]: v};
-  return urlSerializer.parse(urlSerializer.serialize(tree)).queryParams[k];
-}
-
 function tree(
   oldRoot: UrlSegmentGroup,
   oldSegmentGroup: UrlSegmentGroup,
   newSegmentGroup: UrlSegmentGroup,
   queryParams: Params | null,
   fragment: string | null,
-  urlSerializer: UrlSerializer,
 ): UrlTree {
-  const qp: Params = {};
-  for (const [key, value] of Object.entries(queryParams ?? {})) {
-    // This retains old behavior where each item in the array was stringified individually This
-    // helps remove special-case handling for empty and single-item arrays where the default
-    // serializer removes empty arrays when serialized then parsed or converts them to non-arrays
-    // for single-item arrays. Changing this could have breaking change implications. Prior code
-    // always returned arrays of strings for array inputs so tests, applications, serializers,
-    // etc. may only be set up to handle string arrays. We could consider changing this in the
-    // future to serialize the entire array as a single value. For now, this feels safer and is
-    // at least a step in the right direction.
-    qp[key] = Array.isArray(value)
-      ? value.map((v) => normalizeQueryParams(key, v, urlSerializer))
-      : normalizeQueryParams(key, value, urlSerializer);
+  let qp: any = {};
+  if (queryParams) {
+    Object.entries(queryParams).forEach(([name, value]) => {
+      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
+    });
   }
 
   let rootCandidate: UrlSegmentGroup;
