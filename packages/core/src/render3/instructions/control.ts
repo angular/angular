@@ -132,6 +132,24 @@ function getControlDirectiveFirstCreatePass<T>(
     }
   }
 
+  // Check if a directive provides FormUiControl (addresses #63910)
+  const directiveEnd = tNode.directiveEnd;
+  for (let i = tNode.directiveStart; i < directiveEnd; i++) {
+    // Skip the component itself if this is a component host
+    if (isComponentHost(tNode) && i === componentIndex) {
+      continue;
+    }
+
+    const directiveDef = tView.data[i] as ComponentDef<unknown>;
+    if (hasModelInput(directiveDef, 'value')) {
+      tNode.flags |= TNodeFlags.isFormValueControl;
+      return control;
+    } else if (hasModelInput(directiveDef, 'checked')) {
+      tNode.flags |= TNodeFlags.isFormCheckboxControl;
+      return control;
+    }
+  }
+
   if (isNativeControl(tNode)) {
     if (isNumericInput(tNode)) {
       tNode.flags |= TNodeFlags.isNativeNumericControl;
@@ -146,7 +164,7 @@ function getControlDirectiveFirstCreatePass<T>(
   throw new RuntimeError(
     RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
     `'<${tagName}>' is an invalid [field] directive host. The host must be a native form control ` +
-      `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
+      `(such as <input>', '<select>', or '<textarea>') or a custom form control component/directive with a ` +
       `'value' or 'checked' model.`,
   );
 }

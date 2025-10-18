@@ -30,7 +30,10 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 /**
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
  * 1. A native HTML input or textarea
- * 2. A signal forms custom control that implements `FormValueControl` or `FormCheckboxControl`
+ * 2. A component or directive that has a `value` or `checked` model input. This is detected
+ *    automatically - components and directives simply need to implement `FormValueControl` or
+ *    `FormCheckboxControl` by having the appropriate model inputs. This enables directives on
+ *    native inputs to participate in signal forms (e.g., for date formatting, value transformation).
  * 3. TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131712274. A
  *    component that provides a ControlValueAccessor. This should only be used to backwards
  *    compatibility with reactive forms. Prefer options (1) and (2).
