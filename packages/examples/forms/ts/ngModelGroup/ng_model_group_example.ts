@@ -9,10 +9,11 @@
 /* tslint:disable:no-console  */
 // #docregion Component
 import {Component} from '@angular/core';
-import {NgForm} from '@angular/forms';
+import {FormsModule, NgForm} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [FormsModule],
   template: `
     <form #f="ngForm" (ngSubmit)="onSubmit(f)">
       @if(nameCtrl.invalid) {
@@ -30,7 +31,6 @@ import {NgForm} from '@angular/forms';
 
     <button (click)="setValue()">Set value</button>
   `,
-  standalone: false,
 })
 export class NgModelGroupComp {
   name = {first: 'Nancy', middle: 'J', last: 'Drew'};
