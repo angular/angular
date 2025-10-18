@@ -598,8 +598,8 @@ export class ShadowCss {
       // There may be more than `:host-context` in this selector so `selectorText` could look like:
       // `:host-context(.one):host-context(.two)`.
       // Loop until every :host-context in the compound selector has been processed.
-      while (selectorText.includes(_polyfillHostContext)) {
-        const startIndex = selectorText.indexOf(_polyfillHostContext);
+      let startIndex = selectorText.indexOf(_polyfillHostContext);
+      while (startIndex !== -1) {
         const afterPrefix = selectorText.substring(startIndex + _polyfillHostContext.length);
 
         if (!afterPrefix || afterPrefix[0] !== '(') {
@@ -647,6 +647,7 @@ export class ShadowCss {
 
         // Update the `selectorText` and see repeat to see if there are more `:host-context`s.
         selectorText = afterPrefix.substring(endIndex + 1);
+        startIndex = selectorText.indexOf(_polyfillHostContext);
       }
 
       // The context selectors now must be combined with each other to capture all the possible
