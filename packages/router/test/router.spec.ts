@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {EnvironmentInjector, inject} from '@angular/core';
+import {EnvironmentInjector, inject, ɵConsole as Console} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {RouterModule} from '../index';
 import {of} from 'rxjs';
@@ -20,7 +20,7 @@ import {resolveData as resolveDataOperator} from '../src/operators/resolve_data'
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
 import {createEmptyStateSnapshot, RouterStateSnapshot} from '../src/router_state';
-import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSerializer, UrlTree} from '../src/url_tree';
 import {getAllRouteGuards} from '../src/utils/preactivation';
 import {TreeNode} from '../src/utils/tree';
 
@@ -105,6 +105,30 @@ describe('Router', () => {
       const c = (<any>r).nonRouterCurrentEntryChangeSubscription;
 
       expect(c).not.toBe(b);
+    });
+  });
+
+  describe('parseUrl', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({imports: [RouterModule.forRoot([])]});
+    });
+
+    it('should log a warning and fall back to "/" when parsing fails', () => {
+      const router: Router = TestBed.inject(Router);
+      const urlSerializer: UrlSerializer = TestBed.inject(UrlSerializer);
+      const console: Console = TestBed.inject(Console);
+      spyOn(urlSerializer, 'parse').and.callFake((url: string) => {
+        if (url === 'invalid-url') {
+          throw new Error('test error');
+        }
+        // The fallback call should not be mocked
+        return new DefaultUrlSerializer().parse(url);
+      });
+      const spy = spyOn(console, 'warn');
+
+      const result = router.parseUrl('invalid-url');
+      expect(spy.calls.argsFor(0)).toMatch(/Error parsing URL/);
+      expect(result).toEqual(new DefaultUrlSerializer().parse('/'));
     });
   });
 
