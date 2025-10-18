@@ -8,13 +8,18 @@
 
 import {EmptyError} from 'rxjs';
 
-import {CanActivateChildFn, CanActivateFn, CanDeactivateFn, CanLoadFn, CanMatchFn} from '../models';
 import {
-  NAVIGATION_CANCELING_ERROR,
-  NavigationCancelingError,
-  RedirectingNavigationCancelingError,
-} from '../navigation_canceling_error';
-import {isUrlTree} from '../url_tree';
+  CanActivate,
+  CanActivateChild,
+  CanActivateChildFn,
+  CanActivateFn,
+  CanDeactivate,
+  CanDeactivateFn,
+  CanLoad,
+  CanLoadFn,
+  CanMatch,
+  CanMatchFn,
+} from '../models';
 
 /**
  * Simple function check, but generic so type inference will flow. Example:
@@ -37,22 +42,22 @@ export function isBoolean(v: any): v is boolean {
   return typeof v === 'boolean';
 }
 
-export function isCanLoad(guard: any): guard is {canLoad: CanLoadFn} {
+export function isCanLoad(guard: any): guard is CanLoad {
   return guard && isFunction<CanLoadFn>(guard.canLoad);
 }
 
-export function isCanActivate(guard: any): guard is {canActivate: CanActivateFn} {
+export function isCanActivate(guard: any): guard is CanActivate {
   return guard && isFunction<CanActivateFn>(guard.canActivate);
 }
 
-export function isCanActivateChild(guard: any): guard is {canActivateChild: CanActivateChildFn} {
+export function isCanActivateChild(guard: any): guard is CanActivateChild {
   return guard && isFunction<CanActivateChildFn>(guard.canActivateChild);
 }
 
-export function isCanDeactivate<T>(guard: any): guard is {canDeactivate: CanDeactivateFn<T>} {
+export function isCanDeactivate<T>(guard: any): guard is CanDeactivate<T> {
   return guard && isFunction<CanDeactivateFn<T>>(guard.canDeactivate);
 }
-export function isCanMatch(guard: any): guard is {canMatch: CanMatchFn} {
+export function isCanMatch(guard: any): guard is CanMatch {
   return guard && isFunction<CanMatchFn>(guard.canMatch);
 }
 
