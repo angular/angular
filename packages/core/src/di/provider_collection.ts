@@ -110,9 +110,8 @@ type WalkProviderTreeVisitor = (
  * Providers extracted via `importProvidersFrom` are only usable in an application injector or
  * another environment injector (such as a route injector). They should not be used in component
  * providers.
- *
  * More information about standalone components can be found in [this
- * guide](guide/components/importing).
+ * guide](guide/components).
  *
  * @usageNotes
  * The results of the `importProvidersFrom` call can be used in the `bootstrapApplication` call:
@@ -139,6 +138,8 @@ type WalkProviderTreeVisitor = (
  *   }
  * ];
  * ```
+ *
+ * @see  [Importing providers from NgModules](guide/di/dependency-injection#importing-providers-from-ngmodules)
  *
  * @returns Collected providers from the specified list of types.
  * @publicApi

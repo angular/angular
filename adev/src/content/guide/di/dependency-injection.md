@@ -79,11 +79,24 @@ export const appConfig: ApplicationConfig = {
 
 Then, in `main.ts`:
 
-<docs-code language="typescript">
+```ts
 bootstrapApplication(AppComponent, appConfig)
-</docs-code>
+```
 
 NOTE: Declaring a service like this causes `HeroService` to always be included in your application— even if the service is unused.
+
+### Importing providers from NgModules
+
+You can use `importProvidersFrom` in standalone applications to import providers declared in existing NgModules into the application.
+
+```ts
+import {ApplicationConfig, importProvidersFrom} from '@angular/core';
+import {AwesomeModule} from 'awesome-lib';
+
+export const appConfig: ApplicationConfig = {
+    providers: [importProvidersFrom(AwesomeModule)],
+};
+```
 
 ### `NgModule` based applications
 
