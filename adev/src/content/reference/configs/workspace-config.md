@@ -396,7 +396,7 @@ This option enables various optimizations of the build output, including:
 - Minification of scripts and styles
 - Tree-shaking
 - Dead-code elimination
-- Inlining of critical CSS
+- [Inlining of critical CSS](/tools/cli/build#critical-css-inlining)
 - Fonts inlining
 
 Several options can be used to fine-tune the optimization of an application.
