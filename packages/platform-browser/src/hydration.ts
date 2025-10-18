@@ -65,6 +65,8 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
  * server and other one on the browser.
  *
+ * @see [Disabling Caching](guide/ssr#disabling-caching)
+ *
  * @publicApi
  */
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
@@ -78,6 +80,8 @@ export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind
  * such as which headers should be included (no headers are included by default),
  * whether POST requests should be cached or a callback function to determine if a
  * particular request should be cached.
+ *
+ * @see [Configuring HTTP transfer cache options](guide/ssr#caching-data-when-using-httpclient)
  *
  * @publicApi
  */
