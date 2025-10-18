@@ -169,6 +169,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/components/programmatic-rendering',
           },
           {
+            label: 'Dynamic component instantiation',
+            path: 'guide/components/dynamic-component-instantiation',
+            contentPath: 'guide/components/dynamic-component-instantiation',
+            status: 'new',
+          },
+          {
             label: 'Advanced configuration',
             path: 'guide/components/advanced-configuration',
             contentPath: 'guide/components/advanced-configuration',
