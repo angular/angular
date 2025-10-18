@@ -19,3 +19,15 @@ export const ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
   const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
   return `https://${versionSubDomain}angular.dev/errors`;
 })();
+
+/**
+ * Base URL for the extended error details page.
+ *
+ * Keep the files below in full sync:
+ *  - packages/compiler-cli/src/ngtsc/diagnostics/src/error_details_base_url.ts
+ *  - packages/core/src/error_details_base_url.ts
+ */
+export const EXTENDED_ERROR_DETAILS_PAGE_BASE_URL: string = (() => {
+  const versionSubDomain = VERSION.major !== '0' ? `v${VERSION.major}.` : '';
+  return `https://${versionSubDomain}angular.dev/extended-diagnostics`;
+})();

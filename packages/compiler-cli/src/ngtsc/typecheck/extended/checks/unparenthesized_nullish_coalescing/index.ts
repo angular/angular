@@ -10,7 +10,12 @@ import {AST, Binary, TmplAstNode} from '@angular/compiler';
 import ts from 'typescript';
 import {ErrorCode, ExtendedTemplateDiagnosticName} from '../../../../diagnostics';
 import {NgTemplateDiagnostic, SymbolKind} from '../../../api';
-import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '../../api';
+import {
+  TemplateCheckFactory,
+  TemplateCheckWithVisitor,
+  TemplateContext,
+  formatExtendedError,
+} from '../../api';
 
 /**
  * Ensures that parentheses are used to disambiguate precedence when nullish coalescing is mixed
@@ -42,7 +47,10 @@ class UnparenthesizedNullishCoalescing extends TemplateCheckWithVisitor<ErrorCod
           }
           const diagnostic = ctx.makeTemplateDiagnostic(
             sourceMapping.span,
-            `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'.`,
+            formatExtendedError(
+              ErrorCode.UNPARENTHESIZED_NULLISH_COALESCING,
+              `Parentheses are required to disambiguate precedence when mixing '??' with '&&' and '||'`,
+            ),
           );
           return [diagnostic];
         }
