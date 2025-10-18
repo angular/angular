@@ -10,13 +10,14 @@ import {DebugSignalGraph, DebugSignalGraphNode} from '../../../../../../protocol
 import * as d3 from 'd3';
 import {graphlib, render as dagreRender} from 'dagre-d3-es';
 
-const KIND_CLASS_MAP: {[key: string]: string} = {
+const KIND_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'kind-signal',
   'computed': 'kind-computed',
   'effect': 'kind-effect',
   'afterRenderEffectPhase': 'kind-effect',
   'template': 'kind-template',
   'linkedSignal': 'kind-linked-signal',
+  'unknown': 'kind-unknown',
 };
 
 export class SignalsGraphVisualizer {
