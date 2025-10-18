@@ -170,6 +170,10 @@ function isCommandWithOutlets(command: any): command is {outlets: {[key: string]
  * over how a browser URL is parsed into a `UrlTree` on initial load/page refresh.
  */
 function normalizeQueryParams(k: string, v: unknown, urlSerializer: UrlSerializer): unknown {
+  // Hack for empty string query param, which, for whatever reason, happens
+  // in a test. Parsing drops empty key params (which might not really be necessary).
+  // It's probably really a test issue but I don't have the time to fix it...
+  k ||= 'ɵ';
   const tree = new UrlTree();
   tree.queryParams = {[k]: v};
   return urlSerializer.parse(urlSerializer.serialize(tree)).queryParams[k];
