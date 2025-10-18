@@ -20,14 +20,14 @@ import {
   ɵtruncateMiddle as truncateMiddle,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {Observable, of, throwError} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
 
 import {RuntimeErrorCode} from './errors';
 import {HttpHeaders} from './headers';
 import {HTTP_ROOT_INTERCEPTOR_FNS, HttpHandlerFn} from './interceptor';
 import {HttpRequest} from './request';
-import {HttpEvent, HttpResponse} from './response';
+import {HttpErrorResponse, HttpEvent, HttpResponse} from './response';
 import {HttpParams} from './params';
 
 /**
@@ -42,6 +42,7 @@ import {HttpParams} from './params';
  *     (for example using GraphQL).
  * @param includeRequestsWithAuthHeaders Enables caching of requests containing either `Authorization`
  *     or `Proxy-Authorization` headers. By default, these requests are excluded from caching.
+ * @param includeFailedResponses Enables caching of failed responses . By default, failed responses are not cached.
  *
  * @publicApi
  */
@@ -50,6 +51,7 @@ export type HttpTransferCacheOptions = {
   filter?: (req: HttpRequest<unknown>) => boolean;
   includePostRequests?: boolean;
   includeRequestsWithAuthHeaders?: boolean;
+  includeFailedResponses?: boolean;
 };
 
 /**
@@ -79,7 +81,7 @@ export type HttpTransferCacheOptions = {
  * @publicApi
  */
 export const HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken<Record<string, string>>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
+  ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
 );
 
 /**
@@ -113,7 +115,7 @@ interface CacheOptions extends HttpTransferCacheOptions {
 }
 
 const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
-  typeof ngDevMode !== undefined && ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
+  ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
 );
 
 /**
@@ -204,6 +206,22 @@ export function transferCacheInterceptorFn(
       headers = appendMissingHeadersDetection(req.url, headers, headersToInclude ?? []);
     }
 
+    // Similar logic from fetch and xhr
+    const ok = status! >= 200 && status! < 300;
+
+    if (globalOptions.includeFailedResponses && !ok) {
+      return throwError(
+        () =>
+          new HttpErrorResponse({
+            status,
+            statusText,
+            url,
+            error: body,
+            headers,
+          }),
+      );
+    }
+
     return of(
       new HttpResponse({
         body,
@@ -221,7 +239,6 @@ export function transferCacheInterceptorFn(
     // Request not found in cache. Make the request and cache it if on the server.
     return event$.pipe(
       tap((event: HttpEvent<unknown>) => {
-        // Only cache successful HTTP responses.
         if (event instanceof HttpResponse) {
           transferState.set<TransferHttpResponse>(storeKey, {
             [BODY]: event.body,
@@ -232,6 +249,19 @@ export function transferCacheInterceptorFn(
             [RESPONSE_TYPE]: req.responseType,
           });
         }
+      }),
+      catchError((error) => {
+        if (error instanceof HttpErrorResponse && globalOptions.includeFailedResponses) {
+          transferState.set<TransferHttpResponse>(storeKey, {
+            [BODY]: error.error,
+            [HEADERS]: getFilteredHeaders(error.headers, headersToInclude),
+            [STATUS]: error.status,
+            [STATUS_TEXT]: error.statusText,
+            [REQ_URL]: requestUrl,
+            [RESPONSE_TYPE]: req.responseType,
+          });
+        }
+        throw error;
       }),
     );
   }
@@ -379,6 +409,7 @@ function appendMissingHeadersDetection(
           warningProduced.add(key);
           const truncatedUrl = truncateMiddle(url);
 
+          // TODO: create Error guide for this warning
           console.warn(
             formatRuntimeError(
               RuntimeErrorCode.HEADERS_ALTERED_BY_TRANSFER_CACHE,

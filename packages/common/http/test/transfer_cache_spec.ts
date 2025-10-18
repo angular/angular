@@ -94,6 +94,52 @@ describe('TransferCache', () => {
       return response;
     }
 
+    function makeRequestAndExpectError(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams,
+      status?: number,
+    ): any;
+    function makeRequestAndExpectError(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams & {observe: 'response'},
+      status?: number,
+    ): any;
+    function makeRequestAndExpectError(
+      url: string,
+      body: RequestBody,
+      params?: RequestParams,
+      status?: number,
+    ): any {
+      let errorResponse: any;
+      TestBed.inject(HttpClient)
+        .request(params?.method ?? 'GET', url, params)
+        .subscribe({
+          error: (error) => (errorResponse = error),
+        });
+      TestBed.inject(HttpTestingController)
+        .expectOne(url)
+        .flush(body, {headers: params?.headers, status: status ?? 400, statusText: 'Error'});
+
+      return errorResponse;
+    }
+
+    function makeErrorRequestAndExpectNone(
+      url: string,
+      method: string = 'GET',
+      params?: RequestParams,
+    ): any {
+      let errorResponse: any;
+      TestBed.inject(HttpClient)
+        .request(method, url, params)
+        .subscribe({
+          error: (error) => (errorResponse = error),
+        });
+      TestBed.inject(HttpTestingController).expectNone(url);
+      return errorResponse;
+    }
+
     beforeEach(() => {
       globalThis['ngServerMode'] = true;
     });
@@ -657,6 +703,121 @@ describe('TransferCache', () => {
               },
             });
         });
+      });
+    });
+    describe('caching failed responses', () => {
+      beforeEach(
+        withBody('<test-app-http></test-app-http>', () => {
+          TestBed.resetTestingModule();
+          isStable = new BehaviorSubject<boolean>(false);
+
+          @Injectable()
+          class ApplicationRefPatched extends ApplicationRef {
+            override get isStable() {
+              return new BehaviorSubject<boolean>(false);
+            }
+          }
+
+          TestBed.configureTestingModule({
+            declarations: [SomeComponent],
+            providers: [
+              {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
+              {provide: DOCUMENT, useFactory: () => document},
+              {provide: ApplicationRef, useClass: ApplicationRefPatched},
+              withHttpTransferCache({includeFailedResponses: true}),
+              provideHttpClient(),
+              provideHttpClientTesting(),
+            ],
+          });
+
+          const appRef = TestBed.inject(ApplicationRef);
+          appRef.bootstrap(SomeComponent);
+          isStable = appRef.isStable as BehaviorSubject<boolean>;
+        }),
+      );
+
+      it('should cache error responses', () => {
+        makeRequestAndExpectError('/test-error', 'Error message', {}, 404);
+
+        // Verify it's stored in TransferState
+        const transferState = TestBed.inject(TransferState);
+        const stateKeys = Object.keys((transferState as any).store);
+        expect(stateKeys.length).toBe(1);
+
+        const key = makeStateKey(stateKeys[0]);
+        const storedResponse = transferState.get(key, null);
+        expect(storedResponse).toEqual(
+          jasmine.objectContaining({
+            [BODY]: 'Error message',
+            [STATUS]: 404,
+            [STATUS_TEXT]: 'Error',
+          }),
+        );
+
+        // Second request should come from cache (no HTTP call)
+        makeErrorRequestAndExpectNone('/test-error');
+      });
+
+      it('should cache different error status codes separately', () => {
+        makeRequestAndExpectError('/test-error', 'Not Found', {}, 404);
+        makeRequestAndExpectError('/test-error-500', 'Server Error', {}, 500);
+
+        // Verify both errors are stored
+        const transferState = TestBed.inject(TransferState);
+        const stateKeys = Object.keys((transferState as any).store);
+        expect(stateKeys.length).toBe(2);
+
+        // Both should be served from cache
+        makeErrorRequestAndExpectNone('/test-error');
+        makeErrorRequestAndExpectNone('/test-error-500');
+      });
+
+      it('should cache POST error responses when enabled', () => {
+        makeRequestAndExpectError(
+          '/test-post-error',
+          'POST Error',
+          {
+            method: 'POST',
+            transferCache: true,
+            body: {data: 'test'},
+          },
+          422,
+        );
+
+        // Second POST request should come from cache
+        makeErrorRequestAndExpectNone('/test-post-error', 'POST', {
+          transferCache: true,
+          body: {data: 'test'},
+        });
+      });
+
+      it('should not cache headers', () => {
+        // HttpTransferCacheOptions: true = fallback to default = headers won't be cached
+        makeRequestAndExpectError('/test-1?foo=1', 'foo', {
+          headers: {foo: 'foo', bar: 'bar'},
+          transferCache: true,
+        });
+
+        // request returns the cache without any header.
+        const response2 = makeErrorRequestAndExpectNone('/test-1?foo=1');
+        expect(response2.headers.keys().length).toBe(0);
+      });
+
+      it('should not cache error responses when transferCache is disabled', () => {
+        makeRequestAndExpectError(
+          '/no-cache-error',
+          'Not cached error',
+          {transferCache: false},
+          404,
+        );
+
+        // Verify nothing was stored in TransferState
+        const transferState = TestBed.inject(TransferState);
+        const stateKeys = Object.keys((transferState as any).store);
+        expect(stateKeys.length).toBe(0);
+
+        // Second request should make actual HTTP call since it wasn't cached
+        makeRequestAndExpectError('/no-cache-error', 'Second error', {transferCache: false}, 404);
       });
     });
   });
