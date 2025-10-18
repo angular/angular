@@ -161,6 +161,12 @@ destroyed.
 You can also use `DestroyRef` to keep setup code close to cleanup code, rather than putting
 all cleanup code in the `ngOnDestroy` method.
 
+##### Detecting instance destruction
+
+`DestroyRef` provides a `destroyed` property that allows checking whether a given instance has already been destroyed. This is useful for avoiding operations on destroyed components, especially when dealing with delayed or asynchronous logic.
+
+By checking `destroyRef.destroyed`, you can prevent executing code after the instance has been cleaned up, avoiding potential errors such as `NG0911: View has already been destroyed.`.
+
 ### ngDoCheck
 
 The `ngDoCheck` method runs before every time Angular checks a component's template for changes.
@@ -237,7 +243,7 @@ See [Using DOM APIs](guide/components/dom-apis) for guidance on working with the
 
 Render callbacks do not run during server-side rendering or during build-time pre-rendering.
 
-#### after*Render phases
+#### after\*Render phases
 
 When using `afterEveryRender` or `afterNextRender`, you can optionally split the work into phases. The
 phase gives you control over the sequencing of DOM operations, letting you sequence _write_

@@ -20,6 +20,8 @@ const EXECUTE_CALLBACK_IF_ALREADY_DESTROYED = false;
  * is injected in a component or directive, the callbacks run when that component or
  * directive is destroyed. Otherwise the callbacks run when a corresponding injector is destroyed.
  *
+ * @see [Lifecycle DestroyRef](guide/components/lifecycle#destroyref)
+ *
  * @publicApi
  */
 export abstract class DestroyRef {
@@ -43,11 +45,17 @@ export abstract class DestroyRef {
    * // stop the destroy callback from executing if needed
    * unregisterFn();
    * ```
+   *
+   * @see [Lifecycle DestroyRef](guide/components/lifecycle#destroyref)
+   *
    */
   abstract onDestroy(callback: () => void): () => void;
 
   /**
    * Indicates whether the instance has already been destroyed.
+   *
+   * @see [Detecting instance destruction](guide/components/lifecycle#detecting-instance-destruction)
+   *
    */
   abstract get destroyed(): boolean;
 
