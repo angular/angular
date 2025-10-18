@@ -106,7 +106,6 @@ export function scheduleDelayedTrigger(
  */
 export function scheduleDelayedPrefetching(
   scheduleFn: (callback: VoidFunction, injector: Injector) => VoidFunction,
-  trigger: DeferBlockTrigger,
 ) {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) return;
 
