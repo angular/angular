@@ -28,7 +28,30 @@ export interface ɵControl<T> {
    * the component will forward the bound field to another field directive in its own template,
    * and do nothing.
    */
-  register(): void;
+  ɵregister(): void;
+
+  /**
+   * Indicates whether this field is bound to an interoperable control.
+   *
+   * This is used for interoperability between signal forms and reactive forms.
+   */
+  readonly ɵhasInteropControl: boolean;
+
+  /**
+   * Adds event listeners to the associated interoperable control.
+   *
+   * This method should only be called from a template function in create mode if this
+   * {@link ɵhasInteropControl}.
+   */
+  ɵinteropControlCreate(): void;
+
+  /**
+   * Updates the associated interoperable control.
+   *
+   * This method should only be called from a template function in update mode if this
+   * {@link ɵhasInteropControl}.
+   */
+  ɵinteropControlUpdate(): void;
 }
 
 /**

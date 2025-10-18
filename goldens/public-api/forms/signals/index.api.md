@@ -4,7 +4,10 @@
 
 ```ts
 
+import { AbstractControl } from '@angular/forms';
+import { ControlValueAccessor } from '@angular/forms';
 import { DestroyableInjector } from '@angular/core';
+import { FormControlStatus } from '@angular/forms';
 import { HttpResourceOptions } from '@angular/common/http';
 import { HttpResourceRequest } from '@angular/common/http';
 import * as i0 from '@angular/core';
@@ -12,10 +15,13 @@ import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
 import { ModelSignal } from '@angular/core';
+import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
+import { ValidationErrors } from '@angular/forms';
+import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
@@ -117,13 +123,20 @@ export class Field<T> implements ɵControl<T> {
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
     // (undocumented)
-    register(): void;
-    // (undocumented)
     readonly state: i0.Signal<FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
+    ɵgetOrCreateNgControl(): InteropNgControl;
+    // (undocumented)
+    get ɵhasInteropControl(): boolean;
+    // (undocumented)
+    ɵinteropControlCreate(): void;
+    // (undocumented)
+    ɵinteropControlUpdate(): void;
+    // (undocumented)
+    ɵregister(): void;
 }
 
 // @public
