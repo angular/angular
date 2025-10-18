@@ -728,7 +728,7 @@ class UrlParser {
 
       const children = this.parseChildren();
       segments[outletName] =
-        Object.keys(children).length === 1
+        Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
       this.consumeOptional('//');
