@@ -17,16 +17,6 @@ import type {ValidationError, WithOptionalField, WithoutField} from './validatio
 declare const ɵɵTYPE: unique symbol;
 
 /**
- * Creates a type based on the given type T, but with all readonly properties made writable.
- * @template T The type to create a mutable version of.
- *
- * @experimental 21.0.0
- */
-export type Mutable<T> = {
-  -readonly [P in keyof T]: T[P];
-};
-
-/**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
  * @template T The type of the value(s).
  *
