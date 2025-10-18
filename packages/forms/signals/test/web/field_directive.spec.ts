@@ -31,12 +31,12 @@ import {
   maxLength,
   min,
   minLength,
+  pattern,
   readonly,
   required,
   type DisabledReason,
   type FieldTree,
   type FormCheckboxControl,
-  type FormUiControl,
   type FormValueControl,
   type ValidationError,
   type WithOptionalField,
@@ -83,7 +83,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<boolean> {
           readonly value = model(false);
           readonly disabled = input(false);
         }
@@ -157,7 +157,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: `{{value()}}`})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly name = input('');
         }
@@ -229,7 +229,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly readonly = input(false);
         }
@@ -278,7 +278,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly required = input(false);
         }
@@ -301,6 +301,45 @@ describe('field directive', () => {
 
         act(() => component.required.set(true));
         expect(component.customControl().required()).toBe(true);
+      });
+
+      describe('is not bound by default', () => {
+        it('native control', () => {
+          @Component({
+            imports: [Field],
+            template: `<input [field]="f" required>`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const element = fixture.nativeElement.firstChild;
+          expect(element.required).withContext("'required' should be unchanged").toBe(true);
+        });
+
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<string> {
+            readonly value = model('');
+            readonly required = input(true);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().required())
+            .withContext("'required' should be unchanged")
+            .toBe(true);
+        });
       });
     });
 
@@ -327,7 +366,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
           readonly max = input<number>();
         }
@@ -367,6 +406,45 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.max).toBe('');
       });
+
+      describe('is not bound by default', () => {
+        it('native control', () => {
+          @Component({
+            imports: [Field],
+            template: `<input type="number" [field]="f" max="123">`,
+          })
+          class TestCmp {
+            readonly f = form(signal(0));
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const element = fixture.nativeElement.firstChild as HTMLInputElement;
+          expect(element.max).withContext("'max' should be unchanged").toBe('123');
+        });
+
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<number> {
+            readonly value = model(0);
+            readonly max = input<number | undefined>(123);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(0));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().max())
+            .withContext("'max' should be unchanged")
+            .toBe(123);
+        });
+      });
     });
 
     describe('min', () => {
@@ -392,7 +470,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<number> {
           readonly value = model(0);
           readonly min = input<number>();
         }
@@ -432,6 +510,45 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLInputElement;
         expect(element.min).toBe('');
       });
+
+      describe('is not bound by default', () => {
+        it('native control', () => {
+          @Component({
+            imports: [Field],
+            template: `<input type="number" [field]="f" min="123">`,
+          })
+          class TestCmp {
+            readonly f = form(signal(0));
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const element = fixture.nativeElement.firstChild as HTMLInputElement;
+          expect(element.min).withContext("'min' should be unchanged").toBe('123');
+        });
+
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<number> {
+            readonly value = model(0);
+            readonly min = input<number | undefined>(123);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(0));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().min())
+            .withContext("'min' should be unchanged")
+            .toBe(123);
+        });
+      });
     });
 
     describe('maxLength', () => {
@@ -457,7 +574,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly maxLength = input<number>();
         }
@@ -497,6 +614,45 @@ describe('field directive', () => {
         const element = fixture.nativeElement.firstChild as HTMLSelectElement;
         expect(element.getAttribute('maxLength')).toBeNull();
       });
+
+      describe('is not bound by default', () => {
+        it('native control', () => {
+          @Component({
+            imports: [Field],
+            template: `<textarea [field]="f" maxLength="123"></textarea>`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+          expect(element.maxLength).withContext("'maxLength' should be unchanged").toBe(123);
+        });
+
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<string> {
+            readonly value = model('');
+            readonly maxLength = input<number | undefined>(123);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().maxLength())
+            .withContext("'maxLength' should be unchanged")
+            .toBe(123);
+        });
+      });
     });
 
     describe('minLength', () => {
@@ -522,7 +678,7 @@ describe('field directive', () => {
 
       it('custom control', () => {
         @Component({selector: 'custom-control', template: ``})
-        class CustomControl implements FormUiControl {
+        class CustomControl implements FormValueControl<string> {
           readonly value = model('');
           readonly minLength = input<number>();
         }
@@ -561,6 +717,99 @@ describe('field directive', () => {
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const element = fixture.nativeElement.firstChild as HTMLSelectElement;
         expect(element.getAttribute('minLength')).toBeNull();
+      });
+
+      describe('is not bound by default', () => {
+        it('native control', () => {
+          @Component({
+            imports: [Field],
+            template: `<textarea [field]="f" minLength="123"></textarea>`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const element = fixture.nativeElement.firstChild as HTMLTextAreaElement;
+          expect(element.minLength).withContext("'minLength' should be unchanged").toBe(123);
+        });
+
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<string> {
+            readonly value = model('');
+            readonly minLength = input<number | undefined>(123);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().minLength())
+            .withContext("'minLength' should be unchanged")
+            .toBe(123);
+        });
+      });
+    });
+
+    describe('pattern', () => {
+      it('custom control', () => {
+        @Component({selector: 'custom-control', template: ``})
+        class CustomControl implements FormValueControl<string> {
+          readonly value = model('');
+          readonly pattern = input<readonly RegExp[]>([]);
+        }
+
+        @Component({
+          imports: [Field, CustomControl],
+          template: `<custom-control [field]="f" />`,
+        })
+        class TestCmp {
+          readonly pattern = signal(/abc/);
+          readonly f = form(signal(''), (p) => {
+            pattern(p, this.pattern);
+          });
+          readonly customControl = viewChild.required(CustomControl);
+        }
+
+        const fixture = act(() => TestBed.createComponent(TestCmp));
+        const component = fixture.componentInstance;
+        expect(component.customControl().pattern()).toEqual([/abc/]);
+
+        act(() => component.pattern.set(/def/));
+        expect(component.customControl().pattern()).toEqual([/def/]);
+      });
+
+      describe('is not bound by default', () => {
+        it('custom control', () => {
+          @Component({selector: 'custom-control', template: ``})
+          class CustomControl implements FormValueControl<string> {
+            readonly value = model('');
+            readonly pattern = input<readonly RegExp[]>([/abc/]);
+          }
+
+          @Component({
+            imports: [Field, CustomControl],
+            template: `<custom-control [field]="f" />`,
+          })
+          class TestCmp {
+            readonly f = form(signal(''));
+            readonly customControl = viewChild.required(CustomControl);
+          }
+
+          const fixture = act(() => TestBed.createComponent(TestCmp));
+          const component = fixture.componentInstance;
+          expect(component.customControl().pattern())
+            .withContext("'pattern' should be unchanged")
+            .toEqual([/abc/]);
+        });
       });
     });
   });

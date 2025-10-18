@@ -59,7 +59,7 @@ export class FieldPropertyState {
    * @param prop
    * @returns
    */
-  has(prop: Property<unknown> | AggregateProperty<unknown, unknown>): boolean {
+  has(prop: Property<any> | AggregateProperty<any, any>): boolean {
     if (prop instanceof AggregateProperty) {
       // For aggregate properties, they get added to the map lazily, on first access, so we can't
       // rely on checking presence in the properties map. Instead we check if there is any logic for
