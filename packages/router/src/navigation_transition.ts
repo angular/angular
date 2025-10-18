@@ -19,8 +19,18 @@ import {
   untracked,
   ɵWritable as Writable,
 } from '@angular/core';
-import {BehaviorSubject, EMPTY, from, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
+import {
+  catchError,
+  defaultIfEmpty,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
 import {INPUT_BINDER} from './directives/router_outlet';
@@ -700,18 +710,17 @@ export class NavigationTransitions {
 
           // --- LOAD COMPONENTS ---
           switchTap((t: NavigationTransition) => {
-            const loadComponents = (route: ActivatedRouteSnapshot): Array<Promise<void>> => {
-              const loaders: Array<Promise<void>> = [];
-              if (route.routeConfig?._loadedComponent) {
-                route.component = route.routeConfig?._loadedComponent;
-              } else if (route.routeConfig?.loadComponent) {
+            const loadComponents = (route: ActivatedRouteSnapshot): Array<Observable<void>> => {
+              const loaders: Array<Observable<void>> = [];
+              if (route.routeConfig?.loadComponent) {
                 const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
                 loaders.push(
-                  this.configLoader
-                    .loadComponent(injector, route.routeConfig)
-                    .then((loadedComponent) => {
+                  from(this.configLoader.loadComponent(injector, route.routeConfig)).pipe(
+                    tap((loadedComponent) => {
                       route.component = loadedComponent;
                     }),
+                    map(() => void 0),
+                  ),
                 );
               }
               for (const child of route.children) {
@@ -719,8 +728,10 @@ export class NavigationTransitions {
               }
               return loaders;
             };
-            const loaders = loadComponents(t.targetSnapshot!.root);
-            return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
+            return combineLatest(loadComponents(t.targetSnapshot!.root)).pipe(
+              defaultIfEmpty(null),
+              take(1),
+            );
           }),
 
           switchTap(() => this.afterPreactivation()),
