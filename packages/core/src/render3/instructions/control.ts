@@ -335,6 +335,7 @@ function updateCustomControl(
   // * cache which inputs exist.
   writeToDirectiveInput(componentDef, component, modelName, state.value());
   maybeWriteToDirectiveInput(componentDef, component, 'errors', state.errors);
+  maybeWriteToDirectiveInput(componentDef, component, 'invalid', state.invalid);
   maybeWriteToDirectiveInput(componentDef, component, 'disabled', state.disabled);
   maybeWriteToDirectiveInput(componentDef, component, 'disabledReasons', state.disabledReasons);
   maybeWriteToDirectiveInput(componentDef, component, 'max', state.max);

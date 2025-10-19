@@ -41,6 +41,11 @@ export interface ɵFieldState<T> {
   readonly errors: Signal<unknown>;
 
   /**
+   * A signal indicating whether the field is valid.
+   */
+  readonly invalid: Signal<boolean>;
+
+  /**
    * A signal indicating whether the field is currently disabled.
    */
   readonly disabled: Signal<boolean>;

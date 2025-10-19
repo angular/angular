@@ -940,6 +940,36 @@ describe('field directive', () => {
     ]);
   });
 
+  it('should synchronize validity status', () => {
+    @Component({
+      selector: 'my-input',
+      template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+    })
+    class CustomInput implements FormValueControl<string> {
+      value = model('');
+      invalid = input(false);
+    }
+
+    @Component({
+      template: `
+        <my-input [field]="f" />
+      `,
+      imports: [CustomInput, Field],
+    })
+    class ReadonlyTestCmp {
+      myInput = viewChild.required<CustomInput>(CustomInput);
+      data = signal('');
+      f = form(this.data, (p) => {
+        required(p);
+      });
+    }
+
+    const comp = act(() => TestBed.createComponent(ReadonlyTestCmp)).componentInstance;
+    expect(comp.myInput().invalid()).toBe(true);
+    act(() => comp.f().value.set('valid'));
+    expect(comp.myInput().invalid()).toBe(false);
+  });
+
   it(`should mark field as touched on native control 'blur' event`, () => {
     @Component({
       imports: [Field],
