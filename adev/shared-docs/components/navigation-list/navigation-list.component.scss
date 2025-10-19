@@ -49,6 +49,7 @@
     max-width: calc(100% - 1rem);
     overflow: hidden;
     text-overflow: ellipsis;
+    text-wrap: balance;
   }
 
   .docs-nav-item-has-icon {
