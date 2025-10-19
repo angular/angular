@@ -15,7 +15,7 @@ import {TIcuContainerNode} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer_dom';
 import {LView, TVIEW} from '../interfaces/view';
 
-interface IcuIteratorState {
+export interface IcuIteratorState {
   stack: any[];
   index: number;
   lView?: LView;
@@ -35,7 +35,7 @@ function enterIcu(state: IcuIteratorState, tIcu: TIcu, lView: LView) {
   }
 }
 
-function icuContainerIteratorNext(state: IcuIteratorState): RNode | null {
+export function icuContainerIteratorNext(state: IcuIteratorState): RNode | null {
   if (state.index < state.removes!.length) {
     const removeOpCode = state.removes![state.index++] as number;
     ngDevMode && assertNumber(removeOpCode, 'Expecting OpCode number');
@@ -54,6 +54,8 @@ function icuContainerIteratorNext(state: IcuIteratorState): RNode | null {
     }
   } else {
     if (state.stack.length === 0) {
+      // Clear the lView reference when iteration completes to allow garbage collection
+      state.lView = undefined;
       return null;
     } else {
       state.removes = state.stack.pop();
