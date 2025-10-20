@@ -396,16 +396,26 @@ function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unkn
   setBooleanAttribute(renderer, input, 'disabled', state.disabled());
   setBooleanAttribute(renderer, input, 'readonly', state.readonly());
 
-  state.required && setBooleanAttribute(renderer, input, 'required', state.required());
+  if (state.required) {
+    setBooleanAttribute(renderer, input, 'required', state.required());
+  }
 
   if (tNode.flags & TNodeFlags.isNativeNumericControl) {
-    state.max && setOptionalAttribute(renderer, input, 'max', state.max());
-    state.min && setOptionalAttribute(renderer, input, 'min', state.min());
+    if (state.max) {
+      setOptionalAttribute(renderer, input, 'max', state.max());
+    }
+    if (state.min) {
+      setOptionalAttribute(renderer, input, 'min', state.min());
+    }
   }
 
   if (tNode.flags & TNodeFlags.isNativeTextControl) {
-    state.maxLength && setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-    state.minLength && setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+    if (state.maxLength) {
+      setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
+    }
+    if (state.minLength) {
+      setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+    }
   }
 }
 
