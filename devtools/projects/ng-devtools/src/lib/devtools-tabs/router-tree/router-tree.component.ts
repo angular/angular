@@ -104,7 +104,6 @@ export class RouterTreeComponent {
   protected readonly routerTreeConfig: Partial<TreeVisualizerConfig<RouterTreeNode>> = {
     nodeSeparation: () => 1,
     d3NodeModifier: (n) => this.d3NodeModifier(n),
-    d3LinkModifier: (l) => this.d3LinkModifier(l),
   };
 
   constructor() {
@@ -191,13 +190,6 @@ export class RouterTreeComponent {
       }
 
       return nodeClasses.join(' ');
-    });
-  }
-
-  private d3LinkModifier(d3Link: SvgD3Link<RouterTreeNode>) {
-    d3Link.attr('stroke-dasharray', (node: RouterTreeD3Node) => {
-      // Make edges to lazy loaded routes dashed
-      return node.data.isLazy ? '5,5' : 'none';
     });
   }
 }
