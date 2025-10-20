@@ -485,7 +485,11 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
     const generics = makeGenericsText(entry.generics);
-    const extendsStr = entry.extends ? ` extends ${entry.extends}` : '';
+    const extendsStr = entry.extends
+      ? typeof entry.extends === 'string'
+        ? ` extends ${entry.extends}`
+        : ` extends ${entry.extends.join(', ')}`
+      : '';
     const implementsStr =
       entry.implements.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 

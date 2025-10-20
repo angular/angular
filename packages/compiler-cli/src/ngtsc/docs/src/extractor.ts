@@ -11,7 +11,7 @@ import ts from 'typescript';
 import {MetadataReader} from '../../metadata';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 
-import {extractClass, extractInterface} from './class_extractor';
+import {extractClass} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
 import {
   extractorDecorator,
@@ -28,6 +28,7 @@ import {
 } from './initializer_api_function_extractor';
 import {extractTypeAlias} from './type_alias_extractor';
 import {getImportedSymbols} from './import_extractor';
+import {extractInterface} from './interface_extractor';
 
 type DeclarationWithExportName = readonly [string, ts.Declaration];
 
