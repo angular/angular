@@ -9,7 +9,7 @@
 import '../util/ng_dev_mode';
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
-import {OnDestroy} from '../interface/lifecycle_hooks';
+import {OnDestroy} from '../change_detection/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {
   emitInjectorToCreateInstanceEvent,

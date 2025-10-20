@@ -7,12 +7,12 @@
  */
 
 import {InputSignalNode} from '../../authoring/input/input_signal_node';
-import {OnChanges} from '../../interface/lifecycle_hooks';
-import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
+import {OnChanges} from '../../change_detection/lifecycle_hooks';
 import {assertString} from '../../util/assert';
 import {EMPTY_OBJ} from '../../util/empty';
 import {applyValueToInputField} from '../apply_value_input_field';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
+import {SimpleChange, SimpleChanges} from '../../change_detection/simple_change';
 
 /**
  * The NgOnChangesFeature decorates a component with support for the ngOnChanges

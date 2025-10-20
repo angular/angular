@@ -9,7 +9,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {ɵɵdefineInjectable} from './di/interface/defs';
-import {OnDestroy} from './interface/lifecycle_hooks';
+import {OnDestroy} from './change_detection/lifecycle_hooks';
 
 /**
  * Internal implementation of the pending tasks service.
