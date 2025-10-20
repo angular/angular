@@ -44,6 +44,8 @@
       "createLinkElement",
       "createProvidersConfig",
       "createStyleElement",
+      "disableStyles",
+      "enableStyles",
       "errorHandler",
       "getBaseElementHref",
       "getDOM",
