@@ -25,7 +25,7 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
  * that contain a given style.
  */
 interface UsageRecord<T> {
-  elements: Map</** Host */ Node, /** Style Node */ T>;
+  elements: T[];
   usage: number;
   server?: boolean;
 }
@@ -99,13 +99,13 @@ function addServerStyles(
         // The href is build time generated with a unique value to prevent duplicates.
         external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
           usage: 0,
-          elements: new Map([[doc.head, styleElement]]),
+          elements: [styleElement],
           server: true,
         });
       } else if (styleElement.textContent) {
         inline.set(styleElement.textContent, {
           usage: 0,
-          elements: new Map([[doc.head, styleElement]]),
+          elements: [styleElement],
           server: true,
         });
       }
@@ -198,16 +198,14 @@ export class SharedStylesHost implements OnDestroy {
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
       }
       if (record.usage === 0) {
-        enableStyles(record.elements.values());
+        enableStyles(record.elements);
       }
       record.usage++;
     } else {
       // Otherwise, create an entry to track the elements and add element for each host
       usages.set(value, {
         usage: 1,
-        elements: new Map(
-          [...this.hosts].map((host) => [host, this.addElement(host, creator(value, this.doc))]),
-        ),
+        elements: [...this.hosts].map((host) => this.addElement(host, creator(value, this.doc))),
       });
     }
   }
@@ -224,14 +222,14 @@ export class SharedStylesHost implements OnDestroy {
     if (record) {
       record.usage--;
       if (record.usage === 0) {
-        disableStyles(record.elements.values());
+        disableStyles(record.elements);
       }
     }
   }
 
   ngOnDestroy(): void {
     for (const [, {elements}] of [...this.inline, ...this.external]) {
-      removeElements(elements.values());
+      removeElements(elements);
     }
     this.hosts.clear();
   }
@@ -247,18 +245,15 @@ export class SharedStylesHost implements OnDestroy {
 
     // Add existing styles to new host
     for (const [style, {elements}] of this.inline) {
-      elements.set(hostNode, this.addElement(hostNode, createStyleElement(style, this.doc)));
+      elements.push(this.addElement(hostNode, createStyleElement(style, this.doc)));
     }
     for (const [url, {elements}] of this.external) {
-      elements.set(hostNode, this.addElement(hostNode, createLinkElement(url, this.doc)));
+      elements.push(this.addElement(hostNode, createLinkElement(url, this.doc)));
     }
   }
 
   removeHost(hostNode: Node): void {
     this.hosts.delete(hostNode);
-    for (const {elements} of [...this.inline.values(), ...this.external.values()]) {
-      elements.delete(hostNode);
-    }
   }
 
   private addElement<T extends HTMLElement>(host: Node, element: T): T {
