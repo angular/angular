@@ -15,6 +15,7 @@ import {
   FunctionEntry,
   FunctionSignatureMetadata,
   InitializerApiFunctionEntry,
+  InterfaceEntry,
   JsDocTagEntry,
   MemberEntry,
   ParameterEntry,
@@ -80,7 +81,11 @@ export type EnumEntryRenderable = EnumEntry &
   };
 
 /** Documentation entity for a TypeScript interface augmented transformed content for rendering. */
-export type InterfaceEntryRenderable = ClassEntryRenderable;
+export type InterfaceEntryRenderable = InterfaceEntry &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members: MemberEntryRenderable[];
+  };
 
 export type FunctionEntryRenderable = FunctionEntry &
   DocEntryRenderable &
