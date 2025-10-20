@@ -81,8 +81,10 @@ targets supporting approximately 95% of web users.
 
 | Angular | Baseline Date | Browser Set                 |
 | ------- | ------------- | --------------------------- |
+| v21     | 2025-10-20    | [Browser Set][browsers-v21] |
 | v20     | 2025-04-30    | [Browser Set][browsers-v20] |
 
+[browsers-v21]: https://web-platform-dx.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2025-10-20&includeDownstream=false
 [browsers-v20]: https://web-platform-dx.github.io/web-features/supported-browsers/?widelyAvailableOnDate=2025-04-30&includeDownstream=false
 
 Angular versions prior to v20 support the following specific browser versions:
