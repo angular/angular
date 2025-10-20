@@ -27,6 +27,7 @@ import {
 import {removeLViewOnDestroy, storeLViewOnDestroy} from '../render3/util/view_utils';
 import {performanceMarkFeature} from '../util/performance';
 import {invokeAllTriggerCleanupFns, storeTriggerCleanupFn} from './cleanup';
+import {createPrefetchLinkDeferBlocks} from './defer_link_prefetch';
 import {onViewportWrapper, registerDomTrigger} from './dom_triggers';
 import {onHover, onInteraction} from '../../primitives/defer/src/triggers';
 import {onIdle} from './idle_scheduler';
@@ -417,6 +418,8 @@ export function ɵɵdeferHydrateOnIdle() {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
   } else {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
     scheduleDelayedHydrating(onIdle, lView, tNode);
   }
 }
@@ -552,6 +555,8 @@ export function ɵɵdeferHydrateOnTimer(delay: number) {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
   } else {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
     scheduleDelayedHydrating(onTimer(delay), lView, tNode);
   }
 }
@@ -648,6 +653,9 @@ export function ɵɵdeferHydrateOnHover() {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
+  } else {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
   }
   // The actual triggering of hydration on hover is handled by JSAction in
   // event_replay.ts.
@@ -677,6 +685,9 @@ export function ɵɵdeferOnInteraction(triggerIndex: number, walkUpTimes?: numbe
 
   // Avoid adding event listeners when this instruction is invoked on the server.
   if (!(typeof ngServerMode !== 'undefined' && ngServerMode)) {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
+
     registerDomTrigger(
       lView,
       tNode,
@@ -745,6 +756,9 @@ export function ɵɵdeferHydrateOnInteraction() {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
+  } else {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
   }
   // The actual triggering of hydration on interaction is handled by JSAction in
   // event_replay.ts.
@@ -878,6 +892,9 @@ export function ɵɵdeferHydrateOnViewport(options?: IntersectionObserverInit) {
   if (typeof ngServerMode !== 'undefined' && ngServerMode) {
     // We are on the server and SSR for defer blocks is enabled.
     triggerDeferBlock(TriggerType.Hydrate, lView, tNode);
+  } else {
+    const tDetails = getTDeferBlockDetails(lView[TVIEW], tNode);
+    createPrefetchLinkDeferBlocks(lView, tDetails);
   }
   // The actual triggering of hydration on viewport happens in triggering.ts,
   // since these instructions won't exist for dehydrated content.
