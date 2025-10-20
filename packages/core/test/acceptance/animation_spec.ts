@@ -886,6 +886,59 @@ describe('Animation', () => {
       expect(cmp.el.nativeElement.outerHTML).toContain('class="slide-in"');
     }));
 
+    it('should call animation function on entry when animation is specified with no control flow', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template: '<div><p (animate.enter)="slideIn($event)">I should slide in</p></div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        count = signal(0);
+        slideIn(event: AnimationCallbackEvent) {
+          this.count.update((c) => (c += 1));
+          event.animationComplete();
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.count()).toBe(1);
+    }));
+
+    it('should call animation function only once on entry when animation is specified with control flow', fakeAsync(() => {
+      @Component({
+        selector: 'test-cmp',
+        styles: styles,
+        template:
+          '<div>@if(show()) {<p (animate.enter)="slideIn($event)">I should slide in</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        count = signal(0);
+        show = signal(false);
+        slideIn(event: AnimationCallbackEvent) {
+          this.count.update((c) => (c += 1));
+          event.animationComplete();
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.count()).toBe(0);
+
+      cmp.show.update((s) => !s);
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+      expect(cmp.count()).toBe(1);
+    }));
+
     it('should apply classes on entry when animation is specified', fakeAsync(() => {
       @Component({
         selector: 'test-cmp',

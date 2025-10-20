@@ -77,8 +77,11 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
 
-  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
-  // animating through host bindings fails
+  // We have to queue here due to the animation instruction being invoked after the element
+  // instruction. The DOM node has to exist before we can queue an animation. Any node that
+  // is not inside of control flow needs to get queued here. For nodes inside of control
+  // flow, those are queued in node_manipulation.ts and are deduped by a Set in the animation
+  // queue.
   queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
 
   return ɵɵanimateEnter; // For chaining
@@ -202,8 +205,11 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
 
   initializeAnimationQueueScheduler(lView[INJECTOR]);
 
-  // TODO(thePunderWoman): it's unclear why we need to queue animations here, but without this,
-  // animating through host bindings fails
+  // We have to queue here due to the animation instruction being invoked after the element
+  // instruction. The DOM node has to exist before we can queue an animation. Any node that
+  // is not inside of control flow needs to get queued here. For nodes inside of control
+  // flow, those are queued in node_manipulation.ts and are deduped by a Set in the animation
+  // queue.
   queueEnterAnimations(lView[INJECTOR], getLViewEnterAnimations(lView));
 
   return ɵɵanimateEnterListener;
