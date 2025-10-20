@@ -1726,22 +1726,25 @@ export type Signal<T> = (() => T) & {
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
-export class SimpleChange {
-    constructor(previousValue: any, currentValue: any, firstChange: boolean);
+export class SimpleChange<T = any> {
+    constructor(previousValue: T, currentValue: T, firstChange: boolean);
     // (undocumented)
-    currentValue: any;
+    currentValue: T;
     // (undocumented)
     firstChange: boolean;
     isFirstChange(): boolean;
     // (undocumented)
-    previousValue: any;
+    previousValue: T;
 }
 
 // @public
-export interface SimpleChanges {
-    // (undocumented)
+export type SimpleChanges<T = unknown> = T extends object ? {
+    [Key in keyof T]?: SimpleChange<T[Key] extends {
+        [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: infer V;
+    } ? V : T[Key]>;
+} : {
     [propName: string]: SimpleChange;
-}
+};
 
 // @public
 export interface SkipSelf {

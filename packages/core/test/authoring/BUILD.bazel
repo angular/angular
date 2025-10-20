@@ -8,6 +8,7 @@ ts_project(
         "signal_input_signature_test.ts",
         "signal_model_signature_test.ts",
         "signal_queries_signature_test.ts",
+        "simple_changes_signature_test.ts",
         "unwrap_writable_signal_signature_test.ts",
     ],
     deps = [
