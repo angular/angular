@@ -17,7 +17,7 @@ import {
   PropertyEntry,
 } from './entities';
 import {extractJsDocDescription, extractJsDocTags, extractRawJsDoc} from './jsdoc_extractor';
-import {extractInterface} from './class_extractor';
+import {extractInterface} from './interface_extractor';
 
 /** Extracts an API documentation entry for an Angular decorator. */
 export function extractorDecorator(

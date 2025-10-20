@@ -8,7 +8,11 @@
 
 import {Fragment, h} from 'preact';
 import {PipeEntry} from '../entities.mjs';
-import {ClassEntryRenderable, PipeEntryRenderable} from '../entities/renderables.mjs';
+import {
+  ClassEntryRenderable,
+  InterfaceEntryRenderable,
+  PipeEntryRenderable,
+} from '../entities/renderables.mjs';
 import {ClassMemberList} from './class-member-list';
 import {HeaderApi} from './header-api';
 import {
@@ -26,7 +30,9 @@ import {codeToHtml} from '../../../shared/shiki.mjs';
 import {getHighlighterInstance} from '../shiki/shiki.mjs';
 
 /** Component to render a class API reference document. */
-export function ClassReference(entry: ClassEntryRenderable | PipeEntryRenderable) {
+export function ClassReference(
+  entry: ClassEntryRenderable | InterfaceEntryRenderable | PipeEntryRenderable,
+) {
   return (
     <div className={API_REFERENCE_CONTAINER}>
       <HeaderApi entry={entry} />
