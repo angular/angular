@@ -21,7 +21,7 @@ export {
   OnChanges,
   OnDestroy,
   OnInit,
-} from './interface/lifecycle_hooks';
+} from './change_detection/lifecycle_hooks';
 export {
   ContentChild,
   ContentChildDecorator,
