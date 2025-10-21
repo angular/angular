@@ -238,8 +238,13 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.insertBefore(parent, newChild, refChild, isMove);
   }
 
-  removeChild(parent: any, oldChild: any, isHostElement?: boolean | undefined): void {
-    this.delegate.removeChild(parent, oldChild, isHostElement);
+  removeChild(
+    parent: any,
+    oldChild: any,
+    isHostElement?: boolean | undefined,
+    requireSynchronousElementRemoval?: boolean,
+  ): void {
+    this.delegate.removeChild(parent, oldChild, isHostElement, requireSynchronousElementRemoval);
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean | undefined): any {
