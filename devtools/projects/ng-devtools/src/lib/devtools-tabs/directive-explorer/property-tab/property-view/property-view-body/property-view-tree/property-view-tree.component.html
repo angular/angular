@@ -10,7 +10,8 @@
           <ng-property-editor
             class="value"
             [key]="node.prop.name"
-            [initialValue]="node.prop.descriptor.value ?? node.prop.descriptor.preview"
+            [initialValue]="node.prop.descriptor.value"
+            [previewValue]="node.prop.descriptor.preview"
             [containerType]="node.prop.descriptor.containerType"
             (updateValue)="handleUpdate(node, $event)"
           />

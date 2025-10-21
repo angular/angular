@@ -1,13 +1,6 @@
 @switch (currentPropertyState()) {
   @case (readState) {
-    @switch (containerType()) {
-      @case ('WritableSignal') {
-        <span class="editable">Signal({{valueToSubmit()}})</span>
-      }
-      @default {
-        <span class="editable">{{ valueToSubmit() }}</span>
-      }
-    }
+    <span class="editable">{{ previewValue() }}</span>
   }
   @case (writeState) {
     <div class="value-input">
