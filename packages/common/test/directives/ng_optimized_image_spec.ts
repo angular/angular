@@ -1585,7 +1585,7 @@ describe('Image directive', () => {
       }),
     );
 
-    ['localhost', '127.0.0.1', '0.0.0.0'].forEach((blocklistedHostname) => {
+    ['localhost', '127.0.0.1', '0.0.0.0', '[::1]'].forEach((blocklistedHostname) => {
       it(
         `should not log a warning if an origin domain is blocklisted ` +
           `(checking ${blocklistedHostname})`,
