@@ -198,6 +198,7 @@ import {extractHmrMetatadata, getHmrUpdateDeclaration} from '../../../hmr';
 import {getProjectRelativePath} from '../../../util/src/path';
 import {ComponentScope} from '../../../scope/src/api';
 import {analyzeTemplateForSelectorless} from './selectorless';
+import {analyzeTemplateForAnimations} from './animations';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -767,6 +768,24 @@ export class ComponentDecoratorHandler
         }
       }
     }
+
+    if (component.has('animations')) {
+      const {hasAnimations} = analyzeTemplateForAnimations(template.nodes);
+      if (hasAnimations) {
+        if (diagnostics === undefined) {
+          diagnostics = [];
+        }
+        diagnostics.push(
+          makeDiagnostic(
+            ErrorCode.COMPONENT_ANIMATIONS_CONFLICT,
+            component.get('animations')!,
+            `A component cannot have both the '@Component.animations' property (legacy animations) and use 'animate.enter' or 'animate.leave' in the template.`,
+          ),
+        );
+        isPoisoned = true;
+      }
+    }
+
     const templateResource: Resource = template.declaration.isInline
       ? {path: null, node: component.get('template')!}
       : {
