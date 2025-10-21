@@ -702,7 +702,7 @@
     },
     "@@rules_browsers~//browsers:extensions.bzl%browsers": {
       "general": {
-        "bzlTransitiveDigest": "5oRf2nvzV4L2ITD9gzMfSQcGAMEPiTJn8m7iBsM4C50=",
+        "bzlTransitiveDigest": "6QMCx97Hwh2hyQPqZEA9AKAxbpygF41+K8xJfeqJYm8=",
         "usagesDigest": "1PlExi+b77pSr2tAxFCVbpCtFoA7oixHabaL3dmas4Y=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
