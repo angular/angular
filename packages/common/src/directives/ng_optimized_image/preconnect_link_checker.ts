@@ -22,7 +22,7 @@ import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
 
 // Set of origins that are always excluded from the preconnect checks.
-const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0', '[::1]']);
 
 /**
  * Injection token to configure which origins should be excluded
