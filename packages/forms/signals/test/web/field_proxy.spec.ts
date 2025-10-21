@@ -14,7 +14,7 @@ import {
   signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form, type Field} from '../../public_api';
+import {form, type FieldTree} from '../../public_api';
 
 describe('field proxy', () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('field proxy', () => {
       changeDetection: ChangeDetectionStrategy.OnPush,
     })
     class IterateFieldCmp {
-      f = input.required<Field<number[]>>();
+      f = input.required<FieldTree<number[]>>();
     }
 
     @Component({
