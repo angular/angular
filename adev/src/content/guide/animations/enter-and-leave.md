@@ -75,6 +75,10 @@ If you don't call `animationComplete()` when using `animate.leave`, Angular call
   { provide: MAX_ANIMATION_TIMEOUT, useValue: 6000 }
 ```
 
+## Compatibility with Legacy Angular Animations
+
+You cannot use legacy animations alongside `animate.enter` and `animate.leave` within the same component. Doing so would result in enter classes remaining on the element or leaving nodes not being removed. It is otherwise fine to use both legacy animations and the new `animate.enter` and `animate.leave` animations within the same _application_. The only caveat is content projection. If you are projecting content from one component with legacy animations into another component with `animate.enter` or `animate.leave`, or vice versa, this will result in the same behavior as if they are used together in the same component. This is not supported.
+
 ## Testing
 
 TestBed provides built-in support for enabling or disabling animations in your test environment. CSS animations require a browser to run, and many of the APIs are not available in a test environment. By default, TestBed disables animations for you in your test environments.
