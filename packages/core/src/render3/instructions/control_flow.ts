@@ -474,14 +474,6 @@ class LiveCollectionLContainerImpl extends LiveCollection<
  * @codeGenApi
  */
 export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): void {
-  // When working with a proxy object such as signal forms' `Field`, accessing the `length` or
-  // `Symbol.iterator` may trigger a reactive read. Therefore we need to read them up front,
-  // before clearing the active consumer.
-  if (Array.isArray(collection)) {
-    collection.length;
-  } else {
-    collection?.[Symbol.iterator];
-  }
   const prevConsumer = setActiveConsumer(null);
   const metadataSlotIdx = getSelectedIndex();
   try {
@@ -503,7 +495,7 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
     }
 
     const liveCollection = metadata.liveCollection;
-    reconcile(liveCollection, collection, metadata.trackByFn);
+    reconcile(liveCollection, collection, metadata.trackByFn, prevConsumer);
 
     // Warn developers about situations where the entire collection was re-created as part of the
     // reconciliation pass. Note that this warning might be "overreacting" and report cases where
