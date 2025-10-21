@@ -12,6 +12,7 @@ import {
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
   DOCUMENT,
+  OnDestroy,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -53,7 +54,7 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
  * thus there is no `ngDevMode` use in the code.
  */
 @Injectable({providedIn: 'root'})
-export class PreconnectLinkChecker {
+export class PreconnectLinkChecker implements OnDestroy {
   private document = inject(DOCUMENT);
 
   /**
