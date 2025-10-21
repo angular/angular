@@ -89,7 +89,7 @@ export class BaseAnimationRenderer implements Renderer2 {
     // Elements using the new `animate.leave` API require synchronous removal and should
     // skip the rest of the legacy animation behaviors.
     if (requireSynchronousElementRemoval) {
-      this.delegate.removeChild(parent, oldChild, isHostElement);
+      this.delegate.removeChild(parent, oldChild, isHostElement, requireSynchronousElementRemoval);
       return;
     }
     // Prior to the changes in #57203, this method wasn't being called at all by `core` if the child
