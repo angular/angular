@@ -204,7 +204,7 @@ export interface RouterOutletContract {
  * @publicApi
  */
 @Directive({
-  selector: 'router-outlet',
+  selector: 'router-outlet, ng-container[routerOutlet]',
   exportAs: 'outlet',
 })
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
