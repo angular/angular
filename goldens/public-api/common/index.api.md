@@ -503,7 +503,7 @@ export class NgClass implements DoCheck {
 export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
     constructor(_viewContainerRef: ViewContainerRef);
     get componentInstance(): T | null;
-    ngComponentOutlet: Type<any> | null;
+    ngComponentOutlet: Type<T> | null;
     // (undocumented)
     ngComponentOutletContent?: Node[][];
     // (undocumented)
