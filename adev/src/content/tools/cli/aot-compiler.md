@@ -42,7 +42,7 @@ The metadata tells Angular how to construct instances of your application classe
 
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
 
-<docs-code language="typescript">
+```angular-ts
 
 @Component({
   selector: 'app-typical',
@@ -53,7 +53,7 @@ export class TypicalComponent {
   private someService = inject(SomeService);
 }
 
-</docs-code>
+```
 
 The Angular compiler extracts the metadata *once* and generates a *factory* for `TypicalComponent`.
 When it needs to create a `TypicalComponent` instance, Angular calls the factory, which produces a new visual element, bound to a new instance of the component class with its injected dependency.
@@ -125,14 +125,14 @@ The compiler later reports the error if it needs that piece of metadata to gener
 
 HELPFUL: If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file.
 
-<docs-code language="json">
+```json
 
 "angularCompilerOptions": {
   …
   "strictMetadataEmit" : true
 }
 
-</docs-code>
+```
 
 Angular libraries have this option to ensure that all Angular `.metadata.json` files are clean and it is a best practice to do the same when building your own libraries.
 
@@ -143,14 +143,14 @@ and [arrow functions](https://developer.mozilla.org/docs/Web/JavaScript/Referenc
 
 Consider the following component decorator:
 
-<docs-code language="typescript">
+```ts
 
 @Component({
   …
   providers: [{provide: server, useFactory: () => new Server()}]
 })
 
-</docs-code>
+```
 
 The AOT collector does not support the arrow function, `() => new Server()`, in a metadata expression.
 It generates an error node in place of the function.
@@ -158,7 +158,7 @@ When the compiler later interprets this node, it reports an error that invites y
 
 You can fix the error by converting to this:
 
-<docs-code language="typescript">
+```ts
 
 export function serverFactory() {
   return new Server();
@@ -169,7 +169,7 @@ export function serverFactory() {
   providers: [{provide: server, useFactory: serverFactory}]
 })
 
-</docs-code>
+```
 
 In version 5 and later, the compiler automatically performs this rewriting while emitting the `.js` file.
 
@@ -187,7 +187,7 @@ The collector can evaluate references to module-local `const` declarations and i
 
 Consider the following component definition:
 
-<docs-code language="typescript">
+```angular-ts
 
 const template = '<div>{{hero().name}}</div>';
 
@@ -199,13 +199,13 @@ export class HeroComponent {
   hero = input.required<Hero>();
 }
 
-</docs-code>
+```
 
 The compiler could not refer to the `template` constant because it isn't exported.
 The collector, however, can fold the `template` constant into the metadata definition by in-lining its contents.
 The effect is the same as if you had written:
 
-<docs-code language="typescript">
+```angular-ts
 
 @Component({
   selector: 'app-hero',
@@ -215,13 +215,13 @@ export class HeroComponent {
   hero = input.required<Hero>();
 }
 
-</docs-code>
+```
 
 There is no longer a reference to `template` and, therefore, nothing to trouble the compiler when it later interprets the *collector's* output in `.metadata.json`.
 
 You can take this example a step further by including the `template` constant in another expression:
 
-<docs-code language="typescript">
+```angular-ts
 
 const template = '<div>{{hero().name}}</div>';
 
@@ -233,15 +233,15 @@ export class HeroComponent {
   hero = input.required<Hero>();
 }
 
-</docs-code>
+```
 
 The collector reduces this expression to its equivalent *folded* string:
 
-<docs-code language="typescript">
+```angular-ts
 
 '<div>{{hero().name}}</div><div>{{hero().title}}</div>'
 
-</docs-code>
+```
 
 #### Foldable syntax
 
@@ -307,37 +307,37 @@ The compiler, however, only supports macros in the form of functions or static m
 
 For example, consider the following function:
 
-<docs-code language="typescript">
+```ts
 
 export function wrapInArray<T>(value: T): T[] {
   return [value];
 }
 
-</docs-code>
+```
 
 You can call the `wrapInArray` in a metadata definition because it returns the value of an expression that conforms to the compiler's restrictive JavaScript subset.
 
 You might use  `wrapInArray()` like this:
 
-<docs-code language="typescript">
+```ts
 
 @NgModule({
   declarations: wrapInArray(TypicalComponent)
 })
 export class TypicalModule {}
 
-</docs-code>
+```
 
 The compiler treats this usage as if you had written:
 
-<docs-code language="typescript">
+```ts
 
 @NgModule({
   declarations: [TypicalComponent]
 })
 export class TypicalModule {}
 
-</docs-code>
+```
 
 The Angular [`RouterModule`](api/router/RouterModule) exports two macro static methods, `forRoot` and `forChild`, to help declare root and child routes.
 Review the [source code](https://github.com/angular/angular/blob/main/packages/router/src/router_module.ts#L139 "RouterModule.forRoot source code")
@@ -351,7 +351,7 @@ the compiler doesn't need to know the expression's value — it just needs to be
 
 You might write something like:
 
-<docs-code language="typescript">
+```ts
 
 class TypicalServer {
 
@@ -362,12 +362,12 @@ class TypicalServer {
 })
 export class TypicalModule {}
 
-</docs-code>
+```
 
 Without rewriting, this would be invalid because lambdas are not supported and `TypicalServer` is not exported.
 To allow this, the compiler automatically rewrites this to something like:
 
-<docs-code language="typescript">
+```ts
 
 class TypicalServer {
 
@@ -380,7 +380,7 @@ export const θ0 = () => new TypicalServer();
 })
 export class TypicalModule {}
 
-</docs-code>
+```
 
 This allows the compiler to generate a reference to `θ0` in the factory without having to know what the value of `θ0` contains.
 
@@ -402,7 +402,7 @@ file.
 
 For example, consider the following component:
 
-<docs-code language="typescript">
+```angular-ts
 
 @Component({
   selector: 'my-component',
@@ -412,7 +412,7 @@ class MyComponent {
   person?: Person;
 }
 
-</docs-code>
+```
 
 This produces the following error:
 
@@ -449,7 +449,7 @@ The expression used in an `ngIf` directive is used to narrow type unions in the 
 template compiler, the same way the `if` expression does in TypeScript.
 For example, to avoid `Object is possibly 'undefined'` error in the template above, modify it to only emit the interpolation if the value of `person` is initialized as shown below:
 
-<docs-code language="typescript">
+```angular-ts
 
 @Component({
   selector: 'my-component',
@@ -459,7 +459,7 @@ class MyComponent {
   person?: Person;
 }
 
-</docs-code>
+```
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
@@ -472,7 +472,7 @@ Use the non-null type assertion operator to suppress the `Object is possibly 'un
 In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.
 
-<docs-code language="typescript">
+```ts
 
 @Component({
   selector: 'my-component',
@@ -488,13 +488,13 @@ class MyComponent {
   }
 }
 
-</docs-code>
+```
 
 The non-null assertion operator should be used sparingly as refactoring of the component might break this constraint.
 
 In this example it is recommended to include the checking of `address` in the `*ngIf` as shown below:
 
-<docs-code language="typescript">
+```ts
 
 @Component({
   selector: 'my-component',
@@ -510,4 +510,4 @@ class MyComponent {
   }
 }
 
-</docs-code>
+```

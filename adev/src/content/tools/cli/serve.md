@@ -9,7 +9,7 @@ While any builder can be used here, the most common (and default) builder is `@a
 
 You can determine which builder is being used for a particular project by looking up the `serve` target for that project.
 
-<docs-code language="json">
+```json
 
 {
   "projects": {
@@ -27,7 +27,7 @@ You can determine which builder is being used for a particular project by lookin
   }
 }
 
-</docs-code>
+```
 
 This page discusses usage and options of `@angular-devkit/build-angular:dev-server`.
 
@@ -39,37 +39,34 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
 1. Add the following content to the new proxy file:
 
-    <docs-code language="json">
-
-    {
-      "/api": {
-        "target": "http://localhost:3000",
-        "secure": false
-      }
-    }
-
-    </docs-code>
+```json
+{
+  "/api": {
+  "target": "http://localhost:3000",
+  "secure": false
+  }
+}
+```
 
 1. In the CLI configuration file, `angular.json`, add the `proxyConfig` option to the `serve` target:
 
-    <docs-code language="json">
-
-    {
-      "projects": {
-        "my-app": {
-          "architect": {
-            "serve": {
-              "builder": "@angular-devkit/build-angular:dev-server",
-              "options": {
-                "proxyConfig": "src/proxy.conf.json"
-              }
+```json
+{
+  "projects": {
+    "my-app": {
+      "architect": {
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+          "proxyConfig": "src/proxy.conf.json"
             }
-          }
         }
       }
     }
+  }
+}
 
-    </docs-code>
+```
 
 1. To run the development server with this proxy configuration, call `ng serve`.
 

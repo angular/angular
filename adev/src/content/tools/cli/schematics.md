@@ -19,19 +19,19 @@ The package contains named schematics that configure the options that are availa
 The sub-commands for `ng generate` are shorthand for the corresponding schematic.
 To specify and generate a particular schematic, or a collection of schematics, using the long form:
 
-<docs-code language="shell">
+```shell
 
 ng generate my-schematic-collection:my-schematic-name
 
-</docs-code>
+```
 
 or
 
-<docs-code language="shell">
+```shell
 
 ng generate my-schematic-name --collection collection-name
 
-</docs-code>
+```
 
 ### Configuring CLI schematics
 
@@ -79,18 +79,18 @@ The documented sub-commands use the default Angular generation schematics, but y
 Angular Material, for example, supplies generation schematics for the UI components that it defines.
 The following command uses one of these schematics to render an Angular Material `<mat-table>` that is pre-configured with a datasource for sorting and pagination.
 
-<docs-code language="shell">
+```shell
 
 ng generate @angular/material:table <component-name>
 
-</docs-code>
+```
 
 ### Update schematics
 
  The `ng update` command can be used to update your workspace's library dependencies.
  If you supply no options or use the help option, the command examines your workspace and suggests libraries to update.
 
-<docs-code language="shell">
+```shell
 
 ng update
 We analyzed your package.json, there are some packages to update:
@@ -103,7 +103,7 @@ We analyzed your package.json, there are some packages to update:
     @angular/material                  7.2.2 -> 7.3.1           ng update @angular/material
     rxjs                                      6.3.3 -> 6.4.0           ng update rxjs
 
-</docs-code>
+```
 
 If you pass the command a set of libraries to update, it updates those libraries, their peer dependencies, and the peer dependencies that depend on them.
 
@@ -118,9 +118,9 @@ If you create a new version of your library that introduces potential breaking c
 
 For example, suppose you want to update the Angular Material library.
 
-<docs-code language="shell">
+```shell
 ng update @angular/material
-</docs-code>
+```
 
 This command updates both `@angular/material` and its dependency `@angular/cdk` in your workspace's `package.json`.
 If either package contains an update schematic that covers migration from the existing version to a new version, the command runs that schematic on your workspace.
