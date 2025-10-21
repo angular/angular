@@ -13,10 +13,10 @@ import {
   Directive,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   OnDestroy,
-  Optional,
   Output,
   QueryList,
   Renderer2,
@@ -155,14 +155,14 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    */
   @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
 
-  constructor(
-    private router: Router,
-    private element: ElementRef,
-    private renderer: Renderer2,
-    private readonly cdr: ChangeDetectorRef,
-    @Optional() private link?: RouterLink,
-  ) {
-    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
+  private readonly router = inject(Router);
+  private readonly element = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly link = inject(RouterLink, {optional: true});
+
+  constructor() {
+    this.routerEventsSubscription = this.router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }

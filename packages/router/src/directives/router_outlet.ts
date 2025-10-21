@@ -238,7 +238,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    *
    * When unset, the value of the token is `undefined` by default.
    */
-  readonly routerOutletData = input<unknown>(undefined);
+  readonly routerOutletData = input<unknown>();
 
   private parentContexts = inject(ChildrenOutletContexts);
   private location = inject(ViewContainerRef);

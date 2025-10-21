@@ -227,18 +227,18 @@ export class RouterLink implements OnChanges, OnDestroy {
 
   private readonly applicationErrorHandler = inject(ɵINTERNAL_APPLICATION_ERROR_HANDLER);
   private readonly options = inject(ROUTER_CONFIGURATION, {optional: true});
+  private readonly locationStrategy = inject(LocationStrategy, {optional: true});
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
     @Attribute('tabindex') private readonly tabIndexAttribute: string | null | undefined,
-    private readonly renderer: Renderer2,
-    private readonly el: ElementRef,
-    private locationStrategy?: LocationStrategy,
   ) {
     // Set the initial href value to whatever exists on the host element already
     this.reactiveHref.set(inject(new HostAttributeToken('href'), {optional: true}));
-    const tagName = el.nativeElement.tagName?.toLowerCase();
+    const tagName = this.el.nativeElement.tagName?.toLowerCase();
     this.isAnchorElement =
       tagName === 'a' ||
       tagName === 'area' ||
