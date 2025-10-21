@@ -96,7 +96,7 @@ export function setUpLocationSync(
         newState?: {[k: string]: unknown} | RestoredState,
         oldState?: {[k: string]: unknown} | RestoredState,
       ) => {
-        // Navigations coming from Angular router have a navigationId state
+        // navigation's coming from Angular router have a navigationId state
         // property. Don't trigger Angular router navigation again if it is
         // caused by a URL change from the current Angular router
         // navigation.

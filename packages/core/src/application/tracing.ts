@@ -44,7 +44,7 @@ export interface TracingService<T extends TracingSnapshot> {
    * @param linkedSnapshot Optional snapshot to use link to the current context.
    * The caller is no longer responsible for calling dispose on the linkedSnapshot.
    *
-   * @return The tracing snapshot. The caller is responsible for diposing of the
+   * @return The tracing snapshot. The caller is responsible for disposing of the
    * snapshot.
    */
   snapshot(linkedSnapshot: T | null): T;

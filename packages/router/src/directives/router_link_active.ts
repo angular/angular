@@ -30,6 +30,7 @@ import {Router} from '../router';
 import {IsActiveMatchOptions} from '../url_tree';
 
 import {RouterLink} from './router_link';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 /**
  *
@@ -111,7 +112,6 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
 
   private classes: string[] = [];
-  private routerEventsSubscription: Subscription;
   private linkInputChangesSubscription?: Subscription;
   private _isActive = false;
 
@@ -162,7 +162,7 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
     private readonly cdr: ChangeDetectorRef,
     @Optional() private link?: RouterLink,
   ) {
-    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
+    router.events.pipe(takeUntilDestroyed()).subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }
@@ -206,7 +206,6 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
   }
   /** @docs-private */
   ngOnDestroy(): void {
-    this.routerEventsSubscription.unsubscribe();
     this.linkInputChangesSubscription?.unsubscribe();
   }
 
