@@ -2,7 +2,7 @@
 
 Many applications need to solve the same general problems, such as presenting a unified user interface, presenting data, and allowing data entry.
 Developers can create general solutions for particular domains that can be adapted for re-use in different applications.
-Such a solution can be built as Angular *libraries* and these libraries can be published and shared as *npm packages*.
+Such a solution can be built as Angular _libraries_ and these libraries can be published and shared as _npm packages_.
 
 An Angular library is an Angular project that differs from an application in that it cannot run on its own.
 A library must be imported and used in an application.

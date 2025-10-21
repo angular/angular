@@ -17,13 +17,12 @@ HELPFUL: Chrome's new tab page does not run installed extensions, so the Angular
 
 When you open the extension, you'll see two additional tabs:
 
-| Tabs                                     | Details |
-|:---                                      |:---     |
+| Tabs                                   | Details                                                                                                                |
+| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
 | [Components](tools/devtools/component) | Lets you explore the components and directives in your application and preview or edit their state.                    |
-| [Profiler](tools/devtools/profiler)     | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Profiler](tools/devtools/profiler)    | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
 
 <!-- TODO: Add new sections like signals, router etc. -->
-
 
 <img src="assets/images/guide/devtools/devtools-tabs.png" alt="A screenshot of the top of Angular DevTools illustrating two tabs in the upper-left corner, one labeled 'Components' and another labeled 'Profiler'.">
 
@@ -42,4 +41,3 @@ When compiling for production, Angular CLI removes various debug features to min
 
 To run DevTools, you need to compile your application with optimizations disabled. `ng serve` does this by default.
 If you need to debug a deployed application, disable optimizations in your build with the [`optimization` configuration option](reference/configs/workspace-config#optimization-configuration) (`{"optimization": false}`).
-

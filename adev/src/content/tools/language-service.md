@@ -7,13 +7,13 @@ It works with external templates in separate HTML files, and also with in-line t
 
 To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true`, as shown in the following example:
 
-<docs-code language="json">
+```json
 
 "angularCompilerOptions": {
   "strictTemplates": true
 }
 
-</docs-code>
+```
 
 For more information, see the [Angular compiler options](reference/configs/angular-compiler-options) guide.
 
@@ -24,10 +24,10 @@ It then uses the Angular Language Service to read your `tsconfig.json` file, fin
 
 Language services include:
 
-* Completions lists
-* AOT Diagnostic messages
-* Quick info
-* Go to definition
+- Completions lists
+- AOT Diagnostic messages
+- Quick info
+- Go to definition
 
 ### Autocompletion
 
@@ -91,37 +91,37 @@ Starting with TypeScript 2.3, TypeScript has a plug-in model that the language s
 
 1. Install the latest version of TypeScript in a local `node_modules` directory:
 
-    <docs-code language="shell">
+```shell
 
-    npm install --save-dev typescript
+npm install --save-dev typescript
 
-    </docs-code>
+```
 
 1. Install the Angular Language Service package in the same location:
 
-    <docs-code language="shell">
+```shell
 
-    npm install --save-dev @angular/language-service
+npm install --save-dev @angular/language-service
 
-    </docs-code>
+```
 
-1. Once the package is installed,  add the following to the `"compilerOptions"` section of your project's `tsconfig.json`.
+1. Once the package is installed, add the following to the `"compilerOptions"` section of your project's `tsconfig.json`.
 
-    <docs-code header="tsconfig.json" language="json">
+   <docs-code header="tsconfig.json" language="json">
 
-    "plugins": [
-        {"name": "@angular/language-service"}
-    ]
+   "plugins": [
+   {"name": "@angular/language-service"}
+   ]
 
-    </docs-code>
+   </docs-code>
 
 1. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
 
-    <docs-code header="Sublime Text user preferences" language="json">
+   <docs-code header="Sublime Text user preferences" language="json">
 
-    "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
+   "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
 
-    </docs-code>
+   </docs-code>
 
 This lets the Angular Language Service provide diagnostics and completions in `.ts` files.
 
@@ -139,33 +139,33 @@ The Angular Language Service uses the tsserver, which doesn't follow the LSP spe
 
 2. Configure the Angular Language Service
 
-    Once installed run the `CocConfig` vim command line command to open the config file `coc-settings.json` and add the angular property.
+   Once installed run the `CocConfig` vim command line command to open the config file `coc-settings.json` and add the angular property.
 
-    Make sure to substitute the correct paths to your global `node_modules` such that they go to directories which contain `tsserver` and the `ngserver` respectively.
+   Make sure to substitute the correct paths to your global `node_modules` such that they go to directories which contain `tsserver` and the `ngserver` respectively.
 
-    <docs-code header="CocConfig example file coc-settings.json" language="json">
-    {
-      "languageserver": {
-        "angular": {
-          "command": "ngserver",
-          "args": [
-            "--stdio",
-            "--tsProbeLocations",
-            "/usr/local/lib/node_modules/typescript/lib/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES", 
-            "--ngProbeLocations",
-            "/usr/local/lib/node_modules/@angular/language-server/bin/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES"
-          ],
-          "filetypes": ["ts", "typescript", "html"],
-          "trace.server.verbosity": "verbose"
-        }
-      }
-    }
-    </docs-code>
+   <docs-code header="CocConfig example file coc-settings.json" language="json">
+   {
+     "languageserver": {
+       "angular": {
+         "command": "ngserver",
+         "args": [
+           "--stdio",
+           "--tsProbeLocations",
+           "/usr/local/lib/node_modules/typescript/lib/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES", 
+           "--ngProbeLocations",
+           "/usr/local/lib/node_modules/@angular/language-server/bin/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES"
+         ],
+         "filetypes": ["ts", "typescript", "html"],
+         "trace.server.verbosity": "verbose"
+       }
+     }
+   }
+   </docs-code>
 
 HELPFUL: `/usr/local/lib/node_modules/typescript/lib` and `/usr/local/lib/node_modules/@angular/language-server/bin` above should point to the location of your global node modules, which may be different.
 
-
 #### Built In Neovim LSP
+
 Angular Language Service can be used with Neovim by using the [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) plugin.
 
 1. [Install nvim-lspconfig](https://github.com/neovim/nvim-lspconfig?tab=readme-ov-file#install)
@@ -193,5 +193,5 @@ The Angular Language Services then looks at `data.---` within its context, asks 
 
 ## More information
 
-* For more in-depth information on the implementation, see the [Angular Language Service source](https://github.com/angular/angular/blob/main/packages/language-service/src)
-* For more on the design considerations and intentions, see [design documentation here](https://github.com/angular/vscode-ng-language-service/wiki/Design)
+- For more in-depth information on the implementation, see the [Angular Language Service source](https://github.com/angular/angular/blob/main/packages/language-service/src)
+- For more on the design considerations and intentions, see [design documentation here](https://github.com/angular/vscode-ng-language-service/wiki/Design)

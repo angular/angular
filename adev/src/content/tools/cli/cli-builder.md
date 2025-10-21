@@ -1,7 +1,7 @@
 # Angular CLI builders
 
 A number of Angular CLI commands run a complex process on your code, such as building, testing, or serving your application.
-The commands use an internal tool called Architect to run *CLI builders*, which invoke another tool (bundler, test runner, server) to accomplish the desired task.
+The commands use an internal tool called Architect to run _CLI builders_, which invoke another tool (bundler, test runner, server) to accomplish the desired task.
 Custom builders can perform an entirely new task, or to change which third-party tool is used by an existing command.
 
 This document explains how CLI builders integrate with the workspace configuration file, and shows how you can create your own builder.
@@ -10,19 +10,19 @@ HELPFUL: Find the code from the examples used here in this [GitHub repository](h
 
 ## CLI builders
 
-The internal Architect tool delegates work to handler functions called *builders*.
+The internal Architect tool delegates work to handler functions called _builders_.
 A builder handler function receives two arguments:
 
 | Argument  | Type             |
-|:---       |:---              |
+| :-------- | :--------------- |
 | `options` | `JSONObject`     |
 | `context` | `BuilderContext` |
 
 The separation of concerns here is the same as with [schematics](tools/cli/schematics-authoring), which are used for other CLI commands that touch your code (such as `ng generate`).
 
-* The `options` object is provided by the CLI user's options and configuration, while the `context` object is provided by the CLI Builder API automatically.
-* In addition to the contextual information, the `context` object also provides access to a scheduling method, `context.scheduleTarget()`.
-    The scheduler executes the builder handler function with a given target configuration.
+- The `options` object is provided by the CLI user's options and configuration, while the `context` object is provided by the CLI Builder API automatically.
+- In addition to the contextual information, the `context` object also provides access to a scheduling method, `context.scheduleTarget()`.
+  The scheduler executes the builder handler function with a given target configuration.
 
 The builder handler function can be synchronous (return a value), asynchronous (return a `Promise`), or watch and return multiple values (return an `Observable`).
 The return values must always be of type `BuilderOutput`.
@@ -38,7 +38,7 @@ A builder resides in a "project" folder that is similar in structure to an Angul
 For example, your `myBuilder` folder could contain the following files.
 
 | Files                    | Purpose                                                                                                   |
-|:---                      | :---                                                                                                      |
+| :----------------------- | :-------------------------------------------------------------------------------------------------------- |
 | `src/my-builder.ts`      | Main source file for the builder definition.                                                              |
 | `src/my-builder.spec.ts` | Source file for tests.                                                                                    |
 | `src/schema.json`        | Definition of builder input options.                                                                      |
@@ -92,7 +92,7 @@ Pass an empty string to remove the status.
 ## Builder input
 
 You can invoke a builder indirectly through a CLI command such as `ng build`, or directly with the Angular CLI `ng run` command.
-In either case, you must provide required inputs, but can let other inputs default to values that are pre-configured for a specific *target*, specified by a [configuration](tools/cli/environments), or set on the command line.
+In either case, you must provide required inputs, but can let other inputs default to values that are pre-configured for a specific _target_, specified by a [configuration](tools/cli/environments), or set on the command line.
 
 ### Input validation
 
@@ -107,16 +107,16 @@ You can provide the following schema for type validation of these values.
 <docs-code header="src/schema.json" language="json">
 
 {
-  "$schema": "http://json-schema.org/schema",
-  "type": "object",
-  "properties": {
-    "source": {
-      "type": "string"
-    },
-    "destination": {
-      "type": "string"
-    }
-  }
+"$schema": "http://json-schema.org/schema",
+"type": "object",
+"properties": {
+"source": {
+"type": "string"
+},
+"destination": {
+"type": "string"
+}
+}
 }
 
 </docs-code>
@@ -124,7 +124,7 @@ You can provide the following schema for type validation of these values.
 HELPFUL: This is a minimal example, but the use of a schema for validation can be very powerful.
 For more information, see the [JSON schemas website](http://json-schema.org).
 
-To link our builder implementation with its schema and name, you need to create a *builder definition* file, which you can point to in `package.json`.
+To link our builder implementation with its schema and name, you need to create a _builder definition_ file, which you can point to in `package.json`.
 
 Create a file named `builders.json` that looks like this:
 
@@ -221,14 +221,14 @@ Specify further option overrides individually on the command line.
 
 The generic `ng run` CLI command takes as its first argument a target string of the following form.
 
-<docs-code language="shell">
+```shell
 
 project:target[:configuration]
 
-</docs-code>
+```
 
-|               | Details |
-|:---           |:---     |
+|               | Details                                                                                                               |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------- |
 | project       | The name of the Angular CLI project that the target is associated with.                                               |
 | target        | A named builder configuration from the `architect` section of the `angular.json` file.                                |
 | configuration | (optional) The name of a specific configuration override for the given target, as defined in the `angular.json` file. |
@@ -255,7 +255,7 @@ For more information see [Workspace Configuration](reference/configs/workspace-c
 HELPFUL: You can also invoke a builder directly from another builder or test by calling `context.scheduleBuilder()`.
 You pass an `options` object directly to the method, and those option values are validated against the schema of the builder without further adjustment.
 
-Only the  `context.scheduleTarget()` method resolves the configuration and overrides through the `angular.json` file.
+Only the `context.scheduleTarget()` method resolves the configuration and overrides through the `angular.json` file.
 
 ### Default architect configuration
 
@@ -263,11 +263,11 @@ Let's create a simple `angular.json` file that puts target configurations into c
 
 You can publish the builder to npm (see [Publishing your Library](tools/libraries/creating-libraries#publishing-your-library)), and install it using the following command:
 
-<docs-code language="shell">
+```shell
 
 npm install @example/copy-file
 
-</docs-code>
+```
 
 If you create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
 
@@ -300,7 +300,6 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
     }
   }
 }
-
 </docs-code>
 
 ### Adding a target
@@ -308,13 +307,13 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
 Add a new target that will run our builder to copy a file.
 This target tells the builder to copy the `package.json` file.
 
-* We will add a new target section to the `architect` object for our project
-* The target named `copy-package` uses our builder, which you published to `@example/copy-file`.
-* The options object provides default values for the two inputs that you defined.
-  * `source` - The existing file you are copying.
-  * `destination` - The path you want to copy to.
+- We will add a new target section to the `architect` object for our project
+- The target named `copy-package` uses our builder, which you published to `@example/copy-file`.
+- The options object provides default values for the two inputs that you defined.
+  - `source` - The existing file you are copying.
+  - `destination` - The path you want to copy to.
 
-<docs-code header="angular.json" language="json">
+< header="angular.json" language="json">
 
 {
   "projects": {
@@ -333,32 +332,31 @@ This target tells the builder to copy the `package.json` file.
     }
   }
 }
-
 </docs-code>
 
 ### Running the builder
 
 To run our builder with the new target's default configuration, use the following CLI command.
 
-<docs-code language="shell">
+```shell
 
 ng run builder-test:copy-package
 
-</docs-code>
+```
 
 This copies the `package.json` file to `package-copy.json`.
 
 Use command-line arguments to override the configured defaults.
 For example, to run with a different `destination` value, use the following CLI command.
 
-<docs-code language="shell">
+```shell
 
 ng run builder-test:copy-package --destination=package-other.json
 
-</docs-code>
+```
 
 This copies the file to `package-other.json` instead of `package-copy.json`.
-Because you did not override the *source* option, it will still copy from the default `package.json` file.
+Because you did not override the _source_ option, it will still copy from the default `package.json` file.
 
 ## Testing a builder
 
@@ -378,21 +376,21 @@ You can avoid this by renaming `my-builder.spec.ts` to `my-builder.spec.js`.
 Most builders to run once and return. However, this behavior is not entirely compatible with a builder that watches for changes (like a devserver, for example).
 Architect can support watch mode, but there are some things to look out for.
 
-* To be used with watch mode, a builder handler function should return an `Observable`.
-    Architect subscribes to the `Observable` until it completes and might reuse it if the builder is scheduled again with the same arguments.
+- To be used with watch mode, a builder handler function should return an `Observable`.
+  Architect subscribes to the `Observable` until it completes and might reuse it if the builder is scheduled again with the same arguments.
 
-* The builder should always emit a `BuilderOutput` object after each execution.
-    Once it's been executed, it can enter a watch mode, to be triggered by an external event.
-    If an event triggers it to restart, the builder should execute the `context.reportRunning()` function to tell Architect that it is running again.
-    This prevents Architect from stopping the builder if another run is scheduled.
+- The builder should always emit a `BuilderOutput` object after each execution.
+  Once it's been executed, it can enter a watch mode, to be triggered by an external event.
+  If an event triggers it to restart, the builder should execute the `context.reportRunning()` function to tell Architect that it is running again.
+  This prevents Architect from stopping the builder if another run is scheduled.
 
 When your builder calls `BuilderRun.stop()` to exit watch mode, Architect unsubscribes from the builder's `Observable` and calls the builder's teardown logic to clean up.
 This behavior also allows for long-running builds to be stopped and cleaned up.
 
 In general, if your builder is watching an external event, you should separate your run into three phases.
 
-| Phases     | Details |
-|:---        |:---     |
+| Phases     | Details                                                                                                                                                                                                                                       |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Running    | The task being performed, such as invoking a compiler. This ends when the compiler finishes and your builder emits a `BuilderOutput` object.                                                                                                  |
 | Watching   | Between two runs, watch an external event stream. For example, watch the file system for any changes. This ends when the compiler restarts, and `context.reportRunning()` is called.                                                          |
 | Completion | Either the task is fully completed, such as a compiler which needs to run a number of times, or the builder run was stopped (using `BuilderRun.stop()`). Architect executes teardown logic and unsubscribes from your builder's `Observable`. |
@@ -401,7 +399,7 @@ In general, if your builder is watching an external event, you should separate y
 
 The CLI Builder API provides a means of changing the behavior of the Angular CLI by using builders to execute custom logic.
 
-* Builders can be synchronous or asynchronous, execute once or watch for external events, and can schedule other builders or targets.
-* Builders have option defaults specified in the `angular.json` configuration file, which can be overwritten by an alternate configuration for the target, and further overwritten by command line flags
-* The Angular team recommends that you use integration tests to test Architect builders. Use unit tests to validate the logic that the builder executes.
-* If your builder returns an `Observable`, it should clean up the builder in the teardown logic of that `Observable`.
+- Builders can be synchronous or asynchronous, execute once or watch for external events, and can schedule other builders or targets.
+- Builders have option defaults specified in the `angular.json` configuration file, which can be overwritten by an alternate configuration for the target, and further overwritten by command line flags
+- The Angular team recommends that you use integration tests to test Architect builders. Use unit tests to validate the logic that the builder executes.
+- If your builder returns an `Observable`, it should clean up the builder in the teardown logic of that `Observable`.

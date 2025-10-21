@@ -66,11 +66,11 @@ To install the Angular CLI, open a terminal window and run the following command
 On Windows client computers, the execution of PowerShell scripts is disabled by default, so the above command may fail with an error.
 To allow the execution of PowerShell scripts, which is needed for npm global binaries, you must set the following <a href="https://docs.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies">execution policy</a>:
 
-<docs-code language="sh">
+```sh
 
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
-</docs-code>
+```
 
 Carefully read the message displayed after executing the command and follow the instructions. Make sure you understand the implications of setting an execution policy.
 
@@ -111,11 +111,11 @@ You develop apps in the context of an Angular **workspace**.
 
 To create a new workspace and initial starter app, run the CLI command `ng new` and provide the name `my-app`, as shown here, then answer prompts about features to include:
 
-<docs-code language="shell">
+```shell
 
 ng new my-app
 
-</docs-code>
+```
 
 The Angular CLI installs the necessary Angular npm packages and other dependencies.
 This can take a few minutes.
@@ -123,21 +123,21 @@ This can take a few minutes.
 The CLI creates a new workspace and a small welcome app in a new directory with the same name as the workspace, ready to run.
 Navigate to the new directory so subsequent commands use this workspace.
 
-<docs-code language="shell">
+```shell
 
 cd my-app
 
-</docs-code>
+```
 
 ## Run the application
 
 The Angular CLI includes a development server, for you to build and serve your app locally. Run the following command:
 
-<docs-code language="shell">
+```shell
 
 ng serve --open
 
-</docs-code>
+```
 
 The `ng serve` command launches the server, watches your files, as well as rebuilds the app and reloads the browser as you make changes to those files.
 

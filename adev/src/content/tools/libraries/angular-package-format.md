@@ -168,7 +168,7 @@ The README file in the Markdown format that is used to display description of a 
 
 Example README content of @angular/core package:
 
-<docs-code language="html">
+```html
 
 Angular
 &equals;&equals;&equals;&equals;&equals;&equals;&equals;
@@ -177,7 +177,7 @@ The sources for this package are in the main [Angular](https://github.com/angula
 
 License: MIT
 
-</docs-code>
+```
 
 ## Partial compilation
 

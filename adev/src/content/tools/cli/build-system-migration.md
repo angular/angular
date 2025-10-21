@@ -36,11 +36,11 @@ The errors will attempt to provide solutions to the problem when possible and th
 When updating to Angular v18 via `ng update`, you will be asked to execute the migration.
 This migration is entirely optional for v18 and can also be run manually at anytime after an update via the following command:
 
-<docs-code language="shell">
+```shell
 
 ng update @angular/cli --name use-application-builder
 
-</docs-code>
+```
 
 The migration does the following:
 

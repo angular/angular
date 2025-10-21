@@ -23,12 +23,12 @@ If the package of your library does not include typings and your IDE complains, 
 
 For example, suppose you have a library named `d3`:
 
-<docs-code language="shell">
+```shell
 
 npm install d3 --save
 npm install @types/d3 --save-dev
 
-</docs-code>
+```
 
 Types defined in a `@types/` package for a library installed into the workspace are automatically added to the TypeScript configuration for the project that uses that library.
 TypeScript looks for types in the `node_modules/@types` directory by default, so you do not have to add each type package individually.
@@ -37,32 +37,30 @@ If a library does not have typings available at `@types/`, you may use it by man
 To do this:
 
 1. Create a `typings.d.ts` file in your `src/` directory.
-    This file is automatically included as global type definition.
+   This file is automatically included as global type definition.
 
 1. Add the following code in `src/typings.d.ts`:
 
-    <docs-code language="typescript">
+```ts
+declare module 'host' {
+  export interface Host {
+    protocol?: string;
+    hostname?: string;
+    pathname?: string;
+  }
+  export function parse(url: string, queryString?: string): Host;
+}
 
-    declare module 'host' {
-      export interface Host {
-        protocol?: string;
-        hostname?: string;
-        pathname?: string;
-      }
-      export function parse(url: string, queryString?: string): Host;
-    }
-
-    </docs-code>
+```
 
 1. In the component or file that uses the library, add the following code:
 
-    <docs-code language="typescript">
+```ts
+import * as host from 'host';
+const parsedUrl = host.parse('https://angular.dev');
+console.log(parsedUrl.hostname);
 
-    import * as host from 'host';
-    const parsedUrl = host.parse('https://angular.dev');
-    console.log(parsedUrl.hostname);
-
-    </docs-code>
+```
 
 Define more typings as needed.
 
@@ -87,36 +85,33 @@ For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroducti
 
 1. Install the library and the associated dependencies using the npm package manager:
 
-    <docs-code language="shell">
+```shell
+npm install jquery --save
+npm install popper.js --save
+npm install bootstrap --save
 
-    npm install jquery --save
-    npm install popper.js --save
-    npm install bootstrap --save
-
-    </docs-code>
+```
 
 1. In the `angular.json` configuration file, add the associated script files to the `scripts` array:
 
-    <docs-code language="json">
+```json
+"scripts": [
+  "node_modules/jquery/dist/jquery.slim.js",
+  "node_modules/popper.js/dist/umd/popper.js",
+  "node_modules/bootstrap/dist/js/bootstrap.js"
+],
 
-    "scripts": [
-      "node_modules/jquery/dist/jquery.slim.js",
-      "node_modules/popper.js/dist/umd/popper.js",
-      "node_modules/bootstrap/dist/js/bootstrap.js"
-    ],
-
-    </docs-code>
+```
 
 1. Add the `bootstrap.css` CSS file to the `styles` array:
 
-    <docs-code language="css">
+```json
+"styles": [
+  "node_modules/bootstrap/dist/css/bootstrap.css",
+  "src/styles.css"
+],
 
-    "styles": [
-      "node_modules/bootstrap/dist/css/bootstrap.css",
-      "src/styles.css"
-    ],
-
-    </docs-code>
+```
 
 1. Run or restart the `ng serve` Angular CLI command to see Bootstrap 4 work in your application.
 
@@ -125,11 +120,11 @@ For example, to use the [Bootstrap 4][GetbootstrapDocs40GettingStartedIntroducti
 After you import a library using the "scripts" array, do **not** import it using an import statement in your TypeScript code.
 The following code snippet is an example import statement.
 
-<docs-code language="typescript">
+```ts
 
 import * as $ from 'jquery';
 
-</docs-code>
+```
 
 If you import it using import statements, you have two different copies of the library: one imported as a global library, and one imported as a module.
 This is especially bad for libraries with plugins, like JQuery, because each copy includes different plugins.
@@ -143,53 +138,45 @@ If the global library you need to use does not have global typings, you can decl
 
 For example:
 
-<docs-code language="typescript">
+```ts
 
 declare var libraryName: any;
 
-</docs-code>
+```
 
 Some scripts extend other libraries; for instance with JQuery plugins:
 
-<docs-code language="typescript">
+```ts
 
 $('.test').myPlugin();
 
-</docs-code>
+```
 
 In this case, the installed `@types/jquery` does not include `myPlugin`, so you need to add an interface in `src/typings.d.ts`.
 For example:
 
-<docs-code language="typescript">
+```ts
 
 interface JQuery {
   myPlugin(options?: any): any;
 }
 
-</docs-code>
+```
 
 If you do not add the interface for the script-defined extension, your IDE shows an error:
 
-<docs-code language="text">
+```text
 
 [TS][Error] Property 'myPlugin' does not exist on type 'JQuery'
 
-</docs-code>
+```
 
-[CliUpdate]: cli/update "ng update | CLI |Angular"
-
-[GuideNpmPackages]: reference/configs/npm-packages "Workspace npm dependencies | Angular"
-
-[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
-
-[Resources]: resources "Explore Angular Resources | Angular"
-
-[AngularMaterialMain]: https://material.angular.dev "Angular Material | Angular"
-
-[AngularUpdateMain]: https://angular.dev/update-guide "Angular Update Guide | Angular"
-
-[GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction "Introduction | Bootstrap"
-
-[NpmjsMain]: https://www.npmjs.com "npm"
-
-[YarnpkgMain]: https://yarnpkg.com " Yarn"
+[CliUpdate]: cli/update 'ng update | CLI |Angular'
+[GuideNpmPackages]: reference/configs/npm-packages 'Workspace npm dependencies | Angular'
+[GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'
+[Resources]: resources 'Explore Angular Resources | Angular'
+[AngularMaterialMain]: https://material.angular.dev 'Angular Material | Angular'
+[AngularUpdateMain]: https://angular.dev/update-guide 'Angular Update Guide | Angular'
+[GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction 'Introduction | Bootstrap'
+[NpmjsMain]: https://www.npmjs.com 'npm'
+[YarnpkgMain]: https://yarnpkg.com ' Yarn'
