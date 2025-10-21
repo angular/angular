@@ -95,11 +95,11 @@ You can add a named schematic to your collection that lets your users use the `n
 We'll assume that your library defines a service, `my-service`, that requires some setup.
 You want your users to be able to generate it using the following CLI command.
 
-<docs-code language="shell">
+```shell
 
 ng generate my-lib:my-service
 
-</docs-code>
+```
 
 To begin, create a new subfolder, `my-service`, in the `schematics` folder.
 
@@ -265,20 +265,20 @@ The following steps show you how to generate a service using the schematic you c
 
 From the root of your workspace, run the `ng build` command for your library.
 
-<docs-code language="shell">
+```shell
 
 ng build my-lib
 
-</docs-code>
+```
 
 Then, you change into your library directory to build the schematic
 
-<docs-code language="shell">
+```shell
 
 cd projects/my-lib
 npm run build
 
-</docs-code>
+```
 
 ### Link the library
 
@@ -286,21 +286,21 @@ Your library and schematics are packaged and placed in the `dist/my-lib` folder 
 For running the schematic, you need to link the library into your `node_modules` folder.
 From the root of your workspace, run the `npm link` command with the path to your distributable library.
 
-<docs-code language="shell">
+```shell
 
 npm link dist/my-lib
 
-</docs-code>
+```
 
 ### Run the schematic
 
 Now that your library is installed, run the schematic using the `ng generate` command.
 
-<docs-code language="shell">
+```shell
 
 ng generate my-lib:my-service --name my-data
 
-</docs-code>
+```
 
 In the console, you see that the schematic was run and the `my-data.service.ts` file was created in your application folder.
 

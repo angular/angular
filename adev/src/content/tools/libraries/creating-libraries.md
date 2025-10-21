@@ -9,13 +9,13 @@ A simple example might be a button that sends users to your company website, tha
 
 Use the Angular CLI to generate a new library skeleton in a new workspace with the following commands.
 
-<docs-code language="shell">
+```shell
 
 ng new my-workspace --no-create-application
 cd my-workspace
 ng generate library my-lib
 
-</docs-code>
+```
 
 <docs-callout title="Naming your library">
 
@@ -38,7 +38,7 @@ See [Setting up for a multi-project workspace](reference/configs/file-structure#
 
 When you generate a new library, the workspace configuration file, `angular.json`, is updated with a project of type `library`.
 
-<docs-code language="json">
+```json
 
 "projects": {
   …
@@ -52,17 +52,17 @@ When you generate a new library, the workspace configuration file, `angular.json
         "builder": "@angular-devkit/build-angular:ng-packagr",
         …
 
-</docs-code>
+```
 
 Build, test, and lint the project with CLI commands:
 
-<docs-code language="shell">
+```shell
 
 ng build my-lib --configuration development
 ng test my-lib
 ng lint my-lib
 
-</docs-code>
+```
 
 Notice that the configured builder for the project is different from the default builder for application projects.
 This builder, among other things, ensures that the library is always built with the [AOT compiler](tools/cli/aot-compiler).
@@ -81,30 +81,29 @@ Your library should supply documentation \(typically a README file\) for install
 To make your solution reusable, you need to adjust it so that it does not depend on application-specific code.
 Here are some things to consider in migrating application functionality to a library.
 
-* Declarations such as components and pipes should be designed as stateless, meaning they don't rely on or alter external variables.
-    If you do rely on state, you need to evaluate every case and decide whether it is application state or state that the library would manage.
+- Declarations such as components and pipes should be designed as stateless, meaning they don't rely on or alter external variables.
+  If you do rely on state, you need to evaluate every case and decide whether it is application state or state that the library would manage.
 
-* Any observables that the components subscribe to internally should be cleaned up and disposed of during the lifecycle of those components
-* Components should expose their interactions through inputs for providing context, and outputs for communicating events to other components
+- Any observables that the components subscribe to internally should be cleaned up and disposed of during the lifecycle of those components
+- Components should expose their interactions through inputs for providing context, and outputs for communicating events to other components
 
-* Check all internal dependencies.
-  * For custom classes or interfaces used in components or service, check whether they depend on additional classes or interfaces that also need to be migrated
-  * Similarly, if your library code depends on a service, that service needs to be migrated
-  * If your library code or its templates depend on other libraries \(such as Angular Material, for instance\), you must configure your library with those dependencies
+- Check all internal dependencies.
+  - For custom classes or interfaces used in components or service, check whether they depend on additional classes or interfaces that also need to be migrated
+  - Similarly, if your library code depends on a service, that service needs to be migrated
+  - If your library code or its templates depend on other libraries \(such as Angular Material, for instance\), you must configure your library with those dependencies
 
-* Consider how you provide services to client applications.
+- Consider how you provide services to client applications.
+  - Services should declare their own providers, rather than declaring providers in the NgModule or a component.
+    Declaring a provider makes that service _tree-shakable_.
+    This practice lets the compiler leave the service out of the bundle if it never gets injected into the application that imports the library.
+    For more about this, see [Tree-shakable providers](guide/di/lightweight-injection-tokens).
 
-  * Services should declare their own providers, rather than declaring providers in the NgModule or a component.
-        Declaring a provider makes that service *tree-shakable*.
-        This practice lets the compiler leave the service out of the bundle if it never gets injected into the application that imports the library.
-        For more about this, see [Tree-shakable providers](guide/di/lightweight-injection-tokens).
-
-  * If you register global service providers expose a `provideXYZ()` provider function.
-  * If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/di/lightweight-injection-tokens)
+  - If you register global service providers expose a `provideXYZ()` provider function.
+  - If your library provides optional services that might not be used by all client applications, support proper tree-shaking for that case by using the [lightweight token design pattern](guide/di/lightweight-injection-tokens)
 
 ## Integrating with the CLI using code-generation schematics
 
-A library typically includes *reusable code* that defines components, services, and other Angular artifacts \(pipes, directives\) that you import into a project.
+A library typically includes _reusable code_ that defines components, services, and other Angular artifacts \(pipes, directives\) that you import into a project.
 A library is packaged into an npm package for publishing and sharing.
 This package can also include schematics that provide instructions for generating or transforming code directly in your project, in the same way that the CLI creates a generic new component with `ng generate component`.
 A schematic that is packaged with a library can, for example, provide the Angular CLI with the information it needs to generate a component that configures and uses a particular feature, or set of features, defined in that library.
@@ -112,9 +111,9 @@ One example of this is [Angular Material's navigation schematic](https://materia
 
 Create and include the following kinds of schematics:
 
-* Include an installation schematic so that `ng add` can add your library to a project
-* Include generation schematics in your library so that `ng generate` can scaffold your defined artifacts \(components, services, tests\) in a project
-* Include an update schematic so that `ng update` can update your library's dependencies and provide migrations for breaking changes in new releases
+- Include an installation schematic so that `ng add` can add your library to a project
+- Include generation schematics in your library so that `ng generate` can scaffold your defined artifacts \(components, services, tests\) in a project
+- Include an update schematic so that `ng update` can update your library's dependencies and provide migrations for breaking changes in new releases
 
 What you include in your library depends on your task.
 For example, you could define a schematic to create a dropdown that is pre-populated with canned data to show how to add it to an application.
@@ -139,13 +138,13 @@ to choose the right format for your library.
 You should always build libraries for distribution using the `production` configuration.
 This ensures that generated output uses the appropriate optimizations and the correct package format for npm.
 
-<docs-code language="shell">
+```shell
 
 ng build my-lib
 cd dist/my-lib
 npm publish
 
-</docs-code>
+```
 
 ## Managing assets in a library
 
@@ -157,7 +156,7 @@ You need to add these manually to the conditional ["exports"](tools/libraries/an
 
 `ng-packagr` will merge handwritten `"exports"` with the auto-generated ones, allowing for library authors to configure additional export subpaths, or custom conditions.
 
-<docs-code language="json">
+```json
 
 "exports": {
   ".": {
@@ -171,7 +170,7 @@ You need to add these manually to the conditional ["exports"](tools/libraries/an
   }
 }
 
-</docs-code>
+```
 
 The above is an extract from the [@angular/material](https://unpkg.com/browse/@angular/material/package.json) distributable.
 
@@ -187,22 +186,18 @@ You don't have to publish your library to the npm package manager to use it in t
 
 To use your own library in an application:
 
-* Build the library.
-    You cannot use a library before it is built.
+- Build the library.
+  You cannot use a library before it is built.
 
-    <docs-code language="shell">
+```shell
+  ng build my-lib
+```
 
-    ng build my-lib
+- In your applications, import from the library by name:
 
-    </docs-code>
-
-* In your applications, import from the library by name:
-
-    <docs-code language="typescript">
-
-    import { myExport } from 'my-lib';
-
-    </docs-code>
+```ts
+  import { myExport } from 'my-lib';
+```
 
 ### Building and rebuilding your library
 
@@ -221,38 +216,38 @@ For more information, see [Path mapping overview](https://www.typescriptlang.org
 If you find that changes to your library are not reflected in your application, your application is probably using an old build of the library.
 
 You can rebuild your library whenever you make changes to it, but this extra step takes time.
-*Incremental builds* functionality improves the library-development experience.
+_Incremental builds_ functionality improves the library-development experience.
 Every time a file is changed a partial build is performed that emits the amended files.
 
 Incremental builds can be run as a background process in your development environment.
 To take advantage of this feature add the `--watch` flag to the build command:
 
-<docs-code language="shell">
+```shell
 
 ng build my-lib --watch
 
-</docs-code>
+```
 
 IMPORTANT: The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
 
-* The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects
-* The build system for libraries is based on `ng-packagr`.
-    It is only added to your dependencies when you add a library using `ng generate library my-lib`.
+- The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects
+- The build system for libraries is based on `ng-packagr`.
+  It is only added to your dependencies when you add a library using `ng generate library my-lib`.
 
 The two build systems support different things, and even where they support the same things, they do those things differently.
 This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
 
-For this reason, an application that depends on a library should only use TypeScript path mappings that point to the *built library*.
-TypeScript path mappings should *not* point to the library source `.ts` files.
+For this reason, an application that depends on a library should only use TypeScript path mappings that point to the _built library_.
+TypeScript path mappings should _not_ point to the library source `.ts` files.
 
 ## Publishing libraries
 
 There are two distribution formats to use when publishing a library:
 
-| Distribution formats        | Details |
-|:---                         |:---     |
-| Partial-Ivy \(recommended\) | Contains portable code that can be consumed by Ivy applications built with any version of Angular from v12 onwards. |
-| Full-Ivy                    | Contains private Angular Ivy instructions, which are not guaranteed to work across different versions of Angular. This format requires that the library and application are built with the *exact* same version of Angular. This format is useful for environments where all library and application code is built directly from source. |
+| Distribution formats        | Details                                                                                                                                                                                                                                                                                                                                  |
+| :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Partial-Ivy \(recommended\) | Contains portable code that can be consumed by Ivy applications built with any version of Angular from v12 onwards.                                                                                                                                                                                                                      |
+| Full-Ivy                    | Contains private Angular Ivy instructions, which are not guaranteed to work across different versions of Angular. This format requires that the library and application are built with the _exact_ same version of Angular. This format is useful for environments where all library and application code is built directly from source. |
 
 For publishing to npm use the partial-Ivy format as it is stable between patch versions of Angular.
 
