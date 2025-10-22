@@ -40126,7 +40126,7 @@ function paginateRest(octokit) {
 paginateRest.VERSION = VERSION6;
 
 // 
-var VERSION7 = "16.1.0";
+var VERSION7 = "16.1.1";
 
 // 
 var Endpoints = {
