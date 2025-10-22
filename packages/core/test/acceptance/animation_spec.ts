@@ -12,10 +12,12 @@ import {
   AfterViewInit,
   AnimationCallbackEvent,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   computed,
   Directive,
   ElementRef,
+  inject,
   NgModule,
   OnDestroy,
   provideZonelessChangeDetection,
@@ -1623,6 +1625,55 @@ describe('Animation', () => {
       fixture.detectChanges();
       tickAnimationFrames(1);
       expect(cmp.show()).toBeTruthy();
+      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+      expect(paragraphs.length).toBe(1);
+    }));
+
+    it('should reset leave animation and not duplicate node when toggled programmatically very quickly', fakeAsync(() => {
+      const animateStyles = `
+        .fade {
+          animation: fade-out 500ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'test-cmp',
+        styles: animateStyles,
+        template: '<div>@if (show()) {<p animate.leave="fade">I should fade</p>}</div>',
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        show = signal(false);
+        cdr = inject(ChangeDetectorRef);
+
+        toggle() {
+          this.show.update((s) => !s);
+          setTimeout(() => {
+            this.show.update((s) => !s);
+            this.cdr.detectChanges();
+
+            setTimeout(() => {
+              this.show.update((s) => !s);
+              this.cdr.detectChanges();
+            });
+          });
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      cmp.toggle();
+      fixture.detectChanges();
+      tickAnimationFrames(1);
       const paragraphs = fixture.debugElement.queryAll(By.css('p'));
       expect(paragraphs.length).toBe(1);
     }));
