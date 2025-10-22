@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, MetadataKey} from '../api/property';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import type {
   AsyncValidationResult,
   DisabledReason,

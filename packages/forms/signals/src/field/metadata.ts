@@ -7,7 +7,7 @@
  */
 
 import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
-import {AggregateMetadataKey, MetadataKey} from '../api/property';
+import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import type {FieldNode} from './node';
 import {cast} from './util';
 

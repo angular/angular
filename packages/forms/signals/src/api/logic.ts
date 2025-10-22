@@ -9,7 +9,7 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './property';
+import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './metadata';
 import type {
   FieldContext,
   FieldPath,
