@@ -8,6 +8,7 @@
 
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
+import {PathKind} from './path_kind';
 import {AggregateProperty, Property} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
@@ -24,39 +25,6 @@ declare const ɵɵTYPE: unique symbol;
  */
 export type OneOrMany<T> = T | readonly T[];
 
-/**
- * The kind of `FieldPath` (`Root`, `Child` of another `FieldPath`, or `Item` in a `FieldPath` array)
- *
- * @experimental 21.0.0
- */
-export declare namespace PathKind {
-  /**
-   * The `PathKind` for a `FieldPath` that is at the root of its field tree.
-   */
-  export interface Root {
-    /**
-     * The `ɵɵTYPE` is constructed to allow the `extends` clause on `Child` and `Item` to narrow the
-     * type. Another way to think about this is, if we have a function that expects this kind of
-     * path, the `ɵɵTYPE` lists the kinds of path we are allowed to pass to it.
-     */
-    [ɵɵTYPE]: 'root' | 'child' | 'item';
-  }
-
-  /**
-   * The `PathKind` for a `FieldPath` that is a child of another `FieldPath`.
-   */
-  export interface Child extends PathKind.Root {
-    [ɵɵTYPE]: 'child' | 'item';
-  }
-
-  /**
-   * The `PathKind` for a `FieldPath` that is an item in a `FieldPath` array.
-   */
-  export interface Item extends PathKind.Child {
-    [ɵɵTYPE]: 'item';
-  }
-}
-export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  *
@@ -516,3 +484,5 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   /** The index of the current field in its parent field. */
   readonly index: Signal<number>;
 }
+
+export {PathKind};
