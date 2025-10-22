@@ -11,13 +11,14 @@
       }
       @for (item of items; track $index) {
         <li class="docs-faceted-list-item">
+          @let itemLabel = item.label!;
           @if (item.path) {
             @if (item.isExternal) {
               <a
                 [href]="item.path"
                 target="_blank"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="item.label.length < 27"
+                [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -41,7 +42,7 @@
                 [routerLinkActiveOptions]="{ exact: true }"
                 (click)="emitClickOnLink()"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="item.label.length < 27"
+                [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -62,7 +63,7 @@
               <div
                 class="docs-secondary-nav-header"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="item.label.length < 27"
+                [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -90,7 +91,7 @@
                 [class.docs-nav-item-has-icon]="
               item.children && item.level === expandableLevel() && !item.isExpanded"
                 [matTooltip]="item.label"
-                [matTooltipDisabled]="item.label.length < 27"
+                [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
                 [attr.aria-label]="item.label"
                 [matTooltipClass]="'API-tooltip'"
@@ -105,7 +106,9 @@
               </button>
             }
           }
-          @if (displayItemsToLevel() > item.level && item.children?.length > 0) {
+          @if (
+            item.level && displayItemsToLevel() > item.level && item.children && item.children.length > 0
+          ) {
             <ng-container
               *ngTemplateOutlet="navigationList; context: {$implicit: item.children, level: item.level}"
             />

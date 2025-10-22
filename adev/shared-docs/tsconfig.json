@@ -14,6 +14,11 @@
     "types": ["node"],
     "paths": {
       "@angular/*": ["../../packages/*/index"]
-    },
+    }
+  },
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }
