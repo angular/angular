@@ -988,6 +988,7 @@ describe('field directive', () => {
 
     act(() => cmp.f().value.set('two'));
     expect(fix.componentInstance.select()).not.toBeUndefined();
+    pending('https://github.com/angular/angular/pull/63607');
     expect(fix.componentInstance.select()!.nativeElement.value).toEqual('two');
   });
 
