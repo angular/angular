@@ -9,7 +9,7 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateProperty, createProperty, Property} from './property';
+import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './property';
 import type {
   FieldContext,
   FieldPath,
@@ -167,7 +167,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  */
 export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  prop: AggregateProperty<any, TPropItem>,
+  prop: AggregateMetadataKey<any, TPropItem>,
   logic: NoInfer<LogicFn<TValue, TPropItem, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);
@@ -190,7 +190,7 @@ export function aggregateProperty<TValue, TPropItem, TPathKind extends PathKind 
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): Property<TData>;
+): MetadataKey<TData>;
 
 /**
  * Defines the value of a `Property` for a given field.
@@ -206,26 +206,26 @@ export function property<TValue, TData, TPathKind extends PathKind = PathKind.Ro
  */
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
-  prop: Property<TData>,
+  prop: MetadataKey<TData>,
   factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): Property<TData>;
+): MetadataKey<TData>;
 
 export function property<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
   path: FieldPath<TValue, TPathKind>,
   ...rest:
     | [(ctx: FieldContext<TValue, TPathKind>) => TData]
-    | [Property<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
-): Property<TData> {
+    | [MetadataKey<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
+): MetadataKey<TData> {
   assertPathIsCurrent(path);
 
-  let key: Property<TData>;
+  let key: MetadataKey<TData>;
   let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
   if (rest.length === 2) {
     [key, factory] = rest;
   } else {
     [factory] = rest;
   }
-  key ??= createProperty();
+  key ??= createMetadataKey();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addPropertyFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
