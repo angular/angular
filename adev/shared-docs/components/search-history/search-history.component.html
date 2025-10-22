@@ -16,7 +16,7 @@
   <p class="title">Recent</p>
   <ul class="history-results recent">
     @for (item of items.recent; track item.id; let idx = $index) {
-      <li docsSearchItem [item]="item" (mouseenter)="onMouseEnter($event, idx)">
+      <li docsSearchItem (mouseenter)="onMouseEnter($event, idx)">
         <a
           [routerLink]="'/' + item.url | relativeLink: 'pathname'"
           [fragment]="item.url | relativeLink: 'hash'"
@@ -55,11 +55,7 @@
   <p class="title">Favorite</p>
   <ul class="history-results favorite">
     @for (item of items.favorite; track item.id; let idx = $index) {
-      <li
-        docsSearchItem
-        [item]="item"
-        (mouseenter)="onMouseEnter($event, items.recent.length + idx)"
-      >
+      <li docsSearchItem (mouseenter)="onMouseEnter($event, items.recent.length + idx)">
         <a
           [routerLink]="'/' + item.url | relativeLink: 'pathname'"
           [fragment]="item.url | relativeLink: 'hash'"
