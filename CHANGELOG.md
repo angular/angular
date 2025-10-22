@@ -1,3 +1,30 @@
+<a name="20.3.7"></a>
+# 20.3.7 (2025-10-22)
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bd38cd45a5](https://github.com/angular/angular/commit/bd38cd45a5fb81e92b91e582d7b13aa3b21f3839) | fix | account for `Element.animate` exceptions ([#64506](https://github.com/angular/angular/pull/64506)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [891f180262](https://github.com/angular/angular/commit/891f18026243bcf8c8b82881a73dffa283d0dd11) | fix | correctly compile long numeric HTML entities ([#64297](https://github.com/angular/angular/pull/64297)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [371274bfc6](https://github.com/angular/angular/commit/371274bfc6d5690390f90161106b60d80939fe75) | fix | missingStructuralDirective diagnostic produces false negatives ([#64470](https://github.com/angular/angular/pull/64470)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [4c89a267c3](https://github.com/angular/angular/commit/4c89a267c3b49e928332232ec2a3023f6fb4046d) | fix | pass element removal property through in all locations ([#64565](https://github.com/angular/angular/pull/64565)) |
+| [2fad4d4ab6](https://github.com/angular/angular/commit/2fad4d4ab63a2a8326af02b0f2f7d285c7f42e0d) | fix | prevent duplicate nodes from being retained with fast `animate.leave`` calls ([#64592](https://github.com/angular/angular/pull/64592)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [cfd8ed3fff](https://github.com/angular/angular/commit/cfd8ed3fff02af93b3fbd2e3f3a47128bd3582bf) | fix | Fix outlet serialization and parsing with no primary children ([#64505](https://github.com/angular/angular/pull/64505)) |
+| [182fe78f91](https://github.com/angular/angular/commit/182fe78f91d04ac8d25a32bce0ea180a6fe557ce) | fix | Surface parse errors in Router.parseUrl ([#64503](https://github.com/angular/angular/pull/64503)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.6"></a>
 # 20.3.6 (2025-10-16)
 ### core
