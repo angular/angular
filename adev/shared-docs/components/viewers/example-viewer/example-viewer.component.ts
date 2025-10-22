@@ -21,7 +21,7 @@ import {
   Type,
   viewChild,
 } from '@angular/core';
-import {DOCUMENT, NgTemplateOutlet} from '@angular/common';
+import {DOCUMENT, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
@@ -43,7 +43,14 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CopySourceCodeButton, MatTabsModule, MatTooltipModule, IconComponent, NgTemplateOutlet],
+  imports: [
+    CopySourceCodeButton,
+    MatTabsModule,
+    MatTooltipModule,
+    IconComponent,
+    NgTemplateOutlet,
+    NgComponentOutlet,
+  ],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -92,10 +99,9 @@ export class ExampleViewer {
 
   async renderExample(): Promise<void> {
     // Lazy load live example component
-    if (this.exampleMetadata()?.path && this.exampleMetadata()?.preview) {
-      this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(
-        this.exampleMetadata()?.path!,
-      );
+    const path = this.exampleMetadata()?.path;
+    if (path && this.exampleMetadata()?.preview) {
+      this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(path);
     }
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
