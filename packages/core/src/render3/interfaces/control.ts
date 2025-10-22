@@ -114,7 +114,7 @@ export interface ɵFieldState<T> {
   /**
    * A signal indicating the patterns the field must match.
    */
-  readonly pattern?: Signal<readonly RegExp[]>;
+  readonly pattern: Signal<readonly RegExp[]>;
 
   /**
    * A signal indicating whether the field is currently readonly.
@@ -124,7 +124,7 @@ export interface ɵFieldState<T> {
   /**
    * A signal indicating whether the field is required.
    */
-  readonly required?: Signal<boolean>;
+  readonly required: Signal<boolean>;
 
   /**
    * A signal indicating whether the field has been touched by the user.

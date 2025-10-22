@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {Signal, WritableSignal} from '@angular/core';
+import {computed, type Signal, type WritableSignal} from '@angular/core';
 import type {Field} from '../api/field_directive';
 import {
   AggregateMetadataKey,
@@ -37,6 +37,7 @@ import {
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
+
 /**
  * Internal node in the form tree for a given field.
  *
@@ -166,12 +167,12 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataOrUndefined(MIN_LENGTH);
   }
 
-  get pattern(): Signal<readonly RegExp[]> | undefined {
-    return this.metadataOrUndefined(PATTERN);
+  get pattern(): Signal<readonly RegExp[]> {
+    return this.metadataOrUndefined(PATTERN) ?? EMPTY;
   }
 
-  get required(): Signal<boolean> | undefined {
-    return this.metadataOrUndefined(REQUIRED);
+  get required(): Signal<boolean> {
+    return this.metadataOrUndefined(REQUIRED) ?? FALSE;
   }
 
   metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
@@ -253,6 +254,9 @@ export class FieldNode implements FieldState<unknown> {
         );
   }
 }
+
+const EMPTY = computed(() => []);
+const FALSE = computed(() => false);
 
 /**
  * Field node of a field that has children.
