@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateProperty, Property} from '../api/property';
+import {AggregateMetadataKey, MetadataKey} from '../api/property';
 import type {
   AsyncValidationResult,
   DisabledReason,
@@ -43,11 +43,11 @@ export abstract class AbstractLogicNodeBuilder {
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
   /** Adds a rule to compute an aggregate property for a field. */
   abstract addAggregatePropertyRule<M>(
-    key: AggregateProperty<unknown, M>,
+    key: AggregateMetadataKey<unknown, M>,
     logic: LogicFn<any, M>,
   ): void;
   /** Adds a factory function to produce a data value associated with a field. */
-  abstract addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void;
+  abstract addPropertyFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -118,13 +118,16 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override addAggregatePropertyRule<T>(
-    key: AggregateProperty<unknown, T>,
+    key: AggregateMetadataKey<unknown, T>,
     logic: LogicFn<any, T>,
   ): void {
     this.getCurrent().addAggregatePropertyRule(key, logic);
   }
 
-  override addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void {
+  override addPropertyFactory<D>(
+    key: MetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
     this.getCurrent().addPropertyFactory(key, factory);
   }
 
@@ -231,13 +234,16 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override addAggregatePropertyRule<T>(
-    key: AggregateProperty<unknown, T>,
+    key: AggregateMetadataKey<unknown, T>,
     logic: LogicFn<any, T>,
   ): void {
     this.logic.getAggregateProperty(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addPropertyFactory<D>(key: Property<D>, factory: (ctx: FieldContext<any>) => D): void {
+  override addPropertyFactory<D>(
+    key: MetadataKey<D>,
+    factory: (ctx: FieldContext<any>) => D,
+  ): void {
     this.logic.addPropertyFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 

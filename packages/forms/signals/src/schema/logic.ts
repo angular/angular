@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateProperty, Property} from '../api/property';
+import {AggregateMetadataKey, MetadataKey} from '../api/property';
 import {DisabledReason, type FieldContext, type FieldPath, type LogicFn} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
@@ -184,7 +184,7 @@ export class AggregatePropertyMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: AggregateProperty<TAcc, TItem>,
+    private key: AggregateMetadataKey<TAcc, TItem>,
   ) {
     super(predicates);
   }
@@ -260,12 +260,12 @@ export class LogicContainer {
   readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError | 'pending', null>;
   /** A map of aggregate properties to the `AbstractLogic` instances that compute their values. */
   private readonly aggregateProperties = new Map<
-    AggregateProperty<unknown, unknown>,
+    AggregateMetadataKey<unknown, unknown>,
     AbstractLogic<unknown>
   >();
   /** A map of property keys to the factory functions that create their values. */
   private readonly propertyFactories = new Map<
-    Property<unknown>,
+    MetadataKey<unknown>,
     (ctx: FieldContext<unknown>) => unknown
   >();
 
@@ -284,7 +284,7 @@ export class LogicContainer {
   }
 
   /** Checks whether there is logic for the given aggregate property. */
-  hasAggregateProperty(prop: AggregateProperty<any, any>) {
+  hasAggregateProperty(prop: AggregateMetadataKey<any, any>) {
     return this.aggregateProperties.has(prop);
   }
 
@@ -309,15 +309,15 @@ export class LogicContainer {
    * @param prop The `AggregateProperty` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getAggregateProperty<T>(prop: AggregateProperty<unknown, T>): AbstractLogic<T> {
-    if (!this.aggregateProperties.has(prop as AggregateProperty<unknown, unknown>)) {
+  getAggregateProperty<T>(prop: AggregateMetadataKey<unknown, T>): AbstractLogic<T> {
+    if (!this.aggregateProperties.has(prop as AggregateMetadataKey<unknown, unknown>)) {
       this.aggregateProperties.set(
-        prop as AggregateProperty<unknown, unknown>,
+        prop as AggregateMetadataKey<unknown, unknown>,
         new AggregatePropertyMergeLogic(this.predicates, prop),
       );
     }
     return this.aggregateProperties.get(
-      prop as AggregateProperty<unknown, unknown>,
+      prop as AggregateMetadataKey<unknown, unknown>,
     )! as AbstractLogic<T>;
   }
 
@@ -327,7 +327,7 @@ export class LogicContainer {
    * @param factory The factory function.
    * @throws If a factory is already defined for the given key.
    */
-  addPropertyFactory(prop: Property<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
+  addPropertyFactory(prop: MetadataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
     if (this.propertyFactories.has(prop)) {
       // TODO: name of the property?
       throw new Error(`Can't define value twice for the same Property`);

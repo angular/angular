@@ -7,7 +7,7 @@
  */
 
 import {computed, runInInjectionContext, Signal, untracked} from '@angular/core';
-import {AggregateProperty, Property} from '../api/property';
+import {AggregateMetadataKey, MetadataKey} from '../api/property';
 import type {FieldNode} from './node';
 import {cast} from './util';
 
@@ -17,7 +17,7 @@ import {cast} from './util';
 export class FieldPropertyState {
   /** A map of all `Property` and `AggregateProperty` that have been defined for this field. */
   private readonly properties = new Map<
-    Property<unknown> | AggregateProperty<unknown, unknown>,
+    MetadataKey<unknown> | AggregateMetadataKey<unknown, unknown>,
     unknown
   >();
 
@@ -37,15 +37,15 @@ export class FieldPropertyState {
   }
 
   /** Gets the value of a `Property` or `AggregateProperty` for the field. */
-  get<T>(prop: Property<T> | AggregateProperty<T, unknown>): T | undefined | Signal<T> {
-    if (prop instanceof Property) {
+  get<T>(prop: MetadataKey<T> | AggregateMetadataKey<T, unknown>): T | undefined | Signal<T> {
+    if (prop instanceof MetadataKey) {
       return this.properties.get(prop) as T | undefined;
     }
     // Aggregate properties come with an initial value, and are considered to exist for every field.
     // If no logic explicitly contributes values for the property, it is just considered to be the
     // initial value. Therefore if the user asks for an aggregate property for a field,
     // we just create its computed on the fly.
-    cast<AggregateProperty<unknown, unknown>>(prop);
+    cast<AggregateMetadataKey<unknown, unknown>>(prop);
     if (!this.properties.has(prop)) {
       const logic = this.node.logicNode.logic.getAggregateProperty(prop);
       const result = computed(() => logic.compute(this.node.context));
@@ -59,8 +59,8 @@ export class FieldPropertyState {
    * @param prop
    * @returns
    */
-  has(prop: Property<any> | AggregateProperty<any, any>): boolean {
-    if (prop instanceof AggregateProperty) {
+  has(prop: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
+    if (prop instanceof AggregateMetadataKey) {
       // For aggregate properties, they get added to the map lazily, on first access, so we can't
       // rely on checking presence in the properties map. Instead we check if there is any logic for
       // the given property.

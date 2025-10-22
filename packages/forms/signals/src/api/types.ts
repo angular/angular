@@ -8,7 +8,7 @@
 
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
-import {AggregateProperty, Property} from './property';
+import {AggregateMetadataKey, MetadataKey} from './property';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
 /**
@@ -302,18 +302,18 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Reads an aggregate property value from the field.
    * @param prop The property to read.
    */
-  property<M>(prop: AggregateProperty<M, any>): Signal<M>;
+  property<M>(prop: AggregateMetadataKey<M, any>): Signal<M>;
 
   /**
    * Reads a property value from the field.
    * @param prop The property key to read.
    */
-  property<M>(prop: Property<M>): M | undefined;
+  property<M>(prop: MetadataKey<M>): M | undefined;
 
   /**
    * Checks whether the given metadata key has been defined for this field.
    */
-  hasProperty(key: Property<any> | AggregateProperty<any, any>): boolean;
+  hasProperty(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
