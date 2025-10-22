@@ -64,7 +64,7 @@ describe('resources', () => {
       });
 
       validate(p.name, ({state}) => {
-        const remote = state.property(RES)!;
+        const remote = state.metadata(RES)!;
         if (remote.hasValue()) {
           return customError({message: remote.value()});
         } else {
@@ -106,7 +106,7 @@ describe('resources', () => {
         });
 
         validate(p.name, ({state}) => {
-          const remote = state.property(RES)!;
+          const remote = state.metadata(RES)!;
           if (remote.hasValue()) {
             return customError({message: remote.value()});
           } else {

@@ -156,7 +156,7 @@ describe('maxLength validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.text().property(MAX_LENGTH)()).toBe(5);
+      expect(f.text().metadata(MAX_LENGTH)()).toBe(5);
     });
 
     it('merges two maxLengths preferring the smaller option', () => {
@@ -182,7 +182,7 @@ describe('maxLength validator', () => {
       f.text().value.set('abc');
       expect(f.text().errors()).toEqual([]);
 
-      expect(f.text().property(MAX_LENGTH)()).toBe(5);
+      expect(f.text().metadata(MAX_LENGTH)()).toBe(5);
     });
 
     it('merges two maxLengths _dynamically_ preferring the smaller option', () => {
@@ -212,7 +212,7 @@ describe('maxLength validator', () => {
       maxLengthSignal.set(2);
 
       expect(f.text().errors()).toEqual([maxLengthError(2, {field: f.text})]);
-      expect(f.text().property(MAX_LENGTH)()).toBe(2);
+      expect(f.text().metadata(MAX_LENGTH)()).toBe(2);
     });
   });
 

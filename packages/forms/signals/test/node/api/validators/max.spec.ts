@@ -162,7 +162,7 @@ describe('max validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.age().property(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
     });
 
     it('merges two maxes preferring the smaller option', () => {
@@ -183,7 +183,7 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().property(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
     });
 
     it('merges two maxes _dynamically_ preferring the smaller option', () => {
@@ -205,12 +205,12 @@ describe('max validator', () => {
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([]);
 
-      expect(f.age().property(MAX)()).toBe(5);
+      expect(f.age().metadata(MAX)()).toBe(5);
 
       maxSignal.set(2);
       f.age().value.set(3);
       expect(f.age().errors()).toEqual([maxError(2, {field: f.age})]);
-      expect(f.age().property(MAX)()).toBe(2);
+      expect(f.age().metadata(MAX)()).toBe(2);
     });
 
     it('merges two maxes _dynamically_ ignores undefined', () => {

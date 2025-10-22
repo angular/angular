@@ -37,12 +37,12 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   const MAX_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
-  aggregateMetadata(path, MAX, ({state}) => state.property(MAX_MEMO)!());
+  aggregateMetadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
     }
-    const max = ctx.state.property(MAX_MEMO)!();
+    const max = ctx.state.metadata(MAX_MEMO)!();
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }

@@ -47,12 +47,12 @@ export function maxLength<
   const MAX_LENGTH_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
   );
-  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.property(MAX_LENGTH_MEMO)!());
+  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
     }
-    const maxLength = ctx.state.property(MAX_LENGTH_MEMO)!();
+    const maxLength = ctx.state.metadata(MAX_LENGTH_MEMO)!();
     if (maxLength === undefined) {
       return undefined;
     }

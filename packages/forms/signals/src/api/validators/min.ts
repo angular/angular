@@ -37,12 +37,12 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   const MIN_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
-  aggregateMetadata(path, MIN, ({state}) => state.property(MIN_MEMO)!());
+  aggregateMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
     }
-    const min = ctx.state.property(MIN_MEMO)!();
+    const min = ctx.state.metadata(MIN_MEMO)!();
     if (min === undefined || Number.isNaN(min)) {
       return undefined;
     }

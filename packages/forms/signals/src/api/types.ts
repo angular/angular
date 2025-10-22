@@ -299,21 +299,21 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   readonly fieldBindings: Signal<readonly Field<unknown>[]>;
 
   /**
-   * Reads an aggregate property value from the field.
-   * @param prop The property to read.
+   * Reads an aggregate metadata value from the field.
+   * @param key The metadata key to read.
    */
-  property<M>(prop: AggregateMetadataKey<M, any>): Signal<M>;
+  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
 
   /**
-   * Reads a property value from the field.
-   * @param prop The property key to read.
+   * Reads a metadata value from the field.
+   * @param key The metadata key to read.
    */
-  property<M>(prop: MetadataKey<M>): M | undefined;
+  metadata<M>(key: MetadataKey<M>): M | undefined;
 
   /**
    * Checks whether the given metadata key has been defined for this field.
    */
-  hasProperty(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
+  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
