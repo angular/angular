@@ -162,7 +162,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   });
 
   pathNode.logic.addAsyncErrorRule((ctx) => {
-    const res = ctx.state.property(RESOURCE)!;
+    const res = ctx.state.metadata(RESOURCE)!;
     switch (res.status()) {
       case 'idle':
         return undefined;

@@ -47,12 +47,12 @@ export function minLength<
   const MIN_LENGTH_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof minLength === 'number' ? minLength : minLength(ctx))),
   );
-  aggregateMetadata(path, MIN_LENGTH, ({state}) => state.property(MIN_LENGTH_MEMO)!());
+  aggregateMetadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
     }
-    const minLength = ctx.state.property(MIN_LENGTH_MEMO)!();
+    const minLength = ctx.state.metadata(MIN_LENGTH_MEMO)!();
     if (minLength === undefined) {
       return undefined;
     }

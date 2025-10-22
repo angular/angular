@@ -132,7 +132,7 @@ export class InteropNgControl
     // This addresses a common case where users look for the presence of `Validators.required` to
     // determine whether or not to show a required "*" indicator in the UI.
     if (validator === Validators.required) {
-      return this.field().property(REQUIRED)();
+      return this.field().metadata(REQUIRED)();
     }
     return false;
   }

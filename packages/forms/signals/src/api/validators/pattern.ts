@@ -36,12 +36,12 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   const PATTERN_MEMO = metadata(path, (ctx) =>
     computed(() => (pattern instanceof RegExp ? pattern : pattern(ctx))),
   );
-  aggregateMetadata(path, PATTERN, ({state}) => state.property(PATTERN_MEMO)!());
+  aggregateMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
     }
-    const pattern = ctx.state.property(PATTERN_MEMO)!();
+    const pattern = ctx.state.metadata(PATTERN_MEMO)!();
     if (pattern === undefined) {
       return undefined;
     }

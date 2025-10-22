@@ -79,7 +79,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().property(PATTERN)()).toEqual([/pir.*jok/]);
+      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/]);
     });
 
     it('merges the PATTERN property in an array', () => {
@@ -93,7 +93,7 @@ describe('pattern validator', () => {
         {injector: TestBed.inject(Injector)},
       );
 
-      expect(f.name().property(PATTERN)()).toEqual([/pir.*jok/, /pelmeni/]);
+      expect(f.name().metadata(PATTERN)()).toEqual([/pir.*jok/, /pelmeni/]);
     });
 
     it('PATTERN property defaults to empty list', () => {
@@ -105,7 +105,7 @@ describe('pattern validator', () => {
         },
         {injector: TestBed.inject(Injector)},
       );
-      expect(f.name().property(PATTERN)()).toEqual([]);
+      expect(f.name().metadata(PATTERN)()).toEqual([]);
     });
   });
 

@@ -69,7 +69,7 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
   });
   validateTree(path, ({state, fieldOf}) => {
     // Skip sync validation if the result is a Promise.
-    const result = state.property(VALIDATOR_MEMO)!();
+    const result = state.metadata(VALIDATOR_MEMO)!();
     if (ɵisPromise(result)) {
       return [];
     }
@@ -78,7 +78,7 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
   validateAsync(path, {
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
-      const result = state.property(VALIDATOR_MEMO)!();
+      const result = state.metadata(VALIDATOR_MEMO)!();
       return ɵisPromise(result) ? result : undefined;
     },
     factory: (params) => {
