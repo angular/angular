@@ -1,3 +1,65 @@
+<a name="21.0.0-next.9"></a>
+# 21.0.0-next.9 (2025-10-22)
+## Breaking Changes
+### zone.js
+- IE/Non-Chromium Edge are not supported anymore.
+### animations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2b257b3659](https://github.com/angular/angular/commit/2b257b36590677d436d45e98cefe7ca886c7bd57) | fix | account for `Element.animate` exceptions ([#64506](https://github.com/angular/angular/pull/64506)) |
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a1868c9d13](https://github.com/angular/angular/commit/a1868c9d13991d24f893499406b29a5f2e0a388b) | feat | update to cldr 47 ([#64032](https://github.com/angular/angular/pull/64032)) |
+| [196fa500a3](https://github.com/angular/angular/commit/196fa500a3c282af5158fa2873df8e2a73243493) | fix | properly type ngComponentOutlet ([#64561](https://github.com/angular/angular/pull/64561)) |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9a7529dd66](https://github.com/angular/angular/commit/9a7529dd66c12eb56e3772673d1d5aa08bca279a) | fix | correctly compile long numeric HTML entities ([#64297](https://github.com/angular/angular/pull/64297)) |
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c1d870bd38](https://github.com/angular/angular/commit/c1d870bd38821f9ba89884507931486fa6dfd7ce) | fix | missingStructuralDirective diagnostic produces false negatives ([#64470](https://github.com/angular/angular/pull/64470)) |
+| [1f389b8b97](https://github.com/angular/angular/commit/1f389b8b97600ee382ff842e066abc2ca31c442f) | fix | missingStructuralDirective diagnostic produces false negatives ([#64579](https://github.com/angular/angular/pull/64579)) |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [c2d376b85a](https://github.com/angular/angular/commit/c2d376b85aa6eea2c4d7ec3207df6767f5739945) | feat | make SimpleChanges generic ([#64535](https://github.com/angular/angular/pull/64535)) |
+| [70332b0453](https://github.com/angular/angular/commit/70332b04532311276dd025ba00e8fcb6c1350880) | fix | pass element removal property through in all locations ([#64565](https://github.com/angular/angular/pull/64565)) |
+| [81bd671906](https://github.com/angular/angular/commit/81bd671906321a77a0b75e7d846f96847a1f5d4e) | fix | prevent duplicate nodes from being retained with fast `animate.leave`` calls ([#64592](https://github.com/angular/angular/pull/64592)) |
+| [aab73671e4](https://github.com/angular/angular/commit/aab73671e4e95690ce505fa3574caf40a5b54d0c) | fix | update animation scheduling ([#64441](https://github.com/angular/angular/pull/64441)) |
+| [c241038111](https://github.com/angular/angular/commit/c241038111cf602669dd68ef516f147889ab02e5) | fix | update symbols ([#64481](https://github.com/angular/angular/pull/64481)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [9c5e969f51](https://github.com/angular/angular/commit/9c5e969f51448aad05a7e0ac83143b4b5ae477b4) | fix | bind invalid input in custom controls ([#64526](https://github.com/angular/angular/pull/64526)) |
+| [94b0afec00](https://github.com/angular/angular/commit/94b0afec0007f0f5142a39def2849a1ba9e5030d) | fix | implement interoperability between signal forms and reactive forms ([#64471](https://github.com/angular/angular/pull/64471)) |
+| [505bde1fed](https://github.com/angular/angular/commit/505bde1fede95ec907c6b028db4b3c9237899f30) | fix | mark field as dirty when value is changed by `ControlValueAccessor` ([#64471](https://github.com/angular/angular/pull/64471)) |
+| [3529877772](https://github.com/angular/angular/commit/3529877772f7a777d467c99e3d95b465b1b1d82c) | fix | mark field as dirty when value is changed by a bound control ([#64483](https://github.com/angular/angular/pull/64483)) |
+| [fd9af2afaf](https://github.com/angular/angular/commit/fd9af2afaf6c239bbbba50f2f016ecf9b83133c4) | fix | only propagate schema defined properties from field to control ([#64446](https://github.com/angular/angular/pull/64446)) |
+### language-service
+| Commit | Type | Description |
+| -- | -- | -- |
+| [80e00ff4e5](https://github.com/angular/angular/commit/80e00ff4e5833c35e19cfca271dff51121108333) | fix | prevent interpolation from superseding block braces ([#64392](https://github.com/angular/angular/pull/64392)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [75fc16b261](https://github.com/angular/angular/commit/75fc16b261de5312c60834330680052f07138480) | feat | Adds support for CommonModule to standalone migration ([#64138](https://github.com/angular/angular/pull/64138)) |
+### platform-browser
+| Commit | Type | Description |
+| -- | -- | -- |
+| [29c397f883](https://github.com/angular/angular/commit/29c397f8839234e0f9065979d721e583bf48ebb1) | fix | `DomEventsPlugin` should always be the last plugin to be called for `supports()`. ([#50394](https://github.com/angular/angular/pull/50394)) |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2bd764a3c4](https://github.com/angular/angular/commit/2bd764a3c416a3a513b69c894816d4f4db927bfc) | feat | allow router outlet to be set on ng-container ([#64562](https://github.com/angular/angular/pull/64562)) |
+| [7afc193016](https://github.com/angular/angular/commit/7afc193016a953f41b80921a6e79139ca3a15003) | fix | Fix outlet serialization and parsing with no primary children ([#64505](https://github.com/angular/angular/pull/64505)) |
+| [f6a73f1913](https://github.com/angular/angular/commit/f6a73f19131b2befa74f4ea3f941038603958ac0) | fix | Respect custom `UrlSerializer` handling of query parameters ([#64449](https://github.com/angular/angular/pull/64449)) |
+| [46ae034c70](https://github.com/angular/angular/commit/46ae034c70200f1d9fcc430a85c470445945da22) | fix | Respect custom `UrlSerializer` handling of query parameters ([#64449](https://github.com/angular/angular/pull/64449)) |
+| [7fb7511124](https://github.com/angular/angular/commit/7fb7511124548213d7e4a93c5a9b9670b4976677) | fix | Surface parse errors in Router.parseUrl ([#64503](https://github.com/angular/angular/pull/64503)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.7"></a>
 # 20.3.7 (2025-10-22)
 ### animations
