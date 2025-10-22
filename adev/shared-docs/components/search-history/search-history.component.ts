@@ -8,6 +8,7 @@
 
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -33,6 +34,7 @@ import {SearchItem} from '../../directives';
     '(document:keydown)': 'onKeydown($event)',
     '(document:mousemove)': 'onMouseMove($event)',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchHistoryComponent {
   protected readonly items = viewChildren(SearchItem);
