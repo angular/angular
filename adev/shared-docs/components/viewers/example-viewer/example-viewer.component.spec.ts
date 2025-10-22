@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {Component, provideZonelessChangeDetection, ComponentRef} from '@angular/core';
+import {Component, provideZonelessChangeDetection, ComponentRef, signal} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -316,6 +316,24 @@ describe('ExampleViewer', () => {
     codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
     expect(codeContainer).not.toBeNull();
   });
+
+  it('should render example', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    await component.renderExample();
+    fixture.detectChanges();
+    expect(component.exampleComponent).toBeDefined();
+
+    const previewContainer = fixture.debugElement.query(By.css('.docs-example-viewer-preview'));
+    expect(previewContainer.nativeElement.innerHTML).toContain('ng-component');
+    expect(previewContainer.nativeElement.textContent).toContain('foobar');
+  });
 });
 
 const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
@@ -332,6 +350,8 @@ const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
 };
 
 @Component({
-  template: '',
+  template: '{{foobar}}',
 })
-class ExampleComponent {}
+class ExampleComponent {
+  foobar = signal('foobar');
+}
