@@ -1,7 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>angular/dev-infra//renovate-presets/default.json5"],
-  "baseBranchPatterns": ["main", "20.3.x"],
+  "extends": [
+    "github>angular/dev-infra//renovate-presets/default.json5"
+  ],
+  "baseBranchPatterns": [
+    "main",
+    "21.0.x"
+  ],
   "ignoreDeps": [
     "@types/selenium-webdriver",
     "angular-1.5",
@@ -29,7 +34,12 @@
       "enabled": false
     },
     {
-      "matchManagers": ["bazel", "bazel-module", "bazelisk", "npm"],
+      "matchManagers": [
+        "bazel",
+        "bazel-module",
+        "bazelisk",
+        "npm"
+      ],
       "postUpgradeTasks": {
         "commands": [
           "git restore .npmrc",
@@ -50,8 +60,12 @@
     },
     {
       "enabled": false,
-      "matchDepNames": ["tailwindcss"],
-      "matchUpdateTypes": ["major"]
+      "matchDepNames": [
+        "tailwindcss"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ]
     }
   ]
 }
