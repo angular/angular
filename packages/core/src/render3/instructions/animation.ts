@@ -68,7 +68,6 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   }
 
   const tNode = getCurrentTNode()!;
-
   cancelLeavingNodes(tNode, lView);
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
@@ -196,7 +195,6 @@ export function ɵɵanimateEnterListener(value: AnimationFunction): typeof ɵɵa
     return ɵɵanimateEnterListener;
   }
   const tNode = getCurrentTNode()!;
-
   cancelLeavingNodes(tNode, lView);
 
   addAnimationToLView(getLViewEnterAnimations(lView), tNode, () =>
@@ -251,6 +249,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   }
 
   const tNode = getCurrentTNode()!;
+  cancelLeavingNodes(tNode, lView);
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
     runLeaveAnimations(lView, tNode, value),
@@ -383,6 +382,8 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
 
   const lView = getLView();
   const tNode = getCurrentTNode()!;
+  cancelLeavingNodes(tNode, lView);
+
   allLeavingAnimations.add(lView);
 
   addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
