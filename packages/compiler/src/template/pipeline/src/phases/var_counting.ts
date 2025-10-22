@@ -119,7 +119,6 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
       return slots;
     case ir.OpKind.Property:
     case ir.OpKind.DomProperty:
-    case ir.OpKind.Control:
       slots = 1;
 
       // We need to assign a slot even for singleton interpolations, because the
@@ -128,6 +127,10 @@ function varsUsedByOp(op: (ir.CreateOp | ir.UpdateOp) & ir.ConsumesVarsTrait): n
         slots += op.expression.expressions.length;
       }
       return slots;
+    case ir.OpKind.Control:
+      // 1 for the [field] binding itself.
+      // 1 for the control bindings object containing bound field states properties.
+      return 2;
     case ir.OpKind.TwoWayProperty:
       // Two-way properties can only have expressions so they only need one variable slot.
       return 1;

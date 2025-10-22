@@ -2,7 +2,7 @@ MyComponent.ɵcmp = /* @__PURE__ */i0.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["ng-component"]],
   decls: 4,
-  vars: 2,
+  vars: 3,
   consts: [["field", "Not a form control"], [3, "field"]],
   template: function MyComponent_Template(rf, ctx) {
     if (rf & 1) {
