@@ -15,6 +15,7 @@ import {
   Type,
   NgModule,
   signal,
+  Directive,
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
@@ -22,6 +23,7 @@ import {
   Router,
   RouterModule,
   RouterOutlet,
+  RouterOutletPlaceholder,
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
 } from '../../index';
@@ -596,6 +598,244 @@ describe('router outlet data', () => {
 
     await harness.navigateByUrl('/child/grandchild');
     expect(harness.routeNativeElement?.innerText).toContain('parent|not provided');
+  });
+});
+
+describe('router outlet placeholder', () => {
+  it('should render placeholder if no activated route', async () => {
+    @Component({
+      template: `
+        <router-outlet>
+          <div *routerOutletPlaceholder>
+            placeholder content
+          </div>
+        </router-outlet>
+      `,
+      imports: [RouterOutlet, RouterOutletPlaceholder],
+    })
+    class RootCmp {}
+
+    @Component({
+      template: 'foo component',
+    })
+    class FooCmp {}
+
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([{path: 'foo', component: FooCmp}])],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    expect(fixture.nativeElement.innerHTML).toContain('placeholder content');
+    expect(fixture.nativeElement.innerHTML).not.toContain('foo component');
+
+    await router.navigate(['foo']);
+
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+    expect(fixture.nativeElement.innerHTML).toContain('foo component');
+  });
+
+  it('should persist placeholder if name changed and no activated route', async () => {
+    const renderPlaceholder = jasmine.createSpy();
+
+    @Directive({
+      selector: '[renderSpy]',
+    })
+    class RenderSpy {
+      constructor() {
+        renderPlaceholder();
+      }
+    }
+
+    @Component({
+      template: `
+        <router-outlet [name]="name()">
+          <div *routerOutletPlaceholder renderSpy>
+            placeholder content
+          </div>
+        </router-outlet>
+      `,
+      imports: [RouterOutlet, RouterOutletPlaceholder, RenderSpy],
+    })
+    class RootCmp {
+      name = signal('foo');
+    }
+
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([])],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    expect(renderPlaceholder).toHaveBeenCalledWith();
+    expect(fixture.nativeElement.innerHTML).toContain('placeholder content');
+
+    renderPlaceholder.calls.reset();
+
+    fixture.componentInstance.name.set('bar');
+    await advance(fixture);
+
+    expect(renderPlaceholder).not.toHaveBeenCalledWith();
+    expect(fixture.nativeElement.innerHTML).toContain('placeholder content');
+  });
+
+  it('should not render placeholder if name changed and both old and new names has activated route', async () => {
+    const renderPlaceholder = jasmine.createSpy();
+
+    @Directive({
+      selector: '[renderSpy]',
+    })
+    class RenderSpy {
+      constructor() {
+        renderPlaceholder();
+      }
+    }
+
+    @Component({
+      template: `
+        <router-outlet [name]="name()">
+          <div *routerOutletPlaceholder renderSpy>
+            placeholder content
+          </div>
+        </router-outlet>
+      `,
+      imports: [RouterOutlet, RouterOutletPlaceholder, RenderSpy],
+    })
+    class RootCmp {
+      name = signal('foo');
+    }
+
+    @Component({
+      template: 'foo component',
+    })
+    class FooCmp {}
+
+    @Component({
+      template: 'bar component',
+    })
+    class BarCmp {}
+
+    TestBed.configureTestingModule({
+      imports: [
+        RouterModule.forRoot([
+          {path: '', outlet: 'foo', component: FooCmp},
+          {path: '', outlet: 'bar', component: BarCmp},
+        ]),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    // placeholder is rendered for a short time because of setTimeouts inside createRoot
+    renderPlaceholder.calls.reset();
+
+    expect(fixture.nativeElement.innerHTML).toContain('foo component');
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+
+    fixture.componentInstance.name.set('bar');
+    await advance(fixture);
+
+    expect(renderPlaceholder).not.toHaveBeenCalledWith();
+    expect(fixture.nativeElement.innerHTML).toContain('bar component');
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+  });
+
+  it('should not render placeholder if route changed', async () => {
+    const renderPlaceholder = jasmine.createSpy();
+
+    @Directive({
+      selector: '[renderSpy]',
+    })
+    class RenderSpy {
+      constructor() {
+        renderPlaceholder();
+      }
+    }
+
+    @Component({
+      template: `
+        <router-outlet>
+          <div *routerOutletPlaceholder renderSpy>
+            placeholder content
+          </div>
+        </router-outlet>
+      `,
+      imports: [RouterOutlet, RouterOutletPlaceholder, RenderSpy],
+    })
+    class RootCmp {}
+
+    @Component({
+      template: 'foo component',
+    })
+    class FooCmp {}
+
+    @Component({
+      template: 'bar component',
+    })
+    class BarCmp {}
+
+    TestBed.configureTestingModule({
+      imports: [
+        RouterModule.forRoot([
+          {path: 'foo', component: FooCmp},
+          {path: 'bar', component: BarCmp},
+        ]),
+      ],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    renderPlaceholder.calls.reset();
+
+    await router.navigate(['foo']);
+
+    expect(renderPlaceholder).not.toHaveBeenCalledWith();
+    renderPlaceholder.calls.reset();
+
+    expect(fixture.nativeElement.innerHTML).toContain('foo component');
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+
+    await router.navigate(['bar']);
+
+    expect(renderPlaceholder).not.toHaveBeenCalledWith();
+    expect(fixture.nativeElement.innerHTML).toContain('bar component');
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+  });
+
+  it('should remove placeholder if name changed and activated route appears', async () => {
+    @Component({
+      template: `
+        <router-outlet [name]="name()">
+          <div *routerOutletPlaceholder>
+            placeholder content
+          </div>
+        </router-outlet>
+      `,
+      imports: [RouterOutlet, RouterOutletPlaceholder],
+    })
+    class RootCmp {
+      name = signal('foo');
+    }
+
+    @Component({
+      template: 'bar component',
+    })
+    class BarCmp {}
+
+    TestBed.configureTestingModule({
+      imports: [RouterModule.forRoot([{path: '', outlet: 'bar', component: BarCmp}])],
+    });
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    expect(fixture.nativeElement.innerHTML).toContain('placeholder content');
+    expect(fixture.nativeElement.innerHTML).not.toContain('bar component');
+
+    fixture.componentInstance.name.set('bar');
+    await advance(fixture);
+
+    expect(fixture.nativeElement.innerHTML).not.toContain('placeholder content');
+    expect(fixture.nativeElement.innerHTML).toContain('bar component');
   });
 });
 
