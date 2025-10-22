@@ -41,13 +41,13 @@ export abstract class AbstractLogicNodeBuilder {
   abstract addSyncTreeErrorRule(logic: LogicFn<any, ValidationResult>): void;
   /** Adds a rule for asynchronous validation errors for a field. */
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
-  /** Adds a rule to compute an aggregate property for a field. */
-  abstract addAggregatePropertyRule<M>(
+  /** Adds a rule to compute aggregate metadata for a field. */
+  abstract addAggregateMetadataRule<M>(
     key: AggregateMetadataKey<unknown, M>,
     logic: LogicFn<any, M>,
   ): void;
   /** Adds a factory function to produce a data value associated with a field. */
-  abstract addPropertyFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
+  abstract addMetadataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -117,18 +117,18 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addAggregatePropertyRule<T>(
+  override addAggregateMetadataRule<T>(
     key: AggregateMetadataKey<unknown, T>,
     logic: LogicFn<any, T>,
   ): void {
-    this.getCurrent().addAggregatePropertyRule(key, logic);
+    this.getCurrent().addAggregateMetadataRule(key, logic);
   }
 
-  override addPropertyFactory<D>(
+  override addMetadataFactory<D>(
     key: MetadataKey<D>,
     factory: (ctx: FieldContext<any>) => D,
   ): void {
-    this.getCurrent().addPropertyFactory(key, factory);
+    this.getCurrent().addMetadataFactory(key, factory);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -233,18 +233,18 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addAggregatePropertyRule<T>(
+  override addAggregateMetadataRule<T>(
     key: AggregateMetadataKey<unknown, T>,
     logic: LogicFn<any, T>,
   ): void {
-    this.logic.getAggregateProperty(key).push(setBoundPathDepthForResolution(logic, this.depth));
+    this.logic.getAggregateMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addPropertyFactory<D>(
+  override addMetadataFactory<D>(
     key: MetadataKey<D>,
     factory: (ctx: FieldContext<any>) => D,
   ): void {
-    this.logic.addPropertyFactory(key, setBoundPathDepthForResolution(factory, this.depth));
+    this.logic.addMetadataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {

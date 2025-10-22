@@ -7,7 +7,7 @@
  */
 
 import {computed} from '@angular/core';
-import {aggregateProperty, property, validate} from '../logic';
+import {aggregateMetadata, metadata, validate} from '../logic';
 import {MAX} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {maxError} from '../validation_errors';
@@ -34,10 +34,10 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = property(path, (ctx) =>
+  const MAX_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
   );
-  aggregateProperty(path, MAX, ({state}) => state.property(MAX_MEMO)!());
+  aggregateMetadata(path, MAX, ({state}) => state.property(MAX_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
