@@ -9,13 +9,13 @@
 import type {Signal, WritableSignal} from '@angular/core';
 import type {Field} from '../api/field_directive';
 import {
-  AggregateProperty,
+  AggregateMetadataKey,
   MAX,
   MAX_LENGTH,
+  MetadataKey,
   MIN,
   MIN_LENGTH,
   PATTERN,
-  Property,
   REQUIRED,
 } from '../api/property';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
@@ -146,7 +146,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private propertyOrUndefined<M>(prop: AggregateProperty<M, any>): Signal<M> | undefined {
+  private propertyOrUndefined<M>(prop: AggregateMetadataKey<M, any>): Signal<M> | undefined {
     return this.hasProperty(prop) ? this.property(prop) : undefined;
   }
 
@@ -174,12 +174,12 @@ export class FieldNode implements FieldState<unknown> {
     return this.propertyOrUndefined(REQUIRED);
   }
 
-  property<M>(prop: AggregateProperty<M, any>): Signal<M>;
-  property<M>(prop: Property<M>): M | undefined;
-  property<M>(prop: Property<M> | AggregateProperty<M, any>): Signal<M> | M | undefined {
+  property<M>(prop: AggregateMetadataKey<M, any>): Signal<M>;
+  property<M>(prop: MetadataKey<M>): M | undefined;
+  property<M>(prop: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
     return this.propertyState.get(prop);
   }
-  hasProperty(prop: Property<any> | AggregateProperty<any, any>): boolean {
+  hasProperty(prop: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
     return this.propertyState.has(prop);
   }
 

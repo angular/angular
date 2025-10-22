@@ -7,40 +7,40 @@
  */
 
 /**
- * Represents a property that may be defined on a field when it is created using a `property` rule
- * in the schema. A particular `Property` can only be defined on a particular field **once**.
+ * Represents metadata that may be defined on a field when it is created using a `metadata` rule
+ * in the schema. A particular `MetadataKey` can only be defined on a particular field **once**.
  *
  * @category logic
  * @experimental 21.0.0
  */
-export class Property<TValue> {
+export class MetadataKey<TValue> {
   private brand!: TValue;
 
-  /** Use {@link createProperty}. */
+  /** Use {@link createMetadataKey}. */
   private constructor() {}
 }
 
 /**
- * Creates a {@link Property}.
+ * Creates a {@link MetadataKey}.
  *
  * @experimental 21.0.0
  */
-export function createProperty<TValue>(): Property<TValue> {
-  return new (Property as new () => Property<TValue>)();
+export function createMetadataKey<TValue>(): MetadataKey<TValue> {
+  return new (MetadataKey as new () => MetadataKey<TValue>)();
 }
 
 /**
- * Represents a property that is aggregated from multiple parts according to the property's reducer
+ * Represents metadata that is aggregated from multiple parts according to the key's reducer
  * function. A value can be contributed to the aggregated value for a field using an
- * `aggregateProperty` rule in the schema. There may be multiple rules in a schema that contribute
- * values to the same `AggregateProperty` of the same field.
+ * `aggregateMetadata` rule in the schema. There may be multiple rules in a schema that contribute
+ * values to the same `AggregateMetadataKey` of the same field.
  *
  * @experimental 21.0.0
  */
-export class AggregateProperty<TAcc, TItem> {
+export class AggregateMetadataKey<TAcc, TItem> {
   private brand!: [TAcc, TItem];
 
-  /** Use {@link reducedProperty}. */
+  /** Use {@link reducedMetadataKey}. */
   private constructor(
     readonly reduce: (acc: TAcc, item: TItem) => TAcc,
     readonly getInitial: () => TAcc,
@@ -48,42 +48,42 @@ export class AggregateProperty<TAcc, TItem> {
 }
 
 /**
- * Creates an aggregate property that reduces its individual values into an accumulated value using
- * the given `reduce` and `getInitial` functions.
+ * Creates an {@link AggregateMetadataKey} that reduces its individual values into an accumulated
+ * value using the given `reduce` and `getInitial` functions.
  * @param reduce The reducer function.
  * @param getInitial A function that gets the initial value for the reduce operation.
  *
  * @experimental 21.0.0
  */
-export function reducedProperty<TAcc, TItem>(
+export function reducedMetadataKey<TAcc, TItem>(
   reduce: (acc: TAcc, item: TItem) => TAcc,
   getInitial: () => TAcc,
-): AggregateProperty<TAcc, TItem> {
-  return new (AggregateProperty as new (
+): AggregateMetadataKey<TAcc, TItem> {
+  return new (AggregateMetadataKey as new (
     reduce: (acc: TAcc, item: TItem) => TAcc,
     getInitial: () => TAcc,
-  ) => AggregateProperty<TAcc, TItem>)(reduce, getInitial);
+  ) => AggregateMetadataKey<TAcc, TItem>)(reduce, getInitial);
 }
 
 /**
- * Creates an aggregate property that reduces its individual values into a list.
+ * Creates an {@link AggregateMetadataKey} that reduces its individual values into a list.
  *
  * @experimental 21.0.0
  */
-export function listProperty<TItem>(): AggregateProperty<TItem[], TItem | undefined> {
-  return reducedProperty<TItem[], TItem | undefined>(
+export function listMetadataKey<TItem>(): AggregateMetadataKey<TItem[], TItem | undefined> {
+  return reducedMetadataKey<TItem[], TItem | undefined>(
     (acc, item) => (item === undefined ? acc : [...acc, item]),
     () => [],
   );
 }
 
 /**
- * Creates an aggregate property that reduces its individual values by taking their min.
+ * Creates {@link AggregateMetadataKey} that reduces its individual values by taking their min.
  *
  * @experimental 21.0.0
  */
-export function minProperty(): AggregateProperty<number | undefined, number | undefined> {
-  return reducedProperty<number | undefined, number | undefined>(
+export function minMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
+  return reducedMetadataKey<number | undefined, number | undefined>(
     (prev, next) => {
       if (prev === undefined) {
         return next;
@@ -98,12 +98,12 @@ export function minProperty(): AggregateProperty<number | undefined, number | un
 }
 
 /**
- * Creates an aggregate property that reduces its individual values by taking their max.
+ * Creates {@link AggregateMetadataKey} that reduces its individual values by taking their max.
  *
  * @experimental 21.0.0
  */
-export function maxProperty(): AggregateProperty<number | undefined, number | undefined> {
-  return reducedProperty<number | undefined, number | undefined>(
+export function maxMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
+  return reducedMetadataKey<number | undefined, number | undefined>(
     (prev, next) => {
       if (prev === undefined) {
         return next;
@@ -118,73 +118,78 @@ export function maxProperty(): AggregateProperty<number | undefined, number | un
 }
 
 /**
- * Creates an aggregate property that reduces its individual values by logically or-ing them.
+ * Creates an {@link AggregateMetadataKey} that reduces its individual values by logically or-ing
+ * them.
  *
  * @experimental 21.0.0
  */
-export function orProperty(): AggregateProperty<boolean, boolean> {
-  return reducedProperty(
+export function orMetadataKey(): AggregateMetadataKey<boolean, boolean> {
+  return reducedMetadataKey(
     (prev, next) => prev || next,
     () => false,
   );
 }
 
 /**
- * Creates an aggregate property that reduces its individual values by logically and-ing them.
+ * Creates an {@link AggregateMetadataKey} that reduces its individual values by logically and-ing
+ * them.
  *
  * @experimental 21.0.0
  */
-export function andProperty(): AggregateProperty<boolean, boolean> {
-  return reducedProperty(
+export function andMetadataKey(): AggregateMetadataKey<boolean, boolean> {
+  return reducedMetadataKey(
     (prev, next) => prev && next,
     () => true,
   );
 }
 
 /**
- * An aggregate property representing whether the field is required.
+ * An {@link AggregateMetadataKey} representing whether the field is required.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const REQUIRED: AggregateProperty<boolean, boolean> = orProperty();
+export const REQUIRED: AggregateMetadataKey<boolean, boolean> = orMetadataKey();
 
 /**
- * An aggregate property representing the min value of the field.
+ * An {@link AggregateMetadataKey} representing the min value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN: AggregateProperty<number | undefined, number | undefined> = maxProperty();
+export const MIN: AggregateMetadataKey<number | undefined, number | undefined> = maxMetadataKey();
 
 /**
- * An aggregate property representing the max value of the field.
+ * An {@link AggregateMetadataKey} representing the max value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX: AggregateProperty<number | undefined, number | undefined> = minProperty();
+export const MAX: AggregateMetadataKey<number | undefined, number | undefined> = minMetadataKey();
 
 /**
- * An aggregate property representing the min length of the field.
+ * An {@link AggregateMetadataKey} representing the min length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN_LENGTH: AggregateProperty<number | undefined, number | undefined> = maxProperty();
+export const MIN_LENGTH: AggregateMetadataKey<number | undefined, number | undefined> =
+  maxMetadataKey();
 
 /**
- * An aggregate property representing the max length of the field.
+ * An {@link AggregateMetadataKey} representing the max length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX_LENGTH: AggregateProperty<number | undefined, number | undefined> = minProperty();
+export const MAX_LENGTH: AggregateMetadataKey<number | undefined, number | undefined> =
+  minMetadataKey();
 
 /**
- * An aggregate property representing the patterns the field must match.
+ * An {@link AggregateMetadataKey} representing the patterns the field must match.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const PATTERN: AggregateProperty<RegExp[], RegExp | undefined> = listProperty<RegExp>();
+export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined> =
+  listMetadataKey<RegExp>();
