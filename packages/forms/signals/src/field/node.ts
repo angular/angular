@@ -17,7 +17,7 @@ import {
   MIN_LENGTH,
   PATTERN,
   REQUIRED,
-} from '../api/property';
+} from '../api/metadata';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../schema/logic_node';
@@ -25,7 +25,7 @@ import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
-import {FieldMetadataState} from './property';
+import {FieldMetadataState} from './metadata';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {

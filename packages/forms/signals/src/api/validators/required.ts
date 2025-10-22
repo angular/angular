@@ -8,7 +8,7 @@
 
 import {computed} from '@angular/core';
 import {aggregateMetadata, metadata, validate} from '../logic';
-import {REQUIRED} from '../property';
+import {REQUIRED} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {requiredError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
