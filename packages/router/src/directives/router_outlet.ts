@@ -29,6 +29,8 @@ import {
   TemplateRef,
   Optional,
   EmbeddedViewRef,
+  ContentChild,
+  AfterViewInit,
 } from '@angular/core';
 import {combineLatest, merge, of, Subscription, observeOn, asapScheduler} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -159,6 +161,51 @@ export interface RouterOutletContract {
 
 /**
  * @description
+ * Structural directive that renders template content **only when the host `RouterOutlet`
+ * has no activated component**.
+ *
+ * Put `*routerOutletPlaceholder` inside the content of a `<router-outlet>` to provide
+ * lightweight fallback/empty-state markup (e.g. skeleton, hint, or CTA) which appears
+ * whenever the outlet is not displaying a routed component. As soon as the outlet
+ * activates a component, the placeholder view is removed; when the outlet deactivates
+ * and no component is attached, the placeholder view is recreated.
+ *
+ * This directive must be used **inside** a `RouterOutlet` content projection.
+ *
+ * @usageNotes
+ *
+ * ### Basic usage
+ * Render a message or skeleton while there is no activated route:
+ * ```html
+ * <router-outlet>
+ *   <app-skeleton *routerOutletPlaceholder />
+ * </router-outlet>
+ * ```
+ *
+ * ### Named outlets
+ * Works the same for named outlets:
+ * ```html
+ * <router-outlet name="details">
+ *   <app-skeleton *routerOutletPlaceholder />
+ * </router-outlet>
+ * ```
+ *
+ * @see {@link RouterOutlet}
+ * @publicApi
+ */
+@Directive({
+  selector: '[routerOutletPlaceholder]',
+})
+export class RouterOutletPlaceholder {
+  constructor(public readonly templateRef: TemplateRef<void>) {}
+
+  static ngTemplateContextGuard(dir: RouterOutletPlaceholder, ctx: any): ctx is void {
+    return true;
+  }
+}
+
+/**
+ * @description
  *
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
  *
@@ -210,13 +257,14 @@ export interface RouterOutletContract {
   selector: 'router-outlet, ng-container[routerOutlet]',
   exportAs: 'outlet',
 })
-export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
+export class RouterOutlet implements OnDestroy, OnInit, AfterViewInit, RouterOutletContract {
   private activated: ComponentRef<any> | null = null;
   /** @internal */
   get activatedComponentRef(): ComponentRef<any> | null {
     return this.activated;
   }
   private _activatedRoute: ActivatedRoute | null = null;
+  private _placeholderRef: EmbeddedViewRef<void> | null = null;
   /**
    * The name of the outlet
    *
@@ -235,6 +283,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    * subtree.
    */
   @Output('detach') detachEvents = new EventEmitter<unknown>();
+
+  /**
+   * Placeholder template that will be rendered if the outlet is not activated.
+   */
+  @ContentChild(RouterOutletPlaceholder) placeholder: RouterOutletPlaceholder | null = null;
 
   /**
    * Data that will be provided to the child injector through the `ROUTER_OUTLET_DATA` token.
@@ -277,6 +330,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.parentContexts.onChildOutletDestroyed(this.name);
     }
     this.inputBinder?.unsubscribeFromRouteData(this);
+  }
+
+  ngAfterViewInit(): void {
+    this.updatePlaceholder();
   }
 
   private isTrackedInParentContexts(outletName: string) {
@@ -355,6 +412,11 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.activated = null;
     this._activatedRoute = null;
     this.detachEvents.emit(cmp.instance);
+
+    queueMicrotask(() => {
+      this.updatePlaceholder();
+    });
+
     return cmp;
   }
 
@@ -367,6 +429,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.location.insert(ref.hostView);
     this.inputBinder?.bindActivatedRouteToOutletComponent(this);
     this.attachEvents.emit(ref.instance);
+    this.updatePlaceholder();
   }
 
   deactivate(): void {
@@ -376,6 +439,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       this.activated = null;
       this._activatedRoute = null;
       this.deactivateEvents.emit(c);
+
+      queueMicrotask(() => {
+        this.updatePlaceholder();
+      });
     }
   }
 
@@ -409,87 +476,16 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     this.changeDetector.markForCheck();
     this.inputBinder?.bindActivatedRouteToOutletComponent(this);
     this.activateEvents.emit(this.activated.instance);
-  }
-}
-
-/**
- * @description
- * Structural directive that renders template content **only when the host `RouterOutlet`
- * has no activated component**.
- *
- * Put `*routerOutletPlaceholder` inside the content of a `<router-outlet>` to provide
- * lightweight fallback/empty-state markup (e.g. skeleton, hint, or CTA) which appears
- * whenever the outlet is not displaying a routed component. As soon as the outlet
- * activates a component, the placeholder view is removed; when the outlet deactivates
- * and no component is attached, the placeholder view is recreated.
- *
- * This directive must be used **inside** a `RouterOutlet` content projection. Using it
- * elsewhere will throw an error.
- *
- * @usageNotes
- *
- * ### Basic usage
- * Render a message or skeleton while there is no activated route:
- * ```html
- * <router-outlet>
- *   <app-skeleton *routerOutletPlaceholder />
- * </router-outlet>
- * ```
- *
- * ### Named outlets
- * Works the same for named outlets:
- * ```html
- * <router-outlet name="details">
- *   <app-skeleton *routerOutletPlaceholder />
- * </router-outlet>
- * ```
- *
- * @throws Error if applied outside of a `<router-outlet>` content.
- *
- * @see {@link RouterOutlet}
- * @publicApi
- */
-@Directive({
-  selector: '[routerOutletPlaceholder]',
-})
-export class RouterOutletPlaceholder implements OnInit, OnDestroy {
-  private readonly subscription: Subscription;
-
-  private viewRef: EmbeddedViewRef<void> | void = undefined;
-
-  constructor(
-    private readonly viewContainer: ViewContainerRef,
-    private readonly templateRef: TemplateRef<void>,
-    @Optional() private readonly routerOutlet: RouterOutlet,
-  ) {
-    if (this.routerOutlet === null) {
-      throw new Error(`*routerOutletPlaceholder can only be applied within <router-outlet />`);
-    }
-
-    this.subscription = merge(
-      this.routerOutlet.activateEvents,
-      this.routerOutlet.deactivateEvents.pipe(observeOn(asapScheduler)),
-    ).subscribe(() => this.updatePlaceholder());
-  }
-
-  ngOnInit() {
     this.updatePlaceholder();
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
-
-  private updatePlaceholder(): void {
-    if (this.routerOutlet.isActivated) {
-      this.viewRef = this.viewRef?.destroy();
-    } else {
-      this.viewRef ??= this.viewContainer.createEmbeddedView(this.templateRef);
+  private updatePlaceholder() {
+    if (this.activated) {
+      this._placeholderRef?.destroy();
+      this._placeholderRef = null;
+    } else if (this.placeholder) {
+      this._placeholderRef ||= this.location.createEmbeddedView(this.placeholder.templateRef);
     }
-  }
-
-  static ngTemplateContextGuard(dir: RouterOutletPlaceholder, ctx: any): ctx is void {
-    return true;
   }
 }
 
