@@ -10,7 +10,7 @@ import {computed, resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
-import {property, validateTree} from '../logic';
+import {metadata, validateTree} from '../logic';
 import {FieldPath, FieldTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
@@ -64,7 +64,7 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
   // handles the sync result, and the async validator handles the Promise.
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
-  const VALIDATOR_MEMO = property(path, ({value}) => {
+  const VALIDATOR_MEMO = metadata(path, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
   validateTree(path, ({state, fieldOf}) => {

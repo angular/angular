@@ -15,7 +15,7 @@ import {
   applyEach,
   customError,
   form,
-  property,
+  metadata,
   required,
   schema,
   SchemaOrSchemaFn,
@@ -56,7 +56,7 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = property(p.name, ({value}) => {
+      const RES = metadata(p.name, ({value}) => {
         return resource({
           params: () => ({x: value()}),
           loader: async ({params}) => `got: ${params.x}`,
@@ -98,7 +98,7 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = property(p.name, ({value}) => {
+        const RES = metadata(p.name, ({value}) => {
           return resource({
             params: () => ({x: value()}),
             loader: async ({params}) => `got: ${params.x}`,

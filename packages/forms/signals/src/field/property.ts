@@ -29,7 +29,7 @@ export class FieldPropertyState {
       // Property factories are run in the form's injection context so they can create resources
       // and inject DI dependencies.
       runInInjectionContext(this.node.structure.injector, () => {
-        for (const [key, factory] of this.node.logicNode.logic.getPropertyFactoryEntries()) {
+        for (const [key, factory] of this.node.logicNode.logic.getMetadataFactoryEntries()) {
           this.properties.set(key, factory(this.node.context));
         }
       }),
@@ -47,7 +47,7 @@ export class FieldPropertyState {
     // we just create its computed on the fly.
     cast<AggregateMetadataKey<unknown, unknown>>(prop);
     if (!this.properties.has(prop)) {
-      const logic = this.node.logicNode.logic.getAggregateProperty(prop);
+      const logic = this.node.logicNode.logic.getAggregateMetadata(prop);
       const result = computed(() => logic.compute(this.node.context));
       this.properties.set(prop, result);
     }
@@ -64,7 +64,7 @@ export class FieldPropertyState {
       // For aggregate properties, they get added to the map lazily, on first access, so we can't
       // rely on checking presence in the properties map. Instead we check if there is any logic for
       // the given property.
-      return this.node.logicNode.logic.hasAggregateProperty(prop);
+      return this.node.logicNode.logic.hasAggregateMetadata(prop);
     } else {
       // Non-aggregate proeprties get added to our properties map on construction, so we can just
       // refer to their presence in the map.

@@ -7,7 +7,7 @@
  */
 
 import {computed} from '@angular/core';
-import {aggregateProperty, property, validate} from '../logic';
+import {aggregateMetadata, metadata, validate} from '../logic';
 import {MIN} from '../property';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {minError} from '../validation_errors';
@@ -34,10 +34,10 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = property(path, (ctx) =>
+  const MIN_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
   );
-  aggregateProperty(path, MIN, ({state}) => state.property(MIN_MEMO)!());
+  aggregateMetadata(path, MIN, ({state}) => state.property(MIN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
