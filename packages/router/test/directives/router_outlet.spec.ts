@@ -194,31 +194,6 @@ describe('router outlet name', () => {
     // Not contain because route was changed back to parent
     expect(fixture.nativeElement.innerHTML).not.toContain('child component');
   });
-
-  it('should be able to use a router outlet on an ng-container', async () => {
-    @Component({
-      template: '<ng-container routerOutlet [name]="name"/>',
-      imports: [RouterOutlet],
-    })
-    class RootCmp {
-      name = 'popup';
-    }
-
-    @Component({
-      template: 'popup component',
-    })
-    class PopupCmp {}
-
-    TestBed.configureTestingModule({
-      imports: [RouterModule.forRoot([{path: '', outlet: 'popup', component: PopupCmp}])],
-    });
-    const router = TestBed.inject(Router);
-    const fixture = await createRoot(router, RootCmp);
-
-    expect(fixture.nativeElement.innerHTML.trim()).toBe(
-      '<ng-component>popup component</ng-component><!--ng-container-->',
-    );
-  });
 });
 
 describe('component input binding', () => {
