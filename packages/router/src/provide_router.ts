@@ -81,6 +81,7 @@ import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtoo
  *   }
  * );
  * ```
+ * @see [Router](guide/routing)
  *
  * @see {@link RouterFeatures}
  *
