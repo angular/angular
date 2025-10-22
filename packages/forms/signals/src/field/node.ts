@@ -25,7 +25,7 @@ import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
 import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
-import {FieldPropertyState} from './property';
+import {FieldMetadataState} from './property';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {
@@ -53,7 +53,7 @@ import {ValidationState} from './validation';
 export class FieldNode implements FieldState<unknown> {
   readonly structure: FieldNodeStructure;
   readonly validationState: ValidationState;
-  readonly propertyState: FieldPropertyState;
+  readonly metadataState: FieldMetadataState;
   readonly nodeState: FieldNodeState;
   readonly submitState: FieldSubmitState;
 
@@ -74,7 +74,7 @@ export class FieldNode implements FieldState<unknown> {
     this.structure = this.fieldAdapter.createStructure(this, options);
     this.validationState = this.fieldAdapter.createValidationState(this, options);
     this.nodeState = this.fieldAdapter.createNodeState(this, options);
-    this.propertyState = new FieldPropertyState(this);
+    this.metadataState = new FieldMetadataState(this);
     this.submitState = new FieldSubmitState(this);
   }
 
@@ -146,41 +146,41 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private propertyOrUndefined<M>(prop: AggregateMetadataKey<M, any>): Signal<M> | undefined {
-    return this.hasProperty(prop) ? this.property(prop) : undefined;
+  private metadataOrUndefined<M>(key: AggregateMetadataKey<M, any>): Signal<M> | undefined {
+    return this.hasMetadata(key) ? this.metadata(key) : undefined;
   }
 
   get max(): Signal<number | undefined> | undefined {
-    return this.propertyOrUndefined(MAX);
+    return this.metadataOrUndefined(MAX);
   }
 
   get maxLength(): Signal<number | undefined> | undefined {
-    return this.propertyOrUndefined(MAX_LENGTH);
+    return this.metadataOrUndefined(MAX_LENGTH);
   }
 
   get min(): Signal<number | undefined> | undefined {
-    return this.propertyOrUndefined(MIN);
+    return this.metadataOrUndefined(MIN);
   }
 
   get minLength(): Signal<number | undefined> | undefined {
-    return this.propertyOrUndefined(MIN_LENGTH);
+    return this.metadataOrUndefined(MIN_LENGTH);
   }
 
   get pattern(): Signal<readonly RegExp[]> | undefined {
-    return this.propertyOrUndefined(PATTERN);
+    return this.metadataOrUndefined(PATTERN);
   }
 
   get required(): Signal<boolean> | undefined {
-    return this.propertyOrUndefined(REQUIRED);
+    return this.metadataOrUndefined(REQUIRED);
   }
 
-  property<M>(prop: AggregateMetadataKey<M, any>): Signal<M>;
-  property<M>(prop: MetadataKey<M>): M | undefined;
-  property<M>(prop: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
-    return this.propertyState.get(prop);
+  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
+  metadata<M>(key: MetadataKey<M>): M | undefined;
+  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
+    return this.metadataState.get(key);
   }
-  hasProperty(prop: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
-    return this.propertyState.has(prop);
+  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
+    return this.metadataState.has(key);
   }
 
   /**

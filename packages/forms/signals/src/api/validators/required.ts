@@ -39,9 +39,9 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
   const REQUIRED_MEMO = metadata(path, (ctx) =>
     computed(() => (config?.when ? config.when(ctx) : true)),
   );
-  aggregateMetadata(path, REQUIRED, ({state}) => state.property(REQUIRED_MEMO)!());
+  aggregateMetadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!());
   validate(path, (ctx) => {
-    if (ctx.state.property(REQUIRED_MEMO)!() && isEmpty(ctx.value())) {
+    if (ctx.state.metadata(REQUIRED_MEMO)!() && isEmpty(ctx.value())) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {
