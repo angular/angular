@@ -362,8 +362,8 @@ importers:
         specifier: 0.2100.0-next.8
         version: 0.2100.0-next.8(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#6e0f021e72c4d9e18732ef655177682ff88357bd
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e0f021e72c4d9e18732ef655177682ff88357bd(@modelcontextprotocol/sdk@1.20.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#b7b31bc86af715aed506382f2394613b741c840b
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b7b31bc86af715aed506382f2394613b741c840b(@modelcontextprotocol/sdk@1.20.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -1769,9 +1769,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e0f021e72c4d9e18732ef655177682ff88357bd':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e0f021e72c4d9e18732ef655177682ff88357bd}
-    version: 0.0.0-b02901c21fa1d40a4272881a9bf75068d1ca4ad9
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b7b31bc86af715aed506382f2394613b741c840b':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b7b31bc86af715aed506382f2394613b741c840b}
+    version: 0.0.0-52a1e1b2a2068f8d040417fcfe4fc0b08483e957
     hasBin: true
 
   '@angular/ssr@21.0.0-next.8':
@@ -4311,8 +4311,8 @@ packages:
     resolution: {integrity: sha512-tNe7a6U4rCpxLMBaR0SIYTdjxGdL0Vwb3G1zY8++sPtHSvy7qd54u8CIB0Z+Y6t5tc9pNYMYCMwhE/wdSY7ltg==}
     engines: {node: '>=18.12'}
 
-  '@pnpm/dependency-path@1001.1.2':
-    resolution: {integrity: sha512-fih99/lY+HRRak0U0KMKAO7+nacilWMcvFTH6YDKzjCBTOhxDr6Eeap2mF7uf4ED4dnKsQVNUGmFpvaSXSuFCQ==}
+  '@pnpm/dependency-path@1001.1.3':
+    resolution: {integrity: sha512-ScPXDrlpNNrvV+l4Z1Mh7HjejkltQWfSa3PIaB+WJ3h+PoC1w5blbgfq6ENdHdkRU7L14ie/3MqUGMIx2gZldA==}
     engines: {node: '>=18.12'}
 
   '@pnpm/graceful-fs@1000.0.1':
@@ -4327,8 +4327,8 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@pnpm/types@1000.8.0':
-    resolution: {integrity: sha512-yx86CGHHquWAI0GgKIuV/RnYewcf5fVFZemC45C/K2cX0uV8GB8TUP541ZrokWola2fZx5sn1vL7xzbceRZfoQ==}
+  '@pnpm/types@1000.9.0':
+    resolution: {integrity: sha512-UvDTCxnbyqkTg2X0dBOuZ4IdFJ8g4UFu0Ybv/5/cZAxCWVhNl1hC/Xc9hR4tZrlBL0NRFePLRhO/iw9LmA1lbw==}
     engines: {node: '>=18.12'}
 
   '@protobufjs/aspromise@1.1.2':
@@ -13995,7 +13995,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/6e0f021e72c4d9e18732ef655177682ff88357bd(@modelcontextprotocol/sdk@1.20.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/b7b31bc86af715aed506382f2394613b741c840b(@modelcontextprotocol/sdk@1.20.0)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -14012,7 +14012,7 @@ snapshots:
       '@octokit/request-error': 7.0.1
       '@octokit/rest': 22.0.0
       '@octokit/types': 15.0.1
-      '@pnpm/dependency-path': 1001.1.2
+      '@pnpm/dependency-path': 1001.1.3
       '@types/cli-progress': 3.11.6
       '@types/ejs': 3.1.5
       '@types/events': 3.0.3
@@ -15150,14 +15150,6 @@ snapshots:
   '@colors/colors@1.5.0': {}
 
   '@colors/colors@1.6.0': {}
-
-  '@conventional-changelog/git-client@1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)':
-    dependencies:
-      '@types/semver': 7.7.1
-      semver: 7.7.3
-    optionalDependencies:
-      conventional-commits-filter: 5.0.0
-      conventional-commits-parser: 6.2.0
 
   '@conventional-changelog/git-client@1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)':
     dependencies:
@@ -17043,7 +17035,7 @@ snapshots:
 
   '@octokit/endpoint@11.0.1':
     dependencies:
-      '@octokit/types': 15.0.0
+      '@octokit/types': 15.0.1
       universal-user-agent: 7.0.3
 
   '@octokit/endpoint@9.0.6':
@@ -17257,10 +17249,10 @@ snapshots:
 
   '@pnpm/crypto.polyfill@1000.1.0': {}
 
-  '@pnpm/dependency-path@1001.1.2':
+  '@pnpm/dependency-path@1001.1.3':
     dependencies:
       '@pnpm/crypto.hash': 1000.2.1
-      '@pnpm/types': 1000.8.0
+      '@pnpm/types': 1000.9.0
       semver: 7.7.3
 
   '@pnpm/graceful-fs@1000.0.1':
@@ -17277,7 +17269,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@pnpm/types@1000.8.0': {}
+  '@pnpm/types@1000.9.0': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -19932,9 +19924,9 @@ snapshots:
       '@hutson/parse-repository-url': 5.0.0
       add-stream: 1.0.0
       conventional-changelog-writer: 8.2.0
-      conventional-commits-parser: 6.2.0
-      git-raw-commits: 5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
-      git-semver-tags: 8.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
+      conventional-commits-parser: 6.2.1
+      git-raw-commits: 5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
+      git-semver-tags: 8.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
       hosted-git-info: 7.0.2
       normalize-package-data: 6.0.2
       read-package-up: 11.0.0
@@ -21704,14 +21696,6 @@ snapshots:
     dependencies:
       assert-plus: 1.0.0
 
-  git-raw-commits@5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0):
-    dependencies:
-      '@conventional-changelog/git-client': 1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
-      meow: 13.2.0
-    transitivePeerDependencies:
-      - conventional-commits-filter
-      - conventional-commits-parser
-
   git-raw-commits@5.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1):
     dependencies:
       '@conventional-changelog/git-client': 1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
@@ -21720,9 +21704,9 @@ snapshots:
       - conventional-commits-filter
       - conventional-commits-parser
 
-  git-semver-tags@8.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0):
+  git-semver-tags@8.0.0(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1):
     dependencies:
-      '@conventional-changelog/git-client': 1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.0)
+      '@conventional-changelog/git-client': 1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)
       meow: 13.2.0
     transitivePeerDependencies:
       - conventional-commits-filter
