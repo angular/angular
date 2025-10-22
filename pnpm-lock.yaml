@@ -40,8 +40,8 @@ importers:
         specifier: 21.0.0-next.8
         version: 21.0.0-next.8(0172c46e8f6312dd8ea4d6b7b78596e2)
       '@angular/cdk':
-        specifier: 21.0.0-next.9
-        version: 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 21.0.0-next.10
+        version: 21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-next.8
         version: 21.0.0-next.8(@types/node@20.19.21)(chokidar@4.0.3)
@@ -70,8 +70,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 21.0.0-next.9
-        version: 21.0.0-next.9(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 21.0.0-next.10
+        version: 21.0.0-next.10(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -269,7 +269,7 @@ importers:
         version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -362,8 +362,8 @@ importers:
         specifier: 0.2100.0-next.8
         version: 0.2100.0-next.8(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#39cbcff2877b488792dd3aaf02ea818c8f023371
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/39cbcff2877b488792dd3aaf02ea818c8f023371(@modelcontextprotocol/sdk@1.20.0)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#20aae7d5dea3f463edc82a945f37c489df7ee201
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/20aae7d5dea3f463edc82a945f37c489df7ee201(@modelcontextprotocol/sdk@1.20.0)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -527,8 +527,8 @@ importers:
         specifier: 21.0.0-next.8
         version: 21.0.0-next.8(5afd289b58384f88e072cb4b2a870cc9)
       '@angular/cdk':
-        specifier: 21.0.0-next.9
-        version: 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 21.0.0-next.10
+        version: 21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-next.8
         version: 21.0.0-next.8(@types/node@24.9.1)(chokidar@4.0.3)
@@ -551,8 +551,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 21.0.0-next.9
-        version: 21.0.0-next.9(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 21.0.0-next.10
+        version: 21.0.0-next.10(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -696,7 +696,7 @@ importers:
         version: 11.12.0
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -1692,8 +1692,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@21.0.0-next.9':
-    resolution: {integrity: sha512-anQ2gbggsj0b5PODlAanidwA5tQmZ0U7bgl9NGFilDiE/1y/8PUVvqssyttftLhroDb5RYvaN3Wt7XcyQbprkA==}
+  '@angular/cdk@21.0.0-next.10':
+    resolution: {integrity: sha512-2TrKv6q92eWHx+pB0WcignKqBnW6dY+1lFA1Nh0Dg6Al+/ZWhPP89dQUZylWlRQqKlolClJulRfE5PQXidlOIA==}
     peerDependencies:
       '@angular/common': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/core': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
@@ -1759,19 +1759,19 @@ packages:
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
     version: 2.1.6
 
-  '@angular/material@21.0.0-next.9':
-    resolution: {integrity: sha512-lHgK+Kl8NGwikADkU359MNZ7UwDXUt7BiNCUknb28+b8I/eUZkFhrpW4F2zJn/43A4Fg+rXvDIS6rQhbnqVBiw==}
+  '@angular/material@21.0.0-next.10':
+    resolution: {integrity: sha512-oh3SA4b4SLqBpPEWYO00LOSQKUSrSM96ladmr2O7bOpHk4VfRJBaSiX3Tkr/K1bsNrg88LZp3lBYtMN7soIxoQ==}
     peerDependencies:
-      '@angular/cdk': 21.0.0-next.9
+      '@angular/cdk': 21.0.0-next.10
       '@angular/common': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/core': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/forms': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/39cbcff2877b488792dd3aaf02ea818c8f023371':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/39cbcff2877b488792dd3aaf02ea818c8f023371}
-    version: 0.0.0-4425eed914bab0e311066d4b930c35576b7d200e
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/20aae7d5dea3f463edc82a945f37c489df7ee201':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/20aae7d5dea3f463edc82a945f37c489df7ee201}
+    version: 0.0.0-5c8f5f7c0a4e805a8ee33706ee2df99854396bbd
     hasBin: true
 
   '@angular/ssr@21.0.0-next.8':
@@ -13871,7 +13871,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)':
+  '@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -13985,9 +13985,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
-  '@angular/material@21.0.0-next.9(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@21.0.0-next.10(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -13995,7 +13995,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/39cbcff2877b488792dd3aaf02ea818c8f023371(@modelcontextprotocol/sdk@1.20.0)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/20aae7d5dea3f463edc82a945f37c489df7ee201(@modelcontextprotocol/sdk@1.20.0)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -24376,9 +24376,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-next.10(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
