@@ -12,6 +12,113 @@ Route customization can become valuable when your application needs:
 
 NOTE: Before implementing custom strategies, ensure the default router behavior doesn't meet your needs. Angular's default routing is optimized for common use cases and provides the best balance of performance and simplicity. Customizing route strategies can create additional code complexity and have performance implications on memory usage if not carefully managed.
 
+## Router configuration options
+
+The `withRouterConfig` or `RouterModule.forRoot` allows providing additional `RouterConfigOptions` to adjust the Router’s behavior.
+
+### Handle canceled navigations
+
+`canceledNavigationResolution` controls how the Router restores browser history when a navigation is canceled. The default value is `'replace'`, which reverts to the pre-navigation URL with `location.replaceState`. In practice, this means that any time the address bar has already been updated for the navigation, such as with the browser back or forward buttons, the history entry is overwritten with the "rollback" if the navigation fails or is rejected by a guard.
+Switching to `'computed'` keeps the in-flight history index in sync with the Angular navigation, so canceling a back button navigation triggers a forward navigation (and vice versa) to return to the original page.
+
+This setting is most helpful when your app uses `urlUpdateStrategy: 'eager'` or when guards frequently cancel popstate navigations initiated by the browser.
+
+```ts
+provideRouter(routes, withRouterConfig({ canceledNavigationResolution: 'computed' }));
+```
+
+### React to same-URL navigations
+
+`onSameUrlNavigation` configures what should happen when the user asks to navigate to the current URL. The default `'ignore'` skips work, while `'reload'` re-runs guards and resolvers and refreshes component instances.
+
+This is useful when you want repeated clicks on a list filter, left-nav item, or refresh button to trigger new data retrieval even though the URL does not change.
+
+```ts
+provideRouter(routes, withRouterConfig({ onSameUrlNavigation: 'reload' }));
+```
+
+You can also control this behavior on individual navigations rather than globally. This allows you to keep the keep the default of `'ignore'` while selectively enabling reload behavior for specific use cases:
+
+```ts
+router.navigate(['/some-path'], { onSameUrlNavigation: 'reload' });
+```
+
+### Control parameter inheritance
+
+`paramsInheritanceStrategy` defines how route parameters and data flow from parent routes.
+
+With the default `'emptyOnly'`, child routes inherit params only when their path is empty or the parent does not declare a component.
+
+```ts
+provideRouter(routes, withRouterConfig({ paramsInheritanceStrategy: 'always' }));
+```
+
+```ts
+export const routes: Routes = [
+  {
+    path: 'org/:orgId',
+    component: Organization,
+    children: [
+      {
+        path: 'projects/:projectId',
+        component: Project,
+        children: [
+          {
+            path: 'customers/:customerId',
+            component: Customer
+          }
+        ]
+      }
+    ]
+  }
+];
+```
+
+```ts
+@Component({ /* ... */})
+export class CustomerComponent {
+  private route = inject(ActivatedRoute);
+
+  orgId = this.route.parent?.parent?.snapshot.params['orgId'];
+  projectId = this.route.parent?.snapshot.params['projectId'];
+  customerId = this.route.snapshot.params['customerId'];
+}
+```
+
+Using `'always'` ensures matrix parameters, route data, and resolved values are available further down the route tree—handy when you share contextual identifiers across feature areas such as `/org/:orgId/projects/:projectId/customers/:customerId`.
+
+```ts
+@Component({ /* ... */})
+export class CustomerComponent {
+  private route = inject(ActivatedRoute);
+
+  // All parent parameters are available directly
+  orgId = this.route.snapshot.params['orgId'];
+  projectId = this.route.snapshot.params['projectId'];
+  customerId = this.route.snapshot.params['customerId'];
+}
+```
+
+### Decide when the URL updates
+
+`urlUpdateStrategy` determines when Angular writes to the browser address bar. The default `'deferred'` waits for a successful navigation before changing the URL. Use `'eager'` to update immediately when navigation starts. Eager updates make it easier to surface the attempted URL if navigation fails due to guards or errors, but can briefly show an in-progress URL if you have long-running guards.
+
+Consider this when your analytics pipeline needs to see the attempted route even if guards block it.
+
+```ts
+provideRouter(routes, withRouterConfig({ urlUpdateStrategy: 'eager' }));
+```
+
+### Choose default query parameter handling
+
+`defaultQueryParamsHandling` sets the fallback behavior for `Router.createUrlTree` when the call does not specify `queryParamsHandling`. `'replace'` is the default and swaps out the existing query string. `'merge'` combines the provided values with the current ones, and `'preserve'` keeps the existing query parameters unless you explicitly supply new ones.
+
+```ts
+provideRouter(routes, withRouterConfig({ defaultQueryParamsHandling: 'merge' }));
+```
+
+This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
+
 Angular Router exposes four main areas for customization:
 
   <docs-pill-row>
