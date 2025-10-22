@@ -8,7 +8,7 @@
 
 import {computed} from '@angular/core';
 import {aggregateMetadata, metadata, validate} from '../logic';
-import {MIN_LENGTH} from '../property';
+import {MIN_LENGTH} from '../metadata';
 import {FieldPath, LogicFn, PathKind} from '../types';
 import {minLengthError} from '../validation_errors';
 import {

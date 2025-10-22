@@ -8,7 +8,7 @@
 
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
-import {AggregateMetadataKey, MetadataKey} from './property';
+import {AggregateMetadataKey, MetadataKey} from './metadata';
 import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
 
 /**
