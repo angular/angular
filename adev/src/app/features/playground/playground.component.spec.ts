@@ -13,6 +13,7 @@ import {EmbeddedTutorialManager} from '../../editor';
 import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import TutorialPlayground from './playground.component';
+import {provideRouter} from '@angular/router';
 
 describe('TutorialPlayground', () => {
   let component: TutorialPlayground;
@@ -28,6 +29,7 @@ describe('TutorialPlayground', () => {
     TestBed.configureTestingModule({
       imports: [TutorialPlayground],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,

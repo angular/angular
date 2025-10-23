@@ -19,6 +19,7 @@ export async function generatePlaygroundRoutes(
   const templates = Object.entries(configs).map(([path, config]) => ({
     path: `playground/${path}`,
     label: config.title,
+    id: path,
   }));
 
   return {
