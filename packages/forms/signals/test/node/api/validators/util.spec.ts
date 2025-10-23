@@ -17,7 +17,7 @@ import {FieldTree} from '../../../../src/api/types';
 import {addDefaultField} from '../../../../src/field/validation';
 
 describe('validators utils', () => {
-  describe('makeValidationResultCustomIfNeeded', () => {
+  describe('ensureCustomValidationResult', () => {
     it('should return null as is', () => {
       expect(ensureCustomValidationResult(null)).toBe(null);
     });

@@ -301,7 +301,10 @@ export function customError<E extends Partial<ValidationErrorWithField>>(
 /**
  * Common interface for all validation errors.
  *
- * Use the creation functions to create an instance (e.g. `requiredError`, `minError`, etc.).
+ * This can be returned from validators.
+ *
+ * It's also used by the creation functions to create an instance
+ * (e.g. `requiredError`, `minError`, etc.).
  *
  * @category validation
  * @experimental 21.0.0
@@ -313,9 +316,36 @@ export interface ValidationError {
   readonly message?: string;
 }
 
+/**
+ * Validation error with a field.
+ *
+ * This is returned from field state, e.g., catField.errors() would be of a list of errors with
+ * `field: catField` bound to state.
+ */
 export interface ValidationErrorWithField extends ValidationError {
   /** The field associated with this error. */
   readonly field: FieldTree<unknown>;
+}
+
+/**
+ * Validation error with optional field.
+ *
+ * This is generally used in places where the result might have a field.
+ * e.g., as a result of a `validateTree`, or when handling form submission.
+ */
+export interface ValidationErrorWithOptionalField extends ValidationError {
+  /** The field associated with this error. */
+  readonly field?: FieldTree<unknown>;
+}
+
+/**
+ * Validation error with no field.
+ *
+ * This is used to strongly enforce that fields are not allowed in validation result.
+ */
+export interface ValidationErrorWithoutField extends ValidationError {
+  /** The field associated with this error. */
+  readonly field?: never;
 }
 
 /**
