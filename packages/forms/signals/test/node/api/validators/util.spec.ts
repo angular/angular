@@ -9,15 +9,20 @@
 import {ensureCustomValidationResult} from '../../../../src/api/validators/util';
 import {
   customError,
+  minError,
   ValidationError,
   ValidationErrorWithField,
 } from '../../../../src/api/validation_errors';
 import {FieldTree} from '../../../../src/api/types';
+import {addDefaultField} from '../../../../src/field/validation';
 
 describe('validators utils', () => {
   describe('makeValidationResultCustomIfNeeded', () => {
-    it('should return null and undefined as is', () => {
+    it('should return null as is', () => {
       expect(ensureCustomValidationResult(null)).toBe(null);
+    });
+
+    it('should return undefined as is', () => {
       expect(ensureCustomValidationResult(undefined)).toBe(undefined);
     });
 
@@ -25,6 +30,34 @@ describe('validators utils', () => {
       const error: ValidationErrorWithField = {kind: 'meow', field: {} as FieldTree<unknown>};
       const result = ensureCustomValidationResult(error);
       expect(result).toEqual(customError(error));
+    });
+
+    it('should not wrap an error with the same shape', () => {
+      class WeirdError {
+        readonly kind = 'pirojok-the-weird-error';
+      }
+
+      const weirdError = addDefaultField(new WeirdError(), {} as FieldTree<unknown>);
+      const result = ensureCustomValidationResult(weirdError);
+      expect(result).toBe(weirdError);
+    });
+
+    it('should not wrap a custom user error', () => {
+      class PirojokError implements ValidationError {
+        readonly kind = 'pirojok-the-error';
+
+        constructor(readonly flavor: string) {}
+      }
+
+      const pirojokError = addDefaultField(new PirojokError('jam'), {} as FieldTree<unknown>);
+      const result = ensureCustomValidationResult(pirojokError);
+      expect(result).toBe(pirojokError);
+    });
+
+    it('should not wrap a min error', () => {
+      const min = minError(27);
+      const result = ensureCustomValidationResult(min);
+      expect(result).toBe(min);
     });
 
     it('should not wrap an error that is not a plain object', () => {
