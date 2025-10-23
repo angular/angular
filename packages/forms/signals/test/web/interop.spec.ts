@@ -220,6 +220,63 @@ describe('ControlValueAccessor', () => {
     });
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
+
+  it('should not throw if the ControlValueAccessor implementation uses signals', () => {
+    @Component({
+      selector: 'signal-custom-control',
+      template: `<input [value]="value()" [disabled]="disabled()" />`,
+      providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControl, multi: true}],
+    })
+    class CustomControl implements ControlValueAccessor {
+      value = signal('');
+      disabled = signal(false);
+
+      private onChangeFn?: (value: string) => void;
+      private onTouchedFn?: () => void;
+
+      writeValue(newValue: string): void {
+        this.value.set(newValue);
+      }
+
+      registerOnChange(fn: (value: string) => void): void {
+        this.onChangeFn = fn;
+      }
+
+      registerOnTouched(fn: () => void): void {
+        this.onTouchedFn = fn;
+      }
+
+      setDisabledState(disabled: boolean): void {
+        this.disabled.set(disabled);
+      }
+
+      onBlur() {
+        this.onTouchedFn?.();
+      }
+
+      onInput(newValue: string) {
+        this.value.set(newValue);
+        this.onChangeFn?.(newValue);
+      }
+    }
+
+    @Component({
+      selector: 'app-root',
+      imports: [CustomControl, Field],
+      template: `<signal-custom-control [field]="f" />`,
+    })
+    class App {
+      disabled = signal(false);
+      readonly f = form(signal('test'), (f) => {
+        disabled(f, () => this.disabled());
+      });
+    }
+
+    const fixture = TestBed.createComponent(App);
+    expect(() => fixture.detectChanges()).not.toThrowError(/NG0600/);
+
+    expect(() => fixture.componentInstance.disabled.set(true)).not.toThrowError(/NG0600/);
+  });
 });
 
 function act<T>(fn: () => T): T {
