@@ -981,6 +981,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `TouchedChangeEvent` with the `touched` property being `true`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAsTouched(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void;
   /**
@@ -1016,6 +1019,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `PristineChangeEvent` with the `pristine` property being `false`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAllAsDirty(opts: {emitEvent?: boolean} = {}): void {
     this.markAsDirty({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
@@ -1032,6 +1038,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `TouchedChangeEvent` with the `touched` property being `true`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAllAsTouched(opts: {emitEvent?: boolean} = {}): void {
     this.markAsTouched({onlySelf: true, emitEvent: opts.emitEvent, sourceControl: this});
@@ -1056,6 +1065,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `TouchedChangeEvent` with the `touched` property being `false`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAsUntouched(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void;
   /**
@@ -1103,6 +1115,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `PristineChangeEvent` with the `pristine` property being `false`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAsDirty(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void;
   /**
@@ -1147,6 +1162,9 @@ export abstract class AbstractControl<
    * * `emitEvent`: When true or not supplied (the default), the `events`
    * observable emits a `PristineChangeEvent` with the `pristine` property being `true`.
    * When false, no events are emitted.
+   *
+   * @see [Managing form control state](guide/forms/reactive-forms#managing-form-control-state)
+   *
    */
   markAsPristine(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void;
   /**
@@ -1361,6 +1379,9 @@ export abstract class AbstractControl<
    * `valueChanges` and `events`
    * observables emit events with the latest status and value when the control is updated.
    * When false, no events are emitted.
+   *
+   * @see [Understanding propagation control](guide/forms/reactive-forms#understanding-event-emission)
+   *
    */
   updateValueAndValidity(opts?: {onlySelf?: boolean; emitEvent?: boolean}): void;
   /**
