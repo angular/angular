@@ -685,10 +685,11 @@ function resetControlBindings(lView: LView): void {
  */
 function controlBindingUpdated(bindings: unknown[], value: unknown): boolean {
   const index = nextControlBindingIndex();
-  ngDevMode && assertLessThanOrEqual(index, bindings.length, 'Control binding index out of range');
 
-  // If index is out of range, this is the first time we're checking the field state property and
-  // want to mark it as changed.
+  // The index should be less than the number of bindings if this is an update to a previously bound
+  // field state property, or exactly equal if this is the first update, in which case the binding
+  // will be marked as updated and appended below.
+  ngDevMode && assertLessThanOrEqual(index, bindings.length, 'Control binding index out of range');
   if (index < bindings.length && Object.is(value, bindings[index])) {
     return false;
   }
