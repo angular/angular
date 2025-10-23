@@ -6,17 +6,17 @@ Before you can use `HttpClient` in your app, you must configure it using [depend
 
 `HttpClient` is provided using the `provideHttpClient` helper function, which most apps include in the application `providers` in `app.config.ts`.
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
   ]
 };
-</docs-code>
+```
 
 If your app is using NgModule-based bootstrap instead, you can include `provideHttpClient` in the providers of your app's NgModule:
 
-<docs-code language="ts">
+```ts
 @NgModule({
   providers: [
     provideHttpClient(),
@@ -24,17 +24,17 @@ If your app is using NgModule-based bootstrap instead, you can include `provideH
   // ... other application configuration
 })
 export class AppModule {}
-</docs-code>
+```
 
 You can then inject the `HttpClient` service as a dependency of your components, services, or other classes:
 
-<docs-code language="ts">
+```ts
 @Injectable({providedIn: 'root'})
 export class ConfigService {
   private http = inject(HttpClient);
   // This service can now make HTTP requests via `this.http`.
 }
-</docs-code>
+```
 
 ## Configuring features of `HttpClient`
 
@@ -42,7 +42,7 @@ export class ConfigService {
 
 ### `withFetch`
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
@@ -50,7 +50,7 @@ export const appConfig: ApplicationConfig = {
     ),
   ]
 };
-</docs-code>
+```
 
 By default, `HttpClient` uses the [`XMLHttpRequest`](https://developer.mozilla.org/docs/Web/API/XMLHttpRequest) API to make requests. The `withFetch` feature switches the client to use the [`fetch`](https://developer.mozilla.org/docs/Web/API/Fetch_API) API instead.
 

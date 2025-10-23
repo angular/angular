@@ -6,10 +6,10 @@ Most front-end applications need to communicate with a server over the HTTP prot
 
 The HTTP client service offers the following major features:
 
-* The ability to request [typed response values](guide/http/making-requests#fetching-json-data)
-* Streamlined [error handling](guide/http/making-requests#handling-request-failure)
-* Request and response [interception](guide/http/interceptors)
-* Robust [testing utilities](guide/http/testing)
+- The ability to request [typed response values](guide/http/making-requests#fetching-json-data)
+- Streamlined [error handling](guide/http/making-requests#handling-request-failure)
+- Request and response [interception](guide/http/interceptors)
+- Robust [testing utilities](guide/http/testing)
 
 ## What's next
 
