@@ -18,6 +18,7 @@ import {
   MinValidationError,
   ValidationError,
 } from '../../../../src/api/validation_errors';
+import {FieldTree} from '../../../../src/api/types';
 
 describe('validation errors', () => {
   it('supports returning a a plain object ', () => {
@@ -91,6 +92,14 @@ describe('validation errors', () => {
 
           array.push(minError(5));
 
+          // Below is just a type test
+          if (!1) {
+            array.push({
+              kind: 'custom',
+              // @ts-expect-error
+              field: {} as FieldTree<unknown>,
+            });
+          }
           return array;
         });
       },
