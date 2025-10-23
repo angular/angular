@@ -36,6 +36,22 @@ describe('validation errors', () => {
     expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
   });
 
+  it('overrides field valid ', () => {
+    const cat = signal('meow');
+
+    const f = form(
+      cat,
+      (p) => {
+        validate(p, () => {
+          return {kind: 'i am a custom error', 'field': 'wow, I am not a real form'};
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+
+    expect(f().errors()[0].field).toBe(f);
+  });
+
   it('supports returning a list of errors', () => {
     const cat = signal('meow');
 

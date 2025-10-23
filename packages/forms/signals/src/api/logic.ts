@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {addDefaultField} from '../field/validation';
+import {addDefaultField, dropField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
 import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './metadata';
@@ -126,7 +126,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.logic.addSyncErrorRule((ctx) => {
     return ensureCustomValidationResult(
-      addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
+      addDefaultField(dropField(logic(ctx as FieldContext<TValue, TPathKind>)), ctx.field),
     );
   });
 }
