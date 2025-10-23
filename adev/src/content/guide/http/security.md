@@ -38,7 +38,7 @@ If your backend service uses different names for the XSRF token cookie or header
 
 Add it to the `provideHttpClient` call as follows:
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
@@ -49,13 +49,13 @@ export const appConfig: ApplicationConfig = {
     ),
   ]
 };
-</docs-code>
+```
 
 ### Disabling XSRF protection
 
 If the built-in XSRF protection mechanism doesn't work for your application, you can disable it using the `withNoXsrfProtection` feature:
 
-<docs-code language="ts">
+```ts
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
@@ -63,4 +63,4 @@ export const appConfig: ApplicationConfig = {
     ),
   ]
 };
-</docs-code>
+```
