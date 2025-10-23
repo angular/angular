@@ -7,7 +7,7 @@
  */
 
 import {stringify} from '../util/stringify'; // Adjust imports as per actual location
-import {ANIMATIONS_DISABLED, LongestAnimation, NodeAnimations} from './interfaces';
+import {ANIMATIONS_DISABLED, AnimationValue, LongestAnimation, NodeAnimations} from './interfaces';
 import {INJECTOR, LView, DECLARATION_LCONTAINER, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
@@ -16,6 +16,7 @@ import {TNode} from '../render3/interfaces/node';
 import {getBeforeNodeForView} from '../render3/node_manipulation';
 
 const DEFAULT_ANIMATIONS_DISABLED = false;
+const ANIMATION_LEAVE_DEBOUNCE_TIMEOUT = 10;
 
 export const areAnimationSupported =
   (typeof ngServerMode === 'undefined' || !ngServerMode) &&
@@ -291,4 +292,30 @@ export function leaveAnimationFunctionCleanup(
   clearLeavingNodes(tNode, nativeElement as HTMLElement);
   cleanupAfterLeaveAnimations(resolvers, cleanupFns);
   clearLViewNodeAnimationResolvers(lView, tNode);
+}
+
+/**
+ * We have to debounce leave animations due to potential for legitimate rapid calling of the instruction
+ * in cases with async control flow values. Due to composition with host bindings, we need to key off
+ * of the value, as composition with host bindings are a valid reason for rapid calls.
+ */
+export function debounceLeaveAnimation(
+  lView: LView,
+  tNode: TNode,
+  value: AnimationValue,
+  animateFn: Function,
+) {
+  const animations = getLViewLeaveAnimations(lView);
+  const nodeAnimations = animations.get(tNode.index) ?? {animateFns: []};
+  if (nodeAnimations.timeouts && nodeAnimations.timeouts.has(value)) {
+    clearTimeout(nodeAnimations.timeouts.get(value) as number);
+  }
+  const timeouts = (nodeAnimations.timeouts ??= new Map<AnimationValue, unknown>());
+  const timeoutId = setTimeout(() => {
+    timeouts.delete(value);
+    animateFn();
+  }, ANIMATION_LEAVE_DEBOUNCE_TIMEOUT);
+
+  timeouts.set(value, timeoutId);
+  animations.set(tNode.index, nodeAnimations);
 }

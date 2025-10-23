@@ -76,9 +76,12 @@ export interface LongestAnimation {
   duration: number;
 }
 
+export type AnimationValue = string | Function | AnimationFunction;
+
 export interface NodeAnimations {
   animateFns: Function[];
   resolvers?: VoidFunction[];
+  timeouts?: Map<AnimationValue, unknown>;
 }
 
 export interface AnimationLViewData {

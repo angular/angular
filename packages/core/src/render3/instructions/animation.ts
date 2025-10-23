@@ -33,6 +33,7 @@ import {
   cleanupEnterClassData,
   clearLeavingNodes,
   clearLViewNodeAnimationResolvers,
+  debounceLeaveAnimation,
   enterClassMap,
   getClassListFromValue,
   getLViewEnterAnimations,
@@ -251,11 +252,12 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
-  addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
-    runLeaveAnimations(lView, tNode, value),
-  );
-
-  initializeAnimationQueueScheduler(lView[INJECTOR]);
+  debounceLeaveAnimation(lView, tNode, value, () => {
+    addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
+      runLeaveAnimations(lView, tNode, value),
+    );
+    initializeAnimationQueueScheduler(lView[INJECTOR]);
+  });
 
   return ɵɵanimateLeave; // For chaining
 }
@@ -341,6 +343,7 @@ function animateLeaveClassRunner(
   for (const item of classList) {
     renderer.addClass(el, item);
   }
+
   // In the case that the classes added have no animations, we need to remove
   // the element right away. This could happen because someone is intentionally
   // preventing an animation via selector specificity.
@@ -384,13 +387,13 @@ export function ɵɵanimateLeaveListener(value: AnimationFunction): typeof ɵɵa
   const tNode = getCurrentTNode()!;
   cancelLeavingNodes(tNode, lView);
 
-  allLeavingAnimations.add(lView);
-
-  addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
-    runLeaveAnimationFunction(lView, tNode, value),
-  );
-
-  initializeAnimationQueueScheduler(lView[INJECTOR]);
+  debounceLeaveAnimation(lView, tNode, value, () => {
+    allLeavingAnimations.add(lView);
+    addAnimationToLView(getLViewLeaveAnimations(lView), tNode, () =>
+      runLeaveAnimationFunction(lView, tNode, value),
+    );
+    initializeAnimationQueueScheduler(lView[INJECTOR]);
+  });
 
   return ɵɵanimateLeaveListener; // For chaining
 }

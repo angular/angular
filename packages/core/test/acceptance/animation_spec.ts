@@ -1651,7 +1651,7 @@ describe('Animation', () => {
         encapsulation: ViewEncapsulation.None,
       })
       class TestComponent {
-        show = signal(false);
+        show = signal(true);
         cdr = inject(ChangeDetectorRef);
 
         toggle() {
@@ -1674,8 +1674,16 @@ describe('Animation', () => {
       cmp.toggle();
       fixture.detectChanges();
       tickAnimationFrames(1);
-      const paragraphs = fixture.debugElement.queryAll(By.css('p'));
-      expect(paragraphs.length).toBe(1);
+
+      fixture.debugElement
+        .query(By.css('p'))
+        .nativeElement.dispatchEvent(
+          new AnimationEvent('animationend', {animationName: 'fade-out'}),
+        );
+      fixture.detectChanges();
+      tickAnimationFrames(1);
+
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(0);
     }));
 
     it('should always run animations for `@for` loops when adding and removing quickly', fakeAsync(() => {
@@ -2045,7 +2053,6 @@ describe('Animation', () => {
       cmp.removeSecondToLast();
       fixture.detectChanges();
       tickAnimationFrames(1);
-
       expect(fixture.debugElement.queryAll(By.css('p.fade')).length).toBe(1);
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(4);
       fixture.debugElement
@@ -2219,6 +2226,7 @@ describe('Animation', () => {
       const fixture = TestBed.createComponent(TestComponent);
       const cmp = fixture.componentInstance;
       fixture.detectChanges();
+      tick(10);
 
       expect(fixture.debugElement.query(By.css('p.all-there-is'))).not.toBeNull();
       expect(fixture.debugElement.query(By.css('p.not-here.fade-out'))).not.toBeNull();
