@@ -749,7 +749,9 @@
       "wasLastNodeCreated",
       "writeDirectClass",
       "writeDirectStyle",
-      "writeToDirectiveInput"
+      "writeToDirectiveInput",
+      "DeferComponent",
+      "_DeferComponent"
     ]
   }
 }
