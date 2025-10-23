@@ -76,10 +76,10 @@ export interface ChildFieldContext<TValue> extends RootFieldContext<TValue> {
 export function createMetadataKey<TValue>(): MetadataKey<TValue>;
 
 // @public
-export function customError<E extends Partial<ValidationError>>(obj: WithField<E>): CustomValidationError;
+export function customError<E extends Partial<ValidationErrorWithField>>(obj: WithField<E>): CustomValidationError;
 
 // @public
-export function customError<E extends Partial<ValidationError>>(obj?: E): WithoutField<CustomValidationError>;
+export function customError<E extends Partial<ValidationErrorWithField>>(obj?: E): WithoutField<CustomValidationError>;
 
 // @public
 export class CustomValidationError implements ValidationError {
@@ -156,8 +156,8 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     // (undocumented)
     readonly disabledReasons: Signal<readonly DisabledReason[]>;
     // (undocumented)
-    readonly errors: Signal<ValidationError[]>;
-    readonly errorSummary: Signal<ValidationError[]>;
+    readonly errors: Signal<ValidationErrorWithField[]>;
+    readonly errorSummary: Signal<ValidationErrorWithField[]>;
     readonly fieldBindings: Signal<readonly Field<unknown>[]>;
     hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
     readonly hidden: Signal<boolean>;
@@ -175,10 +175,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 export type FieldTree<TValue, TKey extends string | number = string | number> = (() => FieldState<TValue, TKey>) & (TValue extends Array<infer U> ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TValue extends Record<string, any> ? Subfields<TValue> : unknown);
 
 // @public
-export type FieldValidationResult<E extends ValidationError = ValidationError> = ValidationSuccess | OneOrMany<E>;
-
-// @public
-export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, FieldValidationResult, TPathKind>;
+export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationErrorWithoutField>, TPathKind>;
 
 // @public
 export function form<TValue>(model: WritableSignal<TValue>): FieldTree<TValue>;
@@ -499,7 +496,7 @@ export function submit<TValue>(form: FieldTree<TValue>, action: (form: FieldTree
 export type SubmittedStatus = 'unsubmitted' | 'submitted' | 'submitting';
 
 // @public
-export type TreeValidationResult<E extends ValidationError = ValidationError> = ValidationSuccess | OneOrMany<WithOptionalField<E>>;
+export type TreeValidationResult<E extends ValidationErrorWithOptionalField = ValidationErrorWithOptionalField> = ValidationSuccess | OneOrMany<E>;
 
 // @public
 export type TreeValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, TreeValidationResult, TPathKind>;
@@ -521,9 +518,23 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 
 // @public
 export interface ValidationError {
-    readonly field?: FieldTree<unknown>;
     readonly kind: string;
     readonly message?: string;
+}
+
+// @public
+export interface ValidationErrorWithField extends ValidationError {
+    readonly field: FieldTree<unknown>;
+}
+
+// @public
+export interface ValidationErrorWithOptionalField extends ValidationError {
+    readonly field?: FieldTree<unknown>;
+}
+
+// @public
+export interface ValidationErrorWithoutField extends ValidationError {
+    readonly field?: never;
 }
 
 // @public

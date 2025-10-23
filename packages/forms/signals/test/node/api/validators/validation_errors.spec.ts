@@ -18,7 +18,8 @@ import {
   MinValidationError,
   ValidationError,
 } from '../../../../src/api/validation_errors';
-import {FieldTree} from '../../../../src/api/types';
+import {FieldTree, FieldValidator, PathKind} from '../../../../src/api/types';
+import Root = PathKind.Root;
 
 describe('validation errors', () => {
   it('supports returning a a plain object ', () => {
@@ -35,22 +36,6 @@ describe('validation errors', () => {
     );
 
     expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
-  });
-
-  it('overrides field valid ', () => {
-    const cat = signal('meow');
-
-    const f = form(
-      cat,
-      (p) => {
-        validate(p, () => {
-          return {kind: 'i am a custom error', 'field': 'wow, I am not a real form'};
-        });
-      },
-      {injector: TestBed.inject(Injector)},
-    );
-
-    expect(f().errors()[0].field).toBe(f);
   });
 
   it('supports returning a list of errors', () => {
@@ -92,14 +77,6 @@ describe('validation errors', () => {
 
           array.push(minError(5));
 
-          // Below is just a type test
-          if (!1) {
-            array.push({
-              kind: 'custom',
-              // @ts-expect-error
-              field: {} as FieldTree<unknown>,
-            });
-          }
           return array;
         });
       },
@@ -140,5 +117,72 @@ describe('validation errors', () => {
     } else {
       fail('this should not happen');
     }
+  });
+
+  describe('type tests', () => {
+    it('field on a validation result is not allowed', () => {
+      //  field on a validation result is not allowed
+      const TBD: FieldValidator<string, Root> = () => ({
+        kind: '3',
+        dsdsd: 4,
+        // @ts-expect-error
+        field: 3,
+      });
+    });
+
+    it('does not allow returning an error containing a field from a validator', () => {
+      const cat = signal('meow');
+
+      const f = form(
+        cat,
+        (p) => {
+          // @ts-expect-error
+          validate(p, () => {
+            return {kind: 'i am a custom error', field: {} as FieldTree<unknown>};
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
+    });
+
+    it('allows returning ValidationError from a validator', () => {
+      const cat = signal('meow');
+
+      const f = form(
+        cat,
+        (p) => {
+          validate(p, () => {
+            return {} as ValidationError;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().errors()[0]).toBeInstanceOf(CustomValidationError);
+    });
+
+    it('disallows pushin an error containing a field to a list of ValidationErrors', () => {
+      const cat = signal('meow');
+
+      form(
+        cat,
+        (p) => {
+          validate(p, () => {
+            const array: ValidationError[] = [];
+
+            array.push({
+              kind: 'custom',
+              // @ts-expect-error
+              field: {} as FieldTree<unknown>,
+            });
+
+            return array;
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+    });
   });
 });

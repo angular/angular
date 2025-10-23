@@ -12,7 +12,8 @@ import {AggregateMetadataKey, MetadataKey} from './metadata';
 import type {
   ValidationError,
   ValidationErrorWithField,
-  WithOptionalField,
+  ValidationErrorWithOptionalField,
+  ValidationErrorWithoutField,
 } from './validation_errors';
 
 /**
@@ -91,24 +92,6 @@ export interface DisabledReason {
 export type ValidationSuccess = null | undefined | void;
 
 /**
- * The result of running a field validation function.
- *
- * The result may be one of the following:
- * 1. A {@link ValidationSuccess} to indicate no errors.
- * 2. A {@link ValidationError} without a field to indicate an error on the field being validated.
- * 3. A list of {@link ValidationError} without fields to indicate multiple errors on the field
- *    being validated.
- *
- * @template E the type of error (defaults to {@link ValidationError}).
- *
- * @category types
- * @experimental 21.0.0
- */
-export type FieldValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationSuccess
-  | OneOrMany<E>;
-
-/**
  * The result of running a tree validation function.
  *
  * The result may be one of the following:
@@ -122,9 +105,9 @@ export type FieldValidationResult<E extends ValidationError = ValidationError> =
  * @category types
  * @experimental 21.0.0
  */
-export type TreeValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationSuccess
-  | OneOrMany<WithOptionalField<E>>;
+export type TreeValidationResult<
+  E extends ValidationErrorWithOptionalField = ValidationErrorWithOptionalField,
+> = ValidationSuccess | OneOrMany<E>;
 
 /**
  * A validation result where all errors explicitly define their target field.
@@ -427,7 +410,7 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  FieldValidationResult,
+  ValidationResult<ValidationErrorWithoutField>,
   TPathKind
 >;
 
