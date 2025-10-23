@@ -585,6 +585,79 @@ describe('recognize', () => {
       const s = await recognize([{path: '**', component: ComponentA}], 'a/b/c/d;a1=11');
       checkActivatedRoute(s.root.firstChild!, 'a/b/c/d', {a1: '11'}, ComponentA);
     });
+
+    it(`should match '**' with pathMatch: 'full' to a non-empty path`, async () => {
+      const s = await recognize([{path: '**', pathMatch: 'full', component: ComponentA}], 'a/b/c');
+      checkActivatedRoute(s.root.firstChild!, 'a/b/c', {}, ComponentA);
+    });
+
+    it(`should match '**' with pathMatch: 'full' to an empty path`, async () => {
+      const s = await recognize([{path: '**', pathMatch: 'full', component: ComponentA}], '');
+      checkActivatedRoute(s.root.firstChild!, '', {}, ComponentA);
+    });
+
+    // Note that we do not support named children under a wildcard, though we _could_ potentially do this
+    // as long as the children are all named outlets (non-primary). The primary outlet would be consumed by the wildcard.
+    // This test is to ensure we do not break the matcher completely when there are children under a wildcard.
+    it(`should match '**' with pathMatch: 'full' even when there are named outlets`, async () => {
+      const s = await recognize(
+        [{path: '**', pathMatch: 'full', component: ComponentA}],
+        'a/(aux:c)',
+      );
+      checkActivatedRoute(s.root.firstChild!, 'a', {}, ComponentA);
+    });
+
+    it('should support segments after a wildcard', async () => {
+      const s = await recognize(
+        [
+          {
+            path: 'a',
+            component: ComponentA,
+            children: [
+              {
+                path: '**/b',
+                component: ComponentB,
+              },
+            ],
+          },
+        ],
+        'a/1/2/b',
+      );
+      const a = s.root.firstChild!;
+      checkActivatedRoute(a, 'a', {}, ComponentA);
+
+      const wildcard = a.firstChild!;
+      checkActivatedRoute(wildcard, '1/2/b', {}, ComponentB);
+    });
+
+    describe('with segments after', () => {
+      const recognizer = (url: string) => {
+        const config = [
+          {
+            path: 'foo/**/bar',
+            component: ComponentA,
+          },
+        ];
+        return recognize(config, url);
+      };
+
+      it('matches a url with one segment for the wildcard', async () => {
+        const s = await recognizer('foo/a/bar');
+        checkActivatedRoute(s.root.firstChild!, 'foo/a/bar', {}, ComponentA);
+      });
+
+      it('matches a url with multiple segments for the wildcard', async () => {
+        const s = await recognizer('foo/a/b/c/bar');
+        checkActivatedRoute(s.root.firstChild!, 'foo/a/b/c/bar', {}, ComponentA);
+      });
+      it('does not match a url with no segments for the wildcard', async () => {
+        await expectAsync(recognizer('foo/bar')).toBeRejected();
+      });
+
+      it('does not match a url with a wrong suffix', async () => {
+        await expectAsync(recognizer('foo/a/b/baz')).toBeRejected();
+      });
+    });
   });
 
   describe('componentless routes', () => {
