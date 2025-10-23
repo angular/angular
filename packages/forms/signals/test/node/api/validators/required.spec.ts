@@ -88,7 +88,7 @@ describe('required validator', () => {
     expect(f.name().errors()).toEqual([requiredError({field: f.name})]);
   });
 
-  it('supports returning custom plain error', () => {
+  it('supports returning custom plain error, and wraps it as custom', () => {
     const cat = signal({name: 'meow', age: 5});
     const f = form(
       cat,

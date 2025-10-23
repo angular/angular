@@ -75,7 +75,7 @@ describe('min validator', () => {
       ]);
     });
 
-    it('wraps custom errors if needed', () => {
+    it('supports returning custom plain error, and wraps it as custom', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});
       const f = form(
         cat,

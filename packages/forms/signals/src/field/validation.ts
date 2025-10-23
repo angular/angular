@@ -11,7 +11,7 @@ import type {FieldTree, TreeValidationResult, ValidationResult} from '../api/typ
 import type {
   ValidationError,
   ValidationErrorWithField,
-  WithOptionalField,
+  ValidationErrorWithOptionalField,
 } from '../api/validation_errors';
 import {isArray} from '../util/type_guards';
 import type {FieldNode} from './node';
@@ -361,8 +361,8 @@ function normalizeErrors<T extends ValidationResult>(error: T | readonly T[]): r
  * @param field The default field to add
  * @returns The passed in error(s), with its field set.
  */
-export function addDefaultField<E extends ValidationError>(
-  error: WithOptionalField<E>,
+export function addDefaultField<E extends ValidationErrorWithOptionalField>(
+  error: E,
   field: FieldTree<unknown>,
 ): E & {field: FieldTree<unknown>};
 export function addDefaultField<E extends ValidationError>(
@@ -375,28 +375,10 @@ export function addDefaultField<E extends ValidationError>(
 ): ValidationResult<E & {field: FieldTree<unknown>}> {
   if (isArray(errors)) {
     for (const error of errors) {
-      (error as ɵWritable<ValidationErrorWithField>).field ??= field;
+      (error as ɵWritable<ValidationErrorWithOptionalField>).field ??= field;
     }
   } else if (errors) {
-    (errors as ɵWritable<ValidationErrorWithField>).field ??= field;
+    (errors as ɵWritable<ValidationErrorWithOptionalField>).field ??= field;
   }
   return errors as ValidationResult<E & {field: FieldTree<unknown>}>;
-}
-
-/**
- * Strips the `field` property from the given validation result.
- * @param errors The validation result
- * @returns The validation result, without any `field` properties.
- */
-export function dropField(
-  errors: ValidationResult<ValidationError | ValidationErrorWithField>,
-): ValidationResult<ValidationError> {
-  if (isArray(errors)) {
-    for (const error of errors) {
-      delete (error as ɵWritable<WithOptionalField<ValidationError>>).field;
-    }
-  } else if (errors) {
-    delete (errors as ɵWritable<WithOptionalField<ValidationError>>).field;
-  }
-  return errors as ValidationResult<ValidationError>;
 }
