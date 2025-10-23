@@ -15,7 +15,9 @@ import {
   EnvironmentInjector,
   PLATFORM_ID,
   Type,
+  effect,
   inject,
+  input,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
@@ -27,6 +29,7 @@ import {injectNodeRuntimeSandbox} from '../../editor/index';
 import type {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playground/routes.json';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'adev-playground',
@@ -36,12 +39,16 @@ import PLAYGROUND_ROUTE_DATA_JSON from '../../../../src/assets/tutorials/playgro
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class PlaygroundComponent {
+  readonly templateId = input<string | undefined>();
+
   private readonly changeDetectorRef = inject(ChangeDetectorRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly destroyRef = inject(DestroyRef);
   private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  readonly templates = PLAYGROUND_ROUTE_DATA_JSON.templates;
+  readonly templates: PlaygroundTemplate[] = PLAYGROUND_ROUTE_DATA_JSON.templates;
   readonly defaultTemplate = PLAYGROUND_ROUTE_DATA_JSON.defaultTemplate;
   readonly starterTemplate = PLAYGROUND_ROUTE_DATA_JSON.starterTemplate;
 
@@ -53,6 +60,11 @@ export default class PlaygroundComponent {
     if (this.isServer) {
       return;
     }
+
+    effect(() => {
+      const foundTemplate = this.templates.find((t) => t.id === this.templateId());
+      this.changeTemplate(foundTemplate ?? this.defaultTemplate);
+    });
 
     // If using `async-await`, `this` will be captured until the function is executed
     // and completed, which can lead to a memory leak if the user navigates away from
@@ -66,7 +78,7 @@ export default class PlaygroundComponent {
           this.nodeRuntimeSandbox = nodeRuntimeSandbox;
           this.embeddedEditorComponent = embeddedEditorComponent;
         }),
-        switchMap(() => this.loadTemplate(this.defaultTemplate.path)),
+        switchMap(() => this.loadTemplate(this.selectedTemplate.path)),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
@@ -80,6 +92,11 @@ export default class PlaygroundComponent {
   }
 
   async changeTemplate(template: PlaygroundTemplate): Promise<void> {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {templateId: template.id},
+      replaceUrl: true,
+    });
     this.selectedTemplate = template;
     await this.loadTemplate(template.path);
     await this.nodeRuntimeSandbox!.reset();
