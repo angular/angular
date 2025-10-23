@@ -84,7 +84,7 @@ function ensureCustomValidationError(error: ValidationErrorWithField): Validatio
 
 /**
  * Makes sure every provided error is wrapped as a custom error.
- * @param result Validation result with a field.пше з
+ * @param result Validation result with a field.
  */
 export function ensureCustomValidationResult(
   result: ValidationResult<ValidationErrorWithField>,

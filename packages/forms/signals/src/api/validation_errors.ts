@@ -7,7 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {FieldTree} from './types';
+import type {FieldTree} from './types';
 
 /**
  * Options used to create a `ValidationError`.
@@ -316,6 +316,11 @@ export interface ValidationError {
 export interface ValidationErrorWithField extends ValidationError {
   /** The field associated with this error. */
   readonly field: FieldTree<unknown>;
+}
+
+export interface ValidationErrorWithOptionalField extends ValidationError {
+  /** The field associated with this error. */
+  readonly field?: FieldTree<unknown>;
 }
 
 /**

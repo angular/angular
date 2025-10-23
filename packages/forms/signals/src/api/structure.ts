@@ -26,7 +26,7 @@ import type {
   SchemaOrSchemaFn,
   TreeValidationResult,
 } from './types';
-import {ValidationError, ValidationErrorWithField, WithOptionalField} from './validation_errors';
+import {ValidationErrorWithField, type ValidationErrorWithOptionalField} from './validation_errors';
 
 /**
  * Options that may be specified when creating a form.
@@ -420,7 +420,7 @@ export async function submit<TValue>(
  */
 function setServerErrors(
   submittedField: FieldNode,
-  errors: OneOrMany<WithOptionalField<ValidationError>>,
+  errors: OneOrMany<ValidationErrorWithOptionalField>,
 ) {
   if (!isArray(errors)) {
     errors = [errors];
