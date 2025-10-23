@@ -8,7 +8,7 @@
 
 import {Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {MIN, form, min, validate} from '../../../../public_api';
+import {MIN, form, min} from '../../../../public_api';
 import {customError, minError} from '../../../../src/api/validation_errors';
 
 describe('min validator', () => {
@@ -52,28 +52,6 @@ describe('min validator', () => {
   });
 
   describe('custom errors', () => {
-    it('returns custom errors when provided', () => {
-      const cat = signal({name: 'pirojok-the-cat', age: 3});
-
-      const f = form(
-        cat,
-        (p) => {
-          validate(p.age, () => {
-            return {kind: 'meow', customProp: 'pirojok-the-prop'};
-          });
-        },
-        {injector: TestBed.inject(Injector)},
-      );
-
-      expect(f.age().errors()).toEqual([
-        customError({
-          kind: 'meow',
-          customProp: 'pirojok-the-prop',
-          field: f.age,
-        }),
-      ]);
-    });
-
     it('returns custom errors when provided', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});
       const f = form(

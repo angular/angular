@@ -382,3 +382,21 @@ export function addDefaultField<E extends ValidationError>(
   }
   return errors as ValidationResult<E & {field: FieldTree<unknown>}>;
 }
+
+/**
+ * Strips the `field` property from the given validation result.
+ * @param errors The validation result
+ * @returns The validation result, without any `field` properties.
+ */
+export function dropField(
+  errors: ValidationResult<ValidationError | ValidationErrorWithField>,
+): ValidationResult<ValidationError> {
+  if (isArray(errors)) {
+    for (const error of errors) {
+      delete (error as ɵWritable<WithOptionalField<ValidationError>>).field;
+    }
+  } else if (errors) {
+    delete (errors as ɵWritable<WithOptionalField<ValidationError>>).field;
+  }
+  return errors as ValidationResult<ValidationError>;
+}
