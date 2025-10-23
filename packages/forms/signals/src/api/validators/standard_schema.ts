@@ -87,9 +87,10 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
         loader: async ({params}) => (await params)?.issues ?? [],
       });
     },
-    errors: (issues, {fieldOf}) => {
+    onSuccess: (issues, {fieldOf}) => {
       return issues.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue));
     },
+    onError: () => {},
   });
 }
 

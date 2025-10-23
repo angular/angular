@@ -188,7 +188,8 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
         },
         {injector},
@@ -233,11 +234,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
-              errs.map((e) => ({
+            onSuccess: (results, {fieldOf}) =>
+              results.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+            onError: () => null,
           });
         },
         {injector},
@@ -282,11 +284,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
-              errs.map((e) => ({
+            onSuccess: (results, {fieldOf}) =>
+              results.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+            onError: () => null,
           });
         },
         {injector},
@@ -334,11 +337,12 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs, {fieldOf}) =>
-              errs.map((e) => ({
+            onSuccess: (results, {fieldOf}) =>
+              results.map((e) => ({
                 ...e,
                 field: fieldOf(p.child),
               })),
+            onError: () => null,
           });
         },
         {injector},
@@ -383,7 +387,8 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
         },
         {injector},
@@ -443,7 +448,8 @@ describe('validation status', () => {
                 params,
                 loader: () => new Promise<ValidationError[]>((r) => setTimeout(() => r([]))),
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
         },
         {injector},
@@ -470,7 +476,8 @@ describe('validation status', () => {
                 params,
                 loader: () => promise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
           validateAsync(p, {
             params: () => [],
@@ -479,7 +486,8 @@ describe('validation status', () => {
                 params,
                 loader: () => promise2,
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
         },
         {injector},
@@ -514,7 +522,8 @@ describe('validation status', () => {
                 params,
                 loader: () => invalidPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
           validateAsync(p, {
             params: () => [],
@@ -523,7 +532,8 @@ describe('validation status', () => {
                 params,
                 loader: () => validPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
           validateAsync(p, {
             params: () => [],
@@ -532,7 +542,8 @@ describe('validation status', () => {
                 params,
                 loader: () => pendingPromise,
               })),
-            errors: (errs) => errs,
+            onSuccess: (results) => results,
+            onError: () => null,
           });
         },
         {injector},
