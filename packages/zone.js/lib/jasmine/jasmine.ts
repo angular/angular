@@ -239,10 +239,15 @@ export function patchJasmine(Zone: ZoneType): void {
       timeout: {setTimeout: Function; clearTimeout: Function};
     }
     type QueueRunnerUserContext = {queueRunner?: QueueRunner};
-    const QueueRunner = (jasmine as any).QueueRunner as {
+    const j$ = jasmine as any;
+    const privateApis: {
+      QueueRunner: {};
+      UserContext: new (...args: any[]) => QueueRunnerUserContext;
+    } = j$?.private?.QueueRunner ? j$?.private : j$;
+    const QueueRunner = privateApis.QueueRunner as {
       new (attrs: QueueRunnerAttrs): QueueRunner;
     };
-    (jasmine as any).QueueRunner = (function (_super) {
+    privateApis.QueueRunner = (function (_super) {
       __extends(ZoneQueueRunner, _super);
       function ZoneQueueRunner(this: QueueRunner, attrs: QueueRunnerAttrs) {
         if (attrs.onComplete) {
@@ -266,9 +271,9 @@ export function patchJasmine(Zone: ZoneType): void {
 
         // create a userContext to hold the queueRunner itself
         // so we can access the testProxy in it/xit/beforeEach ...
-        if ((jasmine as any).UserContext) {
+        if (privateApis.UserContext) {
           if (!attrs.userContext) {
-            attrs.userContext = new (jasmine as any).UserContext();
+            attrs.userContext = new privateApis.UserContext();
           }
           attrs.userContext.queueRunner = this;
         } else {
