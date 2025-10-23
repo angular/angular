@@ -204,6 +204,16 @@
       "description": "The type of stylesheet files to be created for components in the initial project."
     },
     {
+      "name": "test-runner",
+      "type": "string",
+      "default": "vitest",
+      "enum": [
+        "karma",
+        "vitest"
+      ],
+      "description": "The unit testing runner to use."
+    },
+    {
       "name": "view-encapsulation",
       "type": "string",
       "enum": [
