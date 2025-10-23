@@ -14,6 +14,7 @@ import {
   InjectionToken,
   Injector,
   input,
+  untracked,
   ɵCONTROL,
   ɵControl,
 } from '@angular/core';
@@ -95,8 +96,18 @@ export class Field<T> implements ɵControl<T> {
     const controlValueAccessor = this.controlValueAccessor!;
     // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
     // * check if values changed since last update before writing.
-    controlValueAccessor.writeValue(this.state().value());
-    controlValueAccessor.setDisabledState?.(this.state().disabled());
+
+    // These values remain reactive
+    const value = this.state().value();
+    const disabled = this.state().disabled();
+
+    // The CVA is accessed in a reactive context (the template executation)
+    // Since we don't control the implementation of the CVA and it can have underlying signals
+    // We need to untrack to prevent writing to a signal in a reactive context
+    untracked(() => {
+      controlValueAccessor.writeValue(value);
+      controlValueAccessor.setDisabledState?.(disabled);
+    });
   }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
