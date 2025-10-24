@@ -57,7 +57,6 @@
     },
     {
       "name": "ElementDimensions",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -97,6 +96,7 @@
       "description": "Dimensions for element size and its position relative to the viewport.",
       "jsdocTags": [],
       "rawComment": "/**\n * Dimensions for element size and its position relative to the viewport.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/element-dimensions.ts",
@@ -106,7 +106,6 @@
     },
     {
       "name": "AutoChangeDetectionStatus",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -132,6 +131,7 @@
       "description": "The status of the test harness auto change detection. If not diabled test harnesses will\nautomatically trigger change detection after every action (such as a click) and before every read\n(such as getting the text of an element).",
       "jsdocTags": [],
       "rawComment": "/**\n * The status of the test harness auto change detection. If not diabled test harnesses will\n * automatically trigger change detection after every action (such as a click) and before every read\n * (such as getting the text of an element).\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/change-detection.ts",
@@ -141,7 +141,6 @@
     },
     {
       "name": "ModifierKeys",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -189,6 +188,7 @@
       "description": "Modifier keys that may be held while typing.",
       "jsdocTags": [],
       "rawComment": "/** Modifier keys that may be held while typing. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
@@ -2402,7 +2402,6 @@
     },
     {
       "name": "TestElement",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -3177,6 +3176,7 @@
       "description": "This acts as a common interface for DOM elements across both unit and e2e tests. It is the\ninterface through which the ComponentHarness interacts with the component's DOM.",
       "jsdocTags": [],
       "rawComment": "/**\n * This acts as a common interface for DOM elements across both unit and e2e tests. It is the\n * interface through which the ComponentHarness interacts with the component's DOM.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
@@ -3222,7 +3222,6 @@
     },
     {
       "name": "HarnessLoader",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -3675,6 +3674,7 @@
       "description": "Interface used to load ComponentHarness objects. This interface is used by test authors to\ninstantiate `ComponentHarness`es.",
       "jsdocTags": [],
       "rawComment": "/**\n * Interface used to load ComponentHarness objects. This interface is used by test authors to\n * instantiate `ComponentHarness`es.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
@@ -4016,7 +4016,6 @@
     },
     {
       "name": "TextOptions",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4034,6 +4033,7 @@
       "description": "Options that affect the text returned by `TestElement.text`.",
       "jsdocTags": [],
       "rawComment": "/**\n * Options that affect the text returned by `TestElement.text`.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
@@ -4043,7 +4043,6 @@
     },
     {
       "name": "LocatorFactory",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4458,6 +4457,7 @@
       "description": "Interface used to create asynchronous locator functions used find elements and component\nharnesses. This interface is used by `ComponentHarness` authors to create locator functions for\ntheir `ComponentHarness` subclass.",
       "jsdocTags": [],
       "rawComment": "/**\n * Interface used to create asynchronous locator functions used find elements and component\n * harnesses. This interface is used by `ComponentHarness` authors to create locator functions for\n * their `ComponentHarness` subclass.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
@@ -6112,7 +6112,6 @@
     },
     {
       "name": "ComponentHarnessConstructor",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -6133,6 +6132,7 @@
       "description": "Constructor for a ComponentHarness subclass. To be a valid ComponentHarnessConstructor, the\nclass must also have a static `hostSelector` property.",
       "jsdocTags": [],
       "rawComment": "/**\n * Constructor for a ComponentHarness subclass. To be a valid ComponentHarnessConstructor, the\n * class must also have a static `hostSelector` property.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
@@ -6142,7 +6142,6 @@
     },
     {
       "name": "BaseHarnessFilters",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -6170,6 +6169,7 @@
       "description": "A set of criteria that can be used to filter a list of `ComponentHarness` instances.",
       "jsdocTags": [],
       "rawComment": "/** A set of criteria that can be used to filter a list of `ComponentHarness` instances. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
