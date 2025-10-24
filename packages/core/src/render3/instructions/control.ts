@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {assertLessThanOrEqual} from '../../util/assert';
 import {bindingUpdated} from '../bindings';
 import {ɵCONTROL, ɵControl} from '../interfaces/control';
 import {ComponentDef} from '../interfaces/definition';
@@ -15,7 +16,15 @@ import {Renderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TView} from '../interfaces/view';
-import {getCurrentTNode, getLView, getSelectedTNode, getTView, nextBindingIndex} from '../state';
+import {
+  getBindingIndex,
+  getCurrentTNode,
+  getLView,
+  getSelectedTNode,
+  getTView,
+  nextBindingIndex,
+} from '../state';
+import {NO_CHANGE} from '../tokens';
 import {isNameOnlyAttributeMarker} from '../util/attrs_utils';
 import {getNativeByTNode} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
@@ -77,6 +86,10 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     const tView = getTView();
     setPropertyAndInputs(tNode, lView, 'field', value, lView[RENDERER], sanitizer);
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
+
+    // Reset control bindings when the [field] itself changes, since the new field may expose a
+    // different set of field state properties than the old field.
+    resetControlBindings(lView);
   }
 
   const control = getControlDirective(tNode, lView);
@@ -91,6 +104,12 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
       updateNativeControl(tNode, lView, control);
     }
   }
+
+  // This instruction requires an additional variable slot to store control property bindings, but
+  // may not use them if the `control` is undefined, so we increment the index here rather than when
+  // used to ensure it happens unconditionally. Otherwise, the next instruction could begin with the
+  // wrong binding index.
+  nextBindingIndex();
 }
 
 function getControlDirectiveFirstCreatePass<T>(
@@ -339,42 +358,51 @@ function updateCustomControl(
   const component = lView[componentIndex];
   const componentDef = tView.data[componentIndex] as ComponentDef<{}>;
   const state = control.state();
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * check if bindings changed before writing.
-  // * cache which inputs exist.
-  writeToDirectiveInput(componentDef, component, modelName, state.value());
-  maybeWriteToDirectiveInput(componentDef, component, 'errors', state.errors);
-  maybeWriteToDirectiveInput(componentDef, component, 'invalid', state.invalid);
-  maybeWriteToDirectiveInput(componentDef, component, 'disabled', state.disabled);
-  maybeWriteToDirectiveInput(componentDef, component, 'disabledReasons', state.disabledReasons);
-  maybeWriteToDirectiveInput(componentDef, component, 'name', state.name);
-  maybeWriteToDirectiveInput(componentDef, component, 'readonly', state.readonly);
-  maybeWriteToDirectiveInput(componentDef, component, 'touched', state.touched);
+  const bindings = getControlBindings(lView);
 
-  maybeWriteToDirectiveInput(componentDef, component, 'max', state.max);
-  maybeWriteToDirectiveInput(componentDef, component, 'maxLength', state.maxLength);
-  maybeWriteToDirectiveInput(componentDef, component, 'min', state.min);
-  maybeWriteToDirectiveInput(componentDef, component, 'minLength', state.minLength);
-  maybeWriteToDirectiveInput(componentDef, component, 'pattern', state.pattern);
-  maybeWriteToDirectiveInput(componentDef, component, 'required', state.required);
+  // We know for certain that the value input exists already.
+  const value = state.value();
+  if (controlBindingUpdated(bindings, value)) {
+    writeToDirectiveInput(componentDef, component, modelName, value);
+  }
+
+  // The remaining inputs are all optional.
+  maybeUpdateInput(componentDef, component, bindings, 'name', state.name);
+  maybeUpdateInput(componentDef, component, bindings, 'disabled', state.disabled);
+  maybeUpdateInput(componentDef, component, bindings, 'readonly', state.readonly);
+  maybeUpdateInput(componentDef, component, bindings, 'required', state.required);
+  maybeUpdateInput(componentDef, component, bindings, 'max', state.max);
+  maybeUpdateInput(componentDef, component, bindings, 'min', state.min);
+  maybeUpdateInput(componentDef, component, bindings, 'maxLength', state.maxLength);
+  maybeUpdateInput(componentDef, component, bindings, 'minLength', state.minLength);
+  maybeUpdateInput(componentDef, component, bindings, 'errors', state.errors);
+  maybeUpdateInput(componentDef, component, bindings, 'disabledReasons', state.disabledReasons);
+  maybeUpdateInput(componentDef, component, bindings, 'invalid', state.invalid);
+  maybeUpdateInput(componentDef, component, bindings, 'pattern', state.pattern);
+  maybeUpdateInput(componentDef, component, bindings, 'touched', state.touched);
 }
 
 /**
- * Writes the specified value to a directive input if the input exists.
+ * Binds a value source, if defined, to an input, if it exists.
  *
- * @param componentDef The definition of the component that owns the input.
- * @param component The component instance.
- * @param inputName The name of the input to write to.
- * @param source A function that returns the value to write.
+ * @param componentDef The component definition used to check for the input.
+ * @param component The component instance to update.
+ * @param bindings The control bindings array to check for changes.
+ * @param inputName The name of the input to update.
+ * @param source The source of the value to bind.
  */
-function maybeWriteToDirectiveInput(
+function maybeUpdateInput(
   componentDef: ComponentDef<unknown>,
   component: unknown,
+  bindings: unknown[],
   inputName: string,
   source?: () => unknown,
-) {
+): void {
   if (source && inputName in componentDef.inputs) {
-    writeToDirectiveInput(componentDef, component, inputName, source());
+    const value = source();
+    if (controlBindingUpdated(bindings, value)) {
+      writeToDirectiveInput(componentDef, component, inputName, value);
+    }
   }
 }
 
@@ -386,36 +414,71 @@ function maybeWriteToDirectiveInput(
  * @param control The `ɵControl` directive instance.
  */
 function updateNativeControl(tNode: TNode, lView: LView, control: ɵControl<unknown>): void {
-  const input = getNativeByTNode(tNode, lView) as NativeControlElement;
+  const element = getNativeByTNode(tNode, lView) as NativeControlElement;
   const renderer = lView[RENDERER];
   const state = control.state();
+  const bindings = getControlBindings(lView);
 
-  // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-  // * check if bindings changed before writing.
-  setNativeControlValue(input, state.value());
-  renderer.setAttribute(input, 'name', state.name());
-  setBooleanAttribute(renderer, input, 'disabled', state.disabled());
-  setBooleanAttribute(renderer, input, 'readonly', state.readonly());
+  const value = state.value();
+  if (controlBindingUpdated(bindings, value)) {
+    setNativeControlValue(element, value);
+  }
+
+  const name = state.name();
+  if (controlBindingUpdated(bindings, name)) {
+    renderer.setAttribute(element, 'name', name);
+  }
+
+  const disabled = state.disabled();
+  if (controlBindingUpdated(bindings, disabled)) {
+    setBooleanAttribute(renderer, element, 'disabled', disabled);
+  }
+
+  const readonly = state.readonly();
+  if (controlBindingUpdated(bindings, readonly)) {
+    setBooleanAttribute(renderer, element, 'readonly', readonly);
+  }
 
   if (state.required) {
-    setBooleanAttribute(renderer, input, 'required', state.required());
+    const required = state.required();
+    if (controlBindingUpdated(bindings, required)) {
+      setBooleanAttribute(renderer, element, 'required', required);
+    }
   }
 
   if (tNode.flags & TNodeFlags.isNativeNumericControl) {
-    if (state.max) {
-      setOptionalAttribute(renderer, input, 'max', state.max());
-    }
-    if (state.min) {
-      setOptionalAttribute(renderer, input, 'min', state.min());
-    }
+    maybeUpdateOptionalAttribute(renderer, element, bindings, 'max', state.max);
+    maybeUpdateOptionalAttribute(renderer, element, bindings, 'min', state.min);
   }
 
   if (tNode.flags & TNodeFlags.isNativeTextControl) {
-    if (state.maxLength) {
-      setOptionalAttribute(renderer, input, 'maxLength', state.maxLength());
-    }
-    if (state.minLength) {
-      setOptionalAttribute(renderer, input, 'minLength', state.minLength());
+    maybeUpdateOptionalAttribute(renderer, element, bindings, 'maxlength', state.maxLength);
+    maybeUpdateOptionalAttribute(renderer, element, bindings, 'minlength', state.minLength);
+  }
+}
+
+/**
+ * Binds a value source, if it exists, to an optional DOM attribute.
+ *
+ * An optional DOM attribute will be added, if defined, or removed, if undefined.
+ *
+ * @param renderer The renderer used to update the DOM.
+ * @param element The element to update.
+ * @param bindings The control bindings array to check for changes.
+ * @param attrName The name of the attribute to update.
+ * @param source The source of the value to bind.
+ */
+function maybeUpdateOptionalAttribute(
+  renderer: Renderer,
+  element: HTMLElement,
+  bindings: unknown[],
+  attrName: string,
+  source?: () => {toString(): string} | undefined,
+): void {
+  if (source) {
+    const value = source();
+    if (controlBindingUpdated(bindings, value)) {
+      setOptionalAttribute(renderer, element, attrName, value);
     }
   }
 }
@@ -556,6 +619,83 @@ function setNativeControlValue(element: NativeControlElement, value: unknown) {
 
   // Default to setting the value as a string.
   element.value = value as string;
+}
+
+/** The index of the next binding that will be checked by {@link controlBindingUpdated}. */
+let controlBindingIndex = 0;
+
+/**
+ * Returns the values of field state properties bound to a control.
+ *
+ * This resets {@link nextControlBindingIndex} to point at the start of the returned array.
+ *
+ * The returned array will be empty if properties from the current field have not yet been bound to
+ * the control.
+ */
+function getControlBindings(lView: LView): unknown[] {
+  const bindingIndex = getBindingIndex();
+  let bindings = lView[bindingIndex];
+  if (bindings === NO_CHANGE) {
+    bindings = lView[bindingIndex] = [];
+  }
+  // Reset the control binding index so that subsequent calls to `nextControlBindingIndex` begin at
+  // the start of the returned `bindings` array.
+  controlBindingIndex = 0;
+  return bindings;
+}
+
+/** Returns the next control binding index to use for {@link controlBindingUpdated}. */
+function nextControlBindingIndex(): number {
+  return controlBindingIndex++;
+}
+
+/**
+ * Resets the array of values returned by {@link getControlBindings}.
+ *
+ * This will cause the next update to apply to all available field state properties.
+ */
+function resetControlBindings(lView: LView): void {
+  const bindingIndex = getBindingIndex();
+  const bindings = lView[bindingIndex];
+  // Do nothing if the bindings array was not initialized.
+  if (bindings !== NO_CHANGE) {
+    // Truncate the control bindings array, leaving only the first element for the control value
+    // since this is the only field state property guaranteed to exists for all fields and will
+    // always be first.
+    (bindings as unknown[]).length = 1;
+  }
+}
+
+/**
+ * Updates binding if changed, then returns whether it was updated.
+ *
+ * This is a variant of {@link bindingUpdated} that checks against a specified array of bindings
+ * rather than an `LView`. Unlike an `LView` whose bindings have fixed length and are initialized
+ * with a sentinel value, we don't know ahead of time how many field state properties will be
+ * bound to a control. Consequently, this function will grow the `bindings` array as needed to
+ * adjust for a variable number of bindings. This assumes that the number and relative position of
+ * these bindings remain unchanged for subsequent updates.
+ *
+ * The caller must first call {@link resetControlBindings} if the number or relative position of
+ * bindings may have changed since the last update.
+ *
+ * @param bindings The array of bindings.
+ * @param value The current value to compare.
+ * @returns whether the binding has changed.
+ */
+function controlBindingUpdated(bindings: unknown[], value: unknown): boolean {
+  const index = nextControlBindingIndex();
+
+  // The index should be less than the number of bindings if this is an update to a previously bound
+  // field state property, or exactly equal if this is the first update, in which case the binding
+  // will be marked as updated and appended below.
+  ngDevMode && assertLessThanOrEqual(index, bindings.length, 'Control binding index out of range');
+  if (index < bindings.length && Object.is(value, bindings[index])) {
+    return false;
+  }
+
+  bindings[index] = value;
+  return true;
 }
 
 /**
