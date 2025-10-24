@@ -133,8 +133,9 @@ copy_to_directory(
     name = "context",
     srcs = [
         "//adev/src/context",
+        "//adev/src/context:llms_full",
     ],
     replace_prefixes = {
-        "**/": "",
+        "**/context/": "",
     },
 )
