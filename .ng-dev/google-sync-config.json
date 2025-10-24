@@ -3,7 +3,7 @@
   "separateFilePatterns": ["packages/core/primitives/**"],
   "alwaysExternalFilePatterns": [
     "packages/*",
-    "packages/bazel/**",
+    "packages/core/resources/**",
     "packages/compiler-cli/linker/**",
     "packages/compiler-cli/src/ngtsc/sourcemaps/**",
     "packages/compiler-cli/src/ngtsc/testing/**",
