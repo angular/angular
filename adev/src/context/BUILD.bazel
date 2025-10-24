@@ -4,7 +4,11 @@ package(default_visibility = ["//adev:__subpackages__"])
 
 filegroup(
     name = "context",
-    srcs = glob(["**"]),
+    srcs = glob([
+        "**/*.md",
+        "**/*.txt",
+        "**/*.mdc",
+    ]),
     visibility = ["//visibility:public"],
 )
 

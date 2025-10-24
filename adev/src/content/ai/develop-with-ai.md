@@ -12,7 +12,7 @@ Here is a set of instructions to help LLMs generate correct code that follows An
 
 <docs-code language="md" path="adev/src/context/best-practices.md" class="compact"/>
 
-<a download href="/assets/context/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a> 
+<a download href="/assets/context/best-practices.md" target="_blank">Click here to download the best-practices.md file.</a>
 
 ## Rules Files
 Several editors, such as <a href="https://studio.firebase.google.com?utm_source=adev&utm_medium=website&utm_campaign=BUILD_WITH_AI_ANGULAR&utm_term=angular_devrel&utm_content=build_with_ai_angular_firebase_studio">Firebase Studio</a> have rules files useful for providing critical context to LLMs.
@@ -35,8 +35,8 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 `llms.txt` is a proposed standard for websites designed to help LLMs better understand and process their content. The Angular team has developed two versions of this file to help LLMs and tools that use LLMs for code generation to create better modern Angular code.
 
 
-* <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources. 
-* <a href="/context/llm-files/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
+* <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources.
+* <a href="/assets/context/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
 Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.
 
