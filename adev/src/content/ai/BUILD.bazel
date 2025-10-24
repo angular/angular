@@ -9,6 +9,7 @@ generate_guides(
     data = [
         "//adev/src/assets/images:what_is_angular.svg",
         "//adev/src/context",
+        "//packages/core/resources:best-practices.md",
     ],
     visibility = ["//adev:__subpackages__"],
 )
