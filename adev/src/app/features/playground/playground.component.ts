@@ -83,7 +83,7 @@ export default class PlaygroundComponent {
       )
       .subscribe(() => {
         this.changeDetectorRef.markForCheck();
-        this.nodeRuntimeSandbox!.init();
+        this.nodeRuntimeSandbox?.init();
       });
   }
 
@@ -99,7 +99,7 @@ export default class PlaygroundComponent {
     });
     this.selectedTemplate = template;
     await this.loadTemplate(template.path);
-    await this.nodeRuntimeSandbox!.reset();
+    await this.nodeRuntimeSandbox?.reset();
   }
 
   private async loadTemplate(tutorialPath: string) {
