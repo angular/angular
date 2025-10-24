@@ -135,7 +135,6 @@
     },
     {
       "name": "CdkDragStart",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -164,6 +163,7 @@
       "description": "Event emitted when the user starts dragging a draggable.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user starts dragging a draggable. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -246,7 +246,6 @@
     },
     {
       "name": "CdkDragRelease",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -275,6 +274,7 @@
       "description": "Event emitted when the user releases an item, before any animations have started.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user releases an item, before any animations have started. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -923,7 +923,6 @@
     },
     {
       "name": "CdkDragEnd",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -968,6 +967,7 @@
       "description": "Event emitted when the user stops dragging a draggable.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user stops dragging a draggable. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -977,7 +977,6 @@
     },
     {
       "name": "DragDropConfig",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -1136,7 +1135,9 @@
       "description": "Object that can be used to configure the drag\nitems and drop lists within a module or a component.",
       "jsdocTags": [],
       "rawComment": "/**\n * Object that can be used to configure the drag\n * items and drop lists within a module or a component.\n */",
-      "extends": "Partial<DragRefConfig>",
+      "extends": [
+        "Partial<DragRefConfig>"
+      ],
       "implements": [],
       "source": {
         "filePath": "src/cdk/drag-drop/directives/config.ts",
@@ -1604,7 +1605,6 @@
     },
     {
       "name": "DragRefConfig",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -1648,6 +1648,7 @@
       "description": "Object that can be used to configure the behavior of DragRef.",
       "jsdocTags": [],
       "rawComment": "/** Object that can be used to configure the behavior of DragRef. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
@@ -2400,7 +2401,6 @@
     },
     {
       "name": "CdkDragEnter",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -2441,6 +2441,7 @@
       "description": "Event emitted when the user moves an item into a new drop container.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user moves an item into a new drop container. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -2605,7 +2606,6 @@
     },
     {
       "name": "CdkDragExit",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -2638,6 +2638,7 @@
       "description": "Event emitted when the user removes an item from a\ndrop container by moving it into another one.",
       "jsdocTags": [],
       "rawComment": "/**\n * Event emitted when the user removes an item from a\n * drop container by moving it into another one.\n */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -4571,7 +4572,6 @@
     },
     {
       "name": "CdkDragDrop",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4663,6 +4663,7 @@
       "description": "Event emitted when the user drops a draggable item inside a drop container.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user drops a draggable item inside a drop container. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -4672,7 +4673,6 @@
     },
     {
       "name": "CdkDragMove",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4725,6 +4725,7 @@
       "description": "Event emitted as the user is dragging a draggable item.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted as the user is dragging a draggable item. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
@@ -4734,7 +4735,6 @@
     },
     {
       "name": "Point",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4758,6 +4758,7 @@
       "description": "Point on the page or within an element.",
       "jsdocTags": [],
       "rawComment": "/** Point on the page or within an element. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
@@ -4781,7 +4782,6 @@
     },
     {
       "name": "CdkDragSortEvent",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -4830,6 +4830,7 @@
       "description": "Event emitted when the user swaps the position of two drag items.",
       "jsdocTags": [],
       "rawComment": "/** Event emitted when the user swaps the position of two drag items. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-events.ts",
