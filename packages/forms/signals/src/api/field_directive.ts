@@ -101,7 +101,7 @@ export class Field<T> implements ɵControl<T> {
     const value = this.state().value();
     const disabled = this.state().disabled();
 
-    // The CVA is accessed in a reactive context (the template executation)
+    // The CVA is accessed in a reactive context (the template execution)
     // Since we don't control the implementation of the CVA and it can have underlying signals
     // We need to untrack to prevent writing to a signal in a reactive context
     untracked(() => {
