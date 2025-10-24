@@ -61,8 +61,9 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
 
 // @public
 export interface AsyncValidatorOptions<TValue, TParams, TResult, TPathKind extends PathKind = PathKind.Root> {
-    readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult | undefined>;
+    readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+    readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly params: (ctx: FieldContext<TValue, TPathKind>) => TParams;
 }
 
@@ -233,7 +234,8 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(path:
 
 // @public
 export interface HttpValidatorOptions<TValue, TResult, TPathKind extends PathKind = PathKind.Root> {
-    readonly errors: MapToErrorsFn<TValue, TResult, TPathKind>;
+    readonly onError: (error: unknown, ctx: FieldContext<TValue, TPathKind>) => TreeValidationResult;
+    readonly onSuccess: MapToErrorsFn<TValue, TResult, TPathKind>;
     readonly options?: HttpResourceOptions<TResult, unknown>;
     readonly request: ((ctx: FieldContext<TValue, TPathKind>) => string | undefined) | ((ctx: FieldContext<TValue, TPathKind>) => HttpResourceRequest | undefined);
 }
