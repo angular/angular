@@ -32,6 +32,7 @@
               "src/favicon.ico",
               "src/robots.txt",
               "src/assets",
+              "src/context/llm-files",
               "src/llms.txt"
             ],
             "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
