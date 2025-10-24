@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.28.4",
+    "@babel/core": "7.28.5",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^4.0.0",
