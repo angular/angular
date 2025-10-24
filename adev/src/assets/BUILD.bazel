@@ -133,6 +133,7 @@ copy_to_directory(
     name = "context",
     srcs = [
         "//adev/src/context",
+        "//packages/core/resources",
     ],
     replace_prefixes = {
         "**/": "",
