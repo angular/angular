@@ -36,7 +36,7 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 
 
 * <a href="/llms.txt" target="_blank">llms.txt</a> - an index file providing links to key files and resources.
-* <a href="/assets/context/llm-files/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
+* <a href="/assets/context/llms-full.txt" target="_blank">llms-full.txt</a> - a more robust compiled set of resources describing how Angular works and how to build Angular applications.
 
 Be sure [to check out the overview page](/ai) for more information on how to integrate AI into your Angular applications.
 

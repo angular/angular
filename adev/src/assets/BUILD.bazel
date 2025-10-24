@@ -136,6 +136,6 @@ copy_to_directory(
         "//adev/src/context:llms_full",
     ],
     replace_prefixes = {
-        "**/context/": "",
+        "**/": "",
     },
 )
