@@ -12,8 +12,6 @@ import {
   ɵStyleDataMap,
 } from '../../../src/animations';
 
-const EMPTY_ANIMATION_OPTIONS: AnimationOptions = {};
-
 export interface AstVisitor {
   visitTrigger(ast: TriggerAst, context: any): any;
   visitState(ast: StateAst, context: any): any;

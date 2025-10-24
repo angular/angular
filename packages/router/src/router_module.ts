@@ -17,14 +17,11 @@ import {
   APP_BOOTSTRAP_LISTENER,
   ComponentRef,
   inject,
-  Inject,
   InjectionToken,
   ModuleWithProviders,
   NgModule,
   NgZone,
-  Optional,
   Provider,
-  SkipSelf,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
 

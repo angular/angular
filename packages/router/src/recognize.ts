@@ -26,7 +26,6 @@ import {getOutlet, sortByMatchingOutlets} from './utils/config';
 import {
   emptyPathMatch,
   match,
-  MatchResult,
   matchWithChecks,
   noLeftoversInUrl,
   split,

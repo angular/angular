@@ -7,7 +7,6 @@
  */
 
 import {
-  DOCUMENT,
   LocationChangeEvent,
   LocationChangeListener,
   PlatformLocation,

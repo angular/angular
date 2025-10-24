@@ -22,12 +22,7 @@ import {
   ɵWritable as Writable,
 } from '@angular/core';
 
-import {
-  AbstractControl,
-  FormHooks,
-  FormResetEvent,
-  FormSubmittedEvent,
-} from '../model/abstract_model';
+import {AbstractControl, FormHooks, FormSubmittedEvent} from '../model/abstract_model';
 import {FormControl} from '../model/form_control';
 import {FormGroup} from '../model/form_group';
 import {
