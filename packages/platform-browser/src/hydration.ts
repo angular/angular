@@ -12,7 +12,6 @@ import {
   EnvironmentProviders,
   inject,
   makeEnvironmentProviders,
-  NgZone,
   Provider,
   ɵConsole as Console,
   ɵRuntimeError as RuntimeError,
