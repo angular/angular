@@ -415,6 +415,7 @@ export interface NavigationBehaviorOptions {
     readonly info?: unknown;
     onSameUrlNavigation?: OnSameUrlNavigation;
     replaceUrl?: boolean;
+    readonly scroll?: 'manual' | 'after-transition';
     skipLocationChange?: boolean;
     state?: {
         [k: string]: any;
@@ -982,13 +983,16 @@ export class Scroll {
     constructor(
     routerEvent: NavigationEnd | NavigationSkipped,
     position: [number, number] | null,
-    anchor: string | null);
+    anchor: string | null,
+    scrollBehavior?: "manual" | "after-transition" | undefined);
     // (undocumented)
     readonly anchor: string | null;
     // (undocumented)
     readonly position: [number, number] | null;
     // (undocumented)
     readonly routerEvent: NavigationEnd | NavigationSkipped;
+    // (undocumented)
+    readonly scrollBehavior?: "manual" | "after-transition" | undefined;
     // (undocumented)
     toString(): string;
     // (undocumented)
