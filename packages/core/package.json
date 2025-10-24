@@ -40,12 +40,6 @@
     "migrations": "./schematics/migrations.json",
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "angular": {
-    "bestPractices": {
-      "format": "markdown",
-      "path": "./resources/best-practices.md"
-    }
-  },
   "schematics": "./schematics/collection.json",
   "sideEffects": false
 }
