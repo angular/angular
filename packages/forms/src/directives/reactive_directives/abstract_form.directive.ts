@@ -22,7 +22,7 @@ import {
 
 import {FormGroup} from '../../model/form_group';
 import {FormArray} from '../../model/form_array';
-import {AbstractControl, FormResetEvent, FormSubmittedEvent} from '../../model/abstract_model';
+import {AbstractControl, FormSubmittedEvent} from '../../model/abstract_model';
 import {FormControl, isFormControl} from '../../model/form_control';
 import {ControlContainer} from '../control_container';
 import type {Form} from '../form_interface';

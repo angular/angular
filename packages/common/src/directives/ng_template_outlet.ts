@@ -12,7 +12,6 @@ import {
   Injector,
   Input,
   OnChanges,
-  SimpleChange,
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,

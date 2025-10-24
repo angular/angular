@@ -6,13 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  ASTWithSource,
-  EmptyExpr,
-  BindingPipe,
-  RecursiveAstVisitor,
-  AST,
-} from '../expression_parser/ast';
+import {ASTWithSource, EmptyExpr, RecursiveAstVisitor, AST} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {ParseError, ParseSourceSpan} from '../parse_util';
 import {BindingParser} from '../template_parser/binding_parser';

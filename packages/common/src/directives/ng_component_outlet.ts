@@ -14,7 +14,6 @@ import {
   EnvironmentInjector,
   Injector,
   Input,
-  NgModuleFactory,
   NgModuleRef,
   OnChanges,
   OnDestroy,
