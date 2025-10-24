@@ -37,7 +37,7 @@
     "@types/jasmine": "5.1.12",
     "@types/jsdom": "27.0.0",
     "@types/node": "24.9.1",
-    "@typescript/vfs": "1.6.1",
+    "@typescript/vfs": "1.6.2",
     "@webcontainer/api": "1.6.1",
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
