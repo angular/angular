@@ -120,7 +120,7 @@ export function convertToParamMap(params: Params): ParamMap {
 function matchParts(
   routeParts: string[],
   urlSegments: UrlSegment[],
-  posParams: {[key: string]: UrlSegment},
+  posParams: {[key: string]: UrlSegment | UrlSegment[]},
 ): boolean {
   for (let i = 0; i < routeParts.length; i++) {
     const part = routeParts[i];
@@ -199,7 +199,7 @@ export function defaultUrlMatcher(
     return null;
   }
 
-  const posParams: {[key: string]: UrlSegment} = {};
+  const posParams: {[key: string]: UrlSegment | UrlSegment[]} = {};
 
   // Match the segments before the wildcard
   if (!matchParts(pre, segments.slice(0, pre.length), posParams)) {
@@ -210,9 +210,10 @@ export function defaultUrlMatcher(
     return null;
   }
 
-  // TODO(atscott): put the wildcard segments into a _splat param.
-  // this would require a breaking change to the UrlMatchResult to allow UrlSegment[]
-  // since the splat could be multiple segments.
+  const splat = segments.slice(pre.length, segments.length - post.length);
+  if (splat.length > 0) {
+    posParams['_splat'] = splat;
+  }
 
   return {consumed: segments, posParams};
 }

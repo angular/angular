@@ -87,7 +87,7 @@ export class ApplyRedirects {
   applyRedirectCommands(
     segments: UrlSegment[],
     redirectTo: string | RedirectFunction,
-    posParams: {[k: string]: UrlSegment},
+    posParams: {[k: string]: UrlSegment | UrlSegment[]},
     currentSnapshot: ActivatedRouteSnapshot,
     injector: Injector,
   ): Observable<UrlTree> {
@@ -116,7 +116,7 @@ export class ApplyRedirects {
     redirectTo: string,
     urlTree: UrlTree,
     segments: UrlSegment[],
-    posParams: {[k: string]: UrlSegment},
+    posParams: {[k: string]: UrlSegment | UrlSegment[]},
   ): UrlTree {
     const newRoot = this.createSegmentGroup(redirectTo, urlTree.root, segments, posParams);
     return new UrlTree(
@@ -144,7 +144,7 @@ export class ApplyRedirects {
     redirectTo: string,
     group: UrlSegmentGroup,
     segments: UrlSegment[],
-    posParams: {[k: string]: UrlSegment},
+    posParams: {[k: string]: UrlSegment | UrlSegment[]},
   ): UrlSegmentGroup {
     const updatedSegments = this.createSegments(redirectTo, group.segments, segments, posParams);
 
@@ -160,9 +160,9 @@ export class ApplyRedirects {
     redirectTo: string,
     redirectToSegments: UrlSegment[],
     actualSegments: UrlSegment[],
-    posParams: {[k: string]: UrlSegment},
+    posParams: {[k: string]: UrlSegment | UrlSegment[]},
   ): UrlSegment[] {
-    return redirectToSegments.map((s) =>
+    return redirectToSegments.flatMap((s) =>
       s.path[0] === ':'
         ? this.findPosParam(redirectTo, s, posParams)
         : this.findOrReturn(s, actualSegments),
@@ -172,8 +172,8 @@ export class ApplyRedirects {
   findPosParam(
     redirectTo: string,
     redirectToUrlSegment: UrlSegment,
-    posParams: {[k: string]: UrlSegment},
-  ): UrlSegment {
+    posParams: {[k: string]: UrlSegment | UrlSegment[]},
+  ): UrlSegment | UrlSegment[] {
     const pos = posParams[redirectToUrlSegment.path.substring(1)];
     if (!pos)
       throw new RuntimeError(
