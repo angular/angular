@@ -11,6 +11,8 @@ import {HttpHeaders} from './headers';
 /**
  * Type enumeration for the different kinds of `HttpEvent`.
  *
+ * @see [Receiving raw progress event](guide/http/making-requests#receiving-raw-progress-events)
+ *
  * @publicApi
  */
 export enum HttpEventType {
@@ -50,6 +52,8 @@ export enum HttpEventType {
 /**
  * Base interface for progress events.
  *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
+ *
  * @publicApi
  */
 export interface HttpProgressEvent {
@@ -73,6 +77,8 @@ export interface HttpProgressEvent {
 /**
  * A download progress event.
  *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
+ *
  * @publicApi
  */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
@@ -91,6 +97,8 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
  *
  * Note: The `FetchBackend` doesn't support progress report on uploads.
  *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
+ *
  * @publicApi
  */
 export interface HttpUploadProgressEvent extends HttpProgressEvent {
@@ -101,6 +109,8 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
  * An event indicating that the request was sent to the server. Useful
  * when a request may be retried multiple times, to distinguish between
  * retries on the final event stream.
+ *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
  *
  * @publicApi
  */
@@ -113,6 +123,8 @@ export interface HttpSentEvent {
  *
  * Grouping all custom events under this type ensures they will be handled
  * and forwarded by all implementations of interceptors.
+ *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
  *
  * @publicApi
  */
@@ -138,6 +150,7 @@ export interface HttpJsonParseError {
  *
  * Typed according to the expected type of the response.
  *
+ * @see [Intercepting response events](guide/http/interceptors#intercepting-response-events)
  * @publicApi
  */
 export type HttpEvent<T> =
@@ -248,6 +261,8 @@ export abstract class HttpResponseBase {
  * `HttpHeaderResponse` is a `HttpEvent` available on the response
  * event stream, only when progress events are requested.
  *
+ * @see [Receiving raw progress events](guide/http/making-requests#receiving-raw-progress-events)
+ *
  * @publicApi
  */
 export class HttpHeaderResponse extends HttpResponseBase {
@@ -296,6 +311,8 @@ export class HttpHeaderResponse extends HttpResponseBase {
  *
  * `HttpResponse` is a `HttpEvent` available on the response event
  * stream.
+ *
+ * @see [Interacting with the server response events](guide/http/making-requests#interacting-with-the-server-response-events)
  *
  * @publicApi
  */
@@ -376,6 +393,8 @@ export class HttpResponse<T> extends HttpResponseBase {
  * the state of the HTTP layer when the error occurred. The error property
  * will contain either a wrapped Error object or the error response returned
  * from the server.
+ *
+ * @see [Handling request failure](guide/http/making-requests#handling-request-failure)
  *
  * @publicApi
  */

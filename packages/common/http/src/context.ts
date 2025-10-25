@@ -9,6 +9,8 @@
 /**
  * A token used to manipulate and access values stored in `HttpContext`.
  *
+ * @see [Request and response metadata](guide/http/interceptors#request-and-response-metadata)
+ *
  * @publicApi
  */
 export class HttpContextToken<T> {
@@ -45,6 +47,8 @@ export class HttpContextToken<T> {
  *   context: new HttpContext().set(IS_CACHE_ENABLED, true)
  * }).subscribe(...);
  * ```
+ *
+ * @see [Request and response metadata](guide/http/interceptors#request-and-response-metadata)
  *
  * @publicApi
  */
