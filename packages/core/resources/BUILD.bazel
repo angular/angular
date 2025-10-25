@@ -1,0 +1,15 @@
+exports_files(
+    srcs = ["best-practices.md"],
+    visibility = [
+        "//adev/src/assets:__pkg__",
+        "//adev/src/content/ai:__pkg__",
+    ],
+)
+
+filegroup(
+    name = "resources",
+    srcs = ["best-practices.md"],
+    visibility = [
+        "//packages/core:__pkg__",
+    ],
+)
