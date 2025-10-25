@@ -7,9 +7,11 @@
  */
 
 import {
+  Binding,
   ComponentRef,
   createNgModule,
   Directive,
+  DirectiveWithBindings,
   DoCheck,
   EnvironmentInjector,
   Injector,
@@ -21,7 +23,9 @@ import {
   SimpleChanges,
   Type,
   ViewContainerRef,
+  ɵRuntimeError as RuntimeError,
 } from '@angular/core';
+import {RuntimeErrorCode} from '../errors';
 
 /**
  * Instantiates a {@link /api/core/Component Component} type and inserts its Host View into the current View.
@@ -103,7 +107,15 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
   /** Component that should be rendered in the outlet. */
   @Input() ngComponentOutlet: Type<T> | null = null;
 
+  /**
+   * Note: Incompatible with `ngComponentOutletBindings`.
+   */
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
+  /**
+   * Note: Incompatible with `ngComponentOutletInputs`.
+   */
+  @Input() ngComponentOutletBindings?: Binding[];
+  @Input() ngComponentOutletDirectives?: (Type<unknown> | DirectiveWithBindings<unknown>)[];
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
   @Input() ngComponentOutletContent?: Node[][];
@@ -146,6 +158,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // were changed).
     return (
       changes['ngComponentOutlet'] !== undefined ||
+      changes['ngComponentOutletBindings'] !== undefined ||
+      changes['ngComponentOutletDirectives'] !== undefined ||
       changes['ngComponentOutletContent'] !== undefined ||
       changes['ngComponentOutletInjector'] !== undefined ||
       changes['ngComponentOutletEnvironmentInjector'] !== undefined ||
@@ -155,6 +169,12 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges) {
+    if (ngDevMode && this.ngComponentOutletInputs && this.ngComponentOutletBindings) {
+      throw new RuntimeError(
+        RuntimeErrorCode.INVALID_INPUT,
+        '`ngComponentOutletInputs` and `ngComponentOutletBindings` are incompatible.',
+      );
+    }
     if (this._needToReCreateComponentInstance(changes)) {
       this._viewContainerRef.clear();
       this._inputsUsed.clear();
@@ -181,6 +201,8 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           ngModuleRef: this._moduleRef,
           projectableNodes: this.ngComponentOutletContent,
           environmentInjector: this.ngComponentOutletEnvironmentInjector,
+          bindings: this.ngComponentOutletBindings,
+          directives: this.ngComponentOutletDirectives,
         });
       }
     }
@@ -188,7 +210,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
 
   /** @docs-private */
   ngDoCheck() {
-    if (this._componentRef) {
+    if (this._componentRef && !this.ngComponentOutletBindings) {
       if (this.ngComponentOutletInputs) {
         for (const inputName of Object.keys(this.ngComponentOutletInputs)) {
           this._inputsUsed.set(inputName, true);
