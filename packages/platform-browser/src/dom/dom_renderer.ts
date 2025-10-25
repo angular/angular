@@ -522,7 +522,14 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     private sharedStylesHost?: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, platformIsServer, tracingService);
-    this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    this.shadowRoot = (hostEl as Element).shadowRoot;
+    if (!this.shadowRoot) {
+      this.shadowRoot = (hostEl as Element).attachShadow({mode: 'open'});
+    } else {
+      // In case of custom elements, it is possible that the host element was already initialized during the
+      // element life-cycle (after a disconnect/reconnect)
+      this.shadowRoot.innerHTML = '';
+    }
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
     // This is optional as it is not used by IsolatedShadowDom.
