@@ -134,6 +134,7 @@ copy_to_directory(
     srcs = [
         "//adev/src/context",
         "//adev/src/context:llms_full",
+        "//packages/core/resources:best-practices.md",
     ],
     replace_prefixes = {
         "**/": "",
