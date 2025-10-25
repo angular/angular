@@ -11,6 +11,10 @@ import {
   getTranslationForTemplate,
   i18nStartFirstCreatePass,
 } from '../../../src/render3/i18n/i18n_parse';
+import {
+  icuContainerIteratorNext,
+  IcuIteratorState,
+} from '../../../src/render3/i18n/i18n_icu_container_visitor';
 import {getTIcu} from '../../../src/render3/i18n/i18n_util';
 import {TNodeType} from '../../../src/render3/interfaces/node';
 
@@ -583,6 +587,23 @@ describe('Runtime i18n', () => {
           matchDebug([`remove(lView[${HEADER_OFFSET + 10}])`]),
         ],
       });
+    });
+
+    it('should clear lView reference when ICU iteration completes', () => {
+      const state: IcuIteratorState = {
+        stack: [],
+        index: 0,
+        removes: [] as any,
+        lView: [] as any, // Mock lView
+      };
+
+      // Call icuContainerIteratorNext with an empty removes array and empty stack
+      // This simulates the end of iteration
+      const result = icuContainerIteratorNext(state);
+
+      expect(result).toBeNull();
+      // Verify that lView should be cleared to allow garbage collection
+      expect(state.lView).toBeUndefined();
     });
   });
 
