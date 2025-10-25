@@ -13,42 +13,36 @@ describe('parseRoutes', () => {
     const routes: any[] = [];
     const parsedRoutes = parseRoutes(routes as any);
     expect(parsedRoutes).toEqual({
-      component: 'no-name',
-      path: '/',
+      component: 'App Root',
+      path: 'App Root',
       children: [],
       data: [],
       isAux: false,
       isLazy: false,
-      isActive: false,
+      isActive: true,
       isRedirect: false,
     });
   });
 
   it('should work with single route', () => {
     const nestedRouter = {
-      rootComponentType: {
-        name: 'homeComponent',
-      },
       config: [],
     };
     const parsedRoutes = parseRoutes(nestedRouter as any);
     expect(parsedRoutes).toEqual({
-      'component': 'homeComponent',
-      'path': '/',
+      'component': 'App Root',
+      'path': 'App Root',
       'data': [],
       'children': [],
       'isAux': false,
       'isLazy': false,
-      'isActive': false,
+      'isActive': true,
       isRedirect: false,
     });
   });
 
   it('should work with nested routes', () => {
     const nestedRouter = {
-      rootComponentType: {
-        name: 'homeComponent',
-      },
       config: [
         {
           outlet: 'outlet',
@@ -96,8 +90,8 @@ describe('parseRoutes', () => {
     };
     const parsedRoutes = parseRoutes(nestedRouter as any);
     expect(parsedRoutes).toEqual({
-      'component': 'homeComponent',
-      'path': '/',
+      'component': 'App Root',
+      'path': 'App Root',
       'children': [
         {
           'component': 'component-one',
@@ -186,7 +180,7 @@ describe('parseRoutes', () => {
       'isLazy': false,
       'isRedirect': false,
       'data': [],
-      'isActive': false,
+      'isActive': true,
     } as any);
   });
 });
