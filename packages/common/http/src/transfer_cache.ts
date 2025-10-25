@@ -43,6 +43,8 @@ import {HttpParams} from './params';
  * @param includeRequestsWithAuthHeaders Enables caching of requests containing either `Authorization`
  *     or `Proxy-Authorization` headers. By default, these requests are excluded from caching.
  *
+ * @see [Configuring the caching options](guide/ssr#configuring-the-caching-options)
+ *
  * @publicApi
  */
 export type HttpTransferCacheOptions = {
@@ -320,6 +322,8 @@ function generateHash(value: string): string {
  * When these providers are added, requests performed on the server are cached and reused during the
  * bootstrapping of the application in the browser thus avoiding duplicate requests and reducing
  * load time.
+ *
+ * @see [Caching data when using HttpClient](guide/ssr#configuring-the-caching-options)
  *
  */
 export function withHttpTransferCache(cacheOptions: HttpTransferCacheOptions): Provider[] {

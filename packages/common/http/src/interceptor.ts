@@ -187,6 +187,8 @@ export function chainedInterceptorFn(
  * A multi-provider token that represents the array of registered
  * `HttpInterceptor` objects.
  *
+ * @see [HTTP Guide](guide/http/interceptors)
+ *
  * @publicApi
  */
 export const HTTP_INTERCEPTORS = new InjectionToken<readonly HttpInterceptor[]>(
