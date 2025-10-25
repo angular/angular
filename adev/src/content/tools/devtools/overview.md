@@ -17,10 +17,11 @@ HELPFUL: Chrome's new tab page does not run installed extensions, so the Angular
 
 When you open the extension, you'll see two additional tabs:
 
-| Tabs                                   | Details                                                                                                                |
-| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| [Components](tools/devtools/component) | Lets you explore the components and directives in your application and preview or edit their state.                    |
-| [Profiler](tools/devtools/profiler)    | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| Tabs                                      | Details                                                                                                                |
+| :---------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| [Components](tools/devtools/component)    | Lets you explore the components and directives in your application and preview or edit their state.                    |
+| [Profiler](tools/devtools/profiler)       | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Injector Tree](tools/devtools/injectors) | Lets visualize the Environment and Element Injector hierarchy                                                          |
 
 <!-- TODO: Add new sections like signals, router etc. -->
 
