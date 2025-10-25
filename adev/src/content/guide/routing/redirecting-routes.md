@@ -48,7 +48,7 @@ By default, all redirects use the `prefix` strategy.
 ```ts
 export const routes: Routes = [
   // This redirect route is equivalent to…
-  { path: 'news', redirectTo: 'blog },
+  { path: 'news', redirectTo: 'blog' },
 
   // This explicitly defined route redirect pathMatch
   { path: 'news', redirectTo: 'blog', pathMatch: 'prefix' },
@@ -138,6 +138,26 @@ export const routes: Routes = [
 ```
 
 To learn more, check out [the API docs for the RedirectFunction](api/router/RedirectFunction).
+
+## Asynchronous redirects
+
+The [`redirectTo`](api/router/RedirectFunction) function supports asynchronous redirects by returning an `Observable` or `Promise`, allowing redirect logic to be resolved dynamically based on asynchronous operations or other runtime conditions.
+
+```ts
+export const routes: Routes = [
+  {
+    path: 'awesome-feature',
+    redirectTo: () => {
+      const featureFlagService = inject(FeatureFlagService);
+
+      // Returns a Promise that resolves to the redirect path
+      return featureFlagService.getVariation();
+    }
+  }
+];
+```
+
+Asynchronous redirects are useful when the redirect destination depends on external factors that require asynchronous operations. Common use cases include feature flag-based routing, role-based redirects.
 
 ## Next steps
 
