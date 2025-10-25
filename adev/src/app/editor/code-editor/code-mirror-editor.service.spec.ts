@@ -17,6 +17,7 @@ import {EmbeddedTutorialManager} from '../embedded-tutorial-manager.service';
 
 import {CodeMirrorEditor, EDITOR_CONTENT_CHANGE_DELAY_MILLIES} from './code-mirror-editor.service';
 import {TutorialConfig, TutorialMetadata} from '@angular/docs';
+import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 
 class FakeNodeRuntimeSandbox {
   async writeFile(path: string, content: string) {}
@@ -64,8 +65,16 @@ export class FakeEmbeddedTutorialManager {
   }
 }
 
+class MockWorker {
+  addEventListener = jasmine.createSpy('addEventListener');
+  postMessage = jasmine.createSpy('postMessage');
+  removeEventListener = jasmine.createSpy('removeEventListener');
+  terminate = jasmine.createSpy('terminate');
+}
+
 describe('CodeMirrorEditor', () => {
   let service: CodeMirrorEditor;
+  let mockWorker: MockWorker;
 
   const fakeNodeRuntimeSandbox = new FakeNodeRuntimeSandbox();
   const fakeEmbeddedTutorialManager = new FakeEmbeddedTutorialManager();
@@ -80,12 +89,18 @@ describe('CodeMirrorEditor', () => {
   }
 
   beforeEach(() => {
+    mockWorker = new MockWorker();
+
     TestBed.configureTestingModule({
       providers: [
         CodeMirrorEditor,
         {
           provide: NodeRuntimeSandbox,
           useValue: fakeNodeRuntimeSandbox,
+        },
+        {
+          provide: TYPESCRIPT_VFS_WORKER_FACTORY,
+          useValue: () => mockWorker as unknown as Worker,
         },
         {
           provide: EmbeddedTutorialManager,
