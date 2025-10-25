@@ -9,7 +9,11 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
 import {AggregateMetadataKey, MetadataKey} from './metadata';
-import type {ValidationError, WithOptionalField, WithoutField} from './validation_errors';
+import type {
+  ValidationError,
+  ValidationErrorWithField,
+  ValidationErrorWithOptionalField,
+} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -87,24 +91,6 @@ export interface DisabledReason {
 export type ValidationSuccess = null | undefined | void;
 
 /**
- * The result of running a field validation function.
- *
- * The result may be one of the following:
- * 1. A {@link ValidationSuccess} to indicate no errors.
- * 2. A {@link ValidationError} without a field to indicate an error on the field being validated.
- * 3. A list of {@link ValidationError} without fields to indicate multiple errors on the field
- *    being validated.
- *
- * @template E the type of error (defaults to {@link ValidationError}).
- *
- * @category types
- * @experimental 21.0.0
- */
-export type FieldValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationSuccess
-  | OneOrMany<WithoutField<E>>;
-
-/**
  * The result of running a tree validation function.
  *
  * The result may be one of the following:
@@ -118,9 +104,9 @@ export type FieldValidationResult<E extends ValidationError = ValidationError> =
  * @category types
  * @experimental 21.0.0
  */
-export type TreeValidationResult<E extends ValidationError = ValidationError> =
-  | ValidationSuccess
-  | OneOrMany<WithOptionalField<E>>;
+export type TreeValidationResult<
+  E extends ValidationErrorWithOptionalField = ValidationErrorWithOptionalField,
+> = ValidationSuccess | OneOrMany<E>;
 
 /**
  * A validation result where all errors explicitly define their target field.
@@ -248,12 +234,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  readonly errors: Signal<ValidationError[]>;
+  readonly errors: Signal<ValidationErrorWithField[]>;
 
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
-  readonly errorSummary: Signal<ValidationError[]>;
+  readonly errorSummary: Signal<ValidationErrorWithField[]>;
 
   /**
    * A signal indicating whether the field's value is currently valid.
@@ -423,7 +409,7 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  FieldValidationResult,
+  ValidationResult,
   TPathKind
 >;
 

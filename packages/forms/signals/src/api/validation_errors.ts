@@ -7,7 +7,7 @@
  */
 
 import type {StandardSchemaV1} from '@standard-schema/spec';
-import {FieldTree} from './types';
+import type {FieldTree} from './types';
 
 /**
  * Options used to create a `ValidationError`.
@@ -279,7 +279,7 @@ export function standardSchemaError(
  * @category validation
  * @experimental 21.0.0
  */
-export function customError<E extends Partial<ValidationError>>(
+export function customError<E extends Partial<ValidationErrorWithField>>(
   obj: WithField<E>,
 ): CustomValidationError;
 /**
@@ -289,10 +289,10 @@ export function customError<E extends Partial<ValidationError>>(
  * @category validation
  * @experimental 21.0.0
  */
-export function customError<E extends Partial<ValidationError>>(
+export function customError<E extends Partial<ValidationErrorWithField>>(
   obj?: E,
 ): WithoutField<CustomValidationError>;
-export function customError<E extends Partial<ValidationError>>(
+export function customError<E extends Partial<ValidationErrorWithField>>(
   obj?: E,
 ): WithOptionalField<CustomValidationError> {
   return new CustomValidationError(obj);
@@ -309,10 +309,18 @@ export function customError<E extends Partial<ValidationError>>(
 export interface ValidationError {
   /** Identifies the kind of error. */
   readonly kind: string;
-  /** The field associated with this error. */
-  readonly field: FieldTree<unknown>;
   /** Human readable error message. */
   readonly message?: string;
+}
+
+export interface ValidationErrorWithField extends ValidationError {
+  /** The field associated with this error. */
+  readonly field: FieldTree<unknown>;
+}
+
+export interface ValidationErrorWithOptionalField extends ValidationError {
+  /** The field associated with this error. */
+  readonly field?: FieldTree<unknown>;
 }
 
 /**

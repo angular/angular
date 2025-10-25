@@ -75,6 +75,32 @@ describe('min validator', () => {
       ]);
     });
 
+    it('wraps custom errors if needed', () => {
+      const cat = signal({name: 'pirojok-the-cat', age: 3});
+      const f = form(
+        cat,
+        (p) => {
+          min(p.age, 5, {
+            error: ({value}) => {
+              return {
+                kind: 'special-min',
+                message: value().toString(),
+              };
+            },
+          });
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f.age().errors()).toEqual([
+        customError({
+          kind: 'special-min',
+          message: '3',
+          field: f.age,
+        }),
+      ]);
+    });
+
     it('supports custom error messages', () => {
       const cat = signal({name: 'pirojok-the-cat', age: 3});
       const f = form(
