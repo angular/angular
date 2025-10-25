@@ -15,6 +15,8 @@ import {RuntimeErrorCode} from './errors';
  *
  * Used by `HttpParams`.
  *
+ * @see [Custom parameter encoding](guide/http/making-requests#custom-parameter-encoding)
+ *
  * @publicApi
  **/
 export interface HttpParameterCodec {
@@ -129,6 +131,9 @@ interface Update {
 /**
  * Options used to construct an `HttpParams` instance.
  *
+ * @see [Setting URL parameters](guide/http/making-requests#setting-url-parameters)
+ * @see [Custom parameter encoding](guide/http/making-requests#custom-parameter-encoding)
+ *
  * @publicApi
  */
 export interface HttpParamsOptions {
@@ -152,6 +157,8 @@ export interface HttpParamsOptions {
  * per the MIME type `application/x-www-form-urlencoded`.
  *
  * This class is immutable; all mutation operations return a new instance.
+ *
+ * @see [Setting URL parameters](guide/http/making-requests#setting-url-parameters)
  *
  * @publicApi
  */

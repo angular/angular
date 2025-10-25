@@ -94,7 +94,7 @@ function makeHttpFeature<KindT extends HttpFeatureKind>(
  * ```
  *
  * </div>
- *
+ * @see [HTTP Client](guide/http/setup)
  * @see {@link withInterceptors}
  * @see {@link withInterceptorsFromDi}
  * @see {@link withXsrfConfiguration}
@@ -275,6 +275,7 @@ export function withJsonpSupport(): HttpFeature<HttpFeatureKind.JsonpSupport> {
  * "bubble up" until either reaching the root level or an `HttpClient` which was not configured with
  * this option.
  *
+ * @see [HTTP client setup](guide/http/setup#withrequestsmadeviaparent)
  * @see {@link provideHttpClient}
  * @publicApi 19.0
  */
@@ -299,6 +300,8 @@ export function withRequestsMadeViaParent(): HttpFeature<HttpFeatureKind.Request
  * Configures the current `HttpClient` instance to make requests using the fetch API.
  *
  * Note: The Fetch API doesn't support progress report on uploads.
+ *
+ * @see [Advanced fetch Options](guide/http/making-requests#advanced-fetch-options)
  *
  * @publicApi
  */
