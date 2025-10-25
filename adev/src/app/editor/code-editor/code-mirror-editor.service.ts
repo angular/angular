@@ -29,6 +29,7 @@ import {TsVfsWorkerActions} from './workers/enums/actions';
 import {CodeChangeRequest} from './workers/interfaces/code-change-request';
 import {ActionMessage} from './workers/interfaces/message';
 import {NodeRuntimeState} from '../node-runtime-state.service';
+import {TYPESCRIPT_VFS_WORKER_FACTORY} from './workers/factory-provider';
 
 export interface EditorFile {
   filename: string;
@@ -71,7 +72,6 @@ export class CodeMirrorEditor {
 
   // An instance of web worker used to run virtual TypeScript environment in the browser.
   // It allows to enrich CodeMirror UX for TypeScript files.
-  private tsVfsWorker: Worker | null = null;
   // EventManager gives ability to communicate between tsVfsWorker and CodeMirror instance
   private readonly eventManager$ = new Subject<ActionMessage>();
 
@@ -81,6 +81,8 @@ export class CodeMirrorEditor {
   private readonly typingsLoader = inject(TypingsLoader);
   private readonly destroyRef = inject(DestroyRef);
   private readonly diagnosticsState = inject(DiagnosticsState);
+  private readonly tsVfsWorkerFactory = inject(TYPESCRIPT_VFS_WORKER_FACTORY);
+  private tsVfsWorker: Worker | null = null;
 
   private _editorView: EditorView | null = INITIAL_STATES._editorView;
   private readonly _editorStates = new Map<EditorFile['filename'], EditorState>();
@@ -182,14 +184,11 @@ export class CodeMirrorEditor {
   }
 
   private initTypescriptVfsWorker(): void {
-    if (this.tsVfsWorker) {
+    if (this.tsVfsWorker || !this.tsVfsWorkerFactory) {
       return;
     }
 
-    this.tsVfsWorker = new Worker(new URL('./workers/typescript-vfs.worker', import.meta.url), {
-      type: 'module',
-    });
-
+    this.tsVfsWorker = this.tsVfsWorkerFactory();
     this.tsVfsWorker.addEventListener('message', ({data}: MessageEvent<ActionMessage>) => {
       this.eventManager$.next(data);
     });
@@ -214,10 +213,13 @@ export class CodeMirrorEditor {
 
   // Method is responsible for sending request to Typescript VFS worker.
   private sendRequestToTsVfs = <T>(request: ActionMessage<T>) => {
-    if (!this.tsVfsWorker) return;
+    if (!this.tsVfsWorker) {
+      console.warn('TypeScript VFS worker not available');
+      return;
+    }
 
     // Send message to tsVfsWorker only when current file is TypeScript file.
-    if (!this.currentFile().filename.endsWith('.ts')) return;
+    if (!this.currentFile()?.filename.endsWith('.ts')) return;
 
     this.tsVfsWorker.postMessage(request);
   };
