@@ -8,10 +8,11 @@
 
 // #docregion Component
 import {Component} from '@angular/core';
-import {FormControl, Validators} from '@angular/forms';
+import {FormControl, ReactiveFormsModule, Validators} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
+  imports: [ReactiveFormsModule],
   template: `
     <input [formControl]="control" />
 
@@ -20,7 +21,6 @@ import {FormControl, Validators} from '@angular/forms';
 
     <button (click)="setValue()">Set value</button>
   `,
-  standalone: false,
 })
 export class SimpleFormControl {
   control: FormControl = new FormControl('value', Validators.minLength(2));
