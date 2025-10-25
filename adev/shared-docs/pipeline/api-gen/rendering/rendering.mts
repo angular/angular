@@ -19,11 +19,7 @@ import {
   isInterfaceEntry,
   isTypeAliasEntry,
 } from './entities/categorization.mjs';
-import {
-  ClassEntryRenderable,
-  CliCommandRenderable,
-  DocEntryRenderable,
-} from './entities/renderables.mjs';
+import {CliCommandRenderable, DocEntryRenderable} from './entities/renderables.mjs';
 import {ClassReference} from './templates/class-reference';
 import {CliCommandReference} from './templates/cli-reference';
 import {ConstantReference} from './templates/constant-reference';
@@ -43,7 +39,7 @@ export function renderEntry(renderable: DocEntryRenderable | CliCommandRenderabl
   }
 
   if (isClassEntry(renderable) || isInterfaceEntry(renderable)) {
-    return render(ClassReference(renderable as ClassEntryRenderable));
+    return render(ClassReference(renderable));
   }
   if (isDecoratorEntry(renderable)) {
     return render(DecoratorReference(renderable));

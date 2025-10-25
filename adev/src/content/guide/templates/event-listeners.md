@@ -117,4 +117,110 @@ export class AppComponent{
 }
 ```
 
-If the event handler statement evaluates to `false`, Angular automatically calls `preventDefault()`, similar to [native event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). *Always prefer explicitly calling `preventDefault`*, as this approach makes the code's intent obvious.
+If the event handler statement evaluates to `false`, Angular automatically calls `preventDefault()`, similar to [native event handler attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes#event_handler_attributes). _Always prefer explicitly calling `preventDefault`_, as this approach makes the code's intent obvious.
+
+## Extend event handling
+
+Angular’s event system is extensible via custom event plugins registered with the `EVENT_MANAGER_PLUGINS` injection token.
+
+### Implementing Event Plugin
+
+To create a custom event plugin, extend the `EventManagerPlugin` class and implement the required methods.
+
+```ts
+import { Injectable } from '@angular/core';
+import { EventManagerPlugin } from '@angular/platform-browser';
+
+@Injectable()
+export class DebounceEventPlugin extends EventManagerPlugin {
+  constructor() {
+    super(document);
+  }
+
+  // Define which events this plugin supports
+  override supports(eventName: string) {
+    return /debounce/.test(eventName);
+  }
+
+  // Handle the event registration
+  override addEventListener(
+    element: HTMLElement,
+    eventName: string,
+    handler: Function
+  ) {
+    // Parse the event: e.g., "click.debounce.500"
+    // event: "click", delay: 500
+    const [event, method , delay = 300 ] = eventName.split('.');
+
+    let timeoutId: number;
+
+    const listener = (event: Event) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+          handler(event);
+      }, delay);
+    };
+
+    element.addEventListener(event, listener);
+
+    // Return cleanup function
+    return () => {
+      clearTimeout(timeoutId);
+      element.removeEventListener(event, listener);
+    };
+  }
+}
+```
+
+Register your custom plugin using the `EVENT_MANAGER_PLUGINS` token in your application's providers:
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { DebounceEventPlugin } from './debounce-event-plugin';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: DebounceEventPlugin,
+      multi: true
+    }
+  ]
+});
+```
+
+Once registered, you can use your custom event syntax in templates, as well as with the `host` property:
+
+```angular-ts
+@Component({
+  template: `
+    <input
+      type="text"
+      (input.debounce.500)="onSearch($event.target.value)"
+      placeholder="Search..."
+    />
+  `,
+  ...
+})
+export class Search {
+ onSearch(query: string): void {
+    console.log('Searching for:', query);
+  }
+}
+```
+
+```ts
+@Component({
+  ...,
+  host: {
+    '(click.debounce.500)': 'handleDebouncedClick()',
+  },
+})
+export class AwesomeCard {
+  handleDebouncedClick(): void {
+   console.log('Debounced click!');
+  }
+}
+```

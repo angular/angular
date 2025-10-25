@@ -1,4 +1,3 @@
-load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
 load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
@@ -25,6 +24,7 @@ APPLICATION_FILES = [
     "//adev/src/assets:content",
     "//adev/src/assets:context",
     "//adev/src/content/examples:embeddable",
+    "tailwind.config.js",
 ] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
@@ -58,12 +58,18 @@ APPLICATION_DEPS = [
     "//adev:node_modules/marked",
     "//adev:node_modules/ngx-progressbar",
     "//adev:node_modules/open-in-idx",
+    "//adev:node_modules/tailwindcss",
     "//adev:node_modules/typescript",
     "//adev:node_modules/xhr2",
     "//adev:node_modules/@types/node",
     "//adev:node_modules/@types/dom-navigation",
 
-    # Deep imports
+    # The imports below are packages that our code does not directly import, but our upstream deps import from
+    # these locations directly. By design, rather than hoisting these packages into the "root" node_modules the
+    # dependency is found in (i.e. ./adev/node_modules), rules_js places all of each package's dependencies in
+    # a "hoisted" location within the `.aspect_rules_js/` directories in the node_modules directory. This prevents
+    # the bundler from being able to find it as expected. We instead specifically provide it as a dep within bazel
+    # as a mechanism of "hoisting" the package for our usage by this target.
     "//adev:node_modules/@algolia/client-common",
     "//adev:node_modules/@algolia/requester-browser-xhr",
     "//adev:node_modules/@algolia/requester-node-http",
@@ -87,60 +93,63 @@ TEST_DEPS = [
     for dep in APPLICATION_DEPS
     if dep != "//adev:node_modules/@types/node"
 ] + [
-    "@rules_browsers//src/browsers/chromium",
-    "@rules_browsers//src/browsers/firefox",
+    "@rules_browsers//browsers/chromium",
+    "@rules_browsers//browsers/firefox",
     "//adev/tools:windows-chromium-path",
 ]
 
 ng_config(name = "ng_config")
 
-bool_flag(
-    name = "full_build_adev",
-    build_setting_default = False,
-)
-
-config_setting(
-    name = "prod_build",
-    flag_values = {
-        ":full_build_adev": "true",
-    },
-)
-
-config_setting(
-    name = "dev_build",
-    flag_values = {
-        ":full_build_adev": "false",
-    },
-)
-
-config_based_architect_env = select({
-    ":dev_build": {
-        "NG_BUILD_PARTIAL_SSR": "1",
-    },
-    ":prod_build": {
-        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
-    },
-})
-
-config_based_architect_flags = select({
-    ":dev_build": [
-        "--configuration",
-        "development",
-    ],
-    ":prod_build": [
-        "--configuration",
-        "production",
-    ],
-})
-
 ng_application(
     name = "build",
     srcs = APPLICATION_FILES + APPLICATION_DEPS,
-    args = config_based_architect_flags,
-    env = config_based_architect_env,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
     ng_config = ":ng_config",
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = "//adev:node_modules",
+    project_name = "angular-dev",
+    serve_args = [
+        "--port",
+        "4201",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
 )
 
 ng_test(
@@ -155,7 +164,7 @@ ng_test(
     node_modules = "//adev:node_modules",
     project_name = "angular-dev",
     toolchains = [
-        "@rules_browsers//src/browsers/chromium:toolchain_alias",
-        "@rules_browsers//src/browsers/firefox:toolchain_alias",
+        "@rules_browsers//browsers/chromium:toolchain_alias",
+        "@rules_browsers//browsers/firefox:toolchain_alias",
     ],
 )

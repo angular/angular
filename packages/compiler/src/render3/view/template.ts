@@ -9,7 +9,6 @@
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as html from '../../ml_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/defaults';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {LexerRange} from '../../ml_parser/lexer';
@@ -39,10 +38,6 @@ export interface ParseTemplateOptions {
    * Preserve whitespace significant to rendering.
    */
   preserveSignificantWhitespace?: boolean;
-  /**
-   * How to parse interpolation markers.
-   */
-  interpolationConfig?: InterpolationConfig;
   /**
    * The start and end point of the text to parse within the `source` string.
    * The entire `source` string is parsed if this is not provided.
@@ -147,9 +142,9 @@ export function parseTemplate(
   templateUrl: string,
   options: ParseTemplateOptions = {},
 ): ParsedTemplate {
-  const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const {preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const selectorlessEnabled = options.enableSelectorless ?? false;
-  const bindingParser = makeBindingParser(interpolationConfig, selectorlessEnabled);
+  const bindingParser = makeBindingParser(selectorlessEnabled);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl, {
     leadingTriviaChars: LEADING_TRIVIA_CHARS,
@@ -166,7 +161,6 @@ export function parseTemplate(
     parseResult.errors.length > 0
   ) {
     const parsedTemplate: ParsedTemplate = {
-      interpolationConfig,
       preserveWhitespaces,
       errors: parseResult.errors,
       nodes: [],
@@ -193,7 +187,6 @@ export function parseTemplate(
   // extraction process (ng extract-i18n) relies on a raw content to generate
   // message ids
   const i18nMetaVisitor = new I18nMetaVisitor(
-    interpolationConfig,
     /* keepI18nAttrs */ !preserveWhitespaces,
     enableI18nLegacyMessageIdFormat,
     /* containerBlocks */ undefined,
@@ -208,7 +201,6 @@ export function parseTemplate(
     i18nMetaResult.errors.length > 0
   ) {
     const parsedTemplate: ParsedTemplate = {
-      interpolationConfig,
       preserveWhitespaces,
       errors: i18nMetaResult.errors,
       nodes: [],
@@ -252,7 +244,6 @@ export function parseTemplate(
     if (i18nMetaVisitor.hasI18nMeta) {
       rootNodes = html.visitAll(
         new I18nMetaVisitor(
-          interpolationConfig,
           /* keepI18nAttrs */ false,
           /* enableI18nLegacyMessageIdFormat */ undefined,
           /* containerBlocks */ undefined,
@@ -272,7 +263,6 @@ export function parseTemplate(
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
   const parsedTemplate: ParsedTemplate = {
-    interpolationConfig,
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     nodes,
@@ -292,16 +282,8 @@ const elementRegistry = new DomElementSchemaRegistry();
 /**
  * Construct a `BindingParser` with a default configuration.
  */
-export function makeBindingParser(
-  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-  selectorlessEnabled = false,
-): BindingParser {
-  return new BindingParser(
-    new Parser(new Lexer(), selectorlessEnabled),
-    interpolationConfig,
-    elementRegistry,
-    [],
-  );
+export function makeBindingParser(selectorlessEnabled = false): BindingParser {
+  return new BindingParser(new Parser(new Lexer(), selectorlessEnabled), elementRegistry, []);
 }
 
 /**
@@ -316,10 +298,6 @@ export interface ParsedTemplate {
    */
   preserveWhitespaces?: boolean;
 
-  /**
-   * How to parse interpolation markers.
-   */
-  interpolationConfig?: InterpolationConfig;
   /**
    * Any errors from parsing the template the first time.
    *

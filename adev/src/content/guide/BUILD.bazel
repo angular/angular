@@ -6,6 +6,7 @@ generate_guides(
     srcs = glob([
         "*.md",
     ]),
+    api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
         "//adev/src/content/examples",
     ],
@@ -16,6 +17,7 @@ copy_to_bin(
     name = "guide_files",
     srcs = [
         "//adev/src/content/guide/animations:guide_files",
+        "//adev/src/content/guide/aria:guide_files",
         "//adev/src/content/guide/components:guide_files",
         "//adev/src/content/guide/di:guide_files",
         "//adev/src/content/guide/directives:guide_files",

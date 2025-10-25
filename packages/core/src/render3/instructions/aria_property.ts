@@ -21,15 +21,13 @@ import {
   storePropertyBindingMetadata,
 } from './shared';
 
-const ARIA_PREFIX = 'aria';
-
 /**
- * Update an ARIA attribute by either its attribute or property name on a selected element.
+ * Update an ARIA attribute on a selected element.
  *
- * If the property name also exists as an input property on any of the element's directives, those
- * inputs will be set instead of the element property.
+ * If the attribute name also exists as an input property on any of the element's directives, those
+ * inputs will be set instead of the element attribute.
  *
- * @param name Name of the ARIA attribute or property (beginning with `aria`).
+ * @param name Name of the ARIA attribute (beginning with `aria-`).
  * @param value New value to write.
  * @returns This function returns itself so that it may be chained.
  *
@@ -49,30 +47,10 @@ export function ɵɵariaProperty<T>(name: string, value: T): typeof ɵɵariaProp
     } else {
       ngDevMode && assertTNodeType(tNode, TNodeType.Element);
       const element = getNativeByTNode(tNode, lView) as RElement;
-      const attributeName = ariaAttrName(name);
-      setElementAttribute(lView[RENDERER], element, null, tNode.value, attributeName, value, null);
+      setElementAttribute(lView[RENDERER], element, null, tNode.value, name, value, null);
     }
 
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, name, bindingIndex);
   }
   return ɵɵariaProperty;
-}
-
-/**
- * Converts an ARIA property name to its corresponding attribute name, if necessary.
- *
- * For example, converts `ariaLabel` to `aria-label`.
- *
- * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
- *
- * This must be kept in sync with the the function of the same name in
- * packages/compiler/src/template/pipeline/src/phases/reify.ts
- *
- * @param name A property name that starts with `aria`.
- * @returns The corresponding attribute name.
- */
-function ariaAttrName(name: string): string {
-  return name.charAt(ARIA_PREFIX.length) !== '-'
-    ? ARIA_PREFIX + '-' + name.slice(ARIA_PREFIX.length).toLowerCase()
-    : name; // Property already has attribute name.
 }

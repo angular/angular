@@ -8,7 +8,6 @@
 
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule} from '@angular/forms';
 import {ChangeDetectionStrategy, Component, model, forwardRef, input, signal} from '@angular/core';
-import {CommonModule} from '@angular/common';
 
 type SelectOptionValue = string | number | boolean;
 
@@ -20,7 +19,7 @@ export interface SelectOption {
 @Component({
   selector: 'docs-select',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
   providers: [
@@ -38,7 +37,7 @@ export class Select implements ControlValueAccessor {
   readonly id = input.required<string>({alias: 'selectId'});
   readonly name = input.required<string>();
   readonly options = input.required<SelectOption[]>();
-  readonly disabled = model<boolean>(false);
+  readonly disabled = model(false);
 
   // Implemented as part of ControlValueAccessor.
   private onChange: (value: SelectOptionValue) => void = (_: SelectOptionValue) => {};

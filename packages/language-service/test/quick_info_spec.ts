@@ -951,13 +951,7 @@ describe('quick info', () => {
         expectedDisplayString: string;
         expectedSpanText: string;
       }) {
-        const project = env.addProject(
-          'host-bindings',
-          {'host-bindings.ts': source},
-          {
-            typeCheckHostBindings: true,
-          },
-        );
+        const project = env.addProject('host-bindings', {'host-bindings.ts': source});
         const appFile = project.openFile('host-bindings.ts');
 
         appFile.moveCursorToText(moveTo);

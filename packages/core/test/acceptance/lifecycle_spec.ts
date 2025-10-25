@@ -17,6 +17,7 @@ import {
   Input,
   NgModule,
   OnChanges,
+  provideZoneChangeDetection,
   QueryList,
   SimpleChange,
   SimpleChanges,
@@ -28,6 +29,11 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('onChanges', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should correctly support updating one Input among many', () => {
     let log: string[] = [];
 
@@ -1199,6 +1205,11 @@ describe('onChanges', () => {
 });
 
 describe('meta-programming', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should allow adding lifecycle hook methods any time before first instance creation', () => {
     const events: any[] = [];
 
@@ -1315,6 +1326,11 @@ describe('meta-programming', () => {
 });
 
 describe('hooks order', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should call all hooks in correct order when several directives on same node', () => {
     let log: string[] = [];
 
@@ -1485,6 +1501,11 @@ describe('hooks order', () => {
 });
 
 describe('onInit', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should call onInit after inputs are the first time', () => {
     const input1Values: string[] = [];
     const input2Values: string[] = [];
@@ -2138,6 +2159,11 @@ describe('onInit', () => {
 });
 
 describe('doCheck', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should call doCheck on every refresh', () => {
     let doCheckCalled = 0;
 
@@ -2422,6 +2448,11 @@ describe('doCheck', () => {
 });
 
 describe('afterContentinit', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should be called only in creation mode', () => {
     let afterContentInitCalls = 0;
 
@@ -2839,6 +2870,11 @@ describe('afterContentinit', () => {
 });
 
 describe('afterContentChecked', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should be called every change detection run after afterContentInit', () => {
     const events: string[] = [];
 
@@ -2887,6 +2923,11 @@ describe('afterContentChecked', () => {
 });
 
 describe('afterViewInit', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should be called on creation and not in update mode', () => {
     let afterViewInitCalls = 0;
 
@@ -3370,6 +3411,11 @@ describe('afterViewInit', () => {
 });
 
 describe('afterViewChecked', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should call ngAfterViewChecked every update', () => {
     let afterViewCheckedCalls = 0;
 
@@ -3625,6 +3671,11 @@ describe('afterViewChecked', () => {
 });
 
 describe('onDestroy', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should call destroy when view is removed', () => {
     let destroyCalled = 0;
 
@@ -4250,6 +4301,11 @@ describe('onDestroy', () => {
 });
 
 describe('hook order', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let events: string[] = [];
 
   beforeEach(() => (events = []));
@@ -4592,6 +4648,7 @@ describe('non-regression', () => {
     expect(destroyed).toBeFalsy();
 
     fixture.componentInstance.show = false;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(destroyed).toBeTruthy();

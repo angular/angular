@@ -147,7 +147,7 @@ export class LTreeStrategy {
     return nodes;
   }
 
-  build(element: Element, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] {
+  build(element: Element, _: number): ComponentTreeNode[] {
     const ctx = (element as any).__ngContext__;
     const rootLView = ctx.lView ?? ctx;
     return this._extract(rootLView);

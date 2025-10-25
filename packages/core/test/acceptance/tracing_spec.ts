@@ -9,6 +9,7 @@
 import {
   afterEveryRender,
   Component,
+  provideZoneChangeDetection,
   ɵTracingAction as TracingAction,
   ɵTracingService as TracingService,
   ɵTracingSnapshot as TracingSnapshot,
@@ -16,6 +17,11 @@ import {
 import {fakeAsync, TestBed} from '../../testing';
 
 describe('TracingService', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let actions: TracingAction[];
   let listeners: {event: string; handler: Function}[];
   let fakeSnapshot: TracingSnapshot;

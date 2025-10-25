@@ -21,7 +21,7 @@ import {RouterLink} from '@angular/router';
 export class Breadcrumb {
   private readonly navigationState = inject(NavigationState);
 
-  breadcrumbItems = computed(() => {
+  readonly breadcrumbItems = computed(() => {
     const breadcrumbs: NavigationItem[] = [];
     let activeItem = this.navigationState.activeNavigationItem()?.parent;
 

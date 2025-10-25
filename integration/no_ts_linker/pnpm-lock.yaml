@@ -1,0 +1,38 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@angular/compiler':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/compiler-cli':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      '@angular/core':
+        specifier: link:./in-existing-linked-by-bazel
+        version: link:in-existing-linked-by-bazel
+      rxjs:
+        specifier: ^7.0.0
+        version: 7.8.2
+
+packages:
+
+  rxjs@7.8.2:
+    resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
+
+  tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+
+snapshots:
+
+  rxjs@7.8.2:
+    dependencies:
+      tslib: 2.8.1
+
+  tslib@2.8.1: {}

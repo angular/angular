@@ -11,7 +11,7 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
 import {resolve} from 'node:path';
-import shx from 'shelljs';
+import {rmSync} from 'node:fs';
 
 describe('router-current-navigation migration', () => {
   let runner: SchematicTestRunner;
@@ -52,7 +52,7 @@ describe('router-current-navigation migration', () => {
     `,
     );
 
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   it('should migrate a usage of Router.getCurrentNavigation()', async () => {

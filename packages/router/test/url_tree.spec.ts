@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {exactMatchOptions, subsetMatchOptions} from '../src/router';
+import {TestBed} from '@angular/core/testing';
+import {exactMatchOptions, Router, subsetMatchOptions} from '../src/router';
 import {containsTree, DefaultUrlSerializer} from '../src/url_tree';
 
 describe('UrlTree', () => {
@@ -30,6 +31,31 @@ describe('UrlTree', () => {
     it('should allow question marks in query param values', () => {
       const tree = serializer.parse('/path/to?first=http://foo/bar?baz=true&second=123');
       expect(tree.queryParams).toEqual({'first': 'http://foo/bar?baz=true', 'second': '123'});
+    });
+
+    it('create, serialize, parse, serialize results in same serialized tree with outlet and no primary children', () => {
+      const router = TestBed.inject(Router);
+      const th = router.createUrlTree(['/', {outlets: {a: ['a'], b: [{outlets: {a: ['b1']}}]}}]);
+      const serialized = router.serializeUrl(th);
+      const p = router.parseUrl(serialized);
+      expect(router.serializeUrl(p)).toBe(serialized);
+    });
+
+    it('should work with named outlet with primary and immediate named siblings', () => {
+      const router = TestBed.inject(Router);
+      const tree = router.createUrlTree([
+        {
+          outlets: {
+            primary: ['Home'],
+            app: ['Welcome'],
+            dock: [{outlets: {primary: 'left', 1: ['One', {pinned: true}]}}],
+          },
+        },
+      ]);
+      const url = tree.toString();
+      expect(url).toBe('/Home(app:Welcome//dock:/(left//1:One;pinned=true))');
+      const tree2 = serializer.parse(url);
+      expect(serializer.serialize(tree2)).toBe(url);
     });
   });
 

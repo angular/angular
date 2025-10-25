@@ -250,6 +250,10 @@ export class FrameSelectorComponent {
       this._viewportScrollState.scrollLeft - dx * DRAG_SCROLL_SPEED;
   }
 
+  trackByIndex(index: number): number {
+    return index;
+  }
+
   private getBarStyles(frame: ProfilerFrame, multiplicationFactor: number): GraphNode {
     const height = frame.duration * multiplicationFactor;
     const colorPercentage = Math.max(10, Math.round((height / MAX_HEIGHT) * 100));
@@ -270,7 +274,7 @@ export class FrameSelectorComponent {
     } else if (60 > framerate && framerate >= 30) {
       return 'var(--dynamic-yellow-01)';
     } else if (30 > framerate && framerate >= 15) {
-      return 'var(--dynamic-red-03)';
+      return 'var(--dynamic-red-02)';
     }
     return 'var(--dynamic-red-01)';
   }

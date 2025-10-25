@@ -13,10 +13,10 @@ import {AnalyticsService} from '../analytics/analytics.service';
 import {ErrorSnackBar, ErrorSnackBarData} from './error-snack-bar';
 
 export class CustomErrorHandler implements ErrorHandler {
-  snackBar = inject(MatSnackBar);
-  document = inject(DOCUMENT);
-  isServer = isPlatformServer(inject(PLATFORM_ID));
-  analyticsService = inject(AnalyticsService);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly document = inject(DOCUMENT);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
+  private readonly analyticsService = inject(AnalyticsService);
 
   get isOnline(): boolean {
     if (this.isServer) return false;
@@ -42,7 +42,7 @@ export class CustomErrorHandler implements ErrorHandler {
     console.error(error);
   }
 
-  openErrorSnackBar(): void {
+  private openErrorSnackBar(): void {
     this.snackBar
       .openFromComponent(ErrorSnackBar, {
         panelClass: 'docs-invert-mode',

@@ -1,0 +1,100 @@
+load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
+load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
+load("@aspect_rules_js//npm:defs.bzl", "npm_package")
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
+
+esbuild(
+    name = "banner",
+    config = {
+        # This is described in more detail in the `server/banner.ts` but this line actually overrides
+        # the built-in `require` function by adding a line at the bottom of the generated banner code
+        # to assign the override function to the `require` name.
+        "footer": {"js": "require = requireOverride;"},
+        # Workaround for https://github.com/aspect-build/rules_esbuild/issues/58
+        "resolveExtensions": [".js"],
+    },
+    entry_point = "//vscode-ng-language-service/server/src:banner.js",
+    external = [
+        "path",
+    ],
+    format = "cjs",
+    # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
+    minify = False,
+    platform = "node",
+    sourcemap = "linked",
+    deps = [
+        "//:node_modules/source-map-support",
+        "//vscode-ng-language-service/server/src",
+    ],
+)
+
+esbuild(
+    name = "index",
+    srcs = [
+        ":banner",
+    ],
+    config = "esbuild.mjs",
+    data = [
+        "//vscode-ng-language-service/server:node_modules/@angular/language-service",
+        "//vscode-ng-language-service/server:node_modules/typescript",
+    ],
+    entry_point = "//vscode-ng-language-service/server/src:server.js",
+    external = [
+        "typescript/lib/tsserverlibrary",
+    ],
+    format = "cjs",
+    # Do not enable minification. It seems to break the extension on Windows (with WSL). See #1198.
+    minify = False,
+    platform = "node",
+    sourcemap = "linked",
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+    ],
+    deps = [
+        "//:node_modules/source-map-support",
+        "//vscode-ng-language-service/server/src",
+    ],
+)
+
+expand_template_rule(
+    name = "package_json_expanded",
+    out = "package_expanded.json",
+    # We only have a single dependency now, which makes this safe.
+    # In the case we add more we should consider adding a JQ filter.
+    stamp_substitutions = select({
+        "//:language_server_package_json_use_snapshot_repo_deps": {
+            "0.0.0-PLACEHOLDER": "{{STABLE_PROJECT_VERSION}}",
+            # Example of `STABLE_PROJECT_VERSION` for snapshots is: `21.0.0-next.7+sha-7134dfe`
+            "workspace:*": "github:angular/language-service-builds#{{STABLE_PROJECT_VERSION}}",
+        },
+        "//conditions:default": {
+            "0.0.0-PLACEHOLDER": "{{STABLE_PROJECT_VERSION}}",
+            "workspace:*": "{{STABLE_PROJECT_VERSION}}",
+        },
+    }),
+    substitutions = {
+        "0.0.0-PLACEHOLDER": "0.0.0",
+        "workspace:*": "0.0.0",
+        "../../dist/bin/vscode-ng-language-service/server/src/server.js": "./index.js",
+    },
+    template = "package.json",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "README.md",
+        "bin/ngserver",
+        "index.js",
+        "package_expanded.json",
+    ],
+    replace_prefixes = {
+        "package_expanded.json": "package.json",
+    },
+    tags = [
+        "release-with-framework",
+    ],
+    visibility = ["//vscode-ng-language-service:__pkg__"],
+)

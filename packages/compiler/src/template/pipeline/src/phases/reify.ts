@@ -16,8 +16,7 @@ import {
   type CompilationUnit,
 } from '../compilation';
 import * as ng from '../instruction';
-
-const ARIA_PREFIX = 'aria';
+import {isAriaAttribute} from '../util/attributes';
 
 /**
  * Map of target resolvers for event listeners.
@@ -376,27 +375,44 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
         );
         break;
       case ir.OpKind.DeferOn:
-        let args: (number | null)[] = [];
+        let args: o.Expression[] = [];
         switch (op.trigger.kind) {
           case ir.DeferTriggerKind.Never:
           case ir.DeferTriggerKind.Idle:
           case ir.DeferTriggerKind.Immediate:
             break;
           case ir.DeferTriggerKind.Timer:
-            args = [op.trigger.delay];
+            args = [o.literal(op.trigger.delay)];
+            break;
+          case ir.DeferTriggerKind.Viewport:
+            // `hydrate` triggers don't support targets.
+            if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
+              args = op.trigger.options ? [op.trigger.options] : [];
+            } else {
+              // The slots not being defined at this point is invalid, however we
+              // catch it during type checking. Pass in null in such cases.
+              args = [o.literal(op.trigger.targetSlot?.slot ?? null)];
+              if (op.trigger.targetSlotViewSteps !== 0) {
+                args.push(o.literal(op.trigger.targetSlotViewSteps));
+              } else if (op.trigger.options) {
+                args.push(o.literal(null));
+              }
+              if (op.trigger.options) {
+                args.push(op.trigger.options);
+              }
+            }
             break;
           case ir.DeferTriggerKind.Interaction:
           case ir.DeferTriggerKind.Hover:
-          case ir.DeferTriggerKind.Viewport:
             // `hydrate` triggers don't support targets.
             if (op.modifier === ir.DeferOpModifierKind.HYDRATE) {
               args = [];
             } else {
               // The slots not being defined at this point is invalid, however we
               // catch it during type checking. Pass in null in such cases.
-              args = [op.trigger.targetSlot?.slot ?? null];
+              args = [o.literal(op.trigger.targetSlot?.slot ?? null)];
               if (op.trigger.targetSlotViewSteps !== 0) {
-                args.push(op.trigger.targetSlotViewSteps);
+                args.push(o.literal(op.trigger.targetSlotViewSteps));
               }
             }
             break;
@@ -572,6 +588,9 @@ function reifyCreateOperations(unit: CompilationUnit, ops: ir.OpList<ir.CreateOp
 
         ir.OpList.replace(op, ng.attachSourceLocation(op.templatePath, locationsLiteral));
         break;
+      case ir.OpKind.ControlCreate:
+        ir.OpList.replace(op, ng.controlCreate(op.sourceSpan));
+        break;
       case ir.OpKind.Statement:
         // Pass statement operations directly through.
         break;
@@ -600,6 +619,9 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
             ? reifyDomProperty(op)
             : reifyProperty(op),
         );
+        break;
+      case ir.OpKind.Control:
+        ir.OpList.replace(op, reifyControl(op));
         break;
       case ir.OpKind.TwoWayProperty:
         ir.OpList.replace(
@@ -688,35 +710,6 @@ function reifyUpdateOperations(unit: CompilationUnit, ops: ir.OpList<ir.UpdateOp
 }
 
 /**
- * Converts an ARIA property name to its corresponding attribute name, if necessary.
- *
- * For example, converts `ariaLabel` to `aria-label`.
- *
- * https://www.w3.org/TR/wai-aria-1.2/#accessibilityroleandproperties-correspondence
- *
- * This must be kept in sync with the the function of the same name in
- * packages/core/src/render3/instructions/aria_property.ts.
- *
- * @param name A property name that starts with `aria`.
- * @returns The corresponding attribute name.
- */
-function ariaAttrName(name: string): string {
-  return name.charAt(ARIA_PREFIX.length) !== '-'
-    ? ARIA_PREFIX + '-' + name.slice(ARIA_PREFIX.length).toLowerCase()
-    : name; // Property already has attribute name.
-}
-
-/**
- * Returns whether `name` is an ARIA property (or attribute) name.
- *
- * This is a heuristic based on whether name begins with and is longer than `aria`. For example,
- * this returns true for both `ariaLabel` and `aria-label`.
- */
-function isAriaProperty(name: string): boolean {
-  return name.startsWith(ARIA_PREFIX) && name.length > ARIA_PREFIX.length;
-}
-
-/**
  * Reifies a DOM property binding operation.
  *
  * This is an optimized version of {@link reifyProperty} that avoids unnecessarily trying to bind
@@ -726,14 +719,12 @@ function isAriaProperty(name: string): boolean {
  * @returns A statement to update the property at runtime.
  */
 function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
-  return isAriaProperty(op.name)
-    ? ng.attribute(ariaAttrName(op.name), op.expression, null, null, op.sourceSpan)
-    : ng.domProperty(
-        DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
-        op.expression,
-        op.sanitizer,
-        op.sourceSpan,
-      );
+  return ng.domProperty(
+    DOM_PROPERTY_REMAPPING.get(op.name) ?? op.name,
+    op.expression,
+    op.sanitizer,
+    op.sourceSpan,
+  );
 }
 
 /**
@@ -746,9 +737,13 @@ function reifyDomProperty(op: ir.DomPropertyOp | ir.PropertyOp): ir.UpdateOp {
  * @returns A statement to update the property at runtime.
  */
 function reifyProperty(op: ir.PropertyOp): ir.UpdateOp {
-  return isAriaProperty(op.name)
+  return isAriaAttribute(op.name)
     ? ng.ariaProperty(op.name, op.expression, op.sourceSpan)
     : ng.property(op.name, op.expression, op.sanitizer, op.sourceSpan);
+}
+
+function reifyControl(op: ir.ControlOp): ir.UpdateOp {
+  return ng.control(op.expression, op.sanitizer, op.sourceSpan);
 }
 
 function reifyIrExpression(expr: o.Expression): o.Expression {

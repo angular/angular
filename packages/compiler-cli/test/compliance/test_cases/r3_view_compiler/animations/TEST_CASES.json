@@ -19,6 +19,23 @@
       ]
     },
     {
+      "description": "should generate animate enter instructions on element with a structural directive",
+      "inputFiles": [
+        "animate_enter_with_structural_directive.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_enter_with_structural_directive_template.js",
+              "generated": "animate_enter_with_structural_directive.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
       "description": "should generate animate enter instructions with host binding and simple string",
       "inputFiles": [
         "animate_enter_with_string_host_bindings.ts"
@@ -29,6 +46,23 @@
             {
               "expected": "animate_enter_with_string_host_bindings_template.js",
               "generated": "animate_enter_with_string_host_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateEnter() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate enter instructions with host binding and event",
+      "inputFiles": [
+        "animate_enter_with_event_host_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_enter_with_event_host_bindings_template.js",
+              "generated": "animate_enter_with_event_host_bindings.js"
             }
           ],
           "failureMessage": "Incorrect ɵɵanimateEnter() call"
@@ -134,6 +168,40 @@
             }
           ],
           "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should generate animate leave instructions with host binding and event",
+      "inputFiles": [
+        "animate_leave_with_event_host_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_leave_with_event_host_bindings_template.js",
+              "generated": "animate_leave_with_event_host_bindings.js"
+            }
+          ],
+          "failureMessage": "Incorrect ɵɵanimateLeave() call"
+        }
+      ]
+    },
+    {
+      "description": "should not generate animate leave when using 'animate' as a binding prefix",
+      "inputFiles": [
+        "animate_prefix_with_event_listener.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "animate_prefix_with_event_listener_template.js",
+              "generated": "animate_prefix_with_event_listener.js"
+            }
+          ],
+          "failureMessage": "ɵɵanimateLeave() present when it should not be"
         }
       ]
     }

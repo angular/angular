@@ -182,6 +182,10 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-
     <div>{{ (x && y) ?? z }}</div>
     <div>{{ x && (y ?? z) }}</div>
     <div>{{ x?.y ?? y?.z }}</div>
+    <div>{{ (x?.y ?? y) || z }}</div>
+    <div>{{ (x?.y ?? y) && z }}</div>
+    <div>{{ z || (x?.y ?? y) }}</div>
+    <div>{{ z && (x?.y ?? y) }}</div>
     `, isInline: true });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
             type: Component,
@@ -191,6 +195,10 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div>{{ (x && y) ?? z }}</div>
     <div>{{ x && (y ?? z) }}</div>
     <div>{{ x?.y ?? y?.z }}</div>
+    <div>{{ (x?.y ?? y) || z }}</div>
+    <div>{{ (x?.y ?? y) && z }}</div>
+    <div>{{ z || (x?.y ?? y) }}</div>
+    <div>{{ z && (x?.y ?? y) }}</div>
     `,
                 }]
         }] });

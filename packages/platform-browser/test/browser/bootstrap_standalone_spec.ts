@@ -18,6 +18,7 @@ import {
   PlatformRef,
   ɵR3Injector as R3Injector,
   ɵNoopNgZone as NoopNgZone,
+  APP_ID,
 } from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
@@ -46,7 +47,6 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: `({{testToken}})`,
         imports: [AmbientModule],
       })
@@ -70,7 +70,6 @@ describe('bootstrapApplication for standalone components', () => {
     withBody('<test-app></test-app>', async () => {
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: ``,
       })
       class StandaloneCmp {}
@@ -114,7 +113,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: `({{service.ambientToken}})`,
-        standalone: true,
         imports: [AmbientModule],
       })
       class StandaloneCmp {
@@ -148,7 +146,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [BrowserModule],
       })
       class StandaloneCmp {}
@@ -182,7 +179,6 @@ describe('bootstrapApplication for standalone components', () => {
       @Component({
         selector: 'test-app',
         template: '...',
-        standalone: true,
         imports: [SomeDependencyModule],
       })
       class StandaloneCmp {}
@@ -221,7 +217,6 @@ describe('bootstrapApplication for standalone components', () => {
 
       @Component({
         selector: 'test-app',
-        standalone: true,
         template: 'Hello',
       })
       class ComponentWithOnDestroy {
@@ -250,4 +245,29 @@ describe('bootstrapApplication for standalone components', () => {
       expect(document.body.textContent).toBe('');
     }),
   );
+
+  it('should throw and error if the APP_ID is not valid', async () => {
+    withBody('<test-app></test-app>', async () => {
+      @Component({
+        selector: 'test-app',
+        template: ``,
+        imports: [],
+      })
+      class StandaloneCmp {}
+
+      try {
+        await bootstrapApplication(StandaloneCmp, {
+          providers: [{provide: APP_ID, useValue: 'foo:bar'}],
+        });
+
+        // we expect the bootstrap process to fail because of the invalid APP_ID value
+        fail('Expected to throw');
+      } catch (e: unknown) {
+        expect(e).toBeInstanceOf(Error);
+        expect((e as Error).message).toContain(
+          'APP_ID value "foo:bar" is not alphanumeric. The APP_ID must be a string of alphanumeric characters.',
+        );
+      }
+    });
+  });
 });

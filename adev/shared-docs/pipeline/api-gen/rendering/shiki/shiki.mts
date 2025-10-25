@@ -6,41 +6,24 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-let highlighter: any;
+import {HighlighterGeneric} from 'shiki';
 
-export async function initHighlighter() {
-  const {createHighlighter} = await import('shiki');
-  highlighter = await createHighlighter({
-    themes: ['github-light', 'github-dark'],
-    langs: [
-      'javascript',
-      'typescript',
-      'angular-html',
-      'angular-ts',
-      'shell',
-      'html',
-      'http',
-      'json',
-      'jsonc',
-      'nginx',
-      'markdown',
-      'apache',
-    ],
-  });
+/**
+ * Singleton instance of the Shiki highlighter used during API page generation.
+ *
+ * TODO: Consider removing this singleton pattern if we find a better alternative.
+ */
+let highlighter: HighlighterGeneric<any, any>;
+export function setHighlighterInstance(instance: HighlighterGeneric<any, any>) {
+  highlighter = instance;
 }
-
-export function codeToHtml(code: string, language: string | undefined): string {
-  const html = highlighter.codeToHtml(code, {
-    lang: language ?? 'text',
-    themes: {
-      light: 'github-light',
-      dark: 'github-dark',
-    },
-    cssVariablePrefix: '--shiki-',
-    defaultColor: false,
-  });
-
-  return html;
+export function getHighlighterInstance(): HighlighterGeneric<any, any> {
+  if (!highlighter) {
+    throw new Error(
+      'Shiki highlighter has not been initialized. Make sure to call `setHighlighterInstance`.',
+    );
+  }
+  return highlighter;
 }
 
 /**

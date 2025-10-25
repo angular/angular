@@ -26,6 +26,7 @@ import {
   NO_ERRORS_SCHEMA,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   Type,
@@ -46,7 +47,7 @@ describe('runtime i18n', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AppComp, DirectiveWithTplRef, UppercasePipe],
-      providers: [provideNgReflectAttributes()],
+      providers: [provideZoneChangeDetection(), provideNgReflectAttributes()],
       // In some of the tests we use made-up tag names for better readability, however
       // they'll cause validation errors. Add the `NO_ERRORS_SCHEMA` so that we don't have
       // to declare dummy components for each one of them.
@@ -113,15 +114,6 @@ describe('runtime i18n', () => {
     expect(fixture.nativeElement.innerHTML).toEqual(
       `<div> Bonjour Other Backend Framework! </div>`,
     );
-  });
-
-  it('should support interpolations with custom interpolation config', () => {
-    loadTranslations({[computeMsgId('Hello {$INTERPOLATION}')]: 'Bonjour {$INTERPOLATION}'});
-    const interpolation = ['{%', '%}'] as [string, string];
-    TestBed.overrideComponent(AppComp, {set: {interpolation}});
-    const fixture = initWithTemplate(AppComp, `<div i18n>Hello {% name %}</div>`);
-
-    expect(fixture.nativeElement.innerHTML).toBe('<div>Bonjour Angular</div>');
   });
 
   it('should support &ngsp; in translatable sections', () => {
@@ -1067,21 +1059,6 @@ describe('runtime i18n', () => {
       );
     });
 
-    it('with custom interpolation config', () => {
-      loadTranslations({
-        [computeMsgId('{VAR_SELECT, select, 10 {ten} other {{INTERPOLATION}}}')]:
-          '{VAR_SELECT, select, 10 {dix} other {{INTERPOLATION}}}',
-      });
-      const interpolation = ['{%', '%}'] as [string, string];
-      TestBed.overrideComponent(AppComp, {set: {interpolation}});
-      const fixture = initWithTemplate(
-        AppComp,
-        `<div i18n>{count, select, 10 {ten} other {{% name %}}}</div>`,
-      );
-
-      expect(fixture.nativeElement).toHaveText(`Angular`);
-    });
-
     it('inside HTML elements', () => {
       loadTranslations({
         [computeMsgId(
@@ -2002,19 +1979,6 @@ describe('runtime i18n', () => {
         `<div i18n><span i18n-title title="text">content</span></div>`,
       );
       expect(fixture.nativeElement.innerHTML).toEqual(`<div>contenu</div>`);
-    });
-
-    it('with custom interpolation config', () => {
-      loadTranslations({[computeMsgId('Hello {$INTERPOLATION}', 'm')]: 'Bonjour {$INTERPOLATION}'});
-      const interpolation = ['{%', '%}'] as [string, string];
-      TestBed.overrideComponent(AppComp, {set: {interpolation}});
-      const fixture = initWithTemplate(
-        AppComp,
-        `<div i18n-title="m|d" title="Hello {% name %}"></div>`,
-      );
-
-      const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe('Bonjour Angular');
     });
 
     it('in nested template', () => {

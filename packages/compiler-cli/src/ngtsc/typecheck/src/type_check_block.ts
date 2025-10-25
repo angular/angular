@@ -2122,6 +2122,34 @@ class TcbForOfOp extends TcbOp {
 }
 
 /**
+ * A `TcbOp` which can be used to type check the options of an `IntersectionObserver`.
+ */
+class TcbIntersectionObserverOp extends TcbOp {
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private options: AST,
+  ) {
+    super();
+  }
+
+  override readonly optional = false;
+
+  override execute(): null {
+    const options = tcbExpression(this.options, this.tcb, this.scope);
+    const callback = ts.factory.createNonNullExpression(ts.factory.createNull());
+    const expression = ts.factory.createNewExpression(
+      ts.factory.createIdentifier('IntersectionObserver'),
+      undefined,
+      [callback, options],
+    );
+
+    this.scope.addStatement(ts.factory.createExpressionStatement(expression));
+    return null;
+  }
+}
+
+/**
  * Overall generation context for the type check block.
  *
  * `Context` handles operations during code generation which are global with respect to the whole
@@ -3012,6 +3040,10 @@ class Scope {
       this.opQueue.push(new TcbExpressionOp(this.tcb, this, triggers.when.value));
     }
 
+    if (triggers.viewport !== undefined && triggers.viewport.options !== null) {
+      this.opQueue.push(new TcbIntersectionObserverOp(this.tcb, this, triggers.viewport.options));
+    }
+
     if (triggers.hover !== undefined) {
       this.validateReferenceBasedDeferredTrigger(block, triggers.hover);
     }
@@ -3422,10 +3454,16 @@ function getBoundAttributes(
     }
   };
 
-  node.inputs.forEach(processAttribute);
-  node.attributes.forEach(processAttribute);
   if (node instanceof TmplAstTemplate) {
+    if (node.tagName === 'ng-template') {
+      node.inputs.forEach(processAttribute);
+      node.attributes.forEach(processAttribute);
+    }
+
     node.templateAttrs.forEach(processAttribute);
+  } else {
+    node.inputs.forEach(processAttribute);
+    node.attributes.forEach(processAttribute);
   }
 
   return boundInputs;

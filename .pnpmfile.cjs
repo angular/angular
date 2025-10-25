@@ -42,7 +42,7 @@ function readPackage(pkg, context) {
     // Change all locally generated packages to directly depend on the other local packages, instead
     // of expecting them as peerDependencies automatically as we do not auto install peer deps. The
     // package is also removed from peerDependencies as it was moved over and will just cause errors.
-    if (localAngularPackages.includes(key)) {
+    if (localAngularPackages.includes(key) && pkg.version === '0.0.0-PLACEHOLDER') {
       pkg.dependencies = {
         ...pkg.dependencies,
         [key]: 'workspace: *',

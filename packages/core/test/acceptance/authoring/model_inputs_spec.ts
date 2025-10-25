@@ -162,6 +162,7 @@ describe('model inputs', () => {
 
     // Changing the value from the outside.
     host.value = 3;
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
     expect(host.value).toBe(3);
     expect(host.dir.value()).toBe(3);
@@ -356,29 +357,6 @@ describe('model inputs', () => {
     expect(host.value()).toBe(3);
     expect(host.dir.value()).toBe(3);
     expect(emittedValues).toEqual([2]);
-  });
-
-  it('should throw if a required model input is accessed too early', () => {
-    @Directive({selector: '[dir]'})
-    class Dir {
-      value = model.required<number>();
-
-      constructor() {
-        this.value();
-      }
-    }
-
-    @Component({
-      template: '<div [(value)]="value" dir></div>',
-      imports: [Dir],
-    })
-    class App {
-      value = 1;
-    }
-
-    expect(() => TestBed.createComponent(App)).toThrowError(
-      /Model is required but no value is available yet/,
-    );
   });
 
   it('should throw if a required model input is updated too early', () => {

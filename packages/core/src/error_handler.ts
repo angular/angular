@@ -13,7 +13,9 @@ import type {EnvironmentProviders} from './di/interface/provider';
 import {makeEnvironmentProviders, provideEnvironmentInitializer} from './di/provider_collection';
 import {EnvironmentInjector} from './di/r3_injector';
 import {DOCUMENT} from './document';
+import {RuntimeError, RuntimeErrorCode} from './errors';
 import {DestroyRef} from './linker/destroy_ref';
+import {NgZone} from './zone/ng_zone';
 
 /**
  * Provides a hook for centralized exception handling.
@@ -45,6 +47,9 @@ import {DestroyRef} from './linker/destroy_ref';
  * ```
  *
  * @publicApi
+ *
+ * @see [Unhandled errors in Angular](best-practices/error-handling)
+ *
  */
 export class ErrorHandler {
   /**
@@ -67,17 +72,20 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
     factory: () => {
       // The user's error handler may depend on things that create a circular dependency
       // so we inject it lazily.
+      const zone = inject(NgZone);
       const injector = inject(EnvironmentInjector);
       let userErrorHandler: ErrorHandler;
       return (e: unknown) => {
-        if (injector.destroyed && !userErrorHandler) {
-          setTimeout(() => {
-            throw e;
-          });
-        } else {
-          userErrorHandler ??= injector.get(ErrorHandler);
-          userErrorHandler.handleError(e);
-        }
+        zone.runOutsideAngular(() => {
+          if (injector.destroyed && !userErrorHandler) {
+            setTimeout(() => {
+              throw e;
+            });
+          } else {
+            userErrorHandler ??= injector.get(ErrorHandler);
+            userErrorHandler.handleError(e);
+          }
+        });
       };
     },
   },
@@ -85,61 +93,73 @@ export const INTERNAL_APPLICATION_ERROR_HANDLER = new InjectionToken<(e: any) =>
 
 export const errorHandlerEnvironmentInitializer = {
   provide: ENVIRONMENT_INITIALIZER,
-  useValue: () => void inject(ErrorHandler),
+  useValue: () => {
+    const handler = inject(ErrorHandler, {optional: true});
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && handler === null) {
+      throw new RuntimeError(
+        RuntimeErrorCode.MISSING_REQUIRED_INJECTABLE_IN_BOOTSTRAP,
+        `A required Injectable was not found in the dependency injection tree. ` +
+          'If you are bootstrapping an NgModule, make sure that the `BrowserModule` is imported.',
+      );
+    }
+  },
   multi: true,
 };
 
-const globalErrorListeners = new InjectionToken<void>(ngDevMode ? 'GlobalErrorListeners' : '', {
-  providedIn: 'root',
-  factory: () => {
-    if (typeof ngServerMode !== 'undefined' && ngServerMode) {
-      return;
-    }
-    const window = inject(DOCUMENT).defaultView;
-    if (!window) {
-      return;
-    }
-
-    const errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
-    const rejectionListener = (e: PromiseRejectionEvent) => {
-      errorHandler(e.reason);
-      e.preventDefault();
-    };
-    const errorListener = (e: ErrorEvent) => {
-      if (e.error) {
-        errorHandler(e.error);
-      } else {
-        errorHandler(
-          new Error(
-            ngDevMode
-              ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
-              : e.message,
-            {cause: e},
-          ),
-        );
+const globalErrorListeners = new InjectionToken<void>(
+  typeof ngDevMode !== undefined && ngDevMode ? 'GlobalErrorListeners' : '',
+  {
+    providedIn: 'root',
+    factory: () => {
+      if (typeof ngServerMode !== 'undefined' && ngServerMode) {
+        return;
       }
-      e.preventDefault();
-    };
+      const window = inject(DOCUMENT).defaultView;
+      if (!window) {
+        return;
+      }
 
-    const setupEventListeners = () => {
-      window.addEventListener('unhandledrejection', rejectionListener);
-      window.addEventListener('error', errorListener);
-    };
+      const errorHandler = inject(INTERNAL_APPLICATION_ERROR_HANDLER);
+      const rejectionListener = (e: PromiseRejectionEvent) => {
+        errorHandler(e.reason);
+        e.preventDefault();
+      };
+      const errorListener = (e: ErrorEvent) => {
+        if (e.error) {
+          errorHandler(e.error);
+        } else {
+          errorHandler(
+            new Error(
+              ngDevMode
+                ? `An ErrorEvent with no error occurred. See Error.cause for details: ${e.message}`
+                : e.message,
+              {cause: e},
+            ),
+          );
+        }
+        e.preventDefault();
+      };
 
-    // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
-    // the scope of this functionality.
-    if (typeof Zone !== 'undefined') {
-      Zone.root.run(setupEventListeners);
-    } else {
-      setupEventListeners();
-    }
+      const setupEventListeners = () => {
+        window.addEventListener('unhandledrejection', rejectionListener);
+        window.addEventListener('error', errorListener);
+      };
 
-    inject(DestroyRef).onDestroy(() => {
-      window.removeEventListener('error', errorListener);
-      window.removeEventListener('unhandledrejection', rejectionListener);
-    });
+      // Angular doesn't have to run change detection whenever any asynchronous tasks are invoked in
+      // the scope of this functionality.
+      if (typeof Zone !== 'undefined') {
+        Zone.root.run(setupEventListeners);
+      } else {
+        setupEventListeners();
+      }
+
+      inject(DestroyRef).onDestroy(() => {
+        window.removeEventListener('error', errorListener);
+        window.removeEventListener('unhandledrejection', rejectionListener);
+      });
+    },
   },
-});
+);
 
 /**
  * Provides an environment initializer which forwards unhandled errors to the ErrorHandler.

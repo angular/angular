@@ -200,8 +200,6 @@ export function booleanAttribute(value: unknown): boolean;
 // @public @deprecated
 export interface BootstrapOptions {
     // @deprecated
-    ignoreChangesOutsideZone?: boolean;
-    // @deprecated
     ngZone?: NgZone | 'zone.js' | 'noop';
     // @deprecated
     ngZoneEventCoalescing?: boolean;
@@ -274,10 +272,6 @@ export interface Component extends Directive {
     changeDetection?: ChangeDetectionStrategy;
     encapsulation?: ViewEncapsulation;
     imports?: (Type<any> | ReadonlyArray<any>)[];
-    // @deprecated
-    interpolation?: [string, string];
-    // @deprecated
-    moduleId?: string;
     preserveWhitespaces?: boolean;
     schemas?: SchemaMetadata[];
     standalone?: boolean;
@@ -592,9 +586,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
     onDestroy(): void;
 }
 
-// @public @deprecated (undocumented)
-export const defineInjectable: typeof ɵɵdefineInjectable;
-
 // @public
 export interface DestroyableInjector extends Injector {
     // (undocumented)
@@ -843,9 +834,6 @@ export interface HostListenerDecorator {
     // (undocumented)
     new (eventName: string, args?: string[]): any;
 }
-
-// @public @deprecated
-export type ImportedNgModuleProviders = EnvironmentProviders;
 
 // @public
 export function importProvidersFrom(...sources: ImportProvidersSource[]): EnvironmentProviders;
@@ -1146,6 +1134,7 @@ export class KeyValueDiffers {
 // @public
 export function linkedSignal<D>(computation: () => D, options?: {
     equal?: ValueEqualityFn<NoInfer<D>>;
+    debugName?: string;
 }): WritableSignal<D>;
 
 // @public
@@ -1156,6 +1145,7 @@ export function linkedSignal<S, D>(options: {
         value: NoInfer<D>;
     }) => D;
     equal?: ValueEqualityFn<NoInfer<D>>;
+    debugName?: string;
 }): WritableSignal<D>;
 
 // @public
@@ -1278,15 +1268,6 @@ export abstract class NgModuleRef<T> {
     abstract onDestroy(callback: () => void): void;
 }
 
-// @public @deprecated
-export class NgProbeToken {
-    constructor(name: string, token: any);
-    // (undocumented)
-    name: string;
-    // (undocumented)
-    token: any;
-}
-
 // @public
 export class NgZone {
     constructor(options: {
@@ -1315,8 +1296,6 @@ export class NgZone {
 // @public
 export interface NgZoneOptions {
     eventCoalescing?: boolean;
-    // @deprecated
-    ignoreChangesOutsideZone?: boolean;
     runCoalescing?: boolean;
 }
 
@@ -1401,9 +1380,6 @@ export interface OutputRefSubscription {
     unsubscribe(): void;
 }
 
-// @public @deprecated
-export const PACKAGE_ROOT_URL: InjectionToken<string>;
-
 // @public
 export class PendingTasks {
     add(): () => void;
@@ -1445,9 +1421,15 @@ export const platformCore: (extraProviders?: StaticProvider[] | undefined) => Pl
 
 // @public
 export class PlatformRef {
-    bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions) | Array<CompilerOptions & BootstrapOptions>): Promise<NgModuleRef<M>>;
+    bootstrapModule<M>(moduleType: Type<M>, compilerOptions?: (CompilerOptions & BootstrapOptions & {
+        applicationProviders?: Array<Provider | EnvironmentProviders>;
+    }) | Array<CompilerOptions & BootstrapOptions & {
+        applicationProviders?: Array<Provider | EnvironmentProviders>;
+    }>): Promise<NgModuleRef<M>>;
     // @deprecated
-    bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions): Promise<NgModuleRef<M>>;
+    bootstrapModuleFactory<M>(moduleFactory: NgModuleFactory<M>, options?: BootstrapOptions & {
+        applicationProviders?: Array<Provider | EnvironmentProviders>;
+    }): Promise<NgModuleRef<M>>;
     destroy(): void;
     get destroyed(): boolean;
     get injector(): Injector;
@@ -1579,7 +1561,7 @@ export abstract class Renderer2 {
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
-    abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean): void;
+    abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean, requireSynchronousElementRemoval?: boolean): void;
     abstract removeClass(el: any, name: string): void;
     abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
     abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;
@@ -1626,7 +1608,9 @@ export function resolveForwardRef<T>(type: T): T;
 // @public
 export interface Resource<T> {
     readonly error: Signal<Error | undefined>;
-    hasValue(): this is Resource<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is Resource<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
     readonly isLoading: Signal<boolean>;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
@@ -1662,7 +1646,9 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
 export interface ResourceRef<T> extends WritableResource<T> {
     destroy(): void;
     // (undocumented)
-    hasValue(): this is ResourceRef<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is ResourceRef<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
 }
 
 // @public
@@ -1740,22 +1726,25 @@ export type Signal<T> = (() => T) & {
 export function signal<T>(initialValue: T, options?: CreateSignalOptions<T>): WritableSignal<T>;
 
 // @public
-export class SimpleChange {
-    constructor(previousValue: any, currentValue: any, firstChange: boolean);
+export class SimpleChange<T = any> {
+    constructor(previousValue: T, currentValue: T, firstChange: boolean);
     // (undocumented)
-    currentValue: any;
+    currentValue: T;
     // (undocumented)
     firstChange: boolean;
     isFirstChange(): boolean;
     // (undocumented)
-    previousValue: any;
+    previousValue: T;
 }
 
 // @public
-export interface SimpleChanges {
-    // (undocumented)
+export type SimpleChanges<T = unknown> = T extends object ? {
+    [Key in keyof T]?: SimpleChange<T[Key] extends {
+        [ɵINPUT_SIGNAL_BRAND_READ_TYPE]: infer V;
+    } ? V : T[Key]>;
+} : {
     [propName: string]: SimpleChange;
-}
+};
 
 // @public
 export interface SkipSelf {
@@ -2039,7 +2028,9 @@ export interface WritableResource<T> extends Resource<T> {
     // (undocumented)
     asReadonly(): Resource<T>;
     // (undocumented)
-    hasValue(): this is WritableResource<Exclude<T, undefined>>;
+    hasValue(this: T extends undefined ? this : never): this is WritableResource<Exclude<T, undefined>>;
+    // (undocumented)
+    hasValue(): boolean;
     reload(): boolean;
     set(value: T): void;
     update(updater: (value: T) => T): void;

@@ -375,7 +375,7 @@ const deferTriggerToR3TriggerInstructionsMap = new Map([
 
 export function deferOn(
   trigger: ir.DeferTriggerKind,
-  args: (number | null)[],
+  args: o.Expression[],
   modifier: ir.DeferOpModifierKind,
   sourceSpan: ParseSourceSpan | null,
 ): ir.CreateOp {
@@ -383,11 +383,7 @@ export function deferOn(
   if (instructionToCall === undefined) {
     throw new Error(`Unable to determine instruction for trigger ${trigger}`);
   }
-  return call(
-    instructionToCall,
-    args.map((a) => o.literal(a)),
-    sourceSpan,
-  );
+  return call(instructionToCall, args, sourceSpan);
 }
 
 export function projectionDef(def: o.Expression | null): ir.CreateOp {
@@ -597,6 +593,27 @@ export function property(
   sourceSpan: ParseSourceSpan,
 ): ir.UpdateOp {
   return propertyBase(Identifiers.property, name, expression, sanitizer, sourceSpan);
+}
+
+export function control(
+  expression: o.Expression | ir.Interpolation,
+  sanitizer: o.Expression | null,
+  sourceSpan: ParseSourceSpan,
+): ir.UpdateOp {
+  const args = [];
+  if (expression instanceof ir.Interpolation) {
+    args.push(interpolationToExpression(expression, sourceSpan));
+  } else {
+    args.push(expression);
+  }
+  if (sanitizer !== null) {
+    args.push(sanitizer);
+  }
+  return call(Identifiers.control, args, sourceSpan);
+}
+
+export function controlCreate(sourceSpan: ParseSourceSpan): ir.CreateOp {
+  return call(Identifiers.controlCreate, [], sourceSpan);
 }
 
 export function twoWayProperty(

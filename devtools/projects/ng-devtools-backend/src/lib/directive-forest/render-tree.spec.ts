@@ -92,30 +92,6 @@ describe('render tree extraction', () => {
     expect(rtree[0].children[0].children.length).toBe(0);
   });
 
-  it('should go all the way to the root element to look up for nodes', () => {
-    const rootNode = document.createElement('body');
-    const siblingNode = document.createElement('section');
-    const appNode = document.createElement('app');
-    const childNode = document.createElement('div');
-    const childComponentNode = document.createElement('child');
-    rootNode.appendChild(appNode);
-    rootNode.appendChild(siblingNode);
-    appNode.appendChild(childNode);
-    childNode.appendChild(childComponentNode);
-
-    const appComponent: any = {};
-    const childComponent: any = {};
-    const siblingComponent: any = {};
-    componentMap.set(siblingNode, siblingComponent);
-    componentMap.set(appNode, appComponent);
-    componentMap.set(childComponentNode, childComponent);
-
-    const rtree = treeStrategy.build(appNode);
-    expect(rtree[0].children.length).toBe(1);
-    expect(rtree[0].children[0].children.length).toBe(0);
-    expect(rtree[1].component?.instance).toBe(siblingComponent);
-  });
-
   it('should use component name from `ng.getDirectiveMetadata`', () => {
     const appNode = document.createElement('app');
 

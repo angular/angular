@@ -97,7 +97,7 @@ export class NgtscTestEnvironment {
         "target": "es2015",
         "newLine": "lf",
         "module": "es2015",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "lib": ["es2015", "dom"],
         "typeRoots": ["node_modules/@types"]
       },

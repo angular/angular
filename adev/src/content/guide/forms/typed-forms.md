@@ -8,7 +8,7 @@ As background for this guide, you should already be familiar with [Angular React
 
 <docs-video src="https://www.youtube.com/embed/L-odCf4MfJc" alt="Typed Forms in Angular" />
 
-With Angular reactive forms, you explicitly specify a *form model*. As a simple example, consider this basic user login form:
+With Angular reactive forms, you explicitly specify a _form model_. As a simple example, consider this basic user login form:
 
 ```ts
 const login = new FormGroup({
@@ -29,7 +29,7 @@ With strictly typed reactive forms, the above code does not compile, because the
 
 In addition to the added safety, the types enable a variety of other improvements, such as better autocomplete in IDEs, and an explicit way to specify form structure.
 
-These improvements currently apply only to *reactive* forms (not [*template-driven* forms](guide/forms/template-driven-forms)).
+These improvements currently apply only to _reactive_ forms (not [_template-driven_ forms](guide/forms/template-driven-forms)).
 
 ## Untyped Forms
 
@@ -56,7 +56,7 @@ This control will be automatically inferred to have the type `FormControl<string
 
 ### Nullability
 
-You might wonder: why does the type of this control include `null`?  This is because the control can become `null` at any time, by calling reset:
+You might wonder: why does the type of this control include `null`? This is because the control can become `null` at any time, by calling reset:
 
 ```ts
 const email = new FormControl('angularrox@gmail.com');
@@ -99,6 +99,13 @@ const names = new FormArray([new FormControl('Alex')]);
 names.push(new FormControl('Jess'));
 ```
 
+Pass an array of controls to `aliases.push()` when you need to add several entries at once.
+
+```ts
+const aliases = new FormArray([new FormControl('ng')]);
+aliases.push([new FormControl('ngDev'), new FormControl('ngAwesome')]);
+```
+
 This `FormArray` will have the inner controls type `FormControl<string|null>`.
 
 If you want to have multiple different element types inside the array, you must use `UntypedFormArray`, because TypeScript cannot infer which element type will occur at which position.
@@ -124,11 +131,11 @@ As a consequence, the type of `login.value` is `Partial<{email: string, password
 
 More specifically, the type of `login.value.email` is `string|undefined`, and TypeScript will enforce that you handle the possibly `undefined` value (if you have `strictNullChecks` enabled).
 
-If you want to access the value *including* disabled controls, and thus bypass possible `undefined` fields, you can use `login.getRawValue()`.
+If you want to access the value _including_ disabled controls, and thus bypass possible `undefined` fields, you can use `login.getRawValue()`.
 
 ### Optional Controls and Dynamic Groups
 
-Some forms have controls that may or may not be present, which can be added and removed at runtime. You can represent these controls using *optional fields*:
+Some forms have controls that may or may not be present, which can be added and removed at runtime. You can represent these controls using _optional fields_:
 
 ```ts
 interface LoginForm {

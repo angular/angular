@@ -23,15 +23,15 @@
       "type": "string",
       "default": "xlf",
       "enum": [
-        "xmb",
+        "arb",
+        "json",
+        "legacy-migrate",
         "xlf",
+        "xlf2",
         "xlif",
         "xliff",
-        "xlf2",
         "xliff2",
-        "json",
-        "arb",
-        "legacy-migrate"
+        "xmb"
       ],
       "description": "Output format for the generated file."
     },
@@ -45,8 +45,8 @@
       "type": "string",
       "enum": [
         "error",
-        "warning",
-        "ignore"
+        "ignore",
+        "warning"
       ],
       "description": "How to handle duplicate translations."
     },

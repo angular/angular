@@ -118,8 +118,8 @@ prefix your components with `yt-`, with components like `yt-menu`, `yt-player`, 
 your selectors like this makes it immediately clear where a particular component comes from. By
 default, the Angular CLI uses `app-`.
 
-Angular uses the `ng` selector prefix for its own framework APIs. Never use `ng` as a selector
-prefix for your own custom components.
+IMPORTANT: Angular uses the `ng` selector prefix for its own framework APIs. Never use `ng` as a selector prefix for your own custom components.
+
 
 ### When to use an attribute selector
 

@@ -598,7 +598,7 @@ describe('createComponent', () => {
     });
 
     it('should throw if a component class is attached', () => {
-      @Component({template: '', standalone: true})
+      @Component({template: ''})
       class NotADir {}
 
       @Component({template: ''})
@@ -1115,7 +1115,6 @@ describe('createComponent', () => {
 
     it('should update view of component set with the onPush strategy after input change', () => {
       @Component({
-        standalone: true,
         changeDetection: ChangeDetectionStrategy.OnPush,
         template: 'Value: {{ value }}',
       })

@@ -25,10 +25,16 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  provideZoneChangeDetection,
   ViewChild,
 } from '../../src/core';
 
 describe('profiler', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   class TestProfiler {
     profile() {}
   }

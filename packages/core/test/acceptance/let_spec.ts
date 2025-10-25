@@ -17,10 +17,16 @@ import {
   inject,
   ChangeDetectorRef,
   ViewChild,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {TestBed} from '../../testing';
 
 describe('@let declarations', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should update the value of a @let declaration over time', () => {
     @Component({
       template: `

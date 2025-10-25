@@ -21,7 +21,7 @@ import {
   ɵWebAnimationsPlayer,
   ɵTransitionAnimationPlayer as TransitionAnimationPlayer,
 } from '@angular/animations/browser';
-import {Component, ViewChild} from '../../src/core';
+import {Component, ViewChild, provideZoneChangeDetection} from '../../src/core';
 import {TestBed} from '../../testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {isNode} from '@angular/private/testing';
@@ -34,7 +34,10 @@ import {isNode} from '@angular/private/testing';
   describe('legacy animation integration tests using web animations', function () {
     beforeEach(() => {
       TestBed.configureTestingModule({
-        providers: [{provide: AnimationDriver, useClass: ɵWebAnimationsDriver}],
+        providers: [
+          {provide: AnimationDriver, useClass: ɵWebAnimationsDriver},
+          provideZoneChangeDetection(),
+        ],
         imports: [BrowserAnimationsModule],
       });
     });

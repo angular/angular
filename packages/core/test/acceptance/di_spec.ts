@@ -60,6 +60,7 @@ import {
   ɵINJECTOR_SCOPE,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
   DestroyRef,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {RuntimeError, RuntimeErrorCode} from '../../src/errors';
 import {ViewRef as ViewRefInternal} from '../../src/render3/view_ref';
@@ -422,6 +423,11 @@ describe('EnvironmentProviders', () => {
 });
 
 describe('di', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('no dependencies', () => {
     it('should create directive with no deps', () => {
       @Directive({
@@ -889,6 +895,7 @@ describe('di', () => {
         TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp, MyApp]});
         const fixture = TestBed.createComponent(MyApp);
         fixture.componentInstance.showing = true;
+        fixture.changeDetectorRef.markForCheck();
         fixture.detectChanges();
 
         const divElement = fixture.nativeElement.querySelector('div');
@@ -2615,6 +2622,7 @@ describe('di', () => {
           const fixture = TestBed.createComponent(MyApp);
           fixture.detectChanges();
           fixture.componentInstance.showing = true;
+          fixture.changeDetectorRef.markForCheck();
           fixture.detectChanges();
 
           const dirA = fixture.componentInstance.dirA;

@@ -60,6 +60,7 @@ import {createVariadicPipes} from './phases/pipe_variadic';
 import {propagateI18nBlocks} from './phases/propagate_i18n_blocks';
 import {extractPureFunctions} from './phases/pure_function_extraction';
 import {generatePureLiteralStructures} from './phases/pure_literal_structures';
+import {optimizeRegularExpressions} from './phases/regular_expression_optimization';
 import {reify} from './phases/reify';
 import {removeEmptyBindings} from './phases/remove_empty_bindings';
 import {removeI18nContexts} from './phases/remove_i18n_contexts';
@@ -101,6 +102,7 @@ type Phase =
 
 const phases: Phase[] = [
   {kind: Kind.Tmpl, fn: removeContentSelectors},
+  {kind: Kind.Both, fn: optimizeRegularExpressions},
   {kind: Kind.Host, fn: parseHostStyleProperties},
   {kind: Kind.Tmpl, fn: emitNamespaceChanges},
   {kind: Kind.Tmpl, fn: propagateI18nBlocks},

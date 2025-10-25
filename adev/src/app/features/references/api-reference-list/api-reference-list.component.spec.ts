@@ -16,48 +16,53 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
 import {Location} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {TextField} from '@angular/docs';
+import {NavigationItem, TextField} from '@angular/docs';
+import {ApiItem} from '../interfaces/api-item';
 
 describe('ApiReferenceList', () => {
   let component: ApiReferenceList;
   let fixture: ComponentFixture<ApiReferenceList>;
-  let fakeItem1 = {
+  let fakeItem1: ApiItem = {
     'title': 'fakeItem1',
     'url': 'api/animations/fakeItem1',
     'itemType': ApiItemType.FUNCTION,
     'deprecated': undefined,
     'developerPreview': undefined,
     'experimental': undefined,
+    'category': undefined,
     'stable': {version: undefined},
   };
-  let fakeItem2 = {
+  let fakeItem2: ApiItem = {
     'title': 'fakeItem2',
     'url': 'api/animations/fakeItem2',
     'itemType': ApiItemType.CLASS,
     'deprecated': undefined,
     'developerPreview': undefined,
     'experimental': undefined,
+    'category': undefined,
     'stable': {version: undefined},
   };
-  let fakeDeprecatedFeaturedItem = {
+  let fakeDeprecatedFeaturedItem: ApiItem = {
     'title': 'fakeItemDeprecated',
     'url': 'api/animations/fakeItemDeprecated',
     'itemType': ApiItemType.INTERFACE,
     'deprecated': {version: undefined},
     'developerPreview': undefined,
     'experimental': undefined,
+    'category': undefined,
     'stable': undefined,
   };
-  let fakeDeveloperPreviewItem = {
+  let fakeDeveloperPreviewItem: ApiItem = {
     'title': 'fakeItemDeveloperPreview',
     'url': 'api/animations/fakeItemDeveloperPreview',
     'itemType': ApiItemType.INTERFACE,
     'deprecated': undefined,
     'developerPreview': {version: undefined},
     'experimental': undefined,
+    'category': undefined,
     'stable': undefined,
   };
-  let fakeExperimentalItem = {
+  let fakeExperimentalItem: ApiItem = {
     'title': 'fakeItemExperimental',
     'url': 'api/animations/fakeItemExperimental',
     'itemType': ApiItemType.INTERFACE,
@@ -65,6 +70,7 @@ describe('ApiReferenceList', () => {
     'developerPreview': undefined,
     'experimental': {version: undefined},
     'stable': undefined,
+    'category': undefined,
   };
   const fakeApiReferenceManager = {
     apiGroups: signal([

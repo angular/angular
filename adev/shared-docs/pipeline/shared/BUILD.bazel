@@ -1,0 +1,22 @@
+load("//adev/shared-docs:defaults.bzl", "ts_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_project(
+    name = "linking",
+    srcs = ["linking.mts"],
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+)
+
+ts_project(
+    name = "shiki",
+    srcs = ["shiki.mts"],
+    visibility = [
+        "//adev/shared-docs/pipeline:__subpackages__",
+    ],
+    deps = [
+        "//adev:node_modules/shiki",
+    ],
+)

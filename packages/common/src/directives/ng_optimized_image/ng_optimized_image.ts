@@ -262,6 +262,7 @@ export interface ImagePlaceholderConfig {
  * ```
  *
  * @publicApi
+ * @see [Image Optimization Guide](guide/image-optimization)
  */
 @Directive({
   selector: 'img[ngSrc]',

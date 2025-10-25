@@ -52,11 +52,34 @@
       "schema": "./ng-generate/self-closing-tags-migration/schema.json",
       "aliases": ["self-closing-tag"]
     },
+    "common-to-standalone-migration": {
+      "description": "Replaces CommonModule with individual imports from @angular/common",
+      "factory": "./bundles/common-to-standalone-migration.cjs#migrate",
+      "schema": "./migrations/common-to-standalone-migration/schema.json",
+      "aliases": ["common-to-standalone"]
+    },
     "control-flow-migration": {
       "description": "Converts the entire application to block control flow syntax",
       "factory": "./bundles/control-flow-migration.cjs#migrate",
       "schema": "./migrations/control-flow-migration/schema.json",
       "aliases": ["control-flow"]
+    },
+    "ngclass-to-class-migration": {
+      "description": "Updates usages of `ngClass` directives to the `class` bindings where possible",
+      "factory": "./bundles/ngclass-to-class-migration.cjs#migrate",
+      "schema": "./migrations/ngclass-to-class-migration/schema.json",
+      "aliases": ["ngclass-to-class"]
+    },
+    "ngstyle-to-style-migration": {
+      "description": "Updates usages of `ngStyle` directives to the `style` bindings where possible",
+      "factory": "./bundles/ngstyle-to-style-migration.cjs#migrate",
+      "schema": "./migrations/ngstyle-to-style-migration/schema.json",
+      "aliases": ["ngstyle-to-style"]
+    },
+    "router-testing-module-migration": {
+      "description": "Replaces deprecated RouterTestingModule with provideRouter() as recommended in the deprecation note",
+      "factory": "./bundles/router-testing-module-migration.cjs#migrate",
+      "schema": "./migrations/router-testing-module-migration/schema.json"
     }
   }
 }

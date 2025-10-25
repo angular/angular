@@ -356,6 +356,20 @@ describe('FetchBackend', async () => {
     fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
   });
 
+  it('should pass referrerPolicy option to fetch', () => {
+    const req = new HttpRequest('GET', '/test', {referrerPolicy: 'no-referrer'});
+    backend.handle(req).subscribe();
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/test',
+      jasmine.objectContaining({
+        referrerPolicy: 'no-referrer',
+      }),
+    );
+
+    fetchMock.mockFlush(HttpStatusCode.Ok, 'OK');
+  });
+
   it('emits an error when a request times out', (done) => {
     backend.handle(TEST_POST).subscribe({
       error: (err: HttpErrorResponse) => {
@@ -507,21 +521,6 @@ describe('FetchBackend', async () => {
           done();
         });
       fetchMock.response.url = '/response/url';
-      fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
-    });
-
-    it('from X-Request-URL header if the response URL is not present', (done) => {
-      backend
-        .handle(TEST_POST)
-        .pipe(toArray())
-        .subscribe((events) => {
-          expect(events.length).toBe(2);
-          expect(events[1].type).toBe(HttpEventType.Response);
-          const response = events[1] as HttpResponse<string>;
-          expect(response.url).toBe('/response/url');
-          done();
-        });
-      fetchMock.response.headers = {'X-Request-URL': '/response/url'};
       fetchMock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
     });
 

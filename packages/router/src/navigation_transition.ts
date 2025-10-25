@@ -17,19 +17,10 @@ import {
   signal,
   Type,
   untracked,
+  ɵWritable as Writable,
 } from '@angular/core';
-import {BehaviorSubject, combineLatest, EMPTY, from, Observable, of, Subject} from 'rxjs';
-import {
-  catchError,
-  defaultIfEmpty,
-  filter,
-  finalize,
-  map,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs/operators';
+import {BehaviorSubject, EMPTY, from, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, finalize, map, switchMap, take, takeUntil, tap} from 'rxjs/operators';
 
 import {createRouterState} from './create_router_state';
 import {INPUT_BINDER} from './directives/router_outlet';
@@ -90,6 +81,7 @@ import {UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
 import {getClosestRouteInjector} from './utils/config';
+import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 
 /**
  * @description
@@ -305,6 +297,8 @@ export interface Navigation {
   readonly abort: () => void;
 }
 
+const noop = () => {};
+
 export interface NavigationTransition {
   id: number;
   currentUrlTree: UrlTree;
@@ -324,7 +318,6 @@ export interface NavigationTransition {
   targetRouterState: RouterState | null;
   guards: Checks;
   guardsResult: GuardResult | null;
-  abortController: AbortController;
 }
 
 /**
@@ -436,7 +429,6 @@ export class NavigationTransitions {
         targetRouterState: null,
         guards: {canActivateChecks: [], canDeactivateChecks: []},
         guardsResult: null,
-        abortController: new AbortController(),
         id,
       });
     });
@@ -450,6 +442,10 @@ export class NavigationTransitions {
       // Using switchMap so we cancel executing navigations when a new one comes in
       switchMap((overallTransitionState) => {
         let completedOrAborted = false;
+        const abortController = new AbortController();
+        const shouldContinueNavigation = () => {
+          return !completedOrAborted && this.currentTransition?.id === overallTransitionState.id;
+        };
         return of(overallTransitionState).pipe(
           switchMap((t) => {
             // It is possible that `switchMap` fails to cancel previous navigations if a new one happens synchronously while the operator
@@ -487,7 +483,7 @@ export class NavigationTransitions {
                     ...lastSuccessfulNavigation,
                     previousNavigation: null,
                   },
-              abort: () => t.abortController.abort(),
+              abort: () => abortController.abort(),
             });
             const urlTransition =
               !router.navigated || this.isUpdatingInternalState() || this.isUpdatedBrowserUrl();
@@ -539,6 +535,7 @@ export class NavigationTransitions {
                   router.config,
                   this.urlSerializer,
                   this.paramsInheritanceStrategy,
+                  abortController.signal,
                 ),
 
                 // Update URL if in `eager` update mode
@@ -612,8 +609,7 @@ export class NavigationTransitions {
             }
           }),
 
-          // --- GUARDS ---
-          tap((t) => {
+          map((t) => {
             const guardsStart = new GuardsCheckStart(
               t.id,
               this.urlSerializer.serialize(t.extractedUrl),
@@ -621,9 +617,10 @@ export class NavigationTransitions {
               t.targetSnapshot!,
             );
             this.events.next(guardsStart);
-          }),
+            // Note we don't have to check shouldContinueNavigation here because we don't do anything
+            // in the remainder of this operator that has side effects. If `checkGuards` is combined into
+            // this operators, we would need to ensure we check shouldContinueNavigation before running the guards.
 
-          map((t) => {
             this.currentTransition = overallTransitionState = {
               ...t,
               guards: getAllRouteGuards(t.targetSnapshot!, t.currentSnapshot, this.rootContexts),
@@ -632,7 +629,8 @@ export class NavigationTransitions {
           }),
 
           checkGuards(this.environmentInjector, (evt: Event) => this.events.next(evt)),
-          tap((t) => {
+
+          switchMap((t) => {
             overallTransitionState.guardsResult = t.guardsResult;
             if (t.guardsResult && typeof t.guardsResult !== 'boolean') {
               throw redirectingNavigationError(this.urlSerializer, t.guardsResult);
@@ -646,77 +644,72 @@ export class NavigationTransitions {
               !!t.guardsResult,
             );
             this.events.next(guardsEnd);
-          }),
-
-          filter((t) => {
+            if (!shouldContinueNavigation()) {
+              return EMPTY;
+            }
             if (!t.guardsResult) {
               this.cancelNavigationTransition(t, '', NavigationCancellationCode.GuardRejected);
-              return false;
+              return EMPTY;
             }
-            return true;
-          }),
 
-          // --- RESOLVE ---
-          switchTap((t) => {
             if (t.guards.canActivateChecks.length === 0) {
-              return undefined;
+              return of(t);
             }
 
+            const resolveStart = new ResolveStart(
+              t.id,
+              this.urlSerializer.serialize(t.extractedUrl),
+              this.urlSerializer.serialize(t.urlAfterRedirects!),
+              t.targetSnapshot!,
+            );
+            this.events.next(resolveStart);
+            if (!shouldContinueNavigation()) {
+              return EMPTY;
+            }
+
+            let dataResolved = false;
             return of(t).pipe(
-              tap((t) => {
-                const resolveStart = new ResolveStart(
-                  t.id,
-                  this.urlSerializer.serialize(t.extractedUrl),
-                  this.urlSerializer.serialize(t.urlAfterRedirects!),
-                  t.targetSnapshot!,
-                );
-                this.events.next(resolveStart);
-              }),
-              switchMap((t) => {
-                let dataResolved = false;
-                return of(t).pipe(
-                  resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
-                  tap({
-                    next: () => (dataResolved = true),
-                    complete: () => {
-                      if (!dataResolved) {
-                        this.cancelNavigationTransition(
-                          t,
-                          typeof ngDevMode === 'undefined' || ngDevMode
-                            ? `At least one route resolver didn't emit any value.`
-                            : '',
-                          NavigationCancellationCode.NoDataFromResolver,
-                        );
-                      }
-                    },
-                  }),
-                );
-              }),
-              tap((t) => {
-                const resolveEnd = new ResolveEnd(
-                  t.id,
-                  this.urlSerializer.serialize(t.extractedUrl),
-                  this.urlSerializer.serialize(t.urlAfterRedirects!),
-                  t.targetSnapshot!,
-                );
-                this.events.next(resolveEnd);
+              resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
+              tap({
+                next: () => {
+                  dataResolved = true;
+                  const resolveEnd = new ResolveEnd(
+                    t.id,
+                    this.urlSerializer.serialize(t.extractedUrl),
+                    this.urlSerializer.serialize(t.urlAfterRedirects!),
+                    t.targetSnapshot!,
+                  );
+                  this.events.next(resolveEnd);
+                },
+                complete: () => {
+                  if (!dataResolved) {
+                    this.cancelNavigationTransition(
+                      t,
+                      typeof ngDevMode === 'undefined' || ngDevMode
+                        ? `At least one route resolver didn't emit any value.`
+                        : '',
+                      NavigationCancellationCode.NoDataFromResolver,
+                    );
+                  }
+                },
               }),
             );
           }),
 
           // --- LOAD COMPONENTS ---
           switchTap((t: NavigationTransition) => {
-            const loadComponents = (route: ActivatedRouteSnapshot): Array<Observable<void>> => {
-              const loaders: Array<Observable<void>> = [];
-              if (route.routeConfig?.loadComponent) {
+            const loadComponents = (route: ActivatedRouteSnapshot): Array<Promise<void>> => {
+              const loaders: Array<Promise<void>> = [];
+              if (route.routeConfig?._loadedComponent) {
+                route.component = route.routeConfig?._loadedComponent;
+              } else if (route.routeConfig?.loadComponent) {
                 const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
                 loaders.push(
-                  this.configLoader.loadComponent(injector, route.routeConfig).pipe(
-                    tap((loadedComponent) => {
+                  this.configLoader
+                    .loadComponent(injector, route.routeConfig)
+                    .then((loadedComponent) => {
                       route.component = loadedComponent;
                     }),
-                    map(() => void 0),
-                  ),
                 );
               }
               for (const child of route.children) {
@@ -724,10 +717,8 @@ export class NavigationTransitions {
               }
               return loaders;
             };
-            return combineLatest(loadComponents(t.targetSnapshot!.root)).pipe(
-              defaultIfEmpty(null),
-              take(1),
-            );
+            const loaders = loadComponents(t.targetSnapshot!.root);
+            return loaders.length === 0 ? of(t) : from(Promise.all(loaders).then(() => t));
           }),
 
           switchTap(() => this.afterPreactivation()),
@@ -778,18 +769,13 @@ export class NavigationTransitions {
           take(1),
 
           takeUntil(
-            new Observable<void>((subscriber) => {
-              const abortSignal = overallTransitionState.abortController.signal;
-              const handler = () => subscriber.next();
-              abortSignal.addEventListener('abort', handler);
-              return () => abortSignal.removeEventListener('abort', handler);
-            }).pipe(
+            abortSignalToObservable(abortController.signal).pipe(
               // Ignore aborts if we are already completed, canceled, or are in the activation stage (we have targetRouterState)
               filter(() => !completedOrAborted && !overallTransitionState.targetRouterState),
               tap(() => {
                 this.cancelNavigationTransition(
                   overallTransitionState,
-                  overallTransitionState.abortController.signal.reason + '',
+                  abortController.signal.reason + '',
                   NavigationCancellationCode.Aborted,
                 );
               }),
@@ -799,6 +785,10 @@ export class NavigationTransitions {
           tap({
             next: (t: NavigationTransition) => {
               completedOrAborted = true;
+              this.currentNavigation.update((nav) => {
+                (nav as Writable<Navigation>).abort = noop;
+                return nav;
+              });
               this.lastSuccessfulNavigation.set(untracked(this.currentNavigation));
               this.events.next(
                 new NavigationEnd(
@@ -831,6 +821,7 @@ export class NavigationTransitions {
           ),
 
           finalize(() => {
+            abortController.abort();
             /* When the navigation stream finishes either through error or success,
              * we set the `completed` or `errored` flag. However, there are some
              * situations where we could get here without either of those being set.

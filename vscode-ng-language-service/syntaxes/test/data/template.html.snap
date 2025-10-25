@@ -1,0 +1,21 @@
+><!-- Interpolation test -->
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ template.ng
+><div>{{ call(1 + 2 + 3) }}</div>
+#^^^^^ template.ng
+#     ^^ template.ng punctuation.definition.block.ts
+#       ^ template.ng expression.ng
+#        ^^^^ template.ng expression.ng entity.name.function.ts
+#            ^ template.ng expression.ng meta.brace.round.ts
+#             ^ template.ng expression.ng constant.numeric.decimal.ts
+#              ^ template.ng expression.ng
+#               ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                ^ template.ng expression.ng
+#                 ^ template.ng expression.ng constant.numeric.decimal.ts
+#                  ^ template.ng expression.ng
+#                   ^ template.ng expression.ng keyword.operator.arithmetic.ts
+#                    ^ template.ng expression.ng
+#                     ^ template.ng expression.ng constant.numeric.decimal.ts
+#                      ^ template.ng expression.ng meta.brace.round.ts
+#                       ^ template.ng expression.ng
+#                        ^^ template.ng punctuation.definition.block.ts
+#                          ^^^^^^^ template.ng

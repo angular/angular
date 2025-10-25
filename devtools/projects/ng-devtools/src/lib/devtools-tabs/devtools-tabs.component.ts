@@ -27,7 +27,6 @@ import {
   Route,
   SerializedInjector,
   SerializedProviderRecord,
-  SupportedApis,
 } from '../../../../protocol';
 
 import {ApplicationEnvironment, Frame, TOP_LEVEL_FRAME_ID} from '../application-environment/index';
@@ -41,6 +40,7 @@ import {RouterTreeComponent} from './router-tree/router-tree.component';
 import {TransferStateComponent} from './transfer-state/transfer-state.component';
 import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
+import {SUPPORTED_APIS} from '../application-providers/supported_apis';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -68,31 +68,29 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
-  readonly applicationEnvironment = inject(ApplicationEnvironment);
   readonly frameManager = inject(FrameManager);
   readonly themeService = inject(ThemeService);
   private readonly tabUpdate = inject(TabUpdate);
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
   private readonly settings = inject(Settings);
+  protected readonly applicationEnvironment = inject(ApplicationEnvironment);
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
 
   readonly isHydrationEnabled = input(false);
-  readonly supportedApis = input.required<SupportedApis>();
   readonly frameSelected = output<Frame>();
 
-  readonly activeTab = signal<Tab>('Components');
   readonly inspectorRunning = signal(false);
 
   protected readonly showCommentNodes = this.settings.showCommentNodes;
   protected readonly routerGraphEnabled = this.settings.routerGraphEnabled;
   protected readonly timingAPIEnabled = this.settings.timingAPIEnabled;
-  protected readonly signalGraphEnabled = this.settings.signalGraphEnabled;
+  protected readonly signalGraphEnabled = () => this.supportedApis().signals;
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
+  protected readonly activeTab = this.settings.activeTab;
 
   readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
   readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
-
-  readonly snapToRoot = signal(false);
 
   readonly tabs = computed<Tab[]>(() => {
     const supportedApis = this.supportedApis();
@@ -104,7 +102,7 @@ export class DevToolsTabsComponent {
     if (supportedApis.dependencyInjection) {
       tabs.push('Injector Tree');
     }
-    if (supportedApis.routes && this.routerGraphEnabled() && this.routes().length > 0) {
+    if (this.routerGraphEnabled() && this.routes().length > 0) {
       tabs.push('Router Tree');
     }
     if (supportedApis.transferState && this.transferStateEnabled()) {
@@ -169,7 +167,6 @@ export class DevToolsTabsComponent {
     this.tabUpdate.notify(tab);
     if (tab === 'Router Tree') {
       this.messageBus.emit('getRoutes');
-      this.snapToRoot.set(true);
     }
   }
 
@@ -203,10 +200,6 @@ export class DevToolsTabsComponent {
     if (!enabled) {
       this.activeTab.set('Components');
     }
-  }
-
-  protected setSignalGraph(enabled: boolean): void {
-    this.signalGraphEnabled.set(enabled);
   }
 
   protected setTransferStateTab(enabled: boolean): void {

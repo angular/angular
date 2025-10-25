@@ -4,9 +4,11 @@ import {provideClientHydration, withIncrementalHydration} from '@angular/platfor
 import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
+import {provideZoneChangeDetection} from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZoneChangeDetection(),
     provideRouter(routes),
     provideClientHydration(withIncrementalHydration()),
     provideHttpClient(),

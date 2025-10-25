@@ -1,6 +1,6 @@
 load("@aspect_rules_js//js:defs.bzl", "js_library")
 load("@npm//:rollup/package_json.bzl", rollup = "bin")
-load("//tools:defaults2.bzl", "npm_package", "ts_config")
+load("//tools:defaults.bzl", "npm_package", "ts_config")
 
 exports_files([
     "tsconfig.json",
@@ -42,7 +42,11 @@ npm_package(
         "collection.json",
         "migrations.json",
         ":bundles",
+        "//packages/core/schematics/migrations/common-to-standalone-migration:static_files",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
+        "//packages/core/schematics/migrations/ngstyle-to-style-migration:static_files",
+        "//packages/core/schematics/migrations/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",
@@ -94,20 +98,20 @@ bundle_entrypoints = [
         "packages/core/schematics/ng-generate/self-closing-tags-migration/index.js",
     ],
     [
-        "inject-flags",
-        "packages/core/schematics/migrations/inject-flags/index.js",
-    ],
-    [
-        "test-bed-get",
-        "packages/core/schematics/migrations/test-bed-get/index.js",
-    ],
-    [
-        "document-core",
-        "packages/core/schematics/migrations/document-core/index.js",
+        "common-to-standalone-migration",
+        "packages/core/schematics/migrations/common-to-standalone-migration/index.js",
     ],
     [
         "control-flow-migration",
         "packages/core/schematics/migrations/control-flow-migration/index.js",
+    ],
+    [
+        "ngclass-to-class-migration",
+        "packages/core/schematics/migrations/ngclass-to-class-migration/index.js",
+    ],
+    [
+        "ngstyle-to-style-migration",
+        "packages/core/schematics/migrations/ngstyle-to-style-migration/index.js",
     ],
     [
         "router-current-navigation",
@@ -116,6 +120,22 @@ bundle_entrypoints = [
     [
         "router-last-successful-navigation",
         "packages/core/schematics/migrations/router-last-successful-navigation/index.js",
+    ],
+    [
+        "application-config-core",
+        "packages/core/schematics/migrations/application-config-core/index.js",
+    ],
+    [
+        "add-bootstrap-context-to-server-main",
+        "packages/core/schematics/migrations/add-bootstrap-context-to-server-main/index.js",
+    ],
+    [
+        "bootstrap-options-migration",
+        "packages/core/schematics/migrations/bootstrap-options-migration/index.js",
+    ],
+    [
+        "router-testing-module-migration",
+        "packages/core/schematics/migrations/router-testing-module-migration/index.js",
     ],
 ]
 
@@ -128,12 +148,16 @@ rollup.rollup(
         "//:node_modules/magic-string",
         "//:node_modules/semver",
         "//packages/core/schematics:tsconfig_build",
+        "//packages/core/schematics/migrations/add-bootstrap-context-to-server-main",
+        "//packages/core/schematics/migrations/application-config-core",
+        "//packages/core/schematics/migrations/bootstrap-options-migration",
+        "//packages/core/schematics/migrations/common-to-standalone-migration",
         "//packages/core/schematics/migrations/control-flow-migration",
-        "//packages/core/schematics/migrations/document-core",
-        "//packages/core/schematics/migrations/inject-flags",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration",
+        "//packages/core/schematics/migrations/ngstyle-to-style-migration",
         "//packages/core/schematics/migrations/router-current-navigation",
         "//packages/core/schematics/migrations/router-last-successful-navigation",
-        "//packages/core/schematics/migrations/test-bed-get",
+        "//packages/core/schematics/migrations/router-testing-module-migration",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports",
         "//packages/core/schematics/ng-generate/inject-migration",
         "//packages/core/schematics/ng-generate/output-migration",

@@ -9,7 +9,7 @@
 import {ɵɵdefineInjectable as defineInjectable} from './di/interface/defs';
 import {Provider} from './di/interface/provider';
 import {EnvironmentInjector} from './di/r3_injector';
-import {OnDestroy} from './interface/lifecycle_hooks';
+import {OnDestroy} from './change_detection/lifecycle_hooks';
 import {createEnvironmentInjector} from './render3/ng_module_ref';
 
 /**

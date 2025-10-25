@@ -837,7 +837,7 @@ describe('completions', () => {
         '',
         {},
         `
-        @Component({selector: 'other-cmp', template: 'unimportant', standalone: true})
+        @Component({selector: 'other-cmp', template: 'unimportant'})
         export class OtherCmp {}
       `,
       );
@@ -1097,7 +1097,6 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
                 inputs: ['myInput']
               })
               export class HostDir {
@@ -1131,8 +1130,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir my>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
-                inputs: ['myInput']
+                                inputs: ['myInput']
               })
               export class HostDir {
                 myInput = 'foo';
@@ -1161,8 +1159,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
               @Directive({
-                standalone: true,
-                inputs: ['myInput']
+                                inputs: ['myInput']
               })
               export class HostDir {
                 myInput = 'foo';
@@ -1195,8 +1192,7 @@ describe('completions', () => {
           const {templateFile} = setup(`<input dir ali>`, '', {
             'Dir': `
                   @Directive({
-                    standalone: true,
-                    inputs: ['myInput: myPublicInput']
+                                        inputs: ['myInput: myPublicInput']
                   })
                   export class HostDir {
                     myInput = 'foo';
@@ -1565,8 +1561,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput']
+                            outputs: ['myOutput']
             })
             export class HostDir {
               myOutput: any;
@@ -1599,8 +1594,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (my)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput']
+                            outputs: ['myOutput']
             })
             export class HostDir {
               myOutput: any;
@@ -1628,8 +1622,7 @@ describe('completions', () => {
         const {templateFile} = setup(`<input dir (ali)>`, '', {
           'Dir': `
             @Directive({
-              standalone: true,
-              outputs: ['myOutput: myPublicOutput']
+                            outputs: ['myOutput: myPublicOutput']
             })
             export class HostDir {
               myOutput: any;
@@ -2157,9 +2150,6 @@ describe('completions', () => {
         `title!: string; hero!: number;`,
         undefined,
         `host: {'[title]': 'ti'},`,
-        {
-          typeCheckHostBindings: true,
-        },
       );
       appFile.moveCursorToText(`'ti¦'`);
       const completions = appFile.getCompletionsAtPosition();
@@ -2172,9 +2162,6 @@ describe('completions', () => {
         `title!: string; hero!: number;`,
         undefined,
         `host: {'(click)': 't'},`,
-        {
-          typeCheckHostBindings: true,
-        },
       );
       appFile.moveCursorToText(`'(click)': 't¦'`);
       const completions = appFile.getCompletionsAtPosition();
@@ -2182,11 +2169,8 @@ describe('completions', () => {
     });
 
     it('should be able to complete inside `host` of a directive', () => {
-      const {appFile} = setupInlineTemplate(
-        '',
-        '',
-        {
-          'Dir': `
+      const {appFile} = setupInlineTemplate('', '', {
+        'Dir': `
             @Directive({
               host: {'[title]': 'ti'},
             })
@@ -2195,12 +2179,7 @@ describe('completions', () => {
               hero!: number;
             }
           `,
-        },
-        undefined,
-        {
-          typeCheckHostBindings: true,
-        },
-      );
+      });
       appFile.moveCursorToText(`'ti¦'`);
       const completions = appFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);

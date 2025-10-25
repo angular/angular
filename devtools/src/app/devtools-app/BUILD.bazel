@@ -23,6 +23,7 @@ ng_project(
         "//:node_modules/@angular/router",
         "//devtools/projects/ng-devtools",
         "//devtools/projects/ng-devtools/src/lib/application-services:frame_manager",
+        "//devtools/projects/ng-devtools/src/lib/shared/split",
         "//devtools/projects/protocol",
         "//devtools/src:iframe_message_bus",
     ],

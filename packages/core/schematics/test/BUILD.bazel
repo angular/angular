@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "jasmine_test", "ts_project")
+load("//tools:defaults.bzl", "jasmine_test", "ts_project")
 
 ts_project(
     name = "test_lib",
@@ -7,7 +7,6 @@ ts_project(
     deps = [
         "//:node_modules/@angular-devkit/core",
         "//:node_modules/@angular-devkit/schematics",
-        "//:node_modules/@types/shelljs",
         "//:node_modules/tslint",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
@@ -19,10 +18,13 @@ jasmine_test(
     timeout = "moderate",
     data = [
         ":test_lib",
-        "//:node_modules/shelljs",
         "//packages/core/schematics:bundles",
         "//packages/core/schematics:schematics_jsons",
+        "//packages/core/schematics/migrations/common-to-standalone-migration:static_files",
         "//packages/core/schematics/migrations/control-flow-migration:static_files",
+        "//packages/core/schematics/migrations/ngclass-to-class-migration:static_files",
+        "//packages/core/schematics/migrations/ngstyle-to-style-migration:static_files",
+        "//packages/core/schematics/migrations/router-testing-module-migration:static_files",
         "//packages/core/schematics/ng-generate/cleanup-unused-imports:static_files",
         "//packages/core/schematics/ng-generate/inject-migration:static_files",
         "//packages/core/schematics/ng-generate/output-migration:static_files",

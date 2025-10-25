@@ -14,7 +14,6 @@ import {Component} from '@angular/core';
   selector: 'cdk-drag-drop-custom-placeholder-example',
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.css',
-  standalone: true,
   imports: [CdkDropList, CdkDrag, CdkDragPlaceholder],
 })
 export class CdkDragDropCustomPlaceholderExample {

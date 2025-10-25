@@ -100,7 +100,7 @@ describe('list reconciliation', () => {
   describe('fast path', () => {
     it('should do nothing if 2 lists are the same', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, ['a', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'b', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([]);
@@ -108,7 +108,7 @@ describe('list reconciliation', () => {
 
     it('should add items at the end', () => {
       const pc = new LoggingLiveCollection(['a', 'b']);
-      reconcile(pc, ['a', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'b', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -119,7 +119,7 @@ describe('list reconciliation', () => {
 
     it('should swap items', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, ['c', 'b', 'a'], trackByIdentity);
+      reconcile(pc, ['c', 'b', 'a'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['c', 'b', 'a']);
       // TODO: think of expressing as swap
@@ -133,7 +133,7 @@ describe('list reconciliation', () => {
 
     it('should should optimally swap adjacent items', () => {
       const pc = new LoggingLiveCollection(['a', 'b']);
-      reconcile(pc, ['b', 'a'], trackByIdentity);
+      reconcile(pc, ['b', 'a'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['b', 'a']);
       expect(pc.getLogs()).toEqual([
@@ -144,7 +144,7 @@ describe('list reconciliation', () => {
 
     it('should detect moves to the front', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c', 'd']);
-      reconcile(pc, ['a', 'd', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'd', 'b', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'd', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -155,7 +155,7 @@ describe('list reconciliation', () => {
 
     it('should delete items in the middle', () => {
       const pc = new LoggingLiveCollection(['a', 'x', 'b', 'c']);
-      reconcile(pc, ['a', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'b', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -166,7 +166,7 @@ describe('list reconciliation', () => {
 
     it('should delete items from the beginning', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, ['c'], trackByIdentity);
+      reconcile(pc, ['c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['c']);
       expect(pc.getLogs()).toEqual([
@@ -179,7 +179,7 @@ describe('list reconciliation', () => {
 
     it('should delete items from the end', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, ['a'], trackByIdentity);
+      reconcile(pc, ['a'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a']);
       expect(pc.getLogs()).toEqual([
@@ -192,7 +192,7 @@ describe('list reconciliation', () => {
 
     it('should work with duplicated items', () => {
       const pc = new LoggingLiveCollection(['a', 'a', 'a']);
-      reconcile(pc, ['a', 'a', 'a'], trackByIdentity);
+      reconcile(pc, ['a', 'a', 'a'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'a', 'a']);
       expect(pc.getLogs()).toEqual([]);
@@ -202,7 +202,7 @@ describe('list reconciliation', () => {
   describe('slow path', () => {
     it('should delete multiple items from the middle', () => {
       const pc = new LoggingLiveCollection(['a', 'x1', 'b', 'x2', 'c']);
-      reconcile(pc, ['a', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'b', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -215,7 +215,7 @@ describe('list reconciliation', () => {
 
     it('should add multiple items in the middle', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, ['a', 'n1', 'b', 'n2', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'n1', 'b', 'n2', 'c'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'n1', 'b', 'n2', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -228,7 +228,7 @@ describe('list reconciliation', () => {
 
     it('should go back to the fast path when start / end is different', () => {
       const pc = new LoggingLiveCollection(['s1', 'a', 'b', 'c', 'e1']);
-      reconcile(pc, ['s2', 'a', 'b', 'c', 'e2'], trackByIdentity);
+      reconcile(pc, ['s2', 'a', 'b', 'c', 'e2'], trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['s2', 'a', 'b', 'c', 'e2']);
       expect(pc.getLogs()).toEqual([
@@ -250,7 +250,7 @@ describe('list reconciliation', () => {
 
     it('should detect moves to the back', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c', 'd']);
-      reconcile(pc, ['b', 'c', 'n1', 'n2', 'n3', 'a', 'd'], trackByIdentity);
+      reconcile(pc, ['b', 'c', 'n1', 'n2', 'n3', 'a', 'd'], trackByIdentity, null);
       expect(pc.getCollection()).toEqual(['b', 'c', 'n1', 'n2', 'n3', 'a', 'd']);
       expect(pc.getLogs()).toEqual([
         ['detach', 0, 'a'],
@@ -272,7 +272,7 @@ describe('list reconciliation', () => {
         {k: 2},
         {k: 3},
       ]);
-      reconcile(pc, [{k: 2}, {k: 3}, {k: 1}, {k: 1}, {k: 1}, {k: 4}], trackByKey);
+      reconcile(pc, [{k: 2}, {k: 3}, {k: 1}, {k: 1}, {k: 1}, {k: 4}], trackByKey, null);
 
       expect(pc.getCollection()).toEqual([{k: 2}, {k: 3}, {k: 1}, {k: 1}, {k: 1}, {k: 4}]);
       expect(pc.getLogs()).toEqual([
@@ -291,7 +291,7 @@ describe('list reconciliation', () => {
   describe('iterables', () => {
     it('should do nothing if 2 lists represented as iterables are the same', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity);
+      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([]);
@@ -299,7 +299,7 @@ describe('list reconciliation', () => {
 
     it('should add items at the end', () => {
       const pc = new LoggingLiveCollection(['a', 'b']);
-      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity);
+      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -310,7 +310,7 @@ describe('list reconciliation', () => {
 
     it('should add multiple items in the middle', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, new Set(['a', 'n1', 'b', 'n2', 'c']), trackByIdentity);
+      reconcile(pc, new Set(['a', 'n1', 'b', 'n2', 'c']), trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'n1', 'b', 'n2', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -323,7 +323,7 @@ describe('list reconciliation', () => {
 
     it('should delete items from the end', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
-      reconcile(pc, new Set(['a']), trackByIdentity);
+      reconcile(pc, new Set(['a']), trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a']);
       expect(pc.getLogs()).toEqual([
@@ -336,7 +336,7 @@ describe('list reconciliation', () => {
 
     it('should detect (slow) moves to the front', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c', 'd']);
-      reconcile(pc, new Set(['a', 'd', 'b', 'c']), trackByIdentity);
+      reconcile(pc, new Set(['a', 'd', 'b', 'c']), trackByIdentity, null);
 
       expect(pc.getCollection()).toEqual(['a', 'd', 'b', 'c']);
       expect(pc.getLogs()).toEqual([
@@ -349,7 +349,7 @@ describe('list reconciliation', () => {
 
     it('should detect (fast) moves to the back', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c', 'd']);
-      reconcile(pc, new Set(['b', 'c', 'a', 'd']), trackByIdentity);
+      reconcile(pc, new Set(['b', 'c', 'a', 'd']), trackByIdentity, null);
       expect(pc.getCollection()).toEqual(['b', 'c', 'a', 'd']);
       expect(pc.getLogs()).toEqual([
         ['detach', 0, 'a'],
@@ -360,11 +360,11 @@ describe('list reconciliation', () => {
     it('should allow switching collection types', () => {
       const pc = new LoggingLiveCollection(['a', 'b', 'c']);
 
-      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity);
+      reconcile(pc, new Set(['a', 'b', 'c']), trackByIdentity, null);
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([]);
 
-      reconcile(pc, ['a', 'b', 'c'], trackByIdentity);
+      reconcile(pc, ['a', 'b', 'c'], trackByIdentity, null);
       expect(pc.getCollection()).toEqual(['a', 'b', 'c']);
       expect(pc.getLogs()).toEqual([]);
     });
@@ -405,14 +405,14 @@ describe('list reconciliation', () => {
     it('should update when tracking by index - fast path from the start', () => {
       const pc = new LoggingLiveCollection([], new RepeaterLikeItemFactory());
 
-      reconcile(pc, ['a', 'b', 'c'], trackByIndex);
+      reconcile(pc, ['a', 'b', 'c'], trackByIndex, null);
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: 'a'},
         {index: 1, implicit: 'b'},
         {index: 2, implicit: 'c'},
       ]);
 
-      reconcile(pc, ['c', 'b', 'a'], trackByIndex);
+      reconcile(pc, ['c', 'b', 'a'], trackByIndex, null);
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: 'c'},
         {index: 1, implicit: 'b'},
@@ -426,7 +426,7 @@ describe('list reconciliation', () => {
         new RepeaterLikeItemFactory<KeyValueItem<string, string>>(),
       );
 
-      reconcile(pc, [{k: 'o', v: 'o'}], trackByKey);
+      reconcile(pc, [{k: 'o', v: 'o'}], trackByKey, null);
       expect(pc.getCollection()).toEqual([{index: 0, implicit: {k: 'o', v: 'o'}}]);
 
       reconcile(
@@ -436,6 +436,7 @@ describe('list reconciliation', () => {
           {k: 'o', v: 'oo'},
         ],
         trackByKey,
+        null,
       );
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: {k: 'n', v: 'n'}},
@@ -458,6 +459,7 @@ describe('list reconciliation', () => {
           {k: 2, v: 'c'},
         ],
         trackByKey as any,
+        null,
       );
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: {k: 0, v: 'a'}},
@@ -473,6 +475,7 @@ describe('list reconciliation', () => {
           {k: 0, v: 'aa'},
         ],
         trackByKey as any,
+        null,
       );
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: {k: 2, v: 'cc'}},
@@ -495,6 +498,7 @@ describe('list reconciliation', () => {
           {k: 3, v: 'd'},
         ],
         trackByKey as any,
+        null,
       );
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: {k: 0, v: 'a'}},
@@ -512,6 +516,7 @@ describe('list reconciliation', () => {
           {k: 2, v: 'cc'},
         ],
         trackByKey as any,
+        null,
       );
       expect(pc.getCollection()).toEqual([
         {index: 0, implicit: {k: 0, v: 'aa'}},

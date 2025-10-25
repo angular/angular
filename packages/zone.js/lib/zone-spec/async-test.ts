@@ -8,8 +8,7 @@
 
 import {__symbol__, ZoneType} from '../zone-impl';
 
-const __global: any =
-  (typeof window !== 'undefined' && window) || (typeof self !== 'undefined' && self) || global;
+const __global: any = globalThis;
 class AsyncTestZoneSpec implements ZoneSpec {
   // Needs to be a getter and not a plain property in order run this just-in-time. Otherwise
   // `__symbol__` would be evaluated during top-level execution prior to the Zone prefix being

@@ -14,6 +14,7 @@ import {
   forwardRef,
   Input,
   OnDestroy,
+  provideZoneChangeDetection,
   Type,
   ViewChild,
 } from '@angular/core';
@@ -30,6 +31,7 @@ import {
   COMPOSITION_BUFFER_MODE,
   ControlValueAccessor,
   FormArray,
+  FormArrayDirective,
   FormBuilder,
   FormControl,
   FormControlDirective,
@@ -142,6 +144,7 @@ describe('reactive forms integration tests', () => {
     TestBed.configureTestingModule({
       declarations: [component, ...directives],
       imports: [FormsModule, ReactiveFormsModule],
+      providers: [provideZoneChangeDetection()],
     });
     return TestBed.createComponent(component);
   }
@@ -1492,6 +1495,132 @@ describe('reactive forms integration tests', () => {
       expect(events.length).toBe(1);
       expect(events[0]).toBeInstanceOf(FormSubmittedEvent);
       expect(events[0].source).toBe(form);
+    });
+
+    it('formArray should emit an event when resetting a form', () => {
+      @Component({
+        selector: 'form-array-comp',
+        template: `
+          <form #formElement [formArray]="form" (ngSubmit)="event=$event">
+            @for(_ of controls; track $index) {
+              <input type="text" [formControlName]="$index">
+            }
+          </form>`,
+        standalone: false,
+      })
+      class FormArrayComp {
+        controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        form = new FormArray(this.controls);
+        event!: Event;
+
+        @ViewChild('formElement') formElement!: ElementRef<HTMLFormElement>;
+      }
+
+      const fixture = initTest(FormArrayComp);
+      fixture.detectChanges();
+
+      const formArrayDir = fixture.debugElement.children[0].injector.get(FormArrayDirective);
+
+      const events: ControlEvent[] = [];
+      fixture.componentInstance.form.events.subscribe((event) => events.push(event));
+      formArrayDir.resetForm();
+
+      expect(events.length).toBe(4);
+      expect(events[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(events[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(events[2]).toBeInstanceOf(StatusChangeEvent);
+
+      // The event that matters
+      expect(events[3]).toBeInstanceOf(FormResetEvent);
+      expect(events[3].source).toBe(fixture.componentInstance.form);
+    });
+
+    it('formControl should emit an event when resetting it', () => {
+      const fc = new FormControl<string | null>('foo', Validators.required);
+      const fcEvents: ControlEvent[] = [];
+      fc.events.subscribe((event) => fcEvents.push(event));
+      expect(fcEvents.length).toBe(0);
+
+      fc.reset('bar');
+      expect(fcEvents.length).toBe(3);
+      expect(fcEvents[0]).toBeInstanceOf(ValueChangeEvent);
+      expect(fcEvents[1]).toBeInstanceOf(StatusChangeEvent);
+      expect(fcEvents[2]).toBeInstanceOf(FormResetEvent);
+      expect(fcEvents[2].source).toBe(fc);
+    });
+
+    it('formControl should not emit an event when resetting it with emit:false', () => {
+      const fc = new FormControl<string | null>('foo', Validators.required);
+      const fcEvents: ControlEvent[] = [];
+      fc.events.subscribe((event) => fcEvents.push(event));
+      expect(fcEvents.length).toBe(0);
+
+      fc.reset('bar', {emitEvent: false});
+      expect(fcEvents.length).toBe(0);
+    });
+
+    it('formGroup should emit a reset event when resetting it', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fgEvents: ControlEvent[] = [];
+      fg.events.subscribe((event) => fgEvents.push(event));
+      expect(fgEvents.length).toBe(0);
+
+      fg.reset({fc1: 'newFoo', fc2: 'newBar'});
+      expect(fgEvents.length).toBe(4);
+      expect(fgEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(fgEvents[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(fgEvents[2]).toBeInstanceOf(StatusChangeEvent);
+      expect(fgEvents[3]).toBeInstanceOf(FormResetEvent);
+      expect(fgEvents[3].source).toBe(fg);
+    });
+
+    it('formGroup should not emit a reset event when resetting it with emit:false', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fg = new FormGroup({fc1, fc2});
+
+      const fgEvents: ControlEvent[] = [];
+      fg.events.subscribe((event) => fgEvents.push(event));
+      expect(fgEvents.length).toBe(0);
+
+      fg.reset({fc1: 'newFoo', fc2: 'newBar'}, {emitEvent: false});
+      expect(fgEvents.length).toBe(1);
+      expect(fgEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+    });
+
+    it('formArray should emit a reset event when resetting it', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fa = new FormArray([fc1, fc2]);
+
+      const faEvents: ControlEvent[] = [];
+      fa.events.subscribe((event) => faEvents.push(event));
+      expect(faEvents.length).toBe(0);
+
+      fa.reset(['newFoo', 'newBar']);
+      expect(faEvents.length).toBe(4);
+      expect(faEvents[0]).toBeInstanceOf(TouchedChangeEvent);
+      expect(faEvents[1]).toBeInstanceOf(ValueChangeEvent);
+      expect(faEvents[2]).toBeInstanceOf(StatusChangeEvent);
+      expect(faEvents[3]).toBeInstanceOf(FormResetEvent);
+      expect(faEvents[3].source).toBe(fa);
+    });
+
+    it('formArray should not emit a reset event when resetting it with emit:false', () => {
+      const fc1 = new FormControl<string | null>('foo', Validators.required);
+      const fc2 = new FormControl<string | null>('bar', Validators.required);
+      const fa = new FormArray([fc1, fc2]);
+
+      const faEvents: ControlEvent[] = [];
+      fa.events.subscribe((event) => faEvents.push(event));
+      expect(faEvents.length).toBe(0);
+
+      fa.reset(['newFoo', 'newBar'], {emitEvent: false});
+      expect(faEvents.length).toBe(1);
+      expect(faEvents[0]).toBeInstanceOf(TouchedChangeEvent);
     });
   });
 
@@ -3994,7 +4123,11 @@ describe('reactive forms integration tests', () => {
 
       const fixture = initTest(FormGroupComp);
       expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
-        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+        if (
+          !e.message.includes(
+            `formControlName must be used with a parent formGroup or formArray directive`,
+          )
+        ) {
           return false;
         }
 
@@ -4017,7 +4150,11 @@ describe('reactive forms integration tests', () => {
 
       const fixture = initTest(FormGroupComp);
       expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
-        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+        if (
+          !e.message.includes(
+            `formControlName must be used with a parent formGroup or formArray directive`,
+          )
+        ) {
           return false;
         }
 
@@ -4040,7 +4177,11 @@ describe('reactive forms integration tests', () => {
 
       const fixture = initTest(FormGroupComp);
       expect(() => fixture.detectChanges()).toThrowMatching((e: Error) => {
-        if (!e.message.includes(`formControlName must be used with a parent formGroup directive`)) {
+        if (
+          !e.message.includes(
+            `formControlName must be used with a parent formGroup or formArray directive`,
+          )
+        ) {
           return false;
         }
 
@@ -4065,7 +4206,7 @@ describe('reactive forms integration tests', () => {
       const fixture = initTest(FormGroupComp);
 
       expect(() => fixture.detectChanges()).toThrowError(
-        new RegExp(`formControlName must be used with a parent formGroup directive.`),
+        new RegExp(`formControlName must be used with a parent formGroup or formArray directive.`),
       );
     });
 
@@ -5894,6 +6035,134 @@ describe('reactive forms integration tests', () => {
       expect(() => {
         fixture.destroy();
       }).not.toThrow();
+    });
+
+    describe('formArray support', () => {
+      @Component({
+        selector: 'form-array-comp',
+        template: `
+          <form #formElement [formArray]="form" (ngSubmit)="event=$event">
+            @for(_ of controls; track $index) {
+              <input type="text" [formControlName]="$index">
+            }
+          </form>`,
+        standalone: false,
+      })
+      class FormArrayComp {
+        controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        form = new FormArray(this.controls);
+        event!: Event;
+
+        @ViewChild('formElement') formElement!: ElementRef<HTMLFormElement>;
+      }
+
+      it('basic functionality ', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+        const controls = fixture.componentInstance.controls;
+
+        // model -> view
+        const inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs[1].nativeElement.value).toBe('cat');
+
+        inputs[1].nativeElement.value = 'updated value';
+        dispatchEvent(inputs[1].nativeElement, 'input');
+
+        // view -> model
+        expect(controls[1].value).toEqual('updated value');
+      });
+
+      it('should add novalidate by default to form', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.css('form'));
+        expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
+      });
+
+      it('should mark formArray as submitted on submit event', () => {
+        const fixture = initTest(FormArrayComp);
+        const controls = [new FormControl('fish'), new FormControl('cat'), new FormControl('dog')];
+        fixture.detectChanges();
+
+        const formGroupDir = fixture.debugElement.children[0].injector.get(FormArrayDirective);
+        expect(formGroupDir.submitted).toBe(false);
+
+        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        dispatchEvent(formEl, 'submit');
+
+        fixture.detectChanges();
+        expect(formGroupDir.submitted).toEqual(true);
+      });
+
+      it('should reset properly', () => {
+        const fixture = initTest(FormArrayComp);
+        fixture.detectChanges();
+
+        const control = fixture.componentInstance.controls[0];
+        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+        input.value = 'aa';
+        dispatchEvent(input, 'input');
+        fixture.detectChanges();
+
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
+        expect(control.dirty).withContext('Expected control to be dirty on blur.').toBe(true);
+
+        control.reset();
+
+        dispatchEvent(input, 'blur');
+        fixture.detectChanges();
+
+        expect(input.value).withContext('Expected view value to reset').toEqual('');
+        expect(control.value).withContext('Expected pending value to reset.').toBe(null);
+        expect(control.dirty).withContext('Expected pending dirty value to reset.').toBe(false);
+      });
+
+      it('should support add/removing controls', () => {
+        const fixture = initTest(FormArrayComp);
+        const controls = fixture.componentInstance.controls;
+        fixture.detectChanges();
+
+        let inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(3);
+
+        controls.push(new FormControl('pineapple'));
+        fixture.detectChanges();
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(4);
+
+        controls.pop();
+        controls.pop();
+        fixture.detectChanges();
+        inputs = fixture.debugElement.queryAll(By.css('input'));
+        expect(inputs.length).toBe(2);
+      });
+
+      it('should support formArrayName', () => {
+        @Component({
+          template: `
+            <form [formArray]="form">
+              <form formArrayName="1">
+                <input type="text" formControlName="animal" />
+              </form>
+            </form>
+          `,
+          standalone: false,
+        })
+        class FormWithFormArrayName {
+          public form = new FormArray([
+            new FormGroup({animal: new FormControl('')}),
+            new FormGroup({animal: new FormControl('Cat')}),
+          ]);
+        }
+
+        const fixture = initTest(FormWithFormArrayName);
+        fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('input'));
+        expect(input.nativeElement.value).toEqual('Cat');
+      });
     });
   });
 });

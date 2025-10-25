@@ -15,15 +15,11 @@ import {FakeWebContainer, FakeWebContainerProcess, TutorialType} from '@angular/
 import {AlertManager} from './alert-manager.service';
 import {EmbeddedTutorialManager} from './embedded-tutorial-manager.service';
 import {LoadingStep} from './enums/loading-steps';
-import {
-  DEV_SERVER_READY_MSG,
-  NodeRuntimeSandbox,
-  OUT_OF_MEMORY_MSG,
-  PACKAGE_MANAGER,
-} from './node-runtime-sandbox.service';
+import {NodeRuntimeSandbox, PACKAGE_MANAGER} from './node-runtime-sandbox.service';
 import {NodeRuntimeState} from './node-runtime-state.service';
 import {TerminalHandler} from './terminal/terminal-handler.service';
 import {TypingsLoader} from './typings-loader.service';
+import {DEV_SERVER_READY_MSG, OUT_OF_MEMORY_MSG} from './node-runtime-errors';
 
 describe('NodeRuntimeSandbox', () => {
   let testBed: TestBed;

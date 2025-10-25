@@ -804,7 +804,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         trigger.sourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_MISSING_PLACEHOLDER),
-        'Trigger with no parameters can only be placed on an @defer that has a @placeholder block',
+        'Trigger with no target can only be placed on an @defer that has a @placeholder block',
       ),
     );
   }
@@ -823,7 +823,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         trigger.sourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
-        'Trigger with no parameters can only be placed on an @defer that has a ' +
+        'Trigger with no target can only be placed on an @defer that has a ' +
           '@placeholder block with exactly one root element node',
       ),
     );

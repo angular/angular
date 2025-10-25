@@ -1,6 +1,6 @@
 # RxJS interop with Angular signals
 
-The `@angular/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
+The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJS and Angular signals.
 
 ## Create a signal from an RxJs Observable with `toSignal`
 
@@ -54,6 +54,31 @@ When `requiredSync` is `true`, `toSignal` enforces that the Observable emits syn
 By default, `toSignal` automatically unsubscribes from the Observable when the component or service that creates it is destroyed.
 
 To override this behavior, you can pass the `manualCleanup` option. You can use this setting for Observables that complete themselves naturally.
+
+#### Custom equality comparison
+
+Some observables may emit values that are **equals** even though they differ by reference or minor detail. The `equal` option lets you define a **custom equal function** to determine when two consecutive values should be considered the same.
+
+When two emitted values are considered equal, the resulting signal **does not update**. This prevents redundant computations, DOM updates, or effects from re-running unnecessarily.
+
+```ts
+import { Component } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval, map } from 'rxjs';
+
+@Component(/* ... */)
+export class EqualExample {
+  temperature$ = interval(1000).pipe(
+    map(() => ({ temperature: Math.floor(Math.random() * 3) + 20 }) ) // 20, 21, or 22 randomly
+  );
+
+  // Only update if the temperature changes
+  temperature = toSignal(this.temperature$, {
+    initialValue: { temperature : 20  },
+    equal: (prev, curr) => prev.temperature === curr.temperature
+  });
+}
+```
 
 ### Error and Completion
 
@@ -121,11 +146,11 @@ export class UserProfile {
   protected userId = input<string>();
 
   private userResource = rxResource({
-    params: () => this.userId(),
+    params: () => ({ userId: this.userId() }),
 
     // The `stream` property expects a factory function that returns
     // a data stream as an RxJS Observable.
-    stream: ({userId}) => this.userData.load(userId),
+    stream: ({params}) => this.userData.load(params.userId),
   });
 }
 ```

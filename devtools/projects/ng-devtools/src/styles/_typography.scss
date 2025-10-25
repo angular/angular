@@ -64,3 +64,11 @@ $font-size: 0.75rem; // 12px
   line-height: 1.125rem; // 18px
   letter-spacing: normal;
 }
+
+%caption-text {
+  font-family: $font-family;
+  font-size: 0.625rem; // 10px
+  font-weight: 400;
+  line-height: 0.875rem;
+  letter-spacing: normal;
+}

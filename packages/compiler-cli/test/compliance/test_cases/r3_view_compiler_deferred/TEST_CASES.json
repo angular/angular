@@ -309,6 +309,71 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "Defer alias re-export/import",
+      "inputFiles": [
+        "deferred_import_alias.ts",
+        "deferred_import_alias_index.ts",
+        "counter.component.ts"
+      ],
+      "compilationModeFilter": ["declaration-only emit"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_import_alias.js",
+              "generated": "deferred_import_alias_generated.js"
+            }
+          ],
+          "failureMessage": "Defer block output with import alias does not match deferred_import_alias.js (possible alias resolution regression)"
+        }
+      ]
+    },
+    {
+      "description": "should generate a defer block with a `on viewport` trigger that has options",
+      "inputFiles": ["deferred_on_viewport_with_options.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_on_viewport_with_options_template.js",
+              "generated": "deferred_on_viewport_with_options.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a defer block with a `prefetch on viewport` trigger that has options",
+      "inputFiles": ["deferred_prefetch_on_viewport_with_options.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_prefetch_on_viewport_with_options_template.js",
+              "generated": "deferred_prefetch_on_viewport_with_options.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
+    },
+    {
+      "description": "should generate a defer block with a `hydrate on viewport` trigger that has options",
+      "inputFiles": ["deferred_hydrate_on_viewport_with_options.ts"],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "deferred_hydrate_on_viewport_with_options_template.js",
+              "generated": "deferred_hydrate_on_viewport_with_options.js"
+            }
+          ],
+          "failureMessage": "Incorrect template"
+        }
+      ]
     }
   ]
 }

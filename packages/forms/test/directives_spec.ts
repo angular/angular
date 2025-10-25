@@ -706,7 +706,7 @@ describe('Form Directives', () => {
       tick();
       expect(ngModel.control.disabled).toEqual(false);
 
-      ngModel.ngOnChanges({isDisabled: new SimpleChange('', false, false)});
+      ngModel.ngOnChanges({isDisabled: new SimpleChange('' as any, false, false)});
       tick();
       expect(ngModel.control.disabled).toEqual(false);
 
@@ -714,7 +714,7 @@ describe('Form Directives', () => {
       tick();
       expect(ngModel.control.disabled).toEqual(false);
 
-      ngModel.ngOnChanges({isDisabled: new SimpleChange('', 0, false)});
+      ngModel.ngOnChanges({isDisabled: new SimpleChange('' as any, 0, false)});
       tick();
       expect(ngModel.control.disabled).toEqual(false);
 

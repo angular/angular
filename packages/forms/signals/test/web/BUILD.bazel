@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "ng_project", "zoneless_web_test_suite")
+
+ng_project(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        "//:node_modules/zod",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/forms",
+        "//packages/forms/signals",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+    ],
+)
+
+zoneless_web_test_suite(
+    name = "test",
+    deps = [
+        ":test_lib",
+    ],
+)

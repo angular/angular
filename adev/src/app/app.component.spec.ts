@@ -9,7 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {provideRouter, withComponentInputBinding} from '@angular/router';
-import {routes} from './routes';
+import {routes} from './routing/routes';
 import {Search, WINDOW} from '@angular/docs';
 import {provideHttpClient} from '@angular/common/http';
 import {provideHttpClientTesting} from '@angular/common/http/testing';

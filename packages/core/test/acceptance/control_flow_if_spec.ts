@@ -16,6 +16,7 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewContainerRef,
 } from '../../src/core';
@@ -30,6 +31,11 @@ class MultiplyPipe implements PipeTransform {
 }
 
 describe('control flow - if', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('should add and remove views based on conditions change', () => {
     @Component({template: '@if (show) {Something} @else {Nothing}'})
     class TestComponent {
@@ -294,14 +300,13 @@ describe('control flow - if', () => {
 
   it('should support a condition with the a binary expression with the in keyword', () => {
     @Component({
-      standalone: true,
       template: `
-          @if (key in {foo: 'bar'}) {
-            has {{key}}
-          } @else {
-            no {{key}}
-          }
-        `,
+        @if (key in {foo: 'bar'}) {
+          has {{key}}
+        } @else {
+          no {{key}}
+        }
+      `,
     })
     class TestComponent {
       key: string | number = 'foo';

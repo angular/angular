@@ -5,13 +5,9 @@
     }
 
     @if (view() === CodeExampleViewMode.MULTI_FILE) {
-      <mat-tab-group
-        #codeTabs
-        animationDuration="0ms"
-        mat-stretch-tabs="false"
-      >
+      <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
         @for (tab of tabs(); track tab) {
-          <mat-tab [label]="tab.name"></mat-tab>
+          <mat-tab [label]="tab.name" />
         }
       </mat-tab-group>
     }
@@ -19,9 +15,23 @@
     <div class="docs-example-viewer-icons">
       <button
         type="button"
+        role="switch"
+        class="docs-example-code-toggle"
+        [attr.aria-checked]="showCode()"
+        [attr.aria-label]="showCode() ? 'Hide code' : 'Show code'"
+        (click)="showCode.set(!showCode())"
+        [matTooltip]="showCode() ? 'Hide code' : 'Show code'"
+        matTooltipPosition="above"
+      >
+        <docs-icon>{{showCode() ? 'code_off' : 'code'}}</docs-icon>
+      </button>
+      <button
+        type="button"
         class="docs-example-copy-link"
         [attr.aria-label]="'Copy link to ' + exampleMetadata()?.title + ' example to the clipboard'"
         (click)="copyLink()"
+        matTooltip="Copy link to example"
+        matTooltipPosition="above"
       >
         <i aria-hidden="true">
           <svg
@@ -45,8 +55,9 @@
         <button
           type="button"
           (click)="toggleExampleVisibility()"
-          [attr.title]="(expanded() ? 'Collapse' : 'Expand') + ' example'"
           [attr.aria-label]="(expanded() ? 'Collapse' : 'Expand') + ' code example'"
+          matTooltip="{{ expanded() ? 'Collapse' : 'Expand' }} example"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             @if (!expanded()) {
@@ -81,14 +92,18 @@
     </div>
   </header>
 
-  <div
-    class="docs-example-viewer-code-wrapper"
-    [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
-    [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
-  >
-    <button docs-copy-source-code></button>
-    <docs-viewer [docContent]="snippetCode()?.content" />
-  </div>
+  @if (showCode()) {
+    <div
+      class="docs-example-viewer-code-wrapper"
+      [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
+      [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
+    >
+      <button docs-copy-source-code></button>
+      @if (snippetCode()?.sanitizedContent; as content) {
+        <div [innerHTML]="content"></div>
+      }
+    </div>
+  }
 
   @if (exampleComponent) {
     <div class="docs-example-viewer-preview">
@@ -102,9 +117,10 @@
         <a
           [href]="githubUrl()"
           target="_blank"
-          title="Open example on GitHub"
           class="docs-example-github-link"
           aria-label="Open example on GitHub"
+          matTooltip="Open example on GitHub"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg
@@ -130,8 +146,9 @@
           [href]="stackblitzUrl()"
           target="_blank"
           class="docs-example-stackblitz-link"
-          title="Edit this example in StackBlitz"
-          aria-label="Edit this example in StackBlitz"
+          aria-label="Edit example in StackBlitz"
+          matTooltip="Edit example in StackBlitz"
+          matTooltipPosition="above"
         >
           <i aria-hidden="true">
             <svg

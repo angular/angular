@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {registerLocaleData} from '@angular/common';
+import {registerLocaleData, CurrencyPipe} from '@angular/common';
 import {Component} from '@angular/core';
 // we need to import data for the french locale
 import localeFr from './locale-fr';
@@ -17,6 +17,7 @@ registerLocaleData(localeFr);
 // #docregion CurrencyPipe
 @Component({
   selector: 'currency-pipe',
+  imports: [CurrencyPipe],
   template: `<div>
     <!--output '$0.26'-->
     <p>A: {{ a | currency }}</p>
@@ -39,7 +40,6 @@ registerLocaleData(localeFr);
     <!--output 'CLP1' because CLP has no cents-->
     <p>B: {{ b | currency: 'CLP' }}</p>
   </div>`,
-  standalone: false,
 })
 export class CurrencyPipeComponent {
   a: number = 0.259;

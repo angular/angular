@@ -144,7 +144,8 @@ export type HttpEvent<T> =
   | HttpSentEvent
   | HttpHeaderResponse
   | HttpResponse<T>
-  | HttpProgressEvent
+  | HttpDownloadProgressEvent
+  | HttpUploadProgressEvent
   | HttpUserEvent<T>;
 
 /**
@@ -167,6 +168,8 @@ export abstract class HttpResponseBase {
    * Textual description of response status code, defaults to OK.
    *
    * Do not depend on this.
+   *
+   * @deprecated With HTTP/2 and later versions, this will incorrectly remain set to 'OK' even when the status code of a response is not 200.
    */
   readonly statusText: string;
 
@@ -193,6 +196,21 @@ export abstract class HttpResponseBase {
   readonly redirected?: boolean;
 
   /**
+   * Indicates the type of the HTTP response, based on how the request was made and how the browser handles the response.
+   *
+   * This corresponds to the `type` property of the Fetch API's `Response` object, which can indicate values such as:
+   * - `'basic'`: A same-origin response, allowing full access to the body and headers.
+   * - `'cors'`: A cross-origin response with CORS enabled, exposing only safe response headers.
+   * - `'opaque'`: A cross-origin response made with `no-cors`, where the response body and headers are inaccessible.
+   * - `'opaqueredirect'`: A response resulting from a redirect followed in `no-cors` mode.
+   * - `'error'`: A response representing a network error or similar failure.
+   *
+   * This property is only available when using the Fetch-based backend (via `withFetch()`).
+   * When using Angular's (XHR) backend, this value will be `undefined`.
+   */
+  readonly responseType?: ResponseType;
+
+  /**
    * Super-constructor for all responses.
    *
    * The single parameter accepted is an initialization hash. Any properties
@@ -205,6 +223,7 @@ export abstract class HttpResponseBase {
       statusText?: string;
       url?: string;
       redirected?: boolean;
+      responseType?: ResponseType;
     },
     defaultStatus: number = 200,
     defaultStatusText: string = 'OK',
@@ -216,7 +235,7 @@ export abstract class HttpResponseBase {
     this.statusText = init.statusText || defaultStatusText;
     this.url = init.url || null;
     this.redirected = init.redirected;
-
+    this.responseType = init.responseType;
     // Cache the ok value to avoid defining a getter.
     this.ok = this.status >= 200 && this.status < 300;
   }
@@ -297,6 +316,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       statusText?: string;
       url?: string;
       redirected?: boolean;
+      responseType?: ResponseType;
     } = {},
   ) {
     super(init);
@@ -312,6 +332,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     statusText?: string;
     url?: string;
     redirected?: boolean;
+    responseType?: ResponseType;
   }): HttpResponse<T>;
   clone<V>(update: {
     body?: V | null;
@@ -320,6 +341,7 @@ export class HttpResponse<T> extends HttpResponseBase {
     statusText?: string;
     url?: string;
     redirected?: boolean;
+    responseType?: ResponseType;
   }): HttpResponse<V>;
   clone(
     update: {
@@ -329,6 +351,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       statusText?: string;
       url?: string;
       redirected?: boolean;
+      responseType?: ResponseType;
     } = {},
   ): HttpResponse<any> {
     return new HttpResponse<any>({
@@ -338,6 +361,7 @@ export class HttpResponse<T> extends HttpResponseBase {
       statusText: update.statusText || this.statusText,
       url: update.url || this.url || undefined,
       redirected: update.redirected ?? this.redirected,
+      responseType: update.responseType ?? this.responseType,
     });
   }
 }
@@ -372,6 +396,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     statusText?: string;
     url?: string;
     redirected?: boolean;
+    responseType?: ResponseType;
   }) {
     // Initialize with a default status of 0 / Unknown Error.
     super(init, 0, 'Unknown Error');
@@ -382,6 +407,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     if (this.status >= 200 && this.status < 300) {
       this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
     } else {
+      // TODO: Cleanup G3 to update the tests that rely on having the status text in the Error message.
       this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${
         init.statusText
       }`;

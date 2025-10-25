@@ -13,14 +13,13 @@ import {
   ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID,
 } from '@angular/common';
 import {
-  ApplicationConfig as ApplicationConfigFromCore,
+  ApplicationConfig,
   ApplicationModule,
   ApplicationRef,
   createPlatformFactory,
   ErrorHandler,
   InjectionToken,
   NgModule,
-  NgZone,
   PLATFORM_ID,
   PLATFORM_INITIALIZER,
   platformCore,
@@ -29,7 +28,6 @@ import {
   RendererFactory2,
   StaticProvider,
   Testability,
-  TestabilityRegistry,
   Type,
   ɵINJECTOR_SCOPE as INJECTOR_SCOPE,
   ɵinternalCreateApplication as internalCreateApplication,
@@ -52,16 +50,17 @@ import {SharedStylesHost} from './dom/shared_styles_host';
 import {RuntimeErrorCode} from './errors';
 
 /**
- * Set of config options available during the application bootstrap operation.
+ * A context object that can be passed to `bootstrapApplication` to provide a pre-existing platform
+ * injector.
  *
  * @publicApi
- *
- * @deprecated
- * `ApplicationConfig` has moved, please import `ApplicationConfig` from `@angular/core` instead.
  */
-// The below is a workaround to add a deprecated message.
-type ApplicationConfig = ApplicationConfigFromCore;
-export {ApplicationConfig};
+export interface BootstrapContext {
+  /**
+   * A reference to a platform.
+   */
+  platformRef: PlatformRef;
+}
 
 /**
  * Bootstraps an instance of an Angular application and renders a standalone component as the
@@ -118,6 +117,9 @@ export {ApplicationConfig};
  * @param rootComponent A reference to a standalone component that should be rendered.
  * @param options Extra configuration for the bootstrap operation, see `ApplicationConfig` for
  *     additional info.
+ * @param context Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
@@ -125,8 +127,13 @@ export {ApplicationConfig};
 export function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
+  context?: BootstrapContext,
 ): Promise<ApplicationRef> {
-  const config = {rootComponent, ...createProvidersConfig(options)};
+  const config = {
+    rootComponent,
+    platformRef: context?.platformRef,
+    ...createProvidersConfig(options),
+  };
 
   // Attempt to resolve component resources before bootstrapping in JIT mode,
   // however don't interrupt the bootstrapping process.
@@ -154,7 +161,7 @@ export function bootstrapApplication(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig) {
+export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
   return internalCreateApplication(createProvidersConfig(options));
 }
 
@@ -230,12 +237,10 @@ const TESTABILITY_PROVIDERS = [
   {
     provide: TESTABILITY,
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
   {
     provide: Testability, // Also provide as `Testability` for backwards-compatibility.
     useClass: Testability,
-    deps: [NgZone, TestabilityRegistry, TESTABILITY_GETTER],
   },
 ];
 
@@ -246,9 +251,8 @@ const BROWSER_MODULE_PROVIDERS: Provider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: DomEventsPlugin,
     multi: true,
-    deps: [DOCUMENT],
   },
-  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [DOCUMENT]},
+  {provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true},
   DomRendererFactory2,
   SharedStylesHost,
   EventManager,

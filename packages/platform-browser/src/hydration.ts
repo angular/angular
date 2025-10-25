@@ -65,6 +65,8 @@ function hydrationFeature<FeatureKind extends HydrationFeatureKind>(
  * Disables HTTP transfer cache. Effectively causes HTTP requests to be performed twice: once on the
  * server and other one on the browser.
  *
+ * @see [Disabling Caching](guide/ssr#disabling-caching)
+ *
  * @publicApi
  */
 export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind.NoHttpTransferCache> {
@@ -78,6 +80,8 @@ export function withNoHttpTransferCache(): HydrationFeature<HydrationFeatureKind
  * such as which headers should be included (no headers are included by default),
  * whether POST requests should be cached or a callback function to determine if a
  * particular request should be cached.
+ *
+ * @see [Configuring HTTP transfer cache options](guide/ssr#caching-data-when-using-httpclient)
  *
  * @publicApi
  */
@@ -138,36 +142,6 @@ export function withEventReplay(): HydrationFeature<HydrationFeatureKind.EventRe
  */
 export function withIncrementalHydration(): HydrationFeature<HydrationFeatureKind.IncrementalHydration> {
   return hydrationFeature(HydrationFeatureKind.IncrementalHydration, ɵwithIncrementalHydration());
-}
-
-/**
- * Returns an `ENVIRONMENT_INITIALIZER` token setup with a function
- * that verifies whether compatible ZoneJS was used in an application
- * and logs a warning in a console if it's not the case.
- */
-function provideZoneJsCompatibilityDetector(): Provider[] {
-  return [
-    {
-      provide: ENVIRONMENT_INITIALIZER,
-      useValue: () => {
-        const ngZone = inject(NgZone);
-        const isZoneless = inject(ZONELESS_ENABLED);
-        // Checking `ngZone instanceof NgZone` would be insufficient here,
-        // because custom implementations might use NgZone as a base class.
-        if (!isZoneless && ngZone.constructor !== NgZone) {
-          const console = inject(Console);
-          const message = formatRuntimeError(
-            RuntimeErrorCode.UNSUPPORTED_ZONEJS_INSTANCE,
-            'Angular detected that hydration was enabled for an application ' +
-              'that uses a custom or a noop Zone.js implementation. ' +
-              'This is not yet a fully supported configuration.',
-          );
-          console.warn(message);
-        }
-      },
-      multi: true,
-    },
-  ];
 }
 
 /**
@@ -279,7 +253,6 @@ export function provideClientHydration(
   }
 
   return makeEnvironmentProviders([
-    typeof ngDevMode !== 'undefined' && ngDevMode ? provideZoneJsCompatibilityDetector() : [],
     typeof ngDevMode !== 'undefined' && ngDevMode
       ? provideEnabledBlockingInitialNavigationDetector()
       : [],

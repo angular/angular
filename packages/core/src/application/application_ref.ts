@@ -32,7 +32,7 @@ import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {ViewRef} from '../linker/view_ref';
-import {PendingTasksInternal} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
 import {RendererFactory2} from '../render/api';
 import {AfterRenderManager} from '../render3/after_render/manager';
 import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
@@ -89,19 +89,6 @@ export function publishSignalConfiguration(): void {
 
 export function isBoundToModule<C>(cf: ComponentFactory<C>): boolean {
   return (cf as R3ComponentFactory<C>).isBoundToModule;
-}
-
-/**
- * A token for third-party components that can register themselves with NgProbe.
- *
- * @deprecated
- * @publicApi
- */
-export class NgProbeToken {
-  constructor(
-    public name: string,
-    public token: any,
-  ) {}
 }
 
 /**
@@ -167,25 +154,6 @@ export interface BootstrapOptions {
    * @deprecated BootstrapOptions is deprecated. Use `provideZoneChangeDetection` instead to configure coalescing.
    */
   ngZoneRunCoalescing?: boolean;
-
-  /**
-   * When false, change detection is scheduled when Angular receives
-   * a clear indication that templates need to be refreshed. This includes:
-   *
-   * - calling `ChangeDetectorRef.markForCheck`
-   * - calling `ComponentRef.setInput`
-   * - updating a signal that is read in a template
-   * - attaching a view that is marked dirty
-   * - removing a view
-   * - registering a render hook (templates are only refreshed if render hooks do one of the above)
-   *
-   * @deprecated This option was introduced out of caution as a way for developers to opt out of the
-   *    new behavior in v18 which schedule change detection for the above events when they occur
-   *    outside the Zone. After monitoring the results post-release, we have determined that this
-   *    feature is working as desired and do not believe it should ever be disabled by setting
-   *    this option to `true`.
-   */
-  ignoreChangesOutsideZone?: boolean;
 }
 
 /** Maximum number of times ApplicationRef will refresh all attached views in a single tick. */

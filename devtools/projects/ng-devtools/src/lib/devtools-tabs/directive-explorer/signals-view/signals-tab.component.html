@@ -2,12 +2,13 @@
 
 @let node = selectedNode();
 @let dataSource = this.dataSource();
-@if (node && dataSource) {
+@if (node && dataSource && detailsVisible()) {
   <ng-signals-details
     [node]="node"
     [dataSource]="dataSource"
     [treeControl]="treeControl()"
     (gotoSource)="gotoSource($event)"
+    (close)="detailsVisible.set(false)"
   />
 }
 

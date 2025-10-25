@@ -21,6 +21,7 @@ import {
   SimpleChanges,
   createComponent,
   inject,
+  provideZoneChangeDetection,
 } from '@angular/core';
 
 import {TestBed} from '@angular/core/testing';
@@ -39,7 +40,7 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injector: Injector;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
     injector = TestBed.inject(Injector);
     const strategyFactory = new ComponentNgElementStrategyFactory(TestComponent, injector);
     strategy = strategyFactory.create(injector);
@@ -217,7 +218,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
 
     it('should detect changes even when updated during CD', async () => {
       @Component({
-        standalone: true,
         template: ``,
       })
       class DriverCmp {
@@ -360,7 +360,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
 });
 
 @Directive({
-  standalone: true,
   selector: '[cdTracker]',
 })
 export class CdTrackerDir {
@@ -373,7 +372,6 @@ export class CdTrackerDir {
 
 @Component({
   selector: 'fake-component',
-  standalone: true,
   imports: [CdTrackerDir],
   template: `
     <ng-container cdTracker></ng-container>

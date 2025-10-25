@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs';
 import {PROVIDED_NG_ZONE} from '../change_detection/scheduling/ng_zone_scheduling';
 import {R3Injector} from '../di/r3_injector';
 import {INTERNAL_APPLICATION_ERROR_HANDLER} from '../error_handler';
-import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {DEFAULT_LOCALE_ID} from '../i18n/localization';
 import {LOCALE_ID} from '../i18n/tokens';
 import {ImagePerformanceWarning} from '../image_performance_warning';
@@ -26,7 +26,10 @@ import {InjectionToken, Injector} from '../di';
 import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
-import {PendingTasksInternal} from '../pending_tasks';
+import {PendingTasksInternal} from '../pending_tasks_internal';
+
+const REQUIRE_ONE_CD_PROVIDER_CREATE_APPLICATION = false;
+const REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE = false;
 
 /**
  * InjectionToken to control root component bootstrap behavior.
@@ -49,7 +52,7 @@ import {PendingTasksInternal} from '../pending_tasks';
  * from component rendering.
  */
 export const ENABLE_ROOT_COMPONENT_BOOTSTRAP = new InjectionToken<boolean>(
-  ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'ENABLE_ROOT_COMPONENT_BOOTSTRAP' : '',
 );
 
 export interface BootstrapConfig {
@@ -94,11 +97,25 @@ export function bootstrap<M>(
     const exceptionHandler = envInjector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
       if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
-        throw new RuntimeError(
-          RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
-          'Invalid change detection configuration: ' +
-            'provideZoneChangeDetection and provideZonelessChangeDetection cannot be used together.',
+        console.warn(
+          formatRuntimeError(
+            RuntimeErrorCode.PROVIDED_BOTH_ZONE_AND_ZONELESS,
+            'Both provideZoneChangeDetection and provideZonelessChangeDetection are provided. ' +
+              'This is likely a mistake. Update the application providers to use only one of the two.',
+          ),
         );
+      }
+      if (!envInjector.get(PROVIDED_ZONELESS) && !envInjector.get(PROVIDED_NG_ZONE)) {
+        if (
+          (REQUIRE_ONE_CD_PROVIDER_CREATE_APPLICATION && isApplicationBootstrapConfig(config)) ||
+          (REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE && !isApplicationBootstrapConfig(config))
+        ) {
+          throw new Error(
+            'Missing change detection configuration: ' +
+              'please add either `provideZoneChangeDetection()` or `provideZonelessChangeDetection()` ' +
+              "to the list of root providers in your application's bootstrap code.",
+          );
+        }
       }
     }
 
@@ -144,11 +161,11 @@ export function bootstrap<M>(
           const localeId = envInjector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
           setLocaleId(localeId || DEFAULT_LOCALE_ID);
 
-          const enableRootComponentBoostrap = envInjector.get(
+          const enableRootComponentbootstrap = envInjector.get(
             ENABLE_ROOT_COMPONENT_BOOTSTRAP,
             true,
           );
-          if (!enableRootComponentBoostrap) {
+          if (!enableRootComponentbootstrap) {
             if (isApplicationBootstrapConfig(config)) {
               return envInjector.get(ApplicationRef);
             }
@@ -179,8 +196,8 @@ export function bootstrap<M>(
 }
 
 /**
- * Having a separate symbol for the module boostrap implementation allows us to
- * tree shake the module based boostrap implementation in standalone apps.
+ * Having a separate symbol for the module bootstrap implementation allows us to
+ * tree shake the module based bootstrap implementation in standalone apps.
  */
 let moduleBootstrapImpl: undefined | typeof _moduleDoBootstrap;
 

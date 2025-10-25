@@ -163,21 +163,31 @@ export function listenToDomEvent(
     stashEventListenerImpl(lView, target, eventName, wrappedListener);
 
     const cleanupFn = renderer.listen(target as RElement, eventName, wrappedListener);
-    const idxOrTargetGetter = eventTargetResolver
-      ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
-      : tNode.index;
 
-    storeListenerCleanup(
-      idxOrTargetGetter,
-      tView,
-      lView,
-      eventName,
-      wrappedListener,
-      cleanupFn,
-      false,
-    );
+    // We skip cleaning up animation event types to ensure leaving animation events can be used.
+    // These events should be automatically garbage collected anyway after the element is
+    // removed from the DOM.
+    if (!isAnimationEventType(eventName)) {
+      const idxOrTargetGetter = eventTargetResolver
+        ? (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index]))
+        : tNode.index;
+
+      storeListenerCleanup(
+        idxOrTargetGetter,
+        tView,
+        lView,
+        eventName,
+        wrappedListener,
+        cleanupFn,
+        false,
+      );
+    }
   }
   return hasCoalesced;
+}
+
+function isAnimationEventType(eventName: string): boolean {
+  return eventName.startsWith('animation') || eventName.startsWith('transition');
 }
 
 /**

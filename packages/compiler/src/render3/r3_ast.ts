@@ -12,6 +12,7 @@ import {
   ASTWithSource,
   BindingType,
   BoundElementProperty,
+  LiteralMap,
   ParsedEvent,
   ParsedEventType,
 } from '../expression_parser/ast';
@@ -252,7 +253,8 @@ export class InteractionDeferredTrigger extends DeferredTrigger {
 
 export class ViewportDeferredTrigger extends DeferredTrigger {
   constructor(
-    public reference: string | null,
+    readonly reference: string | null,
+    readonly options: LiteralMap | null,
     nameSpan: ParseSourceSpan,
     sourceSpan: ParseSourceSpan,
     prefetchSpan: ParseSourceSpan | null,

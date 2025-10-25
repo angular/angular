@@ -1,5 +1,5 @@
 load("//integration/ng-modules-importability:index.bzl", "module_test")
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 ts_project(
     name = "test_lib",

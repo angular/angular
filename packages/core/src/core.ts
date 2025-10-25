@@ -27,7 +27,6 @@ export * from './di';
 export {
   BootstrapOptions,
   ApplicationRef,
-  NgProbeToken,
   APP_BOOTSTRAP_LISTENER,
 } from './application/application_ref';
 export {PlatformRef} from './platform/platform_ref';
@@ -50,7 +49,6 @@ export {provideCheckNoChangesConfig} from './change_detection/provide_check_no_c
 export {enableProdMode, isDevMode} from './util/is_dev_mode';
 export {
   APP_ID,
-  PACKAGE_ROOT_URL,
   PLATFORM_INITIALIZER,
   PLATFORM_ID,
   ANIMATION_MODULE_TYPE,

@@ -6,33 +6,36 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {JsonPipe} from '@angular/common';
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   computed,
   DestroyRef,
-  effect,
   ElementRef,
   inject,
   input,
+  linkedSignal,
   signal,
   viewChild,
 } from '@angular/core';
-import {TreeVisualizerHostComponent} from '../../shared/tree-visualizer-host/tree-visualizer-host.component';
+import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visualizer.component';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route} from '../../../../../protocol';
-import {SvgD3Node, TreeVisualizer} from '../../shared/tree-visualizer-host/tree-visualizer';
 import {
-  RouterTreeVisualizer,
+  SvgD3Node,
+  SvgD3Link,
+  TreeVisualizerConfig,
+} from '../../shared/tree-visualizer/tree-visualizer';
+import {
   RouterTreeD3Node,
   transformRoutesIntoVisTree,
   RouterTreeNode,
   findNodesByLabel,
+  RouterTreeVisualizer,
 } from './router-tree-fns';
 import {ButtonComponent} from '../../shared/button/button.component';
 import {SplitComponent} from '../../shared/split/split.component';
@@ -46,11 +49,11 @@ const SEARCH_DEBOUNCE = 250;
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
   imports: [
-    JsonPipe,
-    TreeVisualizerHostComponent,
+    TreeVisualizerComponent,
     SplitComponent,
     SplitAreaDirective,
     MatIconModule,
+    MatSnackBarModule,
     RouteDetailsRowComponent,
     ButtonComponent,
   ],
@@ -58,54 +61,53 @@ const SEARCH_DEBOUNCE = 250;
 })
 export class RouterTreeComponent {
   private readonly searchInput = viewChild.required<ElementRef>('searchInput');
-  private readonly routerTree = viewChild.required<TreeVisualizerHostComponent>('routerTree');
-  private routerTreeVisualizer!: RouterTreeVisualizer;
+  private readonly routerTree = viewChild.required<RouterTreeVisualizer>('routerTree');
 
   private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
   private readonly appOperations = inject(ApplicationOperations);
   private readonly frameManager = inject(FrameManager);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected selectedRoute = signal<RouterTreeD3Node | null>(null);
+  protected routeData = computed<RouterTreeNode | undefined>(() => {
+    return this.selectedRoute()?.data;
+  });
 
-  routes = input<Route[]>([]);
-  snapToRoot = input(false);
+  routes = input.required<Route[]>();
+  routerDebugApiSupport = input<boolean>(false);
 
   private readonly showFullPath = signal(false);
-  private readonly visualizerReady = signal<boolean>(false);
-  private readonly d3RootNode = computed(() =>
-    transformRoutesIntoVisTree(this.routes()[0], this.showFullPath()),
-  );
+  protected readonly d3RootNode = linkedSignal<RouterTreeNode | null>(() => {
+    const routes = this.routes();
+    if (routes.length) {
+      return transformRoutesIntoVisTree(routes[0], this.showFullPath());
+    }
+    return null;
+  });
 
   private searchMatches: Set<RouterTreeNode> = new Set();
 
   private readonly searchDebouncer = new Debouncer();
 
   protected readonly searchRoutes = this.searchDebouncer.debounce((inputValue: string) => {
-    this.searchMatches = findNodesByLabel(this.d3RootNode(), inputValue.toLowerCase());
-    this.renderGraph(this.d3RootNode());
+    const d3RootNode = this.d3RootNode();
+    if (!d3RootNode) {
+      return;
+    }
+    this.searchMatches = findNodesByLabel(d3RootNode, inputValue.toLowerCase());
+    // Since `searchMatches` is used in the D3 node modifier, reset the root to trigger a re-render.
+    // Consider: Ideally, we could perform the search visual changes via direct DOM manipulations
+    // that won't require re-rendering the whole tree.
+    this.d3RootNode.set({...d3RootNode});
   }, SEARCH_DEBOUNCE);
 
+  protected readonly routerTreeConfig: Partial<TreeVisualizerConfig<RouterTreeNode>> = {
+    nodeSeparation: () => 1,
+    d3NodeModifier: (n) => this.d3NodeModifier(n),
+  };
+
   constructor() {
-    effect(() => {
-      if (this.visualizerReady()) {
-        this.renderGraph(this.d3RootNode());
-      }
-    });
-
-    effect(() => {
-      if (this.visualizerReady() && this.snapToRoot()) {
-        this.routerTreeVisualizer.snapToRoot(0.6);
-      }
-    });
-
-    afterNextRender({
-      write: () => {
-        this.setUpRouterVisualizer();
-      },
-    });
-
     inject(DestroyRef).onDestroy(() => {
-      this.routerTreeVisualizer.dispose();
       this.searchDebouncer.cancel();
     });
   }
@@ -117,10 +119,28 @@ export class RouterTreeComponent {
   }
 
   viewSourceFromRouter(className: string, type: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
   viewComponentSource(component: string): void {
+    const data = this.selectedRoute()?.data;
+    // Check if the selected route is a lazy loaded route or a redirecting route.
+    // These routes have no component associated with them.
+    if (data?.isLazy || data?.isRedirect) {
+      const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(
       component,
       'component',
@@ -132,41 +152,35 @@ export class RouterTreeComponent {
     this.messageBus.emit('navigateRoute', [route.data.path]);
   }
 
-  private renderGraph(root: RouterTreeNode): void {
-    this.routerTreeVisualizer?.render(root);
-    this.routerTreeVisualizer?.onNodeClick((_, node) => {
-      this.selectedRoute.set(node);
-      setTimeout(() => {
-        this.routerTreeVisualizer?.snapToNode(node, 0.7);
-      });
-    });
+  onRouterTreeRender({initial}: {initial: boolean}) {
+    if (initial) {
+      this.routerTree().snapToRoot(0.6);
+    }
   }
 
-  private setUpRouterVisualizer(): void {
-    const container = this.routerTree().container().nativeElement;
-    const group = this.routerTree().group().nativeElement;
-
-    this.routerTreeVisualizer?.cleanup?.();
-    this.routerTreeVisualizer = new TreeVisualizer(container, group, {
-      nodeSeparation: () => 1,
-      d3NodeModifier: (n) => this.d3NodeModifier(n),
-    });
-
-    this.visualizerReady.set(true);
+  nodeClick(node: RouterTreeD3Node) {
+    this.selectedRoute.set(node);
+    this.routerTree().snapToNode(node.data, 0.7);
   }
 
   private d3NodeModifier(d3Node: SvgD3Node<RouterTreeNode>) {
     d3Node.attr('class', (node: RouterTreeD3Node) => {
-      // Since `node-faded` could pre-exist, drop it if the node is a match.
-      const classNames = d3Node.attr('class').replace('node-faded', '');
-      const nodeClasses = [classNames];
+      // Drop all class labels and recompute them.
+      const classesToRemove = new Set([
+        'node-faded',
+        'node-element',
+        'node-lazy',
+        'node-search',
+        'node-environment',
+      ]);
+
+      const nodeClasses = d3Node
+        .attr('class')
+        .split(' ')
+        .filter((cls) => !classesToRemove.has(cls));
 
       if (node.data.isActive) {
         nodeClasses.push('node-element');
-      } else if (node.data.isLazy) {
-        nodeClasses.push('node-lazy');
-      } else {
-        nodeClasses.push('node-environment');
       }
 
       if (this.searchMatches.has(node.data)) {

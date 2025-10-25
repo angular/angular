@@ -324,14 +324,8 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
         );
 
         // ---- element instruction
-
-        // TODO(crisbeto): in practice `hostElement` should always be defined, but there are some
-        // tests where the renderer is mocked out and `undefined` is returned. We should update the
-        // tests so that this check can be removed.
-        if (hostElement) {
-          setupStaticAttributes(hostRenderer, hostElement, hostTNode);
-          attachPatchData(hostElement, rootLView);
-        }
+        setupStaticAttributes(hostRenderer, hostElement, hostTNode);
+        attachPatchData(hostElement, rootLView);
 
         // TODO(pk): this logic is similar to the instruction code where a node can have directives
         createDirectivesInstances(rootTView, rootLView, hostTNode);
@@ -545,7 +539,7 @@ export class ComponentRef<T> extends AbstractComponentRef<T> {
     if (ngDevMode && !hasSetInput) {
       const cmpNameForError = stringifyForError(this.componentType);
       let message = `Can't set value of the '${name}' input on the '${cmpNameForError}' component. `;
-      message += `Make sure that the '${name}' property is declared as an input using the @Input() decorator or the input() function.`;
+      message += `Make sure that the '${name}' property is declared as an input using the input() or model() function or the @Input() decorator.`;
       reportUnknownPropertyError(message);
     }
   }

@@ -11,7 +11,7 @@ Angular provides `animate.enter` and `animate.leave` to animate your application
 
 ## `animate.enter`
 
-You can use `animate.enter` to animate elements as they _enter_ the DOM. You can define enter animations using CSS classes with either transforms or keyframe animations.
+You can use `animate.enter` to animate elements as they _enter_ the DOM. You can define enter animations using CSS classes with either transitions or keyframe animations.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/enter-and-leave/enter.ts">
     <docs-code header="src/app/enter.ts" path="adev/src/content/examples/animations/src/app/enter-and-leave/enter.ts" />
@@ -24,6 +24,8 @@ When the animation completes, Angular removes the class or classes that you spec
 NOTE: When using multiple keyframe animations or transition properties on an element, Angular removes all classes only _after_ the longest animation has completed.
 
 You can use `animate.enter` with any other Angular features, such as control flow or dynamic expressions. `animate.enter` accepts both a single class string (with multiple classes separated by spaces), or an array of class strings.
+
+A quick note about using CSS transitions: If you choose to use transitions instead of keyframe animations, the classes added to the element with `animate.enter` represent the state that the transition will animate _to_. Your base element CSS is what the element will look like when no animations run, which is likely similar to the end state of the CSS transition. So you would still need to pair it with `@starting-style` to have an appropriate _from_ state for your transition to work.
 
 <docs-code-multifile preview path="adev/src/content/examples/animations/src/app/enter-and-leave/enter-binding.ts">
     <docs-code header="src/app/enter-binding.ts" path="adev/src/content/examples/animations/src/app/enter-and-leave/enter-binding.ts" />
@@ -73,6 +75,10 @@ If you don't call `animationComplete()` when using `animate.leave`, Angular call
   { provide: MAX_ANIMATION_TIMEOUT, useValue: 6000 }
 ```
 
+## Compatibility with Legacy Angular Animations
+
+You cannot use legacy animations alongside `animate.enter` and `animate.leave` within the same component. Doing so would result in enter classes remaining on the element or leaving nodes not being removed. It is otherwise fine to use both legacy animations and the new `animate.enter` and `animate.leave` animations within the same _application_. The only caveat is content projection. If you are projecting content from one component with legacy animations into another component with `animate.enter` or `animate.leave`, or vice versa, this will result in the same behavior as if they are used together in the same component. This is not supported.
+
 ## Testing
 
 TestBed provides built-in support for enabling or disabling animations in your test environment. CSS animations require a browser to run, and many of the APIs are not available in a test environment. By default, TestBed disables animations for you in your test environments.
@@ -86,3 +92,12 @@ If you want to test that the animations are animating in a browser test, for exa
 This will configure animations in your test environment to behave normally.
 
 NOTE: Some test environments do not emit animation events like `animationstart`, `animationend` and their transition event equivalents.
+
+## More on Angular animations
+
+You might also be interested in the following:
+
+<docs-pill-row>
+  <docs-pill href="guide/animations/css" title="Complex Animations with CSS"/>
+  <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+</docs-pill-row>

@@ -189,6 +189,13 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.setSourceMapRange(this.factory.createLiteral(ast.value), ast.sourceSpan);
   }
 
+  visitRegularExpressionLiteral(ast: o.outputAst.RegularExpressionLiteral, context: any) {
+    return this.setSourceMapRange(
+      this.factory.createRegularExpressionLiteral(ast.body, ast.flags),
+      ast.sourceSpan,
+    );
+  }
+
   visitLocalizedString(ast: o.LocalizedString, context: Context): TExpression {
     // A `$localize` message consists of `messageParts` and `expressions`, which get interleaved
     // together. The interleaved pieces look like:

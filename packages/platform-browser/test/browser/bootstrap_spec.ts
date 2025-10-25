@@ -45,6 +45,7 @@ import {
   destroyPlatform,
   providePlatformInitializer,
   ɵcreateOrReusePlatformInjector as createOrReusePlatformInjector,
+  APP_ID,
 } from '@angular/core';
 import {ɵLog as Log, inject, TestBed} from '@angular/core/testing';
 import {BrowserModule} from '../../index';
@@ -171,7 +172,7 @@ function bootstrap(
     imports: [BrowserModule, ...imports],
     declarations: [cmpType],
     bootstrap: [cmpType],
-    providers: providers,
+    providers: [provideZoneChangeDetection(), ...providers],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
   })
   class TestModule {}
@@ -221,7 +222,6 @@ describe('bootstrap factory method', () => {
     const NAME = new InjectionToken<string>('name');
 
     @Component({
-      standalone: true,
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
     })
@@ -230,7 +230,6 @@ describe('bootstrap factory method', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'hello-app-2',
       template: 'Hello from {{ name }}!',
     })
@@ -239,7 +238,6 @@ describe('bootstrap factory method', () => {
     }
 
     @Component({
-      standalone: true,
       selector: 'hello-app',
       template: 'Hello from {{ name }}!',
     })
@@ -289,8 +287,12 @@ describe('bootstrap factory method', () => {
     });
 
     it('should keep change detection isolated for separately bootstrapped apps', async () => {
-      const appRef1 = await bootstrapApplication(SimpleComp);
-      const appRef2 = await bootstrapApplication(SimpleComp2);
+      const appRef1 = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
+      const appRef2 = await bootstrapApplication(SimpleComp2, {
+        providers: [provideZoneChangeDetection()],
+      });
 
       expect(el.innerText).toBe('Hello from SimpleComp!');
       expect(el2.innerText).toBe('Hello from SimpleComp2!');
@@ -315,7 +317,9 @@ describe('bootstrap factory method', () => {
     });
 
     it('should allow bootstrapping multiple standalone components within the same app', async () => {
-      const appRef = await bootstrapApplication(SimpleComp);
+      const appRef = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
       appRef.bootstrap(SimpleComp2);
 
       expect(el.innerText).toBe('Hello from SimpleComp!');
@@ -334,7 +338,9 @@ describe('bootstrap factory method', () => {
     });
 
     it('should allow bootstrapping non-standalone components within the same app', async () => {
-      const appRef = await bootstrapApplication(SimpleComp);
+      const appRef = await bootstrapApplication(SimpleComp, {
+        providers: [provideZoneChangeDetection()],
+      });
 
       // ApplicationRef should still allow bootstrapping non-standalone
       // components into the same application.
@@ -359,7 +365,7 @@ describe('bootstrap factory method', () => {
       const msg =
         'NG0907: The NonStandaloneComp component is not marked as standalone, ' +
         'but Angular expects to have a standalone component here. Please make sure the ' +
-        'NonStandaloneComp component has the `standalone: true` flag in the decorator.';
+        'NonStandaloneComp component does not have the `standalone: false` flag in the decorator.';
       let bootstrapError: string | null = null;
 
       try {
@@ -373,7 +379,6 @@ describe('bootstrap factory method', () => {
 
     it('should throw when trying to bootstrap a standalone directive', async () => {
       @Directive({
-        standalone: true,
         selector: '[dir]',
       })
       class StandaloneDirective {}
@@ -412,7 +417,6 @@ describe('bootstrap factory method', () => {
       let state: TransferState | undefined;
       @Component({
         selector: 'hello-app',
-        standalone: true,
         template: '...',
       })
       class StandaloneComponent {
@@ -443,7 +447,6 @@ describe('bootstrap factory method', () => {
 
     describe('with animations', () => {
       @Component({
-        standalone: true,
         selector: 'hello-app',
         template:
           '<div @myAnimation (@myAnimation.start)="onStart($event)">Hello from AnimationCmp!</div>',
@@ -506,7 +509,6 @@ describe('bootstrap factory method', () => {
         template: '',
         selector: 'hello-app',
         imports: [SomeModule],
-        standalone: true,
       })
       class AnimationCmp {}
 
@@ -793,6 +795,24 @@ describe('bootstrap factory method', () => {
     }, done.fail);
   });
 
+  it('should throw an error if the provided APP_ID is invalid', (done) => {
+    const logger = new MockConsole();
+    const errorHandler = new ErrorHandler();
+    (errorHandler as any)._console = logger as any;
+
+    const refPromise = bootstrap(HelloRootCmp, [{provide: APP_ID, useValue: 'foo:bar'}]);
+    refPromise.then(
+      () => fail(),
+      (reason) => {
+        expect(reason.message).toContain(
+          `NG0211: APP_ID value "foo:bar" is not alphanumeric. The APP_ID must be a string of alphanumeric characters.`,
+        );
+        done();
+        return null;
+      },
+    );
+  });
+
   describe('change detection', () => {
     const log: string[] = [];
 
@@ -838,6 +858,7 @@ describe('bootstrap factory method', () => {
         declarations: [CompA, CompB],
         bootstrap: [CompA, CompB],
         schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        providers: [provideZoneChangeDetection()],
       })
       class TestModuleA {}
       platformBrowser()

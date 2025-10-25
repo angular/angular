@@ -13,7 +13,7 @@ import {Subject, filter, take} from 'rxjs';
 
 import ts from 'typescript';
 
-import {EditorFile} from '../code-mirror-editor.service';
+import type {EditorFile} from '../code-mirror-editor.service';
 import {TsVfsWorkerActions} from '../workers/enums/actions';
 import {DisplayTooltipRequest} from '../workers/interfaces/display-tooltip-request';
 import {DisplayTooltipResponse} from '../workers/interfaces/display-tooltip-response';

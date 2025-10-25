@@ -1,0 +1,11 @@
+:host {
+  display: inline;
+
+  .function {
+    &:hover {
+      background: var(--blue-02);
+      color: white;
+      cursor: pointer;
+    }
+  }
+}

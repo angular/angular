@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AST, SafeCall, SafeKeyedRead, SafePropertyRead, TmplAstNode} from '@angular/compiler';
+import {
+  AST,
+  KeyedRead,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
+  TmplAstNode,
+} from '@angular/compiler';
 import ts from 'typescript';
 
 import {NgCompilerOptions} from '../../../../core/api';
@@ -21,8 +28,11 @@ import {TemplateCheckFactory, TemplateCheckWithVisitor, TemplateContext} from '.
  * otherwise it would produce inaccurate results.
  */
 class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE> {
-  override readonly canVisitStructuralAttributes = false;
   override code = ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE as const;
+
+  constructor(private readonly noUncheckedIndexedAccess: boolean) {
+    super();
+  }
 
   override visitNode(
     ctx: TemplateContext<ErrorCode.OPTIONAL_CHAIN_NOT_NULLABLE>,
@@ -33,8 +43,15 @@ class OptionalChainNotNullableCheck extends TemplateCheckWithVisitor<ErrorCode.O
       !(node instanceof SafeCall) &&
       !(node instanceof SafePropertyRead) &&
       !(node instanceof SafeKeyedRead)
-    )
+    ) {
       return [];
+    }
+
+    // When `noUncheckedIndexedAccess` is disabled, an indexed access is not checked
+    // and may result in `undefined`.
+    if (node.receiver instanceof KeyedRead && !this.noUncheckedIndexedAccess) {
+      return [];
+    }
 
     const symbolLeft = ctx.templateTypeChecker.getSymbolOfNode(node.receiver, component);
     if (symbolLeft === null || symbolLeft.kind !== SymbolKind.Expression) {
@@ -88,6 +105,8 @@ export const factory: TemplateCheckFactory<
       return null;
     }
 
-    return new OptionalChainNotNullableCheck();
+    const noUncheckedIndexedAccess = !!options.noUncheckedIndexedAccess;
+
+    return new OptionalChainNotNullableCheck(noUncheckedIndexedAccess);
   },
 };

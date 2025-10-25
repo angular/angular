@@ -11,3 +11,4 @@ export {RestoredState as ɵRestoredState} from './navigation_transition';
 export {loadChildren as ɵloadChildren} from './router_config_loader';
 export {ROUTER_PROVIDERS as ɵROUTER_PROVIDERS} from './router_module';
 export {afterNextNavigation as ɵafterNextNavigation} from './utils/navigations';
+export {provideSometimesSyncRecognize as ɵprovideSometimesSyncRecognize} from './operators/recognize';

@@ -1,3 +1,5 @@
+@use '../../../../styles/typography' as tg;
+
 :host {
   position: relative;
   height: 100%;
@@ -16,32 +18,39 @@
         contain: paint;
         width: 70px;
         height: 60px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
         text-align: center;
         word-wrap: break-word;
         border-radius: 8px;
-        background-color: var(--red-03);
+        background-color: var(--gray-400);
         cursor: pointer;
         transition: border-width 0.25s ease-in-out;
         border: 0px solid black;
+
         &.animating {
           border-width: 5px;
         }
+
         .header {
-          width: 85%;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          padding: 7.5%;
-          background-color: var(--red-06);
+          padding: 3px 5px;
+          background-color: var(--gray-500);
+
+          &.special {
+            font-style: italic;
+          }
         }
+
         .body {
-          flex: 1;
+          font-family: tg.$font-family-mono;
+          font-size: 11px;
+          padding: 5px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
+
       .selected rect {
         stroke: var(--dynamic-blue-02);
         stroke-width: 3px;
@@ -51,26 +60,41 @@
 
       .kind-signal {
         background-color: var(--blue-02);
+
         .header {
           background-color: var(--blue-01);
         }
       }
+
       .kind-computed {
         background-color: var(--green-02);
+
         .header {
           background-color: var(--green-01);
         }
       }
+
       .kind-effect {
         background-color: var(--purple-02);
+
         .header {
           background-color: var(--purple-01);
         }
       }
+
       .kind-template {
         background-color: var(--gray-400);
+
         .header {
           background-color: var(--gray-700);
+        }
+      }
+
+      .kind-linked-signal {
+        background-color: var(--red-04);
+
+        .header {
+          background-color: var(--red-03);
         }
       }
     }

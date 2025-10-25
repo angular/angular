@@ -96,6 +96,9 @@ import {RouterLink} from './router_link';
  * <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">Home Page</a>
  * ```
  *
+ * NOTE: RouterLinkActive is a `ContentChildren` query.
+ * Content children queries do not retrieve elements or directives that are in other components' templates, since a component's template is always a black box to its ancestors.
+ *
  * @ngModule RouterModule
  *
  * @publicApi

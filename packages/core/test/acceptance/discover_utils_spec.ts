@@ -13,6 +13,7 @@ import {
   InjectionToken,
   Input,
   Output,
+  provideZoneChangeDetection,
   ViewChild,
   ViewEncapsulation,
 } from '../../src/core';
@@ -39,6 +40,11 @@ import {
 } from '../../src/render3/util/discovery_utils';
 
 describe('discovery utils', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let fixture: ComponentFixture<MyApp>;
   let myApp: MyApp;
   let dirA: DirectiveA[];

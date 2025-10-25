@@ -37,8 +37,7 @@
     "suppressTsconfigOverrideWarnings": true
   },
   "angularCompilerOptions": {
-    "strictTemplates": true,
-    "typeCheckHostBindings": true
+    "strictTemplates": true
   },
   "exclude": [
     "common/locales",

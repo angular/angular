@@ -7,6 +7,7 @@
  */
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  DirectiveModuleExportDetails,
   PotentialDirective,
   PotentialDirectiveModuleSpecifierResolver,
   PotentialImportMode,
@@ -821,24 +822,47 @@ class PotentialDirectiveModuleSpecifierResolverImpl
     private readonly includeCompletionsForModuleExports: boolean | undefined,
   ) {}
 
-  resolve(toImport: Reference<ClassDeclaration>, importOn: ts.Node | null): string | undefined {
+  resolve(
+    toImport: Reference<ClassDeclaration>,
+    importOn: ts.Node | null,
+  ): DirectiveModuleExportDetails | null {
     if (toImport.node.getSourceFile().fileName === importOn?.getSourceFile().fileName) {
-      return undefined;
+      return null;
     }
-    const moduleSpecifier = getModuleSpecifierIfExists(this.compiler, importOn, toImport.node);
+    const tsEntry = this.getMatchTsEntry(toImport);
+    const moduleSpecifier = getModuleSpecifierIfExists(
+      this.compiler,
+      importOn,
+      toImport.node,
+      tsEntry?.tsCompletionEntrySymbolName,
+    );
 
     if (moduleSpecifier !== null) {
-      return moduleSpecifier;
+      return {
+        moduleSpecifier,
+        exportName: tsEntry?.tsCompletionEntrySymbolName ?? toImport.node.name.getText(),
+      };
     }
 
     return getModuleSpecifierFromImportStatement(
-      this.directive.tsCompletionEntryInfos,
-      toImport,
+      tsEntry,
       importOn,
       this.templateTypeChecker,
       this.component,
       this.tsLS,
       this.includeCompletionsForModuleExports,
+    );
+  }
+
+  private getMatchTsEntry(toImport: Reference<ClassDeclaration>): TsCompletionEntryInfo | null {
+    const program = this.tsLS.getProgram();
+    if (program === undefined) {
+      return null;
+    }
+    return findTsCompletionEntryInfoForImport(
+      this.directive.tsCompletionEntryInfos,
+      toImport,
+      program,
     );
   }
 }
@@ -854,28 +878,27 @@ const importRegex = /\bimport\b[\s\S]*?\bfrom\b\s*(['"`])(.*?)\1/;
  * like `import { FooComponent } from '@foo'`. The `@foo` will be returned by the function.
  */
 function getModuleSpecifierFromImportStatement(
-  tsCompletionEntryInfos: TsCompletionEntryInfo[] | null,
-  toImport: Reference<ClassDeclaration>,
+  tsCompletionEntryInfo: TsCompletionEntryInfo | null,
   importOn: ts.Node | null,
   templateTypeChecker: TemplateTypeChecker,
   component: ts.ClassDeclaration,
   tsLS: ts.LanguageService,
   includeCompletionsForModuleExports: boolean | undefined,
-): string | undefined {
-  const tsCompletionEntryInfo = findTsCompletionEntryInfoForImport(
-    tsCompletionEntryInfos,
-    toImport,
-  );
+): DirectiveModuleExportDetails | null {
+  const program = tsLS.getProgram();
+  if (program === undefined) {
+    return null;
+  }
 
-  if (tsCompletionEntryInfo === undefined) {
-    return undefined;
+  if (tsCompletionEntryInfo === null) {
+    return null;
   }
 
   const tsEntryName = tsCompletionEntryInfo.tsCompletionEntrySymbolName;
 
   const globalContext = templateTypeChecker.getGlobalTsContext(component);
   if (globalContext === null) {
-    return undefined;
+    return null;
   }
 
   const completionListDetail = tsLS.getCompletionEntryDetails(
@@ -892,7 +915,7 @@ function getModuleSpecifierFromImportStatement(
 
   const actions = completionListDetail?.codeActions;
   if (actions === undefined) {
-    return undefined;
+    return null;
   }
 
   const tcbDir = path.posix.dirname(globalContext.tcbPath);
@@ -919,25 +942,41 @@ function getModuleSpecifierFromImportStatement(
               moduleSpecifier = `./${moduleSpecifier}`;
             }
           }
-          return moduleSpecifier;
+          return {moduleSpecifier, exportName: tsEntryName};
         }
       }
     }
   }
-  return undefined;
+  return null;
 }
 
 function findTsCompletionEntryInfoForImport(
   tsCompletionEntryInfos: TsCompletionEntryInfo[] | null,
   toImport: Reference<ClassDeclaration>,
-): TsCompletionEntryInfo | undefined {
-  const toImportSymbolName = toImport.node.name?.text;
-  const toImportSymbolFileName = toImport.node.getSourceFile().fileName;
+  program: ts.Program,
+): TsCompletionEntryInfo | null {
+  const typeChecker = program.getTypeChecker();
 
-  return tsCompletionEntryInfos?.find(
-    (entry) =>
-      entry.tsCompletionEntrySymbolName === toImportSymbolName &&
-      entry.tsCompletionEntrySymbolFileName === toImportSymbolFileName,
+  return (
+    tsCompletionEntryInfos?.find((tsEntry) => {
+      const sf = program.getSourceFile(tsEntry.tsCompletionEntrySymbolFileName);
+      if (sf === undefined) {
+        return false;
+      }
+      const sfSymbol = typeChecker.getSymbolAtLocation(sf);
+      if (sfSymbol === undefined) {
+        return false;
+      }
+      const tsEntrySymbol = typeChecker.tryGetMemberInModuleExports(
+        tsEntry.tsCompletionEntrySymbolName,
+        sfSymbol,
+      );
+      if (tsEntrySymbol === undefined) {
+        return false;
+      }
+      const tsEntryType = typeChecker.getTypeOfSymbol(tsEntrySymbol);
+      return tsEntryType.getSymbol()?.declarations?.[0] === toImport.node;
+    }) ?? null
   );
 }
 
@@ -972,6 +1011,7 @@ function getModuleSpecifierIfExists(
   compiler: NgCompiler,
   importOn: ts.Node | null,
   toImport: ClassDeclaration,
+  exportName: string | undefined,
 ): string | null {
   if (importOn === null) {
     return null;
@@ -991,14 +1031,20 @@ function getModuleSpecifierIfExists(
     }
 
     const toImportSymbolFromModule = typeChecker.tryGetMemberInModuleExports(
-      toImport.name.getText(),
+      exportName ?? toImport.name.getText(),
       importSymbol,
     );
+
+    if (toImportSymbolFromModule === undefined) {
+      continue;
+    }
+
+    const symbolType = typeChecker.getTypeOfSymbol(toImportSymbolFromModule);
 
     /**
      * Make sure these are the same node.
      */
-    if (toImportSymbolFromModule?.declarations?.[0] === toImport) {
+    if (symbolType.getSymbol()?.declarations?.[0] === toImport) {
       return getStringLiteralText(importDecl.moduleSpecifier) ?? null;
     }
   }

@@ -19,9 +19,14 @@ export const MAX_RECENT_HISTORY_SIZE = 10;
 export interface HistoryItem {
   id: string;
   labelHtml: string;
+  subLabelHtml?: string;
   url: string;
   isFavorite: boolean;
   createdAt: number;
+}
+
+function cleanUpHtml(label: string | null): string {
+  return (label || '').replace(/<\/?mark>/g, '');
 }
 
 @Injectable({providedIn: 'root'})
@@ -29,28 +34,32 @@ export class SearchHistory {
   private readonly localStorage = inject(LOCAL_STORAGE);
   private readonly history = signal<Map<string, HistoryItem>>(new Map());
 
-  private allItems = computed(() =>
+  private readonly allItems = computed(() =>
     Array.from(this.history().values()).sort((a, b) => b.createdAt - a.createdAt),
   );
 
-  items = computed<{recent: HistoryItem[]; favorite: HistoryItem[]}>(() => ({
+  readonly items = computed<{recent: HistoryItem[]; favorite: HistoryItem[]}>(() => ({
     recent: this.allItems().filter((v) => !v.isFavorite),
     favorite: this.allItems().filter((v) => v.isFavorite),
   }));
 
-  hasItems = computed(() => this.allItems().length > 0);
+  readonly hasItems = computed(() => this.allItems().length > 0);
 
   constructor() {
     this.loadHistory();
   }
 
-  addItem(item: SearchResultItem | HistoryItem) {
-    this.updateHistory((map) => {
-      const labelHtml = (item.labelHtml || '').replace(/<\/?mark>/g, '');
+  addItem(item: SearchResultItem | HistoryItem): void {
+    // We don't want to reset nor update the creation date of favorites
+    if (this.history().get(item.id)?.isFavorite) {
+      return;
+    }
 
+    this.updateHistory((map) => {
       map.set(item.id, {
         id: item.id,
-        labelHtml,
+        labelHtml: cleanUpHtml(item.labelHtml),
+        subLabelHtml: item.subLabelHtml ? cleanUpHtml(item.subLabelHtml) : undefined,
         url: item.url,
         isFavorite: false,
         createdAt: Date.now(),
@@ -64,13 +73,13 @@ export class SearchHistory {
     });
   }
 
-  removeItem(item: SearchResultItem | HistoryItem) {
+  removeItem(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
       map.delete(item.id);
     });
   }
 
-  makeFavorite(item: SearchResultItem | HistoryItem) {
+  makeFavorite(item: SearchResultItem | HistoryItem): void {
     this.updateHistory((map) => {
       const updated = map.get(item.id);
       if (updated) {
@@ -83,7 +92,7 @@ export class SearchHistory {
     });
   }
 
-  private loadHistory() {
+  private loadHistory(): void {
     let parsedData: HistoryItem[];
 
     try {
@@ -100,7 +109,7 @@ export class SearchHistory {
     this.history.set(history);
   }
 
-  private updateHistory(updateFn: (map: Map<string, HistoryItem>) => void) {
+  private updateHistory(updateFn: (map: Map<string, HistoryItem>) => void): void {
     const history = new Map(this.history());
     updateFn(history);
     this.history.set(history);

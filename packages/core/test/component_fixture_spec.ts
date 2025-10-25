@@ -15,6 +15,7 @@ import {
   Input,
   NgZone,
   createComponent,
+  provideZoneChangeDetection,
   provideZonelessChangeDetection,
   signal,
 } from '../src/core';
@@ -165,6 +166,7 @@ describe('ComponentFixture', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
       declarations: [
         AutoDetectComp,
         AsyncComp,
@@ -428,6 +430,7 @@ describe('ComponentFixture', () => {
     class Blank {}
 
     it('rejects whenStable promise when errors happen during appRef.tick', async () => {
+      TestBed.configureTestingModule({providers: [provideZoneChangeDetection()]});
       const fixture = TestBed.createComponent(Blank);
       const throwingThing = createComponent(ThrowingThing, {
         environmentInjector: TestBed.inject(EnvironmentInjector),

@@ -22,6 +22,7 @@ import {
   OnInit,
   Output,
   Pipe,
+  provideZoneChangeDetection,
   QueryList,
   TemplateRef,
   ViewChild,
@@ -40,6 +41,12 @@ import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('acceptance integration tests', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
+
   function stripHtmlComments(str: string) {
     return str.replace(/<!--[\s\S]*?-->/g, '');
   }
@@ -2695,6 +2702,23 @@ describe('acceptance integration tests', () => {
     expect(fixture.nativeElement.textContent).toContain('Message: Hello, Bilbo - 1');
   });
 
+  it('should support regular expressions in templates', () => {
+    @Component({
+      template: 'Matches: {{/\\d+/.test(value)}}',
+    })
+    class App {
+      value = '123';
+    }
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Matches: true');
+
+    fixture.componentInstance.value = 'hello';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toBe('Matches: false');
+  });
+
   it('should support void expressions', () => {
     @Component({
       host: {
@@ -2957,7 +2981,6 @@ describe('acceptance integration tests', () => {
 
   it('should support tagged template literals with no interpolations in expressions', () => {
     @Component({
-      standalone: true,
       template: `
         <p>:{{ caps\`Hello, World!\` }}:{{ excited?.caps(3)\`Uncomfortably excited\` }}:</p>
         <p>{{ greet\`Hi, I'm \${name}, and I'm \${age}\` }}</p>
@@ -2991,7 +3014,6 @@ describe('acceptance integration tests', () => {
 
   it('should not confuse operators for template literal tags', () => {
     @Component({
-      standalone: true,
       template: '{{ typeof`test` }}',
     })
     class TestComponent {
@@ -3005,7 +3027,6 @@ describe('acceptance integration tests', () => {
 
   it('should support "in" expressions', () => {
     @Component({
-      standalone: true,
       template: `{{'foo' in obj ? 'OK' : 'KO'}}`,
     })
     class TestComponent {

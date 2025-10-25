@@ -5,6 +5,10 @@ package(default_visibility = ["//adev/shared-docs/pipeline/api-gen:__subpackages
 esbuild(
     name = "bin",
     entry_point = ":index.mts",
+    external = [
+        "jsdom",
+        "playwright-core",
+    ],
     format = "esm",
     output = "bin.mjs",
     platform = "node",
@@ -20,7 +24,6 @@ ts_project(
         [
             "**/*.mts",
             "**/*.tsx",
-            "shiki.d.ts",
         ],
         exclude = [
             "entities.mts",
@@ -28,13 +31,15 @@ ts_project(
     ),
     deps = [
         ":entities",
-        "//adev:node_modules/@types/node",
-        "//adev:node_modules/html-entities",
         "//adev:node_modules/marked",
         "//adev:node_modules/preact",
         "//adev:node_modules/preact-render-to-string",
         "//adev:node_modules/prettier",
         "//adev:node_modules/shiki",
+        "//adev/shared-docs/pipeline/shared:linking",
+        "//adev/shared-docs/pipeline/shared:shiki",
+        "//adev/shared-docs/pipeline/shared/marked",
+        "//adev/shared-docs/pipeline/shared/regions",
     ],
 )
 

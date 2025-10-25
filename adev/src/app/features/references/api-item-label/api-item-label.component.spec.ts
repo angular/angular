@@ -12,7 +12,6 @@ import ApiItemLabel from './api-item-label.component';
 import {ApiItemType} from '../interfaces/api-item-type';
 
 describe('ApiItemLabel', () => {
-  let component: ApiItemLabel;
   let fixture: ComponentFixture<ApiItemLabel>;
 
   beforeEach(() => {
@@ -20,12 +19,10 @@ describe('ApiItemLabel', () => {
       imports: [ApiItemLabel],
     });
     fixture = TestBed.createComponent(ApiItemLabel);
-    component = fixture.componentInstance;
   });
 
   it('should by default display short label for Class', () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
-    fixture.componentRef.setInput('mode', 'short');
     fixture.detectChanges();
 
     const label = fixture.nativeElement.innerText;

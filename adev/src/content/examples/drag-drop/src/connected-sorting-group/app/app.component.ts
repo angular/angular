@@ -15,7 +15,6 @@ import {Component} from '@angular/core';
   selector: 'cdk-drag-drop-connected-sorting-group-example',
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.css',
-  standalone: true,
   imports: [CdkDropListGroup, CdkDropList, CdkDrag],
 })
 export class CdkDragDropConnectedSortingGroupExample {

@@ -8,5 +8,5 @@ import {Item} from '../item';
   styleUrls: ['./item-detail.component.css'],
 })
 export class ItemDetailComponent {
-  item = input<Item | undefined>();
+  readonly item = input<Item | undefined>();
 }

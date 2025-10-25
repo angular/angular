@@ -387,20 +387,6 @@ describe('XhrBackend', () => {
       factory.mock.responseURL = '/response/url';
       factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
     });
-    it('from X-Request-URL header if XHR.responseURL is not present', (done) => {
-      backend
-        .handle(TEST_POST)
-        .pipe(toArray())
-        .subscribe((events) => {
-          expect(events.length).toBe(2);
-          expect(events[1].type).toBe(HttpEventType.Response);
-          const response = events[1] as HttpResponse<string>;
-          expect(response.url).toBe('/response/url');
-          done();
-        });
-      factory.mock.mockResponseHeaders = 'X-Request-URL: /response/url\n';
-      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
-    });
     it('falls back on Request.url if neither are available', (done) => {
       backend
         .handle(TEST_POST)

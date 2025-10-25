@@ -10,7 +10,7 @@ import {IMAGE_CONFIG, ImageConfig} from './application/application_tokens';
 import {Injectable} from './di';
 import {inject} from './di/injector_compatibility';
 import {formatRuntimeError, RuntimeErrorCode} from './errors';
-import {OnDestroy} from './interface/lifecycle_hooks';
+import {OnDestroy} from './change_detection/lifecycle_hooks';
 import {getDocument} from './render3/interfaces/document';
 
 // A delay in milliseconds before the scan is run after onLoad, to avoid any

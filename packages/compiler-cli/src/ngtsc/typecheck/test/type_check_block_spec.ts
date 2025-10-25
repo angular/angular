@@ -208,6 +208,11 @@ describe('type check blocks', () => {
     );
   });
 
+  it('should generate regular expressions', () => {
+    const TEMPLATE = '{{ /\\d+/g.test("123") }}';
+    expect(tcb(TEMPLATE)).toContain('(((/\\d+/g)).test("123"))');
+  });
+
   describe('type constructors', () => {
     it('should handle missing property bindings', () => {
       const TEMPLATE = `<div dir [inputA]="foo"></div>`;
@@ -454,6 +459,50 @@ describe('type check blocks', () => {
     expect(block).toContain('(_t3).a');
     expect(block).not.toContain('NoBindings');
     expect(block).not.toContain('NoReference');
+  });
+
+  it('should not bind inputs outside of microsyntax to a structural directive', () => {
+    const TEMPLATE = `
+      <my-dir *ngFor="let foo of foos" [ngForTrackBy]="foo"></my-dir>
+    `;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'NgFor',
+        selector: '[ngFor][ngForOf]',
+        inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy'},
+      },
+      {
+        type: 'directive',
+        name: 'MyDir',
+        selector: 'my-dir',
+        inputs: {ngForTrackBy: 'ngForTrackBy'},
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t1 = null! as i0.NgFor');
+    expect(block).toContain('_t1.ngForOf = (((this).foos))');
+    expect(block).not.toContain('_t1.ngForTrackBy');
+    expect(block).toContain('var _t4 = null! as i0.MyDir');
+    expect(block).toContain('_t4.ngForTrackBy =');
+  });
+
+  it('should bind inputs to a structural directive when used on ng-template', () => {
+    const TEMPLATE = `
+      <ng-template ngFor [ngForOf]="foos" let-foo [ngForTrackBy]="foo"></ng-template>
+    `;
+    const DIRECTIVES: TestDeclaration[] = [
+      {
+        type: 'directive',
+        name: 'NgFor',
+        selector: '[ngFor][ngForOf]',
+        inputs: {ngForOf: 'ngForOf', ngForTrackBy: 'ngForTrackBy'},
+      },
+    ];
+    const block = tcb(TEMPLATE, DIRECTIVES);
+    expect(block).toContain('var _t1 = null! as i0.NgFor');
+    expect(block).toContain('_t1.ngForOf = (((this).foos))');
+    expect(block).toContain('_t1.ngForTrackBy = (((this).foo))');
   });
 
   it('should generate a forward element reference correctly', () => {
@@ -1806,6 +1855,20 @@ describe('type check blocks', () => {
       `;
 
       expect(tcb(TEMPLATE)).toContain('((this).shouldShow()) && (((this).isVisible));');
+    });
+
+    it('should generate options for `viewport` trigger', () => {
+      const TEMPLATE = `
+        @defer (on viewport({rootMargin: '123px'})) {
+          {{main()}}
+        } @placeholder {
+          <div>{{placeholder()}}</div>
+        }
+      `;
+
+      expect(tcb(TEMPLATE)).toContain(
+        'new IntersectionObserver(null!, { "rootMargin": "123px" }); "" + ((this).main()); "" + ((this).placeholder());',
+      );
     });
   });
 

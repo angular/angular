@@ -10,7 +10,7 @@ import {TestBed} from '../testing';
 import {filter} from 'rxjs/operators';
 
 import {EventEmitter} from '../src/event_emitter';
-import {ApplicationRef, NgZone} from '../public_api';
+import {ApplicationRef, NgZone, provideZoneChangeDetection} from '../public_api';
 
 describe('EventEmitter', () => {
   let emitter: EventEmitter<number>;
@@ -207,6 +207,9 @@ describe('EventEmitter', () => {
   });
 
   it('should not prevent app from becoming stable if subscriber throws an error', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
     const logs: string[] = [];
     const ngZone = TestBed.inject(NgZone);
     const appRef = TestBed.inject(ApplicationRef);

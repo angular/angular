@@ -9,18 +9,17 @@
 import {resolve} from 'path';
 import {readFile} from 'fs/promises';
 import {JSDOM} from 'jsdom';
-import {configureMarkedGlobally} from '../marked/configuration.mjs';
 import {getRenderable} from '../processing.mjs';
 import {renderEntry} from '../rendering.mjs';
-import {initHighlighter} from '../shiki/shiki.mjs';
+import {initHighlighter} from '../../../shared/shiki.mjs';
+import {setHighlighterInstance} from '../shiki/shiki.mjs';
 
 describe('CLI docs to html', () => {
   let fragment: DocumentFragment;
   let entryJson: any;
 
   beforeAll(async () => {
-    await initHighlighter();
-    await configureMarkedGlobally();
+    setHighlighterInstance(await initHighlighter());
 
     const entryContent = await readFile(resolve('./fake-cli-entries.json'), {
       encoding: 'utf-8',

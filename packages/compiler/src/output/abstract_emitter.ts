@@ -353,6 +353,11 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
+  visitRegularExpressionLiteral(ast: o.RegularExpressionLiteral, ctx: EmitterVisitorContext): any {
+    ctx.print(ast, `/${ast.body}/${ast.flags || ''}`);
+    return null;
+  }
+
   visitLocalizedString(ast: o.LocalizedString, ctx: EmitterVisitorContext): any {
     const head = ast.serializeI18nHead();
     ctx.print(ast, '$localize `' + head.raw);

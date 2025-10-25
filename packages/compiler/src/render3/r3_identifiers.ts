@@ -255,6 +255,9 @@ export class Identifiers {
   static ariaProperty: o.ExternalReference = {name: 'ɵɵariaProperty', moduleName: CORE};
   static property: o.ExternalReference = {name: 'ɵɵproperty', moduleName: CORE};
 
+  static control: o.ExternalReference = {name: 'ɵɵcontrol', moduleName: CORE};
+  static controlCreate: o.ExternalReference = {name: 'ɵɵcontrolCreate', moduleName: CORE};
+
   static animationEnterListener: o.ExternalReference = {
     name: 'ɵɵanimateEnterListener',
     moduleName: CORE,
@@ -447,11 +450,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static AnimationsFeature: o.ExternalReference = {
-    name: 'ɵɵAnimationsFeature',
-    moduleName: CORE,
-  };
-
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
   static getInheritedFactory: o.ExternalReference = {
@@ -479,6 +477,17 @@ export class Identifiers {
   };
   static validateIframeAttribute: o.ExternalReference = {
     name: 'ɵɵvalidateIframeAttribute',
+    moduleName: CORE,
+  };
+
+  // Decorators
+  static inputDecorator: o.ExternalReference = {name: 'Input', moduleName: CORE};
+  static outputDecorator: o.ExternalReference = {name: 'Output', moduleName: CORE};
+  static viewChildDecorator: o.ExternalReference = {name: 'ViewChild', moduleName: CORE};
+  static viewChildrenDecorator: o.ExternalReference = {name: 'ViewChildren', moduleName: CORE};
+  static contentChildDecorator: o.ExternalReference = {name: 'ContentChild', moduleName: CORE};
+  static contentChildrenDecorator: o.ExternalReference = {
+    name: 'ContentChildren',
     moduleName: CORE,
   };
 

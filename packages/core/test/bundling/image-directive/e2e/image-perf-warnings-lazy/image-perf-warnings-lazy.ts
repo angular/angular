@@ -10,7 +10,6 @@ import {Component} from '../../../../../src/core';
 
 @Component({
   selector: 'image-perf-warnings-lazy',
-  standalone: true,
   template: `
     <!-- 'a.png' should be treated as an LCP element -->
     <img src="/e2e/a.png" width="2500" height="2500" loading="lazy">

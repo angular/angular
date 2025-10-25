@@ -17,8 +17,8 @@ import {Hero} from '../model/hero';
 })
 // #docregion class
 export class DashboardHeroComponent {
-  hero = input.required<Hero>();
-  selected = output<Hero>();
+  readonly hero = input.required<Hero>();
+  readonly selected = output<Hero>();
   click() {
     this.selected.emit(this.hero());
   }

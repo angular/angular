@@ -10,8 +10,6 @@ import {ResourceLoader} from '@angular/compiler';
 import {
   ApplicationInitStatus,
   ɵINTERNAL_APPLICATION_ERROR_HANDLER as INTERNAL_APPLICATION_ERROR_HANDLER,
-  ɵChangeDetectionScheduler as ChangeDetectionScheduler,
-  ɵChangeDetectionSchedulerImpl as ChangeDetectionSchedulerImpl,
   Compiler,
   COMPILER_OPTIONS,
   Component,
@@ -43,6 +41,7 @@ import {
   ɵgetAsyncClassMetadataFn as getAsyncClassMetadataFn,
   ɵgetInjectableDef as getInjectableDef,
   ɵInternalEnvironmentProviders as InternalEnvironmentProviders,
+  ɵprovideZonelessChangeDetectionInternal as provideZonelessChangeDetectionInternal,
   ɵinternalProvideZoneChangeDetection as internalProvideZoneChangeDetection,
   ɵisComponentDefPendingResolution,
   ɵisEnvironmentProviders as isEnvironmentProviders,
@@ -92,6 +91,8 @@ enum TestingModuleOverride {
   DECLARATION,
   OVERRIDE_TEMPLATE,
 }
+
+const ZONELESS_BY_DEFAULT = true;
 
 function isTestingModuleOverride(value: unknown): value is TestingModuleOverride {
   return (
@@ -936,9 +937,9 @@ export class TestBedCompiler {
     compileNgModuleDefs(RootScopeModule as NgModuleType<any>, {
       providers: [
         ...this.rootProviderOverrides,
-        internalProvideZoneChangeDetection({}),
+        provideZonelessChangeDetectionInternal(),
+        ZONELESS_BY_DEFAULT ? [] : internalProvideZoneChangeDetection({}),
         TestBedApplicationErrorHandler,
-        {provide: ChangeDetectionScheduler, useExisting: ChangeDetectionSchedulerImpl},
         {
           provide: ENVIRONMENT_INITIALIZER,
           multi: true,

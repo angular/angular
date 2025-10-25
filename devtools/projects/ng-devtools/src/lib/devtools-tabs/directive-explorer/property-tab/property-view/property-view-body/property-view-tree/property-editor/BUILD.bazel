@@ -1,0 +1,27 @@
+load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary")
+
+package(default_visibility = ["//devtools:__subpackages__"])
+
+sass_binary(
+    name = "property-editor_styles",
+    src = "property-editor.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
+ng_project(
+    name = "property-editor",
+    srcs = [
+        "property-editor.component.ts",
+    ],
+    angular_assets = [
+        "property-editor.component.html",
+        ":property-editor_styles",
+    ],
+    deps = [
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/forms",
+        "//devtools/projects/protocol",
+    ],
+)

@@ -47,6 +47,7 @@ function addBody<T>(
     redirect?: RequestRedirect;
     referrer?: string;
     integrity?: string;
+    referrerPolicy?: ReferrerPolicy;
     transferCache?: {includeHeaders?: string[]} | boolean;
     timeout?: number;
   },
@@ -71,6 +72,7 @@ function addBody<T>(
     redirect: options.redirect,
     integrity: options.integrity,
     referrer: options.referrer,
+    referrerPolicy: options.referrerPolicy,
   };
 }
 
@@ -170,6 +172,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -207,6 +210,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -244,6 +248,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -282,6 +287,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -320,6 +326,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -358,6 +365,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -396,6 +404,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -434,6 +443,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -471,6 +481,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -507,6 +518,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -544,6 +556,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -582,6 +595,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -619,6 +633,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
     },
   ): Observable<HttpResponse<R>>;
@@ -655,6 +670,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -692,6 +708,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -728,6 +745,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -781,6 +799,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     } = {},
@@ -830,6 +849,7 @@ export class HttpClient {
         redirect: options.redirect,
         credentials: options.credentials,
         referrer: options.referrer,
+        referrerPolicy: options.referrerPolicy,
         integrity: options.integrity,
         timeout: options.timeout,
       });
@@ -950,6 +970,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       body?: any | null;
     },
   ): Observable<ArrayBuffer>;
@@ -983,6 +1004,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1017,6 +1039,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1052,6 +1075,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1087,6 +1111,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1122,6 +1147,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1157,6 +1183,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1192,6 +1219,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1226,6 +1254,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1260,6 +1289,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1294,6 +1324,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1329,6 +1360,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1363,6 +1395,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1397,6 +1430,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1431,6 +1465,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     },
@@ -1465,6 +1500,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
       body?: any | null;
     } = {},
@@ -1501,6 +1537,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1535,6 +1572,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1569,6 +1607,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1604,6 +1643,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1638,6 +1678,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1672,6 +1713,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1706,6 +1748,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1740,6 +1783,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1775,6 +1819,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1810,6 +1855,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1845,6 +1891,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1880,6 +1927,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1915,6 +1963,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1950,6 +1999,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -1984,6 +2034,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2014,6 +2065,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     } = {},
@@ -2050,6 +2102,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2085,6 +2138,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2119,6 +2173,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2154,6 +2209,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2189,6 +2245,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2224,6 +2281,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2259,6 +2317,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2294,6 +2353,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2329,6 +2389,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2364,6 +2425,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2399,6 +2461,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2434,6 +2497,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2469,6 +2533,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2504,6 +2569,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2539,6 +2605,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -2571,6 +2638,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     } = {},
@@ -2657,6 +2725,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<ArrayBuffer>;
@@ -2690,6 +2759,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Blob>;
@@ -2723,6 +2793,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<string>;
@@ -2757,6 +2828,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -2791,6 +2863,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -2825,6 +2898,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<string>>;
@@ -2859,6 +2933,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Object>>;
@@ -2893,6 +2968,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<T>>;
@@ -2927,6 +3003,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -2961,6 +3038,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -2995,6 +3073,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<string>>;
@@ -3029,6 +3108,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Object>>;
@@ -3063,6 +3143,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<T>>;
@@ -3097,6 +3178,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Object>;
@@ -3130,6 +3212,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<T>;
@@ -3161,6 +3244,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     } = {},
   ): Observable<any> {
@@ -3198,6 +3282,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<ArrayBuffer>;
@@ -3233,6 +3318,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Blob>;
@@ -3268,6 +3354,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<string>;
@@ -3305,6 +3392,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -3341,6 +3429,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -3377,6 +3466,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<string>>;
@@ -3413,6 +3503,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Object>>;
@@ -3449,6 +3540,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<T>>;
@@ -3485,6 +3577,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -3521,6 +3614,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -3557,6 +3651,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<string>>;
@@ -3593,6 +3688,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Object>>;
@@ -3629,6 +3725,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<T>>;
@@ -3665,6 +3762,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Object>;
@@ -3701,6 +3799,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<T>;
@@ -3731,6 +3830,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     } = {},
   ): Observable<any> {
@@ -3768,6 +3868,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3804,6 +3905,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3840,6 +3942,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3877,6 +3980,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3913,6 +4017,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3950,6 +4055,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -3987,6 +4093,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4024,6 +4131,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4061,6 +4169,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4098,6 +4207,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4135,6 +4245,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4172,6 +4283,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4210,6 +4322,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4246,6 +4359,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4283,6 +4397,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -4315,6 +4430,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     } = {},
@@ -4353,6 +4469,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<ArrayBuffer>;
@@ -4388,6 +4505,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Blob>;
@@ -4423,6 +4541,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<string>;
@@ -4459,6 +4578,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<ArrayBuffer>>;
@@ -4495,6 +4615,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Blob>>;
@@ -4531,6 +4652,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<string>>;
@@ -4567,6 +4689,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<Object>>;
@@ -4603,6 +4726,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpEvent<T>>;
@@ -4639,6 +4763,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<ArrayBuffer>>;
@@ -4675,6 +4800,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Blob>>;
@@ -4711,6 +4837,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<string>>;
@@ -4747,6 +4874,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<Object>>;
@@ -4783,6 +4911,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<HttpResponse<T>>;
@@ -4818,6 +4947,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<Object>;
@@ -4853,6 +4983,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     },
   ): Observable<T>;
@@ -4884,6 +5015,7 @@ export class HttpClient {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       timeout?: number;
     } = {},
   ): Observable<any> {

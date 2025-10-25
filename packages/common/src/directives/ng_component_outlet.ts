@@ -100,21 +100,15 @@ import {
   exportAs: 'ngComponentOutlet',
 })
 export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
-  // TODO(crisbeto): this should be `Type<T>`, but doing so broke a few
-  // targets in a TGP so we need to do it in a major version.
   /** Component that should be rendered in the outlet. */
-  @Input() ngComponentOutlet: Type<any> | null = null;
+  @Input() ngComponentOutlet: Type<T> | null = null;
 
   @Input() ngComponentOutletInputs?: Record<string, unknown>;
   @Input() ngComponentOutletInjector?: Injector;
   @Input() ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
-  @Input() ngComponentOutletContent?: any[][];
+  @Input() ngComponentOutletContent?: Node[][];
 
   @Input() ngComponentOutletNgModule?: Type<any>;
-  /**
-   * @deprecated This input is deprecated, use `ngComponentOutletNgModule` instead.
-   */
-  @Input() ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
 
   private _componentRef: ComponentRef<T> | undefined;
   private _moduleRef: NgModuleRef<any> | undefined;
@@ -175,10 +169,6 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
           if (this.ngComponentOutletNgModule) {
             this._moduleRef = createNgModule(
               this.ngComponentOutletNgModule,
-              getParentInjector(injector),
-            );
-          } else if (this.ngComponentOutletNgModuleFactory) {
-            this._moduleRef = this.ngComponentOutletNgModuleFactory.create(
               getParentInjector(injector),
             );
           } else {

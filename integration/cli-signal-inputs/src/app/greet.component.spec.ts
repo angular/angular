@@ -11,6 +11,7 @@ describe('greet component', () => {
     expect(fixture.nativeElement.textContent).toBe('Initial - initial-unset');
 
     fixture.componentInstance.firstName = 'John';
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toBe('John - initial-unset');

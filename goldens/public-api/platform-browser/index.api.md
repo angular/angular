@@ -4,7 +4,7 @@
 
 ```ts
 
-import { ApplicationConfig as ApplicationConfig_2 } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { ApplicationRef } from '@angular/core';
 import { ComponentRef } from '@angular/core';
 import { DebugElement } from '@angular/core';
@@ -25,11 +25,13 @@ import { StaticProvider } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 
-// @public @deprecated
-export type ApplicationConfig = ApplicationConfig_2;
+// @public
+export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
-export function bootstrapApplication(rootComponent: Type<unknown>, options?: ApplicationConfig): Promise<ApplicationRef>;
+export interface BootstrapContext {
+    platformRef: PlatformRef;
+}
 
 // @public
 export class BrowserModule {

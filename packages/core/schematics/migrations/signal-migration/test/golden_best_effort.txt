@@ -719,6 +719,16 @@ import {Component, input} from '@angular/core';
 export class InlineTmpl {
   readonly justify = input<'start' | 'end'>('end');
 }
+@@@@@@ input_function_that_reference_this.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestComponent {
+  readonly fnDisplay = input((item: any) => item);
+  @Input() fnEquals = (a: any, b: any) => this.fnDisplay()(a) === this.fnDisplay()(b);
+}
 @@@@@@ jit_true_component_external_tmpl.html @@@@@@
 
 {{test()}}
@@ -814,6 +824,21 @@ class ModifierScenarios {
   protected readonly ImProtectedAndReadonly = input(true);
   @CustomDecorator()
 protected readonly usingCustomDecorator = input(true);
+}
+@@@@@@ multiple_references_in_method.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TestMigrationComponent {
+  public readonly model = input<any>();
+
+  public onSaveClick(): void {
+    const model = this.model();
+    model.requisitionId = 145;
+    model.comment = 'value';
+  }
 }
 @@@@@@ mutate.ts @@@@@@
 
@@ -1356,6 +1381,15 @@ class TransformIncompatibleTypes {
   //  Input type is incompatible with transform. The migration added an `any`
   //  cast. This worked previously because Angular was unable to check transforms.
   readonly disabled = input<boolean, unknown>(undefined, { transform: ((v: unknown) => (v === null ? undefined : !!v)) as any });
+}
+@@@@@@ transform_no_explicit_types.ts @@@@@@
+
+// tslint:disable
+
+import {input} from '@angular/core';
+
+export class TransformFunctions {
+  readonly untypedTransform = input<number>(0);
 }
 @@@@@@ with_getters.ts @@@@@@
 

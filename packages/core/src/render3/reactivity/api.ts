@@ -33,5 +33,7 @@ export function isSignal(value: unknown): value is Signal<unknown> {
 
 /**
  * A comparison function which can determine if two values are equal.
+ *
+ * @publicApi 17.0
  */
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;

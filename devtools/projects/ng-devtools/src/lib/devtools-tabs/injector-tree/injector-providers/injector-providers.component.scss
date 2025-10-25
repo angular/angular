@@ -6,7 +6,7 @@
   align-items: start;
   height: 100%;
 
-  h2,
+  .header,
   .filter,
   .no-providers-label,
   table {
@@ -15,10 +15,24 @@
     box-sizing: border-box;
   }
 
-  h2 {
-    @extend %heading-400;
-    margin-top: 0;
-    padding-bottom: 0;
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    h2 {
+      @extend %heading-400;
+      margin: 0;
+      padding: 0;
+    }
+
+    .close-btn {
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+    }
   }
 
   .filter {

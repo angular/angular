@@ -10,7 +10,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExampleViewer} from './example-viewer.component';
 import {ExampleMetadata, ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {Component, provideZonelessChangeDetection, ComponentRef} from '@angular/core';
+import {Component, provideZonelessChangeDetection, ComponentRef, signal} from '@angular/core';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Clipboard} from '@angular/cdk/clipboard';
@@ -35,7 +35,6 @@ describe('ExampleViewer', () => {
     await TestBed.configureTestingModule({
       imports: [ExampleViewer],
       providers: [
-        // TODO: Find why tests warn that zone.js is still loaded
         provideZonelessChangeDetection(),
         {provide: EXAMPLE_VIEWER_CONTENT_LOADER, useValue: exampleContentSpy},
         {provide: ActivatedRoute, useValue: {snapshot: {fragment: 'fragment'}}},
@@ -53,9 +52,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: ''},
-          {name: 'file.html', content: ''},
-          {name: 'file.css', content: ''},
+          {name: 'file.ts', sanitizedContent: ''},
+          {name: 'file.html', sanitizedContent: ''},
+          {name: 'file.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -73,9 +72,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'file.ts', content: 'typescript file'},
-          {name: 'file.html', content: 'html file'},
-          {name: 'file.css', content: 'css file'},
+          {name: 'file.ts', sanitizedContent: 'typescript file'},
+          {name: 'file.html', sanitizedContent: 'html file'},
+          {name: 'file.css', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -93,9 +92,9 @@ describe('ExampleViewer', () => {
       'metadata',
       getMetadata({
         files: [
-          {name: 'example.ts', content: 'typescript file'},
-          {name: 'example.html', content: 'html file'},
-          {name: 'another-example.ts', content: 'css file'},
+          {name: 'example.ts', sanitizedContent: 'typescript file'},
+          {name: 'example.html', sanitizedContent: 'html file'},
+          {name: 'another-example.ts', sanitizedContent: 'css file'},
         ],
       }),
     );
@@ -124,7 +123,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -148,7 +147,7 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
             visibleLinesRange: '[1]',
           },
         ],
@@ -216,7 +215,7 @@ describe('ExampleViewer', () => {
     fixture.detectChanges();
 
     const stackblitzButton = fixture.debugElement.query(
-      By.css('a[aria-label="Edit this example in StackBlitz"]'),
+      By.css('a[aria-label="Edit example in StackBlitz"]'),
     );
     expect(stackblitzButton).toBeTruthy();
     expect(stackblitzButton.nativeElement.href).toBe(component.stackblitzUrl());
@@ -243,9 +242,9 @@ describe('ExampleViewer', () => {
         files: [
           {
             name: 'example.ts',
-            content: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
+            sanitizedContent: `<pre><code>${expectedCodeSnippetContent}</code></pre>`,
           },
-          {name: 'example.css', content: ''},
+          {name: 'example.css', sanitizedContent: ''},
         ],
       }),
     );
@@ -273,21 +272,86 @@ describe('ExampleViewer', () => {
     button.click();
     expect(spy.calls.argsFor(0)[0].trim()).toBe(`${window.location.href}#example-1`);
   });
+
+  it('should hide code content when `hideCode` is true', async () => {
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        hideCode: true,
+      }),
+    );
+
+    await component.renderExample();
+    fixture.detectChanges();
+
+    // Initially, the code should be hidden.
+    expect(component.showCode()).toBeFalse();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+  });
+
+  it('should expand/collapse code content with toggle button.', async () => {
+    componentRef.setInput('metadata', getMetadata());
+
+    await component.renderExample();
+    fixture.detectChanges();
+
+    // Initially, the code should be visible.
+    expect(component.showCode()).toBeTrue();
+    let codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+
+    const codeToggleButton = fixture.debugElement.query(By.css('.docs-example-code-toggle'));
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+
+    expect(component.showCode()).toBeFalse();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).toBeNull();
+
+    codeToggleButton.nativeElement.click();
+    fixture.detectChanges();
+
+    expect(component.showCode()).toBeTrue();
+    codeContainer = fixture.debugElement.query(By.css('.docs-example-viewer-code-wrapper'));
+    expect(codeContainer).not.toBeNull();
+  });
+
+  it('should render example', async () => {
+    exampleContentSpy.loadPreview.and.resolveTo(ExampleComponent);
+    componentRef.setInput(
+      'metadata',
+      getMetadata({
+        path: 'example.ts',
+        preview: true,
+      }),
+    );
+    await component.renderExample();
+    fixture.detectChanges();
+    expect(component.exampleComponent).toBeDefined();
+
+    const previewContainer = fixture.debugElement.query(By.css('.docs-example-viewer-preview'));
+    expect(previewContainer.nativeElement.innerHTML).toContain('ng-component');
+    expect(previewContainer.nativeElement.textContent).toContain('foobar');
+  });
 });
 
 const getMetadata = (value: Partial<ExampleMetadata> = {}): ExampleMetadata => {
   return {
     id: 1,
     files: [
-      {name: 'example.ts', content: ''},
-      {name: 'example.css', content: ''},
+      {name: 'example.ts', sanitizedContent: ''},
+      {name: 'example.css', sanitizedContent: ''},
     ],
     preview: false,
+    hideCode: false,
     ...value,
   };
 };
 
 @Component({
-  template: '',
+  template: '{{foobar}}',
 })
-class ExampleComponent {}
+class ExampleComponent {
+  foobar = signal('foobar');
+}

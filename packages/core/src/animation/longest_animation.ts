@@ -6,14 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export interface LongestAnimation {
-  animationName: string | undefined;
-  propertyName: string | undefined;
-  duration: number;
-}
+import {LView} from '../render3/interfaces/view';
+import {LongestAnimation} from './interfaces';
 
 /** Parses a CSS time value to milliseconds. */
-function parseCssTimeUnitsToMs(value: string): number {
+function parseCssTimeUnitsToMs(value: string | undefined): number {
+  if (!value) return 0;
   // Some browsers will return it in seconds, whereas others will return milliseconds.
   const multiplier = value.toLowerCase().indexOf('ms') > -1 ? 1 : 1000;
   return parseFloat(value) * multiplier;
@@ -56,6 +54,20 @@ function getLongestComputedAnimation(computedStyle: CSSStyleDeclaration): Longes
   return longest;
 }
 
+function isShorterThanExistingAnimation(
+  existing: LongestAnimation | undefined,
+  longest: LongestAnimation,
+): boolean {
+  return existing !== undefined && existing.duration > longest.duration;
+}
+
+function longestExists(longest: LongestAnimation): boolean {
+  return (
+    (longest.animationName != undefined || longest.propertyName != undefined) &&
+    longest.duration > 0
+  );
+}
+
 /**
  * Determines the longest animation, but with `getComputedStyles` instead of `getAnimations`. This
  * is ultimately safer than getAnimations because it can be used when recalculations are in
@@ -72,10 +84,10 @@ function determineLongestAnimationFromComputedStyles(
 
   const longest =
     longestAnimation.duration > longestTransition.duration ? longestAnimation : longestTransition;
-  if (animationsMap.has(el) && animationsMap.get(el)!.duration > longest.duration) {
-    return;
+  if (isShorterThanExistingAnimation(animationsMap.get(el), longest)) return;
+  if (longestExists(longest)) {
+    animationsMap.set(el, longest);
   }
-  animationsMap.set(el, longest);
 }
 
 /**
@@ -86,12 +98,11 @@ function determineLongestAnimationFromComputedStyles(
  * that animation completes.
  */
 export function determineLongestAnimation(
-  event: AnimationEvent | TransitionEvent,
   el: HTMLElement,
   animationsMap: WeakMap<HTMLElement, LongestAnimation>,
   areAnimationSupported: boolean,
 ): void {
-  if (!areAnimationSupported || !(event.target instanceof Element) || event.target !== el) return;
+  if (!areAnimationSupported) return;
   const animations = el.getAnimations();
   return animations.length === 0
     ? // fallback to computed styles if getAnimations is empty. This would happen if styles are
@@ -105,7 +116,7 @@ function determineLongestAnimationFromElementAnimations(
   animationsMap: WeakMap<HTMLElement, LongestAnimation>,
   animations: Animation[],
 ): void {
-  let currentLongest: LongestAnimation = {
+  let longest: LongestAnimation = {
     animationName: undefined,
     propertyName: undefined,
     duration: 0,
@@ -126,12 +137,14 @@ function determineLongestAnimationFromElementAnimations(
       propertyName = (animation as CSSTransition).transitionProperty;
     }
 
-    if (duration >= currentLongest.duration) {
-      currentLongest = {animationName, propertyName, duration};
+    if (duration >= longest.duration) {
+      longest = {animationName, propertyName, duration};
     }
   }
-  if (animationsMap.has(el) && animationsMap.get(el)!.duration > currentLongest.duration) {
-    return;
+  if (isShorterThanExistingAnimation(animationsMap.get(el), longest)) return;
+  if (longestExists(longest)) {
+    animationsMap.set(el, longest);
   }
-  animationsMap.set(el, currentLongest);
 }
+
+export const allLeavingAnimations = new Set<LView>();

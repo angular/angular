@@ -17,5 +17,5 @@ import {DocContent, DocViewer} from '@angular/docs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class CliReferenceDetailsPage {
-  docContent = input<DocContent | undefined>();
+  readonly docContent = input<DocContent | undefined>();
 }

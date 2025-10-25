@@ -33,9 +33,13 @@
                 <ng-docs-ref-button docs="injector-hierarchies" />
               </h2>
               <section class="injector-graph">
-                <ng-tree-visualizer-host
+                <ng-tree-visualizer
                   #environmentTree
                   a11yTitle="Environment hierarchy visualization"
+                  [root]="environmentInjectorTree()!"
+                  [config]="environmentTreeConfig"
+                  (nodeClick)="selectInjectorByNode($event)"
+                  (render)="onTreeRender(environmentTree, $event)"
                 />
               </section>
             </div>
@@ -47,17 +51,25 @@
                 <ng-docs-ref-button docs="injector-hierarchies" />
               </h2>
               <section class="injector-graph">
-                <ng-tree-visualizer-host #elementTree a11yTitle="Element hierarchy visualization" />
+                <ng-tree-visualizer
+                  #elementTree
+                  a11yTitle="Element hierarchy visualization"
+                  [root]="elementInjectorTree()!"
+                  [config]="elementTreeConfig"
+                  (nodeClick)="selectInjectorByNode($event)"
+                  (render)="onTreeRender(elementTree, $event)"
+                />
               </section>
             </div>
           </as-split-area>
         </as-split>
       </as-split-area>
-      @if (selectedNode() && providers().length > 0) {
+      @if (injectorProvidersEnabled()) {
         <as-split-area size="40" [minSize]="25">
           <ng-injector-providers
             [injector]="selectedNode()!.data.injector"
             [providers]="providers()"
+            (close)="injectorProvidersEnabled.set(false)"
           />
         </as-split-area>
       }

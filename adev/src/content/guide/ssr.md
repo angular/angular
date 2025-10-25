@@ -4,7 +4,7 @@ Angular ships all applications as client-side rendered (CSR) by default. While t
 
 ## What is hybrid rendering?
 
-Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how your different parts of your app is rendered to give your users the best experience possible.
+Hybrid rendering allows developers to leverage the benefits of server-side rendering (SSR), pre-rendering (also known as "static site generation" or SSG) and client-side rendering (CSR) to optimize your Angular application. It gives you fine-grained control over how the different parts of your app are rendered to give your users the best experience possible.
 
 ## Setting up hybrid rendering
 
@@ -98,7 +98,7 @@ The server routing configuration lets you specify how each route in your applica
 
 Each rendering mode has different benefits and drawbacks. You can choose rendering modes based on the specific needs of your application.
 
-##### Client-side rendering
+##### Client-side rendering (CSR)
 
 Client-side rendering has the simplest development model, as you can write code that assumes it always runs in a web browser. This lets you use a wide range of client-side libraries that also assume they run in a browser.
 
@@ -110,7 +110,7 @@ When client-side rendering, the server does not need to do any work to render a 
 
 Applications that support installable, offline experiences with [service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) can rely on client-side rendering without needing to communicate with a server.
 
-##### Server-side rendering
+##### Server-side rendering (SSR)
 
 Server-side rendering offers faster page loads than client-side rendering. Instead of waiting for JavaScript to download and run, the server directly renders an HTML document upon receiving a request from the browser. The user experiences only the latency necessary for the server to fetch data and render the requested page. This mode also eliminates the need for additional network requests from the browser, as your code can fetch data during rendering on the server.
 
@@ -267,6 +267,13 @@ export class MyComponent {
 }
 ```
 
+## Setting providers on the server
+
+On the server side, top level provider values are set once when the application code is initially parsed and evaluated.
+This means that providers configured with `useValue` will keep their value across multiple requests, until the server application is restarted.
+
+If you want to generate a new value for each request, use a factory provider with `useFactory`. The factory function will run for every incoming request, ensuring that a new value is created and assigned to the token each time.
+
 ## Accessing Request and Response via DI
 
 The `@angular/core` package provides several tokens for interacting with the server-side rendering environment. These tokens give you access to crucial information and objects within your Angular application during SSR.
@@ -323,18 +330,129 @@ To configure this, update your `angular.json` file as follows:
 
 ## Caching data when using HttpClient
 
-[`HttpClient`](api/common/http/HttpClient) cached outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
+`HttpClient` caches outgoing network requests when running on the server. This information is serialized and transferred to the browser as part of the initial HTML sent from the server. In the browser, `HttpClient` checks whether it has data in the cache and if so, reuses it instead of making a new HTTP request during initial application rendering. `HttpClient` stops using the cache once an application becomes [stable](api/core/ApplicationRef#isStable) while running in a browser.
 
-By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using [`withHttpTransferCacheOptions`](api/platform-browser/withHttpTransferCacheOptions) when providing hydration.
+### Configuring the caching options
 
-```typescript
+You can customize how Angular caches HTTP responses during server‑side rendering (SSR) and reuses them during hydration by configuring `HttpTransferCacheOptions`.  
+This configuration is provided globally using `withHttpTransferCacheOptions` inside `provideClientHydration()`.
+
+By default, `HttpClient` caches all `HEAD` and `GET` requests which don't contain `Authorization` or `Proxy-Authorization` headers. You can override those settings by using `withHttpTransferCacheOptions` to the hydration configuration.
+
+```ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideClientHydration(
+      withHttpTransferCacheOptions({
+        includeHeaders: ['ETag', 'Cache-Control'],
+        filter: (req) => !req.url.includes('/api/profile'),
+        includePostRequests: true,
+        includeRequestsWithAuthHeaders: false,
+      }),
+    ),
+  ],
+});
+```
+
+---
+
+### `includeHeaders`
+
+Specifies which headers from the server response should be included in cached entries.  
+No headers are included by default.
+
+```ts
+withHttpTransferCacheOptions({
+  includeHeaders: ['ETag', 'Cache-Control'],
+});
+```
+
+IMPORTANT: Avoid including sensitive headers like authentication tokens. These can leak user‑specific data between requests.
+
+---
+
+### `includePostRequests`
+
+By default, only `GET` and `HEAD` requests are cached.  
+You can enable caching for `POST` requests when they are used as read operations such as GraphQL queries.
+
+```ts
+withHttpTransferCacheOptions({
+  includePostRequests: true,
+});
+```
+
+Use this only when `POST` requests are **idempotent** and safe to reuse between server and client renders.
+
+---
+
+### `includeRequestsWithAuthHeaders`
+
+Determines whether requests containing `Authorization` or `Proxy‑Authorization` headers are eligible for caching.  
+By default, these are excluded to prevent caching user‑specific responses.
+
+```ts
+withHttpTransferCacheOptions({
+  includeRequestsWithAuthHeaders: true,
+});
+```
+
+Enable only when authentication headers do **not** affect the response content (for example, public tokens for analytics APIs).
+
+### Per‑request overrides
+
+You can override caching behavior for a specific request using the `transferCache` request option.
+
+```ts
+// Include specific headers for this request
+http.get('/api/profile', { transferCache: { includeHeaders: ['CustomHeader'] } });
+```
+
+### Disabling caching
+
+You can disable HTTP caching of requests sent from the server either globally or individually.
+
+#### Globally
+
+To disable caching for all requests in your application, use the `withNoHttpTransferCache` feature:
+
+```ts
+import { bootstrapApplication, provideClientHydration, withNoHttpTransferCache } from '@angular/platform-browser';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideClientHydration(withNoHttpTransferCache())
+  ]
+});
+```
+
+#### `filter`
+
+You can also selectively disable caching for certain requests using the [`filter`](api/common/http/HttpTransferCacheOptions) option in `withHttpTransferCacheOptions`. For example, you can disable caching for a specific API endpoint:
+
+```ts
+import { bootstrapApplication, provideClientHydration, withHttpTransferCacheOptions } from '@angular/platform-browser';
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideClientHydration(withHttpTransferCacheOptions({
-      includePostRequests: true
+      filter: (req) => !req.url.includes('/api/sensitive-data')
     }))
   ]
 });
+```
+
+Use this option to exclude endpoints with user‑specific or dynamic data (for example `/api/profile`).
+
+#### Individually
+
+To disable caching for an individual request, you can specify the [`transferCache`](api/common/http/HttpRequest#transferCache) option in an `HttpRequest`.
+
+```ts
+httpClient.get('/api/sensitive-data', { transferCache: false });
 ```
 
 ## Configuring a server

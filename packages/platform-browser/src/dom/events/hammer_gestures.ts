@@ -19,7 +19,8 @@ import {
   ɵConsole as Console,
 } from '@angular/core';
 
-import {EVENT_MANAGER_PLUGINS, EventManagerPlugin} from './event_manager';
+import {EVENT_MANAGER_PLUGINS} from './event_manager';
+import {EventManagerPlugin} from './event_manager_plugin';
 
 /**
  * Supported HammerJS recognizer event names.

@@ -21,10 +21,10 @@ import {BindingParser} from '../../../template_parser/binding_parser';
 import * as ir from '../ir';
 
 import {
-  TemplateCompilationMode,
   CompilationUnit,
   ComponentCompilationJob,
   HostBindingCompilationJob,
+  TemplateCompilationMode,
   type CompilationJob,
   type ViewCompilationUnit,
 } from './compilation';
@@ -200,21 +200,37 @@ export function ingestHostAttribute(
 }
 
 export function ingestHostEvent(job: HostBindingCompilationJob, event: e.ParsedEvent) {
-  const [phase, target] =
-    event.type !== e.ParsedEventType.LegacyAnimation
-      ? [null, event.targetOrPhase]
-      : [event.targetOrPhase, null];
-  const eventBinding = ir.createListenerOp(
-    job.root.xref,
-    new ir.SlotHandle(),
-    event.name,
-    null,
-    makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
-    phase,
-    target,
-    true,
-    event.sourceSpan,
-  );
+  let eventBinding: ir.CreateOp;
+  if (event.type === e.ParsedEventType.Animation) {
+    eventBinding = ir.createAnimationListenerOp(
+      job.root.xref,
+      new ir.SlotHandle(),
+      event.name,
+      null,
+      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
+      event.name.endsWith('enter') ? ir.AnimationKind.ENTER : ir.AnimationKind.LEAVE,
+      event.targetOrPhase,
+      true,
+      event.sourceSpan,
+    );
+  } else {
+    const [phase, target] =
+      event.type !== e.ParsedEventType.LegacyAnimation
+        ? [null, event.targetOrPhase]
+        : [event.targetOrPhase, null];
+
+    eventBinding = ir.createListenerOp(
+      job.root.xref,
+      new ir.SlotHandle(),
+      event.name,
+      null,
+      makeListenerHandlerOps(job.root, event.handler, event.handlerSpan),
+      phase,
+      target,
+      true,
+      event.sourceSpan,
+    );
+  }
   job.root.create.push(eventBinding);
 }
 
@@ -833,6 +849,9 @@ function ingestDeferTriggers(
         targetSlot: null,
         targetView: null,
         targetSlotViewSteps: null,
+        options: triggers.viewport.options
+          ? convertAst(triggers.viewport.options, unit.job, triggers.viewport.sourceSpan)
+          : null,
       },
       modifier,
       triggers.viewport.sourceSpan,
@@ -1182,6 +1201,8 @@ function convertAst(
       undefined,
       convertSourceSpan(ast.span, baseSourceSpan),
     );
+  } else if (ast instanceof e.RegularExpressionLiteral) {
+    return new o.RegularExpressionLiteral(ast.body, ast.flags, baseSourceSpan);
   } else {
     throw new Error(
       `Unhandled expression type "${ast.constructor.name}" in file "${baseSourceSpan?.start.file.url}"`,
@@ -1326,6 +1347,12 @@ function ingestElementBindings(
         input.sourceSpan,
       ),
     );
+
+    // If the input name is 'field', this could be a form control binding which requires a
+    // `ControlCreateOp` to properly initialize.
+    if (input.type === e.BindingType.Property && input.name === 'field') {
+      unit.create.push(ir.createControlCreateOp(input.sourceSpan));
+    }
   }
 
   unit.create.push(

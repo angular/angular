@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "generate_api_docs", "ng_project")
+load("//tools:defaults.bzl", "generate_api_docs", "ng_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -14,7 +14,6 @@ ng_project(
         "//packages/compiler",
         "//packages/core",
         "//packages/core/primitives/dom-navigation/testing",
-        "//packages/localize",
     ],
 )
 

@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
-import {InterpolationConfig} from '../../ml_parser/defaults';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -273,11 +272,6 @@ export interface R3ComponentMetadata<DeclarationT extends R3TemplateDependency>
    * (used by Closure Compiler's output of `goog.getMsg` for transition period).
    */
   i18nUseExternalIds: boolean;
-
-  /**
-   * Overrides the default interpolation start and end delimiters ({{ and }}).
-   */
-  interpolation: InterpolationConfig;
 
   /**
    * Strategy used for detecting changes in the component.

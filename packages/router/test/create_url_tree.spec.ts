@@ -16,7 +16,7 @@ import {Router} from '../src/router';
 import {RouterModule} from '../src/router_module';
 import {ActivatedRoute, ActivatedRouteSnapshot} from '../src/router_state';
 import {Params, PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSerializer, UrlTree} from '../src/url_tree';
 import {provideRouter, withRouterConfig} from '../src';
 import {timeout} from './helpers';
 
@@ -68,6 +68,13 @@ describe('createUrlTree', () => {
       expect(serializer.serialize(t2)).toEqual('/a/c/c2?n=1');
     });
 
+    it('should support parameter with single-item array', async () => {
+      await router.navigateByUrl('/a/c');
+      const t1 = create(router.routerState.root.children[0].children[0], ['c2'], {m: [1]});
+      expect(serializer.serialize(t1)).toEqual('/a/c/c2?m=1');
+      expect(t1.queryParams['m']).toEqual(['1']);
+    });
+
     it('should set query params', async () => {
       const p = serializer.parse('/');
       const t = await createRoot(p, [], {a: 'hey'});
@@ -80,6 +87,17 @@ describe('createUrlTree', () => {
       const t = await createRoot(p, [], {a: 1});
       expect(t.queryParams).toEqual({a: '1'});
       expect(t.queryParamMap.get('a')).toEqual('1');
+    });
+
+    it('should retain query parameter order', async () => {
+      await router.navigateByUrl('/a/c');
+      const t = create(router.routerState.root.children[0].children[0], ['c2'], {
+        z: 1,
+        a: '2',
+        m: [3, 4],
+        b: '5',
+      });
+      expect(serializer.serialize(t)).toEqual('/a/c/c2?z=1&a=2&m=3&m=4&b=5');
     });
   });
 
@@ -746,3 +764,78 @@ async function advance(fixture: ComponentFixture<unknown>) {
   await timeout();
   fixture.detectChanges();
 }
+
+describe('createUrlTree with custom serializer', () => {
+  class CustomUrlSerializer extends DefaultUrlSerializer {
+    override parse(url: string): UrlTree {
+      const tree = super.parse(url);
+      const qp: {[key: string]: any} = {};
+      Object.keys(tree.queryParams).forEach((key) => {
+        const value = tree.queryParams[key];
+        if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
+          try {
+            qp[key] = JSON.parse(value);
+          } catch {}
+        } else {
+          qp[key] = value;
+        }
+      });
+      tree.queryParams = qp;
+      return tree;
+    }
+    override serialize(tree: UrlTree): string {
+      const qp: {[key: string]: any} = {};
+      Object.keys(tree.queryParams).forEach((key) => {
+        const value = tree.queryParams[key];
+        if (typeof value === 'object' && value !== null) {
+          qp[key] = JSON.stringify(value);
+        } else {
+          qp[key] = value;
+        }
+      });
+      tree.queryParams = qp;
+      return super.serialize(tree);
+    }
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), {provide: UrlSerializer, useClass: CustomUrlSerializer}],
+    });
+  });
+
+  it('should work with custom URL serializer that handles objects', async () => {
+    const router = TestBed.inject(Router);
+    const serializer = TestBed.inject(UrlSerializer);
+    const tree = router.createUrlTree(['a'], {queryParams: {someObject: {a: 1}}});
+    const url = serializer.serialize(tree);
+    expect(url).toEqual('/a?someObject=%7B%22a%22:1%7D');
+    const parsedTree = serializer.parse(url);
+    expect(parsedTree.queryParams).toEqual({someObject: {a: 1}});
+  });
+
+  it('should work with custom URL serializer and empty arrays', async () => {
+    const router = TestBed.inject(Router);
+    const serializer = TestBed.inject(UrlSerializer);
+    const tree = router.createUrlTree(['a'], {queryParams: {empty: []}});
+    const url = serializer.serialize(tree);
+    // with default serializer, 'empty' would be removed because serialization maps arrays to multiple
+    // key-value pairs, and an empty array would result in no key-value pairs
+    expect(url).toEqual('/a?empty=%5B%5D');
+    const parsedTree = serializer.parse(url);
+    expect(parsedTree.queryParams).toEqual({empty: []});
+  });
+
+  it('should work with custom URL serializer and single item arrays', async () => {
+    const router = TestBed.inject(Router);
+    const serializer = TestBed.inject(UrlSerializer);
+    const tree = router.createUrlTree(['a'], {queryParams: {one: ['1']}});
+    const url = serializer.serialize(tree);
+    expect(url).toEqual('/a?one=%5B%221%22%5D');
+    const parsedTree = serializer.parse(url);
+    // with default serializer, 'one' would be removed because serialization maps arrays to multiple
+    // key-value pairs, and a single item array would result in one key-value pair, which would be
+    // deserialized to a string, not an array
+    expect(parsedTree.queryParams).toEqual({one: ['1']});
+  });
+});

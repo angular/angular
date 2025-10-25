@@ -19,9 +19,7 @@ import {LoadingStep} from './enums/loading-steps';
 import {ErrorType, NodeRuntimeState} from './node-runtime-state.service';
 import {TerminalHandler} from './terminal/terminal-handler.service';
 import {TypingsLoader} from './typings-loader.service';
-
-export const DEV_SERVER_READY_MSG = 'Watch mode enabled. Watching for file changes...';
-export const OUT_OF_MEMORY_MSG = 'Out of memory';
+import {DEV_SERVER_READY_MSG, OUT_OF_MEMORY_MSG} from './node-runtime-errors';
 
 const enum PROCESS_EXIT_CODE {
   SUCCESS = 0, // process exited successfully

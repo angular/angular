@@ -3,7 +3,7 @@ load("@aspect_bazel_lib//lib:copy_to_directory.bzl", _copy_to_directory = "copy_
 load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@devinfra//bazel/private:path_relative_to_label.bzl", _path_relative_to_label = "path_relative_to_label")
 load(
-    "//tools:defaults2.bzl",
+    "//tools:defaults.bzl",
     _jasmine_test = "jasmine_test",
     _js_binary = "js_binary",
     _js_library = "js_library",

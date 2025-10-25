@@ -6,7 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, computed, inject, input, signal} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -28,6 +36,7 @@ import {ButtonComponent} from '../../../shared/button/button.component';
 export class InjectorProvidersComponent {
   readonly injector = input.required<SerializedInjector>();
   readonly providers = input<SerializedProviderRecord[]>([]);
+  protected readonly close = output<void>();
 
   readonly searchToken = signal('');
   readonly searchType = signal('');

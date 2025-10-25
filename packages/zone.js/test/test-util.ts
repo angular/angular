@@ -111,14 +111,6 @@ export function asyncTest(this: unknown, testFn: Function, zone: Zone = Zone.cur
   };
 }
 
-export function getIEVersion() {
-  const userAgent = navigator.userAgent.toLowerCase();
-  if (userAgent.indexOf('msie') != -1) {
-    return parseInt(userAgent.split('msie')[1]);
-  }
-  return null;
-}
-
 export function isFirefox() {
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.indexOf('firefox') != -1) {
@@ -133,20 +125,6 @@ export function isSafari() {
     return true;
   }
   return false;
-}
-
-export function isEdge() {
-  const userAgent = navigator.userAgent.toLowerCase();
-  return userAgent.indexOf('edge') !== -1;
-}
-
-export function getEdgeVersion() {
-  const ua = navigator.userAgent.toLowerCase();
-  const edge = ua.indexOf('edge/');
-  if (edge === -1) {
-    return -1;
-  }
-  return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
 }
 
 export function isPhantomJS() {

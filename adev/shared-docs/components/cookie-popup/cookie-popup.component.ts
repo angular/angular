@@ -11,7 +11,7 @@ import {LOCAL_STORAGE} from '../../providers/index';
 import {setCookieConsent} from '../../utils';
 
 /**
- * Decelare gtag as part of the window in this file as gtag is expected to already be loaded.
+ * Declare gtag as part of the window in this file as gtag is expected to already be loaded.
  */
 declare const window: Window & typeof globalThis & {gtag?: Function};
 
@@ -27,7 +27,7 @@ export class CookiePopup {
   private readonly localStorage = inject(LOCAL_STORAGE);
 
   /** Whether the user has accepted the cookie disclaimer. */
-  hasAccepted = signal<boolean>(false);
+  readonly hasAccepted = signal(false);
 
   constructor() {
     // Needs to be in a try/catch, because some browsers will

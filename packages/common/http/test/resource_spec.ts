@@ -15,6 +15,7 @@ import {
   httpResource,
   HttpContext,
   HttpContextToken,
+  HttpResourceRef,
 } from '../index';
 import {HttpTestingController, provideHttpClientTesting} from '../testing';
 
@@ -113,6 +114,7 @@ describe('httpResource', () => {
         credentials: 'include',
         integrity: 'sha256-abc123',
         referrer: 'https://example.com',
+        referrerPolicy: 'strict-origin-when-cross-origin',
       }),
       {injector: TestBed.inject(Injector)},
     );
@@ -130,6 +132,7 @@ describe('httpResource', () => {
     expect(req.request.credentials).toBe('include');
     expect(req.request.integrity).toBe('sha256-abc123');
     expect(req.request.referrer).toBe('https://example.com');
+    expect(req.request.referrerPolicy).toBe('strict-origin-when-cross-origin');
 
     req.flush([]);
 
@@ -219,7 +222,14 @@ describe('httpResource', () => {
         withCredentials: true,
         keepalive: true,
         transferCache: {includeHeaders: ['Y-Tag']},
+        referrerPolicy: 'no-referrer',
         timeout: 1234,
+        priority: 'high',
+        integrity: 'sha256-abc123',
+        mode: 'cors',
+        redirect: 'follow',
+        credentials: 'include',
+        cache: 'no-store',
       }),
       {
         injector: TestBed.inject(Injector),
@@ -236,6 +246,13 @@ describe('httpResource', () => {
     expect(req.request.keepalive).toBe(true);
     expect(req.request.transferCache).toEqual({includeHeaders: ['Y-Tag']});
     expect(req.request.timeout).toBe(1234);
+    expect(req.request.referrerPolicy).toBe('no-referrer');
+    expect(req.request.priority).toBe('high');
+    expect(req.request.integrity).toBe('sha256-abc123');
+    expect(req.request.mode).toBe('cors');
+    expect(req.request.redirect).toBe('follow');
+    expect(req.request.credentials).toBe('include');
+    expect(req.request.cache).toBe('no-store');
   });
 
   it('should allow mapping data to an arbitrary type', async () => {
@@ -337,5 +354,50 @@ describe('httpResource', () => {
     expect(res.headers()).toBe(undefined);
     expect(res.progress()).toBe(undefined);
     expect(res.statusCode()).toBe(undefined);
+  });
+
+  describe('types', () => {
+    it('should narrow hasValue() when the value can be undefined', () => {
+      const result: HttpResourceRef<number | undefined> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        // @ts-expect-error
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when a default value is provided', () => {
+      const result: HttpResourceRef<number> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+        parse: () => 0,
+        defaultValue: 0,
+      });
+
+      if (result.hasValue()) {
+        const _value: number = result.value();
+      } else if (result.isLoading()) {
+        const _value: number = result.value();
+      } else if (result.error()) {
+      }
+    });
+
+    it('should not narrow hasValue() when the resource type is unknown', () => {
+      const result: HttpResourceRef<unknown> = httpResource(() => '/data', {
+        injector: TestBed.inject(Injector),
+      });
+
+      if (result.hasValue()) {
+        const _value: unknown = result.value();
+      } else if (result.isLoading()) {
+        const _value: unknown = result.value();
+      } else if (result.error()) {
+      }
+    });
   });
 });

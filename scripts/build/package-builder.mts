@@ -10,10 +10,7 @@ import {execSync} from 'child_process';
 import {join, dirname} from 'path';
 import {BuiltPackage} from '@angular/ng-dev';
 import {fileURLToPath} from 'url';
-import sh from 'shelljs';
-
-// ShellJS should exit if a command fails.
-sh.set('-e');
+import {existsSync, lstatSync} from 'fs';
 
 /** Path to the project directory. */
 export const projectDir: string = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -27,7 +24,7 @@ const releaseTargetTag = 'release-with-framework';
 /** Command that queries Bazel for all release package targets. */
 const queryPackagesCmd =
   `${bazelCmd} query --output=label "filter(':npm_package$', ` +
-  `attr('tags', '\\[.*${releaseTargetTag}.*\\]', //packages/...))"`;
+  `attr('tags', '\\[.*${releaseTargetTag}.*\\]', //packages/... + //vscode-ng-language-service/...))"`;
 
 /** Path for the default distribution output directory. */
 const defaultDistPath = join(projectDir, 'dist/packages-dist');
@@ -62,8 +59,12 @@ function buildReleasePackages(
   const targets = exec(queryPackagesCmd, true).split(/\r?\n/).concat(additionalTargets);
   const packageNames = getPackageNamesOfTargets(targets);
   const bazelBinPath = exec(`${bazelCmd} info bazel-bin`, true);
-  const getBazelOutputPath = (pkgName: string) =>
-    join(bazelBinPath, 'packages', pkgName, 'npm_package');
+  const getBazelOutputPath = (pkgName: string) => {
+    return pkgName === 'language-server'
+      ? join(bazelBinPath, 'vscode-ng-language-service/server/npm_package')
+      : join(bazelBinPath, 'packages', pkgName, 'npm_package');
+  };
+
   const getDistPath = (pkgName: string) => join(distPath, pkgName);
 
   // Build with "--config=release" or `--config=snapshot-build` so that Bazel
@@ -76,9 +77,9 @@ function buildReleasePackages(
   // do this to ensure that the version placeholders are properly populated.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
-    if (sh.test('-d', outputPath)) {
-      sh.chmod('-R', 'u+w', outputPath);
-      sh.rm('-rf', outputPath);
+    if (existsSync(outputPath) && lstatSync(outputPath).isDirectory()) {
+      exec(`chmod -R u+w ${outputPath}`);
+      exec(`rm -rf ${outputPath}`);
     }
   });
 
@@ -86,16 +87,16 @@ function buildReleasePackages(
 
   // Delete the distribution directory so that the output is guaranteed to be clean. Re-create
   // the empty directory so that we can copy the release packages into it later.
-  sh.rm('-rf', distPath);
-  sh.mkdir('-p', distPath);
+  exec(`rm -rf ${distPath}`);
+  exec(`mkdir -p ${distPath}`);
 
   // Copy the package output into the specified distribution folder.
   packageNames.forEach((pkgName) => {
     const outputPath = getBazelOutputPath(pkgName);
     const targetFolder = getDistPath(pkgName);
     console.info(`> Copying package output to "${targetFolder}"`);
-    sh.cp('-R', outputPath, targetFolder);
-    sh.chmod('-R', 'u+w', targetFolder);
+    exec(`cp -R ${outputPath} ${targetFolder}`);
+    exec(`chmod -R u+w ${targetFolder}`);
   });
 
   return packageNames.map((pkg) => {
@@ -112,6 +113,10 @@ function buildReleasePackages(
  */
 function getPackageNamesOfTargets(targets: string[]): string[] {
   return targets.map((targetName) => {
+    if (targetName === '//vscode-ng-language-service/server:npm_package') {
+      return 'language-server';
+    }
+
     const matches = targetName.match(/\/\/packages\/(.*):npm_package/);
     if (matches === null) {
       throw Error(
@@ -119,6 +124,7 @@ function getPackageNamesOfTargets(targets: string[]): string[] {
           `determine release output name: ${targetName}`,
       );
     }
+
     return matches[1];
   });
 }

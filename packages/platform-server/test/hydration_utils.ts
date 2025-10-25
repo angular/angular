@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {
   bootstrapApplication,
+  BootstrapContext,
   HydrationFeature,
   provideClientHydration,
   HydrationFeatureKind,
@@ -263,7 +264,8 @@ export async function ssr(
       enableHydration ? provideClientHydration(...hydrationFeatures()) : [],
     ];
 
-    const bootstrap = () => bootstrapApplication(component, {providers});
+    const bootstrap = (context: BootstrapContext) =>
+      bootstrapApplication(component, {providers}, context);
 
     return await renderApplication(bootstrap, {
       document: options?.doc ?? defaultHtml,

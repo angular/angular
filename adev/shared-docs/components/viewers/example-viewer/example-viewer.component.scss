@@ -57,25 +57,25 @@
     display: flex;
     gap: 0.75rem;
 
-    svg {
-      fill: var(--gray-400);
-    }
-  }
+    a,
+    button {
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      height: 24px;
+      width: 24px;
+      color: var(--gray-400);
 
-  a,
-  button {
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-    height: 24px;
-    width: 24px;
-    path {
-      transition: fill 0.3s ease;
-    }
+      path {
+        transition: fill 0.3s ease;
+      }
 
-    &:hover {
       svg {
-        fill: var(--tertiary-contrast);
+        fill: currentColor;
+      }
+
+      &:hover {
+        color: var(--tertiary-contrast);
       }
     }
   }

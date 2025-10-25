@@ -6,7 +6,6 @@
   "entries": [
     {
       "name": "TestbedHarnessEnvironmentOptions",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -22,6 +21,7 @@
       "description": "Options to configure the environment.",
       "jsdocTags": [],
       "rawComment": "/** Options to configure the environment. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/testbed/testbed-harness-environment.ts",

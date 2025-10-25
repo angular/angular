@@ -50,7 +50,6 @@ runInEachFileSystem(() => {
           @Component({
             selector: 'cmp',
             template: 'hello',
-            standalone: true,
           })
           export class Cmp {}
         `,
@@ -80,7 +79,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
         `,
@@ -94,7 +92,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '<div dep><div>',
             imports: [Dep],
           })
@@ -146,7 +143,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
 
@@ -166,8 +162,7 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
-            template: '<div dep><div>',
+                        template: '<div dep><div>',
             imports: [DepModule],
           })
           export class Cmp {}
@@ -216,7 +211,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '@if (true) {hello}',
           })
           export class Cmp {}
@@ -243,7 +237,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '<ng-content select="header"/><ng-content/>',
           })
           export class Cmp {}
@@ -270,7 +263,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
         `,
@@ -284,7 +276,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '@defer (on timer(1000)) {<div dep></div>}',
             imports: [Dep],
           })
@@ -321,7 +312,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[dep]',
-            standalone: true,
           })
           export class Dep {}
         `,
@@ -335,7 +325,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '@defer (on timer(1000)) {<div dep></div>}',
             imports: [Dep],
           })
@@ -376,7 +365,6 @@ runInEachFileSystem(() => {
 
           @Component({
             selector: 'cmp',
-            standalone: true,
             template: '{{#invalid}}',
           })
           export class Cmp {}
@@ -394,10 +382,7 @@ runInEachFileSystem(() => {
         `
           import {Directive} from '@angular/core';
 
-          @Component({
-            selector: '[dir]',
-            standalone: true
-          })
+          @Component({selector: '[dir]'})
           export class Dir {}
         `,
       );
@@ -909,6 +894,37 @@ runInEachFileSystem(() => {
       );
       expect(hmrContents).toContain(
         'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, token, Foo, Component) {',
+      );
+    });
+
+    it('should capture expressions with type arguments', () => {
+      enableHmr();
+
+      env.write(
+        'test.ts',
+        `
+          import {Component, viewChild, TemplateRef} from '@angular/core';
+
+          @Component({
+            template: '<ng-template #template/>'
+          })
+          export class Cmp {
+            template = viewChild('template', {
+              read: TemplateRef<unknown>,
+            });
+          }
+        `,
+      );
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      const hmrContents = env.driveHmr('test.ts', 'Cmp');
+      expect(jsContents).toContain(
+        'ɵɵreplaceMetadata(Cmp, m.default, [i0], [TemplateRef, Component], import.meta, id));',
+      );
+      expect(hmrContents).toContain(
+        'export default function Cmp_UpdateMetadata(Cmp, ɵɵnamespaces, TemplateRef, Component) {',
       );
     });
 

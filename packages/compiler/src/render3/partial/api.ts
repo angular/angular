@@ -229,11 +229,6 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   encapsulation?: ViewEncapsulation;
 
   /**
-   * Overrides the default interpolation start and end delimiters. Defaults to {{ and }}.
-   */
-  interpolation?: [string, string];
-
-  /**
    * Whether whitespace in the template should be preserved. Defaults to false.
    */
   preserveWhitespaces?: boolean;

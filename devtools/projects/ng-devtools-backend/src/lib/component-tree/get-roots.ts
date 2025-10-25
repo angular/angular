@@ -7,7 +7,7 @@
  */
 
 /** Returns all app roots. */
-export function getRoots(): Element[] {
+export function getAppRoots(): Element[] {
   const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
 
   const isTopLevel = (element: Element) => {

@@ -101,6 +101,8 @@ export abstract class ControlEvent<T = any> {
 /**
  * Event fired when the value of a control changes.
  *
+ * @see {@link AbstractControl.events}
+ *
  * @publicApi
  */
 export class ValueChangeEvent<T> extends ControlEvent<T> {
@@ -115,6 +117,8 @@ export class ValueChangeEvent<T> extends ControlEvent<T> {
 /**
  * Event fired when the control's pristine state changes (pristine <=> dirty).
  *
+ * @see {@link AbstractControl.events}
+ *
  * @publicApi */
 export class PristineChangeEvent extends ControlEvent {
   constructor(
@@ -127,6 +131,8 @@ export class PristineChangeEvent extends ControlEvent {
 
 /**
  * Event fired when the control's touched status changes (touched <=> untouched).
+ *
+ * @see {@link AbstractControl.events}
  *
  * @publicApi
  */
@@ -142,6 +148,8 @@ export class TouchedChangeEvent extends ControlEvent {
 /**
  * Event fired when the control's status changes.
  *
+ * @see {@link AbstractControl.events}
+ *
  * @publicApi
  */
 export class StatusChangeEvent extends ControlEvent {
@@ -156,6 +164,8 @@ export class StatusChangeEvent extends ControlEvent {
 /**
  * Event fired when a form is submitted
  *
+ * @see {@link AbstractControl.events}
+ *
  * @publicApi
  */
 export class FormSubmittedEvent extends ControlEvent {
@@ -165,6 +175,8 @@ export class FormSubmittedEvent extends ControlEvent {
 }
 /**
  * Event fired when a form is reset.
+ *
+ * @see {@link AbstractControl.events}
  *
  * @publicApi
  */
@@ -750,6 +762,7 @@ export abstract class AbstractControl<
    * `events` of the parent control instead.
    * For other event types, the events are emitted after the parent control has been updated.
    *
+   * @see [Unified control state change events](guide/forms/reactive-forms#unified-control-state-change-events)
    */
   public readonly events = this._events.asObservable();
 
@@ -1442,6 +1455,8 @@ export abstract class AbstractControl<
    * Sets errors on a form control when running validations manually, rather than automatically.
    *
    * Calling `setErrors` also updates the validity of the parent control.
+   *
+   * Note: Manually set errors are always overwritten by the results of the next validation run.
    *
    * @param opts Configuration options that determine how the control propagates
    * changes and emits events after the control errors are set.

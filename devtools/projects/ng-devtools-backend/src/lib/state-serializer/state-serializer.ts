@@ -81,7 +81,20 @@ function levelSerializer(
   level = MAX_LEVEL,
   continuation = levelSerializer,
 ): Descriptor {
-  const serializableInstance = instance[propName];
+  let serializableInstance: any;
+  try {
+    serializableInstance = instance[propName];
+  } catch {
+    return {
+      type: PropType.Error,
+      value: '',
+      containerType: null,
+      editable: false,
+      expandable: false,
+      preview: '',
+    };
+  }
+
   const propData: PropertyData = {
     prop: serializableInstance,
     type: getPropType(serializableInstance),

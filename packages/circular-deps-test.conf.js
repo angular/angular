@@ -10,7 +10,7 @@ const path = require('path');
 
 module.exports = {
   baseDir: '../',
-  glob: `./**/*.ts`,
+  glob: `../{packages,adev}/**/*.ts`,
   resolveModule: resolveModule,
   ignoreTypeOnlyChecks: true,
 };

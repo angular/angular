@@ -29,6 +29,7 @@ import {
   effect,
   inject,
   signal,
+  provideZoneChangeDetection,
 } from '../../src/core';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 import {TestBed} from '../../testing';
@@ -46,6 +47,11 @@ function createAndAttachComponent<T>(component: Type<T>) {
 }
 
 describe('after render hooks', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   let prev: boolean;
 
   describe('browser', () => {

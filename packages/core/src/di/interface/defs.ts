@@ -178,13 +178,6 @@ export function ɵɵdefineInjectable<T>(opts: {
 }
 
 /**
- * @deprecated in v8, delete after v10. This API should be used only by generated code, and that
- * code should now use ɵɵdefineInjectable instead.
- * @publicApi
- */
-export const defineInjectable = ɵɵdefineInjectable;
-
-/**
  * Construct an `InjectorDef` which configures an injector.
  *
  * This should be assigned to a static injector def (`ɵinj`) field on a type, which will then be an

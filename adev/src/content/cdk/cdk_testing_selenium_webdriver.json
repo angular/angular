@@ -1123,7 +1123,6 @@
     },
     {
       "name": "WebDriverHarnessEnvironmentOptions",
-      "isAbstract": false,
       "entryType": "interface",
       "members": [
         {
@@ -1139,6 +1138,7 @@
       "description": "Options to configure the environment.",
       "jsdocTags": [],
       "rawComment": "/** Options to configure the environment. */",
+      "extends": [],
       "implements": [],
       "source": {
         "filePath": "/src/cdk/testing/selenium-webdriver/selenium-web-driver-harness-environment.ts",

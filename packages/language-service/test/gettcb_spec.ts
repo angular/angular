@@ -93,9 +93,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');
@@ -129,9 +127,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');
@@ -165,9 +161,7 @@ describe('get typecheck block', () => {
       }`,
     };
     const env = LanguageServiceTestEnv.setup();
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     project.expectNoSourceDiagnostics();
 
     const appFile = project.openFile('app.ts');

@@ -12,6 +12,9 @@ common --@aspect_rules_ts//ts:default_to_tsc_transpiler
 # Needed as otherwise `env` of TS actions would be ignored.
 common --incompatible_merge_fixed_and_default_shell_env
 
+# Frozen lockfile
+common --lockfile_mode=error
+
 ###############################
 # Filesystem interactions     #
 ###############################
@@ -66,6 +69,9 @@ build:release --stamp
 # Snapshots should also be stamped with version control information.
 build:snapshot-build --workspace_status_command="pnpm --silent ng-dev release build-env-stamp --mode=snapshot"
 build:snapshot-build --stamp
+# @angular/language-server package depends directly on other Angular framework packages.
+# This flag ensures that the language server uses the snapshot-built framework packages from the repository.
+build:snapshot-build --//:enable_language_server_snapshot_repo_deps
 
 # Angular DevTools for Firefox releases *cannot* be stamped and `--config snapshot-build-firefox` is a no-op.
 # This is because Mozilla requires add-on source code to be uploaded and then they manually reproduce the build.
@@ -166,8 +172,6 @@ test:saucelabs --flaky_test_attempts=1
 
 # --ng_perf will ask the Ivy compiler to produce performance results for each build.
 build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
-# --full_build_adev will run adev build/serve in a full mode, performing prerendering and DCE.
-build --flag_alias=full_build_adev=//adev:full_build_adev
 
 ####################################################
 # User bazel configuration

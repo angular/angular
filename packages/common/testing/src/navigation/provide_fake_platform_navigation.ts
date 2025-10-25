@@ -6,11 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  DOCUMENT,
-  PlatformLocation,
-  ɵPlatformNavigation as PlatformNavigation,
-} from '../../../index';
+import {DOCUMENT, PlatformLocation, PlatformNavigation} from '../../../index';
 import {inject, InjectionToken, Provider} from '@angular/core';
 
 import {

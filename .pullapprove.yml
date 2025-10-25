@@ -56,8 +56,8 @@
 
 version: 3
 
-# availability:
-#   users_unavailable: ['atscott']
+#availability:
+#  users_unavailable: []
 
 # Meta field that goes unused by PullApprove to allow for defining aliases to be
 # used throughout the config.
@@ -135,6 +135,9 @@ groups:
         - kirjs
         - JoostK
         - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Framework: General (most code in our packages)
@@ -164,6 +167,7 @@ groups:
           'packages/router/**/{*,.*}',
           'packages/service-worker/**/{*,.*}',
           'packages/upgrade/**/{*,.*}',
+          'vscode-ng-language-service/**/{*,.*}',
         ])
     reviewers:
       users:
@@ -177,6 +181,10 @@ groups:
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
+        - JeanMeche
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Framework: Security-sensitive files which require extra review
@@ -230,6 +238,9 @@ groups:
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Tooling: Compiler API shared with Angular CLI
@@ -273,7 +284,7 @@ groups:
         - bencodezen
         - crisbeto
         - kirjs
-        - ~JeanMeche
+        - JeanMeche
         - jelbourn
         - thePunderWoman
         - devversion
@@ -283,6 +294,9 @@ groups:
         - MarkTechson
         - mmalerba
         - ~hawkgs
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
 
   # =========================================================
   #  Angular DevTools
@@ -320,7 +334,6 @@ groups:
           '.gemini/**/{*,.*}',
           '.ng-dev/**/{*,.*}',
           '.vscode/**/{*,.*}',
-          '.yarn/**/{*,.*}',
           'contributing-docs/*.md',
           'contributing-docs/images/**/{*,.*}',
           'goldens/{*,.*}',
@@ -397,9 +410,12 @@ groups:
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
     reviews:
-      request: 3 # Request reviews from 3 people
-      required: 2 # Require that 2 people approve
+      request: 2
+      required: 1
       reviewed_for: required
 
   # ================================================
@@ -424,6 +440,9 @@ groups:
         - thePunderWoman
         - ~pkozlowski-opensource
         - mmalerba
+        - ~amishne
+        - ~leonsenft
+        - ~mattrbeck
     reviews:
       request: 2 # Request reviews from 2 people
       required: 1 # Require that 1 person approve

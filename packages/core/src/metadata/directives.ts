@@ -49,34 +49,25 @@ export interface DirectiveDecorator {
    *
    * ### Declaring directives
    *
-   * In order to make a directive available to other components in your application, you should do
-   * one of the following:
-   *  - either mark the directive as [standalone](guide/components/importing),
-   *  - or declare it in an NgModule by adding it to the `declarations` and `exports` fields.
-   *
-   * ** Marking a directive as standalone **
-   *
-   * You can add the `standalone: true` flag to the Directive decorator metadata to declare it as
-   * [standalone](guide/components/importing):
+   * By default, directives are marked as [standalone](guide/components/importing), which makes
+   * them available to other components in your application.
    *
    * ```ts
    * @Directive({
-   *   standalone: true,
    *   selector: 'my-directive',
    * })
-   * class MyDirective {}
    * ```
    *
-   * When marking a directive as standalone, please make sure that the directive is not already
-   * declared in an NgModule.
-   *
+   * Please make sure that directives marked as standalone are not already declared in an NgModule.
    *
    * ** Declaring a directive in an NgModule **
-   *
-   * Another approach is to declare a directive in an NgModule:
+   * If you want to declare a directive in an ngModule, add the `standalone: false` flag to the
+   * Directive decorator metadata and add the directive to the `declarations` and `exports`
+   * fields of your ngModule.
    *
    * ```ts
    * @Directive({
+   *   standalone: false,
    *   selector: 'my-directive',
    * })
    * class MyDirective {}
@@ -559,16 +550,6 @@ export interface Component extends Directive {
   viewProviders?: Provider[];
 
   /**
-   * The module ID of the module that contains the component.
-   * The component must be able to resolve relative URLs for templates and styles.
-   * SystemJS exposes the `__moduleName` variable within each module.
-   * In CommonJS, this can  be set to `module.id`.
-   *
-   * @deprecated This option does not have any effect. Will be removed in Angular v17.
-   */
-  moduleId?: string;
-
-  /**
    * The relative path or absolute URL of a template file for an Angular component.
    * If provided, do not supply an inline template using `template`.
    *
@@ -624,13 +605,6 @@ export interface Component extends Directive {
    * the policy is automatically switched to `ViewEncapsulation.None`.
    */
   encapsulation?: ViewEncapsulation;
-
-  /**
-   * Overrides the default interpolation start and end delimiters (`{{` and `}}`).
-   *
-   * @deprecated use Angular's default interpolation delimiters instead.
-   */
-  interpolation?: [string, string];
 
   /**
    * True to preserve or false to remove potentially superfluous whitespace characters
@@ -950,6 +924,9 @@ export interface HostBindingDecorator {
    * change detection, and if a binding changes it updates the host element of the directive.
    *
    * @usageNotes
+   *
+   * NOTE:  **Always** prefer using the `host` property over `@HostBinding`.
+   * This decorator exist exclusively for backwards compatibility.
    *
    * The following example creates a directive that sets the `valid` and `invalid`
    * class, a style color, and an id on the DOM element that has an `ngModel` directive on it.

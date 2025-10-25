@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, NgModule} from '@angular/core';
+import {Component, NgModule, provideZoneChangeDetection} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 @Component({
@@ -114,6 +114,7 @@ class AsyncApplication {
   declarations: [AsyncApplication],
   bootstrap: [AsyncApplication],
   imports: [BrowserModule],
+  providers: [provideZoneChangeDetection()],
 })
 class ExampleModule {}
 

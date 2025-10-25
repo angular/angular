@@ -153,7 +153,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-component", host: { properties: { "style!important": "myStyleExp", "class!important": "myClassExp", "class.foo!important": "this.myFooClassExp", "style.width!important": "this.myWidthExp" } }, ngImport: i0, template: `
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: MyComponent, isStandalone: false, selector: "my-component", host: { properties: { "style.width!important": "this.myWidthExp", "class.baz!important": "myClassExp", "class.foo!important": "this.myFooClassExp" } }, ngImport: i0, template: `
     <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `, isInline: true });
@@ -165,8 +165,8 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
     <div [style.height!important]="myHeightExp"
          [class.bar!important]="myBarClassExp"></div>
   `,
-                    host: { '[style!important]': 'myStyleExp', '[class!important]': 'myClassExp' },
-                    standalone: false
+                    host: { '[style.width!important]': 'myStyleExp', '[class.baz!important]': 'myClassExp' },
+                    standalone: false,
                 }]
         }], propDecorators: { myFooClassExp: [{
                 type: HostBinding,

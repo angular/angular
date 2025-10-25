@@ -65,15 +65,15 @@ export default class ApiReferenceList {
   private readonly injector = inject(EnvironmentInjector);
 
   // inputs
-  queryInput = input<string | undefined>('', {alias: 'query'});
-  typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
-  statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
+  readonly queryInput = input<string | undefined>('', {alias: 'query'});
+  readonly typeInput = input<string | undefined>(ALL_TYPES_KEY, {alias: 'type'});
+  readonly statusInput = input<number | undefined>(DEFAULT_STATUS, {alias: 'status'});
 
   // inputs are route binded, they can reset to undefined
   // also we want a writable state, so we use a linked signal
-  query = linkedSignal(() => this.queryInput() ?? '');
-  type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
-  status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
+  protected query = linkedSignal(() => this.queryInput() ?? '');
+  public type = linkedSignal(() => this.typeInput() ?? ALL_TYPES_KEY);
+  private status = linkedSignal(() => this.statusInput() ?? DEFAULT_STATUS);
 
   // const state
   protected readonly itemTypes = Object.values(ApiItemType);
@@ -86,7 +86,7 @@ export default class ApiReferenceList {
     [STATUSES.deprecated]: 'Deprecated',
   };
 
-  filteredGroups = computed((): ApiItemsGroup[] => {
+  readonly filteredGroups = computed((): ApiItemsGroup[] => {
     const query = this.query().toLocaleLowerCase();
     const status = this.status();
     const type = this.type();

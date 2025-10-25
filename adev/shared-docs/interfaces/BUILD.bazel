@@ -26,6 +26,7 @@ ts_project(
     ),
     deps = [
         "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/platform-browser",
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/@types/node",
         "//adev:node_modules/@webcontainer/api",

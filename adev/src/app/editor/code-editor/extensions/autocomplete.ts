@@ -19,7 +19,7 @@ import {
 import {EditorView} from '@codemirror/view';
 import {Subject, filter, take} from 'rxjs';
 
-import {EditorFile} from '../code-mirror-editor.service';
+import type {EditorFile} from '../code-mirror-editor.service';
 import {TsVfsWorkerActions} from '../workers/enums/actions';
 import {AutocompleteRequest} from '../workers/interfaces/autocomplete-request';
 import {AutocompleteItem, AutocompleteResponse} from '../workers/interfaces/autocomplete-response';

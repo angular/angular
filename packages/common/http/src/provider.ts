@@ -156,7 +156,7 @@ export function withInterceptors(
 }
 
 const LEGACY_INTERCEPTOR_FN = new InjectionToken<HttpInterceptorFn>(
-  ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'LEGACY_INTERCEPTOR_FN' : '',
 );
 
 /**

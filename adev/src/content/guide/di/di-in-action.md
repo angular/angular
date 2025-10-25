@@ -9,7 +9,7 @@ The following example uses an `InjectionToken` to provide the [localStorage](htt
 
 <docs-code header="src/app/storage.service.ts" language="typescript"
            highlight="[[3,6],[12]]">
-import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
 
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',

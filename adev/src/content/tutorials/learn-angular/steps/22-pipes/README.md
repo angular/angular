@@ -18,7 +18,7 @@ import {UpperCasePipe} from '@angular/common';
   template: `{{ loudMessage | uppercase }}`,
   imports: [UpperCasePipe],
 })
-class App {
+export class App {
   loudMessage = 'we think you are doing great!'
 }
 </docs-code>

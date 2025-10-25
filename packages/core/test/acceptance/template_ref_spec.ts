@@ -293,6 +293,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       context.name = 'Bilbo';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -309,6 +310,7 @@ describe('TemplateRef', () => {
       expect(fixture.nativeElement.textContent).toBe('Frodo');
 
       viewRef.context = {name: 'Bilbo'};
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('Bilbo');
@@ -347,6 +349,7 @@ describe('TemplateRef', () => {
       expect(events).toEqual(['Frodo']);
 
       viewRef.context = {name: 'Bilbo'};
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       button.click();
       expect(events).toEqual(['Frodo', 'Bilbo']);
@@ -364,6 +367,7 @@ describe('TemplateRef', () => {
       spyOn(console, 'warn');
 
       viewRef.context = {name: 'Bilbo'};
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(console.warn).toHaveBeenCalledTimes(1);

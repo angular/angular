@@ -238,14 +238,13 @@ runInEachFileSystem(() => {
         `
         import {Component, Directive, input, Output, EventEmitter} from '@angular/core';
 
-        @Directive({standalone: true, selector: '[dir]'})
+        @Directive({selector: '[dir]'})
         export class TestDir {
           value = input('hello');
           @Output() valueChange = new EventEmitter<string>();
         }
 
         @Component({
-          standalone: true,
           template: \`<div dir [(value)]="value"></div>\`,
           imports: [TestDir],
         })
@@ -270,14 +269,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input(1);
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName [data]="false"></div>\`,
             imports: [TestDir],
           })
@@ -301,7 +298,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input.required({
@@ -310,7 +306,6 @@ runInEachFileSystem(() => {
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName [data]="false"></div>\`,
             imports: [TestDir],
           })
@@ -334,14 +329,12 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             data = input.required<boolean>();
           }
 
           @Component({
-            standalone: true,
             template: \`<div directiveName></div>\`,
             imports: [TestDir],
           })
@@ -367,7 +360,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             #data = input.required<boolean>();
@@ -394,7 +386,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             private data = input.required<boolean>();
@@ -421,7 +412,6 @@ runInEachFileSystem(() => {
 
           @Directive({
             selector: '[directiveName]',
-            standalone: true,
           })
           export class TestDir {
             protected data = input.required<boolean>();
@@ -466,6 +456,26 @@ runInEachFileSystem(() => {
       env.driveMain();
       const js = env.getContents('test.js');
       expect(js).toContain('inputs: { data: [1, "data"] }');
+    });
+
+    it('should capture signal inputs in the setClassMetadata call', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Directive, input} from '@angular/core';
+
+        @Directive()
+        export class TestDir {
+          data = input('test');
+        }
+      `,
+      );
+      env.driveMain();
+      const js = env.getContents('test.js');
+      expect(js).toContain('import * as i0 from "@angular/core";');
+      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Directive
+    }], null, { data: [{ type: i0.Input, args: [{ isSignal: true, alias: "data", required: false }] }] });`);
     });
   });
 });

@@ -8,7 +8,14 @@
 
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {DOCUMENT, Location, isPlatformBrowser} from '@angular/common';
-import {ChangeDetectionStrategy, Component, DestroyRef, PLATFORM_ID, inject} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  PLATFORM_ID,
+  inject,
+  signal,
+} from '@angular/core';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   ClickOutside,
@@ -20,14 +27,14 @@ import {
 } from '@angular/docs';
 import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
-import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routes';
-import {GITHUB, MEDIUM, X, YOUTUBE, DISCORD, BLUESKY} from '../../constants/links';
-import {PagePrefix} from '../../enums/pages';
+import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routing/routes';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
 import {VersionManager} from '../../services/version-manager.service';
-import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
+import {ANGULAR_LINKS} from '../../constants/links';
+import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
 import {COMMAND, CONTROL, SEARCH_TRIGGER_KEY} from '../../constants/keys';
+import {PAGE_PREFIX} from '../../constants/pages';
 
 type MenuType = 'social' | 'theme-picker' | 'version-picker';
 
@@ -49,26 +56,15 @@ export class Navigation {
   private readonly isSearchDialogOpen = inject(IS_SEARCH_DIALOG_OPEN);
   private readonly versionManager = inject(VersionManager);
 
-  readonly DOCS_ROUTE = PagePrefix.DOCS;
-  readonly HOME_ROUTE = PagePrefix.HOME;
-  readonly PLAYGROUND_ROUTE = PagePrefix.PLAYGROUND;
-  readonly REFERENCE_ROUTE = PagePrefix.REFERENCE;
-  readonly TUTORIALS_ROUTE = PagePrefix.TUTORIALS;
-
-  readonly GITHUB = GITHUB;
-  readonly X = X;
-  readonly MEDIUM = MEDIUM;
-  readonly YOUTUBE = YOUTUBE;
-  readonly DISCORD = DISCORD;
-  readonly BLUESKY = BLUESKY;
-
-  readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
-  readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
+  protected PAGE_PREFIX = PAGE_PREFIX;
+  protected ngLinks = ANGULAR_LINKS;
+  protected readonly PRIMARY_NAV_ID = PRIMARY_NAV_ID;
+  protected readonly SECONDARY_NAV_ID = SECONDARY_NAV_ID;
 
   // We can't use the ActivatedRouter queryParams as we're outside the router outlet
-  readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
+  protected readonly isUwu = 'location' in globalThis ? location.search.includes('uwu') : false;
 
-  miniMenuPositions = [
+  protected miniMenuPositions = [
     new ConnectionPositionPair(
       {originX: 'end', originY: 'center'},
       {overlayX: 'start', overlayY: 'center'},
@@ -82,27 +78,27 @@ export class Navigation {
   readonly APPLE_SEARCH_LABEL = `⌘`;
   readonly DEFAULT_SEARCH_LABEL = `ctrl`;
 
-  activeRouteItem = this.navigationState.primaryActiveRouteItem;
-  theme = this.themeManager.theme;
-  openedMenu: MenuType | null = null;
+  readonly activeRouteItem = this.navigationState.primaryActiveRouteItem;
+  protected readonly theme = this.themeManager.theme;
+  protected readonly openedMenu = signal<MenuType | null>(null);
 
-  currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
+  protected readonly currentDocsVersion = this.versionManager.currentDocsVersion;
+  protected readonly currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
-  searchLabel = this.isBrowser
+  protected searchLabel = this.isBrowser
     ? isApple
       ? this.APPLE_SEARCH_LABEL
       : this.DEFAULT_SEARCH_LABEL
     : '';
-  searchTitle = this.isBrowser
+  protected searchTitle = this.isBrowser
     ? isApple
       ? `${COMMAND} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
       : `${CONTROL} ${SEARCH_TRIGGER_KEY.toUpperCase()}`
     : '';
-  versions = this.versionManager.versions;
+  protected versions = this.versionManager.versions;
 
-  isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
+  protected isMobileNavigationOpened = this.navigationState.isMobileNavVisible;
   isMobileNavigationOpened$ = toObservable(this.isMobileNavigationOpened);
   primaryRouteChanged$ = toObservable(this.activeRouteItem);
 
@@ -112,35 +108,35 @@ export class Navigation {
     this.closeMobileNavOnPrimaryRouteChange();
   }
 
-  setTheme(theme: Theme): void {
+  protected setTheme(theme: Theme): void {
     this.themeManager.setTheme(theme);
   }
 
-  openVersionMenu($event: MouseEvent): void {
+  protected openVersionMenu($event: MouseEvent): void {
     // It's required to avoid redirection to `home`
     $event.stopImmediatePropagation();
     $event.preventDefault();
     this.openMenu('version-picker');
   }
 
-  openMenu(menuType: MenuType): void {
-    this.openedMenu = menuType;
+  protected openMenu(menuType: MenuType): void {
+    this.openedMenu.set(menuType);
   }
 
-  closeMenu(): void {
-    this.openedMenu = null;
+  protected closeMenu(): void {
+    this.openedMenu.set(null);
   }
 
-  openMobileNav($event: MouseEvent): void {
+  protected openMobileNav($event: MouseEvent): void {
     $event.stopPropagation();
     this.navigationState.setMobileNavigationListVisibility(true);
   }
 
-  closeMobileNav(): void {
+  protected closeMobileNav(): void {
     this.navigationState.setMobileNavigationListVisibility(false);
   }
 
-  toggleSearchDialog(event: MouseEvent): void {
+  protected toggleSearchDialog(event: MouseEvent): void {
     event.stopPropagation();
     this.isSearchDialogOpen.update((isOpen) => !isOpen);
   }
@@ -175,25 +171,25 @@ export class Navigation {
   // (*) Reference navigation tree contains items which are not start with prefix like /migrations or /errors.
   private setActivePrimaryRoute(urlAfterRedirects: string): void {
     if (urlAfterRedirects === '') {
-      this.activeRouteItem.set(PagePrefix.HOME);
-    } else if (urlAfterRedirects.startsWith(PagePrefix.DOCS)) {
-      this.activeRouteItem.set(PagePrefix.DOCS);
+      this.activeRouteItem.set(PAGE_PREFIX.HOME);
+    } else if (urlAfterRedirects.startsWith(PAGE_PREFIX.DOCS)) {
+      this.activeRouteItem.set(PAGE_PREFIX.DOCS);
     } else if (
-      urlAfterRedirects.startsWith(PagePrefix.REFERENCE) ||
-      urlAfterRedirects.startsWith(PagePrefix.API) ||
-      urlAfterRedirects.startsWith(PagePrefix.UPDATE)
+      urlAfterRedirects.startsWith(PAGE_PREFIX.REFERENCE) ||
+      urlAfterRedirects.startsWith(PAGE_PREFIX.API) ||
+      urlAfterRedirects.startsWith(PAGE_PREFIX.UPDATE)
     ) {
-      this.activeRouteItem.set(PagePrefix.REFERENCE);
-    } else if (urlAfterRedirects === PagePrefix.PLAYGROUND) {
-      this.activeRouteItem.set(PagePrefix.PLAYGROUND);
-    } else if (urlAfterRedirects.startsWith(PagePrefix.TUTORIALS)) {
-      this.activeRouteItem.set(PagePrefix.TUTORIALS);
+      this.activeRouteItem.set(PAGE_PREFIX.REFERENCE);
+    } else if (urlAfterRedirects === PAGE_PREFIX.PLAYGROUND) {
+      this.activeRouteItem.set(PAGE_PREFIX.PLAYGROUND);
+    } else if (urlAfterRedirects.startsWith(PAGE_PREFIX.TUTORIALS)) {
+      this.activeRouteItem.set(PAGE_PREFIX.TUTORIALS);
     } else if (DOCS_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.DOCS);
+      this.activeRouteItem.set(PAGE_PREFIX.DOCS);
     } else if (REFERENCE_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.REFERENCE);
+      this.activeRouteItem.set(PAGE_PREFIX.REFERENCE);
     } else if (TUTORIALS_ROUTES.some((route) => route.path === urlAfterRedirects)) {
-      this.activeRouteItem.set(PagePrefix.TUTORIALS);
+      this.activeRouteItem.set(PAGE_PREFIX.TUTORIALS);
     } else {
       // Reset if no active route item could be found
       this.activeRouteItem.set(null);

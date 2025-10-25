@@ -21,7 +21,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_PIPE_ARGUMENT = 2100,
     // (undocumented)
-    INVALID_TO_DATE_CONVERSION = 2302,
+    INVALID_TO_DATE_CONVERSION = 2311,
     // (undocumented)
     LCP_IMG_MISSING_PRIORITY = 2955,
     // (undocumented)
@@ -73,7 +73,7 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_DATE_TYPE_VALUE = 2301,
     // (undocumented)
-    UNKNOWN_ZONE_WIDTH = 2302,
+    UNKNOWN_ZONE_WIDTH = 2310,
     // (undocumented)
     VALUE_NOT_A_NUMBER = 2309
 }

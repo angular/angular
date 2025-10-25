@@ -19,11 +19,14 @@ import {
 } from './signals-value-tree/signals-value-tree.component';
 import {ButtonComponent} from '../../../../shared/button/button.component';
 
-const TYPE_CLASS_MAP: {[key: string]: string} = {
+const TYPE_CLASS_MAP: {[key in DebugSignalGraphNode['kind']]: string} = {
   'signal': 'type-signal',
   'computed': 'type-computed',
   'effect': 'type-effect',
+  'afterRenderEffectPhase': 'type-effect',
   'template': 'type-template',
+  'linkedSignal': 'type-linked-signal',
+  'unknown': 'type-unknown',
 };
 
 @Component({
@@ -39,6 +42,7 @@ export class SignalsDetailsComponent {
   protected readonly treeControl = input.required<FlatTreeControl<FlatNode>>();
 
   protected readonly gotoSource = output<DebugSignalGraphNode>();
+  protected readonly close = output<void>();
 
   protected readonly TYPE_CLASS_MAP = TYPE_CLASS_MAP;
 }

@@ -12,6 +12,16 @@
     {
       "name": "ai-config",
       "type": "array",
+      "enum": [
+        "agents",
+        "claude",
+        "copilot",
+        "cursor",
+        "gemini",
+        "jetbrains",
+        "none",
+        "windsurf"
+      ],
       "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
     },
     {
@@ -53,6 +63,16 @@
       ],
       "default": false,
       "description": "Run through and reports activity without writing out results."
+    },
+    {
+      "name": "file-name-style-guide",
+      "type": "string",
+      "default": "2025",
+      "enum": [
+        "2016",
+        "2025"
+      ],
+      "description": "The file naming convention to use for generated files. The '2025' style guide (default) uses a concise format (e.g., `app.ts` for the root component), while the '2016' style guide includes the type in the file name (e.g., `app.component.ts`). For more information, see the Angular Style Guide (https://angular.dev/style-guide)."
     },
     {
       "name": "force",
@@ -109,11 +129,10 @@
       "name": "package-manager",
       "type": "string",
       "enum": [
+        "bun",
         "npm",
-        "yarn",
         "pnpm",
-        "cnpm",
-        "bun"
+        "yarn"
       ],
       "description": "The package manager used to install dependencies."
     },
@@ -177,11 +196,22 @@
       "type": "string",
       "enum": [
         "css",
-        "scss",
+        "less",
         "sass",
-        "less"
+        "scss",
+        "tailwind"
       ],
       "description": "The type of stylesheet files to be created for components in the initial project."
+    },
+    {
+      "name": "test-runner",
+      "type": "string",
+      "default": "vitest",
+      "enum": [
+        "karma",
+        "vitest"
+      ],
+      "description": "The unit testing runner to use."
     },
     {
       "name": "view-encapsulation",

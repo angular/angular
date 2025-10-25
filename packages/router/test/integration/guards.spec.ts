@@ -17,7 +17,7 @@ import {
   EnvironmentInjector,
 } from '@angular/core';
 import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {Subject, Observable, of, concat} from 'rxjs';
+import {Subject, Observable, of, concat, EMPTY} from 'rxjs';
 import {tap, mapTo, first, takeWhile, last, switchMap} from 'rxjs/operators';
 import {
   ActivatedRouteSnapshot,
@@ -2038,6 +2038,22 @@ export function guardsIntegrationSuite() {
           {
             path: 'a',
             canMatch: [() => inject(ConfigurableGuard).canMatch()],
+            component: BlankCmp,
+          },
+          {path: 'a', component: SimpleCmp},
+        ]);
+        const fixture = await createRoot(router, RootCmp);
+
+        router.navigateByUrl('/a');
+        await advance(fixture);
+        expect(fixture.nativeElement.innerHTML).toContain('simple');
+      });
+      it('falls back to second route when canMatch returns EMPTY', async () => {
+        const router = TestBed.inject(Router);
+        router.resetConfig([
+          {
+            path: 'a',
+            canMatch: [() => EMPTY],
             component: BlankCmp,
           },
           {path: 'a', component: SimpleCmp},

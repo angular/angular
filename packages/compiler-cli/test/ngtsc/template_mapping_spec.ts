@@ -7,7 +7,7 @@
  */
 
 /// <reference types="node" />
-import {inspect} from 'util';
+import {inspect} from 'node:util';
 import ts from 'typescript';
 
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';

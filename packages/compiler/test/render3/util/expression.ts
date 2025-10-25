@@ -127,6 +127,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitParenthesizedExpression(ast, null);
   }
+  override visitRegularExpressionLiteral(ast: e.RegularExpressionLiteral, context: any): void {
+    this.recordAst(ast);
+    super.visitRegularExpressionLiteral(ast, null);
+  }
 
   visitTemplate(ast: t.Template) {
     t.visitAll(this, ast.directives);
@@ -175,6 +179,8 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   visitDeferredTrigger(trigger: t.DeferredTrigger): void {
     if (trigger instanceof t.BoundDeferredTrigger) {
       this.recordAst(trigger.value);
+    } else if (trigger instanceof t.ViewportDeferredTrigger && trigger.options !== null) {
+      this.recordAst(trigger.options);
     }
   }
 

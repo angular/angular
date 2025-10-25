@@ -68,7 +68,7 @@ placeholder that tells Angular where to render content. Angular's compiler proce
 all `<ng-content>` elements at build-time. You cannot insert, remove, or modify `<ng-content>` at
 run time. You cannot add directives, styles, or arbitrary attributes to `<ng-content>`.
 
-You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
+IMPORTANT: You should not conditionally include `<ng-content>` with `@if`, `@for`, or `@switch`. Angular always
 instantiates and creates DOM nodes for content rendered to a `<ng-content>` placeholder, even if
 that `<ng-content>` placeholder is hidden. For conditional rendering of component content,
 see [Template fragments](api/core/ng-template).
@@ -79,21 +79,48 @@ Angular supports projecting multiple different elements into different `<ng-cont
 based on CSS selector. Expanding the card example from above, you could create two placeholders for
 a card title and a card body by using the `select` attribute:
 
-```angular-html
-<!-- Component template -->
-<div class="card-shadow">
-  <ng-content select="card-title"></ng-content>
-  <div class="card-divider"></div>
-  <ng-content select="card-body"></ng-content>
-</div>
+```angular-ts
+@Component({
+  selector: 'card-title',
+  template: `<ng-content>card-title</ng-content>`,
+})
+export class CardTitle {}
+
+@Component({
+  selector: 'card-body',
+  template: `<ng-content>card-body</ng-content>`,
+})
+export class CardBody {}
 ```
 
-```angular-html
+```angular-ts
+<!-- Component template -->
+Component({
+  selector: 'custom-card',
+  template: `
+  <div class="card-shadow">
+    <ng-content select="card-title"></ng-content>
+    <div class="card-divider"></div>
+    <ng-content select="card-body"></ng-content>
+  </div>
+  `,
+})
+export class CustomCard {}
+```
+
+```angular-ts
 <!-- Using the component -->
-<custom-card>
-  <card-title>Hello</card-title>
-  <card-body>Welcome to the example</card-body>
-</custom-card>
+@Component({
+  selector: 'app-root',
+  imports: [CustomCard, CardTitle, CardBody],
+  template: `
+    <custom-card>
+      <card-title>Hello</card-title>
+      <card-body>Welcome to the example</card-body>
+    </custom-card>
+`,
+})
+export class App {}
 ```
 
 ```angular-html

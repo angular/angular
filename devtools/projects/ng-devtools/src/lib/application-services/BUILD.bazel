@@ -47,8 +47,8 @@ ng_project(
     name = "settings_store",
     srcs = ["settings_store.ts"],
     deps = [
+        "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-operations",
-        "//packages/core",
     ],
 )
 
@@ -58,7 +58,7 @@ ng_project(
     deps = [
         ":settings_store",
         ":theme_types_lib",
-        "//packages/core",
+        "//:node_modules/@angular/core",
     ],
 )
 
@@ -74,6 +74,7 @@ ts_test_library(
         "//:node_modules/@angular/common",
         "//:node_modules/@angular/core",
         "//devtools/projects/ng-devtools/src/lib/application-environment",
+        "//devtools/projects/ng-devtools/src/lib/application-operations",
         "//devtools/projects/ng-devtools/src/lib/application-providers:window",
         "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:app_operations_mock",
         "//devtools/projects/ng-devtools/src/lib/application-services/test-utils:settings_mock",

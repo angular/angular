@@ -11,10 +11,10 @@ export type EditorType = 'name' | 'profile';
   imports: [NameEditorComponent, ProfileEditorComponent],
 })
 export class AppComponent {
-  editor: WritableSignal<EditorType> = signal('name');
+  readonly editor: WritableSignal<EditorType> = signal('name');
 
-  showNameEditor = computed(() => this.editor() === 'name');
-  showProfileEditor = computed(() => this.editor() === 'profile');
+  readonly showNameEditor = computed(() => this.editor() === 'name');
+  readonly showProfileEditor = computed(() => this.editor() === 'profile');
 
   toggleEditor(type: EditorType) {
     this.editor.set(type);

@@ -19,7 +19,7 @@ If you're starting a new project, you'll most likely want to create a local proj
 
 ### Prerequisites
 
-- **Node.js** - [v20.11.1 or newer](/reference/versions)
+- **Node.js** - [v20.19.0 or newer](/reference/versions)
 - **Text editor** - We recommend [Visual Studio Code](https://code.visualstudio.com/)
 - **Terminal** - Required for running Angular CLI commands
 - **Development Tool** - To improve your development workflow, we recommend the [Angular Language Service](/tools/language-service)
@@ -91,7 +91,7 @@ cd my-first-angular-app
 
 </docs-code>
 
-All of your dependencies should be installed at this point (which you can verify by checking for the existent for a `node_modules` folder in your project), so you can start your project by running the command:
+All of your dependencies should be installed at this point (which you can verify by checking for the existence of a `node_modules` folder in your project), so you can start your project by running the command:
 
 <docs-code language="shell">
 

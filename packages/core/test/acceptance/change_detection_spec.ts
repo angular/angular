@@ -47,6 +47,11 @@ import {
 import {By} from '@angular/platform-browser';
 
 describe('change detection', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   it('can provide zone and zoneless (last one wins like any other provider) in TestBed', () => {
     expect(() => {
       TestBed.configureTestingModule({

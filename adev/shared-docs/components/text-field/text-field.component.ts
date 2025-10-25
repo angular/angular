@@ -17,14 +17,13 @@ import {
   model,
   viewChild,
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
   selector: 'docs-text-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, IconComponent],
+  imports: [FormsModule, IconComponent],
   templateUrl: './text-field.component.html',
   styleUrls: ['./text-field.component.scss'],
   providers: [

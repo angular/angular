@@ -13,6 +13,8 @@ import {EmbeddedTutorialManager} from '../../editor';
 import {NodeRuntimeSandbox} from '../../editor/node-runtime-sandbox.service';
 
 import TutorialPlayground from './playground.component';
+import {provideRouter} from '@angular/router';
+import {mockAsyncProvider} from '../../core/services/inject-async';
 
 describe('TutorialPlayground', () => {
   let component: TutorialPlayground;
@@ -25,25 +27,24 @@ describe('TutorialPlayground', () => {
   };
 
   beforeEach(() => {
+    class FakeEmbeddedTutorialManager {
+      fetchAndSetTutorialFiles() {}
+    }
+
+    class FakeNodeRuntimeSandbox {
+      init() {}
+    }
+
     TestBed.configureTestingModule({
       imports: [TutorialPlayground],
       providers: [
+        provideRouter([]),
         {
           provide: WINDOW,
           useValue: fakeWindow,
         },
-        {
-          provide: EmbeddedTutorialManager,
-          useValue: {
-            fetchAndSetTutorialFiles: () => {},
-          },
-        },
-        {
-          provide: NodeRuntimeSandbox,
-          useVaue: {
-            init: () => {},
-          },
-        },
+        mockAsyncProvider(NodeRuntimeSandbox, FakeNodeRuntimeSandbox),
+        mockAsyncProvider(EmbeddedTutorialManager, FakeEmbeddedTutorialManager),
       ],
     });
 

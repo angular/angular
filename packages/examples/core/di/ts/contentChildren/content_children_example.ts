@@ -11,7 +11,6 @@ import {Component, ContentChildren, Directive, input, QueryList, signal} from '@
 
 @Directive({
   selector: 'pane',
-  standalone: false,
 })
 export class Pane {
   id = input.required<string>();
@@ -23,7 +22,6 @@ export class Pane {
     <div class="top-level">Top level panes: {{ serializedPanes }}</div>
     <div class="nested">Arbitrary nested panes: {{ serializedNestedPanes }}</div>
   `,
-  standalone: false,
 })
 export class Tab {
   @ContentChildren(Pane) topLevelPanes!: QueryList<Pane>;
@@ -39,6 +37,7 @@ export class Tab {
 
 @Component({
   selector: 'example-app',
+  imports: [Tab, Pane],
   template: `
     <tab>
       <pane id="1"></pane>
@@ -55,7 +54,6 @@ export class Tab {
 
     <button (click)="show()">Show 3</button>
   `,
-  standalone: false,
 })
 export class ContentChildrenComp {
   shouldShow = signal(false);

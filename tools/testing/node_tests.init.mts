@@ -15,12 +15,18 @@ import './zone_base_setup.mjs';
 
 import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 // Init TestBed
+import {NgModule, provideZonelessChangeDetection} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing';
 import {ɵDominoAdapter as DominoAdapter} from '@angular/platform-server';
 import domino from '../../packages/platform-server/src/bundled-domino';
 
-TestBed.initTestEnvironment(ServerTestingModule, platformServerTesting());
+@NgModule({
+  providers: [provideZonelessChangeDetection()],
+})
+export class TestModule {}
+
+TestBed.initTestEnvironment([ServerTestingModule, TestModule], platformServerTesting());
 DominoAdapter.makeCurrent();
 (global as any).document =
   (DominoAdapter as any).defaultDoc ||

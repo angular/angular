@@ -99,6 +99,17 @@ any PRs to an RC branch to support extra testing before the stable release.
 Breaking changes, marked with `target: major`, can only be merged when `main` represents the next
 major version.
 
+Two additional target labels do not map to specific versions while still defining which branch to merge into.
+
+| Label                | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| target: automation   | A automated change made by the angular-robot account.                       |
+| target: feature      | A change to be made in a feature branch.                                    |
+
+Changes made to a feature branch, outside of our typical branching and merging process utilize the
+`target: feature` branch. Additionally, the `target: automation` label, which is only able to be
+utilized by the `angular-robot` account targets only the branch defined within the Github UI.
+
 ### Pull request examples
 
 | I want to...                                                | Target branch           | Target label | Your change will land in...                                                                                                |

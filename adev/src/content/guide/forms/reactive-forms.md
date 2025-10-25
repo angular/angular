@@ -359,7 +359,7 @@ Use the getter syntax to create an `aliases` class property to retrieve the alia
 
 <docs-code header="src/app/profile-editor/profile-editor.component.ts (aliases getter)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="aliases-getter"/>
 
-Because the returned control is of the type `AbstractControl`, you need to provide an explicit type to access the method syntax for the form array instance. Define a method to dynamically insert an alias control into the alias's form array. The `FormArray.push()` method inserts the control as a new item in the array.
+Because the returned control is of the type `AbstractControl`, you need to provide an explicit type to access the method syntax for the form array instance. Define a method to dynamically insert an alias control into the alias's form array. The `FormArray.push()` method inserts the control as a new item in the array, and you can also pass an array of controls to FormArray.push() to register multiple controls at once.
 
 <docs-code header="src/app/profile-editor/profile-editor.component.ts (add alias)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.ts" visibleRegion="add-alias"/>
 
@@ -387,6 +387,135 @@ Initially, the form contains one `Alias` field. To add another field, click the 
 </docs-step>
 
 </docs-workflow>
+
+## Unified control state change events
+
+All form controls expose a single unified stream of **control state change events** through the `events` observable on `AbstractControl` (`FormControl`, `FormGroup`, `FormArray`, and `FormRecord`).  
+This unified stream lets you react to **value**, **status**, **pristine**, **touched** and **reset** state changes and also for **form-level actions** such as **submit** , allowing you to handle all updates with a one subscription instead of wiring multiple observables.
+
+### Event types
+
+Each item emitted by `events` is an instance of a specific event class:
+
+- **`ValueChangeEvent`** — when the control’s **value** changes.
+- **`StatusChangeEvent`** — when the control’s **validation status** updates to one of the `FormControlStatus` values (`VALID`, `INVALID`, `PENDING`, or `DISABLED`).
+- **`PristineChangeEvent`** — when the control’s **pristine/dirty** state changes.
+- **`TouchedChangeEvent`** — when the control’s **touched/untouched** state changes.
+- **`FormResetEvent`** — when a control or form is reset, either via the `reset()` API or a native action.
+- **`FormSubmittedEvent`** — when the form is submitted.
+
+All event classes extend `ControlEvent` and include a `source` reference to the `AbstractControl` that originated the change, which is useful in large forms.
+
+```ts
+import { Component } from '@angular/core';
+import {
+  FormControl,
+  ValueChangeEvent,
+  StatusChangeEvent,
+  PristineChangeEvent,
+  TouchedChangeEvent,
+  FormResetEvent,
+  FormSubmittedEvent,
+  ReactiveFormsModule,
+  FormGroup,
+} from '@angular/forms';
+
+@Component({/* ... */ })
+export class UnifiedEventsBasicComponent {
+  form = new FormGroup({
+    username: new FormControl(''),
+  });
+
+  constructor() {
+    this.form.events.subscribe((e) => {
+      if (e instanceof ValueChangeEvent) {
+        console.log('Value changed to: ', e.value);
+      }
+
+      if (e instanceof StatusChangeEvent) {
+        console.log('Status changed to: ', e.status);
+      }
+
+      if (e instanceof PristineChangeEvent) {
+        console.log('Pristine status changed to: ', e.pristine);
+      }
+
+      if (e instanceof TouchedChangeEvent) {
+        console.log('Touched status changed to: ', e.touched);
+      }
+
+      if (e instanceof FormResetEvent) {
+        console.log('Form was reset');
+      }
+
+      if (e instanceof FormSubmittedEvent) {
+        console.log('Form was submitted');
+      }
+    });
+  }
+}
+```
+
+### Filtering specific events
+
+Prefer RxJS operators when you only need a subset of event types.
+
+```ts
+import { filter } from 'rxjs/operators';
+import { StatusChangeEvent } from '@angular/forms';
+
+control.events
+  .pipe(filter((e) => e instanceof StatusChangeEvent))
+  .subscribe((e) => console.log('Status:', e.status));
+```
+
+### Unifying from multiple subscriptions
+
+**Before**
+
+```ts
+import { combineLatest } from 'rxjs/operators';
+
+combineLatest([control.valueChanges, control.statusChanges])
+  .subscribe(([value, status]) => { /* ... */ });
+```
+
+**After**
+
+```ts
+control.events.subscribe((e) => {
+  // Handle ValueChangeEvent, StatusChangeEvent, etc.
+});
+```
+
+NOTE: On value change, the emit happens right after a value of this control is updated. The value of a parent control (for example if this FormControl is a part of a FormGroup) is updated later, so accessing a value of a parent control (using the `value` property) from the callback of this event might result in getting a value that has not been updated yet. Subscribe to the `events` of the parent control instead.
+
+## Utility functions for narrowing form control types
+
+Angular provides four utility functions that help determine the concrete type of an `AbstractControl`. These functions act as **type guards** and narrow the control type when they return `true`, which lets you safely access subtype-specific properties inside the same block.
+
+| Utility function | Details                                             |
+| :--------------- | :-------------------------------------------------- |
+| `isFormControl`  | Returns `true` when the control is a `FormControl`. |
+| `isFormGroup`    | Returns `true` when the control is a `FormGroup`    |
+| `isFormRecord`   | Returns `true` when the control is a `FormRecord`   |
+| `isFormArray`    | Returns `true` when the control is a `FormArray`    |
+
+These helpers are particularly useful in **custom validators**, where the function signature receives an `AbstractControl`, but the logic is intended for a specific control kind.
+
+```ts
+import { AbstractControl, isFormArray } from '@angular/forms';
+
+export function positiveValues(control: AbstractControl) {
+    if (!isFormArray(control)) {
+        return null; // Not a FormArray: validator is not applicable.
+    }
+
+    // Safe to access FormArray-specific API after narrowing.
+    const hasNegative = control.controls.some(c => c.value < 0);
+    return hasNegative ? { positiveValues: true } : null;
+}
+```
 
 ## Reactive forms API summary
 

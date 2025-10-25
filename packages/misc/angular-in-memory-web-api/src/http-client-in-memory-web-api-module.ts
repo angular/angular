@@ -8,19 +8,19 @@
 
 import {XhrFactory} from '@angular/common';
 import {HttpBackend} from '@angular/common/http';
-import {ModuleWithProviders, NgModule, Type} from '@angular/core';
+import {inject, ModuleWithProviders, NgModule, Type} from '@angular/core';
 
 import {HttpClientBackendService} from './http-client-backend-service';
 import {InMemoryBackendConfig, InMemoryBackendConfigArgs, InMemoryDbService} from './interfaces';
 
 // Internal - Creates the in-mem backend for the HttpClient module
 // AoT requires factory to be exported
-export function httpClientInMemBackendServiceFactory(
-  dbService: InMemoryDbService,
-  options: InMemoryBackendConfig,
-  xhrFactory: XhrFactory,
-): HttpBackend {
-  return new HttpClientBackendService(dbService, options, xhrFactory) as HttpBackend;
+export function httpClientInMemBackendServiceFactory(): HttpBackend {
+  return new HttpClientBackendService(
+    inject(InMemoryDbService),
+    inject(InMemoryBackendConfig),
+    inject(XhrFactory),
+  ) as HttpBackend;
 }
 
 @NgModule()
@@ -55,7 +55,6 @@ export class HttpClientInMemoryWebApiModule {
         {
           provide: HttpBackend,
           useFactory: httpClientInMemBackendServiceFactory,
-          deps: [InMemoryDbService, InMemoryBackendConfig, XhrFactory],
         },
       ],
     };

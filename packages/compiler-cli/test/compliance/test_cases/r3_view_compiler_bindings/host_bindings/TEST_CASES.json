@@ -2,6 +2,16 @@
   "$schema": "../../test_case_schema.json",
   "cases": [
     {
+      "description": "should support host bindings to ARIA attributes",
+      "inputFiles": ["aria_bindings.ts"],
+      "expectations": [
+        {
+          "failureMessage": "Invalid host binding code",
+          "files": ["aria_bindings.js"]
+        }
+      ]
+    },
+    {
       "description": "should support host bindings",
       "inputFiles": ["host_bindings.ts"],
       "expectations": [

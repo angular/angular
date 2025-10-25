@@ -717,7 +717,7 @@ class UrlParser {
         );
       }
 
-      let outletName: string = undefined!;
+      let outletName: string | undefined;
       if (path.indexOf(':') > -1) {
         outletName = path.slice(0, path.indexOf(':'));
         this.capture(outletName);
@@ -727,8 +727,8 @@ class UrlParser {
       }
 
       const children = this.parseChildren();
-      segments[outletName] =
-        Object.keys(children).length === 1
+      segments[outletName ?? PRIMARY_OUTLET] =
+        Object.keys(children).length === 1 && children[PRIMARY_OUTLET]
           ? children[PRIMARY_OUTLET]
           : new UrlSegmentGroup([], children);
       this.consumeOptional('//');

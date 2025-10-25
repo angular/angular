@@ -229,6 +229,29 @@ The `loadComponent` property accepts a loader function that returns a Promise th
 
 Lazily loading routes can significantly improve the load speed of your Angular application by removing large portions of JavaScript from the initial bundle. These portions of your code compile into separate JavaScript "chunks" that the router requests only when the user visits the corresponding route.
 
+### Injection context lazy loading
+
+The Router executes `loadComponent` and `loadChildren` within the **injection context of the current route**, allowing you to call `inject` inside these loader functions to access providers declared on that route, inherited from parent routes through hierarchical dependency injection, or available globally. This enables context-aware lazy loading.
+
+```ts
+import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { FeatureFlags } from './feature-flags';
+
+export const routes: Routes = [
+  {
+    path: 'dashboard',
+    // Runs inside the route's injection context
+    loadComponent: () => {
+      const flags = inject(FeatureFlags);
+      return flags.isPremium
+        ? import('./dashboard/premium-dashboard').then(c => c.PremiumDashboard)
+        : import('./dashboard/basic-dashboard').then(c => c.BasicDashboard);
+    },
+  },
+];
+```
+
 ### Should I use an eager or a lazy route?
 
 There are many factors to consider when deciding on whether a route should be eager or lazy.
@@ -298,6 +321,44 @@ const routes: Routes = [
 ```
 
 Route titles can also be set via a service extending the [`TitleStrategy`](/api/router/TitleStrategy) abstract class. By default, Angular uses the [`DefaultTitleStrategy`](/api/router/DefaultTitleStrategy).
+
+### Using TitleStrategy for page titles
+
+For advanced scenarios where you need centralized control over how the document title is composed, implement a `TitleStrategy`.
+
+`TitleStrategy` is a token you can provide to override the default title strategy used by Angular. You can supply a custom `TitleStrategy` to implement conventions such as adding an application suffix, formatting titles from breadcrumbs, or generating titles dynamically from route data.
+
+```ts
+import { Injectable } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { TitleStrategy, RouterStateSnapshot } from '@angular/router';
+
+@Injectable()
+export class AppTitleStrategy extends TitleStrategy {
+  private readonly title = inject(Title);
+
+  updateTitle(snapshot: RouterStateSnapshot): void {
+    // PageTitle is equal to the "Title" of a route if it's set
+    // If its not set it will use the "title" given in index.html
+    const pageTitle = this.buildTitle(snapshot) || this.title.getTitle();
+    this.title.setTitle(`MyAwesomeApp - ${pageTitle}`);
+  }
+}
+```
+
+To use the custom strategy, provide it with the `TitleStrategy` token at the application level:
+
+```ts
+import { provideRouter, TitleStrategy } from '@angular/router';
+import { AppTitleStrategy } from './app-title.strategy';
+
+export const appConfig = {
+  providers: [
+    provideRouter(routes),
+    { provide: TitleStrategy, useClass: AppTitleStrategy },
+  ],
+};
+```
 
 ## Route-level providers for dependency injection
 

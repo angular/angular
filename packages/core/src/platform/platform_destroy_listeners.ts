@@ -15,5 +15,5 @@ import {InjectionToken} from '../di';
  * entire class tree-shakeable.
  */
 export const PLATFORM_DESTROY_LISTENERS = new InjectionToken<Set<VoidFunction>>(
-  ngDevMode ? 'PlatformDestroyListeners' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'PlatformDestroyListeners' : '',
 );

@@ -13,29 +13,29 @@ import {
   PlatformLocation,
   ɵgetDOM as getDOM,
 } from '@angular/common';
-import {Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
+import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG} from './tokens';
 
-const RESOLVE_PROTOCOL = 'resolve:';
-
-function parseUrl(urlStr: string): {
+function parseUrl(
+  urlStr: string,
+  origin: string,
+): {
   hostname: string;
   protocol: string;
   port: string;
   pathname: string;
   search: string;
   hash: string;
+  href: string;
 } {
-  const {hostname, protocol, port, pathname, search, hash} = new URL(
-    urlStr,
-    RESOLVE_PROTOCOL + '//',
-  );
+  const {hostname, protocol, port, pathname, search, hash, href} = new URL(urlStr, origin);
 
   return {
     hostname,
-    protocol: protocol === RESOLVE_PROTOCOL ? '' : protocol,
+    href,
+    protocol,
     port,
     pathname,
     search,
@@ -57,24 +57,22 @@ export class ServerPlatformLocation implements PlatformLocation {
   public readonly search: string = '';
   public readonly hash: string = '';
   private _hashUpdate = new Subject<LocationChangeEvent>();
+  private _doc = inject(DOCUMENT);
 
-  constructor(
-    @Inject(DOCUMENT) private _doc: any,
-    @Optional() @Inject(INITIAL_CONFIG) _config: any,
-  ) {
-    const config = _config as PlatformConfig | null;
+  constructor() {
+    const config = inject(INITIAL_CONFIG, {optional: true});
     if (!config) {
       return;
     }
     if (config.url) {
-      const url = parseUrl(config.url);
+      const url = parseUrl(config.url, this._doc.location.origin);
       this.protocol = url.protocol;
       this.hostname = url.hostname;
       this.port = url.port;
       this.pathname = url.pathname;
       this.search = url.search;
       this.hash = url.hash;
-      this.href = _doc.location.href;
+      this.href = url.href;
     }
   }
 
@@ -116,9 +114,11 @@ export class ServerPlatformLocation implements PlatformLocation {
 
   replaceState(state: any, title: string, newUrl: string): void {
     const oldUrl = this.url;
-    const parsedUrl = parseUrl(newUrl);
+    const parsedUrl = parseUrl(newUrl, this._doc.location.origin);
     (this as Writable<this>).pathname = parsedUrl.pathname;
     (this as Writable<this>).search = parsedUrl.search;
+    (this as Writable<this>).href = parsedUrl.href;
+    (this as Writable<this>).protocol = parsedUrl.protocol;
     this.setHash(parsedUrl.hash, oldUrl);
   }
 

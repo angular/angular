@@ -67,7 +67,6 @@
         [showCommentNodes]="showCommentNodes()"
         [isHydrationEnabled]="isHydrationEnabled()"
         (toggleInspector)="toggleInspector()"
-        [signalGraphEnabled]="signalGraphEnabled()"
       />
 
       @let profilerVisible = activeTab() === 'Profiler';
@@ -79,8 +78,8 @@
       @defer (when routerTreeVisible; prefetch on idle) {
         <ng-router-tree
           [hidden]="!routerTreeVisible"
-          [snapToRoot]="snapToRoot()"
           [routes]="routes()"
+          [routerDebugApiSupport]="supportedApis().routes"
         />
       }
 
@@ -131,15 +130,6 @@
           (change)="setRouterGraph($event.checked)"
         />
         <span class="ng-mat-menu-label-text">Enable Router Tree</span>
-      </label>
-    }
-    @if (supportedApis().signals) {
-      <label mat-menu-item disableRipple>
-        <mat-slide-toggle
-          [checked]="signalGraphEnabled()"
-          (change)="setSignalGraph($event.checked)"
-        />
-        <span class="ng-mat-menu-label-text">Enable Signal Graph (experimental)</span>
       </label>
     }
     @if (supportedApis().transferState) {

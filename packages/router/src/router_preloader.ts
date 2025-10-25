@@ -142,7 +142,7 @@ export class RouterPreloader implements OnDestroy {
     return this.preloadingStrategy.preload(route, () => {
       let loadedChildren$: Observable<LoadedRouterConfig | null>;
       if (route.loadChildren && route.canLoad === undefined) {
-        loadedChildren$ = this.loader.loadChildren(injector, route);
+        loadedChildren$ = from(this.loader.loadChildren(injector, route));
       } else {
         loadedChildren$ = of(null);
       }

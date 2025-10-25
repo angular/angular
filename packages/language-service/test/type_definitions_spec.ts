@@ -47,7 +47,7 @@ describe('type definitions', () => {
     expect(definitions!.length).toEqual(3);
 
     assertTextSpans(definitions, ['transform']);
-    assertFileNames(definitions, ['index.d.ts']);
+    assertFileNames(definitions, ['fake_common.d.ts']);
   });
 
   describe('inputs', () => {
@@ -58,8 +58,7 @@ describe('type definitions', () => {
           import {Component, Directive, input} from '@angular/core';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             firstName = input<string>();
@@ -67,7 +66,6 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
             imports: [MyDir],
           })
           export class AppCmp {}
@@ -82,7 +80,7 @@ describe('type definitions', () => {
       expect(definitions!.length).toEqual(1);
 
       assertTextSpans(definitions, ['InputSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['core.d.ts']);
     });
   });
 
@@ -94,8 +92,7 @@ describe('type definitions', () => {
           import {Component, Directive, output} from '@angular/core';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             nameChanges = output<string>();
@@ -103,8 +100,7 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
-            imports: [MyDir],
+                        imports: [MyDir],
           })
           export class AppCmp {
             doSmth() {}
@@ -133,8 +129,7 @@ describe('type definitions', () => {
           import {outputFromObservable} from '@angular/core/rxjs-interop';
 
           @Directive({
-            selector: 'my-dir',
-            standalone: true
+            selector: 'my-dir'
           })
           export class MyDir {
             nameChanges = outputFromObservable(new EventEmitter<number>());
@@ -142,8 +137,7 @@ describe('type definitions', () => {
 
           @Component({
             templateUrl: 'app.html',
-            standalone: true,
-            imports: [MyDir],
+                        imports: [MyDir],
           })
           export class AppCmp {
             doSmth() {}
@@ -168,17 +162,13 @@ describe('type definitions', () => {
       'app.ts': `
         import {Component, Directive, model} from '@angular/core';
 
-        @Directive({
-          selector: 'my-dir',
-          standalone: true
-        })
+        @Directive({selector: 'my-dir'})
         export class MyDir {
           twoWayValue = model<string>();
         }
 
         @Component({
           templateUrl: 'app.html',
-          standalone: true,
           imports: [MyDir],
         })
         export class AppCmp {
@@ -199,7 +189,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['core.d.ts']);
     });
 
     it('should return the definition for the event side of a two-way binding', () => {
@@ -212,7 +202,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['core.d.ts']);
     });
 
     it('should return the definition of a two-way binding', () => {
@@ -225,7 +215,7 @@ describe('type definitions', () => {
 
       expect(definitions.length).toBe(1);
       assertTextSpans(definitions, ['ModelSignal']);
-      assertFileNames(definitions, ['index.d.ts']);
+      assertFileNames(definitions, ['core.d.ts']);
     });
   });
 

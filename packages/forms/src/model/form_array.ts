@@ -15,6 +15,7 @@ import {
   AbstractControlOptions,
   assertAllValuesPresent,
   assertControlPresent,
+  FormResetEvent,
   pickAsyncValidators,
   pickValidators,
   ɵRawValue,
@@ -173,6 +174,8 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
+   *
+   * NOTE: Pushing to the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
    */
   push(control: TControl | Array<TControl>, options: {emitEvent?: boolean} = {}): void {
     if (Array.isArray(control)) {
@@ -200,6 +203,8 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * inserted. When false, no events are emitted.
+   *
+   * NOTE: Inserting to the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
    */
   insert(index: number, control: TControl, options: {emitEvent?: boolean} = {}): void {
     this.controls.splice(index, 0, control);
@@ -219,6 +224,8 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control is
    * removed. When false, no events are emitted.
+   *
+   * NOTE: Removing the FormArray will not mark it dirty. If you want to mark if dirty, call `markAsDirty()`.
    */
   removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
     // Adjust the index, then clamp it at no less than 0 to prevent undesired underflows.
@@ -423,14 +430,18 @@ export class FormArray<TControl extends AbstractControl<any> = any> extends Abst
     options: {
       onlySelf?: boolean;
       emitEvent?: boolean;
+      overwriteDefaultValue?: boolean;
     } = {},
   ): void {
     this._forEachChild((control: AbstractControl, index: number) => {
-      control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
+      control.reset(value[index], {...options, onlySelf: true});
     });
     this._updatePristine(options, this);
     this._updateTouched(options, this);
     this.updateValueAndValidity(options);
+    if (options?.emitEvent !== false) {
+      this._events.next(new FormResetEvent(this));
+    }
   }
 
   /**
@@ -571,6 +582,8 @@ export const UntypedFormArray: UntypedFormArrayCtor = FormArray;
 /**
  * @description
  * Asserts that the given control is an instance of `FormArray`
+ *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
  *
  * @publicApi
  */

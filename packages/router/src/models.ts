@@ -618,6 +618,9 @@ export interface Route {
 
   /**
    * An object specifying a lazy-loaded component.
+   *
+   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   *
    */
   loadComponent?: () =>
     | Type<unknown>
@@ -708,6 +711,9 @@ export interface Route {
   children?: Routes;
   /**
    * An object specifying lazy-loaded child routes.
+   *
+   * @see [Injection context lazy loading](guide/routing/define-routes#injection-context-lazy-loading)
+   *
    */
   loadChildren?: LoadChildren;
 

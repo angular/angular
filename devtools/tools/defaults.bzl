@@ -6,7 +6,7 @@ load("@aspect_rules_esbuild//esbuild:defs.bzl", _esbuild = "esbuild")
 load("@aspect_rules_js//js:defs.bzl", _js_library = "js_library")
 load("@bazel_skylib//rules:common_settings.bzl", _string_flag = "string_flag")
 load(
-    "//tools:defaults2.bzl",
+    "//tools:defaults.bzl",
     _http_server = "http_server",
     _ng_project = "ng_project",
     _ng_web_test_suite = "ng_web_test_suite",
@@ -36,8 +36,6 @@ def ng_web_test_suite(deps = [], **kwargs):
         "//:node_modules/@angular/platform-browser",
     ]
     _ng_web_test_suite(
-        # TODO: Reenable firefox tests once spaces in file paths are not a problem
-        firefox = False,
         deps = deps,
         tsconfig = "//devtools:tsconfig_test",
         **kwargs

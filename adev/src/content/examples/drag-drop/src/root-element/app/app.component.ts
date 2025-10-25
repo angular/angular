@@ -18,7 +18,6 @@ import {
   selector: 'cdk-drag-drop-root-element-example',
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.css',
-  standalone: true,
   imports: [CdkDrag],
 })
 export class CdkDragDropRootElementExample implements AfterViewInit, OnDestroy {

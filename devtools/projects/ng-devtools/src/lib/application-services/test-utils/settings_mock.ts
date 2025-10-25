@@ -14,9 +14,9 @@ import {ThemePreference} from '../theme_types';
 export class SettingsMock extends Settings {
   routerGraphEnabled = signal(false);
   showCommentNodes = signal(false);
-  signalGraphEnabled = signal(false);
   timingAPIEnabled = signal(false);
   theme = signal<ThemePreference>('system');
+  activeTab = signal('Components');
 }
 
 export const SETTINGS_MOCK: Provider[] = [

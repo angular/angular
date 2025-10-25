@@ -19,7 +19,7 @@ jobs:
           exit: true
 
       # Indicate that the benchmark command was received.
-      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+      - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
         with:
           comment-id: ${{github.event.comment.id}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'
@@ -38,7 +38,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - uses: angular/dev-infra/github-actions/bazel/configure-remote@7a11f99c467ca5ae4411c27beeec4300e32b616a
+      - uses: angular/dev-infra/github-actions/bazel/configure-remote@e17731ca1da0c62d7de5fd72fc4541d363946fa4
         with:
           bazelrc: ./.bazelrc.user
 
@@ -53,7 +53,7 @@ jobs:
         id: benchmark
         name: Running benchmark
 
-      - uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+      - uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v5
         with:
           issue-number: ${{github.event.issue.number}}
           token: '${{secrets.BENCHMARK_POST_RESULTS_GITHUB_TOKEN}}'

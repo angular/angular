@@ -38,7 +38,7 @@ export interface InjectDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
    *
-   * @see [Dependency Injection Guide](guide/di/dependency-injection
+   * @see [Dependency Injection Guide](guide/di/dependency-injection)
    *
    */
   (token: any): any;
@@ -90,7 +90,7 @@ export interface OptionalDecorator {
    *
    * {@example core/di/ts/metadata_spec.ts region='Optional'}
    *
-   * @see [Dependency Injection Guide](guide/di/dependency-injection.
+   * @see [Dependency Injection Guide](guide/di/dependency-injection)
    */
   (): any;
   new (): Optional;

@@ -143,7 +143,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       directive: any,
       hookName: keyof LifecycleProfile,
       node: Node,
-      __: number,
+      id: number,
       isComponent: boolean,
     ): void {
       startEvent(timeStartMap, directive, hookName);
@@ -181,6 +181,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
       componentOrDirective: any,
       outputName: string,
       node: Node,
+      id: number | undefined,
       isComponent: boolean,
     ): void {
       startEvent(timeStartMap, componentOrDirective, outputName);

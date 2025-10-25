@@ -1,54 +1,18 @@
 @use '@angular/docs/styles/media-queries' as mq;
 
-.adev-tutorial-nav-list-dropdown {
-  background-color: var(--page-background);
-  border: 1px solid var(--senary-contrast);
-  border-radius: 0.25rem;
-  z-index: var(--z-index-nav);
-  margin-top: 1rem;
-  width: 100%;
-  box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.05);
+:host {
   display: flex;
-  flex-direction: column;
+  min-width: var(--secondary-nav-width);
+  list-style: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+  padding-block: 1.5rem;
+  font-size: 0.875rem;
+  box-sizing: border-box;
 
-  @container tutorial-content (max-width: 430px) {
-    margin-top: 0;
-  }
-
-  ul {
-    padding-block-end: 1rem;
-  }
-
-  // "Next Tutorial" link
-  a {
-    position: sticky;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    color: var(--gray-400);
-    background-color: var(--page-background);
-    border-block-start: 1px solid var(--senary-contrast);
-    border-radius: 0 0 0.25rem 0.25rem;
-    text-align: right;
-    padding: 1rem;
-    font-size: 0.875rem;
-    transition: color 0.3s ease;
-
-    &:hover {
-      color: var(--primary-contrast);
-      background-color: var(--octonary-contrast);
-    }
-
-    &::after {
-      content: 'chevron_right';
-      font-family: var(--icons);
-      font-size: 1.3rem;
-      margin-inline-start: 0.2rem;
-    }
-  }
-}
-
-.adev-nav-list {
   height: max-content;
   max-height: calc(var(--fixed-content-height) - var(--layout-padding) - 67px);
   padding-block-start: 1rem;
@@ -63,5 +27,67 @@
 
   &::-webkit-scrollbar-thumb {
     background-color: var(--senary-contrast);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    background-color: var(--septenary-contrast);
+
+    @include mq.for-tablet-landscape-down {
+      background-color: var(--quinary-contrast);
+    }
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--quinary-contrast);
+  }
+
+  > .docs-faceted-list {
+    border: 0;
+  }
+}
+
+.docs-faceted-list-item-text {
+  max-width: calc(100% - 1rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  line-height: 1.4rem;
+  letter-spacing: -0.00875rem;
+  padding: 0.5rem;
+  padding-inline-start: 1rem;
+  text-align: left;
+}
+
+// Add padding-bottom to last item in the list
+.docs-navigation-list {
+  width: 100%;
+
+  li:last-of-type {
+    ul:last-of-type {
+      li:last-of-type {
+        padding-block-end: 1rem;
+      }
+    }
+  }
+  &:first-child {
+    margin-inline-start: 1rem;
   }
 }

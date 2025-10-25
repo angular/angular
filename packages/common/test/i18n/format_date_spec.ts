@@ -273,7 +273,7 @@ describe('Format date', () => {
         );
       });
 
-      const nightTime = new Date(2015, 5, 15, 2, 3, 1, 550);
+      const nightTime = new Date(2015, 5, 15, 22, 3, 1, 550);
       Object.keys(midnightCrossingPeriods).forEach((pattern) => {
         expectDateFormatAs(nightTime, pattern, midnightCrossingPeriods[pattern]);
       });
@@ -336,14 +336,14 @@ describe('Format date', () => {
         mediumDate: 'Jun 15, 2015',
         longDate: 'June 15, 2015',
         fullDate: 'Monday, June 15, 2015',
-        short: '6/15/15, 9:03 AM',
-        medium: 'Jun 15, 2015, 9:03:01 AM',
-        long: /June 15, 2015 at 9:03:01 AM GMT(\+|-)\d/,
-        full: /Monday, June 15, 2015 at 9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
-        shortTime: '9:03 AM',
-        mediumTime: '9:03:01 AM',
-        longTime: /9:03:01 AM GMT(\+|-)\d/,
-        fullTime: /9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
+        short: '6/15/15, 9:03 AM',
+        medium: 'Jun 15, 2015, 9:03:01 AM',
+        long: /June 15, 2015, 9:03:01 AM GMT(\+|-)\d/,
+        full: /Monday, June 15, 2015, 9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
+        shortTime: '9:03 AM',
+        mediumTime: '9:03:01 AM',
+        longTime: /9:03:01 AM GMT(\+|-)\d/,
+        fullTime: /9:03:01 AM GMT(\+|-)\d{2}:\d{2}/,
       };
 
       Object.keys(dateFixtures).forEach((pattern: string) => {
@@ -383,7 +383,7 @@ describe('Format date', () => {
     it('should show the correct time when the timezone is fixed', () => {
       expect(
         formatDate('2017-06-13T10:14:39+0000', 'shortTime', ɵDEFAULT_LOCALE_ID, '+0000'),
-      ).toEqual('10:14 AM');
+      ).toEqual('10:14 AM');
       expect(formatDate('2017-06-13T10:14:39+0000', 'h:mm a', ɵDEFAULT_LOCALE_ID, '+0000')).toEqual(
         '10:14 AM',
       );
@@ -420,7 +420,7 @@ describe('Format date', () => {
 
     it(`should format the date correctly in various locales`, () => {
       expect(formatDate(date, 'short', 'de')).toEqual('15.06.15, 09:03');
-      expect(formatDate(date, 'short', 'ar')).toEqual('15‏/6‏/2015, 9:03 ص');
+      expect(formatDate(date, 'short', 'ar')).toEqual('15‏/6‏/2015، 9:03 ص');
       expect(formatDate(date, 'dd-MM-yy', 'th')).toEqual('15-06-15');
       expect(formatDate(date, 'a', 'hu')).toEqual('de.');
       expect(formatDate(date, 'a', 'sr')).toEqual('AM');
@@ -517,11 +517,11 @@ describe('Format date', () => {
 
       const date1 = formatDate(isoDate, 'long', 'en', 'America/New_York');
       const date2 = formatDate(isoDate, 'long', 'en', 'EST');
-      expect(date1).toBe('February 17, 2024 at 12:00:00 PM GMT+0');
-      expect(date2).toBe('February 17, 2024 at 7:00:00 AM GMT-5');
+      expect(date1).toBe('February 17, 2024, 12:00:00 PM GMT+0');
+      expect(date2).toBe('February 17, 2024, 7:00:00 AM GMT-5');
 
       const date3 = formatDate(isoDate, 'long', 'en', '+0500');
-      expect(date3).toBe('February 17, 2024 at 5:00:00 PM GMT+5');
+      expect(date3).toBe('February 17, 2024, 5:00:00 PM GMT+5');
     });
 
     it('should return thursday date of the same week', () => {

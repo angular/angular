@@ -25,7 +25,7 @@ When you are ready to pass in a value through an `input`, values can be set in t
   ...
   template: `<app-user occupation="Angular Developer"></app-user>`
 })
-class App {}
+export class App {}
 </docs-code>
 
 The `input` function returns an `InputSignal`. You can read the value by calling the signal. 

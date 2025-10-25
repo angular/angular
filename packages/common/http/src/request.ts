@@ -33,6 +33,7 @@ interface HttpRequestInit {
   redirect?: RequestRedirect;
   referrer?: string;
   integrity?: string;
+  referrerPolicy?: ReferrerPolicy;
 }
 
 /**
@@ -99,13 +100,6 @@ export const CONTENT_TYPE_HEADER = 'Content-Type';
  * (or content types) the client is willing to receive from the server.
  */
 export const ACCEPT_HEADER = 'Accept';
-
-/**
- * `X-Request-URL` is a custom HTTP header used in older browser versions,
- * including Firefox (< 32), Chrome (< 37), Safari (< 8), and Internet Explorer,
- * to include the full URL of the request in cross-origin requests.
- */
-export const X_REQUEST_URL_HEADER = 'X-Request-URL';
 
 /**
  * `text/plain` is a content type used to indicate that the content being
@@ -221,6 +215,12 @@ export class HttpRequest<T> {
   readonly integrity!: string;
 
   /**
+   * The referrer policy of the request, which can be used to specify the referrer information to be included with the request.
+   * This can affect the amount of referrer information sent with the request, and can be used to enhance privacy and security.
+   */
+  readonly referrerPolicy!: ReferrerPolicy;
+
+  /**
    * The expected response type of the server.
    *
    * This is used to parse the response appropriately before returning it to
@@ -278,6 +278,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -309,6 +310,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
     },
   );
   constructor(
@@ -330,6 +332,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -362,6 +365,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
     },
   );
   constructor(
@@ -383,6 +387,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       /**
        * This property accepts either a boolean to enable/disable transferring cache for eligible
        * requests performed using `HttpClient`, or an object, which allows to configure cache
@@ -415,6 +420,7 @@ export class HttpRequest<T> {
           redirect?: RequestRedirect;
           referrer?: string;
           integrity?: string;
+          referrerPolicy?: ReferrerPolicy;
           transferCache?: {includeHeaders?: string[]} | boolean;
           timeout?: number;
         }
@@ -434,6 +440,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
     },
@@ -518,6 +525,10 @@ export class HttpRequest<T> {
 
       if (options.referrer) {
         this.referrer = options.referrer;
+      }
+
+      if (options.referrerPolicy) {
+        this.referrerPolicy = options.referrerPolicy;
       }
 
       // We do want to assign transferCache even if it's falsy (false is valid value)
@@ -653,6 +664,7 @@ export class HttpRequest<T> {
     redirect?: RequestRedirect;
     referrer?: string;
     integrity?: string;
+    referrerPolicy?: ReferrerPolicy;
     transferCache?: {includeHeaders?: string[]} | boolean;
     timeout?: number;
     body?: T | null;
@@ -674,6 +686,7 @@ export class HttpRequest<T> {
     redirect?: RequestRedirect;
     referrer?: string;
     integrity?: string;
+    referrerPolicy?: ReferrerPolicy;
     withCredentials?: boolean;
     credentials?: RequestCredentials;
     transferCache?: {includeHeaders?: string[]} | boolean;
@@ -700,6 +713,7 @@ export class HttpRequest<T> {
       redirect?: RequestRedirect;
       referrer?: string;
       integrity?: string;
+      referrerPolicy?: ReferrerPolicy;
       transferCache?: {includeHeaders?: string[]} | boolean;
       timeout?: number;
       body?: any | null;
@@ -722,6 +736,7 @@ export class HttpRequest<T> {
     const credentials = update.credentials || this.credentials;
     const referrer = update.referrer || this.referrer;
     const integrity = update.integrity || this.integrity;
+    const referrerPolicy = update.referrerPolicy || this.referrerPolicy;
     // Carefully handle the transferCache to differentiate between
     // `false` and `undefined` in the update args.
     const transferCache = update.transferCache ?? this.transferCache;
@@ -783,6 +798,7 @@ export class HttpRequest<T> {
       credentials,
       referrer,
       integrity,
+      referrerPolicy,
     });
   }
 }

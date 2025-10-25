@@ -1,0 +1,45 @@
+load("@aspect_rules_js//js:defs.bzl", "js_test")
+load("//tools:defaults.bzl", "ts_project")
+
+ts_project(
+    name = "e2e",
+    testonly = True,
+    srcs = glob(["*.ts"]),
+    data = [
+        "//vscode-ng-language-service:node_modules/jasmine",
+        "//vscode-ng-language-service:node_modules/jasmine-reporters",
+    ],
+    visibility = [
+        "//vscode-ng-language-service/integration:__subpackages__",
+    ],
+    deps = [
+        "//vscode-ng-language-service:node_modules/@types/jasmine",
+        "//vscode-ng-language-service:node_modules/@types/jasmine-reporters",
+        "//vscode-ng-language-service:node_modules/@types/node",
+        "//vscode-ng-language-service:node_modules/@types/vscode",
+        "//vscode-ng-language-service:node_modules/@vscode/test-electron",
+        "//vscode-ng-language-service:node_modules/xvfb",
+        "//vscode-ng-language-service/integration",
+    ],
+)
+
+js_test(
+    name = "test",
+    data = [
+        ":e2e",
+        "//vscode-ng-language-service:development_package",
+    ],
+    entry_point = ":index.js",
+    env = {
+        "DBUS_SESSION_BUS_ADDRESS": "",
+    },
+    # This test downloads vscode & installs it which is not allowed in the sandbox
+    # due to file system protection. It is tagged local so it runs outside of
+    # the sandbox. It would need some redesign to allow for sandbox execution.
+    tags = [
+        "e2e",
+        "no-remote-exec",
+        "no-sandbox",
+        "requires-network",
+    ],
+)

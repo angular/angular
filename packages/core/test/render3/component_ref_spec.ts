@@ -377,7 +377,7 @@ describe('ComponentFactory', () => {
       fixture.componentRef.setInput('doesNotExist', '');
 
       const msgL1 = `NG0303: Can't set value of the 'doesNotExist' input on the 'NoInputsCmp' component. `;
-      const msgL2 = `Make sure that the 'doesNotExist' property is declared as an input using the @Input() decorator or the input() function.`;
+      const msgL2 = `Make sure that the 'doesNotExist' property is declared as an input using the input() or model() function or the @Input() decorator.`;
       expect(console.error).toHaveBeenCalledWith(msgL1 + msgL2);
     });
 
@@ -403,10 +403,7 @@ describe('ComponentFactory', () => {
 
     it('should not set input if value is the same as the previous', () => {
       let log: string[] = [];
-      @Component({
-        template: `{{input}}`,
-        standalone: true,
-      })
+      @Component({template: `{{input}}`})
       class DynamicCmp {
         @Input()
         set input(v: string) {

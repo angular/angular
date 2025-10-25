@@ -16,6 +16,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    background: var(--page-background);
     color: var(--primary-contrast);
     padding: 1.5rem;
     border: 1px solid var(--senary-contrast);
@@ -40,7 +41,7 @@
       position: relative;
     }
 
-    * + *:not(a):not(code):not(span) {
+    * + *:not(a):not(code):not(span):not(div) {
       margin-block: 1.5rem;
     }
 
@@ -51,6 +52,7 @@
         flex-grow: 1;
         margin-block-start: 0;
         padding-inline: 1.5rem;
+        padding-block: 1rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -58,7 +60,6 @@
 
         h3 {
           margin-bottom: 0;
-          margin-block-start: 1rem;
           font-size: 1rem;
         }
         p {
@@ -88,7 +89,7 @@
     }
 
     &:hover {
-      background: var(--subtle-purple);
+      background: var(--subtle-blue);
 
       span {
         background-position: 0% 0%;

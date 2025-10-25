@@ -538,6 +538,32 @@ export class InstantiateExpr extends Expression {
   }
 }
 
+export class RegularExpressionLiteral extends Expression {
+  constructor(
+    public body: string,
+    public flags: string | null,
+    sourceSpan?: ParseSourceSpan | null,
+  ) {
+    super(null, sourceSpan);
+  }
+
+  override isEquivalent(e: Expression): boolean {
+    return e instanceof RegularExpressionLiteral && this.body === e.body && this.flags === e.flags;
+  }
+
+  override isConstant() {
+    return true;
+  }
+
+  override visitExpression(visitor: ExpressionVisitor, context: any): any {
+    return visitor.visitRegularExpressionLiteral(this, context);
+  }
+
+  override clone(): RegularExpressionLiteral {
+    return new RegularExpressionLiteral(this.body, this.flags, this.sourceSpan);
+  }
+}
+
 export class LiteralExpr extends Expression {
   constructor(
     public value: number | string | boolean | null | undefined,
@@ -1400,6 +1426,7 @@ export interface ExpressionVisitor {
   visitVoidExpr(ast: VoidExpr, context: any): any;
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any): any;
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1625,6 +1652,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
     return this.visitExpression(ast, context);
   }
   visitLiteralExpr(ast: LiteralExpr, context: any): any {
+    return this.visitExpression(ast, context);
+  }
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any {
     return this.visitExpression(ast, context);
   }
   visitLocalizedString(ast: LocalizedString, context: any): any {

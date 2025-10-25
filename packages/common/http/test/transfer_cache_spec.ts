@@ -272,7 +272,6 @@ describe('TransferCache', () => {
       makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST'});
     });
 
-    // TODO: Investigate why this test is flaky
     it('should cache POST with the transferCache option', () => {
       makeRequestAndExpectOne('/test-1?foo=1', 'foo', {method: 'POST', transferCache: true});
       makeRequestAndExpectNone('/test-1?foo=1', 'POST', {transferCache: true});

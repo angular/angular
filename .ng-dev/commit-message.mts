@@ -11,9 +11,7 @@ export const commitMessage: CommitMessageConfig = {
   // https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md#scope
   scopes: [
     'animations',
-    'bazel',
     'benchpress',
-    'changelog',
     'common',
     'compiler',
     'compiler-cli',
@@ -25,15 +23,16 @@ export const commitMessage: CommitMessageConfig = {
     'forms',
     'http',
     'language-service',
+    'language-server',
     'localize',
     'migrations',
-    'packaging',
     'platform-browser',
     'platform-browser-dynamic',
     'platform-server',
     'router',
     'service-worker',
     'upgrade',
+    'vscode-extension',
     'zone.js',
   ],
 };

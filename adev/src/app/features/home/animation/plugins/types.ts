@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Animation} from '../animation';
+import type {Animation} from '../animation';
 
 /**
  * Animation plugin interface.

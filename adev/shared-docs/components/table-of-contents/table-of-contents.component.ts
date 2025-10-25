@@ -17,7 +17,7 @@ import {
 } from '@angular/core';
 import {Location, ViewportScroller} from '@angular/common';
 import {TableOfContentsLevel} from '../../interfaces/index';
-import {TableOfContentsLoader} from '../../services/table-of-contents-loader.service';
+import {TableOfContentsLoader} from '../../services';
 import {IconComponent} from '../icon/icon.component';
 
 @Component({
@@ -38,7 +38,7 @@ export class TableOfContents {
 
   tableOfContentItems = this.tableOfContentsLoader.tableOfContentItems;
 
-  activeItemId = signal<string | null>(null);
+  readonly activeItemId = signal<string | null>(null);
   TableOfContentsLevel = TableOfContentsLevel;
 
   constructor() {

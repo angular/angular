@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_project")
+load("//tools:defaults.bzl", "ts_project")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -10,7 +10,6 @@ ts_project(
         "//:node_modules/rxjs",
         "//:node_modules/typescript",
         "//packages:types",
-        "//packages/core",
         "//packages/service-worker/worker",
     ],
 )

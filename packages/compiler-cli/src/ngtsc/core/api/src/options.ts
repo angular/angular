@@ -81,22 +81,6 @@ export interface InternalOptions {
   supportJitMode?: boolean;
 
   /**
-   * Whether block syntax is enabled in the compiler. Defaults to true.
-   * Used in the language service to disable the new syntax for projects that aren't on v17.
-   *
-   * @internal
-   */
-  _enableBlockSyntax?: boolean;
-
-  /**
-   * Whether `@let` syntax is enabled in the compiler.
-   * Defaults to false while the feature is being developed.
-   *
-   * @internal
-   */
-  _enableLetSyntax?: boolean;
-
-  /**
    * Enables the use of `<link>` elements for component styleUrls instead of inlining the file
    * content.
    * This option is intended to be used with a development server that processes and serves

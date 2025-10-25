@@ -18,7 +18,6 @@ import {
   TemplateBinding,
   VariableBinding,
   BindingPipeType,
-  Binary,
 } from '../../src/expression_parser/ast';
 import {ParseError} from '../../src/parse_util';
 import {Lexer} from '../../src/expression_parser/lexer';
@@ -481,10 +480,7 @@ describe('parser', () => {
       });
 
       it('should report error if interpolation is empty', () => {
-        expectBindingError(
-          '`hello ${}`',
-          'Template literal interpolation cannot be empty at the end of the expression',
-        );
+        expectBindingError('`hello ${}`', 'Template literal interpolation cannot be empty');
       });
 
       it('should parse tagged template literals with no interpolations', () => {
@@ -508,6 +504,36 @@ describe('parser', () => {
       it('should not mistake operator for tagged literal tag', () => {
         checkBinding('typeof `hello!`');
         checkBinding('typeof `hello ${name}!`');
+      });
+    });
+
+    describe('regular expression literals', () => {
+      it('should parse a regular expression literal without flags', () => {
+        checkBinding('/abc/');
+        checkBinding('/[a/]$/');
+        checkBinding('/a\\w+/');
+        checkBinding('/^http:\\/\\/foo\\.bar/');
+      });
+
+      it('should parse a regular expression literal with flags', () => {
+        checkBinding('/abc/g');
+        checkBinding('/[a/]$/gi');
+        checkBinding('/a\\w+/gim');
+        checkBinding('/^http:\\/\\/foo\\.bar/i');
+      });
+
+      it('should parse a regular expression that is a part of other expressions', () => {
+        checkBinding('/abc/.test("foo")');
+        checkBinding('"foo".match(/(abc)/)[1].toUpperCase()');
+        checkBinding('/abc/.test("foo") && something || somethingElse');
+      });
+
+      it('should report invalid regular expression flag', () => {
+        expectBindingError('"foo".match(/abc/O)', 'Unsupported regular expression flag "O"');
+      });
+
+      it('should report duplicated regular expression flags', () => {
+        expectBindingError('"foo".match(/abc/gig)', 'Duplicate regular expression flag "g"');
       });
     });
   });
@@ -690,6 +716,22 @@ describe('parser', () => {
       function expectSpan(input: string) {
         expect(unparseWithSpan(parseBinding(input))).toContain([jasmine.any(String), input]);
       }
+    });
+
+    it('should record span for a regex without flags', () => {
+      const ast = parseBinding('/^http:\\/\\/foo\\.bar/');
+      expect(unparseWithSpan(ast)).toContain([
+        '/^http:\\/\\/foo\\.bar/',
+        '/^http:\\/\\/foo\\.bar/',
+      ]);
+    });
+
+    it('should record span for a regex with flags', () => {
+      const ast = parseBinding('/^http:\\/\\/foo\\.bar/gim');
+      expect(unparseWithSpan(ast)).toContain([
+        '/^http:\\/\\/foo\\.bar/gim',
+        '/^http:\\/\\/foo\\.bar/gim',
+      ]);
     });
   });
 
@@ -1270,17 +1312,6 @@ describe('parser', () => {
       checkInterpolation(`{{ 'foo' +\n 'bar' +\r 'baz' }}`, `{{ "foo" + "bar" + "baz" }}`);
     });
 
-    it('should support custom interpolation', () => {
-      const parser = new Parser(new Lexer());
-      const ast = parser.parseInterpolation('{% a %}', getFakeSpan(), 0, null, {
-        start: '{%',
-        end: '%}',
-      })!.ast as any;
-      expect(ast.strings).toEqual(['', '']);
-      expect(ast.expressions.length).toEqual(1);
-      expect(ast.expressions[0].name).toEqual('a');
-    });
-
     describe('comments', () => {
       it('should ignore comments in interpolation expressions', () => {
         checkInterpolation('{{a //comment}}', '{{ a }}');
@@ -1448,6 +1479,12 @@ describe('parser', () => {
       recover('foo(($event.target as HTMLElement).value)', 'foo(($event.target).value)');
       recover('foo(((($event.target as HTMLElement))).value)', 'foo(((($event.target))).value)');
       recover('foo(((bar as HTMLElement) as Something).value)', 'foo(((bar)).value)');
+    });
+
+    it('should be able to recover from a broken expression in a template literal', () => {
+      recover('`before ${expr.}`', '`before ${expr.}`');
+      recover('`${expr.} after`', '`${expr.} after`');
+      recover('`before ${expr.} after`', '`before ${expr.} after`');
     });
   });
 

@@ -47,13 +47,13 @@ js_binary(
         "//adev:node_modules/jsdom",
         "//adev:node_modules/mermaid",
         "//adev:node_modules/playwright-core",
-        "@rules_browsers//src/browsers/chromium",
+        "@rules_browsers//browsers/chromium",
     ],
     entry_point = "//adev/shared-docs/pipeline/guides:guides.mjs",
     env = {
         "CHROME_HEADLESS_BIN": "$(CHROME-HEADLESS-SHELL)",
     },
-    toolchains = ["@rules_browsers//src/browsers/chromium:toolchain_alias"],
+    toolchains = ["@rules_browsers//browsers/chromium:toolchain_alias"],
     visibility = ["//visibility:public"],
 )
 

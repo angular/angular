@@ -11,7 +11,7 @@ import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {HostTree} from '@angular-devkit/schematics';
 import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing/index.js';
 import {resolve} from 'node:path';
-import shx from 'shelljs';
+import {rmSync} from 'node:fs';
 
 describe('inject migration', () => {
   let runner: SchematicTestRunner;
@@ -50,14 +50,14 @@ describe('inject migration', () => {
       }),
     );
 
-    previousWorkingDir = shx.pwd();
+    previousWorkingDir = process.cwd();
     tmpDirPath = getSystemPath(host.root);
-    shx.cd(tmpDirPath);
+    process.chdir(tmpDirPath);
   });
 
   afterEach(() => {
-    shx.cd(previousWorkingDir);
-    shx.rm('-r', tmpDirPath);
+    process.chdir(previousWorkingDir);
+    rmSync(tmpDirPath, {recursive: true});
   });
 
   ['Directive', 'Component', 'Pipe', 'NgModule'].forEach((decorator) => {
@@ -526,6 +526,37 @@ describe('inject migration', () => {
       `    TestBed.createComponent(MyComp);`,
       `  });`,
       `});`,
+    ]);
+  });
+
+  it('should migrate destructuring property', async () => {
+    writeFile(
+      '/dir.ts',
+      [
+        `import { Directive, ElementRef } from '@angular/core';`,
+        ``,
+        `@Directive()`,
+        `class MyDir {`,
+        `  constructor({nativeElement}: ElementRef) {`,
+        `    console.log(nativeElement);`,
+        `  }`,
+        `}`,
+      ].join('\n'),
+    );
+
+    await runMigration();
+
+    expect(tree.readContent('/dir.ts').split('\n')).toEqual([
+      `import { Directive, ElementRef, inject } from '@angular/core';`,
+      ``,
+      `@Directive()`,
+      `class MyDir {`,
+      `  nativeElement = inject(ElementRef).nativeElement;`,
+      ``,
+      `  constructor() {`,
+      `    console.log(this.nativeElement);`,
+      `  }`,
+      `}`,
     ]);
   });
 

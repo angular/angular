@@ -69,7 +69,7 @@ export interface ModelFunction {
  * To use `model()`, import the function from `@angular/core`.
  *
  * ```ts
- * import {model} from '@angular/core`;
+ * import {model} from '@angular/core';
  * ```
  *
  * Inside your component, introduce a new class member and initialize

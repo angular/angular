@@ -7,7 +7,7 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {DEFAULT_CONTAINER_BLOCKS, InterpolationConfig} from '../ml_parser/defaults';
+import {DEFAULT_CONTAINER_BLOCKS} from '../ml_parser/defaults';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {TokenType} from '../ml_parser/tokens';
 import {ParseError} from '../parse_util';
@@ -28,24 +28,22 @@ let i18nCommentsWarned = false;
  */
 export function extractMessages(
   nodes: html.Node[],
-  interpolationConfig: InterpolationConfig,
   implicitTags: string[],
   implicitAttrs: {[k: string]: string[]},
   preserveSignificantWhitespace: boolean,
 ): ExtractionResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs, preserveSignificantWhitespace);
-  return visitor.extract(nodes, interpolationConfig);
+  return visitor.extract(nodes);
 }
 
 export function mergeTranslations(
   nodes: html.Node[],
   translations: TranslationBundle,
-  interpolationConfig: InterpolationConfig,
   implicitTags: string[],
   implicitAttrs: {[k: string]: string[]},
 ): ParseTreeResult {
   const visitor = new _Visitor(implicitTags, implicitAttrs);
-  return visitor.merge(nodes, translations, interpolationConfig);
+  return visitor.merge(nodes, translations);
 }
 
 export class ExtractionResult {
@@ -106,8 +104,8 @@ class _Visitor implements html.Visitor {
   /**
    * Extracts the messages from the tree
    */
-  extract(nodes: html.Node[], interpolationConfig: InterpolationConfig): ExtractionResult {
-    this._init(_VisitorMode.Extract, interpolationConfig);
+  extract(nodes: html.Node[]): ExtractionResult {
+    this._init(_VisitorMode.Extract);
 
     nodes.forEach((node) => node.visit(this, null));
 
@@ -121,12 +119,8 @@ class _Visitor implements html.Visitor {
   /**
    * Returns a tree where all translatable nodes are translated
    */
-  merge(
-    nodes: html.Node[],
-    translations: TranslationBundle,
-    interpolationConfig: InterpolationConfig,
-  ): ParseTreeResult {
-    this._init(_VisitorMode.Merge, interpolationConfig);
+  merge(nodes: html.Node[], translations: TranslationBundle): ParseTreeResult {
+    this._init(_VisitorMode.Merge);
     this._translations = translations;
 
     // Construct a single fake root element
@@ -280,7 +274,7 @@ class _Visitor implements html.Visitor {
     throw new Error('unreachable code');
   }
 
-  private _init(mode: _VisitorMode, interpolationConfig: InterpolationConfig): void {
+  private _init(mode: _VisitorMode): void {
     this._mode = mode;
     this._inI18nBlock = false;
     this._inI18nNode = false;
@@ -291,7 +285,6 @@ class _Visitor implements html.Visitor {
     this._messages = [];
     this._inImplicitNode = false;
     this._createI18nMessage = createI18nMessageFactory(
-      interpolationConfig,
       DEFAULT_CONTAINER_BLOCKS,
       // When dropping significant whitespace we need to retain whitespace tokens or
       // else we won't be able to reuse source spans because empty tokens would be

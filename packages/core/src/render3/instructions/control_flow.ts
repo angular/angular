@@ -23,6 +23,7 @@ import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
 import {LocalRefExtractor, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {
+  ANIMATIONS,
   CONTEXT,
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
@@ -38,14 +39,15 @@ import {NO_CHANGE} from '../tokens';
 import {getConstant, getTNode} from '../util/view_utils';
 import {createAndRenderEmbeddedLView, shouldAddViewToDom} from '../view_manipulation';
 
-import {declareNoDirectiveHostTemplate} from './template';
+import {AnimationLViewData} from '../../animation/interfaces';
+import {removeDehydratedViews} from '../../hydration/cleanup';
 import {
   addLViewToLContainer,
   detachView,
   getLViewFromLContainer,
   removeLViewFromLContainer,
 } from '../view/container';
-import {removeDehydratedViews} from '../../hydration/cleanup';
+import {declareNoDirectiveHostTemplate} from './template';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -418,8 +420,9 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       shouldAddViewToDom(this.templateTNode, dehydratedView),
     );
   }
-  override detach(index: number): LView<RepeaterContext<unknown>> {
+  override detach(index: number, skipLeaveAnimations?: boolean): LView<RepeaterContext<unknown>> {
     this.needsIndexUpdate ||= index !== this.length - 1;
+    if (skipLeaveAnimations) setSkipLeaveAnimations(this.lContainer, index);
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
@@ -492,7 +495,7 @@ export function ɵɵrepeater(collection: Iterable<unknown> | undefined | null): 
     }
 
     const liveCollection = metadata.liveCollection;
-    reconcile(liveCollection, collection, metadata.trackByFn);
+    reconcile(liveCollection, collection, metadata.trackByFn, prevConsumer);
 
     // Warn developers about situations where the entire collection was re-created as part of the
     // reconciliation pass. Note that this warning might be "overreacting" and report cases where
@@ -565,6 +568,16 @@ function getLContainer(lView: LView, index: number): LContainer {
   ngDevMode && assertLContainer(lContainer);
 
   return lContainer;
+}
+
+function setSkipLeaveAnimations(lContainer: LContainer, index: number): void {
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const viewToDetach = lContainer[indexInContainer];
+  if (viewToDetach && viewToDetach[ANIMATIONS]) {
+    (viewToDetach[ANIMATIONS] as AnimationLViewData).skipLeaveAnimations = true;
+  }
 }
 
 function detachExistingView<T>(lContainer: LContainer, index: number): LView<T> {

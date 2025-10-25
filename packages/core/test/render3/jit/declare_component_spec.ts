@@ -374,19 +374,6 @@ describe('component declaration jit compilation', () => {
     });
   });
 
-  it('should honor custom interpolation config', () => {
-    const def = ɵɵngDeclareComponent({
-      version: '18.0.0',
-      type: TestClass,
-      template: '{% foo %}',
-      interpolation: ['{%', '%}'],
-    }) as ComponentDef<TestClass>;
-
-    expectComponentDef(def, {
-      template: functionContaining([/textInterpolate[^(]*\(ctx.foo\)/]),
-    });
-  });
-
   it('should bind directive inputs as regular property (not DOM property) in the presence of pipes', () => {
     // https://github.com/angular/angular/issues/62573
     const def = ɵɵngDeclareComponent({

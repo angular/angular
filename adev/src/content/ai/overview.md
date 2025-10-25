@@ -35,7 +35,7 @@ Here are examples of how to build with Genkit and Angular:
 
 * [Agentic Apps with Genkit and Angular starter-kit](https://github.com/angular/examples/tree/main/genkit-angular-starter-kit)— New to building with AI? Start here with a basic app that features an agentic workflow. Perfect place to start for your first AI building experience.
 
-* [Use Genkit in an Angular app](https://genkit.dev/docs/angular/)— Build a basic application that uses Genkit Flows, Angular and Gemini 2.0 Flash. This step-by-step walkthrough guides you through creating a full-stack Angular application with AI features.
+* [Use Genkit in an Angular app](https://genkit.dev/docs/angular/)— Build a basic application that uses Genkit Flows, Angular and Gemini 2.5 Flash. This step-by-step walkthrough guides you through creating a full-stack Angular application with AI features.
 
 * [Dynamic Story Generator app](https://github.com/angular/examples/tree/main/genkit-angular-story-generator)— Learn to build an agentic Angular app powered by Genkit, Gemini and Imagen 3 to dynamically generate a story based on user interaction featuring beautiful image panels to accompany the events that take place. Start here if you'd like to experiment with a more advanced use-case.
 
@@ -54,71 +54,17 @@ Here is an example of how to build with Firebase AI Logic and Angular:
   This example includes an [in-depth video walkthrough explaining the functionality and demonstrates how to add new features](https://youtube.com/live/4vfDz2al_BI).
 
 ### Build AI-powered applications with Gemini API and Angular
-The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state-of-the-art models from Google that supports audio, images, video, and text input. The models that are optimized for specific use cases, [learn more on the Gemini API documentation site](https://ai.google.dev/gemini-api/docs/models).
+The [Gemini API](https://ai.google.dev/gemini-api/docs) provides access to state-of-the-art models from Google that support audio, images, video, and text input. These models that are optimized for specific use cases, [learn more on the Gemini API documentation site](https://ai.google.dev/gemini-api/docs/models).
 
 * [AI Text Editor Angular app template](https://github.com/FirebaseExtended/firebase-framework-tools/tree/main/starters/angular/ai-text-editor) - Use this template to start with a fully functioning text editor with AI-powered features like refining text, expanding text and formalizing text. This is a good starting point to gain experience with calling the Gemini API via HTTP.
 
 * [AI Chatbot app template](https://github.com/FirebaseExtended/firebase-framework-tools/tree/main/starters/angular/ai-chatbot) - This template starts with a chatbot user interface that communicates with the Gemini API via HTTP. 
 
-## AI patterns in action: Streaming chat responses
-Having text appear as the response is received from the model is a common UI pattern for web apps using AI. You can achieve this asynchronous task with Angular's `resource` API. The `stream` property of `resource` accepts an asynchronous function you can use to apply updates to a signal value over time. The signal being updated represents the data being streamed.
-
-```ts
-characters = resource({
-    stream: async () => {
-      const data = signal<{ value: string } | { error: unknown }>({
-        value: "",
-      });
-
-      fetch(this.url).then(async (response) => {
-        if (!response.body) return;
-        
-        for await (const chunk of response.body) {
-          const chunkText = this.decoder.decode(chunk);
-          data.update((prev) => {
-            if ("value" in prev) {
-              return { value: `${prev.value} ${chunkText}` };
-            } else {
-              return { error: chunkText };
-            }
-          });
-        }
-      });
-
-      return data;
-    },
-  });
-
-```
-
-The `characters` member is updated asynchronously and can be displayed in the template.
-
-```html
-<p>{{ characters.value() }}</p>
-```
-
-On the server side, in `server.ts` for example, the defined endpoint sends the data to be streamed to the client. The following code uses the Gemini API but this technique is applicable to other tools and frameworks that support streaming responses from LLMs:
-
-```ts
- app.get("/api/stream-response", async (req, res) => {
-   ai.models.generateContentStream({
-     model: "gemini-2.0-flash",
-     contents: "Explain how AI works",
-   }).then(async (response) => {
-     for await (const chunk of response) {
-       res.write(chunk.text);
-     }
-   });
- });
-
-```
-This example connects to the Gemini API but other APIs that support streaming responses can be used here as well. [You can find the complete example on the Angular Github](https://github.com/angular/examples/tree/main/streaming-example).
-
 ## Best Practices
 ### Connecting to model providers and keeping your API Credentials Secure
 When connecting to model providers, it is important to keep your API secrets safe. *Never put your API key in a file that ships to the client, such as `environments.ts`*.
 
-Your application's architecture determines which AI APIs and tools to choose. Specifically, choose based on whether or not your application is client-side or server-side. Tools such as Firebase AI Logic provide a secure connection to the model APIs for client-side code. If you want to use a different API than Firerbase AI Logic or prefer to use a different model provider, consider creating a proxy-server or even [Cloud Functions for Firebase](https://firebase.google.com/docs/functions) to serve as a proxy and not expose your API keys.
+Your application's architecture determines which AI APIs and tools to choose. Specifically, choose based on whether or not your application is client-side or server-side. Tools such as Firebase AI Logic provide a secure connection to the model APIs for client-side code. If you want to use a different API than Firebase AI Logic or prefer to use a different model provider, consider creating a proxy-server or even [Cloud Functions for Firebase](https://firebase.google.com/docs/functions) to serve as a proxy and not expose your API keys.
 
 For an example of connecting using a client-side app, see the code:  [Firebase AI Logic Angular example repository](https://github.com/angular/examples/tree/main/vertex-ai-firebase-angular-example).
 
@@ -142,7 +88,7 @@ Because models can return non-deterministic results, your applications should be
 Even considering these strategies and techniques, sensible fallbacks should be incorporated in your application design. Follow existing standards of application resiliency. For example, it is not acceptable for an application to crash if a resource or API is not available. In that scenario, an error message is displayed to the user and, if applicable, options for next steps are also displayed. Building AI-powered applications requires the same consideration. Confirm that the response is aligned with the expected output and provide a "safe landing" in case it is not aligned by way of [graceful degradation](https://developer.mozilla.org/en-US/docs/Glossary/Graceful_degradation). This also applies to API outages for LLM providers.
 
 Consider this example: The LLM provider is not responding. A potential strategy to handle the outage is:
-* Save the response from the user to used in a retry scenario (now or at a later time)
+* Save the response from the user to use in a retry scenario (now or at a later time)
 * Alert the user to the outage with an appropriate message that doesn't reveal sensitive information
 * Resume the conversation at a later time once the services are available again.
 

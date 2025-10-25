@@ -10,7 +10,6 @@ import * as e from '../../../src/expression_parser/ast';
 import {Lexer} from '../../../src/expression_parser/lexer';
 import {Parser} from '../../../src/expression_parser/parser';
 import * as html from '../../../src/ml_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/defaults';
 import {HtmlParser} from '../../../src/ml_parser/html_parser';
 import {WhitespaceVisitor, visitAllWithSiblings} from '../../../src/ml_parser/html_whitespaces';
 import {ParseTreeResult} from '../../../src/ml_parser/parser';
@@ -182,12 +181,7 @@ export function parseR3(
     ['onEvent'],
     ['onEvent'],
   );
-  const bindingParser = new BindingParser(
-    expressionParser,
-    DEFAULT_INTERPOLATION_CONFIG,
-    schemaRegistry,
-    [],
-  );
+  const bindingParser = new BindingParser(expressionParser, schemaRegistry, []);
   const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
@@ -198,15 +192,9 @@ export function parseR3(
   return r3Result;
 }
 
-export function processI18nMeta(
-  htmlAstWithErrors: ParseTreeResult,
-  interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG,
-): ParseTreeResult {
+export function processI18nMeta(htmlAstWithErrors: ParseTreeResult): ParseTreeResult {
   return new ParseTreeResult(
-    html.visitAll(
-      new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false),
-      htmlAstWithErrors.rootNodes,
-    ),
+    html.visitAll(new I18nMetaVisitor(/* keepI18nAttrs */ false), htmlAstWithErrors.rootNodes),
     htmlAstWithErrors.errors,
   );
 }

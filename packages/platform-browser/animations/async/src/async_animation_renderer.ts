@@ -238,8 +238,13 @@ export class DynamicDelegationRenderer implements Renderer2 {
     this.delegate.insertBefore(parent, newChild, refChild, isMove);
   }
 
-  removeChild(parent: any, oldChild: any, isHostElement?: boolean | undefined): void {
-    this.delegate.removeChild(parent, oldChild, isHostElement);
+  removeChild(
+    parent: any,
+    oldChild: any,
+    isHostElement?: boolean | undefined,
+    requireSynchronousElementRemoval?: boolean,
+  ): void {
+    this.delegate.removeChild(parent, oldChild, isHostElement, requireSynchronousElementRemoval);
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean | undefined): any {
@@ -319,5 +324,5 @@ export class DynamicDelegationRenderer implements Renderer2 {
  * Private token for investigation purposes
  */
 export const ɵASYNC_ANIMATION_LOADING_SCHEDULER_FN = new InjectionToken<<T>(loadFn: () => T) => T>(
-  ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'async_animation_loading_scheduler_fn' : '',
 );

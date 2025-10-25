@@ -48,7 +48,7 @@ export class Search {
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
-  resultsResource = resource({
+  readonly resultsResource = resource({
     params: () => this.searchQuery() || undefined, // coerces empty string to undefined
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
@@ -97,7 +97,7 @@ export class Search {
     },
   });
 
-  searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
+  readonly searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
     source: this.resultsResource.value,
     computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
   });
@@ -141,10 +141,11 @@ export class Search {
 
     const items = result.hits as unknown as SearchResult[];
 
-    return this.getUniqueSearchResultItems(items).map((hitItem: SearchResult) => {
+    return this.getUniqueSearchResultItems(items).map((hitItem: SearchResult): SearchResultItem => {
       const content = hitItem._snippetResult.content;
       const hierarchy = hitItem._snippetResult.hierarchy;
-      const hasSubLabel = content || hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
+      const category = hitItem.hierarchy?.lvl0 ?? null;
+      const hasSubLabel = hierarchy?.lvl2 || hierarchy?.lvl3 || hierarchy?.lvl4;
 
       return {
         id: hitItem.objectID,
@@ -155,6 +156,8 @@ export class Search {
         subLabelHtml: this.parseLabelToHtml(
           hasSubLabel ? this.getBestSnippetForMatch(hitItem) : null,
         ),
+        contentHtml: content ? this.parseLabelToHtml(content.value) : null,
+        package: category === 'Reference' ? extractPackageNameFromUrl(hitItem.url) : null,
 
         category: hitItem.hierarchy?.lvl0 ?? null,
       };
@@ -162,11 +165,6 @@ export class Search {
   }
 
   private getBestSnippetForMatch(result: SearchResult): string {
-    // if there is content, return it
-    if (result._snippetResult.content !== undefined) {
-      return result._snippetResult.content.value;
-    }
-
     const hierarchy = result._snippetResult.hierarchy;
     if (hierarchy === undefined) {
       return '';
@@ -219,7 +217,7 @@ function matched(snippet: SnippetResult | undefined): boolean {
 /**
  * Temporary helper to implement the debounce functionality on the search resource
  */
-function wait(ms: number, signal: AbortSignal) {
+function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => resolve(), ms);
 
@@ -232,4 +230,12 @@ function wait(ms: number, signal: AbortSignal) {
       {once: true},
     );
   });
+}
+
+function extractPackageNameFromUrl(url: string): string | null {
+  const extractedSegment = url.match(/\/api\/(.*)\/.*#?/);
+  if (extractedSegment == null) {
+    return null;
+  }
+  return `<code>@angular/${extractedSegment[1]}</code>`;
 }

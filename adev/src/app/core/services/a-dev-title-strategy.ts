@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy} from '@angular/router';
@@ -19,7 +19,9 @@ export const DEFAULT_PAGE_TITLE = 'Overview';
 
 @Injectable({providedIn: 'root'})
 export class ADevTitleStrategy extends TitleStrategy {
-  constructor(private readonly title: Title) {
+  private readonly title = inject(Title);
+
+  constructor() {
     super();
   }
 

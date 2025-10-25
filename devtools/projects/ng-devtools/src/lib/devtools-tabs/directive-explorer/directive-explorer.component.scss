@@ -1,15 +1,5 @@
 :host {
   height: 100%;
-
-  ::ng-deep {
-    as-split-area {
-      overflow-y: hidden;
-    }
-
-    .as-split-gutter-icon {
-      display: none;
-    }
-  }
 }
 
 .forest-breadcrumbs {

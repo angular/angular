@@ -4,7 +4,7 @@ Data resolvers allow you to fetch data before navigating to a route, ensuring th
 
 ## What are data resolvers?
 
-A data resolver is a service that implements the [`ResolveFn`](api/router/ResolveFn) function. It runs before a route activates and can fetch data from APIs, databases, or other sources. The resolved data becomes available to the component through the [`ActivatedRoute`](api/router/ActivatedRoute).
+A data resolver is a service that implements the `ResolveFn` function. It runs before a route activates and can fetch data from APIs, databases, or other sources. The resolved data becomes available to the component through the `ActivatedRoute`.
 
 ## Why use data resolvers?
 
@@ -17,9 +17,9 @@ Data resolvers solve common routing challenges:
 
 ## Creating a resolver
 
-You create a resolver by writing a function with the [`ResolveFn`](api/router/ResolveFn) type.
+You create a resolver by writing a function with the `ResolveFn` type.
 
-It receives the [`ActivatedRouteSnapshot`](api/router/ActivatedRouteSnapshot) and [`RouterStateSnapshot`](api/router/RouterStateSnapshot) as parameters.
+It receives the `ActivatedRouteSnapshot` and `RouterStateSnapshot` as parameters.
 
 Here is a resolver that gets the user information before rendering a route using the [`inject`](api/core/inject) function:
 
@@ -44,7 +44,7 @@ export const settingsResolver: ResolveFn<Settings> = (route: ActivatedRouteSnaps
 
 ## Configuring routes with resolvers
 
-When you want to add one or more data resolvers to a route, you can add it under the `resolve` key in the route configuration. The [`Routes`](api/router/Routes) type defines the structure for route configurations:
+When you want to add one or more data resolvers to a route, you can add it under the `resolve` key in the route configuration. The `Routes` type defines the structure for route configurations:
 
 ```ts
 import { Routes } from '@angular/router';
@@ -67,7 +67,7 @@ You can learn more about the [`resolve` configuration in the API docs](api/route
 
 ### Using ActivatedRoute
 
-You can access the resolved data in a component by accessing the snapshot data from the [`ActivatedRoute`](api/router/ActivatedRoute) using the [`signal`](api/core/signal) function:
+You can access the resolved data in a component by accessing the snapshot data from the `ActivatedRoute` using the `signal` function:
 
 ```angular-ts
 import { Component, inject, computed } from '@angular/core';
@@ -92,7 +92,7 @@ export class UserDetail {
 
 ### Using withComponentInputBinding
 
-A different approach to accessing the resolved data is to use [`withComponentInputBinding()`](api/router/withComponentInputBinding) when configuring your router with [`provideRouter`](api/router/provideRouter). This allows resolved data to be passed directly as component inputs:
+A different approach to accessing the resolved data is to use `withComponentInputBinding()` when configuring your router with `provideRouter`. This allows resolved data to be passed directly as component inputs:
 
 ```ts
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -106,7 +106,7 @@ bootstrapApplication(App, {
 });
 ```
 
-With this configuration, you can define inputs in your component that match the resolver keys using the [`input`](api/core/input) function and [`input.required`](api/core/input#required) for required inputs:
+With this configuration, you can define inputs in your component that match the resolver keys using the `input` function and `input.required` for required inputs:
 
 ```angular-ts
 import { Component, input } from '@angular/core';
@@ -133,9 +133,9 @@ In the event of navigation failures, it is important to handle errors gracefully
 
 There are three primary ways to handle errors with data resolvers:
 
-1. [Centralizing error handling in `withNavigationErrorHandler`](#centralize-error-handling-in-withnavigationerrorhandler)
-2. [Managing errors through a subscription to router events](#managing-errors-through-a-subscription-to-router-events)
-3. [Handling errors directly in the resolver](#handling-errors-directly-in-the-resolver)
+1. Centralize error handling in `withNavigationErrorHandler`
+2. Manage errors through a subscription to router events
+3. Handle errors directly in the resolver
 
 ### Centralize error handling in `withNavigationErrorHandler`
 
@@ -176,7 +176,7 @@ export const userResolver: ResolveFn<User> = (route) => {
 
 ### Managing errors through a subscription to router events
 
-You can also handle resolver errors by subscribing to router events and listening for [`NavigationError`](api/router/NavigationError) events. This approach gives you more granular control over error handling and allows you to implement custom error recovery logic.
+You can also handle resolver errors by subscribing to router events and listening for `NavigationError` events. This approach gives you more granular control over error handling and allows you to implement custom error recovery logic.
 
 ```angular-ts
 import { Component, inject, signal } from '@angular/core';
@@ -234,7 +234,7 @@ This approach is particularly useful when you need to:
 
 ### Handling errors directly in the resolver
 
-Here's an updated example of the `userResolver` that logs the error and navigates back to the generic `/users` page using the [`Router`](api/router/Router) service:
+Here's an updated example of the `userResolver` that logs the error and navigates back to the generic `/users` page using the `Router` service:
 
 ```ts
 import { inject } from '@angular/core';
@@ -296,3 +296,38 @@ This approach ensures users receive visual feedback that navigation is in progre
 - **Consider navigation UX**: Implement loading indicators for resolver execution since navigation is blocked during data fetching
 - **Set reasonable timeouts**: Avoid resolvers that could hang indefinitely and block navigation
 - **Type safety**: Use TypeScript interfaces for resolved data
+
+## Reading parent resolved data in child resolvers
+
+Resolvers execute from parent to child. When a parent route defines a resolver, its resolved data is available to child resolvers that run afterward.
+
+```ts
+import { inject } from '@angular/core';
+import { provideRouter , ActivatedRouteSnapshot } from '@angular/router';
+import { userResolver } from './resolvers';
+import { UserPosts } from './pages';
+import { PostService } from './services',
+import type { User } from './types';
+
+provideRouter([
+  {
+    path: 'users/:id',
+    resolve: { user: userResolver }, // user resolver in the parent route
+    children: [
+      {
+        path: 'posts',
+        component: UserPosts,
+        // route.data.user is available here while this resolver runs
+        resolve: {
+          posts: (route: ActivatedRouteSnapshot) => {
+            const postService = inject(PostService);
+            const user = route.data['user'] as User; // parent data
+            const userId = user.id;
+            return postService.getPostByUser(userId);
+          },
+        },
+      },
+    ],
+  },
+]);
+```

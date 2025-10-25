@@ -79,7 +79,7 @@ export type HttpTransferCacheOptions = {
  * @publicApi
  */
 export const HTTP_TRANSFER_CACHE_ORIGIN_MAP = new InjectionToken<Record<string, string>>(
-  ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'HTTP_TRANSFER_CACHE_ORIGIN_MAP' : '',
 );
 
 /**
@@ -113,7 +113,7 @@ interface CacheOptions extends HttpTransferCacheOptions {
 }
 
 const CACHE_OPTIONS = new InjectionToken<CacheOptions>(
-  ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'HTTP_TRANSFER_STATE_CACHE_OPTIONS' : '',
 );
 
 /**
@@ -379,7 +379,6 @@ function appendMissingHeadersDetection(
           warningProduced.add(key);
           const truncatedUrl = truncateMiddle(url);
 
-          // TODO: create Error guide for this warning
           console.warn(
             formatRuntimeError(
               RuntimeErrorCode.HEADERS_ALTERED_BY_TRANSFER_CACHE,

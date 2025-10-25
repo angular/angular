@@ -33,7 +33,7 @@ import {
 
 import {ListEndOp, NEW_OP, StatementOp, VariableOp} from './shared';
 
-import type {Interpolation, UpdateOp} from './update';
+import type {BindingOp, Interpolation, UpdateOp} from './update';
 
 /**
  * An operation usable on the creation side of the IR.
@@ -77,7 +77,8 @@ export type CreateOp =
   | AnimationListenerOp
   | AnimationStringOp
   | AnimationOp
-  | SourceLocationOp;
+  | SourceLocationOp
+  | ControlCreateOp;
 
 /**
  * An operation representing the creation of an element or container.
@@ -1407,6 +1408,7 @@ interface DeferInteractionTrigger extends DeferTriggerWithTargetBase {
 
 interface DeferViewportTrigger extends DeferTriggerWithTargetBase {
   kind: DeferTriggerKind.Viewport;
+  options: o.Expression | null;
 }
 
 /**
@@ -1948,6 +1950,21 @@ export function createSourceLocationOp(
     locations,
     ...NEW_OP,
   };
+}
+
+/**
+ * An operation that determines whether a `[control]` binding targets a specialized control
+ * directive on a native or custom form control, and if so, adds event listeners to synchronize the
+ * bound form field to the form control.
+ */
+export interface ControlCreateOp extends Op<CreateOp> {
+  kind: OpKind.ControlCreate;
+  sourceSpan: ParseSourceSpan;
+}
+
+/** Creates a {@link ControlCreateOp}. */
+export function createControlCreateOp(sourceSpan: ParseSourceSpan): ControlCreateOp {
+  return {kind: OpKind.ControlCreate, sourceSpan, ...NEW_OP};
 }
 
 /**

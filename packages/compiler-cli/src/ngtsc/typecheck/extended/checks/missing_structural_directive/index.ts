@@ -25,6 +25,8 @@ export const KNOWN_CONTROL_FLOW_DIRECTIVES = new Set([
   'ngForTrackBy',
   'ngSwitchCase',
   'ngSwitchDefault',
+  'ngIfThen',
+  'ngIfElse',
 ]);
 
 /**
@@ -65,9 +67,13 @@ class MissingStructuralDirectiveCheck extends TemplateCheckWithVisitor<ErrorCode
     if (!customStructuralDirective) return [];
 
     const symbol = ctx.templateTypeChecker.getSymbolOfNode(node, component);
-    if (symbol?.directives.length) {
-      return [];
-    }
+    // Check if there's a directive that matches the structural directive we're checking.
+    // The structural directive *foo desugars to [foo], so we need to check if any
+    // directive's selector would match the attribute [foo].
+    const hasStructuralDirective = symbol?.directives.some((dir) =>
+      dir.selector?.includes(`[${customStructuralDirective.name}]`),
+    );
+    if (hasStructuralDirective) return [];
 
     const sourceSpan = customStructuralDirective.keySpan || customStructuralDirective.sourceSpan;
     const errorMessage =

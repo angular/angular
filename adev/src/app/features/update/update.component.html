@@ -10,7 +10,7 @@
         <span class="adev-template-select">
           From v.
 
-          <button [cdkMenuTriggerFor]="templatesMenuFrom">
+          <button type="button" [cdkMenuTriggerFor]="templatesMenuFrom">
             <span>{{ from.name }}</span>
             <docs-icon>expand_more</docs-icon>
           </button>
@@ -31,7 +31,7 @@
         <span>
           <span class="adev-template-select">
             To v.
-            <button [cdkMenuTriggerFor]="templatesMenuTo">
+            <button type="button" [cdkMenuTriggerFor]="templatesMenuTo">
               <span>{{ to.name }}</span>
               <docs-icon>expand_more</docs-icon>
             </button>
@@ -140,12 +140,12 @@
     beforeRecommendations.length > 0 || duringRecommendations.length > 0 || afterRecommendations.length > 0
   ) {
     <div class="recommendations">
-      <h2>{{title}}</h2>
+      <h2>{{title()}}</h2>
 
       <h3>Before you update</h3>
       @for (r  of beforeRecommendations; track $index) {
-        <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+        <div class="adev-recommendation-item">
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }
@@ -163,8 +163,8 @@
       }
 
       @for (r of duringRecommendations; track $index) {
-        <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+        <div class="adev-recommendation-item">
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }
@@ -176,8 +176,8 @@
 
       <h3>After you update</h3>
       @for (r of afterRecommendations; track $index) {
-        <div class="adev-recommentation-item">
-          <mat-checkbox></mat-checkbox>
+        <div class="adev-recommendation-item">
+          <mat-checkbox />
           <div [innerHTML]="r.renderedStep"></div>
         </div>
       }

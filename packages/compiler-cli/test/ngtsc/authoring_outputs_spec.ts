@@ -324,5 +324,26 @@ runInEachFileSystem(() => {
         expect(diagnostics.length).toBe(0);
       });
     });
+
+    it('should capture initializer-based outputs in the setClassMetadata call', () => {
+      env.write(
+        'test.ts',
+        `
+        import {Component, output} from '@angular/core';
+
+        @Component({selector: 'test', template: ''})
+        export class TestDir {
+          click = output();
+        }
+      `,
+      );
+      env.driveMain();
+      const js = env.getContents('test.js');
+      expect(js).toContain('import * as i0 from "@angular/core";');
+      expect(js).toContain(`i0.ɵsetClassMetadata(TestDir, [{
+        type: Component,
+        args: [{ selector: 'test', template: '' }]
+    }], null, { click: [{ type: i0.Output, args: ["click"] }] });`);
+    });
   });
 });

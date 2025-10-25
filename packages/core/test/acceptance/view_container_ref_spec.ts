@@ -31,6 +31,7 @@ import {
   OnInit,
   Pipe,
   PipeTransform,
+  provideZoneChangeDetection,
   QueryList,
   Renderer2,
   RendererFactory2,
@@ -47,6 +48,7 @@ import {ComponentFixture, TestBed, TestComponentRenderer} from '../../testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer} from '@angular/platform-browser';
 import {expect} from '@angular/private/testing/matchers';
+import {ANIMATION_QUEUE} from '../../src/animation/queue';
 
 describe('ViewContainerRef', () => {
   /**
@@ -1102,6 +1104,7 @@ describe('ViewContainerRef', () => {
       const fixture = TestBed.createComponent(AppComponent);
       fixture.detectChanges();
       fixture.componentRef.instance.visible = false;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
     });
   });
@@ -1324,6 +1327,11 @@ describe('ViewContainerRef', () => {
   });
 
   describe('createComponent', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     let templateExecutionCounter = 0;
 
     beforeEach(() => (templateExecutionCounter = 0));
@@ -1406,6 +1414,7 @@ describe('ViewContainerRef', () => {
           {provide: Sanitizer, useValue: TestBed.inject(DomSanitizer)},
           {provide: ErrorHandler, useValue: TestBed.inject(ErrorHandler)},
           {provide: RendererFactory2, useValue: TestBed.inject(RendererFactory2)},
+          {provide: ANIMATION_QUEUE, useValue: TestBed.inject(ANIMATION_QUEUE)},
         ],
       })
       class MyAppModule {}
@@ -1871,6 +1880,7 @@ describe('ViewContainerRef', () => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
           declarations: [EmbeddedViewInsertionComp, VCRefDirective, HostComponent],
+          providers: [provideZoneChangeDetection()],
         });
         const hostValue = signal('initial');
         let dirValue = 'initial';
@@ -1999,6 +2009,7 @@ describe('ViewContainerRef', () => {
       );
 
       child.tpl = null;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(`<child><div>Child</div></child>`);
     });
@@ -2057,6 +2068,7 @@ describe('ViewContainerRef', () => {
         {data: ['7'], value: 'four'},
       ];
       fixture.componentInstance.name = 'New name!';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(getElementHtml(fixture.nativeElement)).toEqual(
@@ -2085,16 +2097,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.componentInstance.items.push('four');
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2122,16 +2137,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2157,16 +2175,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2187,7 +2208,11 @@ describe('ViewContainerRef', () => {
         items = ['one', 'two', 'three'];
       }
 
-      TestBed.configureTestingModule({imports: [CommonModule], declarations: [App]});
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        providers: [provideZoneChangeDetection()],
+        declarations: [App],
+      });
       const fixture = TestBed.createComponent(App);
       fixture.detectChanges();
 
@@ -2229,16 +2254,19 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.textContent).toBe('|one||two||three|');
 
       fixture.componentInstance.items.unshift('zero');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three|');
 
       fixture.componentInstance.items.push('four');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe('|zero||one||two||three||four|');
 
       fixture.componentInstance.items.splice(3, 0, 'two point five');
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.textContent).toBe(
@@ -2334,6 +2362,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2352,6 +2381,7 @@ describe('ViewContainerRef', () => {
       expect(log).toEqual([]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(
         '<hooks vcref="">A</hooks><hooks>C</hooks><hooks>B</hooks>',
@@ -2373,6 +2403,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2388,6 +2419,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       const viewRef = vcRefDir.vcref.detach(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2400,6 +2432,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.insert(viewRef!);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2415,6 +2448,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.remove(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onDestroy-C',
@@ -2447,6 +2481,7 @@ describe('ViewContainerRef', () => {
         .query(By.directive(VCRefDirective))
         .injector.get(VCRefDirective);
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onChanges-A',
@@ -2466,6 +2501,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2484,6 +2520,7 @@ describe('ViewContainerRef', () => {
       expect(log).toEqual([]);
 
       componentRef.instance.name = 'D';
+      fixture.changeDetectorRef.markForCheck();
       log.length = 0;
       fixture.detectChanges();
       expect(getElementHtml(fixture.nativeElement)).toEqual(
@@ -2505,6 +2542,7 @@ describe('ViewContainerRef', () => {
       ]);
 
       log.length = 0;
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2520,6 +2558,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       const viewRef = vcRefDir.vcref.detach(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2532,6 +2571,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.insert(viewRef!);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'doCheck-A',
@@ -2547,6 +2587,7 @@ describe('ViewContainerRef', () => {
 
       log.length = 0;
       vcRefDir.vcref.remove(0);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
       expect(log).toEqual([
         'onDestroy-D',
@@ -2597,6 +2638,7 @@ describe('ViewContainerRef', () => {
       expect(fixture.nativeElement.children[0].getAttribute('title')).toBe('initial');
 
       componentRef.instance.title = 'changed';
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(fixture.nativeElement.children[0].tagName).toBe('HOST-BINDINGS');
@@ -2606,6 +2648,11 @@ describe('ViewContainerRef', () => {
   });
 
   describe('projection', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [provideZoneChangeDetection()],
+      });
+    });
     it('should project the ViewContainerRef content along its host, in an element', () => {
       @Component({
         selector: 'child',
@@ -2915,6 +2962,7 @@ describe('ViewContainerRef', () => {
       expect(containerEl!.childNodes.length).toBe(3);
       expect(containerEl!.childNodes[1].textContent).toBe('check count: 1');
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(containerEl!.childNodes.length).toBe(3);

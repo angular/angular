@@ -88,6 +88,15 @@ interface ReactiveLink {
   nextProducer: ReactiveLink | undefined;
 }
 
+export type ReactiveNodeKind =
+  | 'signal'
+  | 'computed'
+  | 'effect'
+  | 'template'
+  | 'linkedSignal'
+  | 'afterRenderEffectPhase'
+  | 'unknown';
+
 /**
  * A producer and/or consumer which participates in the reactive graph.
  *
@@ -186,7 +195,7 @@ export interface ReactiveNode {
    *
    * Used in Angular DevTools to identify the kind of signal.
    */
-  kind: string;
+  kind: ReactiveNodeKind;
 }
 
 /**
@@ -359,21 +368,34 @@ export function producerMarkClean(node: ReactiveNode): void {
 }
 
 /**
- * Prepare this consumer to run a computation in its reactive context.
+ * Prepare this consumer to run a computation in its reactive context and set
+ * it as the active consumer.
  *
  * Must be called by subclasses which represent reactive computations, before those computations
  * begin.
  */
 export function consumerBeforeComputation(node: ReactiveNode | null): ReactiveNode | null {
-  if (node) {
-    node.producersTail = undefined;
-    node.recomputing = true;
-  }
+  if (node) resetConsumerBeforeComputation(node);
+
   return setActiveConsumer(node);
 }
 
 /**
- * Finalize this consumer's state after a reactive computation has run.
+ * Prepare this consumer to run a computation in its reactive context.
+ *
+ * We expose this mainly for code where we manually batch effects into a single
+ * consumer. In those cases we may wish to "reopen" a consumer multiple times
+ * in initial render before finalizing it. Most code should just call
+ * `consumerBeforeComputation` instead of calling this directly.
+ */
+export function resetConsumerBeforeComputation(node: ReactiveNode): void {
+  node.producersTail = undefined;
+  node.recomputing = true;
+}
+
+/**
+ * Finalize this consumer's state and set previous consumer as the active consumer after a
+ * reactive computation has run.
  *
  * Must be called by subclasses which represent reactive computations, after those computations
  * have finished.
@@ -384,10 +406,18 @@ export function consumerAfterComputation(
 ): void {
   setActiveConsumer(prevConsumer);
 
-  if (!node) {
-    return;
-  }
+  if (node) finalizeConsumerAfterComputation(node);
+}
 
+/**
+ * Finalize this consumer's state after a reactive computation has run.
+ *
+ * We expose this mainly for code where we manually batch effects into a single
+ * consumer. In those cases we may wish to "reopen" a consumer multiple times
+ * in initial render before finalizing it. Most code should just call
+ * `consumerAfterComputation` instead of calling this directly.
+ */
+export function finalizeConsumerAfterComputation(node: ReactiveNode): void {
   node.recomputing = false;
 
   // We've finished incrementally rebuilding the producers list, now if there are any producers

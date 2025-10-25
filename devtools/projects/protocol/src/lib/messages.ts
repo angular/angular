@@ -18,7 +18,14 @@ import {
 
 export interface DebugSignalGraphNode {
   id: string;
-  kind: string;
+  kind:
+    | 'signal'
+    | 'computed'
+    | 'effect'
+    | 'template'
+    | 'linkedSignal'
+    | 'afterRenderEffectPhase'
+    | 'unknown';
   epoch: number;
   label?: string;
   preview: Descriptor;
@@ -150,6 +157,9 @@ export enum PropType {
   Set,
   Map,
   Unknown,
+
+  // Special Type when an error occurs during property access
+  Error,
 }
 
 export interface Descriptor {
@@ -318,6 +328,7 @@ export interface Route {
   isActive: boolean;
   isAux: boolean;
   isLazy: boolean;
+  isRedirect: boolean;
 }
 
 export interface AngularDetection {
@@ -341,6 +352,7 @@ export interface SupportedApis {
   routes: boolean;
   signals: boolean;
   transferState: boolean;
+  signalPropertiesInspection: boolean;
 }
 
 export type TransferStateValue =
@@ -386,6 +398,7 @@ export interface Events {
   latestComponentExplorerView: (view: ComponentExplorerView) => void;
 
   updateState: (value: UpdatedStateData) => void;
+  logValue: (value: {directiveId: DirectivePosition; keyPath: string[] | null}) => void;
 
   startProfiling: () => void;
   stopProfiling: () => void;

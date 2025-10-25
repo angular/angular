@@ -20,12 +20,12 @@ import {
 
 import {BEFORE_APP_SERIALIZED} from './tokens';
 
-// Tracks whether the server-side application state for a given app ID has been serialized already.
-export const TRANSFER_STATE_SERIALIZED_FOR_APPID = new InjectionToken<Set<string>>(
-  typeof ngDevMode === 'undefined' || ngDevMode ? 'TRANSFER_STATE_SERIALIZED_FOR_APPID' : '',
+/** Tracks whether the server-side application transfer state has already been serialized. */
+const TRANSFER_STATE_STATUS = new InjectionToken<{serialized: boolean}>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'TRANSFER_STATE_STATUS' : '',
   {
-    providedIn: 'platform',
-    factory: () => new Set(),
+    providedIn: 'root',
+    factory: () => ({serialized: false}),
   },
 );
 
@@ -52,11 +52,10 @@ export function createScript(
   return script;
 }
 
-export function warnIfStateTransferHappened(injector: Injector): void {
-  const appId = injector.get(APP_ID);
-  const appIdsWithTransferStateSerialized = injector.get(TRANSFER_STATE_SERIALIZED_FOR_APPID);
+function warnIfStateTransferHappened(injector: Injector): void {
+  const transferStateStatus = injector.get(TRANSFER_STATE_STATUS);
 
-  if (appIdsWithTransferStateSerialized.has(appId)) {
+  if (transferStateStatus.serialized) {
     console.warn(
       `Angular detected an incompatible configuration, which causes duplicate serialization of the server-side application state.\n\n` +
         `This can happen if the server providers have been provided more than once using different mechanisms. For example:\n\n` +
@@ -65,7 +64,8 @@ export function warnIfStateTransferHappened(injector: Injector): void {
         `To fix this, ensure that the \`provideServerRendering()\` function is the only provider used and remove the other(s).`,
     );
   }
-  appIdsWithTransferStateSerialized.add(appId);
+
+  transferStateStatus.serialized = true;
 }
 
 function serializeTransferStateFactory() {

@@ -5,15 +5,14 @@
 ```ts
 
 import { ComponentRef } from '@angular/core';
-import { InjectionToken } from '@angular/core';
+import * as i0 from '@angular/core';
 import { UpgradeModule } from '@angular/upgrade/static';
 
 // @public
 export const RouterUpgradeInitializer: {
-    provide: InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
+    provide: i0.InjectionToken<readonly ((compRef: ComponentRef<any>) => void)[]>;
     multi: boolean;
-    useFactory: (ngUpgrade: UpgradeModule) => () => void;
-    deps: (typeof UpgradeModule)[];
+    useFactory: () => () => void;
 };
 
 // @public

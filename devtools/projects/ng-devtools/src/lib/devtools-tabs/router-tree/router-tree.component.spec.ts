@@ -13,6 +13,7 @@ import SpyObj = jasmine.SpyObj;
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus} from '../../../../../protocol';
 import {ApplicationOperations} from '../../application-operations';
+import {provideZoneChangeDetection} from '@angular/core';
 
 describe('RouterTreeComponent', () => {
   let messageBus: MessageBus<Events>;
@@ -32,6 +33,7 @@ describe('RouterTreeComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RouterTreeComponent],
       providers: [
+        provideZoneChangeDetection(),
         {provide: ApplicationOperations, useValue: applicationOperationsSpy},
         {provide: MessageBus, useValue: messageBus},
         {provide: FrameManager, useValue: frameManager},
@@ -39,42 +41,76 @@ describe('RouterTreeComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(RouterTreeComponent);
-    component = fixture.componentInstance;
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should call application operations viewSourceFromRouter', () => {
-    component.viewSourceFromRouter('routeActiveGuard', 'guard');
-    expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledTimes(1);
-    expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledWith(
-      'routeActiveGuard',
-      'guard',
-      frameManager.selectedFrame()!,
-    );
-  });
-
-  it('should call application operations viewComponentSource', () => {
-    component.viewComponentSource('HomeComponent');
-    expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledTimes(1);
-    expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledWith(
-      'HomeComponent',
-      'component',
-      frameManager.selectedFrame()!,
-    );
-  });
-
-  it('should call emit navigateRoute', () => {
-    component.navigateRoute({
-      data: {
-        path: '/home',
+    fixture.componentRef.setInput('routes', [
+      {
+        'component': 'test-cmp',
+        'path': '/',
+        'children': [],
+        'isAux': false,
+        'isLazy': false,
+        'data': [],
+        'isActive': false,
       },
+    ]);
+    component = fixture.componentInstance;
+  });
+
+  describe('router tree apis supported', () => {
+    beforeEach(async () => {
+      fixture.componentRef.setInput('routerDebugApiSupport', true);
+      fixture.detectChanges();
     });
-    expect(messageBus.emit).toHaveBeenCalledTimes(1);
-    expect(messageBus.emit).toHaveBeenCalledWith('navigateRoute', ['/home']);
+
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should call application operations viewSourceFromRouter', () => {
+      component.viewSourceFromRouter('routeActiveGuard', 'guard');
+      expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledTimes(1);
+      expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledWith(
+        'routeActiveGuard',
+        'guard',
+        frameManager.selectedFrame()!,
+      );
+    });
+
+    it('should call application operations viewComponentSource', () => {
+      component.viewComponentSource('HomeComponent');
+      expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledTimes(1);
+      expect(applicationOperationsSpy.viewSourceFromRouter).toHaveBeenCalledWith(
+        'HomeComponent',
+        'component',
+        frameManager.selectedFrame()!,
+      );
+    });
+
+    it('should call emit navigateRoute', () => {
+      component.navigateRoute({
+        data: {
+          path: '/home',
+        },
+      });
+      expect(messageBus.emit).toHaveBeenCalledTimes(1);
+      expect(messageBus.emit).toHaveBeenCalledWith('navigateRoute', ['/home']);
+    });
+  });
+
+  describe('router tree apis not supported', () => {
+    beforeEach(async () => {
+      fixture.componentRef.setInput('routerDebugApiSupport', false);
+      fixture.detectChanges();
+    });
+
+    it('should show unsupported version message when routerDebugApiSupport is false', () => {
+      fixture.componentRef.setInput('routerDebugApiSupport', false);
+      fixture.detectChanges();
+
+      const unsupportedMsg = fixture.nativeElement.querySelector('.unsupported-version');
+      expect(unsupportedMsg).toBeTruthy();
+      expect(unsupportedMsg.textContent).toContain(
+        'Router tree visualization is available for Angular applications using the latest Angular 20.3.5 release and above.',
+      );
+    });
   });
 });

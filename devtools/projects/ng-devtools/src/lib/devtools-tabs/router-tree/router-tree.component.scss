@@ -23,6 +23,8 @@
   }
 
   .visualization {
+    position: relative;
+    overflow: hidden;
     flex: 1;
 
     .side-pane {
@@ -103,4 +105,9 @@
       }
     }
   }
+}
+
+.unsupported-version {
+  width: 50%;
+  margin: auto;
 }

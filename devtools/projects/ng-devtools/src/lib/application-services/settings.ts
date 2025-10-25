@@ -33,12 +33,6 @@ export class Settings {
     initialValue: false,
   });
 
-  readonly signalGraphEnabled = this.settingsStore.create({
-    key: 'signal_graph_enabled',
-    category: 'general',
-    initialValue: false,
-  });
-
   readonly transferStateEnabled = this.settingsStore.create({
     key: 'transfer_state_enabled',
     category: 'general',
@@ -49,5 +43,11 @@ export class Settings {
     key: 'theme',
     category: 'general',
     initialValue: 'system',
+  });
+
+  readonly activeTab = this.settingsStore.create({
+    key: 'activeTab',
+    category: 'general',
+    initialValue: 'Components',
   });
 }

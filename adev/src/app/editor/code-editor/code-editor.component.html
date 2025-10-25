@@ -30,6 +30,7 @@
 
             @if (tab.isActive && canRenameFile(file.filename)) {
               <button
+                type="button"
                 class="docs-rename-file"
                 aria-label="rename file"
                 matTooltip="Rename file"
@@ -41,6 +42,7 @@
             }
             @if (tab.isActive && canDeleteFile(file.filename)) {
               <button
+                type="button"
                 class="docs-delete-file"
                 aria-label="Delete file"
                 matTooltip="Delete file"
@@ -71,6 +73,7 @@
 
     @if (canCreateFile()) {
       <button
+        type="button"
         class="adev-add-file"
         (click)="onAddButtonClick()"
         aria-label="Add a new file"
@@ -95,7 +98,11 @@
     <div class="adev-editor-dropdown" cdkMenu>
       <button cdkMenuItem (click)="openCurrentSolutionInFirebaseStudio()">
         <span>Open in Firebase Studio </span>
-        <img class="icon" src="assets/images/tutorials/common/firebase-studio_logo.svg" height="32" />
+        <img
+          class="icon"
+          src="assets/images/tutorials/common/firebase-studio_logo.svg"
+          height="32"
+        />
       </button>
       <button cdkMenuItem (click)="openCurrentCodeInStackBlitz()">Open in StackBlitz</button>
     </div>

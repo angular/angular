@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.28.3",
+    "@babel/core": "7.28.5",
     "@jridgewell/sourcemap-codec": "^1.4.14",
     "reflect-metadata": "^0.2.0",
     "chokidar": "^4.0.0",
@@ -49,7 +49,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=5.8 <6.0"
+    "typescript": ">=5.9 <6.0"
   },
   "peerDependenciesMeta": {
     "typescript": {

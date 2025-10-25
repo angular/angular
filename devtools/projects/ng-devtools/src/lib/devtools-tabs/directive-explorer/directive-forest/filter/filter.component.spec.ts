@@ -14,8 +14,7 @@ describe('FilterComponent', () => {
   let component: FilterComponent;
   let fixture: ComponentFixture<FilterComponent>;
   const getMatchesCountEl = () => fixture.debugElement.query(By.css('.matches-count'));
-  const emitFilterEvent = (filter: string) =>
-    component.emitFilter({target: {value: filter} as any} as Event);
+  const emitFilterEvent = (filter: string) => component.emitFilter(filter);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -57,6 +56,16 @@ describe('FilterComponent', () => {
     fixture.detectChanges();
 
     expect(getMatchesCountEl().nativeElement.innerText).toEqual('2 of 5');
+  });
+
+  it('should emit a default filter function that returns an empty matches array, if the filter is an empty string', () => {
+    component.filter.subscribe((filterFn) => {
+      const matches = filterFn('Foo Bar');
+
+      expect(matches.length).toEqual(0);
+    });
+
+    emitFilterEvent('');
   });
 
   it('should emit a default filter function that returns an empty matches array, if no match', () => {

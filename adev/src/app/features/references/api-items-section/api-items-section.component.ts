@@ -20,5 +20,5 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ApiItemsSection {
-  group = input.required<ApiItemsGroup>();
+  readonly group = input.required<ApiItemsGroup>();
 }

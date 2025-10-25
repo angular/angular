@@ -15,6 +15,7 @@ import {
   AbstractControlOptions,
   assertAllValuesPresent,
   assertControlPresent,
+  FormResetEvent,
   pickAsyncValidators,
   pickValidators,
   ɵRawValue,
@@ -555,17 +556,17 @@ export class FormGroup<
    */
   override reset(
     value: ɵTypedOrUntyped<TControl, ɵFormGroupArgumentValue<TControl>, any> = {},
-    options: {onlySelf?: boolean; emitEvent?: boolean} = {},
+    options: {onlySelf?: boolean; emitEvent?: boolean; overwriteDefaultValue?: boolean} = {},
   ): void {
     this._forEachChild((control: AbstractControl, name) => {
-      control.reset(value ? (value as any)[name] : null, {
-        onlySelf: true,
-        emitEvent: options.emitEvent,
-      });
+      control.reset(value ? (value as any)[name] : null, {...options, onlySelf: true});
     });
     this._updatePristine(options, this);
     this._updateTouched(options, this);
     this.updateValueAndValidity(options);
+    if (options?.emitEvent !== false) {
+      this._events.next(new FormResetEvent(this));
+    }
   }
 
   /**
@@ -705,6 +706,8 @@ export const UntypedFormGroup: UntypedFormGroupCtor = FormGroup;
  * @description
  * Asserts that the given control is an instance of `FormGroup`
  *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
+ *
  * @publicApi
  */
 export const isFormGroup = (control: unknown): control is FormGroup => control instanceof FormGroup;
@@ -822,6 +825,8 @@ export interface FormRecord<TControl> {
 /**
  * @description
  * Asserts that the given control is an instance of `FormRecord`
+ *
+ * @see [Utility functions for narrowing form control types](guide/forms/reactive-forms#utility-functions-for-narrowing-form-control-types)
  *
  * @publicApi
  */

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {resolve} from 'path';
+import {resolve, dirname} from 'path';
 import cldrjs, {type CldrStatic} from 'cldrjs';
 import fs from 'fs';
 import {globSync} from 'tinyglobby';
@@ -60,7 +60,9 @@ export type CldrLocaleAliasReason =
  */
 export class CldrData {
   /** Path to the CLDR JSON data Bazel repository. i.e. `@cldr_json_data//`. */
-  readonly cldrDataDir = resolve(process.env['RUNFILES']!, 'cldr_json_data');
+  readonly cldrDataDir = dirname(
+    resolve(process.env['RUNFILES']!, process.env['CLDR_JSON_DATA_RUNFILES_PATH']!),
+  );
 
   /** List of all available locales CLDR provides data for. */
   readonly availableLocales: readonly CldrLocaleData[];

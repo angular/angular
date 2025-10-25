@@ -201,13 +201,3 @@ Control view transitions programmatically using JavaScript APIs for complex anim
 
 - [Chrome Explainer](https://developer.chrome.com/docs/web-platform/view-transitions/same-document#animating-with-javascript)
 - [Angular Example on StackBlitz](https://stackblitz.com/edit/stackblitz-starters-cklnkm)
-
-## Alternative: Angular Animations
-
-If you need broader browser support or more granular control over animations, you can use the [`@angular/animations`](/guide/animations) package instead of native view transitions. Angular's animation system works with router state changes and provides:
-
-- **Universal browser support** - Works across all browsers that support Angular
-- **Fine-grained control** - Define complex animation sequences and timing
-- **Router integration** - Create animations based on route changes, URL patterns, or [`ActivatedRoute`](/api/router/ActivatedRoute) data
-
-Learn more about creating route-based animations with [animation triggers and transitions](/guide/animations/transition-and-triggers).

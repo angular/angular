@@ -12,6 +12,7 @@ import {
   InjectionToken,
   ɵformatRuntimeError as formatRuntimeError,
   DOCUMENT,
+  OnDestroy,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../../errors';
@@ -21,7 +22,7 @@ import {imgDirectiveDetails} from './error_helper';
 import {extractHostname, getUrl} from './url';
 
 // Set of origins that are always excluded from the preconnect checks.
-const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0']);
+const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '0.0.0.0', '[::1]']);
 
 /**
  * Injection token to configure which origins should be excluded
@@ -42,7 +43,7 @@ const INTERNAL_PRECONNECT_CHECK_BLOCKLIST = new Set(['localhost', '127.0.0.1', '
  * @publicApi
  */
 export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | string[]>>(
-  ngDevMode ? 'PRECONNECT_CHECK_BLOCKLIST' : '',
+  typeof ngDevMode !== undefined && ngDevMode ? 'PRECONNECT_CHECK_BLOCKLIST' : '',
 );
 
 /**
@@ -53,7 +54,7 @@ export const PRECONNECT_CHECK_BLOCKLIST = new InjectionToken<Array<string | stri
  * thus there is no `ngDevMode` use in the code.
  */
 @Injectable({providedIn: 'root'})
-export class PreconnectLinkChecker {
+export class PreconnectLinkChecker implements OnDestroy {
   private document = inject(DOCUMENT);
 
   /**

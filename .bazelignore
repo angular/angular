@@ -4,7 +4,7 @@
 # https://github.com/bazelbuild/bazel/issues/8106
 .git
 node_modules
-dist
+dist/
 
 # All integration test node_modules folders
 integration/animations/node_modules
@@ -35,9 +35,11 @@ integration/standalone-bootstrap/node_modules
 integration/terser/node_modules
 integration/trusted-types/node_modules
 integration/typings_test_rxjs7/node_modules
-integration/typings_test_ts58/node_modules
+integration/legacy-animations/node_modules
+integration/legacy-animations-async/node_modules
+integration/typings_test_ts59/node_modules
 modules/ssr-benchmarks/node_modules
-
+vscode-ng-language-service/integration/project/dist/
 
 # For rules_js
 adev/node_modules
@@ -61,7 +63,14 @@ packages/platform-server/node_modules
 packages/platform-browser-dynamic/node_modules
 packages/router/node_modules
 packages/zone.js/node_modules
+packages/zone.js/test/typings/node_modules
 packages/upgrade/node_modules
 packages/benchpress/node_modules
 packages/service-worker/node_modules
+packages/zone.js/test/typings/node_modules
+packages/zone.js/node_modules
 tools/bazel/rules_angular_store/node_modules
+vscode-ng-language-service/node_modules
+vscode-ng-language-service/server/node_modules
+vscode-ng-language-service/integration/pre_standalone_project/node_modules
+vscode-ng-language-service/integration/project/node_modules

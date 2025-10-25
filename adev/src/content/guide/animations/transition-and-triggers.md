@@ -1,6 +1,6 @@
 # Animation transitions and triggers
 
-IMPORTANT: The Angular team recommends using native CSS for animations instead of the Animations package for all new code. Use this guide to understand existing code built with the Animations Package. See [Migrating away from Angular's Animations package](guide/animations/migration#transition-and-triggers) to learn how you can start using pure CSS animations in your apps.
+IMPORTANT: The `@angular/animations` package is now deprecated. The Angular team recommends using native CSS with `animate.enter` and `animate.leave` for animations for all new code. Learn more at the new enter and leave [animation guide](guide/animations/enter-and-leave). Also see [Migrating away from Angular's Animations package](guide/animations/migration) to learn how you can start migrating to pure CSS animations in your apps.
 
 This guide goes into depth on special transition states such as the `*` wildcard and `void`. It shows how these special states are used for elements entering and leaving a view.
 This section also explores multiple animation triggers, animation callbacks, and sequence-based animation using keyframes.
@@ -57,7 +57,7 @@ Wildcard is a fallback value that's used if the state being animated isn't decla
 ### Void state
 
 Use the `void` state to configure transitions for an element that is entering or leaving a page.
-See [Animating entering and leaving a view](guide/animations/transition-and-triggers#aliases-enter-and-leave).
+See [Animating entering and leaving a view](guide/legacy-animations/transition-and-triggers#aliases-enter-and-leave).
 
 ### Combine wildcard and void states
 
@@ -119,7 +119,7 @@ The `transition()` function takes other selector values, `:increment` and `:decr
 Use these to kick off a transition when a numeric value has increased or decreased in value.
 
 HELPFUL: The following example uses `query()` and `stagger()` methods.
-For more information on these methods, see the [complex sequences](guide/animations/complex-sequences) page.
+For more information on these methods, see the [complex sequences](guide/legacy-animations/complex-sequences) page.
 
 <docs-code header="src/app/hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" visibleRegion="increment"/>
 
@@ -296,8 +296,9 @@ The `keyframes()` function in Angular allows you to specify multiple interim sty
 You might also be interested in the following:
 
 <docs-pill-row>
-  <docs-pill href="guide/animations" title="Introduction to Angular animations"/>
-  <docs-pill href="guide/animations/complex-sequences" title="Complex animation sequences"/>
-  <docs-pill href="guide/animations/reusable-animations" title="Reusable animations"/>
+  <docs-pill href="guide/legacy-animations" title="Introduction to Angular animations"/>
+  <docs-pill href="guide/legacy-animations/complex-sequences" title="Complex animation sequences"/>
+  <docs-pill href="guide/legacy-animations/reusable-animations" title="Reusable animations"/>
   <docs-pill href="guide/routing/route-transition-animations" title="Route transition animations"/>
+  <docs-pill href="guide/animations/migration" title="Migrating to Native CSS Animations"/>
 </docs-pill-row>

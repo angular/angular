@@ -1,4 +1,4 @@
-load("//tools:defaults2.bzl", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "ts_config", "ts_project")
 
 package(default_visibility = ["//modules:__subpackages__"])
 

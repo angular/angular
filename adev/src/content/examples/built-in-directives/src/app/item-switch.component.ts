@@ -41,8 +41,8 @@ export class LostItemComponent {
   template: '{{message()}}',
 })
 export class UnknownItemComponent {
-  item = input<Item | undefined>(undefined);
-  message = computed(() => {
+  readonly item = input<Item | undefined>(undefined);
+  readonly message = computed(() => {
     const itemName = this.item()?.name;
     return itemName ? `${itemName} is strange and mysterious.` : 'A mystery wrapped in a fishbowl.';
   });

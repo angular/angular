@@ -92,10 +92,17 @@ export class KeyValuePipe implements PipeTransform {
     input: Record<K, V> | null | undefined,
     compareFn?: ((a: KeyValue<string, V>, b: KeyValue<string, V>) => number) | null,
   ): Array<KeyValue<string, V>> | null;
+
   transform<K extends string, V>(
     input: Record<K, V> | ReadonlyMap<K, V> | null | undefined,
     compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null,
   ): Array<KeyValue<K, V>> | null;
+
+  transform<T>(
+    input: T,
+    compareFn?: T extends object ? (a: T[keyof T], b: T[keyof T]) => number : never,
+  ): T extends object ? Array<KeyValue<keyof T, T[keyof T]>> : null;
+
   transform<K, V>(
     input: undefined | null | {[key: string]: V; [key: number]: V} | ReadonlyMap<K, V>,
     compareFn: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null = defaultComparator,

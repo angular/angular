@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, PLATFORM_ID, Provider, Type} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  PLATFORM_ID,
+  Provider,
+  provideZoneChangeDetection,
+  Type,
+} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {isBrowser, isNode, withHead} from '@angular/private/testing';
@@ -34,6 +41,12 @@ import {
 import {PRECONNECT_CHECK_BLOCKLIST} from '../../src/directives/ng_optimized_image/preconnect_link_checker';
 
 describe('Image directive', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
+
   const PLACEHOLDER_BLUR_AMOUNT = 15;
 
   describe('preload <link> element on a server', () => {
@@ -1572,7 +1585,7 @@ describe('Image directive', () => {
       }),
     );
 
-    ['localhost', '127.0.0.1', '0.0.0.0'].forEach((blocklistedHostname) => {
+    ['localhost', '127.0.0.1', '0.0.0.0', '[::1]'].forEach((blocklistedHostname) => {
       it(
         `should not log a warning if an origin domain is blocklisted ` +
           `(checking ${blocklistedHostname})`,

@@ -8,8 +8,7 @@
 
 import {DOCUMENT} from '@angular/common';
 import {Inject, Injectable, type ListenerOptions} from '@angular/core';
-
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin} from './event_manager_plugin';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {

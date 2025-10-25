@@ -21,7 +21,6 @@ import childProcess from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import sh from 'shelljs';
 import {glob} from 'tinyglobby';
 
 // Do not remove `.git` as we use Git for comparisons later.
@@ -161,6 +160,14 @@ async function deleteDir(dirPath: string) {
   }
 
   // Needed as Bazel artifacts are readonly and cannot be deleted otherwise.
-  sh.chmod('-R', 'u+w', dirPath);
+  recursiveChmod(dirPath, 'u+w');
   await fs.promises.rm(dirPath, {recursive: true, force: true, maxRetries: 3});
+}
+
+function recursiveChmod(dirPath: string, permissions: fs.Mode) {
+  fs.chmodSync(dirPath, permissions);
+
+  for (const file of fs.readdirSync(dirPath)) {
+    recursiveChmod(path.join(dirPath, file), permissions);
+  }
 }

@@ -18,7 +18,7 @@ tool will automatically merge it based on the applied target label.
 To merge a PR run:
 
 ```sh
-$ pnpm ng-dev pr merge <pr number>
+pnpm ng-dev pr merge <pr number>
 ```
 
 ## Primitives and blocked merges

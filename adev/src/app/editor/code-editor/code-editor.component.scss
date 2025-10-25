@@ -1,66 +1,141 @@
 :host {
-  // backgrounds
-  --code-editor-selection-background: color-mix(
-    in srgb,
-    var(--selection-background) 5%,
-    var(--octonary-contrast)
-  );
-  --code-editor-focused-selection-background: color-mix(
-    in srgb,
-    var(--selection-background) 12%,
-    var(--octonary-contrast)
-  );
+  /* GitHub Light Default */
+  :host-context(.docs-light-mode) {
+    --gh-bg: #ffffff;
+    --gh-fg: #24292f;
+    --gh-selection-bg: #007acc;
+    --gh-selection-bg-focused: #007acc;
+    --gh-cursor: #24292f;
+    --gh-comment: #6a737d;
+    --gh-keyword: #d73a49;
+    --gh-string: #032f62;
+    --gh-number: #005cc5;
+    --gh-bool: #005cc5;
+    --gh-function: #6f42c1;
+    --gh-variable: #e36209;
+    --gh-type: #005cc5;
+    --gh-operator: #d73a49;
+    --gh-brace: #24292f;
+    --gh-tag: #22863a;
+    --gh-attribute: #6f42c1;
+    --gh-regexp: #032f62;
+    --gh-tooltip-bg: #f6f8fa;
+    --gh-tooltip-fg: #24292f;
+    --gh-tooltip-border: #d1d5da;
+  }
 
-  // text base colors
-  --code-editor-text-base-color: var(--primary-contrast);
+  /* GitHub Dark Default */
+  :host-context(.docs-dark-mode) {
+    --gh-bg: #0d1117;
+    --gh-fg: #c9d1d9;
+    --gh-selection-bg: #264f78;
+    --gh-selection-bg-focused: #316dca;
+    --gh-cursor: #c9d1d9;
+    --gh-comment: #8b949e;
+    --gh-keyword: #ff7b72;
+    --gh-string: #a5d6ff;
+    --gh-number: #79c0ff;
+    --gh-bool: #79c0ff;
+    --gh-function: #d2a8ff;
+    --gh-variable: #ffa657;
+    --gh-type: #79c0ff;
+    --gh-operator: #ff7b72;
+    --gh-brace: #c9d1d9;
+    --gh-tag: #7ee787;
+    --gh-attribute: #d2a8ff;
+    --gh-regexp: #a5d6ff;
+    --gh-tooltip-bg: #161b22;
+    --gh-tooltip-fg: #c9d1d9;
+    --gh-tooltip-border: #30363d;
+  } /* Code editor variables mapped to GitHub theme tokens */
 
-  // tooltips
-  --code-editor-tooltip-background: color-mix(
-    in srgb,
-    var(--bright-blue),
-    var(--page-background) 90%
-  );
-  --code-editor-tooltip-color: var(--primary-contrast);
-  --code-editor-tooltip-border: 1px solid
-    color-mix(in srgb, var(--bright-blue), var(--page-background) 70%);
+  --code-editor-selection-background: var(--gh-selection-bg);
+  --code-editor-focused-selection-background: var(--gh-selection-bg-focused);
+  --code-editor-text-base-color: var(--gh-fg);
+  --code-editor-tooltip-background: var(--gh-tooltip-bg);
+  --code-editor-tooltip-color: var(--gh-tooltip-fg);
+  --code-editor-tooltip-border: 1px solid var(--gh-tooltip-border);
   --code-editor-tooltip-border-radius: 0.25rem;
-
-  // autocomplete
-  --code-editor-autocomplete-item-background: var(--senary-contrast);
-  --code-editor-autocomplete-item-color: var(--primary-contrast);
-
-  // cursor
-  --code-name: var(--primary-contrast);
-  --code-editor-cursor-color: var(--code-name);
-  --code-variable-name: var(--bright-blue);
-  --code-property-name: var(--code-name);
-  --code-definition-keyword: var(--electric-violet);
-
-  // comments
-  --code-comment: var(--electric-violet);
-  --code-line-comment: var(--symbolic-gray);
-  --code-block-comment: var(--symbolic-brown);
-  --code-doc-comment: var(--code-comment);
-
-  // keywords
-  --code-keyword: var(--electric-violet);
-  --code-modifier: var(--code-keyword);
-  --code-operator-keyword: var(--code-keyword);
-  --code-control-keyword: var(--code-keyword);
-  --code-module-keyword: var(--code-keyword);
-
-  // structural
-  --code-brace: var(--vivid-pink);
-
-  // Misc
-  --code-bool: var(--bright-blue);
-  --code-string: var(--orange-red);
-  --code-regexp: var(--orange-red);
-
-  --code-tags: var(--bright-blue);
-  --code-component: var(--primary-contrast);
-  --code-type-name: var(--vivid-pink);
-  --code-self: var(--orange-red);
+  --code-editor-autocomplete-item-background: var(--gh-bg);
+  --code-editor-autocomplete-item-color: var(--gh-fg);
+  --code-name: var(--gh-fg);
+  --code-editor-cursor-color: var(--gh-cursor);
+  --code-variable-name: var(--gh-variable);
+  --code-property-name: var(--gh-fg);
+  --code-definition-keyword: var(--gh-keyword);
+  --code-comment: var(--gh-comment);
+  --code-line-comment: var(--gh-comment);
+  --code-block-comment: var(--gh-comment);
+  --code-doc-comment: var(--gh-comment);
+  --code-keyword: var(--gh-keyword);
+  --code-modifier: var(--gh-keyword);
+  --code-operator-keyword: var(--gh-operator);
+  --code-control-keyword: var(--gh-keyword);
+  --code-module-keyword: var(--gh-keyword);
+  --code-brace: var(--gh-brace);
+  --code-bool: var(--gh-bool);
+  --code-string: var(--gh-string);
+  --code-regexp: var(--gh-regexp);
+  --code-tags: var(--gh-tag);
+  --code-component: var(--gh-fg);
+  --code-type-name: var(--gh-type);
+  --code-self: var(--gh-string);
+  --code-number: var(--gh-number);
+  --code-attribute-name: var(--gh-attribute);
+  --code-attribute-value: var(--gh-string);
+  --code-literal: var(--gh-number);
+  --code-operator: var(--gh-operator);
+  --code-punctuation: var(--gh-fg);
+  --code-bracket: var(--gh-brace);
+  --code-angle-bracket: var(--gh-brace);
+  --code-square-bracket: var(--gh-brace);
+  --code-paren: var(--gh-brace);
+  --code-invalid: var(--gh-fg);
+  --code-meta: var(--gh-comment);
+  --code-annotation: var(--gh-function);
+  --code-processing-instruction: var(--gh-comment);
+  --code-namespace: var(--gh-variable);
+  --code-macro-name: var(--gh-function);
+  --code-label-name: var(--gh-variable);
+  --code-doc-string: var(--gh-string);
+  --code-character: var(--gh-string);
+  --code-integer: var(--gh-number);
+  --code-float: var(--gh-number);
+  --code-escape: var(--gh-function);
+  --code-color: var(--gh-number);
+  --code-url: var(--gh-string);
+  --code-null: var(--gh-keyword);
+  --code-atom: var(--gh-number);
+  --code-unit: var(--gh-number);
+  --code-deref-operator: var(--gh-operator);
+  --code-arithmetic-operator: var(--gh-operator);
+  --code-logic-operator: var(--gh-operator);
+  --code-bitwise-operator: var(--gh-operator);
+  --code-compare-operator: var(--gh-operator);
+  --code-update-operator: var(--gh-operator);
+  --code-definition-operator: var(--gh-operator);
+  --code-type-operator: var(--gh-operator);
+  --code-control-operator: var(--gh-operator);
+  --code-separator: var(--gh-fg);
+  --code-content: var(--gh-fg);
+  --code-heading: var(--gh-keyword);
+  --code-heading1: var(--gh-keyword);
+  --code-heading2: var(--gh-keyword);
+  --code-heading3: var(--gh-keyword);
+  --code-heading4: var(--gh-keyword);
+  --code-heading5: var(--gh-keyword);
+  --code-heading6: var(--gh-keyword);
+  --code-content-separator: var(--gh-fg);
+  --code-list: var(--gh-fg);
+  --code-quote: var(--gh-string);
+  --code-emphasis: var(--gh-string);
+  --code-strong: var(--gh-keyword);
+  --code-link: var(--gh-string);
+  --code-monospace: var(--gh-string);
+  --code-strikethrough: var(--gh-fg);
+  --code-inserted: var(--gh-tag);
+  --code-deleted: var(--gh-keyword);
+  --code-changed: var(--gh-variable);
 
   position: relative;
 }
@@ -69,7 +144,9 @@
   display: flex;
   background: var(--octonary-contrast);
   border-block-end: 1px solid var(--senary-contrast);
-  transition: background 0.3s ease, border 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border 0.3s ease;
 }
 
 .adev-tabs-and-plus {
@@ -132,7 +209,7 @@
   // to bottom of the editor and adjust height
   // so that scroll bar & content do not render under tabs
   &:has(~ .adev-inline-errors-box) ~ .adev-inline-errors-box {
-      bottom: auto;
+    bottom: auto;
   }
   &:has(~ .adev-inline-errors-box) {
     height: min(75% - 49px);
@@ -212,7 +289,9 @@
     text-align: left;
     padding-block: 0.5rem;
     color: var(--quaternary-contrast);
-    transition: color 0.3s ease, background 0.3s ease;
+    transition:
+      color 0.3s ease,
+      background 0.3s ease;
     font-weight: 400;
     display: flex;
     justify-content: space-between;

@@ -15,6 +15,7 @@ import {
   Injectable,
   Injector,
   Input,
+  provideZoneChangeDetection,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
@@ -24,6 +25,11 @@ import {TestBed} from '../../testing';
 import {By} from '@angular/platform-browser';
 
 describe('view insertion', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZoneChangeDetection()],
+    });
+  });
   describe('of a simple template', () => {
     it('should insert into an empty container, at the front, in the middle, and at the end', () => {
       let _counter = 0;

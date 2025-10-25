@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, ComponentRef, inject} from '@angular/core';
 import {Router, ɵRestoredState as RestoredState} from '../../index';
 import {UpgradeModule} from '@angular/upgrade/static';
 
@@ -45,14 +45,15 @@ import {UpgradeModule} from '@angular/upgrade/static';
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
-  useFactory: locationSyncBootstrapListener as (ngUpgrade: UpgradeModule) => () => void,
-  deps: [UpgradeModule],
+  useFactory: locationSyncBootstrapListener as () => () => void,
 };
 
 /**
  * @internal
  */
-export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
+export function locationSyncBootstrapListener() {
+  const ngUpgrade = inject(UpgradeModule);
+
   return () => {
     setUpLocationSync(ngUpgrade);
   };

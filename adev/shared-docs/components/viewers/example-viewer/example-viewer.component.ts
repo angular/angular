@@ -14,7 +14,6 @@ import {
   computed,
   DestroyRef,
   ElementRef,
-  forwardRef,
   inject,
   Injector,
   input,
@@ -22,14 +21,15 @@ import {
   Type,
   viewChild,
 } from '@angular/core';
-import {CommonModule, DOCUMENT} from '@angular/common';
+import {DOCUMENT, NgComponentOutlet, NgTemplateOutlet} from '@angular/common';
 import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
+import {IconComponent} from '../../icon/icon.component';
 import {ExampleMetadata, Snippet} from '../../../interfaces/index';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {DocViewer} from '../docs-viewer/docs-viewer.component';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 export enum CodeExampleViewMode {
   SNIPPET = 'snippet',
@@ -43,7 +43,14 @@ export const HIDDEN_CLASS_NAME = 'hidden';
 
 @Component({
   selector: 'docs-example-viewer',
-  imports: [CommonModule, forwardRef(() => DocViewer), CopySourceCodeButton, MatTabsModule],
+  imports: [
+    CopySourceCodeButton,
+    MatTabsModule,
+    MatTooltipModule,
+    IconComponent,
+    NgTemplateOutlet,
+    NgComponentOutlet,
+  ],
   templateUrl: './example-viewer.component.html',
   styleUrls: ['./example-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,17 +80,18 @@ export class ExampleViewer {
   CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
-  expandable = signal<boolean>(false);
-  expanded = signal<boolean>(false);
-  snippetCode = signal<Snippet | undefined>(undefined);
-  tabs = computed(() =>
+  readonly expandable = signal<boolean>(false);
+  readonly expanded = signal<boolean>(false);
+  readonly snippetCode = signal<Snippet | undefined>(undefined);
+  readonly showCode = signal<boolean>(true);
+  readonly tabs = computed(() =>
     this.exampleMetadata()?.files.map((file) => ({
       name:
         file.title ?? (this.shouldDisplayFullName() ? file.name : this.getFileExtension(file.name)),
-      code: file.content,
+      code: file.sanitizedContent,
     })),
   );
-  view = computed(() =>
+  readonly view = computed(() =>
     this.exampleMetadata()?.files.length === 1
       ? CodeExampleViewMode.SNIPPET
       : CodeExampleViewMode.MULTI_FILE,
@@ -91,13 +99,16 @@ export class ExampleViewer {
 
   async renderExample(): Promise<void> {
     // Lazy load live example component
-    if (this.exampleMetadata()?.path && this.exampleMetadata()?.preview) {
-      this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(
-        this.exampleMetadata()?.path!,
-      );
+    const path = this.exampleMetadata()?.path;
+    if (path && this.exampleMetadata()?.preview) {
+      this.exampleComponent = await this.exampleViewerContentLoader.loadPreview(path);
     }
 
     this.snippetCode.set(this.exampleMetadata()?.files[0]);
+
+    if (this.exampleMetadata()?.hideCode) {
+      this.showCode.set(false);
+    }
 
     afterNextRender(
       () => {

@@ -5,12 +5,6 @@
   overflow: auto;
   height: 100%;
 
-  ::ng-deep {
-    .as-split-gutter-icon {
-      display: none;
-    }
-  }
-
   .selected-entry {
     padding: 0.75rem;
     box-sizing: border-box;

@@ -1,5 +1,5 @@
 load("@aspect_rules_esbuild//esbuild:defs.bzl", "esbuild")
-load("//tools:defaults2.bzl", "npm_package", "ts_config", "ts_project")
+load("//tools:defaults.bzl", "npm_package", "ts_config", "ts_project")
 
 ts_config(
     name = "tsconfig_build",

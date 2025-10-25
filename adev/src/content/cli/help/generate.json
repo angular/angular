@@ -55,6 +55,19 @@
         {
           "name": "tool",
           "type": "array",
+          "default": [
+            "none"
+          ],
+          "enum": [
+            "agents",
+            "claude",
+            "copilot",
+            "cursor",
+            "gemini",
+            "jetbrains",
+            "none",
+            "windsurf"
+          ],
           "description": "Specifies which AI tools to generate configuration files for. These file are used to improve the outputs of AI tools by following the best practices."
         }
       ],
@@ -80,6 +93,16 @@
       "command": "application [name]",
       "shortDescription": "Generates a new Angular application within your workspace. This schematic sets up the foundational structure of your project, including the root component, module, and configuration files. You can customize various aspects of the application, such as routing, styling, and testing.",
       "options": [
+        {
+          "name": "file-name-style-guide",
+          "type": "string",
+          "default": "2025",
+          "enum": [
+            "2016",
+            "2025"
+          ],
+          "description": "The file naming convention to use for generated files. The '2025' style guide (default) uses a concise format (e.g., `app.ts` for the root component), while the '2016' style guide includes the type in the file name (e.g., `app.component.ts`). For more information, see the Angular Style Guide (https://angular.dev/style-guide)."
+        },
         {
           "name": "inline-style",
           "type": "boolean",
@@ -173,11 +196,22 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
+            "less",
             "sass",
-            "less"
+            "scss",
+            "tailwind"
           ],
           "description": "The type of stylesheet files to be created for components in the application."
+        },
+        {
+          "name": "test-runner",
+          "type": "string",
+          "default": "vitest",
+          "enum": [
+            "karma",
+            "vitest"
+          ],
+          "description": "The unit testing runner to use."
         },
         {
           "name": "view-encapsulation",
@@ -192,7 +226,7 @@
         {
           "name": "zoneless",
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Generate an application that does not use `zone.js`."
         }
       ],
@@ -239,6 +273,12 @@
       "command": "component [name]",
       "shortDescription": "Creates a new Angular component. Components are the basic building blocks of Angular applications. Each component consists of a TypeScript class, an HTML template, and an optional CSS stylesheet. Use this schematic to generate a new component in your project.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "change-detection",
           "type": "string",
@@ -365,10 +405,10 @@
           "default": "css",
           "enum": [
             "css",
-            "scss",
-            "sass",
             "less",
-            "none"
+            "none",
+            "sass",
+            "scss"
           ],
           "description": "Specify the type of stylesheet to be created for the component, or `none` to skip creating a stylesheet."
         },
@@ -410,8 +450,8 @@
           "name": "type",
           "type": "string",
           "enum": [
-            "karma",
-            "browserslist"
+            "browserslist",
+            "karma"
           ],
           "description": "Specifies the type of configuration file to generate.",
           "positional": 0
@@ -425,6 +465,12 @@
       "command": "directive [name]",
       "shortDescription": "Creates a new directive in your project. Directives are used to extend the behavior or appearance of HTML elements and components. They allow you to manipulate the DOM, add custom attributes, and respond to events. This schematic generates the necessary files and boilerplate code for a new directive.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "export",
           "type": "boolean",
@@ -561,6 +607,15 @@
           "type": "array",
           "aliases": [
             "guardType"
+          ],
+          "default": [
+            "CanActivate"
+          ],
+          "enum": [
+            "CanActivate",
+            "CanActivateChild",
+            "CanDeactivate",
+            "CanMatch"
           ],
           "description": "Specifies the type(s) of guard to create. You can choose one or more of the following: `CanActivate` (controls access to a route), `CanActivateChild` (controls access to child routes), `CanDeactivate` (asks for confirmation before leaving a route), `CanMatch` (determines if a route can be matched)."
         },
@@ -931,6 +986,12 @@
       "command": "service [name]",
       "shortDescription": "Creates a new service in your project. Services are used to encapsulate reusable logic, such as data access, API calls, or utility functions. This schematic simplifies the process of generating a new service with the necessary files and boilerplate code.",
       "options": [
+        {
+          "name": "add-type-to-class-name",
+          "type": "boolean",
+          "default": true,
+          "description": "When true, the 'type' option will be appended to the generated class name. When false, only the file name will include the type."
+        },
         {
           "name": "flat",
           "type": "boolean",

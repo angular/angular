@@ -17,7 +17,6 @@ import { Injector } from '@angular/core';
 import { IterableDiffers } from '@angular/core';
 import { KeyValueDiffers } from '@angular/core';
 import { NgIterable } from '@angular/core';
-import { NgModuleFactory } from '@angular/core';
 import { Observable } from 'rxjs';
 import { OnChanges } from '@angular/core';
 import { OnDestroy } from '@angular/core';
@@ -33,6 +32,16 @@ import { TrackByFunction } from '@angular/core';
 import { Type } from '@angular/core';
 import { Version } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
+import { ɵNavigateEvent } from '@angular/core';
+import { ɵNavigation } from '@angular/core';
+import { ɵNavigationCurrentEntryChangeEvent } from '@angular/core';
+import { ɵNavigationHistoryEntry } from '@angular/core';
+import { ɵNavigationNavigateOptions } from '@angular/core';
+import { ɵNavigationOptions } from '@angular/core';
+import { ɵNavigationReloadOptions } from '@angular/core';
+import { ɵNavigationResult } from '@angular/core';
+import { ɵNavigationTransition } from '@angular/core';
+import { ɵNavigationUpdateCurrentEntryOptions } from '@angular/core';
 
 // @public
 export const APP_BASE_HREF: InjectionToken<string>;
@@ -381,6 +390,8 @@ export class KeyValuePipe implements PipeTransform {
     // (undocumented)
     transform<K extends string, V>(input: Record<K, V> | ReadonlyMap<K, V> | null | undefined, compareFn?: ((a: KeyValue<K, V>, b: KeyValue<K, V>) => number) | null): Array<KeyValue<K, V>> | null;
     // (undocumented)
+    transform<T>(input: T, compareFn?: T extends object ? (a: T[keyof T], b: T[keyof T]) => number : never): T extends object ? Array<KeyValue<keyof T, T[keyof T]>> : null;
+    // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<KeyValuePipe, never>;
     // (undocumented)
     static ɵpipe: i0.ɵɵPipeDeclaration<KeyValuePipe, "keyvalue", true>;
@@ -492,9 +503,9 @@ export class NgClass implements DoCheck {
 export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy {
     constructor(_viewContainerRef: ViewContainerRef);
     get componentInstance(): T | null;
-    ngComponentOutlet: Type<any> | null;
+    ngComponentOutlet: Type<T> | null;
     // (undocumented)
-    ngComponentOutletContent?: any[][];
+    ngComponentOutletContent?: Node[][];
     // (undocumented)
     ngComponentOutletEnvironmentInjector?: EnvironmentInjector;
     // (undocumented)
@@ -503,13 +514,11 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     ngComponentOutletInputs?: Record<string, unknown>;
     // (undocumented)
     ngComponentOutletNgModule?: Type<any>;
-    // @deprecated (undocumented)
-    ngComponentOutletNgModuleFactory?: NgModuleFactory<any>;
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     // (undocumented)
-    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletEnvironmentInjector": { "alias": "ngComponentOutletEnvironmentInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; "ngComponentOutletNgModuleFactory": { "alias": "ngComponentOutletNgModuleFactory"; "required": false; }; }, {}, never, never, true, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<NgComponentOutlet<any>, "[ngComponentOutlet]", ["ngComponentOutlet"], { "ngComponentOutlet": { "alias": "ngComponentOutlet"; "required": false; }; "ngComponentOutletInputs": { "alias": "ngComponentOutletInputs"; "required": false; }; "ngComponentOutletInjector": { "alias": "ngComponentOutletInjector"; "required": false; }; "ngComponentOutletEnvironmentInjector": { "alias": "ngComponentOutletEnvironmentInjector"; "required": false; }; "ngComponentOutletContent": { "alias": "ngComponentOutletContent"; "required": false; }; "ngComponentOutletNgModule": { "alias": "ngComponentOutletNgModule"; "required": false; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<NgComponentOutlet<any>, never>;
 }
@@ -843,6 +852,50 @@ export abstract class PlatformLocation {
     static ɵfac: i0.ɵɵFactoryDeclaration<PlatformLocation, never>;
     // (undocumented)
     static ɵprov: i0.ɵɵInjectableDeclaration<PlatformLocation>;
+}
+
+// @public
+export abstract class PlatformNavigation implements ɵNavigation {
+    // (undocumented)
+    abstract addEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract back(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract canGoBack: boolean;
+    // (undocumented)
+    abstract canGoForward: boolean;
+    // (undocumented)
+    abstract currentEntry: ɵNavigationHistoryEntry | null;
+    // (undocumented)
+    abstract dispatchEvent(event: Event): boolean;
+    // (undocumented)
+    abstract entries(): ɵNavigationHistoryEntry[];
+    // (undocumented)
+    abstract forward(options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract navigate(url: string, options?: ɵNavigationNavigateOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract oncurrententrychange: ((this: ɵNavigation, ev: ɵNavigationCurrentEntryChangeEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigate: ((this: ɵNavigation, ev: ɵNavigateEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigateerror: ((this: ɵNavigation, ev: ErrorEvent) => any) | null;
+    // (undocumented)
+    abstract onnavigatesuccess: ((this: ɵNavigation, ev: Event) => any) | null;
+    // (undocumented)
+    abstract reload(options?: ɵNavigationReloadOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract removeEventListener(type: unknown, listener: unknown, options?: unknown): void;
+    // (undocumented)
+    abstract transition: ɵNavigationTransition | null;
+    // (undocumented)
+    abstract traverseTo(key: string, options?: ɵNavigationOptions | undefined): ɵNavigationResult;
+    // (undocumented)
+    abstract updateCurrentEntry(options: ɵNavigationUpdateCurrentEntryOptions): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformNavigation, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<PlatformNavigation>;
 }
 
 // @public @deprecated

@@ -78,7 +78,7 @@ describe('definitions', () => {
     );
     expect(definitions.length).toEqual(3);
     assertTextSpans(definitions, ['transform']);
-    assertFileNames(definitions, ['index.d.ts']);
+    assertFileNames(definitions, ['fake_common.d.ts']);
   });
 
   it('gets definitions for all inputs when attribute matches more than one', () => {
@@ -834,9 +834,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const appFile = project.openFile('app.ts');
     project.expectNoSourceDiagnostics();
 
@@ -868,9 +866,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const appFile = project.openFile('app.ts');
     project.expectNoSourceDiagnostics();
 
@@ -901,9 +897,7 @@ describe('definitions', () => {
     };
     const env = LanguageServiceTestEnv.setup();
 
-    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
-      typeCheckHostBindings: true,
-    });
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
     const dirFile = project.openFile('dir.ts');
     project.expectNoSourceDiagnostics();
 
