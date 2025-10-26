@@ -8,9 +8,11 @@ Route guards are functions that control whether a user can navigate to or leave 
 
 You can generate a route guard using the Angular CLI:
 
-```bash
+<docs-code
+    language="shell"
+    >
 ng generate guard CUSTOM_NAME
-```
+</docs-code>
 
 This will prompt you to select which [type of route guard](#types-of-route-guards) to use and then create the corresponding `CUSTOM_NAME-guard.ts` file.
 

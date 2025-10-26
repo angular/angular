@@ -8,18 +8,20 @@ The Angular CLI MCP server provides several tools to assist you in your developm
 
 | Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
 | :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `ai_tutor`             | Launches an interactive AI-powered Angular tutor. Recommended to run from a new Angular project using v20 or later. [Learn more](https://github.com/angular/ai-tutor/blob/main/README.md).         |      ✅      |      ✅     |
-| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
-| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
-| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
+| `ai_tutor`             | Launches an interactive AI-powered Angular tutor. Recommended to run from a new Angular project using v20 or later. [Learn more](https://github.com/angular/ai-tutor/blob/main/README.md).         |      ✅      |     ✅      |
+| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |     ✅      |
+| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |     ✅      |
+| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |     ✅      |
 
 ## Get Started
 
 To get started, run the following command in your terminal:
 
-```bash
+<docs-code
+    language="shell"
+    >
 ng mcp
-```
+</docs-code>
 
 When run from an interactive terminal, this command displays instructions on how to configure a host environment to use the MCP server. The following sections provide example configurations for several popular editors and tools.
 
@@ -118,11 +120,10 @@ For other IDEs, check your IDE's documentation for the proper location of the MC
 
 The `mcp` command can be configured with the following options passed as arguments in your IDE's MCP configuration:
 
-| Option         | Type      | Description                                                                                                | Default |
-| :------------- | :-------- | :--------------------------------------------------------------------------------------------------------- | :------ |
-| `--read-only`  | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits. | `false` |
+| Option         | Type      | Description                                                                                                                       | Default |
+| :------------- | :-------- | :-------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `--read-only`  | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits.                 | `false` |
 | `--local-only` | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network. | `false` |
-
 
 For example, to run the server in read-only mode in VS Code, you would update your `mcp.json` like this:
 

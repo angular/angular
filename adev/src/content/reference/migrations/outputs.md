@@ -9,9 +9,11 @@ provides an automated migration that converts `@Output` custom events to the new
 
 Run the schematic using the following command:
 
-```bash
+<docs-code
+    language="shell"
+    >
 ng generate @angular/core:output-migration
-```
+</docs-code>
 
 ## What does the migration change?
 
@@ -73,9 +75,11 @@ references outside this directory are silently skipped, potentially breaking you
 
 Use these options as shown below:
 
-```bash
+<docs-code
+    language="shell"
+    >
 ng generate @angular/core:output-migration --path src/app/sub-folder
-```
+</docs-code>
 
 ## Exceptions
 

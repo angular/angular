@@ -9,9 +9,11 @@ provides an automated migration that converts existing decorator query fields to
 
 Run the schematic using the following command:
 
-```bash
+<docs-code
+    language="shell"
+    >
 ng generate @angular/core:signal-queries-migration
-```
+</docs-code>
 
 Alternatively, the migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
 Install the latest version of the VSCode extension and click onto e.g. a `@ViewChild` field.
@@ -102,7 +104,7 @@ references outside this directory are silently skipped, potentially breaking you
 
 ## VSCode extension
 
-![Screenshot of the VSCode extension and clicking on an `@ViewChild` field](assets/images/migrations/signal-queries-vscode.png "Screenshot of the VSCode extension and clicking on an `@ViewChild` field.")
+![Screenshot of the VSCode extension and clicking on an `@ViewChild` field](assets/images/migrations/signal-queries-vscode.png 'Screenshot of the VSCode extension and clicking on an `@ViewChild` field.')
 
 The migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
 
