@@ -629,7 +629,7 @@ class NoneEncapsulationDomRenderer extends DefaultDomRenderer2 {
     if (!this.removeStylesOnCompDestroy) {
       return;
     }
-    if (allLeavingAnimations.size === 0) {
+    if (allLeavingAnimations?.size === 0) {
       this.sharedStylesHost.removeStyles(this.styles, this.styleUrls);
     }
   }
