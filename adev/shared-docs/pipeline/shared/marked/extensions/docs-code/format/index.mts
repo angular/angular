@@ -26,7 +26,7 @@ export interface CodeToken extends Tokens.Generic {
   path?: string;
   /* The example display header */
   header?: string;
-  /* Whether stling should include line numbers */
+  /* Whether styling should include line numbers */
   linenums?: boolean;
   /* The example path to determine diff (lines added/removed) */
   diff?: string;
@@ -41,7 +41,7 @@ export interface CodeToken extends Tokens.Generic {
   /* The lines to display highlighting on */
   highlight?: string;
 
-  /** The generated diff metadata if created in the code formating process. */
+  /** The generated diff metadata if created in the code formatting process. */
   diffMetadata?: DiffMetadata;
 
   // additional classes for the element

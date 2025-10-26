@@ -97,6 +97,7 @@
       class="docs-example-viewer-code-wrapper"
       [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
       [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
+      [class.shell]="snippetCode()?.shell"
     >
       <button docs-copy-source-code></button>
       @if (snippetCode()?.sanitizedContent; as content) {
