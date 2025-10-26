@@ -21,7 +21,7 @@ import {
   HttpXhrBackend,
   JsonpClientBackend,
 } from '../index';
-import {HttpClientTestingModule, HttpTestingController, provideHttpClientTesting} from '../testing';
+import {HttpTestingController, provideHttpClientTesting} from '../testing';
 import {
   ApplicationRef,
   createEnvironmentInjector,
@@ -438,8 +438,8 @@ describe('provideHttpClient', () => {
 
         it('should be able to connect to a legacy-provided HttpClient context', () => {
           TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-            providers: [provideLegacyInterceptor('parent')],
+            imports: [],
+            providers: [provideLegacyInterceptor('parent'), provideHttpClientTesting()],
           });
 
           const child = createEnvironmentInjector(

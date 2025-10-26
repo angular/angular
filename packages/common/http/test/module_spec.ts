@@ -13,12 +13,12 @@ import {HTTP_INTERCEPTORS, HttpInterceptor} from '../src/interceptor';
 import {HttpRequest} from '../src/request';
 import {HttpEvent, HttpResponse} from '../src/response';
 import {HttpTestingController} from '../testing/src/api';
-import {HttpClientTestingModule} from '../testing/src/module';
 import {TestRequest} from '../testing/src/request';
 import {Injectable, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {provideHttpClientTesting} from '../testing/src/provider';
 
 const IS_INTERCEPTOR_C_ENABLED = new HttpContextToken<boolean | undefined>(() => undefined);
 
@@ -80,11 +80,12 @@ describe('HttpClientModule', () => {
   let injector: Injector;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorA, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorB, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: InterceptorC, multi: true},
+        provideHttpClientTesting(),
       ],
     });
     injector = TestBed.inject(Injector);
@@ -134,8 +135,10 @@ describe('HttpClientModule', () => {
   it('allows interceptors to inject HttpClient', (done) => {
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [{provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true}],
+      providers: [
+        {provide: HTTP_INTERCEPTORS, useClass: ReentrantInterceptor, multi: true},
+        provideHttpClientTesting(),
+      ],
     });
     injector = TestBed.inject(Injector);
     injector

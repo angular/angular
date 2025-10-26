@@ -9,7 +9,6 @@
 import {CommonModule} from '../../index';
 import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
-  Compiler,
   Component,
   ComponentRef,
   createEnvironmentInjector,
@@ -19,7 +18,6 @@ import {
   Injector,
   Input,
   NgModule,
-  NgModuleFactory,
   NO_ERRORS_SCHEMA,
   Optional,
   QueryList,

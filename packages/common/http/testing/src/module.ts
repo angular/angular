@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HttpClientModule} from '../../index';
+import {provideHttpClient, withInterceptorsFromDi} from '../../index';
 import {NgModule} from '@angular/core';
 
 import {provideHttpClientTesting} from './provider';
@@ -21,7 +21,7 @@ import {provideHttpClientTesting} from './provider';
  * @deprecated Add `provideHttpClientTesting()` to your providers instead.
  */
 @NgModule({
-  imports: [HttpClientModule],
-  providers: [provideHttpClientTesting()],
+  imports: [],
+  providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), ],
 })
 export class HttpClientTestingModule {}
