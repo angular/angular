@@ -25,9 +25,9 @@ import {
   CanActivateFn,
   CanDeactivateFn,
   GuardResult,
-  CanLoadFn,
   CanMatchFn,
   Route,
+  CanLoadFn,
 } from '../models';
 import {redirectingNavigationError} from '../navigation_canceling_error';
 import type {NavigationTransition} from '../navigation_transition';
