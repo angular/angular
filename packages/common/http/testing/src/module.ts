@@ -22,6 +22,6 @@ import {provideHttpClientTesting} from './provider';
  */
 @NgModule({
   imports: [],
-  providers: [provideHttpClientTesting(), provideHttpClient(withInterceptorsFromDi())],
+  providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), ],
 })
 export class HttpClientTestingModule {}
