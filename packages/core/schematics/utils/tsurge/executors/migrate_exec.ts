@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AbsoluteFsPath, NodeJSFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, NodeJSFileSystem} from '@angular/compiler-cli';
 import {TsurgeMigration} from '../migration';
 import {Replacement} from '../replacement';
 

@@ -19,8 +19,11 @@ import ts from 'typescript';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 import {MigrationConfig} from './types';
 import {getImportSpecifiers} from '../../utils/typescript/imports';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {ImportManager, PartialEvaluator} from '@angular/compiler-cli/private/migrations';
+import {
+  ImportManager,
+  PartialEvaluator,
+  TypeScriptReflectionHost,
+} from '@angular/compiler-cli/private/migrations';
 import {canRemoveCommonModule, parseTemplate} from '../../utils/parse_html';
 
 const ngClassStr = 'NgClass';

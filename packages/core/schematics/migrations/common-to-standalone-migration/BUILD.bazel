@@ -21,8 +21,6 @@ ts_project(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",

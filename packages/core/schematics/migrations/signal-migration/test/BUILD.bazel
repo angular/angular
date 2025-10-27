@@ -110,8 +110,6 @@ ts_project(
     testonly = True,
     srcs = ["migration_spec.ts"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/utils/tsurge",
     ],

@@ -7,12 +7,12 @@
  */
 
 import ts from 'typescript';
+import {getAngularDecorators} from '@angular/compiler-cli/private/migrations';
 import {KnownInputs} from '../input_detection/known_inputs';
 import {MigrationHost} from '../migration_host';
 import {GroupedTsAstVisitor} from '../utils/grouped_ts_ast_visitor';
 import {InheritanceGraph} from '../utils/inheritance_graph';
 import {checkIncompatiblePatterns} from './problematic_patterns/common_incompatible_patterns';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {FieldIncompatibilityReason} from './problematic_patterns/incompatibility';
 
 /**

@@ -17,7 +17,6 @@ ts_project(
         "//:node_modules/@angular-devkit/schematics",
         "//:node_modules/typescript",
         "//packages/compiler-cli/private",
-        "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
         "//packages/core/schematics/utils/tsurge/helpers/angular_devkit",
@@ -32,7 +31,6 @@ ts_project(
         ":bootstrap-options-migration",
         "//:node_modules/typescript",
         "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/core/schematics/utils/tsurge",
     ],
 )

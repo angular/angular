@@ -7,9 +7,9 @@
  */
 
 import ts from 'typescript';
+import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {ProgramInfo, projectFile, Replacement, TextUpdate} from '../../../../../utils/tsurge';
 import assert from 'assert';
-import {ImportManager} from '@angular/compiler-cli/src/ngtsc/translator';
 import {isTsClassTypeReference, Reference} from '../reference_resolution/reference_kinds';
 import {ReferenceMigrationHost} from './reference_migration_host';
 import {ClassFieldDescriptor} from '../reference_resolution/known_fields';

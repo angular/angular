@@ -18,7 +18,7 @@ ts_project(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//:node_modules/@angular-devkit/schematics",
-        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/private",
         "//packages/core/schematics/migrations/signal-queries-migration:migration",
         "//packages/core/schematics/utils",
         "//packages/core/schematics/utils/tsurge",
