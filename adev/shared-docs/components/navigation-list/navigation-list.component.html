@@ -39,7 +39,7 @@
               <a
                 [routerLink]="'/' + item.path"
                 routerLinkActive="docs-faceted-list-item-active"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
                 (click)="emitClickOnLink()"
                 [matTooltip]="item.label"
                 [matTooltipDisabled]="itemLabel.length < 27"
