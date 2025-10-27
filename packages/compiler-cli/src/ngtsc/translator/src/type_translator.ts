@@ -185,11 +185,11 @@ class TypeTranslatorVisitor implements o.ExpressionVisitor, o.TypeVisitor {
     throw new Error('Method not implemented.');
   }
 
-  visitDynamicImportExpr(ast: o.outputAst.DynamicImportExpr, context: any) {
+  visitDynamicImportExpr(ast: o.DynamicImportExpr, context: any) {
     throw new Error('Method not implemented.');
   }
 
-  visitRegularExpressionLiteral(ast: o.outputAst.RegularExpressionLiteral, context: any) {
+  visitRegularExpressionLiteral(ast: o.RegularExpressionLiteralExpr, context: any) {
     throw new Error('Method not implemented.');
   }
 

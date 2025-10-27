@@ -189,7 +189,7 @@ export class ExpressionTranslatorVisitor<TFile, TStatement, TExpression>
     return this.setSourceMapRange(this.factory.createLiteral(ast.value), ast.sourceSpan);
   }
 
-  visitRegularExpressionLiteral(ast: o.outputAst.RegularExpressionLiteral, context: any) {
+  visitRegularExpressionLiteral(ast: o.RegularExpressionLiteralExpr, context: any) {
     return this.setSourceMapRange(
       this.factory.createRegularExpressionLiteral(ast.body, ast.flags),
       ast.sourceSpan,

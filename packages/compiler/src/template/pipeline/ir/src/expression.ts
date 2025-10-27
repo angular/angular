@@ -1323,7 +1323,7 @@ export function transformExpressionsInExpression(
     expr instanceof o.ReadVarExpr ||
     expr instanceof o.ExternalExpr ||
     expr instanceof o.LiteralExpr ||
-    expr instanceof o.RegularExpressionLiteral
+    expr instanceof o.RegularExpressionLiteralExpr
   ) {
     // No action for these types.
   } else {

@@ -311,7 +311,7 @@ export class GenericKeyFn implements ExpressionKeyFn {
       return `"${expr.value}"`;
     } else if (expr instanceof o.LiteralExpr) {
       return String(expr.value);
-    } else if (expr instanceof o.RegularExpressionLiteral) {
+    } else if (expr instanceof o.RegularExpressionLiteralExpr) {
       return `/${expr.body}/${expr.flags ?? ''}`;
     } else if (expr instanceof o.LiteralArrayExpr) {
       const entries: string[] = [];

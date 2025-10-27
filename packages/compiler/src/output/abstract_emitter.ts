@@ -353,7 +353,10 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
     return null;
   }
 
-  visitRegularExpressionLiteral(ast: o.RegularExpressionLiteral, ctx: EmitterVisitorContext): any {
+  visitRegularExpressionLiteral(
+    ast: o.RegularExpressionLiteralExpr,
+    ctx: EmitterVisitorContext,
+  ): any {
     ctx.print(ast, `/${ast.body}/${ast.flags || ''}`);
     return null;
   }

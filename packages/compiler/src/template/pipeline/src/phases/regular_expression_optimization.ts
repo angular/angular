@@ -20,7 +20,7 @@ export function optimizeRegularExpressions(job: CompilationJob): void {
         op,
         (expr) => {
           if (
-            expr instanceof o.RegularExpressionLiteral &&
+            expr instanceof o.RegularExpressionLiteralExpr &&
             // We can't optimize global regexes, because they're stateful.
             (expr.flags === null || !expr.flags.includes('g'))
           ) {
