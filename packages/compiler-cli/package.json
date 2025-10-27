@@ -24,17 +24,9 @@
       "types": "./linker/babel/index.d.ts",
       "default": "./bundles/linker/babel/index.js"
     },
-    "./private/localize": {
-      "types": "./private/localize.d.ts",
-      "default": "./bundles/private/localize.js"
-    },
-    "./private/migrations": {
-      "types": "./private/migrations.d.ts",
-      "default": "./bundles/private/migrations.js"
-    },
-    "./private/tooling": {
-      "types": "./private/tooling.d.ts",
-      "default": "./bundles/private/tooling.js"
+    "./private/*": {
+      "types": "./private/*.d.ts",
+      "default": "./bundles/private/*.js"
     }
   },
   "dependencies": {

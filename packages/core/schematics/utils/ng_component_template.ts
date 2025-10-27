@@ -7,11 +7,11 @@
  */
 
 import ts from 'typescript';
+import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli';
 
 import {extractAngularClassMetadata} from './extract_metadata';
 import {computeLineStartsMap, getLineAndCharacterFromPosition} from './line_mappings';
 import {getPropertyNameText} from './typescript/property_name';
-import {AbsoluteFsPath, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 
 export interface ResolvedTemplate {
   /** Class declaration that contains this template. */

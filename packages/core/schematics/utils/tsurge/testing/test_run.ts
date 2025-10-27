@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MockFileSystem} from '../../../../../compiler-cli/src/ngtsc/file_system/testing';
+import {MockFileSystem} from '@angular/compiler-cli/private/testing';
 
 /** Type describing results of a Tsurge migration test run. */
 export interface TestRun<Stats> {

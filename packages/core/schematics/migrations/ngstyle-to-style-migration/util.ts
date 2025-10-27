@@ -7,6 +7,7 @@
  */
 
 import {visitAll, RecursiveVisitor, Element} from '@angular/compiler';
+import {TypeScriptReflectionHost, ImportManager} from '@angular/compiler-cli/private/migrations';
 import {
   ProgramInfo,
   projectFile,
@@ -19,8 +20,6 @@ import ts from 'typescript';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
 import {MigrationConfig} from './types';
 import {getImportSpecifiers} from '../../utils/typescript/imports';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {ImportManager} from '@angular/compiler-cli/private/migrations';
 import {canRemoveCommonModule, parseTemplate} from '../../utils/parse_html';
 
 const ngStyleStr = 'NgStyle';

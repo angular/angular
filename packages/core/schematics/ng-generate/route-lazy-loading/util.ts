@@ -7,8 +7,7 @@
  */
 
 import ts from 'typescript';
-import {findAngularDecorator} from '@angular/compiler-cli/src/ngtsc/annotations';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection/index';
+import {findAngularDecorator, ReflectionHost} from '@angular/compiler-cli/private/migrations';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 
 /**
