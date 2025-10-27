@@ -11,6 +11,8 @@ import {
   LOCATION_INITIALIZED,
   LocationStrategy,
   ViewportScroller,
+  Location,
+  ɵNavigationAdapterForLocation,
 } from '@angular/common';
 import {
   APP_BOOTSTRAP_LISTENER,
@@ -26,10 +28,11 @@ import {
   provideAppInitializer,
   Provider,
   runInInjectionContext,
-  Type,
   ɵperformanceMarkFeature as performanceMarkFeature,
   ɵIS_ENABLED_BLOCKING_INITIAL_NAVIGATION as IS_ENABLED_BLOCKING_INITIAL_NAVIGATION,
   ɵpublishExternalGlobalUtil,
+  provideEnvironmentInitializer,
+  Type,
 } from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -52,6 +55,8 @@ import {
   ViewTransitionsFeatureOptions,
 } from './utils/view_transition';
 import {getLoadedRoutes, getRouterInstance, navigateByUrl} from './router_devtools';
+import {StateManager} from './statemanager/state_manager';
+import {NavigationStateManager} from './statemanager/navigation_state_manager';
 
 /**
  * Sets up providers necessary to enable `Router` functionality for the application.
@@ -230,6 +235,58 @@ export function withInMemoryScrolling(
         return new RouterScroller(urlSerializer, transitions, viewportScroller, zone, options);
       },
     },
+  ];
+  return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
+}
+
+/**
+ * Enables the use of the browser's `History` API for navigation.
+ *
+ * @description
+ * This function provides a `Location` strategy that uses the browser's `History` API.
+ * It is required when using features that rely on `history.state`. For example, the
+ * `state` object in `NavigationExtras` is passed to `history.pushState` or
+ * `history.replaceState`.
+ *
+ * @usageNotes
+ *
+ * ```typescript
+ * const appRoutes: Routes = [
+ *   { path: 'page', component: PageComponent },
+ * ];
+ *
+ * bootstrapApplication(AppComponent, {
+ *   providers: [
+ *     provideRouter(appRoutes, withPlatformNavigation())
+ *   ]
+ * });
+ * ```
+ *
+ * @returns A `RouterFeature` that enables the platform navigation.
+ */
+export function withPlatformNavigation() {
+  const devModeLocationCheck =
+    typeof ngDevMode === 'undefined' || ngDevMode
+      ? [
+          provideEnvironmentInitializer(() => {
+            const locationInstance = inject(Location);
+            if (!(locationInstance instanceof ɵNavigationAdapterForLocation)) {
+              const locationConstructorName = (locationInstance as any).constructor.name;
+              let message =
+                `'withPlatformNavigation' provides a 'Location' implementation that ensures navigation APIs are consistently used.` +
+                ` An instance of ${locationConstructorName} was found instead.`;
+              if (locationConstructorName === 'SpyLocation') {
+                message += ` One of 'RouterTestingModule' or 'provideLocationMocks' was likely used. 'withPlatformNavigation' does not work with these because they override the Location implementation.`;
+              }
+              throw new Error(message);
+            }
+          }),
+        ]
+      : [];
+  const providers = [
+    {provide: StateManager, useExisting: NavigationStateManager},
+    {provide: Location, useClass: ɵNavigationAdapterForLocation},
+    devModeLocationCheck,
   ];
   return routerFeature(RouterFeatureKind.InMemoryScrollingFeature, providers);
 }
