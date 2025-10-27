@@ -8,10 +8,10 @@
 
 import path from 'path';
 
+import {NodeJSFileSystem} from '@angular/compiler-cli';
 import assert from 'assert';
 import {SignalInputMigration} from './migration';
 import {writeMigrationReplacements} from './write_replacements';
-import {NodeJSFileSystem} from '../../../../../compiler-cli';
 
 main(
   path.resolve(process.argv[2]),

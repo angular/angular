@@ -7,7 +7,7 @@
  */
 
 import {Rule} from '@angular-devkit/schematics';
-import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem} from '@angular/compiler-cli/private/migrations';
 import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
 import {RouterTestingModuleMigration} from './migration';
 

@@ -9,8 +9,7 @@
 import ts from 'typescript';
 import {ProgramInfo, projectFile, Replacement, TextUpdate, ProjectFile} from '../../utils/tsurge';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {ImportManager} from '@angular/compiler-cli/private/migrations';
+import {ImportManager, TypeScriptReflectionHost} from '@angular/compiler-cli/private/migrations';
 import {getImportOfIdentifier} from '../../utils/typescript/imports';
 
 export interface TemplateAnalysis {

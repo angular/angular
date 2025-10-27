@@ -9,7 +9,7 @@
 import {Rule} from '@angular-devkit/schematics';
 import {CommonToStandaloneMigration} from './migration';
 import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
-import {FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {FileSystem} from '@angular/compiler-cli/private/migrations';
 
 interface Options {
   path: string;

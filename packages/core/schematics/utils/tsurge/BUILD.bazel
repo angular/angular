@@ -19,12 +19,6 @@ ts_project(
         "//:node_modules/magic-string",
         "//:node_modules/typescript",
         "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/core",
-        "//packages/compiler-cli/src/ngtsc/core:api",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
-        "//packages/compiler-cli/src/ngtsc/shims",
-        "//packages/compiler-cli/src/ngtsc/translator",
-        "//packages/compiler-cli/src/ngtsc/util",
+        "//packages/compiler-cli/private",
     ],
 )

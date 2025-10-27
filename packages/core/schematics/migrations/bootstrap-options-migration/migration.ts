@@ -16,10 +16,14 @@ import {
   projectFile,
 } from '../../utils/tsurge';
 import ts from 'typescript';
-import {PartialEvaluator, Reference, ImportManager} from '@angular/compiler-cli/private/migrations';
-import {TypeScriptReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {
+  PartialEvaluator,
+  Reference,
+  ImportManager,
+  TypeScriptReflectionHost,
+  getAngularDecorators,
+} from '@angular/compiler-cli/private/migrations';
 import {applyImportManagerChanges} from '../../utils/tsurge/helpers/apply_import_manager';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
 import {findLiteralProperty} from '../../utils/typescript/property_name';
 import {getImportSpecifier, getRelativePath} from '../../utils/typescript/imports';
 import {isReferenceToImport} from '../../utils/typescript/symbol';
