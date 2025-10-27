@@ -8,9 +8,12 @@
 
 import {XhrFactory} from '../../index';
 import {
+  inject,
   Injectable,
   ɵRuntimeError as RuntimeError,
   ɵformatRuntimeError as formatRuntimeError,
+  ɵTracingService as TracingService,
+  ɵTracingSnapshot as TracingSnapshot,
 } from '@angular/core';
 import {from, Observable, Observer, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
@@ -103,7 +106,15 @@ function validateXhrCompatibility(req: HttpRequest<any>) {
  */
 @Injectable({providedIn: 'root'})
 export class HttpXhrBackend implements HttpBackend {
+  private readonly tracingService: TracingService<TracingSnapshot> | null = inject(TracingService, {
+    optional: true,
+  });
+
   constructor(private xhrFactory: XhrFactory) {}
+
+  private maybePropagateTrace<T extends Function>(fn: T): T {
+    return this.tracingService?.propagate ? this.tracingService.propagate(fn) : fn;
+  }
 
   /**
    * Processes a request and returns a stream of response events.
@@ -219,7 +230,7 @@ export class HttpXhrBackend implements HttpBackend {
           // emit. This allows them to be unregistered as event listeners later.
 
           // First up is the load event, which represents a response being fully available.
-          const onLoad = () => {
+          const onLoad = this.maybePropagateTrace(() => {
             // Read response state from the memoized partial data.
             let {headers, status, statusText, url} = partialFromXhr();
 
@@ -296,12 +307,12 @@ export class HttpXhrBackend implements HttpBackend {
                 }),
               );
             }
-          };
+          });
 
           // The onError callback is called when something goes wrong at the network level.
           // Connection timeout, DNS error, offline, etc. These are actual errors, and are
           // transmitted on the error channel.
-          const onError = (error: ProgressEvent) => {
+          const onError = this.maybePropagateTrace((error: ProgressEvent) => {
             const {url} = partialFromXhr();
             const res = new HttpErrorResponse({
               error,
@@ -310,12 +321,12 @@ export class HttpXhrBackend implements HttpBackend {
               url: url || undefined,
             });
             observer.error(res);
-          };
+          });
 
           let onTimeout = onError;
 
           if (req.timeout) {
-            onTimeout = (_: ProgressEvent) => {
+            onTimeout = this.maybePropagateTrace((_: ProgressEvent) => {
               const {url} = partialFromXhr();
               const res = new HttpErrorResponse({
                 error: new DOMException('Request timed out', 'TimeoutError'),
@@ -324,7 +335,7 @@ export class HttpXhrBackend implements HttpBackend {
                 url: url || undefined,
               });
               observer.error(res);
-            };
+            });
           }
 
           // The sentHeaders flag tracks whether the HttpResponseHeaders event
@@ -335,7 +346,7 @@ export class HttpXhrBackend implements HttpBackend {
 
           // The download progress event handler, which is only registered if
           // progress events are enabled.
-          const onDownProgress = (event: ProgressEvent) => {
+          const onDownProgress = this.maybePropagateTrace((event: ProgressEvent) => {
             // Send the HttpResponseHeaders event if it hasn't been sent already.
             if (!sentHeaders) {
               observer.next(partialFromXhr());
@@ -363,11 +374,11 @@ export class HttpXhrBackend implements HttpBackend {
 
             // Finally, fire the event.
             observer.next(progressEvent);
-          };
+          });
 
           // The upload progress event handler, which is only registered if
           // progress events are enabled.
-          const onUpProgress = (event: ProgressEvent) => {
+          const onUpProgress = this.maybePropagateTrace((event: ProgressEvent) => {
             // Upload progress events are simpler. Begin building the progress
             // event.
             let progress: HttpUploadProgressEvent = {
@@ -383,7 +394,7 @@ export class HttpXhrBackend implements HttpBackend {
 
             // Send the event.
             observer.next(progress);
-          };
+          });
 
           // By default, register for load and error events.
           xhr.addEventListener('load', onLoad);
