@@ -538,7 +538,7 @@ export class InstantiateExpr extends Expression {
   }
 }
 
-export class RegularExpressionLiteral extends Expression {
+export class RegularExpressionLiteralExpr extends Expression {
   constructor(
     public body: string,
     public flags: string | null,
@@ -548,7 +548,9 @@ export class RegularExpressionLiteral extends Expression {
   }
 
   override isEquivalent(e: Expression): boolean {
-    return e instanceof RegularExpressionLiteral && this.body === e.body && this.flags === e.flags;
+    return (
+      e instanceof RegularExpressionLiteralExpr && this.body === e.body && this.flags === e.flags
+    );
   }
 
   override isConstant() {
@@ -559,8 +561,8 @@ export class RegularExpressionLiteral extends Expression {
     return visitor.visitRegularExpressionLiteral(this, context);
   }
 
-  override clone(): RegularExpressionLiteral {
-    return new RegularExpressionLiteral(this.body, this.flags, this.sourceSpan);
+  override clone(): RegularExpressionLiteralExpr {
+    return new RegularExpressionLiteralExpr(this.body, this.flags, this.sourceSpan);
   }
 }
 
@@ -1426,7 +1428,7 @@ export interface ExpressionVisitor {
   visitVoidExpr(ast: VoidExpr, context: any): any;
   visitArrowFunctionExpr(ast: ArrowFunctionExpr, context: any): any;
   visitParenthesizedExpr(ast: ParenthesizedExpr, context: any): any;
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any;
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteralExpr, context: any): any;
 }
 
 export const NULL_EXPR = new LiteralExpr(null, null, null);
@@ -1654,7 +1656,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitLiteralExpr(ast: LiteralExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
-  visitRegularExpressionLiteral(ast: RegularExpressionLiteral, context: any): any {
+  visitRegularExpressionLiteral(ast: RegularExpressionLiteralExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
   visitLocalizedString(ast: LocalizedString, context: any): any {
