@@ -25,11 +25,7 @@ import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route} from '../../../../../protocol';
-import {
-  SvgD3Node,
-  SvgD3Link,
-  TreeVisualizerConfig,
-} from '../../shared/tree-visualizer/tree-visualizer';
+import {SvgD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tree-visualizer';
 import {
   RouterTreeD3Node,
   transformRoutesIntoVisTree,
