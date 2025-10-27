@@ -55,7 +55,7 @@ const plugins = [
 /** @type {import('rollup').RollupOptions} */
 const config = {
   plugins,
-  external: ['typescript', 'tslib', /@angular-devkit\/.+/],
+  external: ['typescript', 'tslib', /@angular-devkit\/.+/, '@angular/compiler'],
   output: {
     exports: 'auto',
     chunkFileNames: '[name]-[hash].cjs',
