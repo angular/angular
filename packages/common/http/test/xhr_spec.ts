@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {XhrFactory} from '../../index';
 import {HttpRequest} from '../src/request';
 import {
   HttpDownloadProgressEvent,
@@ -19,6 +20,7 @@ import {
   HttpUploadProgressEvent,
 } from '../src/response';
 import {HttpXhrBackend} from '../src/xhr';
+import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 
@@ -53,8 +55,11 @@ describe('XhrBackend', () => {
   let factory: MockXhrFactory = null!;
   let backend: HttpXhrBackend = null!;
   beforeEach(() => {
-    factory = new MockXhrFactory();
-    backend = new HttpXhrBackend(factory);
+    TestBed.configureTestingModule({
+      providers: [{provide: XhrFactory, useClass: MockXhrFactory}],
+    });
+    factory = TestBed.inject(XhrFactory) as MockXhrFactory;
+    backend = TestBed.inject(HttpXhrBackend);
   });
   it('emits status immediately', () => {
     const events = trackEvents(backend.handle(TEST_POST));
