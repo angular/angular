@@ -99,6 +99,7 @@ export {
   ReadKeyExpr,
   ReadPropExpr,
   ReadVarExpr,
+  RegularExpressionLiteralExpr,
   ReturnStatement,
   Statement,
   StatementVisitor,
