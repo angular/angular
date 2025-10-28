@@ -9,12 +9,7 @@ ts_project(
     ]),
     deps = [
         "//:node_modules/typescript",
-        "//packages/compiler-cli",
-        "//packages/compiler-cli/src/ngtsc/annotations",
-        "//packages/compiler-cli/src/ngtsc/core",
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/metadata",
-        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/private",
         "//packages/core/schematics/migrations/signal-migration/src",
         "//packages/core/schematics/migrations/signal-queries-migration:migration",
         "//packages/core/schematics/utils/tsurge",
