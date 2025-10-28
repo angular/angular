@@ -13,7 +13,7 @@ const {pathPlugin} = require('../../../tools/bazel/rollup/path-plugin.cjs');
 const stripBannerPlugin = {
   name: 'strip-license-banner',
   transform(code, _filePath) {
-    const banner = /(\/\**\s+\*\s@license.*?\*\/)/s.exec(code);
+    const banner = /(\/\*[\!\*]\s+\*\s@license.*?\*\/)/s.exec(code);
     if (!banner) {
       return;
     }
@@ -55,7 +55,7 @@ const plugins = [
 /** @type {import('rollup').RollupOptions} */
 const config = {
   plugins,
-  external: ['typescript', 'tslib', /@angular-devkit\/.+/, '@angular/compiler'],
+  external: ['typescript', 'tslib', /@angular-devkit\/.+/, /@angular\//],
   output: {
     exports: 'auto',
     chunkFileNames: '[name]-[hash].cjs',
