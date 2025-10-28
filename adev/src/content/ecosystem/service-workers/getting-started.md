@@ -145,7 +145,7 @@ Now look at how the browser and service worker handle the updated application.
 
    Look at the `http-server` logs to see the service worker requesting `/ngsw.json`.
 
-   ```shell
+   ```text
    [2023-09-07T00:37:24.372Z]  "GET /ngsw.json?ngsw-cache-bust=0.9365263935102124" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
    ```
 
