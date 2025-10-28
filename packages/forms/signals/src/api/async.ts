@@ -170,7 +170,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
     return opts.factory(params);
   });
 
-  pathNode.logic.addAsyncErrorRule((ctx) => {
+  pathNode.builder.addAsyncErrorRule((ctx) => {
     const res = ctx.state.metadata(RESOURCE)!;
     let errors;
     switch (res.status()) {

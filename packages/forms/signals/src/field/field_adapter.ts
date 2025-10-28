@@ -84,7 +84,7 @@ export class BasicFieldAdapter implements FieldAdapter {
       fieldManager,
       value,
       pathNode,
-      logic: pathNode.logic.build(),
+      logic: pathNode.builder.build(),
       fieldAdapter: adapter,
     });
   }
