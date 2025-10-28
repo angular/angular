@@ -520,7 +520,7 @@ function analyzeTemplateUsage(nodes: any[], templateName: string): TemplateUsage
         for (const attr of node.attrs) {
           if (
             (attr.name === '*ngTemplateOutlet' || attr.name === '[ngTemplateOutlet]') &&
-            attr.value === templateName
+            attr.value?.split(';')[0] === templateName
           ) {
             isReferencedInTemplateOutlet = true;
           }
