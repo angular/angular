@@ -93,6 +93,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('data', {name: 'Lazy Component Name'});
     fixture.componentRef.setInput('dataKey', 'name');
     fixture.componentRef.setInput('actionBtnType', 'view-source');
+    fixture.componentRef.setInput('actionBtnDisabled', true);
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
