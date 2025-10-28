@@ -7,18 +7,25 @@
  */
 
 import {AST, TmplAstNode} from '@angular/compiler';
-import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
+  absoluteFrom,
+  AbsoluteFsPath,
+  CompilerOptions,
+  ConfigurationHost,
   ErrorCode,
-  isFatalDiagnosticError,
   ngErrorCode,
-} from '@angular/compiler-cli/src/ngtsc/diagnostics';
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {FileUpdate, ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
-import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+  OptimizeFor,
+  readConfiguration,
+} from '@angular/compiler-cli';
+import {
+  FileUpdate,
+  isExternalResource,
+  isFatalDiagnosticError,
+  isNamedClassDeclaration,
+  NgCompiler,
+  PerfPhase,
+  ProgramDriver,
+} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
 
 import {
@@ -37,24 +44,23 @@ import {CompletionBuilder} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {getOutliningSpans} from './outlining_spans';
 import {QuickInfoBuilder} from './quick_info';
+import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {createLocationKey} from './references_and_rename_utils';
+import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
 import {getSignatureHelp} from './signature_help';
 import {
   getTargetAtPosition,
   getTcbNodesOfTemplateAtPosition,
   TargetNodeKind,
 } from './template_target';
+import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
 import {
   findTightestNode,
   getClassDeclFromDecoratorProp,
   getParentClassDeclaration,
   getPropertyAssignmentFromValue,
 } from './utils/ts_utils';
-import {getTypeCheckInfoAtPosition, isTypeScriptFile, TypeCheckInfo} from './utils';
-import {ActiveRefactoring, allRefactorings} from './refactorings/refactoring';
-import {getClassificationsForTemplate, TokenEncodingConsts} from './semantic_tokens';
-import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 
 type LanguageServiceConfig = Omit<PluginConfig, 'angularOnly'>;
 

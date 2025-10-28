@@ -5,6 +5,8 @@ package(default_visibility = ["//visibility:public"])
 copy_to_bin(
     name = "files",
     srcs = [
+        "docs.ts",
+        "language_service.ts",
         "localize.ts",
         "migrations.ts",
         "testing.ts",
@@ -14,25 +16,33 @@ copy_to_bin(
 
 ts_project(
     name = "private",
-    srcs = glob(["*.ts"]),
+    srcs = glob(
+        ["*.ts"],
+    ),
     deps = [
         "//:node_modules/typescript",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/core",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
+        "//packages/compiler-cli/src/ngtsc/docs",
         "//packages/compiler-cli/src/ngtsc/file_system",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/incremental",
         "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/perf",
+        "//packages/compiler-cli/src/ngtsc/program_driver",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/sourcemaps",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/transform/jit",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/typecheck",
         "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "//packages/compiler-cli/src/ngtsc/util",
     ],

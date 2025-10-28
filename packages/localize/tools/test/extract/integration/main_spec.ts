@@ -12,9 +12,8 @@ import {
   getFileSystem,
   setFileSystem,
   InvalidFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
-import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
+} from '@angular/compiler-cli';
+import {MockLogger, loadTestDirectory} from '@angular/compiler-cli/private/testing';
 import path from 'path';
 import url from 'url';
 

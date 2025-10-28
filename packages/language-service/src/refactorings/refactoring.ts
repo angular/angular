@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {NgCompiler} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
 import {CompilerOptions} from '@angular/compiler-cli';
