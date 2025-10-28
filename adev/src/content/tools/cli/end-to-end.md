@@ -14,7 +14,7 @@ ng e2e
 
 The `ng e2e` command will first check your project for the "e2e" target. If it can't locate it, the CLI will then prompt you which e2e package you would like to use and walk you through the setup.
 
-```shell
+```text
 
 Cannot find "e2e" target for the specified project.
 You can add a package that implements these capabilities.
