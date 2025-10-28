@@ -119,7 +119,7 @@ export class DevToolsTabsComponent {
   );
   TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
-  readonly angularVersion = input<string | undefined>(undefined);
+  readonly angularVersion = input<string | undefined>();
   readonly majorAngularVersion = computed(() => {
     const version = this.angularVersion();
     if (!version) {
