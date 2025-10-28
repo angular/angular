@@ -25,8 +25,6 @@ import {
 } from '../change_detection/scheduling/ng_zone_scheduling';
 import {getNgZone} from '../zone/ng_zone';
 
-const ZONELESS_BY_DEFAULT = true;
-
 /**
  * The Angular platform is the entry point for Angular on a web page.
  * Each page has exactly one platform. Services (such as reflection) which are common
@@ -56,6 +54,7 @@ export class PlatformRef {
     options?: BootstrapOptions & {applicationProviders?: Array<Provider | EnvironmentProviders>},
   ): Promise<NgModuleRef<M>> {
     const defaultZoneCdProviders = [];
+    const ZONELESS_BY_DEFAULT = true;
     if (!ZONELESS_BY_DEFAULT) {
       const ngZoneFactory = () =>
         getNgZone(options?.ngZone, {
