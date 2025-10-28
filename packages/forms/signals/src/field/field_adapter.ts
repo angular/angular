@@ -8,12 +8,12 @@
 
 import {FieldPathNode} from '../schema/path_node';
 
+import {WritableSignal} from '@angular/core';
 import {FormFieldManager} from './manager';
 import {FieldNode} from './node';
 import {FieldNodeState} from './state';
 import {ChildFieldNodeOptions, FieldNodeOptions, FieldNodeStructure} from './structure';
-import {ValidationState, FieldValidationState} from './validation';
-import {WritableSignal} from '@angular/core';
+import {FieldValidationState, ValidationState} from './validation';
 
 /**
  * Adapter allowing customization of the creation logic for a field and its associated
