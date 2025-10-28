@@ -204,7 +204,7 @@ export type ReadonlyArrayLike<T> = Pick<
  * @experimental 21.0.0
  */
 export type MaybeFieldTree<TValue, TKey extends string | number = string | number> =
-  | (TValue & undefined)
+  | (TValue & TValue extends undefined ? undefined : never)
   | FieldTree<Exclude<TValue, undefined>, TKey>;
 
 /**

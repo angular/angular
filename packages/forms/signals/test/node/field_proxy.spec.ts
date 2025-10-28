@@ -31,4 +31,15 @@ describe('FieldTree proxy', () => {
     // @ts-expect-error
     f.arr[0] = f.arr[0];
   });
+
+  it('should allow accessing state for items of unknown type', () => {
+    const f = form(signal<unknown[]>([1, 2, 3]), {injector: TestBed.inject(Injector)});
+    expect(f[0]().value()).toEqual(1);
+  });
+
+  it('should now allow accessing state for items of known, possibly undefined type', () => {
+    const f = form(signal<(number | undefined)[]>([1, 2, 3]), {injector: TestBed.inject(Injector)});
+    // @ts-expect-error - Can't access state of possibly undefined item.
+    expect(f[0]()).toEqual(jasmine.anything());
+  });
 });
