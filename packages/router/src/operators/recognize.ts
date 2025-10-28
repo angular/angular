@@ -23,13 +23,12 @@ import {recognize as recognizeFnRxjs} from '../recognize_rxjs';
 import type {RouterConfigLoader} from '../router_config_loader';
 import type {UrlSerializer} from '../url_tree';
 
-const USE_ASYNC_RECOGNIZE = true;
-
 const RECOGNIZE_IMPL = new InjectionToken<typeof recognizeFn | typeof recognizeFnRxjs>(
   'RECOGNIZE_IMPL',
   {
     providedIn: 'root',
     factory: () => {
+      const USE_ASYNC_RECOGNIZE = true;
       if (!USE_ASYNC_RECOGNIZE) {
         return recognizeFnRxjs;
       }
