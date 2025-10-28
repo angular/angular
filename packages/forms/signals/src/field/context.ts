@@ -50,7 +50,7 @@ export class FieldNodeContext implements FieldContext<unknown> {
         // applied schema.
         let field: FieldNode | undefined = this.node;
         let stepsRemaining = getBoundPathDepth();
-        while (stepsRemaining > 0 || !field.structure.logic.hasLogic(targetPathNode.root.logic)) {
+        while (stepsRemaining > 0 || !field.structure.logic.hasLogic(targetPathNode.root.builder)) {
           stepsRemaining--;
           field = field.structure.parent;
           if (field === undefined) {

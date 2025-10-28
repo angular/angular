@@ -59,11 +59,11 @@ export class FieldPathNode {
   }
 
   /** The logic builder used to accumulate logic on this path node. */
-  get logic(): LogicNodeBuilder {
+  get builder(): LogicNodeBuilder {
     if (this.logicBuilder) {
       return this.logicBuilder;
     }
-    return this.parent!.logic.getChild(this.keyInParent!);
+    return this.parent!.builder.getChild(this.keyInParent!);
   }
 
   /**
@@ -91,7 +91,7 @@ export class FieldPathNode {
    */
   mergeIn(other: SchemaImpl, predicate?: Predicate) {
     const path = other.compile();
-    this.logic.mergeIn(path.logic, predicate);
+    this.builder.mergeIn(path.builder, predicate);
   }
 
   /** Extracts the underlying path node from the given path proxy. */

@@ -40,7 +40,7 @@ export function disabled<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addDisabledReasonRule((ctx) => {
+  pathNode.builder.addDisabledReasonRule((ctx) => {
     let result: boolean | string = true;
     if (typeof logic === 'string') {
       result = logic;
@@ -73,7 +73,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addReadonlyRule(logic);
+  pathNode.builder.addReadonlyRule(logic);
 }
 
 /**
@@ -103,7 +103,7 @@ export function hidden<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addHiddenRule(logic);
+  pathNode.builder.addHiddenRule(logic);
 }
 
 /**
@@ -124,7 +124,7 @@ export function validate<TValue, TPathKind extends PathKind = PathKind.Root>(
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncErrorRule((ctx) => {
+  pathNode.builder.addSyncErrorRule((ctx) => {
     return ensureCustomValidationResult(
       addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
     );
@@ -150,7 +150,7 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addSyncTreeErrorRule((ctx) =>
+  pathNode.builder.addSyncTreeErrorRule((ctx) =>
     addDefaultField(logic(ctx as FieldContext<TValue, TPathKind>), ctx.field),
   );
 }
@@ -180,7 +180,7 @@ export function aggregateMetadata<
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addAggregateMetadataRule(key, logic);
+  pathNode.builder.addAggregateMetadataRule(key, logic);
 }
 
 /**
@@ -235,6 +235,6 @@ export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Ro
   key ??= createMetadataKey();
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.logic.addMetadataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
+  pathNode.builder.addMetadataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
   return key;
 }
