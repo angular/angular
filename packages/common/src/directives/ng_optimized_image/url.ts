@@ -32,7 +32,7 @@ export function isValidPath(path: unknown): boolean {
 
   // Calling new URL() will throw if the path string is malformed
   try {
-    const url = new URL(path);
+    new URL(path);
     return true;
   } catch {
     return false;
