@@ -19,6 +19,19 @@
         ]
       },
       {
+        "source": "/angular.dev/assets/others/versions.json",
+        "headers": [
+          {
+            "key": "Cross-Origin-Resource-Policy",
+            "value": "cross-origin"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      },
+      {
         "source": "/**/*-[0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z].*",
         "headers": [
           {
