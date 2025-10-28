@@ -9,8 +9,8 @@
     @case ('list') {
       @for (provider of dataArray(); track $index) {
         <div class="value-container">
-          <span>{{ provider || '[empty string]' }}</span>
-          <ng-container
+          <span>{{ provider || '[empty string] ' }}</span
+          ><ng-container
             [ngTemplateOutlet]="actionBtn"
             [ngTemplateOutletContext]="{ value: provider }"
           />
@@ -23,10 +23,9 @@
           @if (rowValue() && renderValueAsJson()) {
             {{ rowValue() | json }}
           } @else {
-            {{ rowValue() || '[empty string]' }}
-          }
-        </span>
-        <ng-container
+            {{ rowValue() || '[empty string] ' }}
+          }</span
+        ><ng-container
           [ngTemplateOutlet]="actionBtn"
           [ngTemplateOutletContext]="{ value: rowValue() }"
         />
@@ -44,7 +43,14 @@
       [matTooltip]="!actionBtnDisabled() ? actionBtnTooltip() || value : null"
       [disabled]="actionBtnDisabled()"
     >
-      <mat-icon>{{ACTION_BTN_ICON[actionBtnType()]}}</mat-icon>
+      @switch (actionBtnType()) {
+        @case ('view-source') {
+          <mat-icon class="view-source">code</mat-icon>
+        }
+        @case ('navigate') {
+          <mat-icon class="navigate">output</mat-icon>
+        }
+      }
     </button>
   }
 </ng-template>

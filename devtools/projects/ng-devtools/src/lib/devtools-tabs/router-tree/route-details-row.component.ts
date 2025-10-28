@@ -16,12 +16,6 @@ import {MatTooltip} from '@angular/material/tooltip';
 export type RowType = 'text' | 'chip' | 'flag' | 'list';
 export type ActionBtnType = 'none' | 'view-source' | 'navigate';
 
-const ACTION_BTN_ICON: {[key in ActionBtnType]: string} = {
-  'none': '',
-  'navigate': 'call_made',
-  'view-source': 'code',
-};
-
 @Component({
   standalone: true,
   selector: '[ng-route-details-row]',
@@ -41,8 +35,6 @@ export class RouteDetailsRowComponent {
   readonly actionBtnDisabled = input<boolean>(false);
 
   readonly actionBtnClick = output<string>();
-
-  readonly ACTION_BTN_ICON = ACTION_BTN_ICON;
 
   readonly rowValue = computed(() => {
     return this.data()[this.dataKey() as keyof RouterTreeNode];
