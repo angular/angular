@@ -503,20 +503,17 @@ importers:
   adev:
     dependencies:
       '@algolia/client-common':
-        specifier: 5.40.1
-        version: 5.40.1
+        specifier: 5.41.0
+        version: 5.41.0
       '@algolia/client-search':
-        specifier: 5.40.1
-        version: 5.40.1
+        specifier: 5.41.0
+        version: 5.41.0
       '@algolia/requester-browser-xhr':
-        specifier: 5.40.1
-        version: 5.40.1
+        specifier: 5.41.0
+        version: 5.41.0
       '@algolia/requester-node-http':
-        specifier: 5.40.1
-        version: 5.40.1
-      '@angular-devkit/build-angular':
-        specifier: 21.0.0-next.9
-        version: 21.0.0-next.9(3439f66885bd88c67b02ae5e0be18475)
+        specifier: 5.41.0
+        version: 5.41.0
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
@@ -563,11 +560,11 @@ importers:
         specifier: 21.0.0-next.9
         version: 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
       '@codemirror/autocomplete':
-        specifier: 6.19.0
-        version: 6.19.0
+        specifier: 6.19.1
+        version: 6.19.1
       '@codemirror/commands':
-        specifier: 6.9.0
-        version: 6.9.0
+        specifier: 6.10.0
+        version: 6.10.0
       '@codemirror/lang-angular':
         specifier: 0.1.4
         version: 0.1.4
@@ -587,8 +584,8 @@ importers:
         specifier: 6.11.3
         version: 6.11.3
       '@codemirror/lint':
-        specifier: 6.9.0
-        version: 6.9.0
+        specifier: 6.9.1
+        version: 6.9.1
       '@codemirror/search':
         specifier: 6.5.11
         version: 6.5.11
@@ -638,8 +635,8 @@ importers:
         specifier: 24.9.1
         version: 24.9.1
       '@typescript/vfs':
-        specifier: 1.6.1
-        version: 1.6.1(typescript@5.9.3)
+        specifier: 1.6.2
+        version: 1.6.2(typescript@5.9.3)
       '@webcontainer/api':
         specifier: 1.6.1
         version: 1.6.1
@@ -650,8 +647,8 @@ importers:
         specifier: 5.5.0
         version: 5.5.0
       algoliasearch:
-        specifier: 5.40.1
-        version: 5.40.1
+        specifier: 5.41.0
+        version: 5.41.0
       angular-split:
         specifier: 20.0.0
         version: 20.0.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -704,8 +701,8 @@ importers:
         specifier: 10.27.2
         version: 10.27.2
       preact-render-to-string:
-        specifier: 6.6.2
-        version: 6.6.2(preact@10.27.2)
+        specifier: 6.6.3
+        version: 6.6.3(preact@10.27.2)
       prettier:
         specifier: 3.6.2
         version: 3.6.2
@@ -713,8 +710,8 @@ importers:
         specifier: 7.8.2
         version: 7.8.2
       shiki:
-        specifier: 3.13.0
-        version: 3.13.0
+        specifier: 3.14.0
+        version: 3.14.0
       style-mod:
         specifier: 4.1.3
         version: 4.1.3
@@ -740,6 +737,9 @@ importers:
       autoprefixer:
         specifier: 10.4.21
         version: 10.4.21(postcss@8.5.6)
+      karma:
+        specifier: ~6.4.4
+        version: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       postcss:
         specifier: 8.5.6
         version: 8.5.6
@@ -1443,56 +1443,112 @@ packages:
     resolution: {integrity: sha512-wV/gNRkzb7sI9vs1OneG129hwe3Q5zPj7zigz3Ps7M5Lpo2hSorrOnXNodHEOV+yXE/ks4Pd+G3CDFIjFTWhMQ==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/abtesting@1.7.0':
+    resolution: {integrity: sha512-hOEItTFOvNLI6QX6TSGu7VE4XcUcdoKZT8NwDY+5mWwu87rGhkjlY7uesKTInlg6Sh8cyRkDBYRumxbkoBbBhA==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/client-abtesting@5.40.1':
     resolution: {integrity: sha512-cxKNATPY5t+Mv8XAVTI57altkaPH+DZi4uMrnexPxPHODMljhGYY+GDZyHwv9a+8CbZHcY372OkxXrDMZA4Lnw==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/client-abtesting@5.41.0':
+    resolution: {integrity: sha512-iRuvbEyuHCAhIMkyzG3tfINLxTS7mSKo7q8mQF+FbQpWenlAlrXnfZTN19LRwnVjx0UtAdZq96ThMWGS6cQ61A==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/client-analytics@5.40.1':
     resolution: {integrity: sha512-XP008aMffJCRGAY8/70t+hyEyvqqV7YKm502VPu0+Ji30oefrTn2al7LXkITz7CK6I4eYXWRhN6NaIUi65F1OA==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/client-analytics@5.41.0':
+    resolution: {integrity: sha512-OIPVbGfx/AO8l1V70xYTPSeTt/GCXPEl6vQICLAXLCk9WOUbcLGcy6t8qv0rO7Z7/M/h9afY6Af8JcnI+FBFdQ==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/client-common@5.40.1':
     resolution: {integrity: sha512-gWfQuQUBtzUboJv/apVGZMoxSaB0M4Imwl1c9Ap+HpCW7V0KhjBddqF2QQt5tJZCOFsfNIgBbZDGsEPaeKUosw==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/client-common@5.41.0':
+    resolution: {integrity: sha512-8Mc9niJvfuO8dudWN5vSUlYkz7U3M3X3m1crDLc9N7FZrIVoNGOUETPk3TTHviJIh9y6eKZKbq1hPGoGY9fqPA==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/client-insights@5.40.1':
     resolution: {integrity: sha512-RTLjST/t+lsLMouQ4zeLJq2Ss+UNkLGyNVu+yWHanx6kQ3LT5jv8UvPwyht9s7R6jCPnlSI77WnL80J32ZuyJg==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/client-insights@5.41.0':
+    resolution: {integrity: sha512-vXzvCGZS6Ixxn+WyzGUVDeR3HO/QO5POeeWy1kjNJbEf6f+tZSI+OiIU9Ha+T3ntV8oXFyBEuweygw4OLmgfiQ==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/client-personalization@5.40.1':
     resolution: {integrity: sha512-2FEK6bUomBzEYkTKzD0iRs7Ljtjb45rKK/VSkyHqeJnG+77qx557IeSO0qVFE3SfzapNcoytTofnZum0BQ6r3Q==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/client-personalization@5.41.0':
+    resolution: {integrity: sha512-tkymXhmlcc7w/HEvLRiHcpHxLFcUB+0PnE9FcG6hfFZ1ZXiWabH+sX+uukCVnluyhfysU9HRU2kUmUWfucx1Dg==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/client-query-suggestions@5.40.1':
     resolution: {integrity: sha512-Nju4NtxAvXjrV2hHZNLKVJLXjOlW6jAXHef/CwNzk1b2qIrCWDO589ELi5ZHH1uiWYoYyBXDQTtHmhaOVVoyXg==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/client-query-suggestions@5.41.0':
+    resolution: {integrity: sha512-vyXDoz3kEZnosNeVQQwf0PbBt5IZJoHkozKRIsYfEVm+ylwSDFCW08qy2YIVSHdKy69/rWN6Ue/6W29GgVlmKQ==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/client-search@5.40.1':
     resolution: {integrity: sha512-Mw6pAUF121MfngQtcUb5quZVqMC68pSYYjCRZkSITC085S3zdk+h/g7i6FxnVdbSU6OztxikSDMh1r7Z+4iPlA==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/client-search@5.41.0':
+    resolution: {integrity: sha512-G9I2atg1ShtFp0t7zwleP6aPS4DcZvsV4uoQOripp16aR6VJzbEnKFPLW4OFXzX7avgZSpYeBAS+Zx4FOgmpPw==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/ingestion@1.40.1':
     resolution: {integrity: sha512-z+BPlhs45VURKJIxsR99NNBWpUEEqIgwt10v/fATlNxc4UlXvALdOsWzaFfe89/lbP5Bu4+mbO59nqBC87ZM/g==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/ingestion@1.41.0':
+    resolution: {integrity: sha512-sxU/ggHbZtmrYzTkueTXXNyifn+ozsLP+Wi9S2hOBVhNWPZ8uRiDTDcFyL7cpCs1q72HxPuhzTP5vn4sUl74cQ==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/monitoring@1.40.1':
     resolution: {integrity: sha512-VJMUMbO0wD8Rd2VVV/nlFtLJsOAQvjnVNGkMkspFiFhpBA7s/xJOb+fJvvqwKFUjbKTUA7DjiSi1ljSMYBasXg==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/monitoring@1.41.0':
+    resolution: {integrity: sha512-UQ86R6ixraHUpd0hn4vjgTHbViNO8+wA979gJmSIsRI3yli2v89QSFF/9pPcADR6PbtSio/99PmSNxhZy+CR3Q==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/recommend@5.40.1':
     resolution: {integrity: sha512-ehvJLadKVwTp9Scg9NfzVSlBKH34KoWOQNTaN8i1Ac64AnO6iH2apJVSP6GOxssaghZ/s8mFQsDH3QIZoluFHA==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/recommend@5.41.0':
+    resolution: {integrity: sha512-DxP9P8jJ8whJOnvmyA5mf1wv14jPuI0L25itGfOHSU6d4ZAjduVfPjTS3ROuUN5CJoTdlidYZE+DtfWHxJwyzQ==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/requester-browser-xhr@5.40.1':
     resolution: {integrity: sha512-PbidVsPurUSQIr6X9/7s34mgOMdJnn0i6p+N6Ab+lsNhY5eiu+S33kZEpZwkITYBCIbhzDLOvb7xZD3gDi+USA==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/requester-browser-xhr@5.41.0':
+    resolution: {integrity: sha512-C21J+LYkE48fDwtLX7YXZd2Fn7Fe0/DOEtvohSfr/ODP8dGDhy9faaYeWB0n1AvmZltugjkjAXT7xk0CYNIXsQ==}
     engines: {node: '>= 14.0.0'}
 
   '@algolia/requester-fetch@5.40.1':
     resolution: {integrity: sha512-ThZ5j6uOZCF11fMw9IBkhigjOYdXGXQpj6h4k+T9UkZrF2RlKcPynFzDeRgaLdpYk8Yn3/MnFbwUmib7yxj5Lw==}
     engines: {node: '>= 14.0.0'}
 
+  '@algolia/requester-fetch@5.41.0':
+    resolution: {integrity: sha512-FhJy/+QJhMx1Hajf2LL8og4J7SqOAHiAuUXq27cct4QnPhSIuIGROzeRpfDNH5BUbq22UlMuGd44SeD4HRAqvA==}
+    engines: {node: '>= 14.0.0'}
+
   '@algolia/requester-node-http@5.40.1':
     resolution: {integrity: sha512-H1gYPojO6krWHnUXu/T44DrEun/Wl95PJzMXRcM/szstNQczSbwq6wIFJPI9nyE95tarZfUNU3rgorT+wZ6iCQ==}
+    engines: {node: '>= 14.0.0'}
+
+  '@algolia/requester-node-http@5.41.0':
+    resolution: {integrity: sha512-tYv3rGbhBS0eZ5D8oCgV88iuWILROiemk+tQ3YsAKZv2J4kKUNvKkrX/If/SreRy4MGP2uJzMlyKcfSfO2mrsQ==}
     engines: {node: '>= 14.0.0'}
 
   '@alloc/quick-lru@5.2.0':
@@ -2446,11 +2502,11 @@ packages:
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
-  '@codemirror/autocomplete@6.19.0':
-    resolution: {integrity: sha512-61Hfv3cF07XvUxNeC3E7jhG8XNi1Yom1G0lRC936oLnlF+jrbrv8rc/J98XlYzcsAoTVupfsf5fLej1aI8kyIg==}
+  '@codemirror/autocomplete@6.19.1':
+    resolution: {integrity: sha512-q6NenYkEy2fn9+JyjIxMWcNjzTL/IhwqfzOut1/G3PrIFkrbl4AL7Wkse5tLrQUUyqGoAKU5+Pi5jnnXxH5HGw==}
 
-  '@codemirror/commands@6.9.0':
-    resolution: {integrity: sha512-454TVgjhO6cMufsyyGN70rGIfJxJEjcqjBG2x2Y03Y/+Fm99d3O/Kv1QDYWuG6hvxsgmjXmBuATikIIYvERX+w==}
+  '@codemirror/commands@6.10.0':
+    resolution: {integrity: sha512-2xUIc5mHXQzT16JnyOFkh8PvfeXuIut3pslWGfsGOhxP/lpgRm9HOl/mpzLErgt5mXDovqA0d11P21gofRLb9w==}
 
   '@codemirror/lang-angular@0.1.4':
     resolution: {integrity: sha512-oap+gsltb/fzdlTQWD6BFF4bSLKcDnlxDsLdePiJpCVNKWXSTAbiiQeYI3UmES+BLAdkmIC1WjyztC1pi/bX4g==}
@@ -2470,8 +2526,8 @@ packages:
   '@codemirror/language@6.11.3':
     resolution: {integrity: sha512-9HBM2XnwDj7fnu0551HkGdrUrrqmYq/WC5iv6nbY2WdicXdGbhR/gfbZOH73Aqj4351alY1+aoG9rCNfiwS1RA==}
 
-  '@codemirror/lint@6.9.0':
-    resolution: {integrity: sha512-wZxW+9XDytH3SKvS8cQzMyQCaaazH8XL1EMHleHe00wVzsv7NBQKVW2yzEHrRhmM7ZOhVdItPbvlRBvMp9ej7A==}
+  '@codemirror/lint@6.9.1':
+    resolution: {integrity: sha512-te7To1EQHePBQQzasDKWmK2xKINIXpk+xAiSYr9ZN+VB4KaT+/Hi2PEkeErTk5BV3PTz1TLyQL4MtJfPkKZ9sw==}
 
   '@codemirror/search@6.5.11':
     resolution: {integrity: sha512-KmWepDE6jUdL6n8cAAqIpRmLPBZ5ZKnicE8oGU/s3QrAVID+0VhLFrzUucVKHG5035/BSykhExDL/Xm7dHthiA==}
@@ -4375,38 +4431,20 @@ packages:
     resolution: {integrity: sha512-Nqc90v4lWCXyakD6xNyNACBJNJ0tNCwj2WNk/7ivyacYHxiITVgmLUFXTBOeCdy79iz6HtN9Y31uw/jbLrdOAg==}
     engines: {node: '>=20.0.0'}
 
-  '@shikijs/core@3.13.0':
-    resolution: {integrity: sha512-3P8rGsg2Eh2qIHekwuQjzWhKI4jV97PhvYjYUzGqjvJfqdQPz+nMlfWahU24GZAyW1FxFI1sYjyhfh5CoLmIUA==}
-
   '@shikijs/core@3.14.0':
     resolution: {integrity: sha512-qRSeuP5vlYHCNUIrpEBQFO7vSkR7jn7Kv+5X3FO/zBKVDGQbcnlScD3XhkrHi/R8Ltz0kEjvFR9Szp/XMRbFMw==}
-
-  '@shikijs/engine-javascript@3.13.0':
-    resolution: {integrity: sha512-Ty7xv32XCp8u0eQt8rItpMs6rU9Ki6LJ1dQOW3V/56PKDcpvfHPnYFbsx5FFUP2Yim34m/UkazidamMNVR4vKg==}
 
   '@shikijs/engine-javascript@3.14.0':
     resolution: {integrity: sha512-3v1kAXI2TsWQuwv86cREH/+FK9Pjw3dorVEykzQDhwrZj0lwsHYlfyARaKmn6vr5Gasf8aeVpb8JkzeWspxOLQ==}
 
-  '@shikijs/engine-oniguruma@3.13.0':
-    resolution: {integrity: sha512-O42rBGr4UDSlhT2ZFMxqM7QzIU+IcpoTMzb3W7AlziI1ZF7R8eS2M0yt5Ry35nnnTX/LTLXFPUjRFCIW+Operg==}
-
   '@shikijs/engine-oniguruma@3.14.0':
     resolution: {integrity: sha512-TNcYTYMbJyy+ZjzWtt0bG5y4YyMIWC2nyePz+CFMWqm+HnZZyy9SWMgo8Z6KBJVIZnx8XUXS8U2afO6Y0g1Oug==}
-
-  '@shikijs/langs@3.13.0':
-    resolution: {integrity: sha512-672c3WAETDYHwrRP0yLy3W1QYB89Hbpj+pO4KhxK6FzIrDI2FoEXNiNCut6BQmEApYLfuYfpgOZaqbY+E9b8wQ==}
 
   '@shikijs/langs@3.14.0':
     resolution: {integrity: sha512-DIB2EQY7yPX1/ZH7lMcwrK5pl+ZkP/xoSpUzg9YC8R+evRCCiSQ7yyrvEyBsMnfZq4eBzLzBlugMyTAf13+pzg==}
 
-  '@shikijs/themes@3.13.0':
-    resolution: {integrity: sha512-Vxw1Nm1/Od8jyA7QuAenaV78BG2nSr3/gCGdBkLpfLscddCkzkL36Q5b67SrLLfvAJTOUzW39x4FHVCFriPVgg==}
-
   '@shikijs/themes@3.14.0':
     resolution: {integrity: sha512-fAo/OnfWckNmv4uBoUu6dSlkcBc+SA1xzj5oUSaz5z3KqHtEbUypg/9xxgJARtM6+7RVm0Q6Xnty41xA1ma1IA==}
-
-  '@shikijs/types@3.13.0':
-    resolution: {integrity: sha512-oM9P+NCFri/mmQ8LoFGVfVyemm5Hi27330zuOBp0annwJdKH1kOLndw3zCtAVDehPLg9fKqoEx3Ht/wNZxolfw==}
 
   '@shikijs/types@3.14.0':
     resolution: {integrity: sha512-bQGgC6vrY8U/9ObG1Z/vTro+uclbjjD/uG58RvfxKZVD5p9Yc1ka3tVyEFy7BNJLzxuWyHH5NWynP9zZZS59eQ==}
@@ -4924,11 +4962,6 @@ packages:
   '@types/yauzl@2.10.3':
     resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
 
-  '@typescript/vfs@1.6.1':
-    resolution: {integrity: sha512-JwoxboBh7Oz1v38tPbkrZ62ZXNHAk9bJ7c9x0eI5zBfBnBYGhURdbnh7Z4smN/MV48Y5OCcZb58n972UtbazsA==}
-    peerDependencies:
-      typescript: '*'
-
   '@typescript/vfs@1.6.2':
     resolution: {integrity: sha512-hoBwJwcbKHmvd2QVebiytN1aELvpk9B74B4L1mFm/XT1Q/VOYAWl2vQ9AWRFtQq8zmz6enTpfTV8WRc4ATjW/g==}
     peerDependencies:
@@ -5325,6 +5358,10 @@ packages:
 
   algoliasearch@5.40.1:
     resolution: {integrity: sha512-iUNxcXUNg9085TJx0HJLjqtDE0r1RZ0GOGrt8KNQqQT5ugu8lZsHuMUYW/e0lHhq6xBvmktU9Bw4CXP9VQeKrg==}
+    engines: {node: '>= 14.0.0'}
+
+  algoliasearch@5.41.0:
+    resolution: {integrity: sha512-9E4b3rJmYbBkn7e3aAPt1as+VVnRhsR4qwRRgOzpeyz4PAOuwKh0HI4AN6mTrqK0S0M9fCCSTOUnuJ8gPY/tvA==}
     engines: {node: '>= 14.0.0'}
 
   angular-mocks@1.5.11:
@@ -10357,8 +10394,8 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  preact-render-to-string@6.6.2:
-    resolution: {integrity: sha512-VJ++Pkzv6+ZOmeN/9Qvx0mRdXqnei1Lo3uu9bGvYHhoMI1VUkDT44hcpGbiokl/kuuYTayYa3yvmYTLZMplfMA==}
+  preact-render-to-string@6.6.3:
+    resolution: {integrity: sha512-7oHG7jzjriqsFPkSPiPnzrQ0GcxFm6wOkYWNdStK5Ks9YlWSQQXKGBRAX4nKDdqX7HAQuRvI4pZNZMycK4WwDw==}
     peerDependencies:
       preact: '>=10 || >= 11.0.0-0'
 
@@ -10506,7 +10543,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -11064,9 +11100,6 @@ packages:
   shell-quote@1.8.3:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
-
-  shiki@3.13.0:
-    resolution: {integrity: sha512-aZW4l8Og16CokuCLf8CF8kq+KK2yOygapU5m3+hoGw0Mdosc6fPitjM+ujYarppj5ZIKGyPDPP1vqmQhr+5/0g==}
 
   shiki@3.14.0:
     resolution: {integrity: sha512-J0yvpLI7LSig3Z3acIuDLouV5UCKQqu8qOArwMx+/yPVC3WRMgrP67beaG8F+j4xfEWE0eVC4GeBCIXeOPra1g==}
@@ -12839,12 +12872,26 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/abtesting@1.7.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/client-abtesting@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
       '@algolia/requester-browser-xhr': 5.40.1
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
+
+  '@algolia/client-abtesting@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
 
   '@algolia/client-analytics@5.40.1':
     dependencies:
@@ -12853,7 +12900,16 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/client-analytics@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/client-common@5.40.1': {}
+
+  '@algolia/client-common@5.41.0': {}
 
   '@algolia/client-insights@5.40.1':
     dependencies:
@@ -12862,12 +12918,26 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/client-insights@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/client-personalization@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
       '@algolia/requester-browser-xhr': 5.40.1
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
+
+  '@algolia/client-personalization@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
 
   '@algolia/client-query-suggestions@5.40.1':
     dependencies:
@@ -12876,12 +12946,26 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/client-query-suggestions@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/client-search@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
       '@algolia/requester-browser-xhr': 5.40.1
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
+
+  '@algolia/client-search@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
 
   '@algolia/ingestion@1.40.1':
     dependencies:
@@ -12890,12 +12974,26 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/ingestion@1.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/monitoring@1.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
       '@algolia/requester-browser-xhr': 5.40.1
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
+
+  '@algolia/monitoring@1.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
 
   '@algolia/recommend@5.40.1':
     dependencies:
@@ -12904,17 +13002,36 @@ snapshots:
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
 
+  '@algolia/recommend@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
+
   '@algolia/requester-browser-xhr@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
+
+  '@algolia/requester-browser-xhr@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
 
   '@algolia/requester-fetch@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
 
+  '@algolia/requester-fetch@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
+
   '@algolia/requester-node-http@5.40.1':
     dependencies:
       '@algolia/client-common': 5.40.1
+
+  '@algolia/requester-node-http@5.41.0':
+    dependencies:
+      '@algolia/client-common': 5.41.0
 
   '@alloc/quick-lru@5.2.0': {}
 
@@ -12939,101 +13056,6 @@ snapshots:
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
-
-  '@angular-devkit/build-angular@21.0.0-next.9(3439f66885bd88c67b02ae5e0be18475)':
-    dependencies:
-      '@ampproject/remapping': 2.3.0
-      '@angular-devkit/architect': 0.2100.0-next.9(chokidar@4.0.3)
-      '@angular-devkit/build-webpack': 0.2100.0-next.9(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.102.1(esbuild@0.25.11)))(webpack@5.102.1(esbuild@0.25.11))
-      '@angular-devkit/core': 21.0.0-next.9(chokidar@4.0.3)
-      '@angular/build': 21.0.0-next.9(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-next.4(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
-      '@angular/compiler-cli': link:packages/compiler-cli
-      '@babel/core': 7.28.4
-      '@babel/generator': 7.28.3
-      '@babel/helper-annotate-as-pure': 7.27.3
-      '@babel/helper-split-export-declaration': 7.24.7
-      '@babel/plugin-transform-async-generator-functions': 7.28.0(@babel/core@7.28.4)
-      '@babel/plugin-transform-async-to-generator': 7.27.1(@babel/core@7.28.4)
-      '@babel/plugin-transform-runtime': 7.28.3(@babel/core@7.28.4)
-      '@babel/preset-env': 7.28.3(@babel/core@7.28.4)
-      '@babel/runtime': 7.28.4
-      '@discoveryjs/json-ext': 0.6.3
-      '@ngtools/webpack': 21.0.0-next.9(@angular/compiler-cli@packages+compiler-cli)(typescript@5.9.3)(webpack@5.102.1(esbuild@0.25.11))
-      ansi-colors: 4.1.3
-      autoprefixer: 10.4.21(postcss@8.5.6)
-      babel-loader: 10.0.0(@babel/core@7.28.4)(webpack@5.102.1(esbuild@0.25.11))
-      browserslist: 4.27.0
-      copy-webpack-plugin: 13.0.1(webpack@5.102.1(esbuild@0.25.11))
-      css-loader: 7.1.2(webpack@5.102.1(esbuild@0.25.11))
-      esbuild-wasm: 0.25.11
-      http-proxy-middleware: 3.0.5
-      istanbul-lib-instrument: 6.0.3
-      jsonc-parser: 3.3.1
-      karma-source-map-support: 1.4.0
-      less: 4.4.2
-      less-loader: 12.3.0(less@4.4.2)(webpack@5.102.1(esbuild@0.25.11))
-      license-webpack-plugin: 4.0.2(webpack@5.102.1(esbuild@0.25.11))
-      loader-utils: 3.3.1
-      mini-css-extract-plugin: 2.9.4(webpack@5.102.1(esbuild@0.25.11))
-      open: 10.2.0
-      ora: 9.0.0
-      picomatch: 4.0.3
-      piscina: 5.1.3
-      postcss: 8.5.6
-      postcss-loader: 8.2.0(postcss@8.5.6)(typescript@5.9.3)(webpack@5.102.1(esbuild@0.25.11))
-      resolve-url-loader: 5.0.0
-      rxjs: 7.8.2
-      sass: 1.93.2
-      sass-loader: 16.0.5(sass@1.93.2)(webpack@5.102.1(esbuild@0.25.11))
-      semver: 7.7.3
-      source-map-loader: 5.0.0(webpack@5.102.1(esbuild@0.25.11))
-      source-map-support: 0.5.21
-      terser: 5.44.0
-      tinyglobby: 0.2.15
-      tree-kill: 1.2.2
-      tslib: 2.8.1
-      typescript: 5.9.3
-      webpack: 5.102.1(esbuild@0.25.11)
-      webpack-dev-middleware: 7.4.5(webpack@5.102.1(esbuild@0.25.11))
-      webpack-dev-server: 5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.102.1(esbuild@0.25.11))
-      webpack-merge: 6.0.1
-      webpack-subresource-integrity: 5.1.0(webpack@5.102.1(esbuild@0.25.11))
-    optionalDependencies:
-      '@angular/core': link:packages/core
-      '@angular/localize': link:packages/localize
-      '@angular/platform-browser': link:packages/platform-browser
-      '@angular/platform-server': link:packages/platform-server
-      '@angular/service-worker': link:packages/service-worker
-      '@angular/ssr': 21.0.0-next.9(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router)
-      esbuild: 0.25.11
-      jest: 30.2.0(@types/node@24.9.1)(ts-node@10.9.2(@types/node@24.9.1)(typescript@5.9.3))
-      jest-environment-jsdom: 30.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      ng-packagr: 21.0.0-next.4(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
-      protractor: 7.0.0
-      tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
-    transitivePeerDependencies:
-      - '@angular/compiler'
-      - '@rspack/core'
-      - '@swc/core'
-      - '@types/node'
-      - bufferutil
-      - chokidar
-      - debug
-      - html-webpack-plugin
-      - jiti
-      - lightningcss
-      - node-sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - tsx
-      - uglify-js
-      - utf-8-validate
-      - vitest
-      - webpack-cli
-      - yaml
 
   '@angular-devkit/build-angular@21.0.0-next.9(a7e06b3490f08f100d6ede5f0b8aaf00)':
     dependencies:
@@ -14460,14 +14482,14 @@ snapshots:
 
   '@chevrotain/utils@11.0.3': {}
 
-  '@codemirror/autocomplete@6.19.0':
+  '@codemirror/autocomplete@6.19.1':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
       '@lezer/common': 1.3.0
 
-  '@codemirror/commands@6.9.0':
+  '@codemirror/commands@6.10.0':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
@@ -14485,7 +14507,7 @@ snapshots:
 
   '@codemirror/lang-css@6.3.1':
     dependencies:
-      '@codemirror/autocomplete': 6.19.0
+      '@codemirror/autocomplete': 6.19.1
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
       '@lezer/common': 1.3.0
@@ -14493,7 +14515,7 @@ snapshots:
 
   '@codemirror/lang-html@6.4.11':
     dependencies:
-      '@codemirror/autocomplete': 6.19.0
+      '@codemirror/autocomplete': 6.19.1
       '@codemirror/lang-css': 6.3.1
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.3
@@ -14505,9 +14527,9 @@ snapshots:
 
   '@codemirror/lang-javascript@6.2.4':
     dependencies:
-      '@codemirror/autocomplete': 6.19.0
+      '@codemirror/autocomplete': 6.19.1
       '@codemirror/language': 6.11.3
-      '@codemirror/lint': 6.9.0
+      '@codemirror/lint': 6.9.1
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
       '@lezer/common': 1.3.0
@@ -14530,7 +14552,7 @@ snapshots:
       '@lezer/lr': 1.4.2
       style-mod: 4.1.3
 
-  '@codemirror/lint@6.9.0':
+  '@codemirror/lint@6.9.1':
     dependencies:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.6
@@ -16793,13 +16815,6 @@ snapshots:
 
   '@secretlint/types@10.2.2': {}
 
-  '@shikijs/core@3.13.0':
-    dependencies:
-      '@shikijs/types': 3.13.0
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
-      hast-util-to-html: 9.0.5
-
   '@shikijs/core@3.14.0':
     dependencies:
       '@shikijs/types': 3.14.0
@@ -16807,48 +16822,24 @@ snapshots:
       '@types/hast': 3.0.4
       hast-util-to-html: 9.0.5
 
-  '@shikijs/engine-javascript@3.13.0':
-    dependencies:
-      '@shikijs/types': 3.13.0
-      '@shikijs/vscode-textmate': 10.0.2
-      oniguruma-to-es: 4.3.3
-
   '@shikijs/engine-javascript@3.14.0':
     dependencies:
       '@shikijs/types': 3.14.0
       '@shikijs/vscode-textmate': 10.0.2
       oniguruma-to-es: 4.3.3
 
-  '@shikijs/engine-oniguruma@3.13.0':
-    dependencies:
-      '@shikijs/types': 3.13.0
-      '@shikijs/vscode-textmate': 10.0.2
-
   '@shikijs/engine-oniguruma@3.14.0':
     dependencies:
       '@shikijs/types': 3.14.0
       '@shikijs/vscode-textmate': 10.0.2
 
-  '@shikijs/langs@3.13.0':
-    dependencies:
-      '@shikijs/types': 3.13.0
-
   '@shikijs/langs@3.14.0':
     dependencies:
       '@shikijs/types': 3.14.0
 
-  '@shikijs/themes@3.13.0':
-    dependencies:
-      '@shikijs/types': 3.13.0
-
   '@shikijs/themes@3.14.0':
     dependencies:
       '@shikijs/types': 3.14.0
-
-  '@shikijs/types@3.13.0':
-    dependencies:
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
 
   '@shikijs/types@3.14.0':
     dependencies:
@@ -17451,13 +17442,6 @@ snapshots:
       '@types/node': 24.9.1
     optional: true
 
-  '@typescript/vfs@1.6.1(typescript@5.9.3)':
-    dependencies:
-      debug: 4.4.3(supports-color@10.2.2)
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - supports-color
-
   '@typescript/vfs@1.6.2(typescript@5.9.3)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
@@ -17897,6 +17881,23 @@ snapshots:
       '@algolia/requester-browser-xhr': 5.40.1
       '@algolia/requester-fetch': 5.40.1
       '@algolia/requester-node-http': 5.40.1
+
+  algoliasearch@5.41.0:
+    dependencies:
+      '@algolia/abtesting': 1.7.0
+      '@algolia/client-abtesting': 5.41.0
+      '@algolia/client-analytics': 5.41.0
+      '@algolia/client-common': 5.41.0
+      '@algolia/client-insights': 5.41.0
+      '@algolia/client-personalization': 5.41.0
+      '@algolia/client-query-suggestions': 5.41.0
+      '@algolia/client-search': 5.41.0
+      '@algolia/ingestion': 1.41.0
+      '@algolia/monitoring': 1.41.0
+      '@algolia/recommend': 5.41.0
+      '@algolia/requester-browser-xhr': 5.41.0
+      '@algolia/requester-fetch': 5.41.0
+      '@algolia/requester-node-http': 5.41.0
 
   angular-mocks@1.5.11: {}
 
@@ -24067,7 +24068,7 @@ snapshots:
     dependencies:
       xtend: 4.0.2
 
-  preact-render-to-string@6.6.2(preact@10.27.2):
+  preact-render-to-string@6.6.3(preact@10.27.2):
     dependencies:
       preact: 10.27.2
 
@@ -25009,17 +25010,6 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.8.3: {}
-
-  shiki@3.13.0:
-    dependencies:
-      '@shikijs/core': 3.13.0
-      '@shikijs/engine-javascript': 3.13.0
-      '@shikijs/engine-oniguruma': 3.13.0
-      '@shikijs/langs': 3.13.0
-      '@shikijs/themes': 3.13.0
-      '@shikijs/types': 3.13.0
-      '@shikijs/vscode-textmate': 10.0.2
-      '@types/hast': 3.0.4
 
   shiki@3.14.0:
     dependencies:

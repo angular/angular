@@ -30,7 +30,6 @@ APPLICATION_FILES = [
 )
 
 APPLICATION_DEPS = [
-    ":node_modules/@angular-devkit/build-angular",
     ":node_modules/@codemirror/autocomplete",
     ":node_modules/@codemirror/commands",
     ":node_modules/@codemirror/lang-angular",
@@ -82,10 +81,7 @@ APPLICATION_DEPS = [
     ":node_modules/w3c-keyname",
 ]
 
-TEST_FILES = APPLICATION_FILES + [
-    "karma.conf.js",
-    "test-main.ts",
-] + glob(["src/**/*.spec.ts"])
+TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
 
 TEST_DEPS = [
     dep
@@ -93,8 +89,6 @@ TEST_DEPS = [
     if dep != ":node_modules/@types/node"
 ] + [
     "@rules_browsers//browsers/chromium",
-    "@rules_browsers//browsers/firefox",
-    "//adev/tools:windows-chromium-path",
 ]
 
 ng_config(name = "ng_config")
@@ -164,6 +158,5 @@ ng_test(
     project_name = "angular-dev",
     toolchains = [
         "@rules_browsers//browsers/chromium:toolchain_alias",
-        "@rules_browsers//browsers/firefox:toolchain_alias",
     ],
 )
