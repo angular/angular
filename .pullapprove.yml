@@ -481,10 +481,6 @@ groups:
         - thePunderWoman # Jessica Janiuk
         - AndrewKushnir # Andrew Kushnir
         - atscott # Andrew Scott
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   # External team required reviews
   primitives-shared:
@@ -502,10 +498,6 @@ groups:
         - tbondwilkinson # Tom Wilkinson
         - rahatarmanahmed # Rahat Ahmed
         - ENAML # Ethan Cline
-    labels:
-      pending: 'requires: TGP'
-      approved: 'requires: TGP'
-      rejected: 'requires: TGP'
 
   ####################################################################################
   # Override managed result groups
