@@ -20,9 +20,9 @@ import {LogicNode} from '../schema/logic_node';
 import type {FieldPathNode} from '../schema/path_node';
 import {deepSignal} from '../util/deep_signal';
 import {isArray, isObject} from '../util/type_guards';
+import type {FieldAdapter} from './field_adapter';
 import type {FormFieldManager} from './manager';
 import type {FieldNode, ParentFieldNode} from './node';
-import type {FieldAdapter} from './field_adapter';
 
 /**
  * Key by which a parent `FieldNode` tracks its children.
@@ -406,7 +406,7 @@ function makeChildrenMapSignal(
           continue;
         }
 
-        if (isValueArray && isObject(childValue)) {
+        if (isValueArray && isObject(childValue) && !isArray(childValue)) {
           // For object values in arrays, assign a synthetic identity instead.
           trackingId = (childValue[identitySymbol] as TrackingKey) ??= Symbol(
             ngDevMode ? `id:${globalId++}` : '',
