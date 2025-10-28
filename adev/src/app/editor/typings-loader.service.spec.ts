@@ -64,11 +64,13 @@ describe('TypingsLoader', () => {
     ).toBeTrue();
   });
 
-  it('should only contain type definitions files', async () => {
+  it('should only contain type definitions files or package metadata', async () => {
     await service.retrieveTypeDefinitions(fakeWebContainer);
 
     for (const {path} of service.typings()) {
-      expect(path.endsWith('.d.ts')).toBeTrue();
+      const isDts = path.endsWith('.d.ts');
+      const isPackageJson = path.endsWith('/package.json');
+      expect(isDts || isPackageJson).toBeTrue();
     }
   });
 

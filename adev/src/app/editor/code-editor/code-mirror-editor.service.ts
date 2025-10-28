@@ -218,8 +218,17 @@ export class CodeMirrorEditor {
       return;
     }
 
-    // Send message to tsVfsWorker only when current file is TypeScript file.
-    if (!this.currentFile()?.filename.endsWith('.ts')) return;
+    // Always allow infrastructure/setup requests to go through, regardless of current file type.
+    const infraActions = new Set<unknown>([
+      TsVfsWorkerActions.CREATE_VFS_ENV_REQUEST,
+      TsVfsWorkerActions.UPDATE_VFS_ENV_REQUEST,
+      TsVfsWorkerActions.DEFINE_TYPES_REQUEST,
+    ]);
+
+    if (!infraActions.has(request.action)) {
+      // For language-service operations, ensure the current file is a TypeScript file.
+      if (!this.currentFile()?.filename.endsWith('.ts')) return;
+    }
 
     this.tsVfsWorker.postMessage(request);
   };

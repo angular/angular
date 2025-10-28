@@ -76,8 +76,9 @@ export class TypingsLoader {
 
     for (const library of this.librariesToGetTypesFrom) {
       // The library's package.json is where the type definitions are defined
+      const packageJsonFsPath = `./node_modules/${library}/package.json`;
       const packageJsonContent = await this.webContainer.fs
-        .readFile(`./node_modules/${library}/package.json`, 'utf-8')
+        .readFile(packageJsonFsPath, 'utf-8')
         .catch((error) => {
           // Note: "ENOENT" errors occurs:
           //    - While resetting the NodeRuntimeSandbox.
@@ -94,15 +95,31 @@ export class TypingsLoader {
       // if the package.json content is empty, skip this library
       if (!packageJsonContent) continue;
 
+      // Ensure the worker VFS also receives the package.json file so NodeNext resolution
+      // can read "exports"/"types" information when resolving imports like '@angular/core'.
+      filesToRead.push(`/node_modules/${library}/package.json`);
+
       const packageJson = JSON.parse(packageJsonContent);
 
-      // If the package.json doesn't have `exports`, skip this library
+      // If the package exposes a top-level types entry, include that directory as a fallback
+      const topLevelTypes: string | undefined = packageJson.types ?? packageJson.typings;
+      if (!packageJson?.exports && topLevelTypes) {
+        const path = `/node_modules/${library}/${this.normalizePath(topLevelTypes)}`;
+        const directory = path.substring(0, path.lastIndexOf('/'));
+        directoriesToRead.push(directory);
+        continue;
+      }
+
       if (!packageJson?.exports) continue;
 
       // Based on `exports` we can identify paths to the types definition files
       for (const exportKey of Object.keys(packageJson.exports)) {
         const exportEntry = packageJson.exports[exportKey];
-        const types: string | undefined = exportEntry.typings ?? exportEntry.types;
+        // Handle both object and string entries; for strings we can't infer types, so skip
+        const types: string | undefined =
+          exportEntry && typeof exportEntry === 'object'
+            ? (exportEntry.typings ?? exportEntry.types)
+            : undefined;
 
         if (types) {
           const path = `/node_modules/${library}/${this.normalizePath(types)}`;
@@ -131,13 +148,71 @@ export class TypingsLoader {
   private async getTypeDefinitionFilesFromDirectory(directory: string): Promise<string[]> {
     if (!this.webContainer) throw new Error('this.webContainer is not defined');
 
-    const files = await this.webContainer.fs.readdir(directory);
+    // Use a `visited` set to avoid loops/duplicates between recurses.
+    return this.getTypeDefinitionFilesRecursively(directory, new Set());
+  }
 
-    return files.filter(this.isTypeDefinitionFile).map((file) => `${directory}/${file}`);
+  private async getTypeDefinitionFilesRecursively(
+    directory: string,
+    visited: Set<string>,
+  ): Promise<string[]> {
+    if (!this.webContainer) throw new Error('this.webContainer is not defined');
+
+    // Normalize and deduplicate the current directory
+    const dir = directory.replace(/\/+$/, '');
+    if (visited.has(dir)) return [];
+    visited.add(dir);
+
+    const results: string[] = [];
+
+    // Read entries; if directory doesn't exist, ignore (optional exports)
+    const entries = await this.webContainer.fs.readdir(dir).catch((error) => {
+      if (error?.message?.startsWith('ENOENT')) return [] as string[];
+      throw error;
+    });
+
+    // Deterministic sort: sort alfab.
+    entries.sort();
+
+    for (const entry of entries) {
+      // Some FS (or test fakes) already return full paths.
+      // Normalize to avoid `dir/dir/file`.
+      const fullPath = entry.startsWith(dir + '/') ? entry : `${dir}/${entry}`;
+
+      // If it's a `.d.ts`, add it and move on (don't try `readdir` on file)
+      if (this.isTypeDefinitionFile(fullPath)) {
+        results.push(fullPath);
+        continue;
+      }
+
+      // Avoid recursively going down paths that are likely files (e.g. .js/.mjs)
+      if (this.isProbablyAFile(fullPath)) {
+        continue;
+      }
+
+      // Try reading it as a directory.
+      const children = await this.webContainer.fs.readdir(fullPath).catch(() => null);
+
+      // Only if `children` is a non-empty array do we consider it a directory and descend.
+      if (Array.isArray(children) && children.length > 0) {
+        const nested = await this.getTypeDefinitionFilesRecursively(fullPath, visited);
+        results.push(...nested);
+      }
+    }
+
+    // Dedup and deterministic order
+    const uniqueSorted = Array.from(new Set(results)).sort();
+    return uniqueSorted;
   }
 
   private isTypeDefinitionFile(path: string): boolean {
     return path.endsWith('.d.ts');
+  }
+
+  private isProbablyAFile(path: string): boolean {
+    // Consider any path whose last segment contains a period to be a "file" (e.g., index.js, index.mjs)
+    // Example regex: '/something/index.js' -> true; '/something/nested' -> false
+    return /\/[^\/]+\.[^\/]+$/.test(path);
   }
 
   private normalizePath(path: string): string {
