@@ -36,9 +36,6 @@
       "@angular/common/locales/*": ["./common/locales/*"],
       "@angular/compiler-cli": ["./compiler-cli"],
       "@angular/compiler-cli/*": ["./compiler-cli/*"],
-      "@angular/compiler-cli/src/ngtsc/reflection":  ["./compiler-cli/src/ngtsc/reflection/index"],
-      "@angular/compiler-cli/src/ngtsc/metadata":  ["./compiler-cli/src/ngtsc/metadata/index"],
-      "@angular/compiler-cli/private/migrations":  ["./compiler-cli/private/migrations"],
       "@angular/core/schematics/utils/tsurge/*": ["./core/schematics/utils/tsurge/*"]
     }
   },

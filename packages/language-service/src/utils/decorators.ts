@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {ReflectionHost, getAngularDecorators} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
-import {ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {getAngularDecorators} from '@angular/compiler-cli/src/ngtsc/annotations';
 
 export function isDirectiveOrComponent(
   node: ts.ClassDeclaration,
