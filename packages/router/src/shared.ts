@@ -204,10 +204,7 @@ export function defaultUrlMatcher(
     return null;
   }
 
-  if (
-    route.pathMatch === 'full' &&
-    (segmentGroup.hasChildren() || segments.length > pre.length + post.length)
-  ) {
+  if (route.pathMatch === 'full' && segmentGroup.hasChildren() && route.path !== '**') {
     // The config is longer than the actual URL but we are looking for a full match, return null
     return null;
   }

@@ -586,6 +586,27 @@ describe('recognize', () => {
       checkActivatedRoute(s.root.firstChild!, 'a/b/c/d', {a1: '11'}, ComponentA);
     });
 
+    it(`should match '**' with pathMatch: 'full' to a non-empty path`, async () => {
+      const s = await recognize([{path: '**', pathMatch: 'full', component: ComponentA}], 'a/b/c');
+      checkActivatedRoute(s.root.firstChild!, 'a/b/c', {}, ComponentA);
+    });
+
+    it(`should match '**' with pathMatch: 'full' to an empty path`, async () => {
+      const s = await recognize([{path: '**', pathMatch: 'full', component: ComponentA}], '');
+      checkActivatedRoute(s.root.firstChild!, '', {}, ComponentA);
+    });
+
+    // Note that we do not support named children under a wildcard, though we _could_ potentially do this
+    // as long as the children are all named outlets (non-primary). The primary outlet would be consumed by the wildcard.
+    // This test is to ensure we do not break the matcher completely when there are children under a wildcard.
+    it(`should match '**' with pathMatch: 'full' even when there are named outlets`, async () => {
+      const s = await recognize(
+        [{path: '**', pathMatch: 'full', component: ComponentA}],
+        'a/(aux:c)',
+      );
+      checkActivatedRoute(s.root.firstChild!, 'a', {}, ComponentA);
+    });
+
     it('should support segments after a wildcard', async () => {
       const s = await recognize(
         [
