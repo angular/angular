@@ -1,0 +1,383 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/combobox",
+  "moduleName": "@angular/aria/combobox",
+  "normalizedModuleName": "angular_aria_combobox",
+  "entries": [
+    {
+      "name": "Combobox",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "protected"
+          ],
+          "description": "A signal wrapper for directionality.",
+          "jsdocTags": []
+        },
+        {
+          "name": "popup",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The combobox popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "filterMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The filter mode for the combobox.",
+          "jsdocTags": []
+        },
+        {
+          "name": "isFocused",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the combobox is focused.",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the combobox is disabled.",
+          "jsdocTags": []
+        },
+        {
+          "name": "readonly",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the combobox is read-only.",
+          "jsdocTags": []
+        },
+        {
+          "name": "firstMatch",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The value of the first matching item in the popup.",
+          "jsdocTags": []
+        },
+        {
+          "name": "expanded",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the combobox is expanded.",
+          "jsdocTags": []
+        },
+        {
+          "name": "inputElement",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Input element connected to the combobox, if any.",
+          "jsdocTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "implements": [],
+      "source": {
+        "filePath": "src/aria/combobox/combobox.ts",
+        "startLine": 31,
+        "endLine": 116
+      }
+    },
+    {
+      "name": "ComboboxInput",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "combobox",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The combobox that the input belongs to.",
+          "jsdocTags": []
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "input",
+            "output"
+          ],
+          "description": "The value of the input.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
+        }
+      ],
+      "generics": [],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "input[ngComboboxInput]",
+      "exportAs": [
+        "ngComboboxInput"
+      ],
+      "source": {
+        "filePath": "src/aria/combobox/combobox.ts",
+        "startLine": 118,
+        "endLine": 155
+      }
+    },
+    {
+      "name": "ComboboxPopupContainer",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [],
+      "generics": [],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "implements": [],
+      "source": {
+        "filePath": "src/aria/combobox/combobox.ts",
+        "startLine": 157,
+        "endLine": 162
+      }
+    },
+    {
+      "name": "ComboboxPopup",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "combobox",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The combobox that the popup belongs to.",
+          "jsdocTags": []
+        },
+        {
+          "name": "controls",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The controls the popup exposes to the combobox.",
+          "jsdocTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngComboboxPopup]",
+      "exportAs": [
+        "ngComboboxPopup"
+      ],
+      "source": {
+        "filePath": "src/aria/combobox/combobox.ts",
+        "startLine": 164,
+        "endLine": 176
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "contentChild",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "signal",
+      "@angular/core"
+    ],
+    [
+      "untracked",
+      "@angular/core"
+    ],
+    [
+      "WritableSignal",
+      "@angular/core"
+    ],
+    [
+      "DeferredContent",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "ComboboxPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "ComboboxListboxControls",
+      "@angular/aria/private"
+    ],
+    [
+      "ComboboxTreeControls",
+      "@angular/aria/private"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "toSignal",
+      "@angular/core/rxjs-interop"
+    ],
+    [
+      "Combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxInput",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopupContainer",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopup",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.textDirection",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.popup",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.filterMode",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.isFocused",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.disabled",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.readonly",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.firstMatch",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.expanded",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.inputElement",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxInput",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxInput.combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxInput.value",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopupContainer",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopup",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopup.combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxPopup.controls",
+      "@angular/aria/combobox"
+    ]
+  ]
+}

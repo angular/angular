@@ -1,0 +1,578 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/grid",
+  "moduleName": "@angular/aria/grid",
+  "normalizedModuleName": "angular_aria_grid",
+  "entries": [
+    {
+      "name": "Grid",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The host native element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "enableSelection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether selection is enabled for the grid.",
+          "jsdocTags": [],
+          "inputAlias": "enableSelection",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the grid is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "skipDisabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether to skip disabled items during navigation.",
+          "jsdocTags": [],
+          "inputAlias": "skipDisabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "focusMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The focus strategy used by the grid.",
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowWrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The wrapping behavior for keyboard navigation along the row axis.",
+          "jsdocTags": [],
+          "inputAlias": "rowWrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colWrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The wrapping behavior for keyboard navigation along the column axis.",
+          "jsdocTags": [],
+          "inputAlias": "colWrap",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "A directive that provides grid-based navigation and selection behavior.",
+      "jsdocTags": [],
+      "rawComment": "/** A directive that provides grid-based navigation and selection behavior. */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGrid]",
+      "exportAs": [
+        "ngGrid"
+      ],
+      "source": {
+        "filePath": "src/aria/grid/grid.ts",
+        "startLine": 26,
+        "endLine": 106
+      }
+    },
+    {
+      "name": "GridRow",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "grid",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The parent grid UI pattern.",
+          "jsdocTags": []
+        },
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The host native element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "role",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The ARIA role for the row.",
+          "jsdocTags": [],
+          "inputAlias": "role",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowIndex",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this row within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "rowIndex",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "A directive that represents a row in a grid.",
+      "jsdocTags": [],
+      "rawComment": "/** A directive that represents a row in a grid. */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridRow]",
+      "exportAs": [
+        "ngGridRow"
+      ],
+      "source": {
+        "filePath": "src/aria/grid/grid.ts",
+        "startLine": 109,
+        "endLine": 149
+      }
+    },
+    {
+      "name": "GridCell",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The host native element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "role",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The ARIA role for the cell.",
+          "jsdocTags": [],
+          "inputAlias": "role",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowSpan",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The number of rows the cell should span.",
+          "jsdocTags": [],
+          "inputAlias": "rowSpan",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colSpan",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The number of columns the cell should span.",
+          "jsdocTags": [],
+          "inputAlias": "colSpan",
+          "isRequiredInput": false
+        },
+        {
+          "name": "rowIndex",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this cell's row within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "rowIndex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "colIndex",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The index of this cell's column within the grid.",
+          "jsdocTags": [],
+          "inputAlias": "colIndex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the cell is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selected",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the cell is selected.",
+          "jsdocTags": [],
+          "inputAlias": "selected",
+          "isRequiredInput": false,
+          "outputAlias": "selectedChange"
+        },
+        {
+          "name": "selectable",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the cell is selectable.",
+          "jsdocTags": [],
+          "inputAlias": "selectable",
+          "isRequiredInput": false
+        }
+      ],
+      "generics": [],
+      "description": "A directive that represents a cell in a grid.",
+      "jsdocTags": [],
+      "rawComment": "/** A directive that represents a cell in a grid. */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridCell]",
+      "exportAs": [
+        "ngGridCell"
+      ],
+      "source": {
+        "filePath": "src/aria/grid/grid.ts",
+        "startLine": 152,
+        "endLine": 224
+      }
+    },
+    {
+      "name": "GridCellWidget",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The host native element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activate",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "Whether the widget is activated and the grid navigation should be paused.",
+          "jsdocTags": [],
+          "inputAlias": "activate",
+          "isRequiredInput": false,
+          "outputAlias": "activateChange"
+        },
+        {
+          "name": "focus",
+          "signatures": [
+            {
+              "name": "focus",
+              "entryType": "function",
+              "description": "Focuses the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Focuses the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "focus",
+            "description": "Focuses the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Focuses the widget. */"
+          },
+          "entryType": "function",
+          "description": "Focuses the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Focuses the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A directive that represents a widget inside a grid cell.",
+      "jsdocTags": [],
+      "rawComment": "/** A directive that represents a widget inside a grid cell. */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngGridCellWidget]",
+      "exportAs": [
+        "ngGridCellWidget"
+      ],
+      "source": {
+        "filePath": "src/aria/grid/grid.ts",
+        "startLine": 227,
+        "endLine": 259
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "booleanAttribute",
+      "@angular/core"
+    ],
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "contentChild",
+      "@angular/core"
+    ],
+    [
+      "contentChildren",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "Signal",
+      "@angular/core"
+    ],
+    [
+      "Grid",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.enableSelection",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.skipDisabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.focusMode",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.rowWrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.colWrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.grid",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.role",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridRow.rowIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.role",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.rowSpan",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.colSpan",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.rowIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.colIndex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.selected",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.selectable",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.activate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.focus",
+      "@angular/aria/grid"
+    ]
+  ]
+}
