@@ -16,6 +16,7 @@ jobs:
       - uses: angular/dev-infra/github-actions/pull-request-labeling@e006a332028a4c3cb24e9d92437fac7ae99e2ed5
         with:
           angular-robot-key: ${{ secrets.ANGULAR_ROBOT_PRIVATE_KEY }}
+          labels: '{"requires: TGP": ["packages/core/primitives/**/{*,.*}"]}'
   post_approval_changes:
     runs-on: ubuntu-latest
     steps:
