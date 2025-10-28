@@ -37,14 +37,33 @@ export class FieldPathNode {
     FIELD_PATH_PROXY_HANDLER,
   ) as unknown as FieldPath<any>;
 
+  /**
+   * For a root path node this will contain the root logic builder. For non-root nodes,
+   * they determine their logic builder from their parent so this is undefined.
+   */
+  private readonly logicBuilder: LogicNodeBuilder | undefined;
+
   protected constructor(
     /** The property keys used to navigate from the root path to this path. */
     readonly keys: PropertyKey[],
-    /** The logic builder used to accumulate logic on this path node. */
-    readonly logic: LogicNodeBuilder,
-    root: FieldPathNode,
+    root: FieldPathNode | undefined,
+    /** The parent of this path node. */
+    private readonly parent: FieldPathNode | undefined,
+    /** The key of this node in its parent. */
+    private readonly keyInParent: PropertyKey | undefined,
   ) {
     this.root = root ?? this;
+    if (!parent) {
+      this.logicBuilder = LogicNodeBuilder.newRoot();
+    }
+  }
+
+  /** The logic builder used to accumulate logic on this path node. */
+  get logic(): LogicNodeBuilder {
+    if (this.logicBuilder) {
+      return this.logicBuilder;
+    }
+    return this.parent!.logic.getChild(this.keyInParent!);
   }
 
   /**
@@ -60,10 +79,7 @@ export class FieldPathNode {
    */
   getChild(key: PropertyKey): FieldPathNode {
     if (!this.children.has(key)) {
-      this.children.set(
-        key,
-        new FieldPathNode([...this.keys, key], this.logic.getChild(key), this.root),
-      );
+      this.children.set(key, new FieldPathNode([...this.keys, key], this.root, this, key));
     }
     return this.children.get(key)!;
   }
@@ -85,7 +101,7 @@ export class FieldPathNode {
 
   /** Creates a new root path node to be passed in to a schema function. */
   static newRoot() {
-    return new FieldPathNode([], LogicNodeBuilder.newRoot(), undefined!);
+    return new FieldPathNode([], undefined, undefined, undefined);
   }
 }
 
