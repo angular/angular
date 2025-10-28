@@ -1,0 +1,987 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/tabs",
+  "moduleName": "@angular/aria/tabs",
+  "normalizedModuleName": "angular_aria_tabs",
+  "entries": [
+    {
+      "name": "Tabs",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "tabs",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The Tab UIPattern of the child Tabs.",
+          "jsdocTags": []
+        },
+        {
+          "name": "unorderedTabpanels",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "The TabPanel UIPattern of the child TabPanels.",
+          "jsdocTags": []
+        },
+        {
+          "name": "register",
+          "signatures": [
+            {
+              "name": "register",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "child",
+                  "description": "",
+                  "type": "TabList | TabPanel",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "child",
+                "description": "",
+                "type": "TabList | TabPanel",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "register",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "deregister",
+          "signatures": [
+            {
+              "name": "deregister",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "child",
+                  "description": "",
+                  "type": "TabList | TabPanel",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "child",
+                "description": "",
+                "type": "TabList | TabPanel",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "deregister",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A Tabs container.\n\nRepresents a set of layered sections of content. The Tabs is a container meant to be used with\nTabList, Tab, and TabPanel as follows:\n\n```html\n<div ngTabs>\n  <ul ngTabList>\n    <li ngTab value=\"tab1\">Tab 1</li>\n    <li ngTab value=\"tab2\">Tab 2</li>\n    <li ngTab value=\"tab3\">Tab 3</li>\n  </ul>\n\n  <div ngTabPanel value=\"tab1\">\n     <ng-template ngTabContent>Tab content 1</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab2\">\n     <ng-template ngTabContent>Tab content 2</ng-template>\n  </div>\n  <div ngTabPanel value=\"tab3\">\n     <ng-template ngTabContent>Tab content 3</ng-template>\n  </div>\n```",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A Tabs container.\n *\n * Represents a set of layered sections of content. The Tabs is a container meant to be used with\n * TabList, Tab, and TabPanel as follows:\n *\n * ```html\n * <div ngTabs>\n *   <ul ngTabList>\n *     <li ngTab value=\"tab1\">Tab 1</li>\n *     <li ngTab value=\"tab2\">Tab 2</li>\n *     <li ngTab value=\"tab3\">Tab 3</li>\n *   </ul>\n *\n *   <div ngTabPanel value=\"tab1\">\n *      <ng-template ngTabContent>Tab content 1</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab2\">\n *      <ng-template ngTabContent>Tab content 2</ng-template>\n *   </div>\n *   <div ngTabPanel value=\"tab3\">\n *      <ng-template ngTabContent>Tab content 3</ng-template>\n *   </div>\n * ```\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngTabs]",
+      "exportAs": [
+        "ngTabs"
+      ],
+      "source": {
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 67,
+        "endLine": 110
+      }
+    },
+    {
+      "name": "TabList",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Text direction.",
+          "jsdocTags": []
+        },
+        {
+          "name": "tabs",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The Tab UIPatterns of the child Tabs.",
+          "jsdocTags": []
+        },
+        {
+          "name": "orientation",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the tablist is vertically or horizontally oriented.",
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
+        },
+        {
+          "name": "wrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether focus should wrap when navigating.",
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "skipDisabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether disabled items in the list should be skipped when navigating.",
+          "jsdocTags": [],
+          "inputAlias": "skipDisabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "focusMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The focus strategy used by the tablist.",
+          "jsdocTags": [],
+          "inputAlias": "focusMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selectionMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The selection strategy used by the tablist.",
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the tablist is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selectedTab",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The current selected tab.",
+          "jsdocTags": [],
+          "inputAlias": "selectedTab",
+          "isRequiredInput": false,
+          "outputAlias": "selectedTabChange"
+        },
+        {
+          "name": "onFocus",
+          "signatures": [
+            {
+              "name": "onFocus",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocus",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "register",
+          "signatures": [
+            {
+              "name": "register",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "child",
+                  "description": "",
+                  "type": "Tab",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "child",
+                "description": "",
+                "type": "Tab",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "register",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "deregister",
+          "signatures": [
+            {
+              "name": "deregister",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "child",
+                  "description": "",
+                  "type": "Tab",
+                  "isOptional": false,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "child",
+                "description": "",
+                "type": "Tab",
+                "isOptional": false,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "deregister",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A TabList container.\n\nControls a list of Tab(s).",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A TabList container.\n *\n * Controls a list of Tab(s).\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngTabList]",
+      "exportAs": [
+        "ngTabList"
+      ],
+      "source": {
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 117,
+        "endLine": 219
+      }
+    },
+    {
+      "name": "Tab",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The host native element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "tablist",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The parent TabList UIPattern.",
+          "jsdocTags": []
+        },
+        {
+          "name": "tabpanel",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The TabPanel UIPattern associated with the tab",
+          "jsdocTags": []
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether a tab is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A local unique identifier for the tab.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": true
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A selectable tab in a TabList.",
+      "jsdocTags": [],
+      "rawComment": "/** A selectable tab in a TabList. */",
+      "implements": [
+        "HasElement",
+        "OnInit",
+        "OnDestroy"
+      ],
+      "isStandalone": true,
+      "selector": "[ngTab]",
+      "exportAs": [
+        "ngTab"
+      ],
+      "source": {
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 222,
+        "endLine": 282
+      }
+    },
+    {
+      "name": "TabPanel",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "tab",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The Tab UIPattern associated with the tabpanel",
+          "jsdocTags": []
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A local unique identifier for the tabpanel.",
+          "jsdocTags": []
+        },
+        {
+          "name": "ngOnInit",
+          "signatures": [
+            {
+              "name": "ngOnInit",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnInit",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "ngOnDestroy",
+          "signatures": [
+            {
+              "name": "ngOnDestroy",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "ngOnDestroy",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "A TabPanel container for the resources of layered content associated with a tab.\n\nIf a tabpanel is hidden due to its corresponding tab is not activated, the `inert` attribute\nwill be applied to the tabpanel element to remove it from the accessibility tree and stop\nall the keyboard and pointer interactions. Note that this does not visually hide the tabpenl\nand a proper styling is required.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A TabPanel container for the resources of layered content associated with a tab.\n *\n * If a tabpanel is hidden due to its corresponding tab is not activated, the `inert` attribute\n * will be applied to the tabpanel element to remove it from the accessibility tree and stop\n * all the keyboard and pointer interactions. Note that this does not visually hide the tabpenl\n * and a proper styling is required.\n */",
+      "implements": [
+        "OnInit",
+        "OnDestroy"
+      ],
+      "source": {
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 292,
+        "endLine": 344
+      }
+    },
+    {
+      "name": "TabContent",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [],
+      "generics": [],
+      "description": "A TabContent container for the lazy-loaded content.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A TabContent container for the lazy-loaded content.\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/tabs/tabs.ts",
+        "startLine": 349,
+        "endLine": 354
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "DeferredContent",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "booleanAttribute",
+      "@angular/core"
+    ],
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "linkedSignal",
+      "@angular/core"
+    ],
+    [
+      "signal",
+      "@angular/core"
+    ],
+    [
+      "Signal",
+      "@angular/core"
+    ],
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "OnInit",
+      "@angular/core"
+    ],
+    [
+      "OnDestroy",
+      "@angular/core"
+    ],
+    [
+      "TabListPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "TabPanelPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "TabPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "Tabs",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabContent",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.tabs",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.unorderedTabpanels",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.register",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tabs.deregister",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.textDirection",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.tabs",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.orientation",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.wrap",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.skipDisabled",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.focusMode",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.selectionMode",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.disabled",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.selectedTab",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.onFocus",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.ngOnInit",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.ngOnDestroy",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.register",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.deregister",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.element",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.tablist",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.tabpanel",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.disabled",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.value",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.ngOnInit",
+      "@angular/aria/tabs"
+    ],
+    [
+      "Tab.ngOnDestroy",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel.tab",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel.value",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel.ngOnInit",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel.ngOnDestroy",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabContent",
+      "@angular/aria/tabs"
+    ]
+  ]
+}

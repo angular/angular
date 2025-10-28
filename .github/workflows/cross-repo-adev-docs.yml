@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   update_adev_docs:
-    name: Update Angular CDK APIs and CLI Help (if necessary)
+    name: Update Angular CDK/Aria APIs and CLI Help (if necessary)
     if: github.repository == 'angular/angular'
     runs-on: ubuntu-latest
     # Prevents multiple concurrent runs of this workflow for the same branch
@@ -35,7 +35,7 @@ jobs:
       - name: Generate CDK apis
         run: node adev/scripts/update-cdk-apis/index.mjs
         env:
-          ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN }}
+          ANGULAR_CDK_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.READONLY_GITHUB_TOKEN }}
       - name: Create a PR CDK apis (if necessary)
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
@@ -65,7 +65,7 @@ jobs:
       - name: Generate CLI help
         run: node adev/scripts/update-cli-help/index.mjs
         env:
-          ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN }}
+          ANGULAR_CLI_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.READONLY_GITHUB_TOKEN }}
       - name: Create a PR CLI help (if necessary)
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
@@ -87,3 +87,33 @@ jobs:
             docs: update Angular CLI help
 
             Updated Angular CLI help contents.
+
+      # Angular Aria
+      - name: Reset to current GitHub ref
+        run: |
+          git reset --hard ${{ github.ref }}
+      - name: Generate Aria apis
+        run: node adev/scripts/update-aria-apis/index.mjs
+        env:
+          ANGULAR_ARIA_BUILDS_READONLY_GITHUB_TOKEN: ${{ secrets.READONLY_GITHUB_TOKEN }}
+      - name: Create a PR Aria apis (if necessary)
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: ${{ secrets.ANGULAR_ROBOT_ACCESS_TOKEN }}
+          push-to-fork: 'angular-robot/angular'
+          delete-branch: true
+          maintainer-can-modify: false
+          branch: docs-update-aria-apis-${{github.ref_name}}
+          committer: Angular Robot <angular-robot@google.com>
+          author: Angular Robot <angular-robot@google.com>
+          title: 'docs: update Angular Aria apis [${{github.ref_name}}]'
+          body: |
+            Updated Angular Aria api files.
+          labels: |
+            action: merge
+            area: docs
+            target: automation
+          commit-message: |
+            docs: update Angular Aria apis
+
+            Updated Angular Aria api files.

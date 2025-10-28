@@ -8,6 +8,7 @@ copy_to_directory(
     srcs = [
         "//adev/src/content",
         "//adev/src/content/ai",
+        "//adev/src/content/aria:aria_docs",
         "//adev/src/content/best-practices",
         "//adev/src/content/best-practices/runtime-performance",
         "//adev/src/content/cdk:cdk_docs",
@@ -89,6 +90,7 @@ copy_to_directory(
     ],
     replace_prefixes = {
         "adev/src/content/cli/help/cli_docs_html": "cli/",
+        "adev/src/content/aria/aria_docs_html": "api/",
         "adev/src/content/cdk/cdk_docs_html": "api/",
         "adev/src/content": "",
         "packages/**/": "api/",
@@ -114,6 +116,7 @@ copy_to_directory(
 generate_api_manifest(
     name = "docs_api_manifest",
     srcs = [
+        "//adev/src/content/aria:aria_extracted_apis",
         "//adev/src/content/cdk:cdk_extracted_apis",
         "//packages:docs_extracted_apis",
     ],

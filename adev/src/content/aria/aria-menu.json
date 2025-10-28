@@ -1,0 +1,842 @@
+{
+  "repo": "angular/components",
+  "moduleLabel": "@angular/aria/menu",
+  "moduleName": "@angular/aria/menu",
+  "normalizedModuleName": "angular_aria_menu",
+  "entries": [
+    {
+      "name": "MenuTrigger",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLButtonElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the menu element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "menu",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "input"
+          ],
+          "description": "The menu associated with the trigger.",
+          "jsdocTags": [],
+          "inputAlias": "menu",
+          "isRequiredInput": false
+        },
+        {
+          "name": "hasBeenFocused",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu item has been focused.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onFocusIn",
+          "signatures": [
+            {
+              "name": "onFocusIn",
+              "entryType": "function",
+              "description": "Marks the menu trigger as having been focused.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Marks the menu trigger as having been focused. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusIn",
+            "description": "Marks the menu trigger as having been focused.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Marks the menu trigger as having been focused. */"
+          },
+          "entryType": "function",
+          "description": "Marks the menu trigger as having been focused.",
+          "jsdocTags": [],
+          "rawComment": "/** Marks the menu trigger as having been focused. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A trigger for a menu.\n\nThe menu trigger is used to open and close menus, and can be placed on menu items to connect\nsub-menus.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A trigger for a menu.\n *\n * The menu trigger is used to open and close menus, and can be placed on menu items to connect\n * sub-menus.\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "button[ngMenuTrigger]",
+      "exportAs": [
+        "ngMenuTrigger"
+      ],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 42,
+        "endLine": 86
+      }
+    },
+    {
+      "name": "Menu",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the menu element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A signal wrapper for directionality.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The unique ID of the menu.",
+          "jsdocTags": []
+        },
+        {
+          "name": "wrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu should wrap its items.",
+          "jsdocTags": []
+        },
+        {
+          "name": "typeaheadDelay",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The delay in seconds before the typeahead buffer is cleared.",
+          "jsdocTags": []
+        },
+        {
+          "name": "parent",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the parent menu item or menu trigger.",
+          "jsdocTags": []
+        },
+        {
+          "name": "items",
+          "type": "() => any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The menu items as a writable signal.\n\nTODO(wagnermaciel): This would normally be a computed, but using a computed causes a bug where\nsometimes the items array is empty. The bug can be reproduced by switching this to use a\ncomputed and then quickly opening and closing menus in the dev app.",
+          "jsdocTags": []
+        },
+        {
+          "name": "isVisible",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the menu is visible.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onSelect",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "A callback function triggered when a menu item is selected.",
+          "jsdocTags": []
+        },
+        {
+          "name": "close",
+          "signatures": [
+            {
+              "name": "close",
+              "entryType": "function",
+              "description": "Closes the menu.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "opts",
+                  "description": "",
+                  "type": "{ refocus?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Closes the menu. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "opts",
+                "description": "",
+                "type": "{ refocus?: boolean | undefined; } | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "close",
+            "description": "Closes the menu.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Closes the menu. */"
+          },
+          "entryType": "function",
+          "description": "Closes the menu.",
+          "jsdocTags": [],
+          "rawComment": "/** Closes the menu. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "closeAll",
+          "signatures": [
+            {
+              "name": "closeAll",
+              "entryType": "function",
+              "description": "Closes all parent menus.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [
+                {
+                  "name": "opts",
+                  "description": "",
+                  "type": "{ refocus?: boolean | undefined; } | undefined",
+                  "isOptional": true,
+                  "isRestParam": false
+                }
+              ],
+              "rawComment": "/** Closes all parent menus. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [
+              {
+                "name": "opts",
+                "description": "",
+                "type": "{ refocus?: boolean | undefined; } | undefined",
+                "isOptional": true,
+                "isRestParam": false
+              }
+            ],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "closeAll",
+            "description": "Closes all parent menus.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Closes all parent menus. */"
+          },
+          "entryType": "function",
+          "description": "Closes all parent menus.",
+          "jsdocTags": [],
+          "rawComment": "/** Closes all parent menus. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A list of menu items.\n\nA menu is used to offer a list of menu item choices to users. Menus can be nested within other\nmenus to create sub-menus.\n\n```html\n<button ngMenuTrigger menu=\"menu\">Options</button>\n\n<div ngMenu #menu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem>Delete</div>\n</div>\n```",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A list of menu items.\n *\n * A menu is used to offer a list of menu item choices to users. Menus can be nested within other\n * menus to create sub-menus.\n *\n * ```html\n * <button ngMenuTrigger menu=\"menu\">Options</button>\n *\n * <div ngMenu #menu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem>Delete</div>\n * </div>\n * ```\n */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 104,
+        "endLine": 244
+      }
+    },
+    {
+      "name": "MenuBar",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the menubar element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A signal wrapper for directionality.",
+          "jsdocTags": []
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The value of the menu.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": false,
+          "outputAlias": "valueChange"
+        },
+        {
+          "name": "wrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the menu should wrap its items.",
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "typeaheadDelay",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The delay in seconds before the typeahead buffer is cleared.",
+          "jsdocTags": [],
+          "inputAlias": "typeaheadDelay",
+          "isRequiredInput": false
+        },
+        {
+          "name": "items",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The menu items as a writable signal.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onSelect",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "output"
+          ],
+          "description": "A callback function triggered when a menu item is selected.",
+          "jsdocTags": [],
+          "outputAlias": "onSelect"
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "A menu bar of menu items.\n\nLike the menu, a menubar is used to offer a list of menu item choices to users. However, a\nmenubar is used to display a persistent, top-level,\nalways-visible set of menu item choices.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * A menu bar of menu items.\n *\n * Like the menu, a menubar is used to offer a list of menu item choices to users. However, a\n * menubar is used to display a persistent, top-level,\n * always-visible set of menu item choices.\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngMenuBar]",
+      "exportAs": [
+        "ngMenuBar"
+      ],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 253,
+        "endLine": 328
+      }
+    },
+    {
+      "name": "MenuItem",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the menu element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The unique ID of the menu item.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The value of the menu item.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": true
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the menu item is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "searchTerm",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The search term associated with the menu item.",
+          "jsdocTags": [],
+          "inputAlias": "searchTerm",
+          "isRequiredInput": false,
+          "outputAlias": "searchTermChange"
+        },
+        {
+          "name": "parent",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the parent menu or menubar.",
+          "jsdocTags": []
+        },
+        {
+          "name": "submenu",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The submenu associated with the menu item.",
+          "jsdocTags": [],
+          "inputAlias": "submenu",
+          "isRequiredInput": false
+        },
+        {
+          "name": "hasBeenFocused",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu item has been focused.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onFocusIn",
+          "signatures": [
+            {
+              "name": "onFocusIn",
+              "entryType": "function",
+              "description": "Marks the menu item as having been focused.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Marks the menu item as having been focused. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusIn",
+            "description": "Marks the menu item as having been focused.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Marks the menu item as having been focused. */"
+          },
+          "entryType": "function",
+          "description": "Marks the menu item as having been focused.",
+          "jsdocTags": [],
+          "rawComment": "/** Marks the menu item as having been focused. */",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [
+        {
+          "name": "V"
+        }
+      ],
+      "description": "An item in a Menu.\n\nMenu items can be used in menus and menubars to represent a choice or action a user can take.",
+      "jsdocTags": [],
+      "rawComment": "/**\n * An item in a Menu.\n *\n * Menu items can be used in menus and menubars to represent a choice or action a user can take.\n */",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "[ngMenuItem]",
+      "exportAs": [
+        "ngMenuItem"
+      ],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 335,
+        "endLine": 405
+      }
+    },
+    {
+      "name": "MenuContent",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [],
+      "generics": [],
+      "description": "Defers the rendering of the menu content.",
+      "jsdocTags": [],
+      "rawComment": "/** Defers the rendering of the menu content. */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 408,
+        "endLine": 413
+      }
+    }
+  ],
+  "symbols": [
+    [
+      "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "computed",
+      "@angular/core"
+    ],
+    [
+      "contentChildren",
+      "@angular/core"
+    ],
+    [
+      "Directive",
+      "@angular/core"
+    ],
+    [
+      "effect",
+      "@angular/core"
+    ],
+    [
+      "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "inject",
+      "@angular/core"
+    ],
+    [
+      "input",
+      "@angular/core"
+    ],
+    [
+      "model",
+      "@angular/core"
+    ],
+    [
+      "output",
+      "@angular/core"
+    ],
+    [
+      "Signal",
+      "@angular/core"
+    ],
+    [
+      "signal",
+      "@angular/core"
+    ],
+    [
+      "untracked",
+      "@angular/core"
+    ],
+    [
+      "SignalLike",
+      "@angular/aria/private"
+    ],
+    [
+      "MenuBarPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "MenuItemPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "MenuPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "MenuTriggerPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
+      "toSignal",
+      "@angular/core/rxjs-interop"
+    ],
+    [
+      "Directionality",
+      "@angular/cdk/bidi"
+    ],
+    [
+      "DeferredContent",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/deferred-content"
+    ],
+    [
+      "MenuTrigger",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuContent",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.menu",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.hasBeenFocused",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.onFocusIn",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.textDirection",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.id",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.wrap",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.typeaheadDelay",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.parent",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.items",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.isVisible",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.onSelect",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.close",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.closeAll",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.textDirection",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.value",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.wrap",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.typeaheadDelay",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.items",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuBar.onSelect",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.element",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.id",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.value",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.disabled",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.searchTerm",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.parent",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.submenu",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.hasBeenFocused",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.onFocusIn",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuContent",
+      "@angular/aria/menu"
+    ]
+  ]
+}
