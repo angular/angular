@@ -145,7 +145,7 @@ export type FieldContext<TValue, TPathKind extends PathKind = PathKind.Root> = T
 
 // @public
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
-    [ɵɵTYPE]: [TValue, TPathKind];
+    [ɵTYPE]: [TValue, TPathKind];
 } & (TValue extends Array<unknown> ? unknown : TValue extends Record<string, any> ? {
     [K in keyof TValue]: MaybeFieldPath<TValue[K], PathKind.Child>;
 } : unknown);
@@ -305,7 +305,7 @@ export class MaxValidationError extends _NgValidationError {
 export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = (TValue & undefined) | FieldPath<Exclude<TValue, undefined>, TPathKind>;
 
 // @public
-export type MaybeFieldTree<TValue, TKey extends string | number = string | number> = (TValue & undefined) | FieldTree<Exclude<TValue, undefined>, TKey>;
+export type MaybeFieldTree<TValue, TKey extends string | number = string | number> = (TValue & TValue extends undefined ? undefined : never) | FieldTree<Exclude<TValue, undefined>, TKey>;
 
 // @public
 export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(path: FieldPath<TValue, TPathKind>, factory: (ctx: FieldContext<TValue, TPathKind>) => TData): MetadataKey<TData>;
@@ -378,14 +378,14 @@ export function orMetadataKey(): AggregateMetadataKey<boolean, boolean>;
 export namespace PathKind {
     export interface Child extends PathKind.Root {
         // (undocumented)
-        [ɵɵTYPE]: 'child' | 'item';
+        [ɵTYPE]: 'child' | 'item';
     }
     export interface Item extends PathKind.Child {
         // (undocumented)
-        [ɵɵTYPE]: 'item';
+        [ɵTYPE]: 'item';
     }
     export interface Root {
-        [ɵɵTYPE]: 'root' | 'child' | 'item';
+        [ɵTYPE]: 'root' | 'child' | 'item';
     }
 }
 
@@ -457,7 +457,7 @@ export interface RootFieldContext<TValue> {
 
 // @public
 export type Schema<in TValue> = {
-    [ɵɵTYPE]: SchemaFn<TValue, PathKind.Root>;
+    [ɵTYPE]: SchemaFn<TValue, PathKind.Root>;
 };
 
 // @public
