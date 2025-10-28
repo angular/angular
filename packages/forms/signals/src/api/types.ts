@@ -19,7 +19,7 @@ import type {
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
  */
-declare const ɵɵTYPE: unique symbol;
+declare const ɵTYPE: unique symbol;
 
 /**
  * A type that represents either a single value of type `T` or a readonly array of `T`.
@@ -40,25 +40,25 @@ export declare namespace PathKind {
    */
   export interface Root {
     /**
-     * The `ɵɵTYPE` is constructed to allow the `extends` clause on `Child` and `Item` to narrow the
+     * The `ɵTYPE` is constructed to allow the `extends` clause on `Child` and `Item` to narrow the
      * type. Another way to think about this is, if we have a function that expects this kind of
-     * path, the `ɵɵTYPE` lists the kinds of path we are allowed to pass to it.
+     * path, the `ɵTYPE` lists the kinds of path we are allowed to pass to it.
      */
-    [ɵɵTYPE]: 'root' | 'child' | 'item';
+    [ɵTYPE]: 'root' | 'child' | 'item';
   }
 
   /**
    * The `PathKind` for a `FieldPath` that is a child of another `FieldPath`.
    */
   export interface Child extends PathKind.Root {
-    [ɵɵTYPE]: 'child' | 'item';
+    [ɵTYPE]: 'child' | 'item';
   }
 
   /**
    * The `PathKind` for a `FieldPath` that is an item in a `FieldPath` array.
    */
   export interface Item extends PathKind.Child {
-    [ɵɵTYPE]: 'item';
+    [ɵTYPE]: 'item';
   }
 }
 export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
@@ -322,7 +322,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
  * @experimental 21.0.0
  */
 export type FieldPath<TValue, TPathKind extends PathKind = PathKind.Root> = {
-  [ɵɵTYPE]: [TValue, TPathKind];
+  [ɵTYPE]: [TValue, TPathKind];
 } & (TValue extends Array<unknown>
   ? unknown
   : TValue extends Record<string, any>
@@ -354,7 +354,7 @@ export type MaybeFieldPath<TValue, TPathKind extends PathKind = PathKind.Root> =
  * @experimental 21.0.0
  */
 export type Schema<in TValue> = {
-  [ɵɵTYPE]: SchemaFn<TValue, PathKind.Root>;
+  [ɵTYPE]: SchemaFn<TValue, PathKind.Root>;
 };
 
 /**
