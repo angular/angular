@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {MockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
+import {getFileSystem} from '@angular/compiler-cli';
+import {MockFileSystem, loadStandardTestFiles} from '@angular/compiler-cli/private/testing';
 import ts from 'typescript';
 
 import {MockServerHost} from './host';

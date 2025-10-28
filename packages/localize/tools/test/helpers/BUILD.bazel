@@ -8,7 +8,7 @@ ts_project(
     ),
     visibility = ["//packages/localize/tools/test:__subpackages__"],
     deps = [
-        "//packages/compiler-cli/src/ngtsc/file_system",
-        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/private",
     ],
 )
