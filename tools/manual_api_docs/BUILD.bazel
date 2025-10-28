@@ -14,7 +14,7 @@ ts_project(
     tsconfig = ":tsconfig_build",
     deps = [
         "//:node_modules/@types/node",
-        "//packages/compiler-cli/src/ngtsc/docs",
+        "//packages/compiler-cli/private",
     ],
 )
 
@@ -32,7 +32,7 @@ ts_project(
     tsconfig = ":tsconfig_build",
     deps = [
         "//:node_modules/@types/node",
-        "//packages/compiler-cli/src/ngtsc/docs",
+        "//packages/compiler-cli/private",
     ],
 )
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli';
 import tss from 'typescript';
 
 import {CodeActionMeta, FixIdForCodeFixesAll} from './utils';
