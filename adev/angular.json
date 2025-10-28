@@ -56,7 +56,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "angular-dev:build:production"
@@ -74,24 +74,14 @@
             }
           }
         },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "angular-dev:build"
-          }
-        },
         "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "tsConfig": "tsconfig.spec.json",
-            "include": ["src/app"],
-            "karmaConfig": "karma.conf.js",
-            "main": "test-main.ts",
-            "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["@angular/docs/styles/global-styles.scss"],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json"
+          "builder": "@angular/build:unit-test",
+           "options": {
+            "runner": "karma",
+            "browsers": ["ChromeHeadlessNoSandbox"],
+            "include": [
+              "src/app/**/*.spec.ts"
+            ]
           }
         }
       }
