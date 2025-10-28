@@ -614,6 +614,30 @@ describe('FieldNode', () => {
         expect(f[0] === kirill).toBeTrue();
         expect(f[1] === alex).toBeTrue();
       });
+
+      it('uses index as identity for primitive values', () => {
+        const value = signal([1, 'two']);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const first = f[0];
+        const second = f[1];
+
+        value.update((old) => [old[1], old[0]]);
+
+        expect(f[0] === first).toBeTrue();
+        expect(f[1] === second).toBeTrue();
+      });
+
+      it('uses index as identity for array values', () => {
+        const value = signal([[1], ['two']]);
+        const f = form(value, {injector: TestBed.inject(Injector)});
+        const first = f[0];
+        const second = f[1];
+
+        value.update((old) => [old[1], old[0]]);
+
+        expect(f[0] === first).toBeTrue();
+        expect(f[1] === second).toBeTrue();
+      });
     });
   });
 
