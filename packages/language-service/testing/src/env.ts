@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {absoluteFrom, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {
   MockFileSystem,
   initMockFileSystem,

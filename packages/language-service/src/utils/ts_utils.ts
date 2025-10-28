@@ -5,8 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {guessIndentationInSingleLine} from './format';
-import * as path from 'path';
 import {
   ClassDeclaration,
   DirectiveModuleExportDetails,
@@ -20,6 +18,8 @@ import {
   TemplateTypeChecker,
   TsCompletionEntryInfo,
 } from '@angular/compiler-cli';
+import * as path from 'path';
+import {guessIndentationInSingleLine} from './format';
 
 import ts from 'typescript';
 

@@ -28,8 +28,8 @@ import {
   SelectorlessCollector,
   TemplateLocationDetails,
 } from './references_and_rename_utils';
-import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition, TypeCheckInfo} from './utils';
+import {collectMemberMethods, findTightestNode} from './utils/ts_utils';
 
 export class ReferencesBuilder {
   private readonly ttc: TemplateTypeChecker;

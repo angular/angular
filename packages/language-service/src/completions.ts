@@ -11,27 +11,27 @@ import {
   ASTWithSource,
   BindingPipe,
   BindingType,
+  TmplAstBoundEvent as BoundEvent,
   EmptyExpr,
   ImplicitReceiver,
   LiteralPrimitive,
-  ParseSourceSpan,
   ParsedEventType,
+  ParseSourceSpan,
   PropertyRead,
   SafePropertyRead,
+  TmplAstSwitchBlock as SwitchBlock,
+  TmplAstTextAttribute as TextAttribute,
   ThisReceiver,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstBoundEvent as BoundEvent,
   TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
   TmplAstReference,
   TmplAstSwitchBlock,
-  TmplAstSwitchBlock as SwitchBlock,
   TmplAstTemplate,
   TmplAstText,
   TmplAstTextAttribute,
-  TmplAstTextAttribute as TextAttribute,
   TmplAstVariable,
 } from '@angular/compiler';
 import {
@@ -54,6 +54,8 @@ import {
   buildAttributeCompletionTable,
   getAttributeCompletionSymbol,
 } from './attribute_completions';
+import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
+import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 import {
   DisplayInfo,
   DisplayInfoKind,
@@ -62,14 +64,12 @@ import {
   getTsSymbolDisplayInfo,
   unsafeCastDisplayInfoKindToScriptElementKind,
 } from './utils/display_parts';
-import {TargetContext, TargetNodeKind, TemplateTarget} from './template_target';
 import {
   findTightestNode,
+  getClassDeclarationFromSymbolReference,
   getCodeActionToImportTheDirectiveDeclaration,
   standaloneTraitOrNgModule,
-  getClassDeclarationFromSymbolReference,
 } from './utils/ts_utils';
-import {filterAliasImports, isBoundEventWithSyntheticHandler, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder = CompletionBuilder<
   PropertyRead | EmptyExpr | SafePropertyRead | TmplAstBoundEvent

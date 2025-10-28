@@ -10,3 +10,4 @@ export {FileTypeCheckingData, TemplateTypeCheckerImpl} from './src/checker';
 export {TypeCheckContextImpl, getTemplateDiagnostics} from './src/context';
 export {TypeCheckShimGenerator} from './src/shim';
 export {createHostElement} from './src/host_bindings';
+export {ExpressionIdentifier, findFirstMatchingNode, hasExpressionIdentifier} from './src/comments';

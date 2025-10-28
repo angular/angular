@@ -46,15 +46,15 @@ import {
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
   getTemplateLocationFromTcbLocation,
   isWithin,
-  TypeCheckInfo,
   toTextSpan,
+  TypeCheckInfo,
 } from './utils';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 
 /** Represents a location in a file. */
 export interface FilePosition {

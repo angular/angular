@@ -18,7 +18,6 @@ import {
   getRootDirs,
   isShim,
 } from '@angular/compiler-cli';
-
 import * as p from 'path';
 import ts from 'typescript';
 

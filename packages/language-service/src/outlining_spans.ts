@@ -7,7 +7,6 @@
  */
 
 import {
-  ParseLocation,
   ParseSourceSpan,
   TmplAstBlockNode,
   TmplAstDeferredBlock,

@@ -33,7 +33,6 @@ import {
 
 import ts from 'typescript';
 
-import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 import {
   createDollarAnyQuickInfo,
   createNgTemplateQuickInfo,
@@ -48,6 +47,7 @@ import {
   getDirectiveMatchesForElementTag,
   getTextSpanOfNode,
 } from './utils';
+import {DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_TEXT} from './utils/display_parts';
 
 export class QuickInfoBuilder {
   private readonly typeChecker: ts.TypeChecker;

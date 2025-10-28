@@ -22,8 +22,8 @@ import {
 } from '@angular/compiler-cli';
 import ts from 'typescript';
 
-import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './utils/display_parts';
 import {makeElementSelector} from './utils';
+import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from './utils/display_parts';
 import {getClassDeclarationFromSymbolReference} from './utils/ts_utils';
 
 /**

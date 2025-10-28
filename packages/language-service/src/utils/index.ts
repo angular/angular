@@ -25,14 +25,14 @@ import {
   TmplAstTextAttribute,
 } from '@angular/compiler';
 import {
+  absoluteFrom,
+  absoluteFromSourceFile,
   AbsoluteFsPath,
   DeclarationNode,
   DirectiveSymbol,
   isExternalResource,
   NgCompiler,
   TemplateTypeChecker,
-  absoluteFrom,
-  absoluteFromSourceFile,
 } from '@angular/compiler-cli';
 import ts from 'typescript';
 

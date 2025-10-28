@@ -8,20 +8,20 @@
 
 import {CompilerOptions, NgCompiler, getFileSystem} from '@angular/compiler-cli';
 
-import ts from 'typescript';
-import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
-import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import {
   MigrationConfig,
   SignalQueriesMigration,
 } from '@angular/core/schematics/migrations/signal-queries-migration';
+import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
 import assert from 'assert';
-import {projectFile, getProgramInfoFromBaseInfo} from '../../../../core/schematics/utils/tsurge';
+import ts from 'typescript';
 import {FieldIncompatibilityReason} from '../../../../core/schematics/migrations/signal-migration/src';
 import {
   isFieldIncompatibility,
   nonIgnorableFieldIncompatibilities,
 } from '../../../../core/schematics/migrations/signal-migration/src/passes/problematic_patterns/incompatibility';
+import {getProgramInfoFromBaseInfo, projectFile} from '../../../../core/schematics/utils/tsurge';
+import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 
 export async function applySignalQueriesRefactoring(
   compiler: NgCompiler,

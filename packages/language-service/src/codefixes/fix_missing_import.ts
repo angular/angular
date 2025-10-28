@@ -17,11 +17,11 @@ import {
 import type ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from '../template_target';
+import {getDirectiveMatchesForElementTag} from '../utils';
 import {
   getCodeActionToImportTheDirectiveDeclaration,
   standaloneTraitOrNgModule,
 } from '../utils/ts_utils';
-import {getDirectiveMatchesForElementTag} from '../utils';
 
 import {CodeActionContext, CodeActionMeta, FixIdForCodeFixesAll} from './utils';
 

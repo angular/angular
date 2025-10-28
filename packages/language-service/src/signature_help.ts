@@ -7,13 +7,13 @@
  */
 
 import {Call, SafeCall} from '@angular/compiler';
-import {NgCompiler, SymbolKind, getSourceFileOrError} from '@angular/compiler-cli';
+import {getSourceFileOrError, NgCompiler, SymbolKind} from '@angular/compiler-cli';
 
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode} from './utils/ts_utils';
 import {getTypeCheckInfoAtPosition} from './utils';
+import {findTightestNode} from './utils/ts_utils';
 
 /**
  * Queries the TypeScript Language Service to get signature help for a template position.

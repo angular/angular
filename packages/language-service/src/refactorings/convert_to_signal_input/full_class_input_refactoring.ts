@@ -9,8 +9,8 @@
 import {CompilerOptions, NgCompiler} from '@angular/compiler-cli';
 
 import {MigrationConfig} from '@angular/core/schematics/migrations/signal-migration/src';
-import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import ts from 'typescript';
+import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import {isTypeScriptFile} from '../../utils';
 import {findTightestNode, getParentClassDeclaration} from '../../utils/ts_utils';
 import type {ActiveRefactoring} from '../refactoring';

@@ -8,8 +8,8 @@
 
 import {AST, TmplAstNode} from '@angular/compiler';
 import {
-  AbsoluteFsPath,
   absoluteFrom,
+  AbsoluteFsPath,
   CompilerOptions,
   ConfigurationHost,
   ErrorCode,
@@ -17,8 +17,8 @@ import {
   isExternalResource,
   isFatalDiagnosticError,
   isNamedClassDeclaration,
-  ngErrorCode,
   NgCompiler,
+  ngErrorCode,
   OptimizeFor,
   PerfPhase,
   ProgramDriver,

@@ -5,13 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {
-  absoluteFrom,
-  AbsoluteFsPath,
-  FileSystem,
-  getFileSystem,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli';
+import {loadTestDirectory} from '@angular/compiler-cli/private/testing';
 import path from 'path';
 import url from 'url';
 

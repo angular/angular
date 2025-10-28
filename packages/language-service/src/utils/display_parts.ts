@@ -7,6 +7,7 @@
  */
 
 import {
+  isNamedClassDeclaration,
   LetDeclarationSymbol,
   PotentialDirective,
   ReferenceSymbol,
@@ -15,7 +16,6 @@ import {
   TcbLocation,
   TemplateTypeChecker,
   VariableSymbol,
-  isNamedClassDeclaration,
 } from '@angular/compiler-cli';
 
 import ts from 'typescript';

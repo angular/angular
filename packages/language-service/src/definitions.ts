@@ -36,18 +36,18 @@ import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
-  getTypeCheckInfoAtPosition,
   getTemplateLocationFromTcbLocation,
   getTextSpanOfNode,
+  getTypeCheckInfoAtPosition,
   isDollarEvent,
   isTypeScriptFile,
-  TypeCheckInfo,
   toTextSpan,
+  TypeCheckInfo,
 } from './utils';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 
 interface DefinitionMeta {
   node: AST | TmplAstNode;

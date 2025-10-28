@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {InternalOptions, TypeCheckingOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {
   absoluteFrom,
   AbsoluteFsPath,
   FileSystem,
   getFileSystem,
   getSourceFileOrError,
-} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+  OptimizeFor,
+} from '@angular/compiler-cli';
+import {
+  InternalOptions,
+  TemplateTypeChecker,
+  TypeCheckingOptions,
+} from '@angular/compiler-cli/private/language_service';
 import ts from 'typescript';
 
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../api';
