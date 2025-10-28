@@ -38633,12 +38633,6 @@ var managedLabels = createTypedObject(ManagedLabel)({
     name: "area: i18n",
     commitCheck: (c3) => c3.scope === "localize",
     repositories: [ManagedRepositories.ANGULAR]
-  },
-  DETECTED_REQUIRES_TGP: {
-    description: "This PR requires a passing TGP before merging is allowed",
-    name: "requires: TGP",
-    commitCheck: (c3) => false,
-    repositories: [ManagedRepositories.ANGULAR]
   }
 });
 
