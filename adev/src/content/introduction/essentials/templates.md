@@ -6,7 +6,7 @@ Component templates aren't just static HTML— they can use data from your compo
 
 ## Showing dynamic text
 
-In Angular, a *binding* creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
+In Angular, a _binding_ creates a dynamic connection between a component's template and its data. This connection ensures that changes to the component's data automatically update the rendered template.
 
 You can create a binding to show some dynamic text in a template by using double curly-braces:
 
@@ -15,7 +15,7 @@ You can create a binding to show some dynamic text in a template by using double
   selector: 'user-profile',
   template: `<h1>Profile for {{userName()}}</h1>`,
 })
-export class TodoListItem {
+export class UserProfile {
   userName = signal('pro_programmer_123');
 }
 ```
@@ -46,11 +46,11 @@ Angular supports binding dynamic values into DOM properties with square brackets
 ```angular-ts
 @Component({
   /*...*/
-  // Set the `disabled` property of the button based on the value of `isInValidUserId`.
-  template: `<button [disabled]="isInValidUserId()">Save changes</button>`,
+  // Set the `disabled` property of the button based on the value of `isValidUserId`.
+  template: `<button [disabled]="!isValidUserId()">Save changes</button>`,
 })
 export class UserProfile {
-  isInValidUserId = signal(true);
+  isValidUserId = signal(false);
 }
 ```
 
@@ -70,12 +70,12 @@ Angular lets you add event listeners to an element in your template with parenth
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription()">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription() { /* Your event handling code goes here. */  }
 }
 ```
@@ -85,12 +85,12 @@ If you need to pass the [event](https://developer.mozilla.org/docs/Web/API/Event
 ```angular-ts
 @Component({
   /*...*/
-  // Add an 'click' event handler that calls the `cancelSubscription` method. 
+  // Add an 'click' event handler that calls the `cancelSubscription` method.
   template: `<button (click)="cancelSubscription($event)">Cancel subscription</button>`,
 })
 export class UserProfile {
   /* ... */
-  
+
   cancelSubscription(event: Event) { /* Your event handling code goes here. */  }
 }
 ```
@@ -118,7 +118,7 @@ The `@if` block also supports an optional `@else` block:
   <!-- ... -->
 } @else {
   <h2>User settings</h2>
-  <!-- ... -->  
+  <!-- ... -->
 }
 ```
 
