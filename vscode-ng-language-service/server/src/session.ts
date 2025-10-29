@@ -706,6 +706,11 @@ export class Session {
         this.triggerDiagnostics(event.data.openFiles, event.eventName);
         break;
       case ts.server.ProjectLanguageServiceStateEvent:
+        this.logger.info(
+          `Project language service state changed for ${event.data.project.getProjectName()}. Enabled: ${
+            event.data.languageServiceEnabled
+          }`,
+        );
         this.connection.sendNotification(ProjectLanguageService, {
           projectName: event.data.project.getProjectName(),
           languageServiceEnabled: event.data.languageServiceEnabled,
@@ -969,6 +974,7 @@ export class Session {
     if (!filePath) {
       return;
     }
+    this.logger.info(`Closing file: ${filePath}`);
     this.openFiles.delete(filePath);
     this.projectService.closeClientFile(filePath);
   }
