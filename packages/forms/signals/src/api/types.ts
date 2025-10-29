@@ -34,6 +34,7 @@ export type OneOrMany<T> = T | readonly T[];
  *
  * @experimental 21.0.0
  */
+export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 export declare namespace PathKind {
   /**
    * The `PathKind` for a `FieldPath` that is at the root of its field tree.
@@ -61,7 +62,7 @@ export declare namespace PathKind {
     [ɵɵTYPE]: 'item';
   }
 }
-export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
+
 /**
  * A status indicating whether a field is unsubmitted, submitted, or currently submitting.
  *

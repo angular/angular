@@ -96,6 +96,7 @@ export interface ConstantEntry extends DocEntry {
 /** Documentation entity for a type alias. */
 export interface TypeAliasEntry extends ConstantEntry {
   generics: GenericEntry[];
+  members?: MemberEntry[]; // For merged namespaces
 }
 
 /** Documentation entity for a TypeScript class. */
