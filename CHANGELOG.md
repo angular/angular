@@ -1,3 +1,8 @@
+<a name="21.0.0-rc.0"></a>
+# 21.0.0-rc.0 (2025-10-29)
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-next.10"></a>
 # 21.0.0-next.10 (2025-10-29)
 ### common
