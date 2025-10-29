@@ -8,6 +8,7 @@
 
 import {TypeAliasEntry} from '../entities.mjs';
 import {TypeAliasEntryRenderable} from '../entities/renderables.mjs';
+import type {HasMembers} from '../entities/traits.mjs';
 import {addRenderableCodeToc} from './code-transforms.mjs';
 import {
   addHtmlAdditionalLinks,
@@ -28,8 +29,8 @@ export async function getTypeAliasRenderable(
 ): Promise<TypeAliasEntryRenderable> {
   const entryWithModuleAndRepo = addRepo(addModuleName(typeAliasEntry, moduleName), repo);
 
-  const renderableMembers = (typeAliasEntry as any).members
-    ? (await addRenderableMembers(entryWithModuleAndRepo as any)).members
+  const renderableMembers = hasMembers(entryWithModuleAndRepo)
+    ? (await addRenderableMembers(entryWithModuleAndRepo)).members
     : undefined;
 
   return setEntryFlags(
@@ -40,4 +41,8 @@ export async function getTypeAliasRenderable(
       members: renderableMembers,
     }),
   );
+}
+
+function hasMembers(typeAlias: TypeAliasEntry): typeAlias is TypeAliasEntry & HasMembers {
+  return typeAlias.members !== undefined;
 }

@@ -18,7 +18,13 @@ import {
   isDecoratorDeclaration,
   isDecoratorOptionsInterface,
 } from './decorator_extractor';
-import {DocEntry, DocEntryWithSourceInfo, EntryType} from './entities';
+import {
+  DocEntry,
+  DocEntryWithSourceInfo,
+  EntryType,
+  type NamespaceEntry,
+  type TypeAliasEntry,
+} from './entities';
 import {extractEnum} from './enum_extractor';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
@@ -142,11 +148,11 @@ export class DocsExtractor {
     if (entries.length > 1) {
       // This is where we can merge multiple declarations for the same symbol.
       // For now, we only support merging a type alias and a namespace.
-      const typeAlias = entries.find((e) => e?.entryType === EntryType.TypeAlias);
-      const namespace = entries.find((e) => e?.entryType === EntryType.Namespace);
+      const typeAlias = entries.find(isTypeAliasEntry);
+      const namespace = entries.find(isNamespaceEntry);
 
       if (typeAlias && namespace) {
-        (typeAlias as any).members = (namespace as any).members;
+        typeAlias.members = namespace.members;
         return typeAlias;
       }
     }
@@ -262,4 +268,12 @@ function getRelativeFilePath(sourceFile: ts.SourceFile, rootDir: string): string
   const relativePath = fullPath.replace(rootDir, '');
 
   return relativePath;
+}
+
+function isTypeAliasEntry(e: DocEntry | null): e is TypeAliasEntry {
+  return e?.entryType === EntryType.TypeAlias;
+}
+
+function isNamespaceEntry(e: DocEntry | null): e is NamespaceEntry {
+  return e?.entryType === EntryType.Namespace;
 }
