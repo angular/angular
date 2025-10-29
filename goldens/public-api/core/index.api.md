@@ -1046,6 +1046,9 @@ export function isSignal(value: unknown): value is Signal<unknown>;
 export function isStandalone(type: Type<unknown>): boolean;
 
 // @public
+export function isWritableSignal(value: unknown): value is WritableSignal<unknown>;
+
+// @public
 export interface IterableChangeRecord<V> {
     readonly currentIndex: number | null;
     readonly item: V;
