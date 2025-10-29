@@ -70,9 +70,10 @@ class MockWatcher implements ts.FileWatcher {
  * A mock file system impacting configuration files.
  * Queries for all other files are deferred to the underlying filesystem.
  */
-export class MockConfigFileFs
-  implements Pick<ts.server.ServerHost, 'readFile' | 'fileExists' | 'watchFile'>
-{
+export class MockConfigFileFs implements Pick<
+  ts.server.ServerHost,
+  'readFile' | 'fileExists' | 'watchFile'
+> {
   private configOverwrites = new Map<string, string>();
   private configFileWatchers = new Map<string, MockWatcher>();
 
