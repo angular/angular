@@ -9,7 +9,7 @@
 import ts from 'typescript';
 
 import {MetadataReader} from '../../metadata';
-import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
+import {isNamedClassDeclaration} from '../../reflection';
 
 import {extractClass} from './class_extractor';
 import {extractConstant, isSyntheticAngularConstant} from './constant_extractor';
@@ -18,17 +18,18 @@ import {
   isDecoratorDeclaration,
   isDecoratorOptionsInterface,
 } from './decorator_extractor';
-import {DocEntry, DocEntryWithSourceInfo} from './entities';
+import {DocEntry, DocEntryWithSourceInfo, EntryType} from './entities';
 import {extractEnum} from './enum_extractor';
 import {isAngularPrivateName} from './filters';
 import {FunctionExtractor} from './function_extractor';
+import {getImportedSymbols} from './import_extractor';
 import {
   extractInitializerApiFunction,
   isInitializerApiFunction,
 } from './initializer_api_function_extractor';
-import {extractTypeAlias} from './type_alias_extractor';
-import {getImportedSymbols} from './import_extractor';
 import {extractInterface} from './interface_extractor';
+import {extractNamespace} from './namespace_extractor';
+import {extractTypeAlias} from './type_alias_extractor';
 
 type DeclarationWithExportName = readonly [string, ts.Declaration];
 
@@ -57,17 +58,26 @@ export class DocsExtractor {
     const symbols = new Map<string, string>();
 
     const exportedDeclarations = this.getExportedDeclarations(sourceFile);
-    for (const [exportName, node] of exportedDeclarations) {
+    const groupedDeclarations = new Map<string, ts.Declaration[]>();
+
+    for (const [exportName, declaration] of exportedDeclarations) {
+      if (!groupedDeclarations.has(exportName)) {
+        groupedDeclarations.set(exportName, []);
+      }
+      groupedDeclarations.get(exportName)!.push(declaration);
+    }
+
+    for (const [exportName, declarations] of groupedDeclarations.entries()) {
       // Skip any symbols with an Angular-internal name.
       if (isAngularPrivateName(exportName)) {
         continue;
       }
 
-      const entry = this.extractDeclaration(node);
+      const entry = this.extractDeclarations(exportName, declarations);
       if (entry && !isIgnoredDocEntry(entry)) {
         // The source file parameter is the package entry: the index.ts
         // We want the real source file of the declaration.
-        const realSourceFile = node.getSourceFile();
+        const realSourceFile = declarations[0].getSourceFile();
 
         /**
          * The `sourceFile` from `extractAll` is the main entry-point file of a package.
@@ -86,7 +96,7 @@ export class DocsExtractor {
           if (symbols.has(symbolName) && symbols.get(symbolName) !== moduleName) {
             // If this ever throws, we need to improve the symbol extraction strategy
             throw new Error(
-              `Ambigous symbol \`${symbolName}\` exported by both ${symbols.get(
+              `Ambiguous symbol \`${symbolName}\` exported by both ${symbols.get(
                 symbolName,
               )} & ${moduleName}`,
             );
@@ -100,8 +110,10 @@ export class DocsExtractor {
           filePath: getRelativeFilePath(realSourceFile, rootDir),
 
           // Start & End are off by 1
-          startLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getStart()).line + 1,
-          endLine: ts.getLineAndCharacterOfPosition(realSourceFile, node.getEnd()).line + 1,
+          startLine:
+            ts.getLineAndCharacterOfPosition(realSourceFile, declarations[0].getStart()).line + 1,
+          endLine:
+            ts.getLineAndCharacterOfPosition(realSourceFile, declarations[0].getEnd()).line + 1,
         };
 
         // The exported name of an API may be different from its declaration name, so
@@ -111,6 +123,35 @@ export class DocsExtractor {
     }
 
     return {entries, symbols};
+  }
+
+  /**
+   * Extracts a documentation entry for a given set of declarations that are all exported under
+   * the same name. This is used to combine entries, e.g. for a type and a namespace that are
+   * exported under the same name.
+   */
+  private extractDeclarations(exportName: string, nodes: ts.Declaration[]): DocEntry | null {
+    const entries = nodes.map((node) => this.extractDeclaration(node));
+    const decorator = entries.find((e) => e?.entryType === EntryType.Decorator);
+    if (decorator) {
+      return decorator;
+    }
+
+    const entry = entries[0];
+
+    if (entries.length > 1) {
+      // This is where we can merge multiple declarations for the same symbol.
+      // For now, we only support merging a type alias and a namespace.
+      const typeAlias = entries.find((e) => e?.entryType === EntryType.TypeAlias);
+      const namespace = entries.find((e) => e?.entryType === EntryType.Namespace);
+
+      if (typeAlias && namespace) {
+        (typeAlias as any).members = (namespace as any).members;
+        return typeAlias;
+      }
+    }
+
+    return entry ?? null;
   }
 
   /** Extract the doc entry for a single declaration. */
@@ -148,26 +189,41 @@ export class DocsExtractor {
       return extractEnum(node, this.typeChecker);
     }
 
+    if (ts.isModuleDeclaration(node)) {
+      return extractNamespace(node, this.typeChecker);
+    }
+
     return null;
   }
 
   /** Gets the list of exported declarations for doc extraction. */
   private getExportedDeclarations(sourceFile: ts.SourceFile): DeclarationWithExportName[] {
-    // Use the reflection host to get all the exported declarations from this
-    // source file entry point.
-    const reflector = new TypeScriptReflectionHost(this.typeChecker, false, true);
-    const exportedDeclarationMap = reflector.getExportsOfModule(sourceFile);
+    const moduleSymbol = this.typeChecker.getSymbolAtLocation(sourceFile);
+    if (!moduleSymbol) {
+      return [];
+    }
 
-    // Augment each declaration with the exported name in the public API.
-    let exportedDeclarations = Array.from(exportedDeclarationMap?.entries() ?? []).map(
-      ([exportName, declaration]) => [exportName, declaration.node] as const,
-    );
+    const exportedSymbols = this.typeChecker.getExportsOfModule(moduleSymbol);
+    const result: DeclarationWithExportName[] = [];
 
-    // Sort the declaration nodes into declaration position because their order is lost in
-    // reading from the export map. This is primarily useful for testing and debugging.
-    return exportedDeclarations.sort(
-      ([a, declarationA], [b, declarationB]) => declarationA.pos - declarationB.pos,
-    );
+    for (const symbol of exportedSymbols) {
+      let declarations: ts.Declaration[] | undefined = symbol.getDeclarations();
+
+      // If the symbol is an alias, resolve it to the original declaration.
+      if (symbol.flags & ts.SymbolFlags.Alias) {
+        const aliasedSymbol = this.typeChecker.getAliasedSymbol(symbol);
+        declarations = aliasedSymbol.getDeclarations();
+      }
+
+      if (declarations) {
+        for (const declaration of declarations) {
+          result.push([symbol.name, declaration]);
+        }
+      }
+    }
+
+    // Sort declarations by their position in the source file for consistent processing.
+    return result.sort(([, declarationA], [, declarationB]) => declarationA.pos - declarationB.pos);
   }
 }
 

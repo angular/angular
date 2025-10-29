@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {h} from 'preact';
+import {Fragment, h} from 'preact';
 import {TypeAliasEntryRenderable} from '../entities/renderables.mjs';
 import {HeaderApi} from './header-api';
 import {SectionDescription} from './section-description';
 import {SectionUsageNotes} from './section-usage-notes';
 import {SectionApi} from './section-api';
-import {API_REFERENCE_CONTAINER} from '../styling/css-classes.mjs';
+import {API_REFERENCE_CONTAINER, REFERENCE_MEMBERS} from '../styling/css-classes.mjs';
 import {DeprecationWarning} from './deprecation-warning';
+import {ClassMemberList} from './class-member-list';
 
 /** Component to render a type alias API reference document. */
 export function TypeAliasReference(entry: TypeAliasEntryRenderable) {
@@ -22,6 +23,13 @@ export function TypeAliasReference(entry: TypeAliasEntryRenderable) {
       <HeaderApi entry={entry} />
       <DeprecationWarning entry={entry} />
       <SectionApi entry={entry} />
+      {entry.members && entry.members.length > 0 ? (
+        <div class={REFERENCE_MEMBERS}>
+          <ClassMemberList members={entry.members} />
+        </div>
+      ) : (
+        <></>
+      )}
       <SectionDescription entry={entry} />
       <SectionUsageNotes entry={entry} />
     </div>

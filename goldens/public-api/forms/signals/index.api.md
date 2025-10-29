@@ -375,6 +375,9 @@ export type OneOrMany<T> = T | readonly T[];
 export function orMetadataKey(): AggregateMetadataKey<boolean, boolean>;
 
 // @public
+export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
+
+// @public (undocumented)
 export namespace PathKind {
     export interface Child extends PathKind.Root {
         // (undocumented)
@@ -388,9 +391,6 @@ export namespace PathKind {
         [ɵɵTYPE]: 'root' | 'child' | 'item';
     }
 }
-
-// @public (undocumented)
-export type PathKind = PathKind.Root | PathKind.Child | PathKind.Item;
 
 // @public
 export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined>;

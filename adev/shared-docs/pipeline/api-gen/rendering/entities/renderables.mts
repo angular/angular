@@ -56,7 +56,11 @@ export type ConstantEntryRenderable = ConstantEntry &
   };
 
 /** Documentation entity for a type alias augmented transformed content for rendering. */
-export type TypeAliasEntryRenderable = TypeAliasEntry & DocEntryRenderable & HasRenderableToc;
+export type TypeAliasEntryRenderable = TypeAliasEntry &
+  DocEntryRenderable &
+  HasRenderableToc & {
+    members?: MemberEntryRenderable[];
+  };
 
 /** Documentation entity for a TypeScript class augmented transformed content for rendering. */
 export type ClassEntryRenderable = ClassEntry &
