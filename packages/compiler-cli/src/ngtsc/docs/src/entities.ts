@@ -37,6 +37,7 @@ export enum EntryType {
   TypeAlias = 'type_alias',
   UndecoratedClass = 'undecorated_class',
   InitializerApiFunction = 'initializer_api_function',
+  Namespace = 'namespace',
 }
 
 /** Types of class members */
@@ -106,6 +107,7 @@ export interface ConstantEntry extends DocEntry {
 /** Documentation entity for a type alias. */
 export interface TypeAliasEntry extends ConstantEntry {
   generics: GenericEntry[];
+  members?: DocEntry[]; // For merged namespaces
 }
 
 /** Documentation entity for a TypeScript class. */
@@ -211,6 +213,11 @@ export interface FunctionDefinitionEntry {
   name: string;
   signatures: FunctionSignatureMetadata[];
   implementation: FunctionSignatureMetadata | null;
+}
+
+/** Documentation entity for a TypeScript namespace. */
+export interface NamespaceEntry extends DocEntry {
+  members: DocEntry[];
 }
 
 /**
