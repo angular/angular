@@ -1291,6 +1291,27 @@ describe('Image directive', () => {
       );
     });
 
+    it('should remove placeholder event listeners once view is removed', () => {
+      const addEventListenerSpy = spyOn(HTMLImageElement.prototype, 'addEventListener');
+      const removeEventListenerSpy = spyOn(HTMLImageElement.prototype, 'removeEventListener');
+      setupTestingModule();
+      const template =
+        '<img ngSrc="path/img.png" width="400" height="300" placeholder="https://mysite.com/assets/my-image.png" />';
+      const fixture = createTestComponent(template);
+      fixture.detectChanges();
+      // The `load` event listener is being set up twice: once in
+      // `assertNoImageDistortion` and once in `removePlaceholderOnLoad`.
+      expect(
+        addEventListenerSpy.calls.all().filter((info) => info.args[0] === 'load').length,
+      ).toEqual(2);
+
+      fixture.destroy();
+
+      expect(
+        removeEventListenerSpy.calls.all().filter((info) => info.args[0] === 'load').length,
+      ).toEqual(2);
+    });
+
     it('should replace the placeholder with the actual image on load', () => {
       setupTestingModule();
       const template = '<img ngSrc="path/img.png" width="400" height="300" placeholder="true" />';
