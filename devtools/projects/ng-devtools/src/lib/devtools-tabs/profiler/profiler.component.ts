@@ -47,9 +47,15 @@ export class ProfilerComponent {
       if (importedFile.error) {
         console.error('Could not process uploaded file');
         console.error(importedFile.error);
+
+        const errorMessage =
+          importedFile.error instanceof Error
+            ? `${importedFile.error.name}: ${importedFile.error.message}`
+            : JSON.stringify(importedFile.error);
+
         this.dialog.open(ProfilerImportDialogComponent, {
           width: '600px',
-          data: {status: 'ERROR', errorMessage: importedFile.error},
+          data: {status: 'ERROR', errorMessage},
         });
 
         return;
