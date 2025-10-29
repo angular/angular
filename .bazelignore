@@ -45,6 +45,7 @@ vscode-ng-language-service/integration/project/dist/
 adev/node_modules
 adev/shared-docs/node_modules
 adev/shared-docs/pipeline/api-gen/node_modules
+dev-app/node_modules
 modules/node_modules
 integration/node_modules
 packages/animations/node_modules

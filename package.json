@@ -44,6 +44,8 @@
     "devtools:release": "tsx --tsconfig=devtools/tsconfig.json devtools/tools/release.mts",
     "adev": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || ibazel run //adev:build.serve",
     "adev:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || bazel build //adev:build",
+    "dev": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || ibazel run //dev-app:build.serve",
+    "dev:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || bazel build //dev-app:build",
     "benchmarks": "tsx --tsconfig=scripts/tsconfig.json scripts/benchmarks/index.mts",
     "diff-release-package": "tsx --tsconfig=scripts/tsconfig.json scripts/diff-release-package.mts"
   },

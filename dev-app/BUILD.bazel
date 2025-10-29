@@ -1,0 +1,105 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+exports_files([
+    "tsconfig.json",
+])
+
+APPLICATION_FILES = glob(
+    ["src/**/*"],
+    exclude = ["src/**/*.spec.ts"],
+)
+
+APPLICATION_DEPS = [
+    ":node_modules/typescript",
+    ":node_modules/xhr2",
+    ":node_modules/@types/node",
+]
+
+TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
+
+TEST_DEPS = [
+    dep
+    for dep in APPLICATION_DEPS
+    if dep != ":node_modules/@types/node"
+] + [
+    "@rules_browsers//browsers/chromium",
+]
+
+ng_config(name = "ng_config")
+
+ng_application(
+    name = "build",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+    serve_args = [
+        "--port",
+        "4200",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+    serve_args = [
+        "--port",
+        "4200",
+    ],
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
+        # Furthermore, the current RBE machine pool lacks high-spec machines.
+        "no-remote-exec",
+    ],
+)
+
+ng_test(
+    name = "test",
+    srcs = TEST_FILES + TEST_DEPS,
+    env = {
+        # Move one level up because we are in `//dev-app`
+        "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
+        "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+    toolchains = [
+        "@rules_browsers//browsers/chromium:toolchain_alias",
+    ],
+)

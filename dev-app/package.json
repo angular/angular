@@ -1,0 +1,36 @@
+{
+  "dependencies": {
+    "@angular/animations": "workspace:*",
+    "@angular/build": "21.0.0-next.9",
+    "@angular/cdk": "21.0.0-next.10",
+    "@angular/cli": "21.0.0-next.9",
+    "@angular/common": "workspace:*",
+    "@angular/compiler": "workspace:*",
+    "@angular/compiler-cli": "workspace:*",
+    "@angular/core": "workspace:*",
+    "@angular/docs": "workspace:*",
+    "@angular/forms": "workspace:*",
+    "@angular/material": "21.0.0-next.10",
+    "@angular/platform-browser": "workspace:*",
+    "@angular/platform-server": "workspace:*",
+    "@angular/router": "workspace:*",
+    "@angular/ssr": "21.0.0-next.9",
+    "@types/jasmine": "5.1.12",
+    "@types/node": "24.9.1",
+    "jasmine-core": "5.12.0",
+    "karma-chrome-launcher": "3.2.0",
+    "karma-coverage": "2.2.1",
+    "karma-jasmine": "5.1.0",
+    "karma-jasmine-html-reporter": "2.1.0",
+    "prettier": "3.6.2",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1",
+    "typescript": "5.9.3",
+    "xhr2": "0.2.1",
+    "zone.js": "0.15.1"
+  },
+  "devDependencies": {
+    "karma": "~6.4.4",
+    "postcss": "8.5.6"
+  }
+}
