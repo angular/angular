@@ -350,7 +350,6 @@ const getDependenciesForDirective = (
     let flags = dependency.flags as InjectOptions;
     let flagToken = '';
     if (flags !== undefined) {
-      // TODO: We need to remove this once the InjectFlags enum is removed from core
       if (typeof flags === 'number') {
         flags = {
           optional: !!(flags & 8),
