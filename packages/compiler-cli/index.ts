@@ -38,6 +38,7 @@ export {ConsoleLogger, Logger, LogLevel} from './src/ngtsc/logging';
 export {
   NodeJSFileSystem,
   absoluteFrom,
+  absoluteFromSourceFile,
   FileSystem,
   AbsoluteFsPath,
   NgtscCompilerHost,
