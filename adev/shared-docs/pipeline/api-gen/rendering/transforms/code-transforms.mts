@@ -474,6 +474,18 @@ export function printInitializerFunctionSignatureLine(
   return `function ${res}`;
 }
 
+export function formatExtendsClause(extendsValue: string | string[] | undefined): string {
+  if (!extendsValue) {
+    return '';
+  }
+
+  if (typeof extendsValue === 'string') {
+    return ` extends ${extendsValue}`;
+  }
+
+  return extendsValue.length > 0 ? ` extends ${extendsValue.join(', ')}` : '';
+}
+
 function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContentsData): void {
   const appendFirstAndLastLines = (
     data: CodeTableOfContentsData,
@@ -485,11 +497,7 @@ function appendPrefixAndSuffix(entry: DocEntry, codeTocData: CodeTableOfContents
 
   if (isClassEntry(entry) || isInterfaceEntry(entry)) {
     const generics = makeGenericsText(entry.generics);
-    const extendsStr = entry.extends
-      ? typeof entry.extends === 'string'
-        ? ` extends ${entry.extends}`
-        : ` extends ${entry.extends.join(', ')}`
-      : '';
+    const extendsStr = formatExtendsClause(entry.extends);
     const implementsStr =
       entry.implements.length > 0 ? ` implements ${entry.implements.join(' ,')}` : '';
 
