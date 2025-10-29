@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {SchemaPath, SchemaPathRules} from '../api/types';
-import {DYNAMIC, Predicate} from './logic';
+import {Predicate} from './logic';
 import {LogicNodeBuilder} from './logic_node';
 import type {SchemaImpl} from './schema';
 
@@ -64,13 +64,6 @@ export class FieldPathNode {
       return this.logicBuilder;
     }
     return this.parent!.builder.getChild(this.keyInParent!);
-  }
-
-  /**
-   * Gets the special path node containing the per-element logic that applies to *all* children paths.
-   */
-  get element(): FieldPathNode {
-    return this.getChild(DYNAMIC);
   }
 
   /**

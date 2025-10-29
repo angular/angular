@@ -16,7 +16,7 @@ import type {
 } from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
-import {BoundPredicate, LogicContainer, Predicate} from './logic';
+import {BoundPredicate, DYNAMIC, LogicContainer, Predicate} from './logic';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -146,6 +146,15 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
+    // Close off the current builder if the key is DYNAMIC and the current builder already has logic
+    // for some non-DYNAMIC key. This guarantees that all of the DYNAMIC logic always comes before
+    // all of the specific-key logic for any given instance of `NonMergeableLogicNodeBuilder`.
+    if (key === DYNAMIC) {
+      const children = this.getCurrent().children;
+      if (children.size > (children.has(DYNAMIC) ? 1 : 0)) {
+        this.current = undefined;
+      }
+    }
     return this.getCurrent().getChild(key);
   }
 
@@ -435,13 +444,17 @@ function getAllChildBuilders(
       return children;
     });
   } else if (builder instanceof NonMergeableLogicNodeBuilder) {
-    if (builder.children.has(key)) {
-      return [{builder: builder.children.get(key)!, predicates: []}];
-    }
+    return [
+      // DYNAMIC logic always comes first for any individual `NonMergeableLogicNodeBuilder`.
+      // This assumption is guaranteed by the behavior of `LogicNodeBuilder.getChild`.
+      ...(key !== DYNAMIC && builder.children.has(DYNAMIC)
+        ? [{builder: builder.getChild(DYNAMIC), predicates: []}]
+        : []),
+      ...(builder.children.has(key) ? [{builder: builder.getChild(key), predicates: []}] : []),
+    ];
   } else {
     throw new Error('Unknown LogicNodeBuilder type');
   }
-  return [];
 }
 
 /**

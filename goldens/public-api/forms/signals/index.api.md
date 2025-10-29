@@ -46,7 +46,10 @@ export function andMetadataKey(): AggregateMetadataKey<boolean, boolean>;
 export function apply<TValue>(path: SchemaPath<TValue>, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
 
 // @public
-export function applyEach<TValue>(path: SchemaPath<TValue[]>, schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>): void;
+export function applyEach<TValue extends ReadonlyArray<any>>(path: SchemaPath<TValue>, schema: NoInfer<SchemaOrSchemaFn<TValue[number], PathKind.Item>>): void;
+
+// @public (undocumented)
+export function applyEach<TValue extends Object>(path: SchemaPath<TValue>, schema: NoInfer<SchemaOrSchemaFn<ItemType<TValue>, PathKind.Child>>): void;
 
 // @public
 export function applyWhen<TValue>(path: SchemaPath<TValue>, logic: LogicFn<TValue, boolean>, schema: NoInfer<SchemaOrSchemaFn<TValue>>): void;
@@ -252,6 +255,9 @@ export type IgnoreUnknownProperties<T> = T extends Record<PropertyKey, unknown> 
 export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
     readonly index: Signal<number>;
 }
+
+// @public
+export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
 
 // @public
 export function listMetadataKey<TItem>(): AggregateMetadataKey<TItem[], TItem | undefined>;
