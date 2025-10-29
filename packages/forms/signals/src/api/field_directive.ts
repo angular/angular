@@ -25,6 +25,9 @@ import type {FieldTree} from './types';
 
 /**
  * Lightweight DI token provided by the {@link Field} directive.
+ *
+ * @category control
+ * @experimental 21.0.0
  */
 export const FIELD = new InjectionToken<Field<unknown>>(
   typeof ngDevMode !== undefined && ngDevMode ? 'FIELD' : '',
