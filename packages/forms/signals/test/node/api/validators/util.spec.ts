@@ -6,14 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ensureCustomValidationResult} from '../../../../src/api/validators/util';
-import {
-  customError,
-  minError,
-  ValidationError,
-  ValidationErrorWithField,
-} from '../../../../src/api/validation_errors';
 import {FieldTree} from '../../../../src/api/types';
+import {customError, minError, ValidationError} from '../../../../src/api/validation_errors';
+import {ensureCustomValidationResult} from '../../../../src/api/validators/util';
 import {addDefaultField} from '../../../../src/field/validation';
 
 describe('validators utils', () => {
@@ -27,7 +22,7 @@ describe('validators utils', () => {
     });
 
     it('should wrap a plain error object with customError', () => {
-      const error: ValidationErrorWithField = {kind: 'meow', field: {} as FieldTree<unknown>};
+      const error: ValidationError.WithField = {kind: 'meow', field: {} as FieldTree<unknown>};
       const result = ensureCustomValidationResult(error);
       expect(result).toEqual(customError(error));
     });
@@ -68,7 +63,7 @@ describe('validators utils', () => {
 
     describe('arrays', () => {
       it('should process a mixed array of validation errors', () => {
-        const plainError: ValidationErrorWithField = {
+        const plainError: ValidationError.WithField = {
           kind: 'plain',
           field: {} as FieldTree<unknown>,
         };

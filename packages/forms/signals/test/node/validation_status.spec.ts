@@ -19,7 +19,6 @@ import {
   validateAsync,
   validateTree,
   ValidationError,
-  ValidationErrorWithField,
 } from '../../public_api';
 
 function validateValue(value: string): ValidationError[] {
@@ -29,7 +28,7 @@ function validateValue(value: string): ValidationError[] {
 function validateValueForChild(
   value: string,
   field: FieldTree<unknown> | undefined,
-): ValidationErrorWithField[] {
+): ValidationError.WithField[] {
   return value === 'INVALID' ? [customError({field})] : [];
 }
 

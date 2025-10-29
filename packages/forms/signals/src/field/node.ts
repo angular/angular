@@ -19,7 +19,7 @@ import {
   REQUIRED,
 } from '../api/metadata';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
-import type {ValidationError, ValidationErrorWithField} from '../api/validation_errors';
+import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../schema/logic_node';
 import {FieldPathNode} from '../schema/path_node';
 import {FieldNodeContext} from './context';
@@ -90,11 +90,11 @@ export class FieldNode implements FieldState<unknown> {
     return this.structure.keyInParent;
   }
 
-  get errors(): Signal<ValidationErrorWithField[]> {
+  get errors(): Signal<ValidationError.WithField[]> {
     return this.validationState.errors;
   }
 
-  get errorSummary(): Signal<ValidationErrorWithField[]> {
+  get errorSummary(): Signal<ValidationError.WithField[]> {
     return this.validationState.errorSummary;
   }
 
