@@ -222,6 +222,7 @@ export class DocViewer {
       sanitizedContent: this.sanitizer.bypassSecurityTrustHtml(tab.innerHTML),
       visibleLinesRange: tab.getAttribute('visibleLines') ?? undefined,
       shell: tab.classList.contains('shell'),
+      title: tab.getAttribute('header') ?? undefined,
     }));
   }
 
