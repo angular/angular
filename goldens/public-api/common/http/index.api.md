@@ -3130,134 +3130,74 @@ export interface HttpSentEvent {
 }
 
 // @public
-export enum HttpStatusCode {
-    // (undocumented)
-    Accepted = 202,
-    // (undocumented)
-    AlreadyReported = 208,
-    // (undocumented)
-    BadGateway = 502,
-    // (undocumented)
-    BadRequest = 400,
-    // (undocumented)
-    Conflict = 409,
-    // (undocumented)
-    Continue = 100,
-    // (undocumented)
-    Created = 201,
-    // (undocumented)
-    EarlyHints = 103,
-    // (undocumented)
-    ExpectationFailed = 417,
-    // (undocumented)
-    FailedDependency = 424,
-    // (undocumented)
-    Forbidden = 403,
-    // (undocumented)
-    Found = 302,
-    // (undocumented)
-    GatewayTimeout = 504,
-    // (undocumented)
-    Gone = 410,
-    // (undocumented)
-    HttpVersionNotSupported = 505,
-    // (undocumented)
-    ImATeapot = 418,
-    // (undocumented)
-    ImUsed = 226,
-    // (undocumented)
-    InsufficientStorage = 507,
-    // (undocumented)
-    InternalServerError = 500,
-    // (undocumented)
-    LengthRequired = 411,
-    // (undocumented)
-    Locked = 423,
-    // (undocumented)
-    LoopDetected = 508,
-    // (undocumented)
-    MethodNotAllowed = 405,
-    // (undocumented)
-    MisdirectedRequest = 421,
-    // (undocumented)
-    MovedPermanently = 301,
-    // (undocumented)
-    MultipleChoices = 300,
-    // (undocumented)
-    MultiStatus = 207,
-    // (undocumented)
-    NetworkAuthenticationRequired = 511,
-    // (undocumented)
-    NoContent = 204,
-    // (undocumented)
-    NonAuthoritativeInformation = 203,
-    // (undocumented)
-    NotAcceptable = 406,
-    // (undocumented)
-    NotExtended = 510,
-    // (undocumented)
-    NotFound = 404,
-    // (undocumented)
-    NotImplemented = 501,
-    // (undocumented)
-    NotModified = 304,
-    // (undocumented)
-    Ok = 200,
-    // (undocumented)
-    PartialContent = 206,
-    // (undocumented)
-    PayloadTooLarge = 413,
-    // (undocumented)
-    PaymentRequired = 402,
-    // (undocumented)
-    PermanentRedirect = 308,
-    // (undocumented)
-    PreconditionFailed = 412,
-    // (undocumented)
-    PreconditionRequired = 428,
-    // (undocumented)
-    Processing = 102,
-    // (undocumented)
-    ProxyAuthenticationRequired = 407,
-    // (undocumented)
-    RangeNotSatisfiable = 416,
-    // (undocumented)
-    RequestHeaderFieldsTooLarge = 431,
-    // (undocumented)
-    RequestTimeout = 408,
-    // (undocumented)
-    ResetContent = 205,
-    // (undocumented)
-    SeeOther = 303,
-    // (undocumented)
-    ServiceUnavailable = 503,
-    // (undocumented)
-    SwitchingProtocols = 101,
-    // (undocumented)
-    TemporaryRedirect = 307,
-    // (undocumented)
-    TooEarly = 425,
-    // (undocumented)
-    TooManyRequests = 429,
-    // (undocumented)
-    Unauthorized = 401,
-    // (undocumented)
-    UnavailableForLegalReasons = 451,
-    // (undocumented)
-    UnprocessableEntity = 422,
-    // (undocumented)
-    UnsupportedMediaType = 415,
-    // (undocumented)
-    Unused = 306,
-    // (undocumented)
-    UpgradeRequired = 426,
-    // (undocumented)
-    UriTooLong = 414,
-    // (undocumented)
-    UseProxy = 305,
-    // (undocumented)
-    VariantAlsoNegotiates = 506
-}
+export const HttpStatusCode: {
+    readonly Continue: 100;
+    readonly SwitchingProtocols: 101;
+    readonly Processing: 102;
+    readonly EarlyHints: 103;
+    readonly Ok: 200;
+    readonly Created: 201;
+    readonly Accepted: 202;
+    readonly NonAuthoritativeInformation: 203;
+    readonly NoContent: 204;
+    readonly ResetContent: 205;
+    readonly PartialContent: 206;
+    readonly MultiStatus: 207;
+    readonly AlreadyReported: 208;
+    readonly ImUsed: 226;
+    readonly MultipleChoices: 300;
+    readonly MovedPermanently: 301;
+    readonly Found: 302;
+    readonly SeeOther: 303;
+    readonly NotModified: 304;
+    readonly UseProxy: 305;
+    readonly Unused: 306;
+    readonly TemporaryRedirect: 307;
+    readonly PermanentRedirect: 308;
+    readonly BadRequest: 400;
+    readonly Unauthorized: 401;
+    readonly PaymentRequired: 402;
+    readonly Forbidden: 403;
+    readonly NotFound: 404;
+    readonly MethodNotAllowed: 405;
+    readonly NotAcceptable: 406;
+    readonly ProxyAuthenticationRequired: 407;
+    readonly RequestTimeout: 408;
+    readonly Conflict: 409;
+    readonly Gone: 410;
+    readonly LengthRequired: 411;
+    readonly PreconditionFailed: 412;
+    readonly PayloadTooLarge: 413;
+    readonly UriTooLong: 414;
+    readonly UnsupportedMediaType: 415;
+    readonly RangeNotSatisfiable: 416;
+    readonly ExpectationFailed: 417;
+    readonly ImATeapot: 418;
+    readonly MisdirectedRequest: 421;
+    readonly UnprocessableEntity: 422;
+    readonly Locked: 423;
+    readonly FailedDependency: 424;
+    readonly TooEarly: 425;
+    readonly UpgradeRequired: 426;
+    readonly PreconditionRequired: 428;
+    readonly TooManyRequests: 429;
+    readonly RequestHeaderFieldsTooLarge: 431;
+    readonly UnavailableForLegalReasons: 451;
+    readonly InternalServerError: 500;
+    readonly NotImplemented: 501;
+    readonly BadGateway: 502;
+    readonly ServiceUnavailable: 503;
+    readonly GatewayTimeout: 504;
+    readonly HttpVersionNotSupported: 505;
+    readonly VariantAlsoNegotiates: 506;
+    readonly InsufficientStorage: 507;
+    readonly LoopDetected: 508;
+    readonly NotExtended: 510;
+    readonly NetworkAuthenticationRequired: 511;
+};
+
+// @public (undocumented)
+export type HttpStatusCode = (typeof HttpStatusCode)[keyof typeof HttpStatusCode];
 
 // @public
 export type HttpTransferCacheOptions = {
