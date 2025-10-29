@@ -1043,6 +1043,9 @@ export function isDevMode(): boolean;
 export function isSignal(value: unknown): value is Signal<unknown>;
 
 // @public
+export function isWritableSignal(value: unknown): value is WritableSignal<unknown>;
+
+// @public
 export function isStandalone(type: Type<unknown>): boolean;
 
 // @public
