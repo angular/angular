@@ -27,6 +27,11 @@
       "description": "One or more named builder configurations as a comma-separated list as specified in the \"configurations\" section in angular.json.\nThe builder uses the named configurations to run the given target.\nFor more information, see https://angular.dev/reference/configs/workspace-config#alternate-build-configurations."
     },
     {
+      "name": "define",
+      "type": "array",
+      "description": "Defines global identifiers that will be replaced with a specified constant value when found in any JavaScript or TypeScript code including libraries. The value will be used directly. String values must be put in quotes. Identifiers within Angular metadata such as Component Decorators will not be replaced."
+    },
+    {
       "name": "headers",
       "type": "array",
       "description": "Custom HTTP headers to be added to all responses."
