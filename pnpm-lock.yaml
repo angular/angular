@@ -10,7 +10,7 @@ overrides:
 
 packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
-pnpmfileChecksum: sha256-LDBE/t1gL6QCKvsgYzYxZaZlgGBTCaL/3QUNg+cLWBE=
+pnpmfileChecksum: sha256-vPvk/mBsTHwJvR6NXsWAPUB+5p/66ODkNQwJchPTYMM=
 
 patchedDependencies:
   dagre-d3-es@7.0.11:
@@ -993,8 +993,8 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
       typescript:
-        specifier: 5.9.0-beta
-        version: 5.9.0-beta
+        specifier: 5.9.3
+        version: 5.9.3
       yargs:
         specifier: ^18.0.0
         version: 18.0.0
@@ -11923,11 +11923,6 @@ packages:
 
   typescript@5.8.2:
     resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
-  typescript@5.9.0-beta:
-    resolution: {integrity: sha512-p91qoTdwWKj9YEBYavmGiBn0DF4OBElzw4pW4oPbK4HeCfr/SDz9+yviVWshZXGvGvFCJ3AVQ+J7F1UZXc23QQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -26087,8 +26082,6 @@ snapshots:
   typescript@3.2.4: {}
 
   typescript@5.8.2: {}
-
-  typescript@5.9.0-beta: {}
 
   typescript@5.9.3: {}
 

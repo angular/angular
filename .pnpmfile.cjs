@@ -25,7 +25,7 @@ function readPackage(pkg, context) {
     pkg.dependencies = {
       ...pkg.dependencies,
       '@angular/compiler': 'workspace:*',
-      'typescript': '5.9.0-beta',
+      'typescript': '5.9.3',
     };
   }
 
