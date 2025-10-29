@@ -7,6 +7,7 @@
  */
 
 import {SIGNAL} from '../../../primitives/signals';
+import type {WritableSignal} from './signal';
 
 /**
  * A reactive value which notifies consumers of any changes.
@@ -37,3 +38,12 @@ export function isSignal(value: unknown): value is Signal<unknown> {
  * @publicApi 17.0
  */
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
+
+/**
+ * Checks if the given `value` is a writeable signal.
+ *
+ * @publicApi 21.1
+ */
+export function isWritableSignal(value: unknown): value is WritableSignal<unknown> {
+  return isSignal(value) && typeof (value as any).set === 'function';
+}

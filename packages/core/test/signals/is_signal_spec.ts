@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, isSignal, signal} from '../../src/core';
+import {computed, isSignal, isWritableSignal, signal} from '../../src/core';
 
 describe('isSignal', () => {
   it('should return true for writable signal', () => {
@@ -32,5 +32,32 @@ describe('isSignal', () => {
   it('should return false for function', () => {
     const fn = () => {};
     expect(isSignal(fn)).toBe(false);
+  });
+});
+
+describe('isWritableSignal', () => {
+  it('should return true for writable signal', () => {
+    const writableSignal = signal('Angular');
+    expect(isWritableSignal(writableSignal)).toBe(true);
+  });
+
+  it('should return false for readonly signal', () => {
+    const readonlySignal = computed(() => 10);
+    expect(isWritableSignal(readonlySignal)).toBe(false);
+  });
+
+  it('should return false for primitive', () => {
+    const primitive = 0;
+    expect(isWritableSignal(primitive)).toBe(false);
+  });
+
+  it('should return false for object', () => {
+    const object = {name: 'Angular'};
+    expect(isWritableSignal(object)).toBe(false);
+  });
+
+  it('should return false for function', () => {
+    const fn = () => {};
+    expect(isWritableSignal(fn)).toBe(false);
   });
 });

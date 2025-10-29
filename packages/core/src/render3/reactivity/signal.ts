@@ -6,16 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {
-  createSignal,
-  SIGNAL,
-  SignalGetter,
-  SignalNode,
-  signalSetFn,
-  signalUpdateFn,
-} from '../../../primitives/signals';
+import {createSignal, SIGNAL, SignalGetter, SignalNode} from '../../../primitives/signals';
 
-import {isSignal, Signal, ValueEqualityFn} from './api';
+import {Signal, ValueEqualityFn} from './api';
 
 /** Symbol used distinguish `WritableSignal` from other non-writable signals and functions. */
 export const ɵWRITABLE_SIGNAL: unique symbol = /* @__PURE__ */ Symbol('WRITABLE_SIGNAL');
@@ -101,11 +94,4 @@ export function signalAsReadonlyFn<T>(this: SignalGetter<T>): Signal<T> {
     node.readonlyFn = readonlyFn as Signal<T>;
   }
   return node.readonlyFn;
-}
-
-/**
- * Checks if the given `value` is a writeable signal.
- */
-export function isWritableSignal(value: unknown): value is WritableSignal<unknown> {
-  return isSignal(value) && typeof (value as any).set === 'function';
 }
