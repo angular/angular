@@ -1,3 +1,24 @@
+<a name="20.3.8"></a>
+# 20.3.8 (2025-10-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [020f17694b](https://github.com/angular/angular/commit/020f17694bf04e390fcf8d75e8f32fd17352c468) | feat | Blocks IPv6 localhost from preconnect checks |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [ca3fd7847f](https://github.com/angular/angular/commit/ca3fd7847f6002898ce1872c4e3c4d035d5197ce) | fix | Clear lView from IcuIteratorState when stack is empty to prevent memory leak |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2edc82abe0](https://github.com/angular/angular/commit/2edc82abe0cfe9e32df86130e0b312b4af8270be) | fix | Do not remove a template if it is referenced even with a trailing semilocon |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [bfa53cdd3f](https://github.com/angular/angular/commit/bfa53cdd3f3531f6528e968f307e30e5b10ca9c4) | fix | handle parenthesized outlets without a name in DefaultUrlSerializer ([#64507](https://github.com/angular/angular/pull/64507)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.7"></a>
 # 20.3.7 (2025-10-22)
 ### animations
