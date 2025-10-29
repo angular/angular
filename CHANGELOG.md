@@ -1,3 +1,33 @@
+<a name="21.0.0-next.10"></a>
+# 21.0.0-next.10 (2025-10-29)
+### common
+| Commit | Type | Description |
+| -- | -- | -- |
+| [2abf2fb501](https://github.com/angular/angular/commit/2abf2fb501139dbc66e5618d7418eba74994f1e0) | feat | Blocks IPv6 localhost from preconnect checks |
+### compiler
+| Commit | Type | Description |
+| -- | -- | -- |
+| [04dd75ba94](https://github.com/angular/angular/commit/04dd75ba948889601bf611254021577aba458d4c) | fix | support arbitrary nesting in :host-context() |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [54ad2304e3](https://github.com/angular/angular/commit/54ad2304e38604437d93292774d54898b7d93e57) | fix | Clear lView from IcuIteratorState when stack is empty to prevent memory leak |
+| [aa389a691b](https://github.com/angular/angular/commit/aa389a691bc2e5726a0ded73d30962c29faab680) | fix | ensure `@for` iteration over field is reactive ([#64113](https://github.com/angular/angular/pull/64113)) |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a1ac9a6415](https://github.com/angular/angular/commit/a1ac9a64154c0a9206e11343b195f287dba3425d) | fix | interop supports CVAs with signals ([#64618](https://github.com/angular/angular/pull/64618)) |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [95344c19f3](https://github.com/angular/angular/commit/95344c19f3981d116546b0de3a72c8b5f66a5a87) | fix | Do not remove a template if it is referenced even with a trailing semilocon |
+### router
+| Commit | Type | Description |
+| -- | -- | -- |
+| [b7cefeb864](https://github.com/angular/angular/commit/b7cefeb8649f85b8cb1faaa53260c85a421096b8) | fix | handle parenthesized outlets without a name in DefaultUrlSerializer ([#64507](https://github.com/angular/angular/pull/64507)) |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.9"></a>
 # 20.3.9 (2025-10-29)
 
