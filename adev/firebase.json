@@ -19,7 +19,7 @@
         ]
       },
       {
-        "source": "/angular.dev/assets/others/versions.json",
+        "source": "assets/others/versions.json",
         "headers": [
           {
             "key": "Cross-Origin-Resource-Policy",
