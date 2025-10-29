@@ -22,8 +22,8 @@ export interface MatchResult {
   matched: boolean;
   consumedSegments: UrlSegment[];
   remainingSegments: UrlSegment[];
-  parameters: {[k: string]: string};
-  positionalParamSegments: {[k: string]: UrlSegment};
+  parameters: {[k: string]: string | string[]};
+  positionalParamSegments: {[k: string]: UrlSegment | UrlSegment[]};
 }
 
 const noMatch: MatchResult = {
@@ -60,10 +60,6 @@ export function match(
   route: Route,
   segments: UrlSegment[],
 ): MatchResult {
-  if (route.path === '**') {
-    return createWildcardMatchResult(segments);
-  }
-
   if (route.path === '') {
     if (route.pathMatch === 'full' && (segmentGroup.hasChildren() || segments.length > 0)) {
       return {...noMatch};
@@ -82,32 +78,27 @@ export function match(
   const res = matcher(segments, segmentGroup, route);
   if (!res) return {...noMatch};
 
-  const posParams: {[n: string]: string} = {};
+  const posParams: {[n: string]: string | string[]} = {};
   Object.entries(res.posParams ?? {}).forEach(([k, v]) => {
-    posParams[k] = v.path;
+    if (Array.isArray(v)) {
+      posParams[k] = v.map((s) => s.path);
+    } else {
+      posParams[k] = v.path;
+    }
   });
-  const parameters =
-    res.consumed.length > 0
-      ? {...posParams, ...res.consumed[res.consumed.length - 1].parameters}
-      : posParams;
+
+  const parameters: {[key: string]: any} = {};
+  for (const s of res.consumed) {
+    Object.assign(parameters, s.parameters);
+  }
+  Object.assign(parameters, posParams);
 
   return {
     matched: true,
     consumedSegments: res.consumed,
     remainingSegments: segments.slice(res.consumed.length),
-    // TODO(atscott): investigate combining parameters and positionalParamSegments
     parameters,
     positionalParamSegments: res.posParams ?? {},
-  };
-}
-
-function createWildcardMatchResult(segments: UrlSegment[]): MatchResult {
-  return {
-    matched: true,
-    parameters: segments.length > 0 ? last(segments)!.parameters : {},
-    consumedSegments: segments,
-    remainingSegments: [],
-    positionalParamSegments: {},
   };
 }
 
