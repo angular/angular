@@ -6,7 +6,10 @@
     color: var(--label-theme);
     background: color-mix(in srgb, var(--label-theme) 10%, white);
     border-radius: 0.25rem;
-    cursor: default;
+
+    &:has(a) {
+      cursor: default;
+    }
 
     &:first-letter {
       text-transform: uppercase;
@@ -23,7 +26,8 @@
 
     &.full {
       font-size: 0.75rem;
-      &:not(:has(*)), &:not(:has(a span, span)) {
+      &:not(:has(*)),
+      &:not(:has(a span, span)) {
         // if no children, just a text node, or
         // no children with span
         padding: 0.25rem 0.5rem;
