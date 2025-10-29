@@ -14,9 +14,9 @@ import type {
   LogicFn,
   ValidationResult,
 } from '../api/types';
+import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {BoundPredicate, LogicContainer, Predicate} from './logic';
-import {ValidationErrorWithField} from '../api/validation_errors';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -113,18 +113,20 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addReadonlyRule(logic);
   }
 
-  override addSyncErrorRule(logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>): void {
+  override addSyncErrorRule(
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
+  ): void {
     this.getCurrent().addSyncErrorRule(logic);
   }
 
   override addSyncTreeErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.getCurrent().addSyncTreeErrorRule(logic);
   }
 
   override addAsyncErrorRule(
-    logic: LogicFn<any, AsyncValidationResult<ValidationErrorWithField>>,
+    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithField>>,
   ): void {
     this.getCurrent().addAsyncErrorRule(logic);
   }
@@ -233,18 +235,20 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.readonly.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addSyncErrorRule(logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>): void {
+  override addSyncErrorRule(
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
+  ): void {
     this.logic.syncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addSyncTreeErrorRule(
-    logic: LogicFn<any, ValidationResult<ValidationErrorWithField>>,
+    logic: LogicFn<any, ValidationResult<ValidationError.WithField>>,
   ): void {
     this.logic.syncTreeErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
   override addAsyncErrorRule(
-    logic: LogicFn<any, AsyncValidationResult<ValidationErrorWithField>>,
+    logic: LogicFn<any, AsyncValidationResult<ValidationError.WithField>>,
   ): void {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
