@@ -34,7 +34,6 @@ import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 export const CALL_SET_DISABLED_STATE = new InjectionToken(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'CallSetDisabledState' : '',
   {
-    providedIn: 'root',
     factory: () => setDisabledStateDefault,
   },
 );
