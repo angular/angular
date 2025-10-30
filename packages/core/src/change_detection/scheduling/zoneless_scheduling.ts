@@ -66,13 +66,13 @@ export abstract class ChangeDetectionScheduler {
 /** Token used to indicate if zoneless was enabled via provideZonelessChangeDetection(). */
 export const ZONELESS_ENABLED = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless enabled' : '',
-  {providedIn: 'root', factory: () => true},
+  {factory: () => true},
 );
 
 /** Token used to indicate `provideZonelessChangeDetection` was used. */
 export const PROVIDED_ZONELESS = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'Zoneless provided' : '',
-  {providedIn: 'root', factory: () => false},
+  {factory: () => false},
 );
 
 // TODO(atscott): Remove in v19. Scheduler should be done with runOutsideAngular.
