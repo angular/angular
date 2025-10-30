@@ -64,11 +64,11 @@
           "jsdocTags": []
         },
         {
-          "name": "skipDisabled",
+          "name": "softDisabled",
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "Whether disabled items in the list should be skipped when navigating.",
+          "description": "Whether to allow disabled items in the list to receive focus.",
           "jsdocTags": []
         },
         {
@@ -436,7 +436,7 @@
       "@angular/aria/listbox"
     ],
     [
-      "Listbox.skipDisabled",
+      "Listbox.softDisabled",
       "@angular/aria/listbox"
     ],
     [

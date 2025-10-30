@@ -159,15 +159,15 @@
           "outputAlias": "valueChange"
         },
         {
-          "name": "skipDisabled",
+          "name": "softDisabled",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "input"
           ],
-          "description": "Whether disabled items should be skipped during keyboard navigation.",
+          "description": "Whether to allow disabled items to receive focus.",
           "jsdocTags": [],
-          "inputAlias": "skipDisabled",
+          "inputAlias": "softDisabled",
           "isRequiredInput": false
         },
         {
@@ -358,7 +358,7 @@
       "@angular/aria/accordion"
     ],
     [
-      "AccordionGroup.skipDisabled",
+      "AccordionGroup.softDisabled",
       "@angular/aria/accordion"
     ],
     [
