@@ -4,12 +4,12 @@ This script updates documentation assets from other repositories for `angular.de
 
 ## Aria Packages
 
-Updates the Angular Aria API JSON files in `adev/src/content/aria`, used for the [angular.dev API](httpss.angular.dev/api) pages.
+Updates the Angular Aria API JSON files in `adev/src/content/aria`, used for the [angular.dev API](https://angular.dev/api) pages.
 
 ## CDK Packages
 
-Updates the Angular CDK API JSON files in `adev/src/content/cdk`, used for the [angular.dev API](httpss.angular.dev/api) pages.
+Updates the Angular CDK API JSON files in `adev/src/content/cdk`, used for the [angular.dev API](https://angular.dev/api) pages.
 
 ## CLI Help Pages
 
-Updates the Angular CLI help JSON files in `adev/src/content/cli/help`, used for the [angular.dev CLI](httpss.angular.dev/cli) pages.
+Updates the Angular CLI help JSON files in `adev/src/content/cli/help`, used for the [angular.dev CLI](https://angular.dev/cli) pages.
