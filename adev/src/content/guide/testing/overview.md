@@ -2,61 +2,58 @@
 
 Testing your Angular application helps you check that your application is working as you expect.
 
+NOTE: While Vitest is the default test runner, Karma is still fully supported. For information on testing with Karma, see the [Karma testing guide](guide/testing/karma).
+
 ## Set up testing
 
-The Angular CLI downloads and installs everything you need to test an Angular application with [Jasmine testing framework](https://jasmine.github.io).
+The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev).
 
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
 
-<docs-code language="shell">
+```shell
 
 ng test
 
-</docs-code>
+```
 
-The `ng test` command builds the application in _watch mode_,
-and launches the [Karma test runner](https://karma-runner.github.io).
+The `ng test` command builds the application in _watch mode_ and launches the [Vitest test runner](https://vitest.dev).
 
 The console output looks like below:
 
-<docs-code language="shell">
+```shell
 
-02 11 2022 09:08:28.605:INFO [karma-server]: Karma v6.4.1 server started at http://localhost:9876/
-02 11 2022 09:08:28.607:INFO [launcher]: Launching browsers Chrome with concurrency unlimited
-02 11 2022 09:08:28.620:INFO [launcher]: Starting browser Chrome
-02 11 2022 09:08:31.312:INFO [Chrome]: Connected on socket -LaEYvD2R7MdcS0-AAAB with id 31534482
-Chrome: Executed 3 of 3 SUCCESS (0.193 secs / 0.172 secs)
-TOTAL: 3 SUCCESS
+ ✓ src/app/app.component.spec.ts (3)
+   ✓ AppComponent should create the app
+   ✓ AppComponent should have as title 'my-app'
+   ✓ AppComponent should render title
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  18:18:01
+   Duration  2.46s (transform 615ms, setup 2ms, collect 2.21s, tests 5ms)
 
-</docs-code>
-
-The last line of the log shows that Karma ran three tests that all passed.
-
-The test output is displayed in the browser using [Karma Jasmine HTML Reporter](https://github.com/dfederm/karma-jasmine-html-reporter).
-
-<img alt="Jasmine HTML Reporter in the browser" src="assets/images/guide/testing/initial-jasmine-html-reporter.png">
-
-Click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group \("test suite"\).
+```
 
 Meanwhile, the `ng test` command is watching for changes.
 
-To see this in action, make a small change to `app.component.ts` and save.
-The tests run again, the browser refreshes, and the new test results appear.
+To see this in action, make a small change to `app.ts` and save.
+The tests run again, and the new test results appear in the console.
 
 ## Configuration
 
-The Angular CLI takes care of Jasmine and Karma configuration for you. It constructs the full configuration in memory, based on options specified in the `angular.json` file.
+The Angular CLI takes care of the Vitest configuration for you. It constructs the full configuration in memory, based on options specified in the `angular.json` file.
 
-If you want to customize Karma, you can create a `karma.conf.js` by running the following command:
+If you want to customize Vitest, you can create a `vitest-base.config.ts` by running the following command:
 
-<docs-code language="shell">
+```shell
 
-ng generate config karma
+ng generate config vitest
 
-</docs-code>
+```
 
-HELPFUL: Read more about Karma configuration in the [Karma configuration guide](http://karma-runner.github.io/6.4/config/configuration-file.html).
+IMPORTANT: Using a custom `vitest-base.config.ts` provides powerful customization options. However, the Angular team does not provide support for the specific contents of this file or for any third-party plugins used within it.
+
+HELPFUL: Read more about Vitest configuration in the [Vitest configuration guide](https://vitest.dev/config/).
 
 ### Other test frameworks
 
@@ -65,12 +62,12 @@ Each library and runner has its own distinctive installation procedures, configu
 
 ### Test file name and location
 
-Inside the `src/app` folder the Angular CLI generated a test file for the `AppComponent` named `app.component.spec.ts`.
+Inside the `src/app` folder the Angular CLI generated a test file for the `App` component named `app.spec.ts`.
 
-IMPORTANT: The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests \(also known as a _spec_ file\).
+IMPORTANT: The test file extension **must be `.spec.ts` or `.test.ts`** so that tooling can identify it as a file with tests \(also known as a _spec_ file\).
 
-The `app.component.ts` and `app.component.spec.ts` files are siblings in the same folder.
-The root file names \(`app.component`\) are the same for both files.
+The `app.ts` and `app.spec.ts` files are siblings in the same folder.
+The root file names \(`app`\) are the same for both files.
 
 Adopt these two conventions in your own projects for _every kind_ of test file.
 
@@ -103,11 +100,19 @@ One of the best ways to keep your project bug-free is through a test suite, but 
 
 Continuous integration \(CI\) servers let you set up your project repository so that your tests run on every commit and pull request.
 
-To test your Angular CLI application in Continuous integration \(CI\) run the following command:
+To test your Angular application in a continuous integration (CI) server, you can typically run the standard test command:
 
-<docs-code language="shell">
-ng test --no-watch --no-progress --browsers=ChromeHeadless
-</docs-code>
+```shell
+ng test
+```
+
+Most CI servers set a `CI=true` environment variable, which `ng test` detects. This automatically runs your tests in the appropriate non-interactive, single-run mode.
+
+If your CI server does not set this variable, or if you need to force single-run mode manually, you can use the `--no-watch` and `--no-progress` flags:
+
+```shell
+ng test --no-watch --no-progress
+```
 
 ## More information on testing
 
