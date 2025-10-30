@@ -17,12 +17,12 @@ interface PluginModule extends ts.server.PluginModule {
 }
 
 export const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
-  let plugin: PluginModule;
+  const plugin: PluginModule = require(`@angular/language-service/bundles/language-service.js`)(
+    tsModule,
+  );
 
   return {
     create(info: ts.server.PluginCreateInfo): NgLanguageService {
-      // Use a module name based import path to allow it to be marked external.
-      plugin = require(`@angular/language-service/bundles/language-service.js`)(tsModule);
       return plugin.create(info);
     },
     getExternalFiles(project: ts.server.Project): string[] {
