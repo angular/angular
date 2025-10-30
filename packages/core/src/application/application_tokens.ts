@@ -44,7 +44,6 @@ import {getDocument} from '../render3/interfaces/document';
 export const APP_ID = new InjectionToken<string>(
   typeof ngDevMode !== undefined && ngDevMode ? 'AppId' : '',
   {
-    providedIn: 'root',
     factory: () => DEFAULT_APP_ID,
   },
 );
@@ -119,7 +118,6 @@ export const ANIMATION_MODULE_TYPE = new InjectionToken<'NoopAnimations' | 'Brow
 export const CSP_NONCE = new InjectionToken<string | null>(
   typeof ngDevMode !== undefined && ngDevMode ? 'CSP nonce' : '',
   {
-    providedIn: 'root',
     factory: () => {
       // Ideally we wouldn't have to use `querySelector` here since we know that the nonce will be on
       // the root node, but because the token value is used in renderers, it has to be available
@@ -182,7 +180,6 @@ export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
   typeof ngDevMode !== undefined && ngDevMode ? 'ImageConfig' : '',
   {
-    providedIn: 'root',
     factory: () => IMAGE_CONFIG_DEFAULTS,
   },
 );

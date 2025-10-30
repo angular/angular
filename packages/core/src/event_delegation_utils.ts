@@ -97,7 +97,6 @@ export interface EventContractDetails {
 export const JSACTION_EVENT_CONTRACT = new InjectionToken<EventContractDetails>(
   typeof ngDevMode !== undefined && ngDevMode ? 'EVENT_CONTRACT_DETAILS' : '',
   {
-    providedIn: 'root',
     factory: () => ({}),
   },
 );
