@@ -527,6 +527,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/code-coverage',
           },
           {
+            label: 'Testing with Karma and Jasmine',
+            path: 'guide/testing/karma',
+            contentPath: 'guide/testing/karma',
+          },
+          {
             label: 'Testing services',
             path: 'guide/testing/services',
             contentPath: 'guide/testing/services',
