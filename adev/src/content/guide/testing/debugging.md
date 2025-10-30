@@ -2,7 +2,9 @@
 
 If your tests aren't working as you expect them to, you can inspect and debug them in the browser.
 
-Debug specs in the browser in the same way that you debug an application.
+NOTE: This guide describes debugging with the Karma test runner.
+
+To debug an application with the Karma test runner:
 
 1. Reveal the Karma browser window.
    See [Set up testing](guide/testing#set-up-testing) if you need help with this step.
