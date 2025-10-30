@@ -7,10 +7,10 @@
  */
 
 import {Signal, ɵFieldState} from '@angular/core';
+import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
 import {AggregateMetadataKey, MetadataKey} from './metadata';
 import type {ValidationError} from './validation_errors';
-import {AbstractControl} from '@angular/forms';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -162,7 +162,17 @@ export type FieldTree<TModel, TKey extends string | number = string | number> =
     // Children:
     (TModel extends AbstractControl
       ? unknown
-      : TModel extends Array<infer U>
+      : // Note: We use `TValue & {}` below to avoid the condition from being distributed over a recursive
+        // union type, which seems to result in infinite type recursion. By adding `& {}` we're not
+        // testing a naked type parameter, and thus the condition is not distributed.
+        // (See https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
+        // The example below demonstrates the problematic situation we want to avoid:
+        //
+        // ```
+        // type RecursiveType = (number | RecursiveType)[]
+        // type Test = FieldTree<RecursiveType> // Infinite type recursion if condition distributes.
+        // ```
+        TModel & {} extends Array<infer U>
         ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
         : TModel extends Record<string, any>
           ? Subfields<TModel>
