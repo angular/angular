@@ -6,12 +6,14 @@ The Angular CLI includes an experimental [Model Context Protocol (MCP) server](h
 
 The Angular CLI MCP server provides several tools to assist you in your development workflow. By default, the following tools are enabled:
 
-| Name                   | Description                                                                                                                                                                                        | `local-only` | `read-only` |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `ai_tutor`             | Launches an interactive AI-powered Angular tutor. Recommended to run from a new Angular project using v20 or later. [Learn more](https://github.com/angular/ai-tutor/blob/main/README.md).         |      ✅      |      ✅     |
-| `get_best_practices`   | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |
-| `list_projects`        | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |
-| `search_documentation` | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |
+| Name                        | Description                                                                                                                                                                                        | `local-only` | `read-only` | `experimental-tool` |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: | :-----------------: |
+| `ai_tutor`                  | Launches an interactive AI-powered Angular tutor. Recommended to run from a new Angular project using v20 or later. [Learn more](https://github.com/angular/ai-tutor/blob/main/README.md).         |      ✅      |      ✅     |         ❌         |
+| `get_best_practices`        | Retrieves the Angular Best Practices Guide. This guide is essential for ensuring that all code adheres to modern standards, including standalone components, typed forms, and modern control flow. |      ✅      |      ✅     |         ❌         |
+| `list_projects`             | Lists the names of all applications and libraries defined within an Angular workspace. It reads the `angular.json` configuration file to identify the projects.                                    |      ✅      |      ✅     |         ❌         |
+| `search_documentation`      | Searches the official Angular documentation at https://angular.dev. This tool should be used to answer any questions about Angular, such as for APIs, tutorials, and best practices.               |      ❌      |      ✅     |         ❌         |
+| `modernize`                 | Provides instructions and commands for modernizing Angular code to align with the latest best practices and syntax. [Learn more](https://angular.dev/reference/migrations).                        |      ✅      |      ❌     |         ✅         |
+| `onpush-zoneless-migration` | Analyzes Angular code and provides a step-by-step, iterative plan to migrate it to `OnPush` change detection, a prerequisite for a zoneless application.                                           |      ✅      |      ❌     |         ✅         |
 
 ## Get Started
 
@@ -118,10 +120,11 @@ For other IDEs, check your IDE's documentation for the proper location of the MC
 
 The `mcp` command can be configured with the following options passed as arguments in your IDE's MCP configuration:
 
-| Option         | Type      | Description                                                                                                | Default |
-| :------------- | :-------- | :--------------------------------------------------------------------------------------------------------- | :------ |
-| `--read-only`  | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits. | `false` |
-| `--local-only` | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network. | `false` |
+| Option                | Alias | Type      | Description                                                                                                | Default |
+| :-------------------- | :---- | :-------- | :--------------------------------------------------------------------------------------------------------- | :------ |
+| `--read-only`         |       | `boolean` | Only register tools that do not make changes to the project. Your editor or coding agent may still perform edits. | `false` |
+| `--local-only`        |       | `boolean` | Only register tools that do not require an internet connection. Your editor or coding agent may still send data over the network. | `false` |
+| `--experimental-tool` | `-E`  | `string`  | Enable an experimental tool. Available choices: `modernize`, `onpush-zoneless-migration`. | |
 
 
 For example, to run the server in read-only mode in VS Code, you would update your `mcp.json` like this:
@@ -136,6 +139,8 @@ For example, to run the server in read-only mode in VS Code, you would update yo
   }
 }
 ```
+
+Or you can pass `-E modernize onpush-zoneless-migration` to enable _Modernize Angular Code_ and _Plan migration to OnPush and/or zoneless_ experimental tools.
 
 ## Feedback and New Ideas
 
