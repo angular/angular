@@ -5,9 +5,10 @@
   display: block;
   overflow-x: auto;
 
-  /* FRAGILE */
-  ::ng-deep {
-    .mat-tree-node {
+  mat-tree {
+    margin-left: 0.625rem;
+
+    mat-tree-node {
       min-height: 20px !important;
     }
   }
@@ -21,6 +22,7 @@
 
   .expandable-node,
   .non-expandable-node {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 0.25rem;
@@ -33,15 +35,16 @@
     cursor: pointer;
 
     mat-icon {
-      width: 16px;
-      height: 16px;
-      font-size: 16px;
+      position: absolute;
+      left: -0.75rem;
+      width: 12px;
+      height: 12px;
+      font-size: 12px;
     }
   }
 
   .non-expandable-node {
     margin: 0;
-    margin-left: 3px;
   }
 
   .name {
