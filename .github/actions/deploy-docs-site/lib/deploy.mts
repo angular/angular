@@ -115,6 +115,6 @@ function firebase(cmd: string, cwd?: string) {
   });
   if (status !== 0) {
     console.error('Firebase command failed, see log above for details.');
-    process.exit(status);
+    process.exit(status ?? undefined);
   }
 }
