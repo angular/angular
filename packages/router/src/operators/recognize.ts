@@ -26,7 +26,6 @@ import type {UrlSerializer} from '../url_tree';
 const RECOGNIZE_IMPL = new InjectionToken<typeof recognizeFn | typeof recognizeFnRxjs>(
   'RECOGNIZE_IMPL',
   {
-    providedIn: 'root',
     factory: () => {
       const USE_ASYNC_RECOGNIZE = true;
       if (!USE_ASYNC_RECOGNIZE) {
