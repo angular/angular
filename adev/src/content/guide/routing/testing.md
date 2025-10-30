@@ -46,7 +46,7 @@ describe('UserProfile', () => {
 });
 ```
 
-```ts
+```angular-ts
 // user-profile.component.ts
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -186,7 +186,7 @@ describe('App Router Outlet', () => {
 });
 ```
 
-```ts
+```angular-ts
 // app.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
@@ -254,7 +254,7 @@ describe('Nested Routes', () => {
 });
 ```
 
-```ts
+```angular-ts
 // nested-components.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -314,7 +314,7 @@ describe('Search', () => {
 });
 ```
 
-```ts
+```angular-ts
 // search.component.ts
 import { Component, inject, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
