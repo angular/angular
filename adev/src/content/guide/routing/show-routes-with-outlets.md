@@ -8,7 +8,7 @@ The `RouterOutlet` directive is a placeholder that marks the location where the 
 <app-footer />
 ```
 
-```angular-ts
+```ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
@@ -23,7 +23,7 @@ export class AppComponent {}
 
 In this example, if an application has the following routes defined:
 
-```angular-ts
+```ts
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { ProductsComponent } from './products/products.component';
@@ -96,7 +96,7 @@ In this example, the `Settings` component will display the desired panel based o
 
 A child route is like any other route, in that it needs both a `path` and a `component`. The one difference is that you place child routes in a children array within the parent route.
 
-```angular-ts
+```ts
 const routes: Routes = [
   {
     path: 'settings-component',
@@ -133,7 +133,7 @@ Each outlet must have a unique name. The name cannot be set or changed dynamical
 
 Angular matches the outlet's name to the `outlet` property defined on each route:
 
-```angular-ts
+```ts
 {
   path: 'user/:id',
   component: UserDetails,
@@ -169,7 +169,7 @@ Check out the [API docs for RouterOutlet](/api/router/RouterOutlet?tab=api) if y
 
 Passing contextual data to routed components often requires global state or complicated route configurations. To make this easier, each `RouterOutlet` supports a `routerOutletData` input. Routed components and their children can read this data as a signal using the `ROUTER_OUTLET_DATA` injection token, allowing outlet-specific configuration without modifying route definitions.
 
-```ts
+```angular-ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
@@ -186,7 +186,7 @@ export class DashboardComponent {}
 
 The routed component can inject the provided outlet data using `ROUTER_OUTLET_DATA`:
 
-```ts
+```angular-ts
 import { Component, inject } from '@angular/core';
 import { ROUTER_OUTLET_DATA } from '@angular/router';
 
