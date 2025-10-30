@@ -33497,7 +33497,7 @@ function firebase(cmd, cwd) {
   });
   if (status !== 0) {
     console.error("Firebase command failed, see log above for details.");
-    process.exit(status);
+    process.exit(status ?? void 0);
   }
 }
 
