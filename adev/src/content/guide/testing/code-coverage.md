@@ -7,7 +7,7 @@ Code coverage reports show you any parts of your code base that might not be pro
 To generate a coverage report run the following command in the root of your project.
 
 <docs-code language="shell">
-ng test --no-watch --code-coverage
+ng test --no-watch --coverage
 </docs-code>
 
 When the tests are complete, the command creates a new `/coverage` directory in the project.
@@ -18,7 +18,7 @@ If you want to create code-coverage reports every time you test, set the followi
 <docs-code language="json">
 "test": {
   "options": {
-    "codeCoverage": true
+    "coverage": true
   }
 }
 </docs-code>
@@ -26,32 +26,25 @@ If you want to create code-coverage reports every time you test, set the followi
 ## Code coverage enforcement
 
 The code coverage percentages let you estimate how much of your code is tested.
-If your team decides on a set minimum amount to be unit tested, enforce this minimum with the Angular CLI.
+If your team decides on a set minimum amount to be unit tested, you can enforce this minimum directly in your Angular CLI configuration.
 
 For example, suppose you want the code base to have a minimum of 80% code coverage.
-To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the `check` property in the `coverageReporter:` key.
+To enable this, open the `angular.json` file and add the `coverageThresholds` option to your test configuration:
 
-<docs-code language="javascript">
-coverageReporter: {
-  dir: require('path').join(__dirname, './coverage/<project-name>'),
-  subdir: '.',
-  reporters: [
-    { type: 'html' },
-    { type: 'text-summary' }
-  ],
-  check: {
-    global: {
-      statements: 80,
-      branches: 80,
-      functions: 80,
-      lines: 80
+<docs-code language="json">
+"test": {
+  "options": {
+    "coverage": true,
+    "coverageThresholds": {
+      "statements": 80,
+      "branches": 80,
+      "functions": 80,
+      "lines": 80
     }
   }
 }
 </docs-code>
 
-HELPFUL: Read more about creating and fine tuning Karma configuration in the [testing guide](guide/testing#configuration).
+Now, when you run `ng test`, the tool will throw an error if the coverage drops below 80%.
 
-The `check` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
-
-Read more on coverage configuration options in the [karma coverage documentation](https://github.com/karma-runner/karma-coverage/blob/master/docs/configuration.md).
+HELPFUL: Read more about coverage configuration options in the [Vitest documentation](https://vitest.dev/config/#coverage-thresholds).
