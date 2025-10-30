@@ -178,6 +178,8 @@ export type Subfields<TValue> = {
     TValue[K],
     string
   >;
+} & {
+  [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TValue[keyof TValue], string>]>;
 };
 
 /**

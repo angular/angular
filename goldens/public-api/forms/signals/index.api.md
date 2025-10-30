@@ -487,6 +487,8 @@ export class StandardSchemaValidationError extends _NgValidationError {
 // @public
 export type Subfields<TValue> = {
     readonly [K in keyof TValue as TValue[K] extends Function ? never : K]: MaybeFieldTree<TValue[K], string>;
+} & {
+    [Symbol.iterator](): Iterator<[string, MaybeFieldTree<TValue[keyof TValue], string>]>;
 };
 
 // @public

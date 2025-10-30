@@ -7,14 +7,14 @@
  */
 
 import {untracked} from '@angular/core';
-import {isArray} from '../util/type_guards';
+import {isArray, isObject} from '../util/type_guards';
 import type {FieldNode} from './node';
 
 /**
  * Proxy handler which implements `FieldTree<T>` on top of `FieldNode`.
  */
 export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
-  get(getTgt: () => FieldNode, p: string | symbol) {
+  get(getTgt: () => FieldNode, p: string | symbol, receiver: {[key: string]: unknown}) {
     const tgt = getTgt();
 
     // First, check whether the requested property is a defined child node of this node.
@@ -41,14 +41,40 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
       // Allow access to the iterator. This allows the user to spread the field array into a
       // standard array in order to call methods like `filter`, `map`, etc.
       if (p === Symbol.iterator) {
-        return (Array.prototype as any)[p];
+        return Array.prototype[p as any];
       }
       // Note: We can consider supporting additional array methods if we want in the future,
       // but they should be thoroughly tested. Just forwarding the method directly from the
       // `Array` prototype results in broken behavior for some methods like `map`.
     }
 
+    if (isObject(value)) {
+      // For object fields, allow iteration over their entries for convenience of use with `@for`.
+      if (p === Symbol.iterator) {
+        return function* () {
+          for (const key in receiver) {
+            yield [key, receiver[key]];
+          }
+        };
+      }
+    }
+
     // Otherwise, this property doesn't exist.
     return undefined;
+  },
+
+  getOwnPropertyDescriptor(getTgt, prop) {
+    const value = untracked(getTgt().value) as Object;
+    const desc = Reflect.getOwnPropertyDescriptor(value, prop);
+    // In order for `Object.keys` to function properly, keys must be reported as configurable.
+    if (desc && !desc.configurable) {
+      desc.configurable = true;
+    }
+    return desc;
+  },
+
+  ownKeys(getTgt: () => FieldNode) {
+    const value = untracked(getTgt().value);
+    return typeof value === 'object' && value !== null ? Reflect.ownKeys(value) : [];
   },
 };
