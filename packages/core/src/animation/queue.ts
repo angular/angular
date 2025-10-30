@@ -22,7 +22,6 @@ export interface AnimationQueue {
 export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationQueue' : '',
   {
-    providedIn: 'root',
     factory: () => {
       return {
         queue: new Set(),

@@ -18,7 +18,6 @@ export const NG_REFLECT_ATTRS_FLAG_DEFAULT = false;
 export const NG_REFLECT_ATTRS_FLAG = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'NG_REFLECT_FLAG' : '',
   {
-    providedIn: 'root',
     factory: () => NG_REFLECT_ATTRS_FLAG_DEFAULT,
   },
 );
