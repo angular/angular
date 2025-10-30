@@ -49,6 +49,11 @@
         "category": "Angular"
       },
       {
+        "command": "angular.showReferences",
+        "title": "Show References",
+        "category": "Angular"
+      },
+      {
         "command": "angular.goToTemplateForComponent",
         "title": "Go to template",
         "category": "Angular"
@@ -153,6 +158,11 @@
           "type": "string",
           "default": "",
           "markdownDescription": "A comma-separated list of error codes in templates whose diagnostics should be ignored."
+        },
+        "angular.referencesCodeLens.enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable/disable the references CodeLens in TypeScript files for properties and methods used in an Angular template."
         }
       }
     },
