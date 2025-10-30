@@ -240,6 +240,147 @@ This means that the TypeScript source can result in different JavaScript code in
 For this reason, an application that depends on a library should only use TypeScript path mappings that point to the _built library_.
 TypeScript path mappings should _not_ point to the library source `.ts` files.
 
+## Linking libraries for local development
+
+When developing multiple libraries or testing library changes in a consuming application, you can use `npm link` to create symbolic links between your library and application. This approach provides several benefits over a monorepo setup:
+
+- Auto-reload when library code changes
+- Selective linking of only the libraries you're actively developing
+- Independence from monorepo tooling and configuration
+- Familiar workflow consistent with other npm-based projects
+
+### Configuring the consuming application
+
+To use linked libraries, you need to configure your application's `angular.json` file with the following settings:
+
+<docs-code language="json">  
+  
+{  
+  "projects": {  
+    "your-app": {  
+      "architect": {  
+        "build": {  
+          "options": {  
+            "preserveSymlinks": true  
+          },  
+          "configurations": {  
+            "development": {  
+              "sourceMap": {  
+                "scripts": true,  
+                "styles": true,  
+                "vendor": true  
+              }  
+            }  
+          }  
+        }  
+      }  
+    }  
+  },  
+  "cli": {  
+    "cache": {  
+      "environment": "local",  
+      "enabled": false  
+    }  
+  }  
+}  
+  
+</docs-code>  
+  
+| Configuration | Purpose |  
+|:---|:---|  
+| `preserveSymlinks: true` | Prevents Node.js from resolving symlinks to their real paths, which is necessary for `npm link` to work correctly |  
+| `sourceMap` | Enables source maps for debugging both your application and linked library code |  
+| `cache.enabled: false` | Disables the Angular CLI disk cache to ensure library changes are always reflected |  
+  
+For more information about cache options, see [Angular CLI configuration options](reference/configs/workspace-config#cache-options).  
+  
+### Configuring the library  
+  
+In your library's `tsconfig.lib.json`, enable declaration maps to support debugging:  
+  
+<docs-code language="json">  
+  
+{  
+  "extends": "./tsconfig.json",  
+  "compilerOptions": {  
+    "declarationMap": true  
+  }  
+}  
+  
+</docs-code>  
+  
+The `declarationMap` option generates source map files for TypeScript declaration files, allowing your IDE to navigate to the original TypeScript source when debugging.  
+  
+### Linking workflow  
+  
+<docs-workflow>  
+  
+<docs-step title="Build the library with watch mode">  
+In your library project, build the library with the `--watch` flag to enable incremental rebuilds:  
+  
+<docs-code language="shell">  
+  
+ng build my-lib --watch  
+  
+</docs-code>  
+  
+This keeps the library build running and automatically rebuilds when you make changes to the library source code.  
+</docs-step>  
+  
+<docs-step title="Create the npm link">  
+In a separate terminal, navigate to the library's distribution folder and create the global link:  
+  
+<docs-code language="shell">  
+  
+cd dist/my-lib  
+npm link  
+  
+</docs-code>  
+  
+This creates a global symbolic link to your library package.  
+</docs-step>  
+  
+<docs-step title="Link in the consuming application">  
+In your application project, link to the library:  
+  
+<docs-code language="shell">  
+  
+cd path/to/your-app  
+npm link my-lib  
+  
+</docs-code>  
+  
+This creates a symbolic link from your application's `node_modules/my-lib` to the globally linked library.  
+</docs-step>  
+  
+<docs-step title="Serve the application">  
+Start your application's development server:  
+  
+<docs-code language="shell">  
+  
+ng serve  
+  
+</docs-code>  
+  
+Changes to your library code will now trigger rebuilds, and the application will automatically reload with the updated library code.  
+</docs-step>  
+  
+</docs-workflow>  
+  
+<docs-callout type="important" title="Cache considerations">  
+  
+When using `npm link`, you must disable the Angular CLI cache by setting `"cli.cache.enabled": false` in your `angular.json`. Otherwise, cached builds may prevent library changes from being reflected in your application.  
+  
+For more details, see [Cache options](reference/configs/workspace-config#cache-options).  
+  
+</docs-callout>  
+  
+<docs-callout type="helpful" title="Unlinking libraries">  
+  
+To remove a linked library, use `npm unlink my-lib` in your application directory, then reinstall the library from npm with `npm install my-lib`.  
+  
+</docs-callout>
+
 ## Publishing libraries
 
 There are two distribution formats to use when publishing a library:
