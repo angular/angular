@@ -8,19 +8,22 @@
 
 import {Tokens, Token, TokenizerThis, RendererThis} from 'marked';
 
-/** Enum of all available callout severities. */
-export enum CalloutSeverityLevel {
-  HELPFUL = 'HELPFUL',
-  IMPORTANT = 'IMPORTANT',
-  CRITICAL = 'CRITICAL',
-}
+/** const of all available callout severities. */
+export const CalloutSeverityLevel = {
+  HELPFUL: 'HELPFUL',
+  IMPORTANT: 'IMPORTANT',
+  CRITICAL: 'CRITICAL',
+} as const;
+
+export type CalloutSeverityLevelType =
+  (typeof CalloutSeverityLevel)[keyof typeof CalloutSeverityLevel];
 
 /** Token for docs-callouts */
 interface DocsCalloutToken extends Tokens.Generic {
   type: 'docs-callout';
   title: string;
   titleTokens: Token[];
-  severityLevel: CalloutSeverityLevel;
+  severityLevel: CalloutSeverityLevelType;
   body: string;
   bodyTokens: Token[];
 }
@@ -46,9 +49,11 @@ export const docsCalloutExtension = {
       const attr = match[1].trim();
       const title = titleRule.exec(attr);
 
-      let severityLevel = CalloutSeverityLevel.HELPFUL;
-      if (isImportantRule.exec(attr)) severityLevel = CalloutSeverityLevel.IMPORTANT;
-      if (isCriticalRule.exec(attr)) severityLevel = CalloutSeverityLevel.CRITICAL;
+      let severityLevel: CalloutSeverityLevelType = CalloutSeverityLevel.HELPFUL;
+      if (isImportantRule.exec(attr))
+        severityLevel = CalloutSeverityLevel.IMPORTANT as CalloutSeverityLevelType;
+      if (isCriticalRule.exec(attr))
+        severityLevel = CalloutSeverityLevel.CRITICAL as CalloutSeverityLevelType;
 
       const body = match[2].trim();
 

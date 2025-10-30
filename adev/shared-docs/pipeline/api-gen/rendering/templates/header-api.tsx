@@ -7,7 +7,7 @@
  */
 
 import {Fragment, h} from 'preact';
-import {EntryType, isDocEntryWithSourceInfo, PipeEntry} from '../entities.mjs';
+import {EntryType, EntryTypeType, isDocEntryWithSourceInfo, PipeEntry} from '../entities.mjs';
 import {DocEntryRenderable, PipeEntryRenderable} from '../entities/renderables.mjs';
 import {
   HEADER_CLASS_NAME,
@@ -130,7 +130,7 @@ function tagInVersionTooltip(
   return tag?.version ? `${label} since ${tag.version}` : label;
 }
 
-function getEntryTypeDisplayName(entryType: EntryType | string): string {
+function getEntryTypeDisplayName(entryType: EntryTypeType | string): string {
   switch (entryType) {
     case EntryType.NgModule:
       return 'NgModule';

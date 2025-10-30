@@ -8,18 +8,20 @@
 
 import {RendererThis, Token, TokenizerThis, Tokens} from 'marked';
 
-/** Enum of all available alert severities. */
-export enum AlertSeverityLevel {
-  NOTE = 'NOTE',
-  TIP = 'TIP',
-  TODO = 'TODO',
-  QUESTION = 'QUESTION',
-  SUMMARY = 'SUMMARY',
-  TLDR = 'TL;DR',
-  CRITICAL = 'CRITICAL',
-  IMPORTANT = 'IMPORTANT',
-  HELPFUL = 'HELPFUL',
-}
+/** const of all available alert severities. */
+export const AlertSeverityLevel = {
+  NOTE: 'NOTE',
+  TIP: 'TIP',
+  TODO: 'TODO',
+  QUESTION: 'QUESTION',
+  SUMMARY: 'SUMMARY',
+  TLDR: 'TL;DR',
+  CRITICAL: 'CRITICAL',
+  IMPORTANT: 'IMPORTANT',
+  HELPFUL: 'HELPFUL',
+} as const;
+
+export type AlertSeverityLevelType = (typeof AlertSeverityLevel)[keyof typeof AlertSeverityLevel];
 
 /** Token for docs-alerts */
 interface DocsAlertToken extends Tokens.Generic {

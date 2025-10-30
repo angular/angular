@@ -13,9 +13,9 @@ import {
   GenericEntry,
   MemberEntry,
   DecoratorEntry,
-  MemberTags,
   ParameterEntry,
   PropertyEntry,
+  MemberTagsType,
 } from '../entities.mjs';
 
 import {
@@ -369,7 +369,10 @@ function getPropertyCodeLine(member: PropertyEntry): string {
 }
 
 /** Map method entry to text */
-function getMethodCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]): string {
+function getMethodCodeLine(
+  member: FunctionSignatureMetadata,
+  memberTags: MemberTagsType[],
+): string {
   const generics = makeGenericsText(member.generics);
   return (
     `${memberTags.join(SPACE)}${memberTags.length ? ' ' : ''}${member.name}${generics}(` +
@@ -378,7 +381,7 @@ function getMethodCodeLine(member: FunctionSignatureMetadata, memberTags: Member
   );
 }
 
-function getFunctionCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTags[]) {
+function getFunctionCodeLine(member: FunctionSignatureMetadata, memberTags: MemberTagsType[]) {
   return `function ${getMethodCodeLine(member, memberTags).trim()}`;
 }
 

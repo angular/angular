@@ -11,49 +11,57 @@
 // can be imported from there.
 
 /** Type of top-level documentation entry. */
-export enum EntryType {
-  Block = 'block',
-  Component = 'component',
-  Constant = 'constant',
-  Decorator = 'decorator',
-  Directive = 'directive',
-  Element = 'element',
-  Enum = 'enum',
-  Function = 'function',
-  Interface = 'interface',
-  NgModule = 'ng_module',
-  Pipe = 'pipe',
-  TypeAlias = 'type_alias',
-  UndecoratedClass = 'undecorated_class',
-  InitializerApiFunction = 'initializer_api_function',
-}
+export const EntryType = {
+  Block: 'block',
+  Component: 'component',
+  Constant: 'constant',
+  Decorator: 'decorator',
+  Directive: 'directive',
+  Element: 'element',
+  Enum: 'enum',
+  Function: 'function',
+  Interface: 'interface',
+  NgModule: 'ng_module',
+  Pipe: 'pipe',
+  TypeAlias: 'type_alias',
+  UndecoratedClass: 'undecorated_class',
+  InitializerApiFunction: 'initializer_api_function',
+} as const;
+
+export type EntryTypeType = (typeof EntryType)[keyof typeof EntryType];
 
 /** Types of class members */
-export enum MemberType {
-  Property = 'property',
-  Method = 'method',
-  Getter = 'getter',
-  Setter = 'setter',
-  EnumItem = 'enum_item',
-}
+export const MemberType = {
+  Property: 'property',
+  Method: 'method',
+  Getter: 'getter',
+  Setter: 'setter',
+  EnumItem: 'enum_item',
+} as const;
 
-export enum DecoratorType {
-  Class = 'class',
-  Member = 'member',
-  Parameter = 'parameter',
-}
+export type MemberTypeType = (typeof MemberType)[keyof typeof MemberType];
+
+export const DecoratorType = {
+  Class: 'class',
+  Member: 'member',
+  Parameter: 'parameter',
+} as const;
+
+export type DecoratorTypeType = (typeof DecoratorType)[keyof typeof DecoratorType];
 
 /** Informational tags applicable to class members. */
-export enum MemberTags {
-  Abstract = 'abstract',
-  Static = 'static',
-  Readonly = 'readonly',
-  Protected = 'protected',
-  Optional = 'optional',
-  Input = 'input',
-  Output = 'output',
-  Inherited = 'override',
-}
+export const MemberTags = {
+  Abstract: 'abstract',
+  Static: 'static',
+  Readonly: 'readonly',
+  Protected: 'protected',
+  Optional: 'optional',
+  Input: 'input',
+  Output: 'output',
+  Inherited: 'override',
+} as const;
+
+export type MemberTagsType = (typeof MemberTags)[keyof typeof MemberTags];
 
 /** Documentation entity for single JsDoc tag. */
 export interface JsDocTagEntry {
@@ -81,7 +89,7 @@ export interface DocEntryWithSourceInfo extends DocEntry {
 
 /** Base type for all documentation entities. */
 export interface DocEntry {
-  entryType: EntryType;
+  entryType: EntryTypeType;
   name: string;
   description: string;
   rawComment: string;
@@ -123,7 +131,7 @@ export interface EnumEntry extends DocEntry {
 
 /** Documentation entity for an Angular decorator. */
 export interface DecoratorEntry extends DocEntry {
-  decoratorType: DecoratorType;
+  decoratorType: DecoratorTypeType;
   signatures?: {
     parameters: ParameterEntry[];
     jsdocTags: JsDocTagEntry[];
@@ -169,8 +177,8 @@ export interface FunctionDefinitionEntry {
 /** Sub-entry for a single class or enum member. */
 export interface MemberEntry {
   name: string;
-  memberType: MemberType;
-  memberTags: MemberTags[];
+  memberType: MemberTypeType;
+  memberTags: MemberTagsType[];
   description: string;
   jsdocTags: JsDocTagEntry[];
 }
