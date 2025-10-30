@@ -277,7 +277,6 @@ export interface ExtraOptions extends InMemoryScrollingOptions, RouterConfigOpti
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'router config' : '',
   {
-    providedIn: 'root',
     factory: () => ({}),
   },
 );
