@@ -80,13 +80,13 @@
           "jsdocTags": []
         },
         {
-          "name": "skipDisabled",
+          "name": "softDisabled",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "Whether to skip disabled items during navigation.",
+          "description": "Whether to allow disabled items to receive focus.",
           "jsdocTags": []
         },
         {
@@ -948,7 +948,7 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree.skipDisabled",
+      "Tree.softDisabled",
       "@angular/aria/tree"
     ],
     [
