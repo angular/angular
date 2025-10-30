@@ -116,7 +116,7 @@ export class AppComponent {
 
 Track page views for analytics:
 
-```typescript
+```ts
 import { Component, inject, signal, effect } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
