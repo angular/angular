@@ -103,7 +103,7 @@ export async function setupRedirect(deployment: Deployment) {
 }
 
 function firebase(cmd: string, cwd?: string) {
-  spawnSync('npx', `-y firebase-tools@13.15.1 ${cmd}`.split(' '), {
+  const {status} = spawnSync('npx', `-y firebase-tools@13.15.1 ${cmd}`.split(' '), {
     cwd,
     encoding: 'utf-8',
     shell: true,
@@ -113,4 +113,8 @@ function firebase(cmd: string, cwd?: string) {
       GOOGLE_APPLICATION_CREDENTIALS: getCredentialFilePath(),
     },
   });
+  if (status !== 0) {
+    console.error('Firebase command failed, see log above for details.');
+    process.exit(status);
+  }
 }
