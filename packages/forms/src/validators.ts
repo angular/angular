@@ -73,6 +73,7 @@ function lengthOrSize(value: unknown): number | null {
  *   }
  * }
  * ```
+ * @see [Adding validation support](guide/forms/custom-form-controls#adding-validation-support)
  *
  * @publicApi
  */

@@ -1,0 +1,37 @@
+.rating-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #ddd;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.star:not(:disabled):hover {
+  color: #ffd700;
+}
+
+.star.filled {
+  color: #ffd700;
+}
+
+.star:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
