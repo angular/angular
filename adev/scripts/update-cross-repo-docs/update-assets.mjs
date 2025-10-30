@@ -10,11 +10,25 @@
 import assert from 'node:assert';
 import {execSync} from 'node:child_process';
 import {existsSync, constants as fsConstants} from 'node:fs';
-import {copyFile, mkdtemp, readdir, readFile, realpath, unlink, writeFile} from 'node:fs/promises';
+import {
+  copyFile,
+  mkdtemp,
+  readdir,
+  readFile,
+  realpath,
+  rm,
+  unlink,
+  writeFile,
+} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {GithubClient} from './github-client.mjs';
 
-export async function copyJsonAssets({repo, githubApi, assetsPath, destPath}) {
+export async function updateAssets({repo, assetsPath, destPath}) {
+  console.log('\n-----------------------------------------------');
+  console.log(`Processing: ${repo}`);
+  console.log('-----------------------------------------------\n');
+
   const buildInfoPath = join(destPath, '_build-info.json');
   if (!existsSync(buildInfoPath)) {
     throw new Error(`${buildInfoPath} does not exist.`);
@@ -25,6 +39,13 @@ export async function copyJsonAssets({repo, githubApi, assetsPath, destPath}) {
 
   const {sha: storedSha, branchName: storedBranch} = JSON.parse(
     await readFile(buildInfoPath, 'utf-8'),
+  );
+
+  assert(process.env.ANGULAR_READONLY_GITHUB_TOKEN);
+  const githubApi = new GithubClient(
+    repo,
+    process.env.ANGULAR_READONLY_GITHUB_TOKEN,
+    'ADEV_Cross_Repo_Docs_Update',
   );
 
   let downstreamBranch = currentBranch;
@@ -53,38 +74,43 @@ export async function copyJsonAssets({repo, githubApi, assetsPath, destPath}) {
         changedFiles.map((f) => '* ' + f).join('\n'),
     );
 
-    const temporaryDir = await realpath(await mkdtemp(join(tmpdir(), 'copy-json-assets-')));
-    const execOptions = {cwd: temporaryDir, stdio: 'inherit'};
-    execSync('git init', execOptions);
-    execSync(`git remote add origin https://github.com/${repo}.git`, execOptions);
-    // fetch a commit
-    execSync(`git fetch origin ${latestSha}`, execOptions);
-    // reset this repository's main branch to the commit of interest
-    execSync('git reset --hard FETCH_HEAD', execOptions);
-    // get sha when files where changed
-    shaWhenFilesChanged = execSync(`git rev-list -1 ${latestSha} "${assetsPath}/"`, {
-      encoding: 'utf8',
-      cwd: temporaryDir,
-      stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
+    const temporaryDir = await realpath(await mkdtemp(join(tmpdir(), 'update-assets-')));
 
-    // Delete existing asset files.
-    const apiFilesUnlink = (await readdir(destPath))
-      .filter((f) => f.endsWith('.json'))
-      .map((f) => unlink(join(destPath, f)));
+    try {
+      const execOptions = {cwd: temporaryDir, stdio: 'inherit'};
+      execSync('git init', execOptions);
+      execSync(`git remote add origin https://github.com/${repo}.git`, execOptions);
+      // fetch a commit
+      execSync(`git fetch origin ${latestSha}`, execOptions);
+      // reset this repository's main branch to the commit of interest
+      execSync('git reset --hard FETCH_HEAD', execOptions);
+      // get sha when files where changed
+      shaWhenFilesChanged = execSync(`git rev-list -1 ${latestSha} "${assetsPath}/"`, {
+        encoding: 'utf8',
+        cwd: temporaryDir,
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim();
 
-    await Promise.allSettled(apiFilesUnlink);
+      // Delete existing asset files.
+      const apiFilesUnlink = (await readdir(destPath))
+        .filter((f) => f.endsWith('.json'))
+        .map((f) => unlink(join(destPath, f)));
 
-    // Copy new asset files
-    const tempAssetsDir = join(temporaryDir, assetsPath);
-    const assetFilesCopy = (await readdir(tempAssetsDir)).map((f) => {
-      const src = join(tempAssetsDir, f);
-      const dest = join(destPath, f);
+      await Promise.allSettled(apiFilesUnlink);
 
-      return copyFile(src, dest, fsConstants.COPYFILE_FICLONE);
-    });
+      // Copy new asset files
+      const tempAssetsDir = join(temporaryDir, assetsPath);
+      const assetFilesCopy = (await readdir(tempAssetsDir)).map((f) => {
+        const src = join(tempAssetsDir, f);
+        const dest = join(destPath, f);
 
-    await Promise.allSettled(assetFilesCopy);
+        return copyFile(src, dest, fsConstants.COPYFILE_FICLONE);
+      });
+
+      await Promise.allSettled(assetFilesCopy);
+    } finally {
+      await rm(temporaryDir, {force: true, recursive: true});
+    }
 
     console.log(`Successfully updated asset files in '${destPath}'.\n`);
   } else {
@@ -103,10 +129,4 @@ export async function copyJsonAssets({repo, githubApi, assetsPath, destPath}) {
       2,
     ),
   );
-
-  // The below command will show uncommitted changes.
-  // This is expected because the framework repo and component/cli might have different minors
-  // (e.g. during exceptional minor releases), leading to changes that need to be committed.
-  console.log('\nChanges: ');
-  execSync(`git status --porcelain`, {stdio: 'inherit'});
 }
