@@ -2,40 +2,7 @@
 
 This guide explores additional features of dependency injection in Angular.
 
-## Custom providers with `@Inject`
-
-Using a custom provider allows you to provide a concrete implementation for implicit dependencies, such as built-in browser APIs.
-The following example uses an `InjectionToken` to provide the [localStorage](https://developer.mozilla.org/docs/Web/API/Window/localStorage) browser API as a dependency in the `BrowserStorageService`:
-
-<docs-code header="src/app/storage.service.ts" language="typescript"
-           highlight="[[3,6],[12]]">
-import { inject, Injectable, InjectionToken } from '@angular/core';
-
-export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
-  providedIn: 'root',
-  factory: () => localStorage
-});
-
-@Injectable({
-  providedIn: 'root'
-})
-export class BrowserStorageService {
-  public storage = inject(BROWSER_STORAGE);
-
-  get(key: string) {
-    return this.storage.getItem(key);
-  }
-
-  set(key: string, value: string) {
-    this.storage.setItem(key, value);
-  }
-}
-</docs-code>
-
-The `factory` function returns the `localStorage` property that is attached to the browser's window object.
-The `inject` function initializes the `storage` property with an instance of the token.
-
-This custom provider can now be overridden during testing with a mock API of `localStorage` instead of interacting with real browser APIs.
+NOTE: For comprehensive coverage of InjectionToken and custom providers, see the [defining dependency providers guide](guide/di/defining-dependency-providers#injection-tokens).
 
 ## Inject the component's DOM element
 
@@ -48,14 +15,14 @@ Angular exposes the underlying element of a `@Component` or `@Directive` via inj
 import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
-  selector: '[appHighlight]'
+selector: '[appHighlight]'
 })
 export class HighlightDirective {
-  private element = inject(ElementRef)
+private element = inject(ElementRef)
 
-  update() {
-    this.element.nativeElement.style.color = 'red';
-  }
+update() {
+this.element.nativeElement.style.color = 'red';
+}
 }
 </docs-code>
 
@@ -64,13 +31,13 @@ export class HighlightDirective {
 The order of class declaration matters in TypeScript.
 You can't refer directly to a class until it's been defined.
 
-This isn't usually a problem, especially if you adhere to the recommended *one class per file* rule.
+This isn't usually a problem, especially if you adhere to the recommended _one class per file_ rule.
 But sometimes circular references are unavoidable.
 For example, when class 'A' refers to class 'B' and 'B' refers to 'A', one of them has to be defined first.
 
-The Angular `forwardRef()` function creates an *indirect* reference that Angular can resolve later.
+The Angular `forwardRef()` function creates an _indirect_ reference that Angular can resolve later.
 
-You face a similar problem when a class makes *a reference to itself*.
+You face a similar problem when a class makes _a reference to itself_.
 For example, in its `providers` array.
 The `providers` array is a property of the `@Component()` decorator function, which must appear before the class definition.
 You can break such circular references by using `forwardRef`.
