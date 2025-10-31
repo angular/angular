@@ -31,4 +31,7 @@ export const pullRequest: PullRequestConfig = {
     {type: 'check', name: 'zone-js'},
     {type: 'status', name: 'google-internal-tests'},
   ],
+
+  // labels to apply to a PR with commits that include files in the specified path
+  managedLabelByPath: {'requires: TGP': ['packages/core/primitives/**/{*,.*}']},
 };
