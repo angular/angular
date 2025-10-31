@@ -750,6 +750,7 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
     private scope: Scope,
     private node: DirectiveOwner,
     private dir: TypeCheckableDirectiveMeta,
+    private customFieldDir: TypeCheckableDirectiveMeta | null,
   ) {
     super();
   }
@@ -781,13 +782,31 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
   }
 
   private getExpectedType(): ts.TypeNode {
-    // TODO: check for custom control.
-
-    if (this.node instanceof TmplAstElement) {
+    if (this.customFieldDir !== null) {
+      return this.getExpectedTypeFromCustomField(this.customFieldDir);
+    } else if (this.node instanceof TmplAstElement) {
       return this.getExpectedTypeFromDomNode(this.node);
     }
 
     return this.getUnsupportedType();
+  }
+
+  private getExpectedTypeFromCustomField(customField: TypeCheckableDirectiveMeta): ts.TypeNode {
+    const id = R3Identifiers.ExtractFormControlValue;
+    const extractRef = this.tcb.env.referenceExternalType(id.moduleName, id.name);
+    const customFieldRef = this.tcb.env.referenceType(customField.ref);
+
+    if (!ts.isTypeReferenceNode(extractRef)) {
+      throw new Error(`Expected TypeReferenceNode when referencing the type for ${id.name}`);
+    }
+
+    if (!ts.isTypeReferenceNode(customFieldRef)) {
+      throw new Error(
+        `Expected TypeReferenceNode when referencing the type for ${customField.ref.debugName}`,
+      );
+    }
+
+    return ts.factory.createTypeReferenceNode(extractRef.typeName, [customFieldRef]);
   }
 
   private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
@@ -2807,7 +2826,7 @@ class Scope {
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
-      this.appendDirectiveInputs(dir, node, dirMap);
+      this.appendDirectiveInputs(dir, node, dirMap, directives);
     }
     this.directiveOpMap.set(node, dirMap);
 
@@ -2884,7 +2903,7 @@ class Scope {
     if (directives !== null && directives.length > 0) {
       const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
       for (const dir of directives) {
-        this.appendDirectiveInputs(dir, node, dirMap);
+        this.appendDirectiveInputs(dir, node, dirMap, directives);
 
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
@@ -2950,21 +2969,32 @@ class Scope {
     dir: TypeCheckableDirectiveMeta,
     node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     dirMap: Map<TypeCheckableDirectiveMeta, number>,
+    allDirectiveMatches: TypeCheckableDirectiveMeta[],
   ): void {
-    const directiveOp = this.getDirectiveOp(dir, node);
+    const directiveOp = this.getDirectiveOp(dir, node, allDirectiveMatches);
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
     this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir));
   }
 
-  private getDirectiveOp(dir: TypeCheckableDirectiveMeta, node: DirectiveOwner): TcbOp {
+  private getDirectiveOp(
+    dir: TypeCheckableDirectiveMeta,
+    node: DirectiveOwner,
+    allDirectiveMatches: TypeCheckableDirectiveMeta[],
+  ): TcbOp {
     const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
 
     if (
       dir.name === 'Field' &&
       dirRef.bestGuessOwningModule?.specifier === '@angular/forms/signals'
     ) {
-      return new TcbFieldDirectiveTypeOp(this.tcb, this, node, dir);
+      return new TcbFieldDirectiveTypeOp(
+        this.tcb,
+        this,
+        node,
+        dir,
+        allDirectiveMatches.find(isCustomFieldDirective) ?? null,
+      );
     } else if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
@@ -3164,7 +3194,7 @@ class Scope {
       const directiveOpMap = new Map<TypeCheckableDirectiveMeta, number>();
 
       for (const directive of directives) {
-        const directiveOp = this.getDirectiveOp(directive, node);
+        const directiveOp = this.getDirectiveOp(directive, node, directives);
         directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
       }
 
@@ -3880,4 +3910,15 @@ class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
 // revisited once the design is finalized.
 function getComponentTagName(node: TmplAstComponent): string {
   return node.tagName || 'ng-component';
+}
+
+/** Determines if a directive can be a custom form field control. */
+function isCustomFieldDirective({inputs, outputs}: TypeCheckableDirectiveMeta): boolean {
+  // Custom fields must have either a model called either `value` or `checked`.
+  return (
+    (!!inputs.getByBindingPropertyName('value')?.some((v) => v.isSignal) &&
+      outputs.hasBindingPropertyName('valueChange')) ||
+    (!!inputs.getByBindingPropertyName('checked')?.some((v) => v.isSignal) &&
+      outputs.hasBindingPropertyName('checkedChange'))
+  );
 }
