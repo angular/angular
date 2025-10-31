@@ -13,20 +13,21 @@ import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
+import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
 import {isArray} from '../util/type_guards';
 import type {
-  FieldPath,
   FieldTree,
   LogicFn,
   OneOrMany,
   PathKind,
+  RulesFieldPath,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
   TreeValidationResult,
 } from './types';
 import {ValidationErrorWithField, type ValidationErrorWithOptionalField} from './validation_errors';
+import {normalizeFormArgs} from '../util/normalize_form_args';
 
 /**
  * Options that may be specified when creating a form.
@@ -47,29 +48,6 @@ export interface FormOptions {
    * Currently this is used to support interop with reactive forms.
    */
   adapter?: FieldAdapter;
-}
-
-/** Extracts the model, schema, and options from the arguments passed to `form()`. */
-function normalizeFormArgs<TValue>(
-  args: any[],
-): [WritableSignal<TValue>, SchemaOrSchemaFn<TValue> | undefined, FormOptions | undefined] {
-  let model: WritableSignal<TValue>;
-  let schema: SchemaOrSchemaFn<TValue> | undefined;
-  let options: FormOptions | undefined;
-
-  if (args.length === 3) {
-    [model, schema, options] = args;
-  } else if (args.length === 2) {
-    if (isSchemaOrSchemaFn(args[1])) {
-      [model, schema] = args;
-    } else {
-      [model, options] = args;
-    }
-  } else {
-    [model] = args;
-  }
-
-  return [model, schema, options];
 }
 
 /**
@@ -195,7 +173,7 @@ export function form<TValue>(
  */
 export function form<TValue>(
   model: WritableSignal<TValue>,
-  schema: SchemaOrSchemaFn<TValue>,
+  schema: SchemaOrSchemaFn<TValue, PathKind>,
   options: FormOptions,
 ): FieldTree<TValue>;
 
@@ -250,7 +228,7 @@ export function form<TValue>(...args: any[]): FieldTree<TValue> {
  * @experimental 21.0.0
  */
 export function applyEach<TValue>(
-  path: FieldPath<TValue[]>,
+  path: RulesFieldPath<TValue[]>,
   schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>,
 ): void {
   assertPathIsCurrent(path);
@@ -281,7 +259,7 @@ export function applyEach<TValue>(
  * @experimental 21.0.0
  */
 export function apply<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
   assertPathIsCurrent(path);
@@ -302,7 +280,7 @@ export function apply<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhen<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue, PathKind>,
   logic: LogicFn<TValue, boolean>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
@@ -326,7 +304,7 @@ export function applyWhen<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   predicate: (value: TValue) => value is TNarrowed,
   schema: SchemaOrSchemaFn<TNarrowed>,
 ): void;
@@ -344,13 +322,13 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue>(
-  path: FieldPath<TValue>,
+  path: RulesFieldPath<TValue>,
   predicate: (value: TValue) => boolean,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void;
 
 export function applyWhenValue(
-  path: FieldPath<unknown>,
+  path: RulesFieldPath<unknown>,
   predicate: (value: unknown) => boolean,
   schema: SchemaOrSchemaFn<unknown>,
 ) {
