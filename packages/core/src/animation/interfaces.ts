@@ -52,7 +52,7 @@ const MAX_ANIMATION_TIMEOUT_DEFAULT = 4000;
  */
 export type AnimationFunction = (event: AnimationCallbackEvent) => void;
 
-export type RunEnterAnimationFn = () => void;
+export type RunEnterAnimationFn = VoidFunction;
 export type RunLeaveAnimationFn = () => {promise: Promise<void>; resolve: VoidFunction};
 
 export interface LongestAnimation {
@@ -81,13 +81,11 @@ export interface AnimationLViewData {
   // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type
   running?: Promise<unknown>;
 
-  // Skip leave animations
-  // This flag is solely used when move operations occur. DOM Node move
-  // operations occur in lists, like `@for` loops, and use the same code
-  // path during move that detaching or removing does. So to prevent
-  // unexpected disappearing of moving nodes, we use this flag to skip
-  // the animations in that case.
-  skipLeaveAnimations?: boolean;
+  // Animation functions that have been queued for this view when the view is detached.
+  // This is used to later remove them from the global animation queue if the view
+  // is attached before the animation queue runs. This is used in cases where views are
+  // moved or swapped during list reconciliation.
+  detachedLeaveAnimationFns?: VoidFunction[];
 }
 
 /**
