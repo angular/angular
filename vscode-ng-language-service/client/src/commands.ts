@@ -13,6 +13,8 @@ import {
   OpenJsDocLinkCommand_Args,
   OpenJsDocLinkCommandId,
   ServerOptions,
+  ShowReferencesCommand_Args,
+  ShowReferencesCommandId,
 } from '../../common/initialize';
 
 import {AngularLanguageClient} from './client';
@@ -153,6 +155,22 @@ function goToComponentWithTemplateFile(ngClient: AngularLanguageClient): Command
   };
 }
 
+function showReferences(client: AngularLanguageClient): Command<ShowReferencesCommand_Args> {
+  return {
+    id: ShowReferencesCommandId,
+    isTextEditorCommand: false,
+    async execute({file, position, references}: ShowReferencesCommand_Args) {
+      const lspClient = client.client!;
+      vscode.commands.executeCommand(
+        'editor.action.showReferences',
+        lspClient.protocol2CodeConverter.asUri(file),
+        lspClient.protocol2CodeConverter.asPosition(position),
+        references.map(lspClient.protocol2CodeConverter.asLocation),
+      );
+    },
+  };
+}
+
 /**
  * Command goToTemplateForComponent finds the template for a component.
  *
@@ -228,6 +246,7 @@ export function registerCommands(
     goToTemplateForComponent(client),
     openJsDocLinkCommand(),
     applyCodeActionCommand(client),
+    showReferences(client),
   ];
 
   for (const command of commands) {
