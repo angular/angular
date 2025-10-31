@@ -814,8 +814,6 @@
       "nextBindingIndex",
       "nextNgElementId",
       "nextNotification",
-      "ngControlStatusHost",
-      "ngGroupStatusHost",
       "ngOnChangesSetInput",
       "ngZoneInstanceId",
       "noSideEffects",
