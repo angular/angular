@@ -74,10 +74,11 @@ describe('RouteDetailsRowComponent', () => {
     expect(dataElements[0].nativeElement.innerText).toEqual('false');
   });
 
-  it('should render a label and chip data', () => {
+  it('should render a label with an action button', () => {
     fixture.componentRef.setInput('type', 'chip');
     fixture.componentRef.setInput('data', {name: 'Component Name'});
     fixture.componentRef.setInput('dataKey', 'name');
+    fixture.componentRef.setInput('actionBtnType', 'view-source');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -85,13 +86,14 @@ describe('RouteDetailsRowComponent', () => {
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(1);
-    expect(dataElements[0].nativeElement.innerText).toEqual('Component Name');
   });
 
-  it('should render a label and chip data disabled', () => {
+  it('should render a label with a disabled action button', () => {
     fixture.componentRef.setInput('type', 'chip');
     fixture.componentRef.setInput('data', {name: 'Lazy Component Name'});
     fixture.componentRef.setInput('dataKey', 'name');
+    fixture.componentRef.setInput('actionBtnType', 'view-source');
+    fixture.componentRef.setInput('actionBtnDisabled', true);
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -99,7 +101,6 @@ describe('RouteDetailsRowComponent', () => {
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(1);
-    expect(dataElements[0].nativeElement.innerText).toEqual('Lazy Component Name');
     expect(dataElements[0].nativeElement.disabled).toEqual(true);
   });
 
@@ -107,6 +108,7 @@ describe('RouteDetailsRowComponent', () => {
     fixture.componentRef.setInput('type', 'list');
     fixture.componentRef.setInput('data', {providers: ['Guard 1', 'Guard 2']});
     fixture.componentRef.setInput('dataKey', 'providers');
+    fixture.componentRef.setInput('actionBtnType', 'view-source');
     fixture.detectChanges();
 
     const labelElement = fixture.debugElement.query(By.css('th'));
@@ -114,7 +116,5 @@ describe('RouteDetailsRowComponent', () => {
 
     const dataElements = fixture.debugElement.queryAll(By.css('button'));
     expect(dataElements.length).toEqual(2);
-    expect(dataElements[0].nativeElement.innerText).toEqual('Guard 1');
-    expect(dataElements[1].nativeElement.innerText).toEqual('Guard 2');
   });
 });
