@@ -13,7 +13,7 @@ import {
   applyEach,
   customError,
   disabled,
-  FieldPath,
+  SchemaPath,
   form,
   hidden,
   readonly,
@@ -23,6 +23,7 @@ import {
   Schema,
   schema,
   SchemaOrSchemaFn,
+  SchemaPathTree,
   validate,
   validateTree,
   ValidationError,
@@ -534,10 +535,10 @@ describe('FieldNode', () => {
         signal({names: [{name: 'Alex'}, {name: 'Miles'}]}),
         (p) => {
           applyEach(p.names, (a) => {
-            disabled(a.name, ({value, fieldOf}) => {
-              const el = fieldOf(a);
+            disabled(a.name, ({value, fieldTreeOf}) => {
+              const el = fieldTreeOf(a);
               expect(el().value().name).toBe(value());
-              expect([...fieldOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
+              expect([...fieldTreeOf(p).names].findIndex((e: any) => e === el)).not.toBe(-1);
               return true;
             });
           });
@@ -1014,13 +1015,13 @@ describe('FieldNode', () => {
         const f = form(
           cat,
           (p) => {
-            validateTree(p, ({value, fieldOf}) => {
+            validateTree(p, ({value, fieldTreeOf}) => {
               const errors: ValidationError[] = [];
               if (value().name.length > 8) {
-                errors.push(customError({kind: 'long_name', field: fieldOf(p.name)}));
+                errors.push(customError({kind: 'long_name', field: fieldTreeOf(p.name)}));
               }
               if (value().age < 0) {
-                errors.push(customError({kind: 'temporal_anomaly', field: fieldOf(p.age)}));
+                errors.push(customError({kind: 'temporal_anomaly', field: fieldTreeOf(p.age)}));
               }
               return errors;
             });
@@ -1046,13 +1047,13 @@ describe('FieldNode', () => {
         const f = form(
           cat,
           (p) => {
-            validateTree(p, ({value, fieldOf}) => {
+            validateTree(p, ({value, fieldTreeOf}) => {
               const errors: ValidationError[] = [];
               if (value().name.length > 8) {
-                errors.push(customError({kind: 'long_name', field: fieldOf(p.name)}));
+                errors.push(customError({kind: 'long_name', field: fieldTreeOf(p.name)}));
               }
               if (value().age < 0) {
-                errors.push(customError({kind: 'temporal_anomaly', field: fieldOf(p.age)}));
+                errors.push(customError({kind: 'temporal_anomaly', field: fieldTreeOf(p.age)}));
               }
               return errors;
             });
@@ -1177,7 +1178,7 @@ describe('FieldNode', () => {
       const opts = {injector: TestBed.inject(Injector)};
       const subFn = jasmine.createSpy('schemaFn');
       const sub: Schema<string> = schema(subFn);
-      const s = schema((p: FieldPath<{a: string; b: string}>) => {
+      const s = schema((p: SchemaPathTree<{a: string; b: string}>) => {
         apply(p.a, sub);
         apply(p.b, sub);
       });
@@ -1227,15 +1228,15 @@ describe('FieldNode', () => {
     });
 
     it('should error on resolving predefined schema path that is not part of the form', () => {
-      let otherP: FieldPath<any>;
+      let otherP: SchemaPath<any>;
       const s = schema<string>((p) => (otherP = p));
       SchemaImpl.rootCompile(s);
 
       const f = form(
         signal(''),
         (p) => {
-          disabled(p, ({fieldOf}) => {
-            fieldOf(otherP);
+          disabled(p, ({fieldTreeOf}) => {
+            fieldTreeOf(otherP);
             return true;
           });
         },
