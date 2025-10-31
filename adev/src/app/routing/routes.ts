@@ -150,6 +150,10 @@ export const routes: Route[] = [
       ...FOOTER_ROUTES,
       updateGuidePageRoute,
       ...REDIRECT_ROUTES,
+      {
+        path: 'all-links',
+        loadComponent: () => import('../features/all-links').then((m) => m.AllLinks),
+      },
     ],
   },
   // Error page
