@@ -7,4 +7,5 @@
  */
 
 export * from './api';
+export {resourceFromSnapshot} from './from_snapshot';
 export {resource} from './resource';
