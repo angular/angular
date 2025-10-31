@@ -95,6 +95,7 @@ export {
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
   ɵɵcontrolCreate,
+  ɵExtractFormControlValue,
   ɵɵcomponentInstance,
   ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
