@@ -57,14 +57,17 @@
               (btnClick)="navigateRoute(route)"
             ></tr>
 
-            <tr
-              ng-route-details-row
-              label="Component"
-              type="chip"
-              dataKey="component"
-              [data]="data"
-              (btnClick)="viewComponentSource(data.component)"
-            ></tr>
+            @if (!data.isRedirect) {
+              <tr
+                ng-route-details-row
+                label="Component"
+                type="chip"
+                dataKey="component"
+                [data]="data"
+                (btnClick)="viewComponentSource(data.component)"
+              ></tr>
+            }
+
             @if (data.pathMatch) {
               <tr ng-route-details-row label="Path Match" dataKey="pathMatch" [data]="data"></tr>
             }
@@ -129,7 +132,14 @@
               ></tr>
             }
             @if (data.title) {
-              <tr ng-route-details-row label="Title" dataKey="title" [data]="data"></tr>
+              <tr
+                ng-route-details-row
+                type="chip"
+                label="Title"
+                dataKey="title"
+                [data]="data"
+                (btnClick)="viewFunctionSource(data.title, 'title')"
+              ></tr>
             }
             <tr
               ng-route-details-row
@@ -153,6 +163,17 @@
               dataKey="isRedirect"
               [data]="data"
             ></tr>
+
+            @if (data.redirectTo) {
+              <tr
+                ng-route-details-row
+                label="Redirect to"
+                type="chip"
+                dataKey="redirectTo"
+                [data]="data"
+                (btnClick)="viewFunctionSource(data.redirectTo, 'redirectTo')"
+              ></tr>
+            }
           </table>
         </div>
       </as-split-area>
