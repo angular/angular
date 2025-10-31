@@ -28,6 +28,7 @@ import {
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
+  INJECTOR,
   LView,
   TVIEW,
   TView,
@@ -48,6 +49,8 @@ import {
   removeLViewFromLContainer,
 } from '../view/container';
 import {declareNoDirectiveHostTemplate} from './template';
+import {removeFromAnimationQueue} from '../../animation/queue';
+import {allLeavingAnimations} from '../../animation/longest_animation';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -419,10 +422,11 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       index,
       shouldAddViewToDom(this.templateTNode, dehydratedView),
     );
+    clearDetachAnimationList(this.lContainer, index);
   }
-  override detach(index: number, skipLeaveAnimations?: boolean): LView<RepeaterContext<unknown>> {
+  override detach(index: number): LView<RepeaterContext<unknown>> {
     this.needsIndexUpdate ||= index !== this.length - 1;
-    if (skipLeaveAnimations) setSkipLeaveAnimations(this.lContainer, index);
+    maybeInitDetachAnimationList(this.lContainer, index);
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
@@ -570,13 +574,39 @@ function getLContainer(lView: LView, index: number): LContainer {
   return lContainer;
 }
 
-function setSkipLeaveAnimations(lContainer: LContainer, index: number): void {
+function clearDetachAnimationList(lContainer: LContainer, index: number): void {
   if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
   const viewToDetach = lContainer[indexInContainer];
-  if (viewToDetach && viewToDetach[ANIMATIONS]) {
-    (viewToDetach[ANIMATIONS] as AnimationLViewData).skipLeaveAnimations = true;
+  const animations = viewToDetach
+    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
+    : undefined;
+  if (
+    viewToDetach &&
+    animations &&
+    animations.detachedLeaveAnimationFns &&
+    animations.detachedLeaveAnimationFns.length > 0
+  ) {
+    const injector = viewToDetach[INJECTOR];
+    removeFromAnimationQueue(injector, animations);
+    allLeavingAnimations.delete(viewToDetach);
+    animations.detachedLeaveAnimationFns = undefined;
+  }
+}
+
+// Initialize the detach leave animation list for a view about to be detached, but only
+// if it has leave animations.
+function maybeInitDetachAnimationList(lContainer: LContainer, index: number): void {
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const viewToDetach = lContainer[indexInContainer];
+  const animations = viewToDetach
+    ? (viewToDetach[ANIMATIONS] as AnimationLViewData | undefined)
+    : undefined;
+  if (animations && animations.leave && animations.leave.size > 0) {
+    animations.detachedLeaveAnimationFns = [];
   }
 }
 
