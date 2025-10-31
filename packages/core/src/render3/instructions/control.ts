@@ -32,6 +32,18 @@ import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
 import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
 import {writeToDirectiveInput} from './write_to_directive_input';
+import {ModelSignal} from '../../authoring/model/model_signal';
+
+/**
+ * Used during template type checking to extract the type of a custom form control.
+ *
+ * @codeGenApi
+ */
+export type ɵExtractFormControlValue<T> = T extends {value: ModelSignal<infer V>}
+  ? V
+  : T extends {checked: ModelSignal<boolean>}
+    ? boolean
+    : unknown;
 
 /**
  * Possibly sets up a {@link ɵControl} to manage a native or custom form control.
