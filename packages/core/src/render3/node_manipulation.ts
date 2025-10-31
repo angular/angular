@@ -386,37 +386,35 @@ function runLeaveAnimationsWithCallback(
   if (animations == null || animations.leave == undefined || !animations.leave.has(tNode.index))
     return callback(false);
 
-  // this is solely for move operations to prevent leave animations from running
-  // on the moved nodes, which would have deleted the node.
-  if (animations.skipLeaveAnimations) {
-    animations.skipLeaveAnimations = false;
-    return callback(false);
-  }
-
   if (lView) allLeavingAnimations.add(lView);
 
-  addToAnimationQueue(injector, () => {
-    // it's possible that in the time between when the leave animation was
-    // and the time it was executed, the data structure changed. So we need
-    // to be safe here.
-    if (animations.leave && animations.leave.has(tNode.index)) {
-      const leaveAnimationMap = animations.leave;
-      const leaveAnimations = leaveAnimationMap.get(tNode.index);
-      const runningAnimations = [];
-      if (leaveAnimations) {
-        for (let index = 0; index < leaveAnimations.animateFns.length; index++) {
-          const animationFn = leaveAnimations.animateFns[index];
-          const {promise} = animationFn();
-          runningAnimations.push(promise);
+  addToAnimationQueue(
+    injector,
+    () => {
+      // it's possible that in the time between when the leave animation was
+      // and the time it was executed, the data structure changed. So we need
+      // to be safe here.
+      if (animations.leave && animations.leave.has(tNode.index)) {
+        const leaveAnimationMap = animations.leave;
+        const leaveAnimations = leaveAnimationMap.get(tNode.index);
+        const runningAnimations = [];
+        if (leaveAnimations) {
+          for (let index = 0; index < leaveAnimations.animateFns.length; index++) {
+            const animationFn = leaveAnimations.animateFns[index];
+            const {promise} = animationFn();
+            runningAnimations.push(promise);
+          }
+          animations.qeueued = undefined;
         }
+        animations.running = Promise.allSettled(runningAnimations);
+        runAfterLeaveAnimations(lView!, callback);
+      } else {
+        if (lView) allLeavingAnimations.delete(lView);
+        callback(false);
       }
-      animations.running = Promise.allSettled(runningAnimations);
-      runAfterLeaveAnimations(lView!, callback);
-    } else {
-      if (lView) allLeavingAnimations.delete(lView);
-      callback(false);
-    }
-  });
+    },
+    animations,
+  );
 }
 
 function runAfterLeaveAnimations(lView: LView, callback: Function) {
