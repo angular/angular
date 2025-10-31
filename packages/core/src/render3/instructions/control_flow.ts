@@ -28,6 +28,7 @@ import {
   DECLARATION_COMPONENT_VIEW,
   HEADER_OFFSET,
   HYDRATION,
+  INJECTOR,
   LView,
   TVIEW,
   TView,
@@ -48,6 +49,8 @@ import {
   removeLViewFromLContainer,
 } from '../view/container';
 import {declareNoDirectiveHostTemplate} from './template';
+import {removeFromAnimationQueue} from '../../animation/queue';
+import {allLeavingAnimations} from '../../animation/longest_animation';
 
 /**
  * Creates an LContainer for an ng-template representing a root node
@@ -419,10 +422,11 @@ class LiveCollectionLContainerImpl extends LiveCollection<
       index,
       shouldAddViewToDom(this.templateTNode, dehydratedView),
     );
+    clearDetachFlag(this.lContainer, index);
   }
-  override detach(index: number, skipLeaveAnimations?: boolean): LView<RepeaterContext<unknown>> {
+  override detach(index: number): LView<RepeaterContext<unknown>> {
     this.needsIndexUpdate ||= index !== this.length - 1;
-    if (skipLeaveAnimations) setSkipLeaveAnimations(this.lContainer, index);
+    setDetachFlag(this.lContainer, index);
     return detachExistingView<RepeaterContext<unknown>>(this.lContainer, index);
   }
   override create(index: number, value: unknown): LView<RepeaterContext<unknown>> {
@@ -570,13 +574,35 @@ function getLContainer(lView: LView, index: number): LContainer {
   return lContainer;
 }
 
-function setSkipLeaveAnimations(lContainer: LContainer, index: number): void {
+function clearDetachFlag(lContainer: LContainer, index: number): void {
+  if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
+
+  const indexInContainer = CONTAINER_HEADER_OFFSET + index;
+  const viewToDetach = lContainer[indexInContainer];
+  if (
+    viewToDetach &&
+    viewToDetach[ANIMATIONS] &&
+    (viewToDetach[ANIMATIONS] as AnimationLViewData).detach
+  ) {
+    const animations = viewToDetach[ANIMATIONS] as AnimationLViewData;
+    animations.detach = false;
+    if (animations.qeueued && animations.qeueued.length > 0) {
+      const injector = viewToDetach[INJECTOR];
+      removeFromAnimationQueue(injector, animations);
+      allLeavingAnimations.delete(viewToDetach);
+    }
+  }
+}
+
+function setDetachFlag(lContainer: LContainer, index: number): void {
   if (lContainer.length <= CONTAINER_HEADER_OFFSET) return;
 
   const indexInContainer = CONTAINER_HEADER_OFFSET + index;
   const viewToDetach = lContainer[indexInContainer];
   if (viewToDetach && viewToDetach[ANIMATIONS]) {
-    (viewToDetach[ANIMATIONS] as AnimationLViewData).skipLeaveAnimations = true;
+    const animations = viewToDetach[ANIMATIONS] as AnimationLViewData;
+    animations.detach = true;
+    animations.qeueued = [];
   }
 }
 

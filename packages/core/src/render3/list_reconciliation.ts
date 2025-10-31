@@ -21,7 +21,7 @@ export abstract class LiveCollection<T, V> {
   abstract get length(): number;
   abstract at(index: number): V;
   abstract attach(index: number, item: T): void;
-  abstract detach(index: number, skipLeaveAnimations?: boolean): T;
+  abstract detach(index: number): T;
   abstract create(index: number, value: V): T;
   destroy(item: T): void {
     // noop by default
@@ -50,7 +50,7 @@ export abstract class LiveCollection<T, V> {
     // DOM nodes, which would trigger `animate.leave` bindings. We need to skip
     // those animations in the case of a move operation so the moving elements don't
     // unexpectedly disappear.
-    this.attach(newIdx, this.detach(prevIndex, true /* skipLeaveAnimations */));
+    this.attach(newIdx, this.detach(prevIndex));
   }
 }
 
@@ -131,6 +131,7 @@ export function reconcile<T, V>(
       // compare from the beginning
       const liveStartValue = liveCollection.at(liveStartIdx);
       const newStartValue = newCollection[liveStartIdx];
+      const newLastValue = newCollection[newEndIdx];
 
       if (ngDevMode) {
         recordDuplicateKeys(duplicateKeys!, trackByFn(liveStartIdx, newStartValue), liveStartIdx);
@@ -180,6 +181,7 @@ export function reconcile<T, V>(
       const liveStartKey = trackByFn(liveStartIdx, liveStartValue);
       const liveEndKey = trackByFn(liveEndIdx, liveEndValue);
       const newStartKey = trackByFn(liveStartIdx, newStartValue);
+
       if (Object.is(newStartKey, liveEndKey)) {
         const newEndKey = trackByFn(newEndIdx, newEndValue);
         // detect swap on both ends;

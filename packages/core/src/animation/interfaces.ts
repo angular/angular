@@ -98,5 +98,11 @@ export interface AnimationLViewData {
   // path during move that detaching or removing does. So to prevent
   // unexpected disappearing of moving nodes, we use this flag to skip
   // the animations in that case.
-  skipLeaveAnimations?: boolean;
+  detach?: boolean;
+
+  // Animation functions that have been queued for this view when the view is detached.
+  // This is used to later remove them from the global animation queue if the view
+  // is attached before the animation queue runs. This is used in cases where views are
+  // moved or swapped during list reconciliation.
+  qeueued?: Function[];
 }

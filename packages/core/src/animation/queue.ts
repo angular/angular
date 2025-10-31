@@ -8,7 +8,7 @@
 
 import {afterNextRender} from '../render3/after_render/hooks';
 import {InjectionToken, Injector} from '../di';
-import {NodeAnimations} from './interfaces';
+import {AnimationLViewData, NodeAnimations} from './interfaces';
 
 export interface AnimationQueue {
   queue: Set<Function>;
@@ -33,16 +33,42 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
   },
 );
 
-export function addToAnimationQueue(injector: Injector, animationFns: Function | Function[]) {
+export function addToAnimationQueue(
+  injector: Injector,
+  animationFns: Function | Function[],
+  animationData?: AnimationLViewData,
+) {
   const animationQueue = injector.get(ANIMATION_QUEUE);
   if (Array.isArray(animationFns)) {
     for (const animateFn of animationFns) {
       animationQueue.queue.add(animateFn);
+      // If a node is detached, we need to keep track of the queued animation functions
+      // so we can later remove them from the global animation queue if the view
+      // is re-attached before the animation queue runs.
+      if (animationData?.detach) {
+        (animationData.qeueued ??= []).push(animateFn);
+      }
     }
   } else {
     animationQueue.queue.add(animationFns);
+    // If a node is detached, we need to keep track of the queued animation functions
+    // so we can later remove them from the global animation queue if the view
+    // is re-attached before the animation queue runs.
+    if (animationData?.detach) {
+      (animationData.qeueued ??= []).push(animationFns);
+    }
   }
   animationQueue.scheduler && animationQueue.scheduler(injector);
+}
+
+export function removeFromAnimationQueue(injector: Injector, animationData: AnimationLViewData) {
+  const animationQueue = injector.get(ANIMATION_QUEUE);
+  if (animationData.qeueued) {
+    for (const animationFn of animationData.qeueued) {
+      animationQueue.queue.delete(animationFn);
+    }
+    animationData.qeueued = undefined;
+  }
 }
 
 export function scheduleAnimationQueue(injector: Injector) {
