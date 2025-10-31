@@ -26,7 +26,6 @@ export const DEFAULT_PRELOADED_IMAGES_LIMIT = 5;
 export const PRELOADED_IMAGES = new InjectionToken<Set<string>>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'NG_OPTIMIZED_PRELOADED_IMAGES' : '',
   {
-    providedIn: 'root',
     factory: () => new Set<string>(),
   },
 );

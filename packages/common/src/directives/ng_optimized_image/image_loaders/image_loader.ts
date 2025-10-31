@@ -73,7 +73,6 @@ export type ImageLoaderInfo = {
 export const IMAGE_LOADER = new InjectionToken<ImageLoader>(
   typeof ngDevMode !== undefined && ngDevMode ? 'ImageLoader' : '',
   {
-    providedIn: 'root',
     factory: () => noopImageLoader,
   },
 );
