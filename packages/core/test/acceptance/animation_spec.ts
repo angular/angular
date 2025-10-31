@@ -2057,6 +2057,47 @@ describe('Animation', () => {
       expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
     }));
 
+    it('should not remove elements when swapping or moving nodes', fakeAsync(() => {
+      const animateSpy = jasmine.createSpy('animateSpy');
+      @Component({
+        selector: 'test-cmp',
+        template: `
+          <div>
+            @for (item of items; track item.id) {
+              <p (animate.leave)="animate($event)" #el>{{ item.id }}</p>
+            }
+          </div>
+        `,
+        encapsulation: ViewEncapsulation.None,
+      })
+      class TestComponent {
+        items = [{id: 1}, {id: 2}, {id: 3}];
+        private cd = inject(ChangeDetectorRef);
+
+        animate(event: AnimationCallbackEvent) {
+          animateSpy();
+          event.animationComplete();
+        }
+
+        shuffle() {
+          this.items = this.shuffleArray(this.items);
+          this.cd.markForCheck();
+        }
+
+        shuffleArray<T>(array: readonly T[]): T[] {
+          return [array[1], array[2], array[0]];
+        }
+      }
+      TestBed.configureTestingModule({animationsEnabled: true});
+
+      const fixture = TestBed.createComponent(TestComponent);
+      const cmp = fixture.componentInstance;
+      cmp.shuffle();
+      fixture.detectChanges();
+      expect(animateSpy).not.toHaveBeenCalled();
+      expect(fixture.debugElement.queryAll(By.css('p')).length).toBe(3);
+    }));
+
     it('should not remove elements when child element animations finish', fakeAsync(() => {
       const animateStyles = `
         .fade {
