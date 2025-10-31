@@ -25,7 +25,8 @@ import {signalSetFn, signalUpdateFn} from './signal';
 // global `ngDevMode` type is defined.
 declare const ngDevMode: boolean | undefined;
 
-export type ComputationFn<S, D> = (source: S, previous?: {source: S; value: D}) => D;
+export type ComputationFn<S, D> = (source: S, previous?: PreviousValue<S, D>) => D;
+export type PreviousValue<S, D> = {source: S; value: D};
 
 export interface LinkedSignalNode<S, D> extends ReactiveNode {
   /**
