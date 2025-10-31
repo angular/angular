@@ -46,7 +46,7 @@ function insertDebugNameIntoCallExpression(
     return callExpression;
   }
 
-  // insert debugName into the existing config object
+  // Insert debugName into the existing config object
   const properties = Array.from(existingArgument.properties);
   const debugNameExists = properties.some(
     (prop) =>
@@ -57,76 +57,52 @@ function insertDebugNameIntoCallExpression(
     return callExpression;
   }
 
-  // We prepend instead of appending so that we don't overwrite an existing debugName Property
-  // `{ foo: 'bar' }` -> `{ debugName: 'myDebugName', foo: 'bar' }`
-  properties.unshift(
-    ts.factory.createPropertyAssignment('debugName', ts.factory.createStringLiteral(debugName)),
-  );
-
-  const transformedConfigProperties = ts.factory.createObjectLiteralExpression(properties);
   const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
+  const debugNameProperty = ts.factory.createPropertyAssignment(
+    'debugName',
+    ts.factory.createStringLiteral(debugName),
+  );
+  const debugNameObject = ts.factory.createObjectLiteralExpression([debugNameProperty]);
+  const emptyObject = ts.factory.createObjectLiteralExpression();
 
-  let devModeCase: ts.ArrayLiteralExpression;
-  // if the signal expression has no arguments and the config object is not required,
-  // we need to add an undefined identifier to the start of the args list so that we can spread the
-  // config object in the right place.
-  if (signalExpressionHasNoArguments && !signalExpressionIsRequired) {
-    devModeCase = ts.factory.createArrayLiteralExpression([
-      ts.factory.createIdentifier('undefined'),
-      transformedConfigProperties,
-    ]);
-  } else {
-    devModeCase = ts.factory.createArrayLiteralExpression([
-      transformedConfigProperties,
-      ...nodeArgs.slice(configPosition + 1),
-    ]);
-  }
-
-  const nonDevModeCase = signalExpressionIsRequired
-    ? ts.factory.createArrayLiteralExpression(nodeArgs)
-    : ts.factory.createArrayLiteralExpression(nodeArgs.slice(configPosition));
-
-  const spreadElementContainingUpdatedOptions = ts.factory.createSpreadElement(
+  // Create the spread expression: `...(ngDevMode ? { debugName: 'myDebugName' } : {})`
+  const spreadDebugNameExpression = ts.factory.createSpreadAssignment(
     ts.factory.createParenthesizedExpression(
       ts.factory.createConditionalExpression(
         ngDevModeIdentifier,
-        /* question token */ undefined,
-        devModeCase,
-        /* colon token */ undefined,
-        nonDevModeCase,
+        undefined, // Question token
+        debugNameObject,
+        undefined, // Colon token
+        emptyObject,
       ),
     ),
   );
 
-  let transformedSignalArgs: ts.NodeArray<ts.Expression>;
+  const transformedConfigProperties = ts.factory.createObjectLiteralExpression([
+    spreadDebugNameExpression,
+    ...properties,
+  ]);
 
-  if (
-    signalExpressionIsRequired ||
-    signalExpressionHasNoArguments ||
-    signalWithObjectOnlyDefinition
-  ) {
-    // 1. If the call expression is a required signal function, there is no args other than the config object.
-    // So we just use the spread element as the only argument.
-    // or
-    // 2. If the call expression has no arguments (ex. input(), model(), etc), we already added the undefined
-    // identifier in the spread element above. So we use that spread Element as is.
-    // or
-    // 3. We are transforming a signal with object-only definition.
-    transformedSignalArgs = ts.factory.createNodeArray([spreadElementContainingUpdatedOptions]);
+  let transformedSignalArgs = [];
+
+  // The following expression handles 3 cases:
+  // 1. Non-`required` signals without an argument that need to be prepended with `undefined` (e.g. `model()`).
+  // 2. Signals with object-only definition like `resource` or `linkedSignal` with computation;
+  //    Or `required` signals.
+  // 3. All remaining cases where we have a signal with an argument (e.g `computed(Fn)` or `signal('foo')`).
+  if (signalExpressionHasNoArguments && !signalExpressionIsRequired) {
+    transformedSignalArgs = [ts.factory.createIdentifier('undefined'), transformedConfigProperties];
+  } else if (signalWithObjectOnlyDefinition || signalExpressionIsRequired) {
+    transformedSignalArgs = [transformedConfigProperties];
   } else {
-    // 3. Signal expression is not required and has arguments.
-    // Here we leave the first argument as is and spread the rest.
-    transformedSignalArgs = ts.factory.createNodeArray([
-      nodeArgs[0],
-      spreadElementContainingUpdatedOptions,
-    ]);
+    transformedSignalArgs = [nodeArgs[0], transformedConfigProperties];
   }
 
   return ts.factory.updateCallExpression(
     callExpression,
     callExpression.expression,
     callExpression.typeArguments,
-    transformedSignalArgs,
+    ts.factory.createNodeArray(transformedSignalArgs),
   );
 }
 
@@ -362,7 +338,10 @@ function transformVariableDeclaration(
 function transformPropertyAssignment(
   program: ts.Program,
   node: ts.ExpressionStatement & {
-    expression: ts.BinaryExpression & {right: ts.CallExpression; left: ts.PropertyAccessExpression};
+    expression: ts.BinaryExpression & {
+      right: ts.CallExpression;
+      left: ts.PropertyAccessExpression;
+    };
   },
 ): ts.ExpressionStatement {
   const expression = node.expression.right.expression;

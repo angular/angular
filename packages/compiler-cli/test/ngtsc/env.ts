@@ -41,9 +41,20 @@ type TsConfigOptionsValue =
   | null
   | TsConfigOptionsValue[]
   | {[key: string]: TsConfigOptionsValue};
+
 export type TsConfigOptions = {
   [key: string]: TsConfigOptionsValue;
 };
+
+type KnownKeys<T> = {
+  [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
+};
+
+// We don't use ts.CompilerOptions directly since enum-based options
+// require additional mapping to be JSON-ified.
+type TsCompilerOptions = Partial<
+  Record<keyof KnownKeys<ts.CompilerOptions>, ts.CompilerOptionsValue>
+>;
 
 /**
  * Manages a temporary testing directory structure and environment for testing ngtsc by feeding it
@@ -213,18 +224,20 @@ export class NgtscTestEnvironment {
     }
   }
 
-  tsconfig(extraOpts: TsConfigOptions = {}, extraRootDirs?: string[], files?: string[]): void {
-    const tsconfig: {[key: string]: any} = {
+  tsconfig(
+    extraOpts: TsConfigOptions = {},
+    compilerOptions?: TsCompilerOptions,
+    files?: string[],
+  ): void {
+    let tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
       angularCompilerOptions: extraOpts,
     };
     if (files !== undefined) {
       tsconfig['files'] = files;
     }
-    if (extraRootDirs !== undefined) {
-      tsconfig['compilerOptions'] = {
-        rootDirs: ['.', ...extraRootDirs],
-      };
+    if (compilerOptions !== undefined) {
+      tsconfig['compilerOptions'] = compilerOptions;
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
 
