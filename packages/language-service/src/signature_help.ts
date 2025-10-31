@@ -7,9 +7,8 @@
  */
 
 import {Call, SafeCall} from '@angular/compiler';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
-import {getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {NgCompiler, SymbolKind} from '@angular/compiler-cli/private/language_service';
+import {getSourceFileOrError} from '@angular/compiler-cli';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
