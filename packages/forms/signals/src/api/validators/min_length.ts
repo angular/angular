@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateMetadata, metadata, validate} from '../logic';
 import {MIN_LENGTH} from '../metadata';
-import {FieldPath, LogicFn, PathKind} from '../types';
+import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
 import {minLengthError} from '../validation_errors';
 import {
   BaseValidatorConfig,
@@ -40,7 +40,7 @@ export function minLength<
   TValue extends ValueWithLengthOrSize,
   TPathKind extends PathKind = PathKind.Root,
 >(
-  path: FieldPath<TValue, TPathKind>,
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {

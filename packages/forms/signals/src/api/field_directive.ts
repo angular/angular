@@ -21,7 +21,7 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import type {FieldNode} from '../field/node';
-import type {FieldTree} from './types';
+import type {FieldState, FieldTree} from './types';
 
 /**
  * Lightweight DI token provided by the {@link Field} directive.
@@ -88,7 +88,7 @@ export class Field<T> implements ɵControl<T> {
   ɵinteropControlCreate() {
     const controlValueAccessor = this.controlValueAccessor!;
     controlValueAccessor.registerOnChange((value: T) => {
-      const state = this.state();
+      const state = this.state() as FieldState<T>;
       state.value.set(value);
       state.markAsDirty();
     });
@@ -120,7 +120,7 @@ export class Field<T> implements ɵControl<T> {
     // (as opposed to just passing the field through to its `field` input).
     effect(
       (onCleanup) => {
-        const fieldNode = this.state() as FieldNode;
+        const fieldNode = this.state() as unknown as FieldNode;
         fieldNode.nodeState.fieldBindings.update((controls) => [
           ...controls,
           this as Field<unknown>,

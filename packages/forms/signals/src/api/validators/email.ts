@@ -7,7 +7,7 @@
  */
 
 import {validate} from '../logic';
-import {FieldPath, PathKind} from '../types';
+import {SchemaPath, SchemaPathRules, PathKind} from '../types';
 import {emailError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -58,7 +58,7 @@ const EMAIL_REGEXP =
  * @experimental 21.0.0
  */
 export function email<TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<string, TPathKind>,
+  path: SchemaPath<string, SchemaPathRules.Supported, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
   validate(path, (ctx) => {

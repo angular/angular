@@ -1,0 +1,20 @@
+load("//tools:defaults.bzl", "ng_project")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_project(
+    name = "compat",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//:node_modules/rxjs",
+        "//packages/core",
+        "//packages/core/rxjs-interop",
+        "//packages/forms",
+        "//packages/forms/signals",
+    ],
+)

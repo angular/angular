@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, resource, ɵisPromise} from '@angular/core';
+import {computed, resource, ɵisPromise, Signal} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
 import {metadata, validateTree} from '../logic';
-import {FieldPath, FieldTree} from '../types';
+import type {SchemaPath, SchemaPathTree, FieldTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
 /**
@@ -55,8 +55,8 @@ export type IgnoreUnknownProperties<T> =
  * @category validation
  * @experimental 21.0.0
  */
-export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProperties<TSchema>>(
-  path: FieldPath<TValue>,
+export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProperties<TSchema>>(
+  path: SchemaPath<TModel> & SchemaPathTree<TModel>,
   schema: StandardSchemaV1<TSchema>,
 ) {
   // We create both a sync and async validator because the standard schema validator can return
@@ -64,18 +64,29 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
   // handles the sync result, and the async validator handles the Promise.
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
-  const VALIDATOR_MEMO = metadata(path, ({value}) => {
+  type Result = StandardSchemaV1.Result<TSchema> | Promise<StandardSchemaV1.Result<TSchema>>;
+  const VALIDATOR_MEMO = metadata<TModel, Signal<Result>>(path, ({value}) => {
     return computed(() => schema['~standard'].validate(value()));
   });
-  validateTree(path, ({state, fieldOf}) => {
+
+  validateTree<TModel>(path, ({state, fieldTreeOf}) => {
     // Skip sync validation if the result is a Promise.
     const result = state.metadata(VALIDATOR_MEMO)!();
     if (ɵisPromise(result)) {
       return [];
     }
-    return result.issues?.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue)) ?? [];
+    return (
+      result.issues?.map((issue) =>
+        standardIssueToFormTreeError(fieldTreeOf<TModel>(path), issue),
+      ) ?? []
+    );
   });
-  validateAsync(path, {
+
+  validateAsync<
+    TModel,
+    Promise<StandardSchemaV1.Result<TSchema>> | undefined,
+    readonly StandardSchemaV1.Issue[]
+  >(path, {
     params: ({state}) => {
       // Skip async validation if the result is *not* a Promise.
       const result = state.metadata(VALIDATOR_MEMO)!();
@@ -87,8 +98,8 @@ export function validateStandardSchema<TSchema, TValue extends IgnoreUnknownProp
         loader: async ({params}) => (await params)?.issues ?? [],
       });
     },
-    onSuccess: (issues, {fieldOf}) => {
-      return issues.map((issue) => standardIssueToFormTreeError(fieldOf(path), issue));
+    onSuccess: (issues, {fieldTreeOf}) => {
+      return issues.map((issue) => standardIssueToFormTreeError(fieldTreeOf<TModel>(path), issue));
     },
     onError: () => {},
   });

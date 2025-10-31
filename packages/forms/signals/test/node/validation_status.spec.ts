@@ -116,8 +116,8 @@ describe('validation status', () => {
       const f = form(
         signal({child: 'VALID'}),
         (p) => {
-          validateTree(p, ({value, fieldOf}) =>
-            validateValueForChild(value().child, fieldOf(p.child)),
+          validateTree(p, ({value, fieldTreeOf}) =>
+            validateValueForChild(value().child, fieldTreeOf(p.child)),
           );
         },
         {injector},
@@ -135,8 +135,8 @@ describe('validation status', () => {
       const f = form(
         signal({child: 'VALID'}),
         (p) => {
-          validateTree(p, ({value, fieldOf}) =>
-            validateValueForChild(value().child, fieldOf(p.child)),
+          validateTree(p, ({value, fieldTreeOf}) =>
+            validateValueForChild(value().child, fieldTreeOf(p.child)),
           );
         },
         {injector},
@@ -154,8 +154,8 @@ describe('validation status', () => {
       const f = form(
         signal({child: 'VALID', sibling: ''}),
         (p) => {
-          validateTree(p, ({value, fieldOf}) =>
-            validateValueForChild(value().child, fieldOf(p.child)),
+          validateTree(p, ({value, fieldTreeOf}) =>
+            validateValueForChild(value().child, fieldTreeOf(p.child)),
           );
         },
         {injector},
@@ -233,10 +233,10 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            onSuccess: (results, {fieldOf}) =>
+            onSuccess: (results, {fieldTreeOf}) =>
               results.map((e) => ({
                 ...e,
-                field: fieldOf(p.child),
+                field: fieldTreeOf(p.child),
               })),
             onError: () => null,
           });
@@ -283,10 +283,10 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            onSuccess: (results, {fieldOf}) =>
+            onSuccess: (results, {fieldTreeOf}) =>
               results.map((e) => ({
                 ...e,
-                field: fieldOf(p.child),
+                field: fieldTreeOf(p.child),
               })),
             onError: () => null,
           });
@@ -336,10 +336,10 @@ describe('validation status', () => {
                     setTimeout(() => r(validateValueForChild(params, undefined))),
                   ),
               })),
-            onSuccess: (results, {fieldOf}) =>
+            onSuccess: (results, {fieldTreeOf}) =>
               results.map((e) => ({
                 ...e,
-                field: fieldOf(p.child),
+                field: fieldTreeOf(p.child),
               })),
             onError: () => null,
           });

@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateMetadata, metadata, validate} from '../logic';
 import {REQUIRED} from '../metadata';
-import {FieldPath, LogicFn, PathKind} from '../types';
+import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
 import {requiredError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -31,7 +31,7 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @experimental 21.0.0
  */
 export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
-  path: FieldPath<TValue, TPathKind>,
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind> & {
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
