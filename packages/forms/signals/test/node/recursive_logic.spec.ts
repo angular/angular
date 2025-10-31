@@ -18,9 +18,9 @@ interface TreeData {
   next: TreeData | null;
 }
 
-function narrowed<TValue, TNarrowed extends TValue>(
-  field: FieldTree<TValue> | undefined,
-  guard: (value: TValue) => value is TNarrowed,
+function narrowed<TModel, TNarrowed extends TModel>(
+  field: FieldTree<TModel> | undefined,
+  guard: (value: TModel) => value is TNarrowed,
 ): Signal<FieldTree<TNarrowed> | undefined> {
   return computed(
     () => field && (guard(field().value()) ? (field as FieldTree<TNarrowed>) : undefined),

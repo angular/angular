@@ -161,12 +161,12 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        onSuccess: (cats, {fieldOf}) => {
+        onSuccess: (cats, {fieldTreeOf}) => {
           return cats.map((cat, index) =>
             customError({
               kind: 'meows_too_much',
               name: cat.name,
-              field: fieldOf(p)[index],
+              field: fieldTreeOf(p)[index],
             }),
           );
         },
@@ -197,11 +197,11 @@ describe('resources', () => {
               return params as Cat[];
             },
           }),
-        onSuccess: (cats, {fieldOf}) => {
+        onSuccess: (cats, {fieldTreeOf}) => {
           return customError({
             kind: 'meows_too_much',
             name: cats[0].name,
-            field: fieldOf(p)[0],
+            field: fieldTreeOf(p)[0],
           });
         },
         onError: () => null,
@@ -269,8 +269,8 @@ describe('resources', () => {
       required(address.street);
       validateHttp(address, {
         request: ({value}) => ({url: '/checkaddress', params: {...value()}}),
-        onSuccess: (message: string, {fieldOf}) =>
-          customError({message, field: fieldOf(address.street)}),
+        onSuccess: (message: string, {fieldTreeOf}) =>
+          customError({message, field: fieldTreeOf(address.street)}),
         onError: () => null,
       });
     });

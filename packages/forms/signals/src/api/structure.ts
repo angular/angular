@@ -16,7 +16,7 @@ import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
 import {isArray} from '../util/type_guards';
 import type {
-  FieldPath,
+  SchemaPath,
   FieldTree,
   LogicFn,
   OneOrMany,
@@ -27,6 +27,7 @@ import type {
   TreeValidationResult,
 } from './types';
 import type {ValidationError} from './validation_errors';
+import {normalizeFormArgs} from '../util/normalize_form_args';
 
 /**
  * Options that may be specified when creating a form.
@@ -47,29 +48,6 @@ export interface FormOptions {
    * Currently this is used to support interop with reactive forms.
    */
   adapter?: FieldAdapter;
-}
-
-/** Extracts the model, schema, and options from the arguments passed to `form()`. */
-function normalizeFormArgs<TValue>(
-  args: any[],
-): [WritableSignal<TValue>, SchemaOrSchemaFn<TValue> | undefined, FormOptions | undefined] {
-  let model: WritableSignal<TValue>;
-  let schema: SchemaOrSchemaFn<TValue> | undefined;
-  let options: FormOptions | undefined;
-
-  if (args.length === 3) {
-    [model, schema, options] = args;
-  } else if (args.length === 2) {
-    if (isSchemaOrSchemaFn(args[1])) {
-      [model, schema] = args;
-    } else {
-      [model, options] = args;
-    }
-  } else {
-    [model] = args;
-  }
-
-  return [model, schema, options];
 }
 
 /**
@@ -93,12 +71,12 @@ function normalizeFormArgs<TValue>(
  * structure will match the shape of the model and any changes to the form data will be written to
  * the model.
  * @return A `FieldTree` representing a form around the data model.
- * @template TValue The type of the data model.
+ * @template TModel The type of the data model.
  *
  * @category structure
  * @experimental 21.0.0
  */
-export function form<TValue>(model: WritableSignal<TValue>): FieldTree<TValue>;
+export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
@@ -145,10 +123,10 @@ export function form<TValue>(model: WritableSignal<TValue>): FieldTree<TValue>;
  * @category structure
  * @experimental 21.0.0
  */
-export function form<TValue>(
-  model: WritableSignal<TValue>,
-  schemaOrOptions: SchemaOrSchemaFn<TValue> | FormOptions,
-): FieldTree<TValue>;
+export function form<TModel>(
+  model: WritableSignal<TModel>,
+  schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions,
+): FieldTree<TModel>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
@@ -188,19 +166,19 @@ export function form<TValue>(
  * @param schema A schema or a function used to specify logic for the form (e.g. validation, disabled fields, etc.)
  * @param options The form options
  * @return A `FieldTree` representing a form around the data model.
- * @template TValue The type of the data model.
+ * @template TModel The type of the data model.
  *
  * @category structure
  * @experimental 21.0.0
  */
-export function form<TValue>(
-  model: WritableSignal<TValue>,
-  schema: SchemaOrSchemaFn<TValue>,
+export function form<TModel>(
+  model: WritableSignal<TModel>,
+  schema: SchemaOrSchemaFn<TModel>,
   options: FormOptions,
-): FieldTree<TValue>;
+): FieldTree<TModel>;
 
-export function form<TValue>(...args: any[]): FieldTree<TValue> {
-  const [model, schema, options] = normalizeFormArgs<TValue>(args);
+export function form<TModel>(...args: any[]): FieldTree<TModel> {
+  const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
   const fieldManager = new FormFieldManager(injector, options?.name);
@@ -208,7 +186,7 @@ export function form<TValue>(...args: any[]): FieldTree<TValue> {
   const fieldRoot = FieldNode.newRoot(fieldManager, model, pathNode, adapter);
   fieldManager.createFieldManagementEffect(fieldRoot.structure);
 
-  return fieldRoot.fieldProxy as FieldTree<TValue>;
+  return fieldRoot.fieldProxy as FieldTree<TModel>;
 }
 
 /**
@@ -250,7 +228,7 @@ export function form<TValue>(...args: any[]): FieldTree<TValue> {
  * @experimental 21.0.0
  */
 export function applyEach<TValue>(
-  path: FieldPath<TValue[]>,
+  path: SchemaPath<TValue[]>,
   schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>,
 ): void {
   assertPathIsCurrent(path);
@@ -281,7 +259,7 @@ export function applyEach<TValue>(
  * @experimental 21.0.0
  */
 export function apply<TValue>(
-  path: FieldPath<TValue>,
+  path: SchemaPath<TValue>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
   assertPathIsCurrent(path);
@@ -302,7 +280,7 @@ export function apply<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhen<TValue>(
-  path: FieldPath<TValue>,
+  path: SchemaPath<TValue>,
   logic: LogicFn<TValue, boolean>,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void {
@@ -326,7 +304,7 @@ export function applyWhen<TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue, TNarrowed extends TValue>(
-  path: FieldPath<TValue>,
+  path: SchemaPath<TValue>,
   predicate: (value: TValue) => value is TNarrowed,
   schema: SchemaOrSchemaFn<TNarrowed>,
 ): void;
@@ -344,13 +322,13 @@ export function applyWhenValue<TValue, TNarrowed extends TValue>(
  * @experimental 21.0.0
  */
 export function applyWhenValue<TValue>(
-  path: FieldPath<TValue>,
+  path: SchemaPath<TValue>,
   predicate: (value: TValue) => boolean,
   schema: NoInfer<SchemaOrSchemaFn<TValue>>,
 ): void;
 
 export function applyWhenValue(
-  path: FieldPath<unknown>,
+  path: SchemaPath<unknown>,
   predicate: (value: unknown) => boolean,
   schema: SchemaOrSchemaFn<unknown>,
 ) {
@@ -386,16 +364,16 @@ export function applyWhenValue(
  * @param form The field to submit.
  * @param action An asynchronous action used to submit the field. The action may return server
  * errors.
- * @template TValue The data type of the field being submitted.
+ * @template TModel The data type of the field being submitted.
  *
  * @category submission
  * @experimental 21.0.0
  */
-export async function submit<TValue>(
-  form: FieldTree<TValue>,
-  action: (form: FieldTree<TValue>) => Promise<TreeValidationResult>,
+export async function submit<TModel>(
+  form: FieldTree<TModel>,
+  action: (form: FieldTree<TModel>) => Promise<TreeValidationResult>,
 ) {
-  const node = form() as FieldNode;
+  const node = form() as unknown as FieldNode;
   markAllAsTouched(node);
 
   // Fail fast if the form is already invalid.
