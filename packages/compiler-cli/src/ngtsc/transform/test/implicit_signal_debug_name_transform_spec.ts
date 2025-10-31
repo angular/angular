@@ -21,7 +21,7 @@ describe('signalMetadataTransform', () => {
     const output = await getTransformedOutput(sourceCode);
 
     expect(output).toContain(
-      'const bar = (0, core_1.signal)(0, ...(ngDevMode ? [{ debugName: "bar" }] : []));',
+      'const bar = (0, core_1.signal)(0, { ...(ngDevMode ? { debugName: "bar" } : {}) });',
     );
   });
 
@@ -29,7 +29,7 @@ describe('signalMetadataTransform', () => {
     const sourceCode = `
       import { signal } from '@angular/core';
 
-      function foo() {
+      class MyComponent {
         bar: Signal<number>;
         constructor() {
           this.bar = signal(0);
@@ -39,7 +39,7 @@ describe('signalMetadataTransform', () => {
     const output = await getTransformedOutput(sourceCode);
 
     expect(output).toContain(
-      'this.bar = (0, core_1.signal)(0, ...(ngDevMode ? [{ debugName: "bar" }] : []));',
+      'this.bar = (0, core_1.signal)(0, { ...(ngDevMode ? { debugName: "bar" } : {}) });',
     );
   });
 
@@ -54,7 +54,7 @@ describe('signalMetadataTransform', () => {
     const output = await getTransformedOutput(sourceCode);
 
     expect(output).toContain(
-      'this.foo = (0, core_1.signal)(0, ...(ngDevMode ? [{ debugName: "foo" }] : []));',
+      'this.foo = (0, core_1.signal)(0, { ...(ngDevMode ? { debugName: "foo" } : {}) });',
     );
   });
 
@@ -69,7 +69,7 @@ describe('signalMetadataTransform', () => {
     const output = await getTransformedOutput(sourceCode);
 
     expect(output).toContain(
-      'this.foo = (0, core_1.signal)(0, ...(ngDevMode ? [{ debugName: "foo", equal: isEqual }] : [{ equal: isEqual }]));',
+      'this.foo = (0, core_1.signal)(0, { ...(ngDevMode ? { debugName: "foo" } : {}), equal: isEqual });',
     );
   });
 
@@ -86,6 +86,33 @@ describe('signalMetadataTransform', () => {
     expect(output).toContain('this.foo = (0, any_lib_1.signal)(0);');
   });
 
+  it('should not transform a signal with an existing debug name', async () => {
+    const sourceCode = `
+      import { signal } from '@angular/core';
+
+      class MyComponent {
+        foo = signal(0, { debugName: 'bar' });
+      }
+      `;
+    const output = await getTransformedOutput(sourceCode);
+
+    expect(output).toContain(`this.foo = (0, core_1.signal)(0, { debugName: 'bar' });`);
+  });
+
+  it('should not transform a signal with a standalone config object', async () => {
+    const sourceCode = `
+      import { signal } from '@angular/core';
+
+      function foo() {
+        const config = { equal: () => {} };
+        const bar = signal(0, config);
+      }
+      `;
+    const output = await getTransformedOutput(sourceCode);
+
+    expect(output).toContain(`const bar = (0, core_1.signal)(0, config);`);
+  });
+
   describe('signal', () => {
     it('should handle base case', async () => {
       const sourceCode = `
@@ -98,7 +125,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        `this.foo = (0, core_1.signal)('bar', ...(ngDevMode ? [{ debugName: "foo" }] : []));`,
+        `this.foo = (0, core_1.signal)('bar', { ...(ngDevMode ? { debugName: "foo" } : {}) });`,
       );
     });
   });
@@ -116,7 +143,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.bar = (0, core_1.computed)(() => foo() + 1, ...(ngDevMode ? [{ debugName: "bar" }] : []));',
+        'this.bar = (0, core_1.computed)(() => foo() + 1, { ...(ngDevMode ? { debugName: "bar" } : {}) });',
       );
     });
   });
@@ -134,7 +161,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.bar = (0, core_1.linkedSignal)(() => foo() + 1, ...(ngDevMode ? [{ debugName: "bar" }] : []));',
+        'this.bar = (0, core_1.linkedSignal)(() => foo() + 1, { ...(ngDevMode ? { debugName: "bar" } : {}) });',
       );
     });
 
@@ -153,9 +180,11 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.bar = (0, core_1.linkedSignal)(...(ngDevMode ? ' +
-          '[{ debugName: "bar", source: foo, computation: () => 1 }] : ' +
-          '[{ source: foo, computation: () => 1 }]));',
+        'this.bar = (0, core_1.linkedSignal)({ ' +
+          '...(ngDevMode ? { debugName: "bar" } : {}), ' +
+          'source: foo, ' +
+          'computation: () => 1 ' +
+          '});',
       );
     });
   });
@@ -175,7 +204,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.barRef = (0, core_1.effect)(() => { foo(); }, ...(ngDevMode ? [{ debugName: "barRef" }] : []));',
+        'this.barRef = (0, core_1.effect)(() => { foo(); }, { ...(ngDevMode ? { debugName: "barRef" } : {}) });',
       );
     });
   });
@@ -192,7 +221,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        `this.foo = (0, core_1.input)('bar', ...(ngDevMode ? [{ debugName: "foo" }] : []));`,
+        `this.foo = (0, core_1.input)('bar', { ...(ngDevMode ? { debugName: "foo" } : {}) });`,
       );
     });
 
@@ -201,13 +230,13 @@ describe('signalMetadataTransform', () => {
         import { input } from '@angular/core';
 
         class MyComponent {
-          foo = input.required<string>();
+          foo = input.required();
         }
         `;
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        `this.foo = core_1.input.required(...(ngDevMode ? [{ debugName: "foo" }] : []));`,
+        `this.foo = core_1.input.required({ ...(ngDevMode ? { debugName: "foo" } : {}) });`,
       );
     });
 
@@ -222,7 +251,22 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        `this.foo = (0, core_1.model)('bar', ...(ngDevMode ? [{ debugName: "foo" }] : []));`,
+        `this.foo = (0, core_1.model)('bar', { ...(ngDevMode ? { debugName: "foo" } : {}) });`,
+      );
+    });
+
+    it('should transform a model input without arguments', async () => {
+      const sourceCode = `
+        import { model } from '@angular/core';
+
+        class MyComponent {
+          foo = model();
+        }
+        `;
+      const output = await getTransformedOutput(sourceCode);
+
+      expect(output).toContain(
+        `this.foo = (0, core_1.model)(undefined, { ...(ngDevMode ? { debugName: "foo" } : {}) });`,
       );
     });
   });
@@ -239,7 +283,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.foo = (0, core_1.viewChild)(FooComponent, ...(ngDevMode ? [{ debugName: "foo" }] : []));',
+        'this.foo = (0, core_1.viewChild)(FooComponent, { ...(ngDevMode ? { debugName: "foo" } : {}) });',
       );
     });
 
@@ -254,7 +298,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.foo = (0, core_1.viewChildren)(FooComponent, ...(ngDevMode ? [{ debugName: "foo" }] : []));',
+        'this.foo = (0, core_1.viewChildren)(FooComponent, { ...(ngDevMode ? { debugName: "foo" } : {}) });',
       );
     });
 
@@ -269,7 +313,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.foo = (0, core_1.contentChild)(FooComponent, ...(ngDevMode ? [{ debugName: "foo" }] : []));',
+        'this.foo = (0, core_1.contentChild)(FooComponent, { ...(ngDevMode ? { debugName: "foo" } : {}) });',
       );
     });
 
@@ -284,7 +328,7 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.foo = (0, core_1.contentChildren)(FooComponent, ...(ngDevMode ? [{ debugName: "foo" }] : []));',
+        'this.foo = (0, core_1.contentChildren)(FooComponent, { ...(ngDevMode ? { debugName: "foo" } : {}) });',
       );
     });
   });
@@ -304,10 +348,11 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        'this.foo = (0, core_1.resource)(...(ngDevMode ? ' +
-          `[{ debugName: "foo", defaultValue: 'bar', loader: () => service() }] : ` +
-          `[{ defaultValue: 'bar', loader: () => service(), }]` +
-          '));',
+        'this.foo = (0, core_1.resource)({ ' +
+          '...(ngDevMode ? { debugName: "foo" } : {}), ' +
+          `defaultValue: 'bar', ` +
+          'loader: () => service() ' +
+          '});',
       );
     });
 
@@ -324,7 +369,10 @@ describe('signalMetadataTransform', () => {
       const output = await getTransformedOutput(sourceCode);
 
       expect(output).toContain(
-        `this.bar = (0, http_1.httpResource)(() => '/api/' + foo(), ...(ngDevMode ? [{ debugName: "bar" }] : []));`,
+        'this.bar = (0, http_1.httpResource)(' +
+          `() => '/api/' + foo(), ` +
+          '{ ...(ngDevMode ? { debugName: "bar" } : {}) }' +
+          ');',
       );
     });
   });
