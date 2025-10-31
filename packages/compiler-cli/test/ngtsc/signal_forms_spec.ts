@@ -48,6 +48,38 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should treat Field directives not coming from the forms module as regular directives', () => {
+      env.write(
+        'field.ts',
+        `
+          import {Directive, input} from '@angular/core';
+
+          @Directive({selector: '[field]'})
+          export class Field {
+            readonly field = input.required<string>();
+          }
+        `,
+      );
+
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Field} from './field';
+
+          @Component({
+            template: '<input [field]="null"/>',
+            imports: [Field]
+          })
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(`Type 'null' is not assignable to type 'string'.`);
+    });
+
     it('should infer an input without a `type` as a string field', () => {
       env.write(
         'test.ts',
@@ -155,6 +187,69 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
         `Type '() => FieldState<number, string | number>' is not assignable to type '() => FieldState<string, string | number>'.`,
+      );
+    });
+
+    it('should infer the type of a custom form field control', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
+
+          interface User {
+            firstName: string;
+            lastName: string;
+          }
+
+          @Component({selector: 'user-control', template: ''})
+          export class UserControl implements FormValueControl<User> {
+            readonly value = model<User>({firstName: 'Frodo', lastName: 'Baggins'});
+          }
+
+          @Component({
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
+          })
+          export class Comp {
+            f = form(signal({name: 'Bilbo'}));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type 'FieldTree<{ name: string; }, string | number>' is not assignable to type 'FieldTree<User, string | number>'.`,
+      );
+    });
+
+    it('should infer the type of a custom checkbox control', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form, FormCheckboxControl} from '@angular/forms/signals';
+
+          @Component({selector: 'my-checkbox', template: ''})
+          export class MyCheckbox implements FormCheckboxControl {
+            readonly checked = model(false);
+          }
+
+          @Component({
+            template: '<my-checkbox [field]="f"/>',
+            imports: [Field, MyCheckbox]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type '() => FieldState<string, string | number>' is not assignable to type '() => FieldState<boolean, string | number>'.`,
       );
     });
   });
