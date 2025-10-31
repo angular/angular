@@ -745,6 +745,26 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
  * A `TcbOp` which constructs an instance of the signal forms `Field` directive.
  */
 class TcbFieldDirectiveTypeOp extends TcbOp {
+  // Should be kept in sync with the `FormUiControl` bindings,
+  // defined in `packages/forms/signals/src/api/control.ts`.
+  private invalidBindingNames = new Set([
+    'value',
+    'checked',
+    'errors',
+    'invalid',
+    'disabled',
+    'disabledReasons',
+    'name',
+    'readonly',
+    'touched',
+    'max',
+    'maxLength',
+    'min',
+    'minLength',
+    'pattern',
+    'required',
+  ]);
+
   constructor(
     private tcb: Context,
     private scope: Scope,
@@ -760,6 +780,14 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
   }
 
   override execute(): ts.Identifier {
+    const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
+
+    for (const input of inputs) {
+      if (input.type === BindingType.Property && this.invalidBindingNames.has(input.name)) {
+        this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, input);
+      }
+    }
+
     const refType = this.tcb.env.referenceType(this.dir.ref);
 
     if (!ts.isTypeReferenceNode(refType)) {

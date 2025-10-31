@@ -257,7 +257,7 @@ runInEachFileSystem(() => {
       env.write(
         'test.ts',
         `
-          import {Component, signal, model} from '@angular/core';
+          import {Component, signal} from '@angular/core';
           import {Field, form} from '@angular/forms/signals';
 
           @Component({
@@ -276,6 +276,30 @@ runInEachFileSystem(() => {
         `This node is an invalid [field] directive host. The host must be a native form control ` +
           `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
           `'value' or 'checked' model.`,
+      );
+    });
+
+    it('should report unsupported bindings on a field', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [field]="f" [max]="10"/>',
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to 'max' is not allowed on nodes using the [field] directive`,
       );
     });
   });

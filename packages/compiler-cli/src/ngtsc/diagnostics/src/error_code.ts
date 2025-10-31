@@ -439,6 +439,9 @@ export enum ErrorCode {
   /** Raised when a form field directive is applied on an invalid node. */
   FORM_FIELD_INVALID_NODE = 8022,
 
+  /** Raised when the user has an unsupported binding on a `Field` directive. */
+  FORM_FIELD_UNSUPPORTED_BINDING = 8023,
+
   /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:

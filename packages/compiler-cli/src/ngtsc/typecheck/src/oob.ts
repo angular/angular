@@ -245,6 +245,11 @@ export interface OutOfBandDiagnosticRecorder {
    * Reports that the `Field` directive is attached to an unsupported node.
    */
   formFieldInvalidNode(id: TypeCheckId, node: DirectiveOwner): void;
+
+  /**
+   * Reports an unsupported binding on a form `Field` node.
+   */
+  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -859,6 +864,19 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         `This node is an invalid [field] directive host. The host must be a native form control ` +
           `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
           `'value' or 'checked' model.`,
+      ),
+    );
+  }
+
+  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.FORM_FIELD_UNSUPPORTED_BINDING),
+        `Binding to '${node.name}' is not allowed on nodes using the [field] directive`,
       ),
     );
   }
