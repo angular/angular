@@ -14,7 +14,6 @@ import {RouterTreeNode} from './router-tree-fns';
 export type RowType = 'text' | 'chip' | 'flag' | 'list';
 
 @Component({
-  standalone: true,
   selector: '[ng-route-details-row]',
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],

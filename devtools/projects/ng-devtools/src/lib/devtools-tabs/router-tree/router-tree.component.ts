@@ -25,11 +25,7 @@ import {ApplicationOperations} from '../../application-operations/index';
 import {RouteDetailsRowComponent} from './route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route} from '../../../../../protocol';
-import {
-  SvgD3Node,
-  SvgD3Link,
-  TreeVisualizerConfig,
-} from '../../shared/tree-visualizer/tree-visualizer';
+import {SvgD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tree-visualizer';
 import {
   RouterTreeD3Node,
   transformRoutesIntoVisTree,
@@ -146,6 +142,17 @@ export class RouterTreeComponent {
       'component',
       this.frameManager.selectedFrame()!,
     );
+  }
+
+  viewFunctionSource(functionName: string, type: 'title' | 'redirectTo'): void {
+    if (functionName === '[Function]') {
+      const message =
+        'Cannot view the source of redirect functions defined inline (arrow or anonymous).';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      return;
+    }
+
+    this.appOperations.viewSourceFromRouter(functionName, type, this.frameManager.selectedFrame()!);
   }
 
   navigateRoute(route: any): void {
