@@ -28,6 +28,10 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
+  DirectiveOwner,
+  TmplAstHostElement,
+  ParseSourceSpan,
+  BindingType,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -236,6 +240,11 @@ export interface OutOfBandDiagnosticRecorder {
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void;
+
+  /**
+   * Reports that the `Field` directive is attached to an unsupported node.
+   */
+  formFieldInvalidNode(id: TypeCheckId, node: DirectiveOwner): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -825,6 +834,31 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
         'Trigger with no target can only be placed on an @defer that has a ' +
           '@placeholder block with exactly one root element node',
+      ),
+    );
+  }
+
+  formFieldInvalidNode(id: TypeCheckId, node: DirectiveOwner): void {
+    let span: ParseSourceSpan;
+
+    if (node instanceof TmplAstHostElement) {
+      span = node.sourceSpan;
+    } else {
+      // If we can, try to report the diagnostic on the `field` binding itself.
+      const prop = node.inputs.find((i) => i.type === BindingType.Property && i.name === 'field');
+      span = prop?.keySpan ?? node.startSourceSpan;
+    }
+
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        span,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.FORM_FIELD_INVALID_NODE),
+        `This node is an invalid [field] directive host. The host must be a native form control ` +
+          `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
+          `'value' or 'checked' model.`,
       ),
     );
   }

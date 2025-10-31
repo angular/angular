@@ -252,5 +252,31 @@ runInEachFileSystem(() => {
         `Type '() => FieldState<string, string | number>' is not assignable to type '() => FieldState<boolean, string | number>'.`,
       );
     });
+
+    it('should report if a Field is applied on an unsupported element', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<button [field]="f"></button>',
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `This node is an invalid [field] directive host. The host must be a native form control ` +
+          `(such as <input>', '<select>', or '<textarea>') or a custom form control component with a ` +
+          `'value' or 'checked' model.`,
+      );
+    });
   });
 });

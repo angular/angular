@@ -788,7 +788,8 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
       return this.getExpectedTypeFromDomNode(this.node);
     }
 
-    throw new Error('TODO');
+    this.tcb.oobRecorder.formFieldInvalidNode(this.tcb.id, this.node);
+    return this.getUnsupportedType();
   }
 
   private getExpectedTypeFromCustomField(customField: TypeCheckableDirectiveMeta): ts.TypeNode {
@@ -816,7 +817,8 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
     }
 
     if (node.name !== 'input') {
-      throw new Error('TODO');
+      this.tcb.oobRecorder.formFieldInvalidNode(this.tcb.id, this.node);
+      return this.getUnsupportedType();
     }
 
     const inputType = node.attributes.find((attr) => attr.name === 'type')?.value;
@@ -847,6 +849,10 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
 
     // Fall back to string if we couldn't map the type.
     return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+  }
+
+  private getUnsupportedType(): ts.TypeNode {
+    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
   }
 }
 

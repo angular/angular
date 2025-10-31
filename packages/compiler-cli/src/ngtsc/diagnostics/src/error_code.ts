@@ -436,6 +436,9 @@ export enum ErrorCode {
    */
   DEFER_TRIGGER_MISCONFIGURATION = 8021,
 
+  /** Raised when a form field directive is applied on an invalid node. */
+  FORM_FIELD_INVALID_NODE = 8022,
+
   /**
    * A two way binding in a template has an incorrect syntax,
    * parentheses outside brackets. For example:
