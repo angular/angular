@@ -742,6 +742,149 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
 }
 
 /**
+ * A `TcbOp` which constructs an instance of the signal forms `Field` directive.
+ */
+class TcbFieldDirectiveTypeOp extends TcbOp {
+  // Should be kept in sync with the `FormUiControl` bindings,
+  // defined in `packages/forms/signals/src/api/control.ts`.
+  private invalidBindingNames = new Set([
+    'value',
+    'checked',
+    'errors',
+    'invalid',
+    'disabled',
+    'disabledReasons',
+    'name',
+    'readonly',
+    'touched',
+    'max',
+    'maxLength',
+    'min',
+    'minLength',
+    'pattern',
+    'required',
+  ]);
+
+  constructor(
+    private tcb: Context,
+    private scope: Scope,
+    private node: DirectiveOwner,
+    private dir: TypeCheckableDirectiveMeta,
+    private customFieldDir: TypeCheckableDirectiveMeta | null,
+  ) {
+    super();
+  }
+
+  override get optional() {
+    return true;
+  }
+
+  override execute(): ts.Identifier {
+    const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
+
+    for (const input of inputs) {
+      if (input.type === BindingType.Property && this.invalidBindingNames.has(input.name)) {
+        this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, input);
+      }
+    }
+
+    const refType = this.tcb.env.referenceType(this.dir.ref);
+
+    if (!ts.isTypeReferenceNode(refType)) {
+      throw new Error(
+        `Expected TypeReferenceNode when referencing the type for ${this.dir.ref.debugName}`,
+      );
+    }
+
+    const span =
+      this.node instanceof TmplAstHostElement
+        ? this.node.sourceSpan
+        : this.node.startSourceSpan || this.node.sourceSpan;
+
+    const type = ts.factory.createTypeReferenceNode(refType.typeName, [this.getExpectedType()]);
+    const id = this.tcb.allocateId();
+    addExpressionIdentifier(id, ExpressionIdentifier.DIRECTIVE);
+    addParseSpanInfo(id, span);
+    this.scope.addStatement(tsDeclareVariable(id, type));
+    return id;
+  }
+
+  private getExpectedType(): ts.TypeNode {
+    if (this.customFieldDir !== null) {
+      return this.getExpectedTypeFromCustomField(this.customFieldDir);
+    } else if (this.node instanceof TmplAstElement) {
+      return this.getExpectedTypeFromDomNode(this.node);
+    }
+
+    this.tcb.oobRecorder.formFieldInvalidNode(this.tcb.id, this.node);
+    return this.getUnsupportedType();
+  }
+
+  private getExpectedTypeFromCustomField(customField: TypeCheckableDirectiveMeta): ts.TypeNode {
+    const id = R3Identifiers.ExtractFormControlValue;
+    const extractRef = this.tcb.env.referenceExternalType(id.moduleName, id.name);
+    const customFieldRef = this.tcb.env.referenceType(customField.ref);
+
+    if (!ts.isTypeReferenceNode(extractRef)) {
+      throw new Error(`Expected TypeReferenceNode when referencing the type for ${id.name}`);
+    }
+
+    if (!ts.isTypeReferenceNode(customFieldRef)) {
+      throw new Error(
+        `Expected TypeReferenceNode when referencing the type for ${customField.ref.debugName}`,
+      );
+    }
+
+    return ts.factory.createTypeReferenceNode(extractRef.typeName, [customFieldRef]);
+  }
+
+  private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
+    if (node.name === 'textarea' || node.name === 'select') {
+      // `<textarea>` and `<select>` are always strings.
+      return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+    }
+
+    if (node.name !== 'input') {
+      this.tcb.oobRecorder.formFieldInvalidNode(this.tcb.id, this.node);
+      return this.getUnsupportedType();
+    }
+
+    const inputType = node.attributes.find((attr) => attr.name === 'type')?.value;
+
+    switch (inputType) {
+      case 'checkbox':
+        return ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
+
+      case 'number':
+      case 'range':
+      case 'datetime-local':
+        return ts.factory.createUnionTypeNode([
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+        ]);
+
+      case 'date':
+      case 'month':
+      case 'time':
+      case 'week':
+        return ts.factory.createUnionTypeNode([
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword),
+          ts.factory.createTypeReferenceNode('Date'),
+          ts.factory.createLiteralTypeNode(ts.factory.createNull()),
+        ]);
+    }
+
+    // Fall back to string if we couldn't map the type.
+    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
+  }
+
+  private getUnsupportedType(): ts.TypeNode {
+    return ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
+  }
+}
+
+/**
  * A `TcbOp` which creates a variable for a local ref in a template.
  * The initializer for the variable is the variable expression for the directive, template, or
  * element the ref refers to. When the reference is used in the template, those TCB statements will
@@ -2713,7 +2856,7 @@ class Scope {
 
     const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
     for (const dir of directives) {
-      this.appendDirectiveInputs(dir, node, dirMap);
+      this.appendDirectiveInputs(dir, node, dirMap, directives);
     }
     this.directiveOpMap.set(node, dirMap);
 
@@ -2790,7 +2933,7 @@ class Scope {
     if (directives !== null && directives.length > 0) {
       const dirMap = new Map<TypeCheckableDirectiveMeta, number>();
       for (const dir of directives) {
-        this.appendDirectiveInputs(dir, node, dirMap);
+        this.appendDirectiveInputs(dir, node, dirMap, directives);
 
         for (const propertyName of dir.inputs.propertyNames) {
           claimedInputs.add(propertyName);
@@ -2856,17 +2999,33 @@ class Scope {
     dir: TypeCheckableDirectiveMeta,
     node: TmplAstElement | TmplAstTemplate | TmplAstComponent | TmplAstDirective,
     dirMap: Map<TypeCheckableDirectiveMeta, number>,
+    allDirectiveMatches: TypeCheckableDirectiveMeta[],
   ): void {
-    const directiveOp = this.getDirectiveOp(dir, node);
+    const directiveOp = this.getDirectiveOp(dir, node, allDirectiveMatches);
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
     this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir));
   }
 
-  private getDirectiveOp(dir: TypeCheckableDirectiveMeta, node: DirectiveOwner): TcbOp {
+  private getDirectiveOp(
+    dir: TypeCheckableDirectiveMeta,
+    node: DirectiveOwner,
+    allDirectiveMatches: TypeCheckableDirectiveMeta[],
+  ): TcbOp {
     const dirRef = dir.ref as Reference<ClassDeclaration<ts.ClassDeclaration>>;
 
-    if (!dir.isGeneric) {
+    if (
+      dir.name === 'Field' &&
+      dirRef.bestGuessOwningModule?.specifier === '@angular/forms/signals'
+    ) {
+      return new TcbFieldDirectiveTypeOp(
+        this.tcb,
+        this,
+        node,
+        dir,
+        allDirectiveMatches.find(isCustomFieldDirective) ?? null,
+      );
+    } else if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
       return new TcbNonGenericDirectiveTypeOp(this.tcb, this, node, dir);
@@ -3065,7 +3224,7 @@ class Scope {
       const directiveOpMap = new Map<TypeCheckableDirectiveMeta, number>();
 
       for (const directive of directives) {
-        const directiveOp = this.getDirectiveOp(directive, node);
+        const directiveOp = this.getDirectiveOp(directive, node, directives);
         directiveOpMap.set(directive, this.opQueue.push(directiveOp) - 1);
       }
 
@@ -3781,4 +3940,15 @@ class TcbForLoopTrackTranslator extends TcbExpressionTranslator {
 // revisited once the design is finalized.
 function getComponentTagName(node: TmplAstComponent): string {
   return node.tagName || 'ng-component';
+}
+
+/** Determines if a directive can be a custom form field control. */
+function isCustomFieldDirective({inputs, outputs}: TypeCheckableDirectiveMeta): boolean {
+  // Custom fields must have either a model called either `value` or `checked`.
+  return (
+    (!!inputs.getByBindingPropertyName('value')?.some((v) => v.isSignal) &&
+      outputs.hasBindingPropertyName('valueChange')) ||
+    (!!inputs.getByBindingPropertyName('checked')?.some((v) => v.isSignal) &&
+      outputs.hasBindingPropertyName('checkedChange'))
+  );
 }
