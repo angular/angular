@@ -9,6 +9,7 @@
 import {TestBed} from '@angular/core/testing';
 import {
   Event,
+  InMemoryScrollingOptions,
   NavigationEnd,
   NavigationStart,
   provideRouter,
@@ -21,12 +22,11 @@ import {filter, switchMap, take} from 'rxjs/operators';
 
 import {PrivateRouterEvents, Scroll} from '../src/events';
 import {ROUTER_SCROLLER, RouterScroller} from '../src/router_scroller';
-import {ApplicationRef, ɵWritable as Writable} from '@angular/core';
+import {Component, ɵWritable as Writable} from '@angular/core';
 import {timeout} from './helpers';
 import {ViewportScroller} from '@angular/common';
 import {NavigationTransitions} from '../src/navigation_transition';
 
-// TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
     const viewportScroller = TestBed.inject(ViewportScroller);
@@ -37,8 +37,8 @@ describe('RouterScroller', () => {
     setScroll(viewportScroller, 0, 0);
     const scroller = TestBed.runInInjectionContext(() => new RouterScroller({}));
 
-    expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
-    expect((scroller as any).options.anchorScrolling).toBe('disabled');
+    expect(scroller['options'].scrollPositionRestoration).toBe('disabled');
+    expect(scroller['options'].anchorScrolling).toBe('disabled');
   });
 
   function nextScrollEvent(events: Subject<Event | PrivateRouterEvents>): Promise<Scroll> {
@@ -291,3 +291,163 @@ function createRouterScroller({
 function setScroll(viewportScroller: any, x: number, y: number) {
   viewportScroller.getScrollPosition.and.returnValue([x, y]);
 }
+
+describe('withInMemoryScrolling', () => {
+  @Component({template: '<div>simple</div>'})
+  class SimpleComponent {}
+
+  function nextScrollEvent(events: Subject<Event | PrivateRouterEvents>): Promise<Scroll> {
+    return events
+      .pipe(
+        filter((e): e is Scroll => e instanceof Scroll),
+        take(1),
+      )
+      .toPromise() as Promise<Scroll>;
+  }
+
+  function createRouterWithInMemoryScrolling({
+    scrollPositionRestoration,
+    anchorScrolling,
+  }: InMemoryScrollingOptions) {
+    const viewportScroller = jasmine.createSpyObj<ViewportScroller>('viewportScroller', [
+      'getScrollPosition',
+      'scrollToPosition',
+      'scrollToAnchor',
+      'setHistoryScrollRestoration',
+    ]);
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {path: 'a', component: SimpleComponent},
+            {path: 'b', component: SimpleComponent},
+          ],
+          withInMemoryScrolling({scrollPositionRestoration, anchorScrolling}),
+        ),
+        {provide: ViewportScroller, useValue: viewportScroller},
+      ],
+    });
+
+    const events = new Subject<Event | PrivateRouterEvents>();
+    (TestBed.inject(NavigationTransitions) as Writable<NavigationTransitions>).events = events;
+
+    const scroller = TestBed.inject(ROUTER_SCROLLER);
+    scroller.init();
+    return {events, viewportScroller};
+  }
+
+  function setScroll(viewportScroller: any, x: number, y: number) {
+    viewportScroller.getScrollPosition.and.returnValue([x, y]);
+  }
+
+  it('should configure scrollPositionRestoration  and anchorScrolling as disabled by default', () => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter([], withInMemoryScrolling())],
+    });
+
+    const scroller = TestBed.inject(ROUTER_SCROLLER);
+    expect(scroller['options'].scrollPositionRestoration).toBe('disabled');
+    expect(scroller['options'].anchorScrolling).toBe('disabled');
+  });
+
+  describe('scroll to top', () => {
+    it('should scroll to top on all navigations', async () => {
+      const {events, viewportScroller} = createRouterWithInMemoryScrolling({
+        scrollPositionRestoration: 'top',
+      });
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(2, '/b'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(3, '/a'));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+    });
+  });
+
+  describe('anchor scrolling', () => {
+    it('should scroll to anchor (scrollPositionRestoration is disabled)', async () => {
+      const {events, viewportScroller} = createRouterWithInMemoryScrolling({
+        scrollPositionRestoration: 'disabled',
+        anchorScrolling: 'enabled',
+      });
+
+      events.next(new NavigationStart(1, '/a#anchor'));
+      events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor');
+
+      events.next(new NavigationStart(2, '/a#anchor2'));
+      events.next(new NavigationEnd(2, '/a#anchor2', '/a#anchor2'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor2');
+    });
+
+    it('should scroll to anchor (scrollPositionRestoration is enabled)', async () => {
+      const {events, viewportScroller} = createRouterWithInMemoryScrolling({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled',
+      });
+
+      events.next(new NavigationStart(1, '/a#anchor'));
+      events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('anchor');
+
+      events.next(new NavigationStart(2, '/b#section'));
+      events.next(new NavigationEnd(2, '/b#section', '/b#section'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).toHaveBeenCalledWith('section');
+    });
+
+    it('should not scroll to anchor when both options are disabled', async () => {
+      const {events, viewportScroller} = createRouterWithInMemoryScrolling({
+        scrollPositionRestoration: 'disabled',
+        anchorScrolling: 'disabled',
+      });
+
+      events.next(new NavigationStart(1, '/a#anchor'));
+      events.next(new NavigationEnd(1, '/a#anchor', '/a#anchor'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToAnchor).not.toHaveBeenCalled();
+      expect(viewportScroller.scrollToPosition).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('scroll position restoration', () => {
+    it('should restore scroll position on popstate', async () => {
+      const {events, viewportScroller} = createRouterWithInMemoryScrolling({
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'disabled',
+      });
+
+      events.next(new NavigationStart(1, '/a'));
+      events.next(new NavigationEnd(1, '/a', '/a'));
+      await nextScrollEvent(events);
+      setScroll(viewportScroller, 10, 100);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(2, '/b'));
+      events.next(new NavigationEnd(2, '/b', '/b'));
+      await nextScrollEvent(events);
+      setScroll(viewportScroller, 20, 200);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([0, 0]);
+
+      events.next(new NavigationStart(3, '/a', 'popstate', {navigationId: 1}));
+      events.next(new NavigationEnd(3, '/a', '/a'));
+      await nextScrollEvent(events);
+      expect(viewportScroller.scrollToPosition).toHaveBeenCalledWith([10, 100], {
+        behavior: 'instant',
+      });
+    });
+  });
+});
