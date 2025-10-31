@@ -13,12 +13,13 @@ import {
   appIsAngularIvy,
   appIsSupportedAngularVersion,
 } from '../../../shared-utils';
+import {getContentScriptUri, getDetectAngularScriptUri} from './comm-utils';
 
 import {SamePageMessageBus} from './same-page-message-bus';
 
 const detectAngularMessageBus = new SamePageMessageBus(
-  `angular-devtools-detect-angular-${location.href}`,
-  `angular-devtools-content-script-${location.href}`,
+  getDetectAngularScriptUri(),
+  getContentScriptUri(),
 );
 
 function detectAngular(win: Window): void {

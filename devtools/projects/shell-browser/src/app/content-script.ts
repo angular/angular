@@ -9,6 +9,7 @@
 /// <reference types="chrome"/>
 
 import {ChromeMessageBus} from './chrome-message-bus';
+import {getBackendUri, getContentScriptUri, getDetectAngularScriptUri} from './comm-utils';
 import {SamePageMessageBus} from './same-page-message-bus';
 
 let backgroundDisconnected = false;
@@ -30,8 +31,8 @@ const handleDisconnect = (): void => {
 port.onDisconnect.addListener(handleDisconnect);
 
 const detectAngularMessageBus = new SamePageMessageBus(
-  `angular-devtools-content-script-${location.href}`,
-  `angular-devtools-detect-angular-${location.href}`,
+  getContentScriptUri(),
+  getDetectAngularScriptUri(),
 );
 
 detectAngularMessageBus.on('detectAngular', (detectionResult) => {
@@ -60,10 +61,7 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
   backendInstalled = true;
 });
 
-const localMessageBus = new SamePageMessageBus(
-  `angular-devtools-content-script-${location.href}`,
-  `angular-devtools-backend-${location.href}`,
-);
+const localMessageBus = new SamePageMessageBus(getContentScriptUri(), getBackendUri());
 const chromeMessageBus = new ChromeMessageBus(port);
 
 const handshakeWithBackend = (): void => {
