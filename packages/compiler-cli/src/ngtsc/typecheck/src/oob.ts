@@ -237,6 +237,11 @@ export interface OutOfBandDiagnosticRecorder {
       | TmplAstInteractionDeferredTrigger
       | TmplAstViewportDeferredTrigger,
   ): void;
+
+  /**
+   * Reports an unsupported binding on a form `Field` node.
+   */
+  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -848,6 +853,19 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         ngErrorCode(ErrorCode.DEFER_IMPLICIT_TRIGGER_INVALID_PLACEHOLDER),
         'Trigger with no target can only be placed on an @defer that has a ' +
           '@placeholder block with exactly one root element node',
+      ),
+    );
+  }
+
+  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void {
+    this._diagnostics.push(
+      makeTemplateDiagnostic(
+        id,
+        this.resolver.getTemplateSourceMapping(id),
+        node.sourceSpan,
+        ts.DiagnosticCategory.Error,
+        ngErrorCode(ErrorCode.FORM_FIELD_UNSUPPORTED_BINDING),
+        `Binding to '${node.name}' is not allowed on nodes using the [field] directive`,
       ),
     );
   }
