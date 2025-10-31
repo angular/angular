@@ -13,7 +13,6 @@ import {InjectionToken} from '../di/injection_token';
 export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'AnimationsDisabled' : '',
   {
-    providedIn: 'root',
     factory: () => false,
   },
 );
@@ -38,7 +37,6 @@ export type AnimationCallbackEvent = {target: Element; animationComplete: Functi
 export const MAX_ANIMATION_TIMEOUT = new InjectionToken<number>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'MaxAnimationTimeout' : '',
   {
-    providedIn: 'root',
     factory: () => MAX_ANIMATION_TIMEOUT_DEFAULT,
   },
 );

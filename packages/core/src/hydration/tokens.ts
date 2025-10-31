@@ -27,7 +27,6 @@ export const PRESERVE_HOST_CONTENT_DEFAULT = false;
 export const PRESERVE_HOST_CONTENT = new InjectionToken<boolean>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'PRESERVE_HOST_CONTENT' : '',
   {
-    providedIn: 'root',
     factory: () => PRESERVE_HOST_CONTENT_DEFAULT,
   },
 );
@@ -64,7 +63,6 @@ export const IS_INCREMENTAL_HYDRATION_ENABLED = new InjectionToken<boolean>(
 export const JSACTION_BLOCK_ELEMENT_MAP = new InjectionToken<Map<string, Set<Element>>>(
   typeof ngDevMode !== undefined && ngDevMode ? 'JSACTION_BLOCK_ELEMENT_MAP' : '',
   {
-    providedIn: 'root',
     factory: () => new Map<string, Set<Element>>(),
   },
 );

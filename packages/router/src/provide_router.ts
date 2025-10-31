@@ -143,7 +143,6 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * called.
  */
 export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>('', {
-  providedIn: 'root',
   factory: () => false,
 });
 
@@ -352,7 +351,7 @@ const enum InitialNavigation {
 
 const INITIAL_NAVIGATION = new InjectionToken<InitialNavigation>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'initial navigation' : '',
-  {providedIn: 'root', factory: () => InitialNavigation.EnabledNonBlocking},
+  {factory: () => InitialNavigation.EnabledNonBlocking},
 );
 
 /**

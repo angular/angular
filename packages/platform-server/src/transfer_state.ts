@@ -24,7 +24,6 @@ import {BEFORE_APP_SERIALIZED} from './tokens';
 const TRANSFER_STATE_STATUS = new InjectionToken<{serialized: boolean}>(
   typeof ngDevMode === 'undefined' || ngDevMode ? 'TRANSFER_STATE_STATUS' : '',
   {
-    providedIn: 'root',
     factory: () => ({serialized: false}),
   },
 );

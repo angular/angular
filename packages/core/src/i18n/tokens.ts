@@ -81,7 +81,6 @@ export function getGlobalLocale(): string {
 export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
   typeof ngDevMode !== undefined && ngDevMode ? 'LocaleId' : '',
   {
-    providedIn: 'root',
     factory: () => inject(LOCALE_ID, {optional: true, skipSelf: true}) || getGlobalLocale(),
   },
 );
@@ -132,7 +131,6 @@ export const LOCALE_ID: InjectionToken<string> = new InjectionToken(
 export const DEFAULT_CURRENCY_CODE = new InjectionToken<string>(
   typeof ngDevMode !== undefined && ngDevMode ? 'DefaultCurrencyCode' : '',
   {
-    providedIn: 'root',
     factory: () => USD_CURRENCY_CODE,
   },
 );
