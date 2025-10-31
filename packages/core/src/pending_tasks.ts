@@ -46,7 +46,7 @@ export class PendingTasks {
    */
   add(): () => void {
     const taskId = this.internalPendingTasks.add();
-    return () => {
+    const cleanup = () => {
       if (!this.internalPendingTasks.has(taskId)) {
         // This pending task has already been cleared.
         return;
@@ -55,6 +55,8 @@ export class PendingTasks {
       this.scheduler.notify(NotificationSource.PendingTaskRemoved);
       this.internalPendingTasks.remove(taskId);
     };
+    cleanup[Symbol.dispose] = cleanup;
+    return cleanup;
   }
 
   /**
