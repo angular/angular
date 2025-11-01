@@ -94,7 +94,7 @@ export class Navigation implements OnInit {
   openedMenu: MenuType | null = null;
 
   currentDocsVersion = this.versionManager.currentDocsVersion;
-  currentDocsVersionMode = this.versionManager.currentDocsVersion()?.version;
+  currentDocsVersionMode = this.versionManager.currentDocsVersionMode;
 
   // Set the values of the search label and title only on the client, because the label is user-agent specific.
   searchLabel = this.isBrowser

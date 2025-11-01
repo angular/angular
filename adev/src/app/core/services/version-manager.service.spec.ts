@@ -6,54 +6,100 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {TestBed} from '@angular/core/testing';
+import {Injectable, VERSION, computed, inject} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {httpResource} from '@angular/common/http';
 
-import {INITIAL_ADEV_DOCS_VERSION, VersionManager} from './version-manager.service';
-import {WINDOW} from '@angular/docs';
-import {CURRENT_MAJOR_VERSION} from '../providers/current-version';
+import versionJson from '../../../assets/others/versions.json';
 
-describe('VersionManager', () => {
-  const fakeWindow = {location: {hostname: 'angular.dev'}};
-  const fakeCurrentMajorVersion = 19;
+export interface Version {
+  displayName: string;
+  url: string;
+}
 
-  let service: VersionManager;
+export type VersionMode = 'stable' | 'deprecated' | 'rc' | 'next' | number;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        {
-          provide: WINDOW,
-          useValue: fakeWindow,
-        },
-        {
-          provide: CURRENT_MAJOR_VERSION,
-          useValue: fakeCurrentMajorVersion,
-        },
-      ],
-    });
-    service = TestBed.inject(VersionManager);
+export const INITIAL_ADEV_DOCS_VERSION = 18;
+export const VERSION_PLACEHOLDER = '{{version}}';
+export const MODE_PLACEHOLDER = '{{prefix}}';
+
+type VersionJson = {version: string; url: string};
+
+/**
+ * This service will rely on 2 sources of data for the list of versions.
+ *
+ * To have an up-to-date list of versions, it will fetch a json from the deployed website.
+ * As fallback it will use a local json file that is bundled with the app.
+ */
+@Injectable({
+  providedIn: 'root',
+})
+export class VersionManager {
+  private document = inject(DOCUMENT);
+
+  readonly currentDocsVersionMode = computed<VersionMode>(() => {
+    const hostname = this.document.location.hostname;
+    if (hostname.startsWith('v')) return 'deprecated';
+    if (hostname.startsWith('rc')) return 'rc';
+    if (hostname.startsWith('next')) return 'next';
+
+    return 'stable';
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  private localVersions = (versionJson as VersionJson[]).map((v) => {
+    return {
+      displayName: v.version,
+      url: v.url,
+    };
   });
 
-  it('should contain correct number of Angular Docs versions', () => {
-    // Note: From v2 to v18 (inclusive), there were no v3
-    const expectedAioDocsVersionsCount = 16;
-
-    // Last stable version and next
-    const expectedRecentDocsVersionCount = 2;
-
-    const expectedPreviousAdevVersionsCount = fakeCurrentMajorVersion - INITIAL_ADEV_DOCS_VERSION;
-
-    expect(service['getAioVersions']().length).toBe(expectedAioDocsVersionsCount);
-    expect(service['getRecentVersions']().length).toBe(expectedRecentDocsVersionCount);
-    expect(service['getAdevVersions']().length).toBe(expectedPreviousAdevVersionsCount);
-    expect(service.versions().length).toBe(
-      expectedAioDocsVersionsCount +
-        expectedRecentDocsVersionCount +
-        expectedPreviousAdevVersionsCount,
-    );
+  // This handle the fallback if the resource fails.
+  readonly versions = computed(() => {
+    return this.remoteVersions.hasValue() ? this.remoteVersions.value() : this.localVersions;
   });
-});
+
+  // Yes this will trigger a cors error on localhost
+  // but this is fine as we'll fallback to the local versions.json
+  // which is the most up-to-date anyway.
+  remoteVersions = httpResource(
+    () => ({
+      url: 'https://angular.dev/assets/others/versions.json',
+      transferCache: false,
+      cache: 'no-cache',
+    }),
+    {
+      parse: (json: unknown) => {
+        if (!Array.isArray(json)) {
+          throw new Error('Invalid version data');
+        }
+        return json.map((v: unknown) => {
+          if (
+            v === undefined ||
+            v === null ||
+            typeof v !== 'object' ||
+            !('version' in v) ||
+            !('url' in v) ||
+            typeof v.version !== 'string' ||
+            typeof v.url !== 'string'
+          ) {
+            throw new Error('Invalid version data');
+          }
+
+          return {
+            displayName: v.version,
+            url: v.url,
+          };
+        });
+      },
+    },
+  );
+
+  readonly currentDocsVersion = computed(() => {
+    // In devmode the version is 0, so we'll target next (which is first on the list)
+    if (VERSION.major === '0') {
+      return this.versions()[0];
+    }
+
+    return this.versions().find((v) => v.displayName.includes(VERSION.major)) ?? this.versions()[0];
+  });
+}

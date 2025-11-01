@@ -11,7 +11,6 @@ import {AppComponent} from './app.component';
 import {provideRouter, withComponentInputBinding} from '@angular/router';
 import {routes} from './routes';
 import {Search, WINDOW} from '@angular/docs';
-import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
 
 describe('AppComponent', () => {
   const fakeSearch = {};
@@ -29,10 +28,6 @@ describe('AppComponent', () => {
         {
           provide: Search,
           useValue: fakeSearch,
-        },
-        {
-          provide: CURRENT_MAJOR_VERSION,
-          useValue: fakeCurrentMajorVersion,
         },
       ],
     });
