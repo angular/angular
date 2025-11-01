@@ -33,7 +33,7 @@ import {
   toObservable,
 } from '../validators';
 import type {FormArray} from './form_array';
-import type {FormGroup} from './form_group';
+import type {FormGroup, FormRecord} from './form_group';
 
 /**
  * Reports that a control is valid, meaning that no errors exist in the input value.
@@ -461,7 +461,7 @@ export type ɵGetProperty<T, K> =
         any;
 
 /**
- * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
+ * This is the base class for `FormControl`, `FormGroup`, `FormArray`, and `FormRecord`.
  *
  * It provides some of the shared behavior that all controls and groups of controls have, like
  * running validators, calculating status, and resetting state. It also defines the properties
@@ -502,7 +502,7 @@ export abstract class AbstractControl<
   /** @internal */
   _updateOn?: FormHooks;
 
-  private _parent: FormGroup | FormArray | null = null;
+  private _parent: FormGroup | FormArray | FormRecord | null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -598,7 +598,7 @@ export abstract class AbstractControl<
   /**
    * The parent control.
    */
-  get parent(): FormGroup | FormArray | null {
+  get parent(): FormGroup | FormArray | FormRecord | null {
     return this._parent;
   }
 
@@ -1514,6 +1514,12 @@ export abstract class AbstractControl<
   get<P extends string | Array<string | number>>(
     path: P,
   ): AbstractControl<ɵGetProperty<TRawValue, P>> | null;
+
+  /**
+   * This is basically a fallback signature, used when you can't get the other two to work.
+   * Usually happens when you have invoke the method on a union type like FormGroup | FormRecord
+   */
+  get<P extends string | Array<string | number>>(path: P): AbstractControl | null;
 
   /**
    * Retrieves a child control given the control's name or path.
