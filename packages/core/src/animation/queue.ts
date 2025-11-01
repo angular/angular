@@ -8,12 +8,12 @@
 
 import {afterNextRender} from '../render3/after_render/hooks';
 import {InjectionToken, Injector} from '../di';
-import {NodeAnimations} from './interfaces';
+import {EnterNodeAnimations} from './interfaces';
 
 export interface AnimationQueue {
-  queue: Set<Function>;
+  queue: Set<VoidFunction>;
   isScheduled: boolean;
-  scheduler: Function | null;
+  scheduler: typeof initializeAnimationQueueScheduler | null;
 }
 
 /**
@@ -33,7 +33,10 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
   },
 );
 
-export function addToAnimationQueue(injector: Injector, animationFns: Function | Function[]) {
+export function addToAnimationQueue(
+  injector: Injector,
+  animationFns: VoidFunction | VoidFunction[],
+) {
   const animationQueue = injector.get(ANIMATION_QUEUE);
   if (Array.isArray(animationFns)) {
     for (const animateFn of animationFns) {
@@ -71,7 +74,7 @@ export function initializeAnimationQueueScheduler(injector: Injector) {
 
 export function queueEnterAnimations(
   injector: Injector,
-  enterAnimations: Map<number, NodeAnimations>,
+  enterAnimations: Map<number, EnterNodeAnimations>,
 ) {
   for (const [_, nodeAnimations] of enterAnimations) {
     addToAnimationQueue(injector, nodeAnimations.animateFns);

@@ -52,23 +52,8 @@ const MAX_ANIMATION_TIMEOUT_DEFAULT = 4000;
  */
 export type AnimationFunction = (event: AnimationCallbackEvent) => void;
 
-export type AnimationEventFunction = (
-  el: Element,
-  value: AnimationFunction,
-) => AnimationRemoveFunction;
-export type AnimationClassFunction = (
-  el: Element,
-  value: Set<string> | null,
-  resolvers: Function[] | undefined,
-) => AnimationRemoveFunction;
-export type AnimationRemoveFunction = (removeFn: VoidFunction) => void;
-
-export interface AnimationDetails {
-  classes: Set<string> | null;
-  classFns?: Function[];
-  animateFn: AnimationRemoveFunction;
-  isEventBinding: boolean;
-}
+export type RunEnterAnimationFn = () => void;
+export type RunLeaveAnimationFn = () => {promise: Promise<void>; resolve: VoidFunction};
 
 export interface LongestAnimation {
   animationName: string | undefined;
@@ -76,17 +61,21 @@ export interface LongestAnimation {
   duration: number;
 }
 
-export interface NodeAnimations {
-  animateFns: Function[];
+export interface EnterNodeAnimations {
+  animateFns: RunEnterAnimationFn[];
+  resolvers?: VoidFunction[];
+}
+export interface LeaveNodeAnimations {
+  animateFns: RunLeaveAnimationFn[];
   resolvers?: VoidFunction[];
 }
 
 export interface AnimationLViewData {
   // Enter animations that apply to nodes in this view
-  enter?: Map<number, NodeAnimations>;
+  enter?: Map<number, EnterNodeAnimations>;
 
   // Leave animations that apply to nodes in this view
-  leave?: Map<number, NodeAnimations>;
+  leave?: Map<number, LeaveNodeAnimations>;
 
   // Leave animations that apply to nodes in this view
   // We chose to use unknown instead of PromiseSettledResult<void> to avoid requiring the type
@@ -100,3 +89,8 @@ export interface AnimationLViewData {
   // the animations in that case.
   skipLeaveAnimations?: boolean;
 }
+
+/**
+ * Function that returns the class or class list binded to the animate instruction
+ */
+export type AnimationClassBindingFn = () => string | string[];
