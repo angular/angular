@@ -28,8 +28,6 @@ import {stringify} from '../util/stringify';
 import {isPromise} from '../util/lang';
 import {PendingTasksInternal} from '../pending_tasks_internal';
 
-const REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE = false;
-
 /**
  * InjectionToken to control root component bootstrap behavior.
  *
@@ -95,6 +93,8 @@ export function bootstrap<M>(
     }
     const exceptionHandler = envInjector.get(INTERNAL_APPLICATION_ERROR_HANDLER);
     if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      const REQUIRE_ONE_CD_PROVIDER_BOOTSTRAP_MODULE = false;
+
       if (envInjector.get(PROVIDED_ZONELESS) && envInjector.get(PROVIDED_NG_ZONE)) {
         console.warn(
           formatRuntimeError(
