@@ -402,7 +402,6 @@ function getRendererFactory2(document: Document): RendererFactory2 {
     appId,
     true,
     document,
-    isNode ? PLATFORM_SERVER_ID : PLATFORM_BROWSER_ID,
     fakeNgZone,
     null,
   );
