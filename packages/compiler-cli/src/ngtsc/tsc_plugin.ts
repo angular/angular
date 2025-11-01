@@ -20,7 +20,6 @@ import {AbsoluteFsPath, NodeJSFileSystem, resolve, setFileSystem} from './file_s
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
 import {ActivePerfRecorder, PerfPhase} from './perf';
 import {TsCreateProgramDriver} from './program_driver';
-import {untagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
 
 // The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will

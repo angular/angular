@@ -8,7 +8,7 @@
 
 import ts from 'typescript';
 
-import {EmittedReference, Reference} from '../../imports';
+import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 import {SymbolWithValueDeclaration} from '../../util/src/typescript';
 
