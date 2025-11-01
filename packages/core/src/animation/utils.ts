@@ -7,7 +7,13 @@
  */
 
 import {stringify} from '../util/stringify'; // Adjust imports as per actual location
-import {ANIMATIONS_DISABLED, LongestAnimation, NodeAnimations} from './interfaces';
+import {
+  ANIMATIONS_DISABLED,
+  RunEnterAnimationFn,
+  RunLeaveAnimationFn,
+  LongestAnimation,
+  NodeAnimations,
+} from './interfaces';
 import {INJECTOR, LView, DECLARATION_LCONTAINER, ANIMATIONS} from '../render3/interfaces/view';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Renderer} from '../render3/interfaces/renderer';
@@ -61,7 +67,11 @@ export function assertElementNodes(nativeElement: Element, instruction: string) 
  * host binding. When removing classes, we need the entire list of animation classes
  * added to properly remove them when the longest animation fires.
  */
-export function trackEnterClasses(el: HTMLElement, classList: string[], cleanupFns: Function[]) {
+export function trackEnterClasses(
+  el: HTMLElement,
+  classList: string[],
+  cleanupFns: VoidFunction[],
+) {
   const elementData = enterClassMap.get(el);
   if (elementData) {
     for (const klass of classList) {
@@ -95,7 +105,7 @@ export const noOpAnimationComplete = () => {};
 // we remove all of the classes in the case of animation composition via host bindings.
 export const enterClassMap = new WeakMap<
   HTMLElement,
-  {classList: string[]; cleanupFns: Function[]}
+  {classList: string[]; cleanupFns: VoidFunction[]}
 >();
 export const longestAnimations = new WeakMap<HTMLElement, LongestAnimation>();
 
@@ -162,23 +172,27 @@ export function trackLeavingNodes(tNode: TNode, el: HTMLElement): void {
 /**
  * Retrieves the list of specified enter animations from the lView
  */
-export function getLViewEnterAnimations(lView: LView): Map<number, NodeAnimations> {
+export function getLViewEnterAnimations(
+  lView: LView,
+): Map<number, NodeAnimations<RunEnterAnimationFn>> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.enter ??= new Map<number, NodeAnimations>());
+  return (animationData.enter ??= new Map());
 }
 
 /**
  * Retrieves the list of specified leave animations from the lView
  */
-export function getLViewLeaveAnimations(lView: LView): Map<number, NodeAnimations> {
+export function getLViewLeaveAnimations(
+  lView: LView,
+): Map<number, NodeAnimations<RunLeaveAnimationFn>> {
   const animationData = (lView[ANIMATIONS] ??= {});
-  return (animationData.leave ??= new Map<number, NodeAnimations>());
+  return (animationData.leave ??= new Map());
 }
 
 /**
  * Gets the list of classes from a passed in value
  */
-export function getClassListFromValue(value: string | Function | string[]): string[] | null {
+export function getClassListFromValue(value: string | (() => string | string[])): string[] | null {
   const classes = typeof value === 'function' ? value() : value;
   let classList: string[] | null = Array.isArray(classes) ? classes : null;
   if (typeof classes === 'string') {
@@ -253,9 +267,9 @@ export function isLongestAnimation(
  * @param fn The animation function to be called later
  */
 export function addAnimationToLView(
-  animations: Map<number, NodeAnimations>,
+  animations: Map<number, NodeAnimations<RunEnterAnimationFn | RunLeaveAnimationFn>>,
   tNode: TNode,
-  fn: Function,
+  fn: RunEnterAnimationFn | RunLeaveAnimationFn,
 ) {
   const nodeAnimations = animations.get(tNode.index) ?? {animateFns: []};
   nodeAnimations.animateFns.push(fn);
@@ -264,7 +278,7 @@ export function addAnimationToLView(
 
 export function cleanupAfterLeaveAnimations(
   resolvers: VoidFunction[] | undefined,
-  cleanupFns: Function[],
+  cleanupFns: VoidFunction[],
 ): void {
   if (resolvers) {
     for (const fn of resolvers) {
@@ -286,7 +300,7 @@ export function leaveAnimationFunctionCleanup(
   tNode: TNode,
   nativeElement: HTMLElement,
   resolvers: VoidFunction[] | undefined,
-  cleanupFns: Function[],
+  cleanupFns: VoidFunction[],
 ) {
   clearLeavingNodes(tNode, nativeElement as HTMLElement);
   cleanupAfterLeaveAnimations(resolvers, cleanupFns);

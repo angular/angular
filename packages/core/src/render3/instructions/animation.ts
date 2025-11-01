@@ -54,7 +54,7 @@ import {initializeAnimationQueueScheduler, queueEnterAnimations} from '../../ani
  *
  * @codeGenApi
  */
-export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEnter {
+export function ɵɵanimateEnter(value: string | (() => string | string[])): typeof ɵɵanimateEnter {
   performanceMarkFeature('NgAnimateEnter');
 
   if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
@@ -86,7 +86,11 @@ export function ɵɵanimateEnter(value: string | Function): typeof ɵɵanimateEn
   return ɵɵanimateEnter; // For chaining
 }
 
-export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Function) {
+export function runEnterAnimation(
+  lView: LView,
+  tNode: TNode,
+  value: string | (() => string | string[]),
+): void {
   const nativeElement = getNativeByTNode(tNode, lView) as HTMLElement;
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.enter');
@@ -97,7 +101,7 @@ export function runEnterAnimation(lView: LView, tNode: TNode, value: string | Fu
   // Retrieve the actual class list from the value. This will resolve any resolver functions from
   // bindings.
   const activeClasses = getClassListFromValue(value);
-  const cleanupFns: Function[] = [];
+  const cleanupFns: VoidFunction[] = [];
 
   // In the case where multiple animations are happening on the element, we need
   // to get the longest animation to ensure we don't complete animations early.
@@ -233,7 +237,7 @@ function runEnterAnimationFunction(lView: LView, tNode: TNode, value: AnimationF
  *
  * @codeGenApi
  */
-export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLeave {
+export function ɵɵanimateLeave(value: string | (() => string | string[])): typeof ɵɵanimateLeave {
   performanceMarkFeature('NgAnimateLeave');
 
   if ((typeof ngServerMode !== 'undefined' && ngServerMode) || !areAnimationSupported) {
@@ -263,7 +267,7 @@ export function ɵɵanimateLeave(value: string | Function): typeof ɵɵanimateLe
 function runLeaveAnimations(
   lView: LView,
   tNode: TNode,
-  value: string | Function,
+  value: string | (() => string | string[]),
 ): {promise: Promise<void>; resolve: VoidFunction} {
   const {promise, resolve} = promiseWithResolvers<void>();
   const nativeElement = getNativeByTNode(tNode, lView) as Element;
@@ -305,7 +309,7 @@ function animateLeaveClassRunner(
   ngZone: NgZone,
 ) {
   cancelAnimationsIfRunning(el, renderer);
-  const cleanupFns: Function[] = [];
+  const cleanupFns: VoidFunction[] = [];
   const resolvers = getLViewLeaveAnimations(lView).get(tNode.index)?.resolvers;
 
   const handleOutAnimationEnd = (event: AnimationEvent | TransitionEvent | CustomEvent) => {
@@ -408,7 +412,7 @@ function runLeaveAnimationFunction(
 
   ngDevMode && assertElementNodes(nativeElement, 'animate.leave');
 
-  const cleanupFns: Function[] = [];
+  const cleanupFns: VoidFunction[] = [];
   const renderer = lView[RENDERER];
   const animationsDisabled = areAnimationsDisabled(lView);
   const ngZone = lView[INJECTOR]!.get(NgZone);
