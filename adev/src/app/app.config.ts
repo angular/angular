@@ -45,7 +45,6 @@ import {CustomErrorHandler} from './core/services/errors-handling/error-handler'
 import {ExampleContentLoader} from './core/services/example-content-loader.service';
 import {ReuseTutorialsRouteStrategy} from './features/tutorial/tutorials-route-reuse-strategy';
 import {routes} from './routes';
-import {CURRENT_MAJOR_VERSION} from './core/providers/current-version';
 import {AppScroller} from './app-scroller';
 
 export const appConfig: ApplicationConfig = {
@@ -78,10 +77,6 @@ export const appConfig: ApplicationConfig = {
     provideEnvironmentInitializer(() => inject(AppScroller)),
     provideEnvironmentInitializer(() => inject(AnalyticsService)),
     provideAlgoliaSearchClient(environment),
-    {
-      provide: CURRENT_MAJOR_VERSION,
-      useValue: Number(VERSION.major),
-    },
     {provide: ENVIRONMENT, useValue: environment},
     {provide: ErrorHandler, useClass: CustomErrorHandler},
     {provide: PREVIEWS_COMPONENTS, useValue: PREVIEWS_COMPONENTS_MAP},
