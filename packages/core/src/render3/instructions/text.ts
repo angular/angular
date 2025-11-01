@@ -8,7 +8,6 @@
 import {validateMatchingNode} from '../../hydration/error_handling';
 import {locateNextRNode} from '../../hydration/node_lookup_utils';
 import {canHydrateNode, markRNodeAsClaimedByHydration} from '../../hydration/utils';
-import {assertIndexInRange} from '../../util/assert';
 import {assertTNodeCreationIndex} from '../assert';
 import {createTextNode} from '../dom_node_manipulation';
 import {TElementNode, TNode, TNodeType} from '../interfaces/node';
