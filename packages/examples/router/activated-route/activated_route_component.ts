@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 // #docregion activated-route
-import {Component, NgModule} from '@angular/core';
+import {Component} from '@angular/core';
 // #enddocregion activated-route
-import {BrowserModule} from '@angular/platform-browser';
 // #docregion activated-route
-import {ActivatedRoute, RouterModule} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 // #enddocregion activated-route
@@ -21,7 +20,6 @@ import {map} from 'rxjs/operators';
   // #enddocregion activated-route
   selector: 'example-app',
   template: '...',
-  standalone: false,
   // #docregion activated-route
 })
 export class ActivatedRouteComponent {
@@ -33,10 +31,3 @@ export class ActivatedRouteComponent {
   }
 }
 // #enddocregion activated-route
-
-@NgModule({
-  imports: [BrowserModule, RouterModule.forRoot([])],
-  declarations: [ActivatedRouteComponent],
-  bootstrap: [ActivatedRouteComponent],
-})
-export class AppModule {}
