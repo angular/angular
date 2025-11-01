@@ -9,7 +9,6 @@
 import {DOCUMENT, ɵparseCookieValue as parseCookieValue} from '../../index';
 import {
   EnvironmentInjector,
-  Inject,
   inject,
   Injectable,
   InjectionToken,
@@ -52,6 +51,9 @@ export const XSRF_HEADER_NAME = new InjectionToken<string>(
  */
 @Injectable({providedIn: 'root'})
 export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
+  private readonly cookieName = inject(XSRF_COOKIE_NAME);
+  private readonly doc = inject(DOCUMENT);
+
   private lastCookieString: string = '';
   private lastToken: string | null = null;
 
@@ -59,11 +61,6 @@ export class HttpXsrfCookieExtractor implements HttpXsrfTokenExtractor {
    * @internal for testing
    */
   parseCount: number = 0;
-
-  constructor(
-    @Inject(DOCUMENT) private doc: any,
-    @Inject(XSRF_COOKIE_NAME) private cookieName: string,
-  ) {}
 
   getToken(): string | null {
     if (typeof ngServerMode !== 'undefined' && ngServerMode) {
@@ -128,7 +125,7 @@ export function xsrfInterceptorFn(
  */
 @Injectable()
 export class HttpXsrfInterceptor implements HttpInterceptor {
-  constructor(private injector: EnvironmentInjector) {}
+  private readonly injector = inject(EnvironmentInjector);
 
   intercept(initialRequest: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return runInInjectionContext(this.injector, () =>

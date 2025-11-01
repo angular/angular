@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../..';
 import {HttpHeaders} from '../src/headers';
 import {HttpRequest} from '../src/request';
 import {
@@ -122,7 +123,15 @@ describe('HttpXsrfCookieExtractor', () => {
     document = {
       cookie: 'XSRF-TOKEN=test',
     };
-    extractor = new HttpXsrfCookieExtractor(document, 'XSRF-TOKEN');
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: DOCUMENT,
+          useValue: document,
+        },
+      ],
+    });
+    extractor = TestBed.inject(HttpXsrfCookieExtractor);
   });
   it('parses the cookie from document.cookie', () => {
     expect(extractor.getToken()).toEqual('test');
