@@ -28,6 +28,7 @@ import {
   TmplAstTextAttribute,
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
+  ParseSourceSpan,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -562,11 +563,33 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       isComponent ? 'component' : 'directive'
     } ${directiveName} must be specified.`;
 
+    let span: ParseSourceSpan;
+    let name: string | null;
+
+    if (element instanceof TmplAstElement || element instanceof TmplAstDirective) {
+      name = element.name;
+    } else if (element instanceof TmplAstComponent) {
+      name = element.componentName;
+    } else {
+      name = null;
+    }
+
+    if (name === null) {
+      span = element.startSourceSpan;
+    } else {
+      // Only highlight the tag name since highlighting the entire start tag can be noisy.
+      const start = element.startSourceSpan.start.moveBy(1);
+      const end = element.startSourceSpan.end.moveBy(
+        start.offset + name.length - element.startSourceSpan.end.offset,
+      );
+      span = new ParseSourceSpan(start, end);
+    }
+
     this._diagnostics.push(
       makeTemplateDiagnostic(
         id,
         this.resolver.getTemplateSourceMapping(id),
-        element.startSourceSpan,
+        span,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.MISSING_REQUIRED_INPUTS),
         message,

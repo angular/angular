@@ -1046,7 +1046,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'input' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'input' from directive Dir must be specified.`,
       ]);
     });
 
@@ -1103,8 +1103,8 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required inputs 'input', 'otherInput' from directive Dir must be specified.`,
-        `TestComponent.html(1, 1): Required input 'otherDirInput' from directive OtherDir must be specified.`,
+        `TestComponent.html(1, 2): Required inputs 'input', 'otherInput' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'otherDirInput' from directive OtherDir must be specified.`,
       ]);
     });
 
@@ -1136,7 +1136,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'inputAlias' from directive Dir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'inputAlias' from directive Dir must be specified.`,
       ]);
     });
 
@@ -1337,7 +1337,7 @@ class TestComponent {
       );
 
       expect(messages).toEqual([
-        `TestComponent.html(1, 1): Required input 'customAlias' from directive HostDir must be specified.`,
+        `TestComponent.html(1, 2): Required input 'customAlias' from directive HostDir must be specified.`,
       ]);
     });
 
