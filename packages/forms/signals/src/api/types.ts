@@ -9,12 +9,7 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import type {Field} from './field_directive';
 import {AggregateMetadataKey, MetadataKey} from './metadata';
-import type {
-  ValidationError,
-  ValidationErrorWithField,
-  ValidationErrorWithOptionalField,
-  ValidationErrorWithoutField,
-} from './validation_errors';
+import type {ValidationError} from './validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -107,7 +102,7 @@ export type ValidationSuccess = null | undefined | void;
  * @experimental 21.0.0
  */
 export type TreeValidationResult<
-  E extends ValidationErrorWithOptionalField = ValidationErrorWithOptionalField,
+  E extends ValidationError.WithOptionalField = ValidationError.WithOptionalField,
 > = ValidationSuccess | OneOrMany<E>;
 
 /**
@@ -236,12 +231,12 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    */
   readonly hidden: Signal<boolean>;
   readonly disabledReasons: Signal<readonly DisabledReason[]>;
-  readonly errors: Signal<ValidationErrorWithField[]>;
+  readonly errors: Signal<ValidationError.WithField[]>;
 
   /**
    * A signal containing the {@link errors} of the field and its descendants.
    */
-  readonly errorSummary: Signal<ValidationErrorWithField[]>;
+  readonly errorSummary: Signal<ValidationError.WithField[]>;
 
   /**
    * A signal indicating whether the field's value is currently valid.
@@ -411,7 +406,7 @@ export type LogicFn<TValue, TReturn, TPathKind extends PathKind = PathKind.Root>
  */
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<
   TValue,
-  ValidationResult<ValidationErrorWithoutField>,
+  ValidationResult<ValidationError.WithoutField>,
   TPathKind
 >;
 

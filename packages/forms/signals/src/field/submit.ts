@@ -7,7 +7,7 @@
  */
 
 import {computed, linkedSignal, Signal, signal, WritableSignal} from '@angular/core';
-import {ValidationError, type ValidationErrorWithField} from '../api/validation_errors';
+import {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from './node';
 
 /**
@@ -21,12 +21,12 @@ export class FieldSubmitState {
   readonly selfSubmitting = signal<boolean>(false);
 
   /** Server errors that are associated with this field. */
-  readonly serverErrors: WritableSignal<readonly ValidationErrorWithField[]>;
+  readonly serverErrors: WritableSignal<readonly ValidationError.WithField[]>;
 
   constructor(private readonly node: FieldNode) {
     this.serverErrors = linkedSignal({
       source: this.node.structure.value,
-      computation: () => [] as readonly ValidationErrorWithField[],
+      computation: () => [] as readonly ValidationError.WithField[],
     });
   }
 

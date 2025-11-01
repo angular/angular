@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {LogicFn, OneOrMany, PathKind, type FieldContext, ValidationResult} from '../types';
-import {customError, ValidationError, ValidationErrorWithField} from '../validation_errors';
 import {isArray} from '../../util/type_guards';
+import {LogicFn, OneOrMany, PathKind, ValidationResult, type FieldContext} from '../types';
+import {customError, ValidationError} from '../validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};
@@ -75,7 +75,7 @@ function isPlainError(error: ValidationError) {
  * If the value provided is a plain object, it wraps it into a custom error.
  * @param error An error that could be a plain object, or an instance of a class implementing ValidationError.
  */
-function ensureCustomValidationError(error: ValidationErrorWithField): ValidationErrorWithField {
+function ensureCustomValidationError(error: ValidationError.WithField): ValidationError.WithField {
   if (isPlainError(error)) {
     return customError(error);
   }
@@ -87,8 +87,8 @@ function ensureCustomValidationError(error: ValidationErrorWithField): Validatio
  * @param result Validation result with a field.
  */
 export function ensureCustomValidationResult(
-  result: ValidationResult<ValidationErrorWithField>,
-): ValidationResult<ValidationErrorWithField> {
+  result: ValidationResult<ValidationError.WithField>,
+): ValidationResult<ValidationError.WithField> {
   if (result === null || result === undefined) {
     return result;
   }

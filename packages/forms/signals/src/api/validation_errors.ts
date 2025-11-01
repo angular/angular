@@ -279,7 +279,7 @@ export function standardSchemaError(
  * @category validation
  * @experimental 21.0.0
  */
-export function customError<E extends Partial<ValidationErrorWithField>>(
+export function customError<E extends Partial<ValidationError.WithField>>(
   obj: WithField<E>,
 ): CustomValidationError;
 /**
@@ -289,10 +289,10 @@ export function customError<E extends Partial<ValidationErrorWithField>>(
  * @category validation
  * @experimental 21.0.0
  */
-export function customError<E extends Partial<ValidationErrorWithField>>(
+export function customError<E extends Partial<ValidationError.WithField>>(
   obj?: E,
 ): WithoutField<CustomValidationError>;
-export function customError<E extends Partial<ValidationErrorWithField>>(
+export function customError<E extends Partial<ValidationError.WithField>>(
   obj?: E,
 ): WithOptionalField<CustomValidationError> {
   return new CustomValidationError(obj);
@@ -316,36 +316,38 @@ export interface ValidationError {
   readonly message?: string;
 }
 
-/**
- * Validation error with a field.
- *
- * This is returned from field state, e.g., catField.errors() would be of a list of errors with
- * `field: catField` bound to state.
- */
-export interface ValidationErrorWithField extends ValidationError {
-  /** The field associated with this error. */
-  readonly field: FieldTree<unknown>;
-}
+export declare namespace ValidationError {
+  /**
+   * Validation error with a field.
+   *
+   * This is returned from field state, e.g., catField.errors() would be of a list of errors with
+   * `field: catField` bound to state.
+   */
+  export interface WithField extends ValidationError {
+    /** The field associated with this error. */
+    readonly field: FieldTree<unknown>;
+  }
 
-/**
- * Validation error with optional field.
- *
- * This is generally used in places where the result might have a field.
- * e.g., as a result of a `validateTree`, or when handling form submission.
- */
-export interface ValidationErrorWithOptionalField extends ValidationError {
-  /** The field associated with this error. */
-  readonly field?: FieldTree<unknown>;
-}
+  /**
+   * Validation error with optional field.
+   *
+   * This is generally used in places where the result might have a field.
+   * e.g., as a result of a `validateTree`, or when handling form submission.
+   */
+  export interface WithOptionalField extends ValidationError {
+    /** The field associated with this error. */
+    readonly field?: FieldTree<unknown>;
+  }
 
-/**
- * Validation error with no field.
- *
- * This is used to strongly enforce that fields are not allowed in validation result.
- */
-export interface ValidationErrorWithoutField extends ValidationError {
-  /** The field associated with this error. */
-  readonly field?: never;
+  /**
+   * Validation error with no field.
+   *
+   * This is used to strongly enforce that fields are not allowed in validation result.
+   */
+  export interface WithoutField extends ValidationError {
+    /** The field associated with this error. */
+    readonly field?: never;
+  }
 }
 
 /**
