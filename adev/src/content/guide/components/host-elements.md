@@ -71,7 +71,7 @@ decorator to class members.
 
 `@HostBinding` lets you bind host properties and attributes to properties and getters:
 
-```angular-ts
+```ts
 @Component({
   /* ... */
 })

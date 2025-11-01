@@ -58,7 +58,7 @@ Both `templateUrl` and `styleUrl` are relative to the directory in which the com
 To use a component, [directive](guide/directives), or [pipe](guide/templates/pipes), you must add
 it to the `imports` array in the `@Component` decorator:
 
-```angular-ts
+```ts
 import {ProfilePhoto} from './profile-photo';
 
 @Component({

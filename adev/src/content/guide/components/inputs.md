@@ -7,7 +7,7 @@ TIP: If you're familiar with other web frameworks, input properties are similar 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
 
-<docs-code language="ts" highlight="[7]">
+<docs-code language="ts" highlight="[5]">
 import {Component, input} from '@angular/core';
 
 @Component({/*...*/})
@@ -25,7 +25,7 @@ This lets you bind to the property in a template:
 
 If an input has a default value, TypeScript infers the type from the default value:
 
-```typescript
+```ts
 @Component({/*...*/})
 export class CustomSlider {
   // TypeScript infers that this input is a number, returning InputSignal<number>.
@@ -37,7 +37,7 @@ You can explicitly declare a type for the input by specifying a generic paramete
 
 If an input without a default value is not set, its value is `undefined`:
 
-```typescript
+```ts
 @Component({/*...*/})
 export class CustomSlider {
   // Produces an InputSignal<number | undefined> because `value` may not be set.
@@ -185,14 +185,14 @@ When creating a component, you can define a model input similarly to how you cre
 
 Both types of input allow someone to bind a value into the property. However, **model inputs allow the component author to write values into the property**. If the property is bound with a two-way binding, the new value propagates to that binding.
 
-```typescript
+```angular-ts
 @Component({ /* ... */})
 export class CustomSlider {
   // Define a model input named "value".
   value = model(0);
 
   increment() {
-    // Update the model input with a new value, propagating the value to any bindings. 
+    // Update the model input with a new value, propagating the value to any bindings.
     this.value.update(oldValue => oldValue + 10);
   }
 }
@@ -205,7 +205,7 @@ export class CustomSlider {
   template: `<custom-slider [(value)]="volume" />`,
 })
 export class MediaControls {
-  // Create a writable signal for the `volume` local state. 
+  // Create a writable signal for the `volume` local state.
   volume = signal(0);
 }
 ```
@@ -238,7 +238,7 @@ In the example above, the `CustomSlider` can write values into its `value` model
 
 When you declare a model input in a component or directive, Angular automatically creates a corresponding [output](guide/components/outputs) for that model. The output's name is the model input's name suffixed with "Change".
 
-```angular-ts
+```ts
 @Directive({ /* ... */ })
 export class CustomCheckbox {
   // This automatically creates an output named "checkedChange".
@@ -342,7 +342,7 @@ Input aliases work the same way as for signal-based inputs described above.
 
 When using decorator-based inputs, a property implemented with a getter and setter can be an input:
 
-<docs-code language="ts">
+```ts
 export class CustomSlider {
   @Input()
   get value(): number {
@@ -353,11 +353,11 @@ export class CustomSlider {
 
   private internalValue = 0;
 }
-</docs-code>
+```
 
 You can even create a _write-only_ input by only defining a public setter:
 
-<docs-code language="ts">
+```ts
 export class CustomSlider {
   @Input()
   set value(newValue: number) {
@@ -366,7 +366,7 @@ export class CustomSlider {
 
   private internalValue = 0;
 }
-</docs-code>
+```
 
 **Prefer using input transforms instead of getters and setters** if possible.
 
