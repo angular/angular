@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {type Injector} from '../../di/injector';
 import {assertGreaterThan, assertNotEqual, assertNumber} from '../../util/assert';
-import {ChainedInjector} from '../chained_injector';
 import {
   NO_PARENT_INJECTOR,
   RelativeInjectorLocation,
