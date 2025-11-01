@@ -240,6 +240,106 @@ This means that the TypeScript source can result in different JavaScript code in
 For this reason, an application that depends on a library should only use TypeScript path mappings that point to the _built library_.
 TypeScript path mappings should _not_ point to the library source `.ts` files.
 
+## Linking libraries for local development
+
+This approach is useful when:
+- You need to test library changes in a consuming application outside the monorepo
+- You're working on a standalone library that needs to be tested with external projects
+- You want to develop and test without setting up monorepo tooling
+
+**Note**: If you're working within a monorepo setup, the standard monorepo workflow is generally more efficient as it handles linking automatically and provides better integration.
+
+### Configuring the consuming application
+
+To use linked libraries, you need to configure your application's `angular.json` file with the following settings:
+
+```json
+
+{
+  "projects": {
+    "your-app": {
+      "architect": {
+        "build": {
+          "options": {
+            "preserveSymlinks": true
+          },
+          "configurations": {
+            "development": {
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "vendor": true
+              },
+              "prebundle": {
+                "exclude": ["@your-scope/*"]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "cache": {
+      "environment": "local"
+    }
+  }
+}
+```
+
+**Configuration options explained:**
+
+- **`preserveSymlinks: true`** - Ensures Angular follows symlinks created by `npm link` instead of resolving to their original locations
+- **`sourceMap`** - Enables source maps for easier debugging of linked library code
+- **`prebundle.exclude`** - Excludes linked libraries from pre-bundling to ensure changes are detected on each rebuild. Replace `@your-scope/*` with your library scope (e.g., `@mycompany/*`) or specific library names (e.g., `["my-lib-1", "my-lib-2"]`)
+
+### Usage
+
+1. In your library project, create a global link:
+```bash
+   cd /path/to/your-library
+   npm link
+```
+
+2. In your application project, link to the library:
+```bash
+   cd /path/to/your-app
+   npm link @your-scope/your-library
+```
+
+3. Start the dev server in your application:
+```bash
+   ng serve
+```
+
+4. When making changes to your library, rebuild it:
+```bash
+   cd /path/to/your-library
+   npm run build
+   # Or use watch mode for automatic rebuilds
+   npm run build -- --watch
+```
+
+5. The application will pick up the changes on the next rebuild (dev server will auto-reload if running)
+
+### Troubleshooting
+
+If changes aren't being picked up:
+- Ensure the library is built after making changes
+- Try clearing the Angular cache: `ng cache clean`
+- Verify the symlink exists: `ls -la node_modules/@your-scope/`
+- Restart the dev server
+
+**To unlink:**
+```bash
+cd /path/to/your-app
+npm unlink @your-scope/your-library
+npm install  # Reinstalls the original package
+
+cd /path/to/your-library
+npm unlink
+```
+
 ## Publishing libraries
 
 There are two distribution formats to use when publishing a library:
