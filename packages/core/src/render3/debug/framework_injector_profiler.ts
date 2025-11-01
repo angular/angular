@@ -10,7 +10,6 @@ import {Injector} from '../../di/injector';
 import {EnvironmentInjector} from '../../di/r3_injector';
 import {Type} from '../../interface/type';
 import {assertDefined, throwError} from '../../util/assert';
-import {AfterRenderRef} from '../after_render/api';
 import {assertTNodeForLView} from '../assert';
 import {getComponentDef} from '../def_getters';
 import {getNodeInjectorLView, getNodeInjectorTNode, NodeInjector} from '../di';
@@ -22,7 +21,6 @@ import {EffectRefImpl} from '../reactivity/effect';
 import {
   InjectedService,
   InjectorCreatedInstance,
-  InjectorProfiler,
   InjectorProfilerContext,
   InjectorProfilerEvent,
   InjectorProfilerEventType,

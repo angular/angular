@@ -12,7 +12,7 @@ import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../me
 import {throwError} from '../../util/assert';
 import {getComponentDef} from '../def_getters';
 import {ComponentDef} from '../interfaces/definition';
-import {TElementNode, TNode, TNodeType} from '../interfaces/node';
+import {TElementNode, TNodeType} from '../interfaces/node';
 import {RComment, RElement} from '../interfaces/renderer_dom';
 import {isDirectiveHost} from '../interfaces/type_checks';
 import {CONTEXT, DECLARATION_COMPONENT_VIEW, LView, TVIEW} from '../interfaces/view';

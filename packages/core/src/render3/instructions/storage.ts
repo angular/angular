@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {HEADER_OFFSET, LView, TView} from '../interfaces/view';
+import {HEADER_OFFSET} from '../interfaces/view';
 import {getContextLView} from '../state';
 import {load} from '../util/view_utils';
 

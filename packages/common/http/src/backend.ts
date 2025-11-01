@@ -12,12 +12,10 @@ import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 import {FetchBackend} from './fetch';
 import {HttpXhrBackend} from './xhr';
-import {isPlatformServer} from '@angular/common';
 import {
   EnvironmentInjector,
   inject,
   Injectable,
-  PLATFORM_ID,
   ɵConsole as Console,
   ɵformatRuntimeError as formatRuntimeError,
   PendingTasks,

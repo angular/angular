@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {inject, Optional, SkipSelf, StaticProvider, ɵɵdefineInjectable} from '../../di';
+import {inject, StaticProvider, ɵɵdefineInjectable} from '../../di';
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
 
 import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
