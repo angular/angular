@@ -10,20 +10,22 @@ import {Route} from '@angular/router';
 /**
  * This file contains the redirections we keep to prevent breakages on existing links
  * that may exist on the internet and over which we have no control.
+ *
+ * The redirectTo should always that start with a "/" to avoid relative redirections.
  */
 
 export const REDIRECT_ROUTES: Route[] = [
   {
     path: 'guide/di/dependency-injection',
-    redirectTo: 'guide/di',
+    redirectTo: '/guide/di',
   },
   {
     path: 'guide/di/creating-injectable-service',
-    redirectTo: 'guide/di/creating-and-using-services',
+    redirectTo: '/guide/di/creating-and-using-services',
   },
   {
     path: 'guide/di/dependency-injection-providers',
-    redirectTo: 'guide/di/defining-dependency-providers',
+    redirectTo: '/guide/di/defining-dependency-providers',
   },
   {
     path: 'guide/defer',
