@@ -192,7 +192,15 @@ export class Session {
       watchOptions: {
         // Used as watch options when not specified by user's `tsconfig`.
         watchFile: ts.WatchFileKind.UseFsEvents,
-        watchDirectory: ts.WatchDirectoryKind.UseFsEvents,
+        // On Windows, fs.watch() can hold a lock on the watched directory, which
+        // causes problems when users try to rename/move/delete folders.
+        // It's better to use polling instead.
+        // https://github.com/angular/vscode-ng-language-service/issues/1398
+        // More history here: https://github.com/angular/vscode-ng-language-service/commit/6eb2984cbe2112d9f4284192ffa11d40ee6b2f74
+        watchDirectory:
+          process.platform === 'win32'
+            ? ts.WatchDirectoryKind.DynamicPriorityPolling
+            : ts.WatchDirectoryKind.UseFsEvents,
         fallbackPolling: ts.PollingWatchKind.DynamicPriority,
       },
     });
