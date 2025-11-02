@@ -21,8 +21,7 @@
     max-width: var(--page-width);
   }
 
-
-  //applying styles when TOC position got translated to the top right 
+  // applying styles when TOC position got translated to the top right
   @include mq.for-large-desktop-up {
     // take the available space except a reserved area for TOC
     margin-left: -16rem;
@@ -32,8 +31,13 @@
   // restrict the content to be fluid until it reaches that width
   // $screen-xl is the breakpoint where Main content stop being fluid and made fixed
 
-  >*:not(docs-table-of-contents) {
-    max-width: calc(mq.$screen-xl - var(--secondary-nav-width) - var(--primary-nav-width) - var(--layout-padding)*2)
+  > *:not(docs-table-of-contents) {
+    max-width: calc(
+      mq.$screen-xl - var(--secondary-nav-width) - var(--primary-nav-width) - var(
+          --layout-padding
+        ) *
+        2
+    );
   }
 
   pre {
@@ -50,8 +54,15 @@
       margin-block-start: 0.75rem;
       display: inline-block;
       color: inherit;
+      max-width: 100%;
 
       @include anchor.docs-anchor();
+
+      code {
+        // This can be useful on mobile if the heading contains a long code block
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 
@@ -90,7 +101,6 @@
   }
 
   a:not(.docs-github-links):not(.docs-card):not(.docs-pill):not(.docs-example-github-link) {
-
     &[href^='http:'],
     &[href^='https:'] {
       @include links.external-link-with-icon();
@@ -98,7 +108,6 @@
   }
 
   &-scroll-margin-large {
-
     h2,
     h3 {
       scroll-margin: 5em;
@@ -109,7 +118,7 @@
 .docs-header {
   margin-block-end: 1rem;
 
-  &>p:first-child {
+  & > p:first-child {
     color: var(--quaternary-contrast);
     font-weight: 500;
     margin: 0;
