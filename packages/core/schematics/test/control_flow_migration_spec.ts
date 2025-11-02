@@ -1441,6 +1441,55 @@ describe('control flow migration (ng update)', () => {
       );
     });
 
+    it('should migrate but not remove ng-templates when referenced elsewhere with a trailing semicolon including leading whitespace character', async () => {
+      writeFile(
+        '/comp.ts',
+        `
+        import {Component} from '@angular/core';
+        import {NgIf} from '@angular/common';
+
+        @Component({
+          templateUrl: './comp.html'
+        })
+        class Comp {
+          show = false;
+        }
+      `,
+      );
+
+      writeFile(
+        '/comp.html',
+        [
+          `<div>`,
+          `<span *ngIf="show; then thenBlock; else elseBlock">Ignored</span>`,
+          `<ng-template #thenBlock><div>THEN Stuff</div></ng-template>`,
+          `<ng-template #elseBlock let-ctx>{{ ctx }} Else Content</ng-template>`,
+          `</div>`,
+          `<ng-container *ngTemplateOutlet="
+              elseBlock;
+              context: $implicit: 'Hello'"></ng-container>`,
+        ].join('\n'),
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.html');
+      expect(content).toBe(
+        [
+          `<div>`,
+          `  @if (show) {`,
+          `    <div>THEN Stuff</div>`,
+          `  } @else {`,
+          `    {{ ctx }} Else Content`,
+          `  }`,
+          `  <ng-template #elseBlock let-ctx>{{ ctx }} Else Content</ng-template>`,
+          `</div>`,
+          `<ng-container *ngTemplateOutlet="
+              elseBlock;
+              context: $implicit: 'Hello'"></ng-container>`,
+        ].join('\n'),
+      );
+    });
+
     it('should not remove ng-templates used by other directives', async () => {
       writeFile(
         '/comp.ts',
