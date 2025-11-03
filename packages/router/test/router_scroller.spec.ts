@@ -21,12 +21,11 @@ import {filter, switchMap, take} from 'rxjs/operators';
 
 import {PrivateRouterEvents, Scroll} from '../src/events';
 import {ROUTER_SCROLLER, RouterScroller} from '../src/router_scroller';
-import {ApplicationRef, ɵWritable as Writable} from '@angular/core';
+import {ɵWritable as Writable} from '@angular/core';
 import {timeout} from './helpers';
 import {ViewportScroller} from '@angular/common';
 import {NavigationTransitions} from '../src/navigation_transition';
 
-// TODO: add tests that exercise the `withInMemoryScrolling` feature of the provideRouter function
 describe('RouterScroller', () => {
   it('defaults to disabled', () => {
     const viewportScroller = TestBed.inject(ViewportScroller);
@@ -37,8 +36,8 @@ describe('RouterScroller', () => {
     setScroll(viewportScroller, 0, 0);
     const scroller = TestBed.runInInjectionContext(() => new RouterScroller({}));
 
-    expect((scroller as any).options.scrollPositionRestoration).toBe('disabled');
-    expect((scroller as any).options.anchorScrolling).toBe('disabled');
+    expect(scroller['options'].scrollPositionRestoration).toBe('disabled');
+    expect(scroller['options'].anchorScrolling).toBe('disabled');
   });
 
   function nextScrollEvent(events: Subject<Event | PrivateRouterEvents>): Promise<Scroll> {
