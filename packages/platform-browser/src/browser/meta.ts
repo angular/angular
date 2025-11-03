@@ -51,6 +51,7 @@ export type MetaDefinition = {
  *
  * @see [HTML meta tag](https://developer.mozilla.org/docs/Web/HTML/Element/meta)
  * @see [Document.querySelector()](https://developer.mozilla.org/docs/Web/API/Document/querySelector)
+ * @see [Search Engine Optimization (SEO) Guide](guide/seo)
  *
  *
  * @publicApi

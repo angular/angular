@@ -511,6 +511,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/incremental-hydration',
             contentPath: 'guide/incremental-hydration',
           },
+          {
+            label: 'Search Engine Optimization (SEO)',
+            path: 'guide/seo',
+            contentPath: 'guide/seo',
+          },
         ],
       },
       {
