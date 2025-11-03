@@ -698,6 +698,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/accordion',
                 },
                 {
+                  label: 'Autocomplete',
+                  path: 'guide/aria/autocomplete',
+                  contentPath: 'guide/aria/autocomplete',
+                },
+                {
                   label: 'Combobox',
                   path: 'guide/aria/combobox',
                   contentPath: 'guide/aria/combobox',

@@ -1,0 +1,31 @@
+<div ngCombobox #combobox="ngCombobox" filterMode="manual" class="combobox-container">
+  <label for="state-input">Select a state:</label>
+  <div class="input-container">
+    <input
+      id="state-input"
+      ngComboboxInput
+      placeholder="Search states..."
+      [(value)]="searchString"
+      class="combobox-input"
+    />
+  </div>
+
+  <div popover="manual" #popover class="popover">
+    <ng-template ngComboboxPopupContainer>
+      <div ngListbox class="listbox">
+        @for (option of options(); track option) {
+          <div class="option" ngOption [value]="option" [label]="option">
+            <span>{{ option }}</span>
+          </div>
+        }
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<div class="info">
+  <p><strong>Manual mode:</strong> The input only updates when you explicitly select an option with Enter or click.</p>
+  @if (searchString()) {
+    <p>Current value: <strong>{{ searchString() }}</strong></p>
+  }
+</div>
