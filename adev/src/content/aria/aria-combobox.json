@@ -109,8 +109,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 31,
-        "endLine": 116
+        "startLine": 32,
+        "endLine": 117
       }
     },
     {
@@ -155,8 +155,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 118,
-        "endLine": 155
+        "startLine": 119,
+        "endLine": 156
       }
     },
     {
@@ -171,8 +171,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 157,
-        "endLine": 162
+        "startLine": 158,
+        "endLine": 163
       }
     },
     {
@@ -217,8 +217,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 164,
-        "endLine": 176
+        "startLine": 165,
+        "endLine": 177
       }
     }
   ],
@@ -269,11 +269,11 @@
     ],
     [
       "DeferredContent",
-      "@angular/aria/deferred-content"
+      "@angular/aria/private"
     ],
     [
       "DeferredContentAware",
-      "@angular/aria/deferred-content"
+      "@angular/aria/private"
     ],
     [
       "ComboboxPattern",

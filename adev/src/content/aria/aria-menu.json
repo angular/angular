@@ -91,8 +91,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 42,
-        "endLine": 86
+        "startLine": 43,
+        "endLine": 87
       }
     },
     {
@@ -296,8 +296,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 104,
-        "endLine": 244
+        "startLine": 105,
+        "endLine": 245
       }
     },
     {
@@ -404,8 +404,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 253,
-        "endLine": 328
+        "startLine": 254,
+        "endLine": 329
       }
     },
     {
@@ -560,8 +560,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 335,
-        "endLine": 405
+        "startLine": 336,
+        "endLine": 406
       }
     },
     {
@@ -576,8 +576,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 408,
-        "endLine": 413
+        "startLine": 409,
+        "endLine": 414
       }
     }
   ],
@@ -655,6 +655,14 @@
       "@angular/aria/private"
     ],
     [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/private"
+    ],
+    [
       "_IdGenerator",
       "@angular/cdk/a11y"
     ],
@@ -665,14 +673,6 @@
     [
       "Directionality",
       "@angular/cdk/bidi"
-    ],
-    [
-      "DeferredContent",
-      "@angular/aria/deferred-content"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/deferred-content"
     ],
     [
       "MenuTrigger",

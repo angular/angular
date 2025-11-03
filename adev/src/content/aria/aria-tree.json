@@ -331,8 +331,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 65,
-        "endLine": 208
+        "startLine": 70,
+        "endLine": 213
       }
     },
     {
@@ -605,8 +605,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 213,
-        "endLine": 321
+        "startLine": 218,
+        "endLine": 326
       }
     },
     {
@@ -813,8 +813,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 326,
-        "endLine": 364
+        "startLine": 331,
+        "endLine": 369
       }
     }
   ],
@@ -884,14 +884,6 @@
       "@angular/cdk/bidi"
     ],
     [
-      "DeferredContent",
-      "@angular/aria/deferred-content"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/deferred-content"
-    ],
-    [
       "ComboboxTreePattern",
       "@angular/aria/private"
     ],
@@ -901,6 +893,14 @@
     ],
     [
       "TreePattern",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
       "@angular/aria/private"
     ],
     [
