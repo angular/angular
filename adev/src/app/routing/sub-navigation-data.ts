@@ -914,6 +914,17 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
     ],
   },
   {
+    label: 'Developer Events',
+    children: [
+      {
+        label: 'Angular v21 Release',
+        path: 'events/v21',
+        contentPath: 'events/v21',
+        status: 'new',
+      },
+    ],
+  },
+  {
     label: 'Extended Ecosystem',
     children: [
       {

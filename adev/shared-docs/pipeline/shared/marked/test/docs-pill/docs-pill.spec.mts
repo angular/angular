@@ -36,4 +36,20 @@ describe('markdown to html', () => {
     const samePageEl = markdownDocument.querySelectorAll('a.docs-pill')[2];
     expect(samePageEl.textContent?.trim()).toBe('Another Page');
   });
+
+  it('should render links with a specific target', () => {
+    const pageElement = markdownDocument.querySelectorAll('a.docs-pill')[3];
+    expect(pageElement.getAttribute('target')).toBe('_some_target');
+  });
+
+  it('should render links with a specific download attribute', () => {
+    const pageElement = markdownDocument.querySelectorAll('a.docs-pill')[4];
+    expect(pageElement.getAttribute('download')).toBe('file.ics');
+  });
+
+  it('should render links with both a specific target and specific download attribute', () => {
+    const pageElement = markdownDocument.querySelectorAll('a.docs-pill')[5];
+    expect(pageElement.getAttribute('download')).toBe('file.ics');
+    expect(pageElement.getAttribute('target')).toBe('_some_target');
+  });
 });
