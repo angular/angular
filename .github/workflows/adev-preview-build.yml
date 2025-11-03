@@ -29,7 +29,8 @@ jobs:
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Build adev
-        run: pnpm bazel build //adev:build.production
+        # `snapshot-build` config is used to stamp the exact version with sha in the footer.
+        run: pnpm bazel build //adev:build.production --config=snapshot-build
       - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@a41a2ae61301b2a8ec47d98f73ca5309a7cea932
         with:
           workflow-artifact-name: 'adev-preview'
