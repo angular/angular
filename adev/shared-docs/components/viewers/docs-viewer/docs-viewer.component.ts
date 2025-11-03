@@ -14,32 +14,32 @@ import {
   ComponentRef,
   createComponent,
   DestroyRef,
+  effect,
   ElementRef,
   EnvironmentInjector,
   inject,
   Injector,
+  input,
+  output,
+  PendingTasks,
   PLATFORM_ID,
   Type,
   ViewContainerRef,
   ViewEncapsulation,
-  PendingTasks,
-  output,
-  input,
-  effect,
 } from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {TOC_SKIP_CONTENT_MARKER, NavigationState} from '../../../services';
-import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
-import {IconComponent} from '../../icon/icon.component';
-import {handleHrefClickEventWithRouter} from '../../../utils';
-import {Snippet} from '../../../interfaces';
 import {Router} from '@angular/router';
 import {fromEvent} from 'rxjs';
+import {Snippet} from '../../../interfaces';
+import {NavigationState, TOC_SKIP_CONTENT_MARKER} from '../../../services';
+import {handleHrefClickEventWithRouter} from '../../../utils';
+import {IconComponent} from '../../icon/icon.component';
+import {TableOfContents} from '../../table-of-contents/table-of-contents.component';
 
+import {DomSanitizer} from '@angular/platform-browser';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
-import {DomSanitizer} from '@angular/platform-browser';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
@@ -253,7 +253,9 @@ export class DocViewer {
   // the code
   private loadCopySourceCodeButtons(): void {
     const staticCodeSnippets = <Element[]>(
-      Array.from(this.elementRef.nativeElement.querySelectorAll('.docs-code:not([mermaid])'))
+      Array.from(
+        this.elementRef.nativeElement.querySelectorAll('.docs-code:not([mermaid],.docs-no-copy)'),
+      )
     );
 
     for (let codeSnippet of staticCodeSnippets) {
