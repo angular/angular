@@ -28,7 +28,7 @@ export async function getInterfaceRenderable(
 ): Promise<InterfaceEntryRenderable> {
   return setEntryFlags(
     await addRenderableCodeToc(
-      addRenderableMembers(
+      await addRenderableMembers(
         addHtmlAdditionalLinks(
           addHtmlUsageNotes(
             addHtmlJsDocTagComments(
@@ -36,6 +36,7 @@ export async function getInterfaceRenderable(
             ),
           ),
         ),
+        entry.name,
       ),
     ),
   );

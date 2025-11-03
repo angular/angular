@@ -15,24 +15,24 @@ import {
   HasDeprecatedFlag,
   HasDescription,
   HasDeveloperPreviewFlag,
+  hasExperimentalFlag,
   HasHtmlDescription,
   HasHtmlUsageNotes,
   HasJsDocTags,
   HasModuleName,
   HasRenderableJsDocTags,
-  hasExperimentalFlag,
   HasStableFlag,
 } from '../entities/traits.mjs';
 
-import {addApiLinksToHtml} from './code-transforms.mjs';
+import {parseMarkdown} from '../../../shared/marked/parse.mjs';
+import {getHighlighterInstance} from '../shiki/shiki.mjs';
 import {
   getCurrentSymbol,
   getSymbols,
   getSymbolUrl,
   unknownSymbolMessage,
 } from '../symbol-context.mjs';
-import {parseMarkdown} from '../../../shared/marked/parse.mjs';
-import {getHighlighterInstance} from '../shiki/shiki.mjs';
+import {addApiLinksToHtml} from './code-transforms.mjs';
 
 const JS_DOC_USAGE_NOTE_TAGS: Set<string> = new Set(['remarks', 'usageNotes', 'example']);
 export const JS_DOC_SEE_TAG = 'see';

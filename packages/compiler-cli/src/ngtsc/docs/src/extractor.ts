@@ -22,6 +22,9 @@ import {
   DocEntry,
   DocEntryWithSourceInfo,
   EntryType,
+  MemberType,
+  type InterfaceEntry,
+  type MemberEntry,
   type NamespaceEntry,
   type TypeAliasEntry,
 } from './entities';
@@ -150,14 +153,29 @@ export class DocsExtractor {
       // For now, we only support merging a type alias and a namespace.
       const typeAlias = entries.find(isTypeAliasEntry);
       const namespace = entries.find(isNamespaceEntry);
+      const interfaceEntry = entries.find(isInterfaceEntry);
 
       if (typeAlias && namespace) {
-        typeAlias.members = namespace.members;
+        typeAlias.members.push(...this.getTypeMembersFromNamespace(namespace));
         return typeAlias;
+      }
+      if (interfaceEntry && namespace) {
+        interfaceEntry.members.push(...this.getTypeMembersFromNamespace(namespace));
       }
     }
 
     return entry ?? null;
+  }
+
+  private getTypeMembersFromNamespace(namespace: NamespaceEntry): MemberEntry[] {
+    return namespace.members
+      .filter((e) => isInterfaceEntry(e) || isTypeAliasEntry(e))
+      .map((e) => ({
+        ...e,
+        memberType:
+          e.entryType === EntryType.Interface ? MemberType.Interface : MemberType.TypeAlias,
+        memberTags: [],
+      }));
   }
 
   /** Extract the doc entry for a single declaration. */
@@ -276,4 +294,8 @@ function isTypeAliasEntry(e: DocEntry | null): e is TypeAliasEntry {
 
 function isNamespaceEntry(e: DocEntry | null): e is NamespaceEntry {
   return e?.entryType === EntryType.Namespace;
+}
+
+function isInterfaceEntry(e: DocEntry | null): e is InterfaceEntry {
+  return e?.entryType === EntryType.Interface;
 }

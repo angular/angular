@@ -8,7 +8,6 @@
 
 import {TypeAliasEntry} from '../entities.mjs';
 import {TypeAliasEntryRenderable} from '../entities/renderables.mjs';
-import type {HasMembers} from '../entities/traits.mjs';
 import {addRenderableCodeToc} from './code-transforms.mjs';
 import {
   addHtmlAdditionalLinks,
@@ -27,22 +26,20 @@ export async function getTypeAliasRenderable(
   moduleName: string,
   repo: string,
 ): Promise<TypeAliasEntryRenderable> {
-  const entryWithModuleAndRepo = addRepo(addModuleName(typeAliasEntry, moduleName), repo);
-
-  const renderableMembers = hasMembers(entryWithModuleAndRepo)
-    ? (await addRenderableMembers(entryWithModuleAndRepo)).members
-    : undefined;
-
   return setEntryFlags(
-    await addRenderableCodeToc({
-      ...addHtmlAdditionalLinks(
-        addHtmlUsageNotes(addHtmlJsDocTagComments(addHtmlDescription(entryWithModuleAndRepo))),
+    await addRenderableCodeToc(
+      addHtmlAdditionalLinks(
+        addHtmlUsageNotes(
+          addHtmlJsDocTagComments(
+            addHtmlDescription(
+              await addRenderableMembers(
+                addRepo(addModuleName(typeAliasEntry, moduleName), repo),
+                typeAliasEntry.name,
+              ),
+            ),
+          ),
+        ),
       ),
-      members: renderableMembers,
-    }),
+    ),
   );
-}
-
-function hasMembers(typeAlias: TypeAliasEntry): typeAlias is TypeAliasEntry & HasMembers {
-  return typeAlias.members !== undefined;
 }
