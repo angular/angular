@@ -16,6 +16,7 @@ copy_to_directory(
         "//adev/src/content/ecosystem",
         "//adev/src/content/ecosystem/rxjs-interop",
         "//adev/src/content/ecosystem/service-workers",
+        "//adev/src/content/events",
         "//adev/src/content/guide",
         "//adev/src/content/guide/animations",
         "//adev/src/content/guide/aria",
