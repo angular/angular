@@ -21,7 +21,6 @@ import {
 } from './events';
 import {NavigationTransitions} from './navigation_transition';
 import {UrlSerializer} from './url_tree';
-import {ROUTER_CONFIGURATION} from './router_config';
 
 export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
 
