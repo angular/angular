@@ -30,6 +30,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Build adev
         run: pnpm bazel build //adev:build.production
+      - name: Build sitemap for adev
+        run: node adev/scripts/generate-sitemap/index.mjs
       - uses: angular/dev-infra/github-actions/previews/pack-and-upload-artifact@a41a2ae61301b2a8ec47d98f73ca5309a7cea932
         with:
           workflow-artifact-name: 'adev-preview'
