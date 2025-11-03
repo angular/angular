@@ -19,7 +19,6 @@ import { WritableResource } from '@angular/core';
 
 // @public
 export class FetchBackend implements HttpBackend {
-    constructor();
     // (undocumented)
     handle(request: HttpRequest<any>): Observable<HttpEvent<any>>;
     // (undocumented)
