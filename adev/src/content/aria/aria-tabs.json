@@ -136,8 +136,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 67,
-        "endLine": 110
+        "startLine": 72,
+        "endLine": 115
       }
     },
     {
@@ -471,8 +471,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 117,
-        "endLine": 219
+        "startLine": 122,
+        "endLine": 224
       }
     },
     {
@@ -619,8 +619,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 222,
-        "endLine": 282
+        "startLine": 227,
+        "endLine": 287
       }
     },
     {
@@ -725,8 +725,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 292,
-        "endLine": 344
+        "startLine": 297,
+        "endLine": 349
       }
     },
     {
@@ -741,20 +741,12 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 349,
-        "endLine": 354
+        "startLine": 354,
+        "endLine": 359
       }
     }
   ],
   "symbols": [
-    [
-      "DeferredContent",
-      "@angular/aria/deferred-content"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/deferred-content"
-    ],
     [
       "_IdGenerator",
       "@angular/cdk/a11y"
@@ -825,6 +817,14 @@
     ],
     [
       "TabPattern",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
       "@angular/aria/private"
     ],
     [

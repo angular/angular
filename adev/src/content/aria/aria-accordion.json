@@ -35,8 +35,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 35,
-        "endLine": 79
+        "startLine": 36,
+        "endLine": 80
       }
     },
     {
@@ -101,8 +101,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 85,
-        "endLine": 138
+        "startLine": 86,
+        "endLine": 139
       }
     },
     {
@@ -195,8 +195,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 144,
-        "endLine": 207
+        "startLine": 145,
+        "endLine": 208
       }
     },
     {
@@ -211,8 +211,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 213,
-        "endLine": 217
+        "startLine": 214,
+        "endLine": 218
       }
     }
   ],
@@ -271,11 +271,11 @@
     ],
     [
       "DeferredContent",
-      "@angular/aria/deferred-content"
+      "@angular/aria/private"
     ],
     [
       "DeferredContentAware",
-      "@angular/aria/deferred-content"
+      "@angular/aria/private"
     ],
     [
       "AccordionGroupPattern",
