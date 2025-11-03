@@ -53,6 +53,7 @@
     "@angular-devkit/core": "21.0.0-rc.0",
     "@angular-devkit/schematics": "21.0.0-rc.0",
     "@angular/animations": "workspace:*",
+    "@angular/aria": "^0.0.1",
     "@angular/benchpress": "workspace: *",
     "@angular/build": "21.0.0-rc.0",
     "@angular/cdk": "21.0.0-next.10",
