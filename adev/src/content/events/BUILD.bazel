@@ -1,0 +1,14 @@
+load("//adev/shared-docs:index.bzl", "generate_guides")
+
+generate_guides(
+    name = "events",
+    srcs = glob([
+        "*.md",
+    ]),
+    api_manifest = "//adev/src/assets:docs_api_manifest",
+    data = [
+        "//adev/src/assets/images:angular-v21-hero.jpg",
+        "//adev/src/assets/others:angular-v21-release.ics",
+    ],
+    visibility = ["//adev:__subpackages__"],
+)
