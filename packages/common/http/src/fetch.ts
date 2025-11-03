@@ -63,13 +63,6 @@ export class FetchBackend implements HttpBackend {
     inject(FetchFactory, {optional: true})?.fetch ?? ((...args) => globalThis.fetch(...args));
   private readonly ngZone = inject(NgZone);
   private readonly destroyRef = inject(DestroyRef);
-  private destroyed = false;
-
-  constructor() {
-    this.destroyRef.onDestroy(() => {
-      this.destroyed = true;
-    });
-  }
 
   handle(request: HttpRequest<any>): Observable<HttpEvent<any>> {
     return new Observable((observer) => {
@@ -174,7 +167,7 @@ export class FetchBackend implements HttpBackend {
           // unnecessary work or triggering side effects after teardown.
           // This may happen if the app was explicitly destroyed before
           // the response returned entirely.
-          if (this.destroyed) {
+          if (this.destroyRef.destroyed) {
             // Streams left in a pending state (due to `break` without cancel) may
             // continue consuming or holding onto data behind the scenes.
             // Calling `reader.cancel()` allows the browser or the underlying
