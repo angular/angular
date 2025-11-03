@@ -314,7 +314,7 @@ groups:
         - ~devversion
         - dgp1130
         - hawkgs
-        - jkrems
+        - hybrist
         - ~josephperrott
         - JeanMeche
         - milomg
@@ -406,7 +406,7 @@ groups:
         - crisbeto
         - devversion
         - JeanMeche
-        - ~jkrems
+        - ~hybrist
         - ~iteriani
         - ~tbondwilkinson
         - ~rahatarmanahmed
