@@ -86,7 +86,6 @@
 ### router
 | Commit | Type | Description |
 | -- | -- | -- |
-| [2bd764a3c4](https://github.com/angular/angular/commit/2bd764a3c416a3a513b69c894816d4f4db927bfc) | feat | allow router outlet to be set on ng-container ([#64562](https://github.com/angular/angular/pull/64562)) |
 | [7afc193016](https://github.com/angular/angular/commit/7afc193016a953f41b80921a6e79139ca3a15003) | fix | Fix outlet serialization and parsing with no primary children ([#64505](https://github.com/angular/angular/pull/64505)) |
 | [f6a73f1913](https://github.com/angular/angular/commit/f6a73f19131b2befa74f4ea3f941038603958ac0) | fix | Respect custom `UrlSerializer` handling of query parameters ([#64449](https://github.com/angular/angular/pull/64449)) |
 | [7fb7511124](https://github.com/angular/angular/commit/7fb7511124548213d7e4a93c5a9b9670b4976677) | fix | Surface parse errors in Router.parseUrl ([#64503](https://github.com/angular/angular/pull/64503)) |
