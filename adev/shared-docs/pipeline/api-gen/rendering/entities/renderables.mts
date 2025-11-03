@@ -59,7 +59,7 @@ export type ConstantEntryRenderable = ConstantEntry &
 export type TypeAliasEntryRenderable = TypeAliasEntry &
   DocEntryRenderable &
   HasRenderableToc & {
-    members?: MemberEntryRenderable[];
+    members: MemberEntryRenderable[];
   };
 
 /** Documentation entity for a TypeScript class augmented transformed content for rendering. */
@@ -108,6 +108,7 @@ export interface MemberEntryRenderable extends MemberEntry {
   jsdocTags: JsDocTagRenderable[];
   deprecationMessage: string | null;
   htmlUsageNotes: string;
+  displayName?: string;
 }
 
 /** Sub-entry for a class method augmented transformed content for rendering. */

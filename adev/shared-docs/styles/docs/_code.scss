@@ -161,6 +161,11 @@ $code-font-size: 0.875rem;
         max-height: 300px;
       }
     }
+
+    &.embedded {
+      border-width: 0;
+      border-radius: 0;
+    }
   }
 
   .shiki {
@@ -334,7 +339,7 @@ $code-font-size: 0.875rem;
       text-align: right;
       padding-block: 0.25rem;
     }
-    
+
     .line {
       &.highlighted {
         background-color: color-mix(in srgb, var(--bright-blue) 9%, var(--page-background));

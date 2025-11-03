@@ -7,12 +7,12 @@
  */
 
 import {
+  DecoratorEntry,
   DocEntry,
   EntryType,
   FunctionSignatureMetadata,
   GenericEntry,
   MemberEntry,
-  DecoratorEntry,
   MemberTags,
   ParameterEntry,
   PropertyEntry,
@@ -34,16 +34,20 @@ import {
 } from '../entities/categorization.mjs';
 import {CodeLineRenderable} from '../entities/renderables.mjs';
 import {HasModuleName, HasRenderableToc} from '../entities/traits.mjs';
-import {getSymbolUrl} from '../symbol-context.mjs';
 import {
   getHighlighterInstance,
   insertParenthesesForDecoratorInShikiHtml,
   replaceKeywordFromShikiHtml,
 } from '../shiki/shiki.mjs';
+import {getSymbolUrl} from '../symbol-context.mjs';
 
-import {filterLifecycleMethods, mergeGettersAndSetters} from './member-transforms.mjs';
-import {formatJs} from './format-code.mjs';
 import {codeToHtml} from '../../../shared/shiki.mjs';
+import {formatJs} from './format-code.mjs';
+import {
+  filterLifecycleMethods,
+  filterMergedNamespaceMembers,
+  mergeGettersAndSetters,
+} from './member-transforms.mjs';
 
 const INDENT = '  ';
 const SPACE = ' ';
@@ -198,7 +202,10 @@ function mapDocEntryToCode(entry: DocEntry): CodeTableOfContentsData {
   }
 
   if (isInterfaceEntry(entry)) {
-    return getCodeTocData(mergeGettersAndSetters(entry.members), isDeprecated);
+    return getCodeTocData(
+      filterMergedNamespaceMembers(mergeGettersAndSetters(entry.members)),
+      isDeprecated,
+    );
   }
 
   if (isFunctionEntry(entry)) {
