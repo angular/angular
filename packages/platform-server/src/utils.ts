@@ -244,7 +244,9 @@ const DEFAULT_SERVER_CONTEXT = 'other';
  * (e.g. whether SSR or SSG was used). The value is a string and characters other
  * than [a-zA-Z0-9\-] are removed. See the default value in `DEFAULT_SERVER_CONTEXT` const.
  */
-export const SERVER_CONTEXT = new InjectionToken<string>('SERVER_CONTEXT');
+export const SERVER_CONTEXT = new InjectionToken<string>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'SERVER_CONTEXT' : '',
+);
 
 /**
  * Sanitizes provided server context:

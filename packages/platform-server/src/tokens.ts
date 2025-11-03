@@ -33,7 +33,9 @@ export interface PlatformConfig {
  *
  * @publicApi
  */
-export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL_CONFIG');
+export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Server.INITIAL_CONFIG' : '',
+);
 
 /**
  * A function that will be executed when calling `renderApplication` or
@@ -42,7 +44,9 @@ export const INITIAL_CONFIG = new InjectionToken<PlatformConfig>('Server.INITIAL
  * @publicApi
  */
 export const BEFORE_APP_SERIALIZED = new InjectionToken<ReadonlyArray<() => void | Promise<void>>>(
-  'Server.RENDER_MODULE_HOOK',
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'Server.RENDER_MODULE_HOOK' : '',
 );
 
-export const ENABLE_DOM_EMULATION = new InjectionToken<boolean>('ENABLE_DOM_EMULATION');
+export const ENABLE_DOM_EMULATION = new InjectionToken<boolean>(
+  typeof ngDevMode === 'undefined' || ngDevMode ? 'ENABLE_DOM_EMULATION' : '',
+);
