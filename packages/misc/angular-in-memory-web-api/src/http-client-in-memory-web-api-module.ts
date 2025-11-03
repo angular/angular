@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '@angular/common';
 import {HttpBackend} from '@angular/common/http';
 import {inject, ModuleWithProviders, NgModule, Type} from '@angular/core';
 
@@ -19,7 +18,6 @@ export function httpClientInMemBackendServiceFactory(): HttpBackend {
   return new HttpClientBackendService(
     inject(InMemoryDbService),
     inject(InMemoryBackendConfig),
-    inject(XhrFactory),
   ) as HttpBackend;
 }
 

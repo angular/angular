@@ -61,11 +61,10 @@ export class HttpInterceptorHandler implements HttpHandler {
   private chain: ChainedInterceptorFn<unknown> | null = null;
   private readonly pendingTasks = inject(PendingTasks);
   private readonly contributeToStability = inject(REQUESTS_CONTRIBUTE_TO_STABILITY);
+  private readonly backend = inject(HttpBackend);
+  private readonly injector = inject(EnvironmentInjector);
 
-  constructor(
-    private backend: HttpBackend,
-    private injector: EnvironmentInjector,
-  ) {
+  constructor() {
     // We strongly recommend using fetch backend for HTTP calls when SSR is used
     // for an application. The logic below checks if that's the case and produces
     // a warning otherwise.
@@ -83,7 +82,7 @@ export class HttpInterceptorHandler implements HttpHandler {
         !isTestingBackend
       ) {
         fetchBackendWarningDisplayed = true;
-        injector
+        this.injector
           .get(Console)
           .warn(
             formatRuntimeError(

@@ -109,8 +109,7 @@ export class HttpXhrBackend implements HttpBackend {
   private readonly tracingService: TracingService<TracingSnapshot> | null = inject(TracingService, {
     optional: true,
   });
-
-  constructor(private xhrFactory: XhrFactory) {}
+  private readonly xhrFactory = inject(XhrFactory);
 
   private maybePropagateTrace<T extends Function>(fn: T): T {
     return this.tracingService?.propagate ? this.tracingService.propagate(fn) : fn;

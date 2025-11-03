@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {XhrFactory} from '@angular/common';
 import {
   HttpBackend,
   HttpEvent,
@@ -61,7 +60,6 @@ export class HttpClientBackendService extends BackendService implements HttpBack
   constructor(
     inMemDbService: InMemoryDbService,
     @Inject(InMemoryBackendConfig) @Optional() config: InMemoryBackendConfigArgs,
-    private xhrFactory: XhrFactory,
   ) {
     super(inMemDbService, config);
   }
@@ -109,7 +107,7 @@ export class HttpClientBackendService extends BackendService implements HttpBack
 
   protected override createPassThruBackend() {
     try {
-      return new HttpXhrBackend(this.xhrFactory);
+      return new HttpXhrBackend();
     } catch (ex: any) {
       ex.message = 'Cannot create passThru404 backend; ' + (ex.message || '');
       throw ex;
