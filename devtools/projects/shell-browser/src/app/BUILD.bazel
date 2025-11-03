@@ -92,23 +92,8 @@ ts_project(
 )
 
 ts_project(
-    name = "comm_utils",
-    srcs = ["comm-utils.ts"],
-)
-
-ts_test_library(
-    name = "comm_utils_test_lib",
-    srcs = ["comm-utils.spec.ts"],
-    deps = [
-        ":comm_utils",
-    ],
-)
-
-ng_web_test_suite(
-    name = "comm_utils_test",
-    deps = [
-        ":comm_utils_test_lib",
-    ],
+    name = "communication",
+    srcs = ["communication.ts"],
 )
 
 ts_project(
@@ -170,7 +155,7 @@ ts_project(
     ],
     deps = [
         ":chrome_window_extensions",
-        ":comm_utils",
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
@@ -184,7 +169,7 @@ ts_project(
     ],
     deps = [
         ":chrome_message_bus",
-        ":comm_utils",
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
     ],
@@ -196,7 +181,7 @@ ts_project(
         "detect-angular-for-extension-icon.ts",
     ],
     deps = [
-        ":comm_utils",
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
