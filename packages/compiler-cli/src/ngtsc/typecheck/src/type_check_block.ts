@@ -742,12 +742,13 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
 }
 
 /**
- * A `TcbOp` which constructs an instance of the signal forms `Field` directive.
+ * Base class for `TcbOp`s that construct instances of the a signal form `Field`.
  */
-class TcbFieldDirectiveTypeOp extends TcbOp {
-  // Should be kept in sync with the `FormUiControl` bindings,
-  // defined in `packages/forms/signals/src/api/control.ts`.
-  private invalidBindingNames = new Set([
+abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
+  /** Bindings that aren't supported on signal form fields. */
+  private unsupportedBindingFields = new Set([
+    // Should be kept in sync with the `FormUiControl` bindings,
+    // defined in `packages/forms/signals/src/api/control.ts`.
     'value',
     'checked',
     'errors',
@@ -766,11 +767,10 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
   ]);
 
   constructor(
-    private tcb: Context,
-    private scope: Scope,
-    private node: DirectiveOwner,
-    private dir: TypeCheckableDirectiveMeta,
-    private customFieldDir: TypeCheckableDirectiveMeta | null,
+    protected tcb: Context,
+    protected scope: Scope,
+    protected node: DirectiveOwner,
+    protected dir: TypeCheckableDirectiveMeta,
   ) {
     super();
   }
@@ -779,11 +779,13 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
     return true;
   }
 
+  protected abstract getExpectedType(): ts.TypeNode;
+
   override execute(): ts.Identifier {
     const inputs = this.node instanceof TmplAstHostElement ? this.node.bindings : this.node.inputs;
 
     for (const input of inputs) {
-      if (input.type === BindingType.Property && this.invalidBindingNames.has(input.name)) {
+      if (input.type === BindingType.Property && this.unsupportedBindingFields.has(input.name)) {
         this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, input);
       }
     }
@@ -808,33 +810,18 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
     this.scope.addStatement(tsDeclareVariable(id, type));
     return id;
   }
+}
 
-  private getExpectedType(): ts.TypeNode {
-    if (this.customFieldDir !== null) {
-      return this.getExpectedTypeFromCustomField(this.customFieldDir);
-    } else if (this.node instanceof TmplAstElement) {
+/**
+ * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a native element.
+ */
+class TcbNativeFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
+  protected getExpectedType(): ts.TypeNode {
+    if (this.node instanceof TmplAstElement) {
       return this.getExpectedTypeFromDomNode(this.node);
     }
 
     return this.getUnsupportedType();
-  }
-
-  private getExpectedTypeFromCustomField(customField: TypeCheckableDirectiveMeta): ts.TypeNode {
-    const id = R3Identifiers.ExtractFormControlValue;
-    const extractRef = this.tcb.env.referenceExternalType(id.moduleName, id.name);
-    const customFieldRef = this.tcb.env.referenceType(customField.ref);
-
-    if (!ts.isTypeReferenceNode(extractRef)) {
-      throw new Error(`Expected TypeReferenceNode when referencing the type for ${id.name}`);
-    }
-
-    if (!ts.isTypeReferenceNode(customFieldRef)) {
-      throw new Error(
-        `Expected TypeReferenceNode when referencing the type for ${customField.ref.debugName}`,
-      );
-    }
-
-    return ts.factory.createTypeReferenceNode(extractRef.typeName, [customFieldRef]);
   }
 
   private getExpectedTypeFromDomNode(node: TmplAstElement): ts.TypeNode {
@@ -879,6 +866,39 @@ class TcbFieldDirectiveTypeOp extends TcbOp {
 
   private getUnsupportedType(): ts.TypeNode {
     return ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword);
+  }
+}
+
+/**
+ * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a custom control.
+ */
+class TcbCustomFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
+  constructor(
+    tcb: Context,
+    scope: Scope,
+    node: DirectiveOwner,
+    dir: TypeCheckableDirectiveMeta,
+    private customFieldDir: TypeCheckableDirectiveMeta,
+  ) {
+    super(tcb, scope, node, dir);
+  }
+
+  protected getExpectedType(): ts.TypeNode {
+    const id = R3Identifiers.ExtractFormControlValue;
+    const extractRef = this.tcb.env.referenceExternalType(id.moduleName, id.name);
+    const customFieldRef = this.tcb.env.referenceType(this.customFieldDir.ref);
+
+    if (!ts.isTypeReferenceNode(extractRef)) {
+      throw new Error(`Expected TypeReferenceNode when referencing the type for ${id.name}`);
+    }
+
+    if (!ts.isTypeReferenceNode(customFieldRef)) {
+      throw new Error(
+        `Expected TypeReferenceNode when referencing the type for ${this.customFieldDir.ref.debugName}`,
+      );
+    }
+
+    return ts.factory.createTypeReferenceNode(extractRef.typeName, [customFieldRef]);
   }
 }
 
@@ -3016,13 +3036,10 @@ class Scope {
       dir.name === 'Field' &&
       dirRef.bestGuessOwningModule?.specifier === '@angular/forms/signals'
     ) {
-      return new TcbFieldDirectiveTypeOp(
-        this.tcb,
-        this,
-        node,
-        dir,
-        allDirectiveMatches.find(isCustomFieldDirective) ?? null,
-      );
+      const customControl = allDirectiveMatches.find(isCustomFieldDirective);
+      return customControl
+        ? new TcbCustomFieldDirectiveTypeOp(this.tcb, this, node, dir, customControl)
+        : new TcbNativeFieldDirectiveTypeOp(this.tcb, this, node, dir);
     } else if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
