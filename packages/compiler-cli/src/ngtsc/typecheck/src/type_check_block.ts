@@ -840,7 +840,7 @@ abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
  * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a native element.
  */
 class TcbNativeFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
-  protected getExpectedType(): ts.TypeNode {
+  protected override getExpectedType(): ts.TypeNode {
     if (this.node instanceof TmplAstElement) {
       return this.getExpectedTypeFromDomNode(this.node);
     }
@@ -902,27 +902,101 @@ class TcbCustomFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
     scope: Scope,
     node: DirectiveOwner,
     dir: TypeCheckableDirectiveMeta,
-    private customFieldDir: TypeCheckableDirectiveMeta,
+    private customFieldDir: {type: 'value' | 'checkbox'; meta: TypeCheckableDirectiveMeta},
   ) {
     super(tcb, scope, node, dir);
   }
 
-  protected getExpectedType(): ts.TypeNode {
+  override execute(): ts.Identifier {
+    const refId = super.execute();
+    this.appendFormFieldConformanceStatements();
+    return refId;
+  }
+
+  protected override getExpectedType(): ts.TypeNode {
     const id = R3Identifiers.ExtractFormControlValue;
     const extractRef = this.tcb.env.referenceExternalType(id.moduleName, id.name);
-    const customFieldRef = this.tcb.env.referenceType(this.customFieldDir.ref);
 
     if (!ts.isTypeReferenceNode(extractRef)) {
       throw new Error(`Expected TypeReferenceNode when referencing the type for ${id.name}`);
     }
 
+    return ts.factory.createTypeReferenceNode(extractRef.typeName, [
+      this.getCustomFieldTypeReference(),
+    ]);
+  }
+
+  private getCustomFieldTypeReference(): ts.TypeReferenceNode {
+    const customFieldRef = this.tcb.env.referenceType(this.customFieldDir.meta.ref);
+
     if (!ts.isTypeReferenceNode(customFieldRef)) {
       throw new Error(
-        `Expected TypeReferenceNode when referencing the type for ${this.customFieldDir.ref.debugName}`,
+        `Expected TypeReferenceNode when referencing the type for ${this.customFieldDir.meta.ref.debugName}`,
       );
     }
 
-    return ts.factory.createTypeReferenceNode(extractRef.typeName, [customFieldRef]);
+    return customFieldRef;
+  }
+
+  private appendFormFieldConformanceStatements(): void {
+    let span: ParseSourceSpan;
+
+    if (this.node instanceof TmplAstHostElement) {
+      span = this.node.sourceSpan;
+    } else {
+      span =
+        this.node.inputs.find((input) => {
+          return input.type === BindingType.Property && input.name === 'field';
+        })?.sourceSpan ?? this.node.startSourceSpan;
+    }
+
+    // We check that the custom control conforms to either `FormValueControl` or `FormValueControl`
+    // by generating the following code, on top of the existing type checking code:
+    // ```
+    // var _t1 = null! as FormValueControl<unknown>;
+    // if (_t1) _t1 = null! as CustomControl;
+    // ```
+    // Some notes:
+    // * `FormValueControl` is generic so we need to fill out the value. We use `unknown`, because
+    // this code isn't concerned with whether the value type is correct, only that the rest of the
+    // properties conform to the interface.
+    // * The `if (_t1)` isn't really necessary. We do it so the compiler doesn't flag `_t1` as a
+    // variable that's never read which may trigger a diagnostic, depending on the user's settings.
+
+    const isCheckbox = this.customFieldDir.type === 'checkbox';
+    const symbolName = isCheckbox ? 'FormCheckboxControl' : 'FormValueControl';
+    const targetTypeRef = this.tcb.env.referenceExternalType('@angular/forms/signals', symbolName);
+
+    if (!ts.isTypeReferenceNode(targetTypeRef)) {
+      throw new Error(`Expected TypeReferenceNode when referencing the type for ${symbolName}`);
+    }
+
+    // var _t1 = null! as FormValueControl<unknown>
+    const id = this.tcb.allocateId();
+    const targetType = ts.factory.createTypeReferenceNode(
+      targetTypeRef.typeName,
+      isCheckbox ? undefined : [ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)],
+    );
+    this.scope.addStatement(tsDeclareVariable(id, targetType));
+
+    // null! as CustomControl
+    const controlType = ts.factory.createAsExpression(
+      ts.factory.createNonNullExpression(ts.factory.createNull()),
+      this.getCustomFieldTypeReference(),
+    );
+
+    // _t1 = null! as CustomControl
+    const assignment = ts.factory.createBinaryExpression(
+      id,
+      ts.SyntaxKind.EqualsToken,
+      controlType,
+    );
+    addParseSpanInfo(assignment, span);
+
+    // if (_t1) ...
+    this.scope.addStatement(
+      ts.factory.createIfStatement(id, ts.factory.createExpressionStatement(assignment)),
+    );
   }
 }
 
@@ -3060,10 +3134,21 @@ class Scope {
       dir.name === 'Field' &&
       dirRef.bestGuessOwningModule?.specifier === '@angular/forms/signals'
     ) {
-      const customControl = allDirectiveMatches.find(isCustomFieldDirective);
-      return customControl
-        ? new TcbCustomFieldDirectiveTypeOp(this.tcb, this, node, dir, customControl)
-        : new TcbNativeFieldDirectiveTypeOp(this.tcb, this, node, dir);
+      let customControl: {type: 'value' | 'checkbox'; meta: TypeCheckableDirectiveMeta} | null =
+        null;
+
+      for (const meta of allDirectiveMatches) {
+        const type = getCustomFieldDirectiveType(meta);
+
+        if (type !== null) {
+          customControl = {type, meta};
+          break;
+        }
+      }
+
+      return customControl === null
+        ? new TcbNativeFieldDirectiveTypeOp(this.tcb, this, node, dir)
+        : new TcbCustomFieldDirectiveTypeOp(this.tcb, this, node, dir, customControl);
     } else if (!dir.isGeneric) {
       // The most common case is that when a directive is not generic, we use the normal
       // `TcbNonDirectiveTypeOp`.
@@ -3981,13 +4066,24 @@ function getComponentTagName(node: TmplAstComponent): string {
   return node.tagName || 'ng-component';
 }
 
-/** Determines if a directive can be a custom form field control. */
-function isCustomFieldDirective({inputs, outputs}: TypeCheckableDirectiveMeta): boolean {
-  // Custom fields must have either a model called either `value` or `checked`.
-  return (
-    (!!inputs.getByBindingPropertyName('value')?.some((v) => v.isSignal) &&
-      outputs.hasBindingPropertyName('valueChange')) ||
-    (!!inputs.getByBindingPropertyName('checked')?.some((v) => v.isSignal) &&
-      outputs.hasBindingPropertyName('checkedChange'))
-  );
+/** Determines the type of signal form field control (if any) from a directive's metadata. */
+function getCustomFieldDirectiveType({
+  inputs,
+  outputs,
+}: TypeCheckableDirectiveMeta): 'value' | 'checkbox' | null {
+  if (
+    inputs.getByBindingPropertyName('value')?.some((v) => v.isSignal) &&
+    outputs.hasBindingPropertyName('valueChange')
+  ) {
+    return 'value';
+  }
+
+  if (
+    inputs.getByBindingPropertyName('checked')?.some((v) => v.isSignal) &&
+    outputs.hasBindingPropertyName('checkedChange')
+  ) {
+    return 'checkbox';
+  }
+
+  return null;
 }

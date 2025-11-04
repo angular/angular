@@ -325,5 +325,71 @@ runInEachFileSystem(() => {
         `Setting the 'value' attribute is not allowed on nodes using the '[field]' directive`,
       );
     });
+
+    it('should check that a custom value control conforms to FormValueControl', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({selector: 'user-control', template: ''})
+          export class UserControl {
+            readonly value = model<number>(0);
+            required = input<number>(0);
+          }
+
+          @Component({
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
+          })
+          export class Comp {
+            f = form(signal(1));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type 'UserControl' is not assignable to type 'FormValueControl<unknown>'.`,
+      );
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).next?.[0].messageText).toBe(
+        `Types of property 'required' are incompatible.`,
+      );
+    });
+
+    it('should check that a custom checkbox control conforms to FormCheckboxControl', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({selector: 'user-control', template: ''})
+          export class UserControl {
+            readonly checked = model<boolean>(false);
+            required = input<number>(0);
+          }
+
+          @Component({
+            template: '<user-control [field]="f"/>',
+            imports: [Field, UserControl]
+          })
+          export class Comp {
+            f = form(signal(true));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type 'UserControl' is not assignable to type 'FormCheckboxControl'.`,
+      );
+      expect((diags[0].messageText as ts.DiagnosticMessageChain).next?.[0].messageText).toBe(
+        `Types of property 'required' are incompatible.`,
+      );
+    });
   });
 });
