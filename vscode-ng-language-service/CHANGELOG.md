@@ -1,3 +1,9 @@
+# 20.3.1
+
+This release upgrades `@angular/language-service` to v21.0.0-rc.0
+
+This release includes several internal build and repository structure changes.
+
 # 20.3.0
 
 This release upgrades `@angular/language-service` to v20.3.5
