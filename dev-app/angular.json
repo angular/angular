@@ -1,45 +1,47 @@
 {
-  "$schema": "../node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "newProjectRoot": ".",
+  "cli": {
+    "packageManager": "pnpm"
+  },
+  "newProjectRoot": "projects",
   "projects": {
     "dev-app": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss",
-          "standalone": true,
-          "changeDetection": "OnPush"
-        }
-      },
-      "root": ".",
+      "schematics": {},
+      "root": "",
       "sourceRoot": "src",
-      "prefix": "dev-app",
+      "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "externalDependencies": ["path"],
-            "outputMode": "static",
-            "outputPath": "dist",
-            "index": "src/index.html",
             "browser": "src/main.ts",
-            "server": "src/main.server.ts",
-            "polyfills": [],
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico"],
-            "styles": ["src/app/theme.scss"],
-            "scripts": [],
-            "webWorkerTsConfig": "tsconfig.worker.json",
-            "optimization": {
-              "fonts": {
-                "inline": false
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
               }
-            }
+            ],
+            "styles": [
+              "src/styles.css"
+            ]
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
               "outputHashing": "all"
             },
             "development": {
@@ -60,30 +62,12 @@
               "buildTarget": "dev-app:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "buildTarget": "web-ui:build",
-            "headers": {
-              "Cross-Origin-Opener-Policy": "same-origin",
-              "Cross-Origin-Embedder-Policy": "require-corp"
-            }
-          }
+          "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "runner": "karma",
-            "browsers": ["ChromeHeadlessNoSandbox"],
-            "include": ["src/app/**/*.spec.ts"]
-          }
+          "builder": "@angular/build:unit-test"
         }
       }
-    }
-  },
-  "cli": {
-    "analytics": "dca119a9-da31-47f7-a6cb-b60541037021",
-    "cache": {
-      "enabled": false
     }
   }
 }

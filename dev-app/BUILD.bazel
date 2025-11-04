@@ -13,14 +13,15 @@ exports_files([
     "tsconfig.json",
 ])
 
-APPLICATION_FILES = glob(
+APPLICATION_FILES = [
+    "//dev-app/public",
+] + glob(
     ["src/**/*"],
     exclude = ["src/**/*.spec.ts"],
 )
 
 APPLICATION_DEPS = [
     ":node_modules/typescript",
-    ":node_modules/xhr2",
     ":node_modules/@types/node",
 ]
 
@@ -32,6 +33,8 @@ TEST_DEPS = [
     if dep != ":node_modules/@types/node"
 ] + [
     "@rules_browsers//browsers/chromium",
+    ":node_modules/jsdom",
+    ":node_modules/vitest",
 ]
 
 ng_config(name = "ng_config")
@@ -49,10 +52,6 @@ ng_application(
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "dev-app",
-    serve_args = [
-        "--port",
-        "4200",
-    ],
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
@@ -75,10 +74,6 @@ ng_application(
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "dev-app",
-    serve_args = [
-        "--port",
-        "4200",
-    ],
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
@@ -92,7 +87,7 @@ ng_test(
     name = "test",
     srcs = TEST_FILES + TEST_DEPS,
     env = {
-        # Move one level up because we are in `//dev-app`
+        # Move one level up because we are in `//adev`
         "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
         "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
     },

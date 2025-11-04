@@ -4,8 +4,7 @@ For experimentation while developing Angular.
 
 ## Local Development
 
-For local development, [pnpm](https://pnpm.io/) is the preferred package manager. You can set up a local environment with the following commands
-:
+For local development, [pnpm](https://pnpm.io/) is the preferred package manager. You can set up a local environment with the following commands:
 
 ```bash
 # Clone Angular repo
@@ -15,7 +14,7 @@ git clone https://github.com/angular/angular.git
 cd angular
 
 # Install dependencies
-pnpm
+pnpm install
 
 # Build and run local dev server
 # NOTE: Initial build will take some time
