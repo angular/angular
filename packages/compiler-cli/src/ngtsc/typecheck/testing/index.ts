@@ -47,6 +47,7 @@ import {
   LocalIdentifierStrategy,
   LogicalProjectStrategy,
   ModuleResolver,
+  OwningModule,
   Reference,
   ReferenceEmitter,
   RelativePathStrategy,
@@ -68,6 +69,7 @@ import {
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {
+  AmbientImport,
   ClassDeclaration,
   isNamedClassDeclaration,
   TypeScriptReflectionHost,
@@ -341,6 +343,7 @@ export interface TestDirective
     inputs?: string[];
     outputs?: string[];
   }[];
+  bestGuessOwningModule?: OwningModule | AmbientImport;
 }
 
 export interface TestPipe {
@@ -350,6 +353,7 @@ export interface TestPipe {
   pipeName: string;
   type: 'pipe';
   code?: string;
+  bestGuessOwningModule?: OwningModule | AmbientImport;
 }
 
 export type TestDeclaration = TestDirective | TestPipe;
@@ -817,7 +821,7 @@ function prepareDeclarations(
     } else if (decl.type === 'pipe') {
       pipes.set(decl.pipeName, {
         kind: MetaKind.Pipe,
-        ref: new Reference(resolveDeclaration(decl)),
+        ref: new Reference(resolveDeclaration(decl), decl.bestGuessOwningModule),
         name: decl.pipeName,
         nameExpr: null,
         isStandalone: false,
@@ -864,7 +868,7 @@ function getDirectiveMetaFromDeclaration(
 ) {
   return {
     name: decl.name,
-    ref: new Reference(resolveDeclaration(decl)),
+    ref: new Reference(resolveDeclaration(decl), decl.bestGuessOwningModule),
     exportAs: decl.exportAs || null,
     selector: decl.selector || null,
     hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
