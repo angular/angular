@@ -133,7 +133,7 @@ a.gradient-button:focus span:nth-of-type(2) {
   transform: rotate(45deg);
   width: 4px;
   background-color: black;
-  border-radius: 0px 0px 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .arrow::after {
@@ -317,7 +317,7 @@ svg.personified  {
   margin: 0 4px;
   background-color: #fff;
   transition: all 0.3s ease;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3607843137);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3607843137);
 }
 
 .accessibility button:focus:enabled, .accessibility button:hover:enabled {

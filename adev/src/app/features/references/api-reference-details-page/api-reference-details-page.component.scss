@@ -37,7 +37,7 @@
   }
 
   &>* {
-    padding-inline: 0px;
+    padding-inline: 0;
 
     @include mq.for-extra-large-desktop-up {
       width: var(--page-width);

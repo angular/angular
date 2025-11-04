@@ -6,7 +6,7 @@ $ver-dropdown-width: 200px;
   display: flex;
   flex-flow: column;
   align-items: center;
-  padding: var(--layout-padding) 0px;
+  padding: var(--layout-padding) 0;
   container: update-guide-page / inline-size;
 
   .docs-viewer {
@@ -21,7 +21,7 @@ $ver-dropdown-width: 200px;
     }
 
     .page-header {
-      margin-top: 0px;
+      margin-top: 0;
     }
   }
 }
@@ -31,7 +31,7 @@ $ver-dropdown-width: 200px;
 
   & > * {
     @include mq.for-extra-large-desktop-up {
-      padding-inline: 0px;
+      padding-inline: 0;
     }
   }
 

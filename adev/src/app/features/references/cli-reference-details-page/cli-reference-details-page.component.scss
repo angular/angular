@@ -34,7 +34,7 @@
     width: 100%;
 
     @include mq.for-desktop-up {
-      padding-inline: 0px;
+      padding-inline: 0;
       width: var(--page-width);
     }
   }

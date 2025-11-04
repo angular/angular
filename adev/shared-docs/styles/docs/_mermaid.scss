@@ -76,7 +76,7 @@
   .checkedNode {
     rect {
       color: white !important;
-      filter: drop-shadow(5px 5px 0px var(--hot-pink));
+      filter: drop-shadow(5px 5px 0 var(--hot-pink));
       stroke: var(--hot-pink) !important;
     }
 
