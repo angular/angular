@@ -20,27 +20,59 @@
           "jsdocTags": []
         },
         {
-          "name": "submenu",
+          "name": "menu",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "input"
           ],
-          "description": "The submenu associated with the menu trigger.",
+          "description": "The menu associated with the trigger.",
           "jsdocTags": [],
-          "inputAlias": "submenu",
+          "inputAlias": "menu",
           "isRequiredInput": false
         },
         {
-          "name": "onSubmit",
+          "name": "hasBeenFocused",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "output"
+            "readonly"
           ],
-          "description": "A callback function triggered when a menu item is selected.",
+          "description": "Whether the menu item has been focused.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onFocusIn",
+          "signatures": [
+            {
+              "name": "onFocusIn",
+              "entryType": "function",
+              "description": "Marks the menu trigger as having been focused.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Marks the menu trigger as having been focused. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusIn",
+            "description": "Marks the menu trigger as having been focused.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Marks the menu trigger as having been focused. */"
+          },
+          "entryType": "function",
+          "description": "Marks the menu trigger as having been focused.",
           "jsdocTags": [],
-          "outputAlias": "onSubmit"
+          "rawComment": "/** Marks the menu trigger as having been focused. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -59,14 +91,14 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 39,
-        "endLine": 74
+        "startLine": 43,
+        "endLine": 87
       }
     },
     {
       "name": "Menu",
       "isAbstract": false,
-      "entryType": "directive",
+      "entryType": "undecorated_class",
       "members": [
         {
           "name": "element",
@@ -89,69 +121,44 @@
           "jsdocTags": []
         },
         {
-          "name": "submenu",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The submenu associated with the menu.",
-          "jsdocTags": [],
-          "inputAlias": "submenu",
-          "isRequiredInput": false
-        },
-        {
           "name": "id",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
           "description": "The unique ID of the menu.",
-          "jsdocTags": [],
-          "inputAlias": "id",
-          "isRequiredInput": false
+          "jsdocTags": []
         },
         {
           "name": "wrap",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
           "description": "Whether the menu should wrap its items.",
-          "jsdocTags": [],
-          "inputAlias": "wrap",
-          "isRequiredInput": false
+          "jsdocTags": []
         },
         {
           "name": "typeaheadDelay",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
           "description": "The delay in seconds before the typeahead buffer is cleared.",
-          "jsdocTags": [],
-          "inputAlias": "typeaheadDelay",
-          "isRequiredInput": false
+          "jsdocTags": []
         },
         {
           "name": "parent",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly",
-            "input"
+            "readonly"
           ],
           "description": "A reference to the parent menu item or menu trigger.",
-          "jsdocTags": [],
-          "inputAlias": "parent",
-          "isRequiredInput": false
+          "jsdocTags": []
         },
         {
           "name": "items",
@@ -172,15 +179,12 @@
           "jsdocTags": []
         },
         {
-          "name": "onSubmit",
+          "name": "onSelect",
           "type": "any",
           "memberType": "property",
-          "memberTags": [
-            "output"
-          ],
+          "memberTags": [],
           "description": "A callback function triggered when a menu item is selected.",
-          "jsdocTags": [],
-          "outputAlias": "onSubmit"
+          "jsdocTags": []
         },
         {
           "name": "close",
@@ -290,15 +294,10 @@
       "jsdocTags": [],
       "rawComment": "/**\n * A list of menu items.\n *\n * A menu is used to offer a list of menu item choices to users. Menus can be nested within other\n * menus to create sub-menus.\n *\n * ```html\n * <button ngMenuTrigger menu=\"menu\">Options</button>\n *\n * <div ngMenu #menu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem>Delete</div>\n * </div>\n * ```\n */",
       "implements": [],
-      "isStandalone": true,
-      "selector": "[ngMenu]",
-      "exportAs": [
-        "ngMenu"
-      ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 92,
-        "endLine": 215
+        "startLine": 105,
+        "endLine": 245
       }
     },
     {
@@ -378,7 +377,7 @@
           "jsdocTags": []
         },
         {
-          "name": "onSubmit",
+          "name": "onSelect",
           "type": "any",
           "memberType": "property",
           "memberTags": [
@@ -386,7 +385,7 @@
           ],
           "description": "A callback function triggered when a menu item is selected.",
           "jsdocTags": [],
-          "outputAlias": "onSubmit"
+          "outputAlias": "onSelect"
         }
       ],
       "generics": [
@@ -405,8 +404,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 224,
-        "endLine": 299
+        "startLine": 254,
+        "endLine": 329
       }
     },
     {
@@ -500,6 +499,49 @@
           "jsdocTags": [],
           "inputAlias": "submenu",
           "isRequiredInput": false
+        },
+        {
+          "name": "hasBeenFocused",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the menu item has been focused.",
+          "jsdocTags": []
+        },
+        {
+          "name": "onFocusIn",
+          "signatures": [
+            {
+              "name": "onFocusIn",
+              "entryType": "function",
+              "description": "Marks the menu item as having been focused.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Marks the menu item as having been focused. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "onFocusIn",
+            "description": "Marks the menu item as having been focused.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Marks the menu item as having been focused. */"
+          },
+          "entryType": "function",
+          "description": "Marks the menu item as having been focused.",
+          "jsdocTags": [],
+          "rawComment": "/** Marks the menu item as having been focused. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -518,8 +560,24 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 306,
-        "endLine": 363
+        "startLine": 336,
+        "endLine": 406
+      }
+    },
+    {
+      "name": "MenuContent",
+      "isAbstract": false,
+      "entryType": "undecorated_class",
+      "members": [],
+      "generics": [],
+      "description": "Defers the rendering of the menu content.",
+      "jsdocTags": [],
+      "rawComment": "/** Defers the rendering of the menu content. */",
+      "implements": [],
+      "source": {
+        "filePath": "/src/aria/menu/menu.ts",
+        "startLine": 409,
+        "endLine": 414
       }
     }
   ],
@@ -538,6 +596,10 @@
     ],
     [
       "Directive",
+      "@angular/core"
+    ],
+    [
+      "effect",
       "@angular/core"
     ],
     [
@@ -593,6 +655,18 @@
       "@angular/aria/private"
     ],
     [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/private"
+    ],
+    [
+      "_IdGenerator",
+      "@angular/cdk/a11y"
+    ],
+    [
       "toSignal",
       "@angular/core/rxjs-interop"
     ],
@@ -617,6 +691,10 @@
       "@angular/aria/menu"
     ],
     [
+      "MenuContent",
+      "@angular/aria/menu"
+    ],
+    [
       "MenuTrigger",
       "@angular/aria/menu"
     ],
@@ -625,11 +703,15 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuTrigger.submenu",
+      "MenuTrigger.menu",
       "@angular/aria/menu"
     ],
     [
-      "MenuTrigger.onSubmit",
+      "MenuTrigger.hasBeenFocused",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.onFocusIn",
       "@angular/aria/menu"
     ],
     [
@@ -642,10 +724,6 @@
     ],
     [
       "Menu.textDirection",
-      "@angular/aria/menu"
-    ],
-    [
-      "Menu.submenu",
       "@angular/aria/menu"
     ],
     [
@@ -673,7 +751,7 @@
       "@angular/aria/menu"
     ],
     [
-      "Menu.onSubmit",
+      "Menu.onSelect",
       "@angular/aria/menu"
     ],
     [
@@ -713,7 +791,7 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuBar.onSubmit",
+      "MenuBar.onSelect",
       "@angular/aria/menu"
     ],
     [
@@ -746,6 +824,18 @@
     ],
     [
       "MenuItem.submenu",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.hasBeenFocused",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuItem.onFocusIn",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuContent",
       "@angular/aria/menu"
     ]
   ]

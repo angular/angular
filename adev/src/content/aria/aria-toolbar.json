@@ -43,16 +43,15 @@
           "isRequiredInput": false
         },
         {
-          "name": "skipDisabled",
+          "name": "softDisabled",
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly",
             "input"
           ],
-          "description": "Whether disabled items in the group should be skipped when navigating.",
+          "description": "Whether to allow disabled items to receive focus.",
           "jsdocTags": [],
-          "inputAlias": "skipDisabled",
+          "inputAlias": "softDisabled",
           "isRequiredInput": false
         },
         {
@@ -626,7 +625,7 @@
       "@angular/aria/toolbar"
     ],
     [
-      "Toolbar.skipDisabled",
+      "Toolbar.softDisabled",
       "@angular/aria/toolbar"
     ],
     [
