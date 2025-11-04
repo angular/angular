@@ -42741,7 +42741,7 @@ async function getDeployments() {
     docSites.set(branch.name, {
       branch: branch.name,
       destination: `v${branch.version.major}-angular-dev`,
-      servingUrl: `https://v${branch.version.major}.angular.dev`
+      servingUrl: `https://v${branch.version.major}.angular.dev/`
     });
   });
   docSites.set(releaseTrains.latest.branchName, {
@@ -42750,13 +42750,13 @@ async function getDeployments() {
       from: `v${releaseTrains.latest.version.major}-angular-dev`,
       to: "https://angular.dev"
     },
-    servingUrl: "https://angular.dev",
+    servingUrl: "https://angular.dev/",
     destination: "angular-dev-site"
   });
   if (releaseTrains.releaseCandidate) {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
     docSites.set(releaseTrains.releaseCandidate.branchName, {
       branch: releaseTrains.releaseCandidate.branchName,
@@ -42765,13 +42765,13 @@ async function getDeployments() {
         from: `v${releaseTrains.releaseCandidate.version.major}-angular-dev`,
         to: "https://next.angular.dev"
       },
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
   } else {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
       destination: "next-angular-dev",
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
   }
   return docSites;
@@ -42787,7 +42787,7 @@ async function generateSitemap(deployment, distDir) {
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${Object.keys(routes.routes).map((route) => `
     <url>
-      <loc>${join3(deployment.servingUrl, route)}</loc>
+      <loc>${deployment.servingUrl}${route}</loc>
       <lastmod>${lastModifiedTimestamp}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
