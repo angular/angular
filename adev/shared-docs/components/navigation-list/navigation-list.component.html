@@ -10,24 +10,25 @@
         <li class="docs-navigation-group">{{groupLabel | titlecase}}</li>
       }
       @for (item of items; track $index) {
+        @let itemLabel = item.label ?? '';
+
         <li class="docs-faceted-list-item">
-          @let itemLabel = item.label!;
           @if (item.path) {
             @if (item.isExternal) {
               <a
                 [href]="item.path"
                 target="_blank"
-                [matTooltip]="item.label"
+                [matTooltip]="itemLabel"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
-                [attr.aria-label]="item.label"
+                [attr.aria-label]="itemLabel"
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span
                   [class.docs-external-link]="item.isExternal"
                   class="docs-faceted-list-item-text"
                 >
-                  {{ item.label }}
+                  {{ itemLabel }}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
@@ -41,14 +42,14 @@
                 routerLinkActive="docs-faceted-list-item-active"
                 [routerLinkActiveOptions]="{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
                 (click)="emitClickOnLink()"
-                [matTooltip]="item.label"
+                [matTooltip]="itemLabel"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
-                [attr.aria-label]="item.label"
+                [attr.aria-label]="itemLabel"
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{item.label}}
+                  {{itemLabel}}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
 
@@ -62,14 +63,14 @@
             @if (item.level !== collapsableLevel() && item.level !== expandableLevel()) {
               <div
                 class="docs-secondary-nav-header"
-                [matTooltip]="item.label"
+                [matTooltip]="itemLabel"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
-                [attr.aria-label]="item.label"
+                [attr.aria-label]="itemLabel"
                 [matTooltipClass]="'API-tooltip'"
               >
                 <span class="docs-faceted-list-item-text">
-                  {{item.label}}
+                  {{itemLabel}}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
               </div>
@@ -82,7 +83,7 @@
               <button
                 type="button"
                 (click)="toggle(item)"
-                [attr.aria-label]="(item.isExpanded ? 'Collapse' : 'Expand') + ' ' + item.label"
+                [attr.aria-label]="(item.isExpanded ? 'Collapse' : 'Expand') + ' ' + itemLabel"
                 [attr.aria-expanded]="item.isExpanded"
                 class="docs-secondary-nav-button"
                 [class.docs-faceted-list-item-active]="item | isActiveNavigationItem: activeItem()"
@@ -90,17 +91,17 @@
                 [class.docs-not-expanded-button]="item.children && item.level === expandableLevel()"
                 [class.docs-nav-item-has-icon]="
               item.children && item.level === expandableLevel() && !item.isExpanded"
-                [matTooltip]="item.label"
+                [matTooltip]="itemLabel"
                 [matTooltipDisabled]="itemLabel.length < 27"
                 matTooltipPosition="after"
-                [attr.aria-label]="item.label"
+                [attr.aria-label]="itemLabel"
                 [matTooltipClass]="'API-tooltip'"
               >
                 @if (item.children && item.level === collapsableLevel()) {
                   <docs-icon>arrow_back</docs-icon>
                 }
                 <span class="docs-faceted-list-item-text">
-                  {{ item.label }}
+                  {{ itemLabel }}
                   <ng-container *ngTemplateOutlet="itemStatus; context: {$implicit: item}" />
                 </span>
               </button>
