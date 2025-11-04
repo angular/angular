@@ -21,15 +21,15 @@ import {ProductCard} from './product-card';
           [description]="'High-performance laptop'"
           [available]="true"
           [productId]="'LAP001'"
-          [category]="'Electronics'">
-        </product-card>
+          [category]="'Electronics'"
+        />
       </div>
 
       <div class="cart-section">
         <cart-summary
           [itemCount]="cartQuantity()"
-          [total]="totalPrice()">
-        </cart-summary>
+          [total]="totalPrice()" 
+        />
 
         <div class="cart-controls">
           <label>Quantity:</label>
