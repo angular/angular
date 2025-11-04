@@ -451,7 +451,8 @@
           "type": "string",
           "enum": [
             "browserslist",
-            "karma"
+            "karma",
+            "vitest"
           ],
           "description": "Specifies the type of configuration file to generate.",
           "positional": 0
