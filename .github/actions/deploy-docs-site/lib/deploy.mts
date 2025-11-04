@@ -1,4 +1,4 @@
-import {cp, mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
+import {mkdtemp, readFile, rm, writeFile} from 'node:fs/promises';
 import {Deployment} from './deployments.mjs';
 import {join} from 'node:path';
 
@@ -9,7 +9,7 @@ import {getCredentialFilePath} from './credential.mjs';
 export async function deployToFirebase(
   deployment: Deployment,
   configPath: string,
-  distDirPath: string,
+  stagingDir: string,
 ) {
   if (deployment.destination == undefined) {
     console.log(`No deployment necessary for docs created from: ${deployment.branch}`);
@@ -18,8 +18,7 @@ export async function deployToFirebase(
 
   console.log('Preparing for deployment to firebase...');
 
-  const tmpDeployDir = await mkdtemp(join(tmpdir(), 'deploy-directory'));
-  const deployConfigPath = join(tmpDeployDir, 'firebase.json');
+  const deployConfigPath = join(stagingDir, 'firebase.json');
 
   const config = JSON.parse(await readFile(configPath, {encoding: 'utf-8'})) as {
     hosting: {public: string};
@@ -28,27 +27,24 @@ export async function deployToFirebase(
 
   await writeFile(deployConfigPath, JSON.stringify(config, null, 2));
 
-  await cp(distDirPath, join(tmpDeployDir, 'dist'), {recursive: true});
-  spawnSync(`chmod 777 -R ${tmpDeployDir}`, {encoding: 'utf-8', shell: true});
-
   firebase(
     `target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`,
-    tmpDeployDir,
+    stagingDir,
   );
   firebase(
     `target:apply --config ${deployConfigPath} --project angular-dev-site hosting angular-docs ${deployment.destination}`,
-    tmpDeployDir,
+    stagingDir,
   );
   firebase(
     `deploy --config ${deployConfigPath} --project angular-dev-site --only hosting --non-interactive`,
-    tmpDeployDir,
+    stagingDir,
   );
   firebase(
     `target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`,
-    tmpDeployDir,
+    stagingDir,
   );
 
-  await rm(tmpDeployDir, {recursive: true});
+  await rm(stagingDir, {recursive: true});
 }
 
 export async function setupRedirect(deployment: Deployment) {
