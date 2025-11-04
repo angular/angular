@@ -650,12 +650,47 @@ describe('recognize', () => {
         const s = await recognizer('foo/a/b/c/bar');
         checkActivatedRoute(s.root.firstChild!, 'foo/a/b/c/bar', {}, ComponentA);
       });
-      it('does not match a url with no segments for the wildcard', async () => {
-        await expectAsync(recognizer('foo/bar')).toBeRejected();
+      it('matches a url with no segments for the wildcard', async () => {
+        const s = await recognizer('foo/bar');
+        checkActivatedRoute(s.root.firstChild!, 'foo/bar', {}, ComponentA);
       });
 
       it('does not match a url with a wrong suffix', async () => {
         await expectAsync(recognizer('foo/a/b/baz')).toBeRejected();
+      });
+    });
+
+    describe('with prefix', () => {
+      const recognizer = (url: string) => {
+        const config = [{path: 'foo/**', component: ComponentA}];
+        return recognize(config, url);
+      };
+
+      it('matches a url with segments after the prefix', async () => {
+        const s = await recognizer('foo/a/b');
+        checkActivatedRoute(s.root.firstChild!, 'foo/a/b', {}, ComponentA);
+      });
+
+      it('matches a url with no segments after the prefix', async () => {
+        const s = await recognizer('foo');
+        checkActivatedRoute(s.root.firstChild!, 'foo', {}, ComponentA);
+      });
+    });
+
+    describe('with suffix', () => {
+      const recognizer = (url: string) => {
+        const config = [{path: '**/bar', component: ComponentA}];
+        return recognize(config, url);
+      };
+
+      it('matches a url with segments before the suffix', async () => {
+        const s = await recognizer('a/b/bar');
+        checkActivatedRoute(s.root.firstChild!, 'a/b/bar', {}, ComponentA);
+      });
+
+      it('matches a url with no segments before the suffix', async () => {
+        const s = await recognizer('bar');
+        checkActivatedRoute(s.root.firstChild!, 'bar', {}, ComponentA);
       });
     });
   });
@@ -875,6 +910,52 @@ describe('recognize', () => {
       ];
       const s = await recognize(config, 'a');
       expect(s.root.firstChild!.data['id']).toEqual('b');
+    });
+  });
+
+  describe('with required param before wildcard', () => {
+    const recognizer = (url: string) => {
+      const config = [
+        {
+          path: 'foo/:anyRequired/**/bar',
+          component: ComponentA,
+        },
+      ];
+      return recognize(config, url);
+    };
+
+    it('matches with one segment for wildcard', async () => {
+      const s = await recognizer('foo/required/a/bar');
+      checkActivatedRoute(
+        s.root.firstChild!,
+        'foo/required/a/bar',
+        {anyRequired: 'required'},
+        ComponentA,
+      );
+    });
+
+    it('matches with multiple segments for wildcard', async () => {
+      const s = await recognizer('foo/required/a/b/c/bar');
+      checkActivatedRoute(
+        s.root.firstChild!,
+        'foo/required/a/b/c/bar',
+        {anyRequired: 'required'},
+        ComponentA,
+      );
+    });
+
+    it('matches with no segments for wildcard', async () => {
+      const s = await recognizer('foo/required/bar');
+      checkActivatedRoute(
+        s.root.firstChild!,
+        'foo/required/bar',
+        {anyRequired: 'required'},
+        ComponentA,
+      );
+    });
+
+    it('does not match without the required segment', async () => {
+      await expectAsync(recognizer('foo/bar')).toBeRejected();
     });
   });
 });

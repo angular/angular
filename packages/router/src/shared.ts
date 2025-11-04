@@ -193,16 +193,6 @@ export function defaultUrlMatcher(
     // The actual URL is shorter than the config, no match
     return null;
   }
-  if (
-    // If the wildcard is not at the end of the path, it must match at least one segment.
-    // e.g. `foo/**/bar` does not match `foo/bar`.
-    wildcardIndex > -1 &&
-    pre.length > 0 &&
-    post.length > 0 &&
-    pre.length + post.length === segments.length
-  ) {
-    return null;
-  }
 
   if (route.pathMatch === 'full' && segmentGroup.hasChildren() && route.path !== '**') {
     // The config is longer than the actual URL but we are looking for a full match, return null
