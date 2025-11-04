@@ -273,6 +273,9 @@ export abstract class Renderer2 {
   /** The component's internal shadow root if one is used. */
   shadowRoot?: ShadowRoot;
 
+  /** Attach any required stylesheets to the DOM. */
+  abstract applyStyles?(): void;
+
   /**
    * @internal
    * @nocollapse
