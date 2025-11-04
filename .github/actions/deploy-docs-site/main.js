@@ -39517,7 +39517,7 @@ var RequestError = class extends Error {
 };
 
 // 
-var VERSION2 = "10.0.5";
+var VERSION2 = "10.0.6";
 var defaults_default = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION2} ${getUserAgent()}`
