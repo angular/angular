@@ -44,10 +44,11 @@ import {
   EmptyQueryParamsCmp,
   createRoot,
   advance,
+  simulateLocationChange,
 } from './integration_helpers';
 import {timeout} from '../helpers';
 
-export function navigationErrorsIntegrationSuite() {
+export function navigationErrorsIntegrationSuite(browserAPI: 'history' | 'navigation') {
   it('should handle failed navigations gracefully', async () => {
     const router = TestBed.inject(Router);
     const fixture = await createRoot(router, RootCmp);
@@ -374,8 +375,7 @@ export function navigationErrorsIntegrationSuite() {
       }
     });
 
-    location.go('/throwing');
-    location.historyGo(0);
+    simulateLocationChange('/throwing', browserAPI);
     await advance(fixture);
 
     expect(routerUrlBeforeEmittingError).toEqual('/simple');
@@ -404,6 +404,10 @@ export function navigationErrorsIntegrationSuite() {
   });
 
   it('should not swallow errors from browser state update', async () => {
+    if (browserAPI === 'navigation') {
+      // Router interfaces with the browser APIs at different times. We cannot use the same test for this because the events will be different.
+      return;
+    }
     const routerEvents: Event[] = [];
     TestBed.inject(Router).resetConfig([{path: '**', component: BlankCmp}]);
     TestBed.inject(Router).events.subscribe((e) => {
