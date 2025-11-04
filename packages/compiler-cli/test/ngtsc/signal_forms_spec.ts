@@ -252,5 +252,78 @@ runInEachFileSystem(() => {
         `Type '() => FieldState<string, string | number>' is not assignable to type '() => FieldState<boolean, string | number>'.`,
       );
     });
+
+    it('should report unsupported property bindings on a field', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input type="number" [field]="f" [max]="10"/>',
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to '[max]' is not allowed on nodes using the '[field]' directive`,
+      );
+    });
+
+    it('should report unsupported attribute bindings on a field', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input [attr.type]="type" [field]="f"/>',
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(''));
+            type = 'number';
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to '[attr.type]' is not allowed on nodes using the '[field]' directive`,
+      );
+    });
+
+    it('should report unsupported static attributes of a field', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input value="Hello" [field]="f"/>',
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Setting the 'value' attribute is not allowed on nodes using the '[field]' directive`,
+      );
+    });
   });
 });

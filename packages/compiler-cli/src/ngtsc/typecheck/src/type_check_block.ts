@@ -746,25 +746,7 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
  */
 abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
-  private unsupportedBindingFields = new Set([
-    // Should be kept in sync with the `FormUiControl` bindings,
-    // defined in `packages/forms/signals/src/api/control.ts`.
-    'value',
-    'checked',
-    'errors',
-    'invalid',
-    'disabled',
-    'disabledReasons',
-    'name',
-    'readonly',
-    'touched',
-    'max',
-    'maxLength',
-    'min',
-    'minLength',
-    'pattern',
-    'required',
-  ]);
+  private unsupportedBindingFields: Set<string>;
 
   constructor(
     protected tcb: Context,
@@ -773,6 +755,32 @@ abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
     protected dir: TypeCheckableDirectiveMeta,
   ) {
     super();
+
+    // Should be kept in sync with the `FormUiControl` bindings,
+    // defined in `packages/forms/signals/src/api/control.ts`.
+    const commonUnsupportedNames = [
+      'value',
+      'checked',
+      'errors',
+      'invalid',
+      'disabled',
+      'disabledReasons',
+      'name',
+      'readonly',
+      'touched',
+      'max',
+      'maxlength',
+      'maxLength',
+      'min',
+      'minLength',
+      'minlength',
+      'pattern',
+      'required',
+      'type',
+    ];
+
+    // `type` can't be bound, but is allowed as a static attribute.
+    this.unsupportedBindingFields = new Set(commonUnsupportedNames);
   }
 
   override get optional() {
@@ -787,6 +795,22 @@ abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
     for (const input of inputs) {
       if (input.type === BindingType.Property && this.unsupportedBindingFields.has(input.name)) {
         this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, input);
+      } else if (
+        input.type === BindingType.Attribute &&
+        this.unsupportedBindingFields.has(input.name.toLowerCase())
+      ) {
+        this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, input);
+      }
+    }
+
+    if (!(this.node instanceof TmplAstHostElement)) {
+      for (const attr of this.node.attributes) {
+        const name = attr.name.toLowerCase();
+
+        // `type` is allowed to be a static attribute.
+        if (name !== 'type' && this.unsupportedBindingFields.has(name)) {
+          this.tcb.oobRecorder.formFieldUnsupportedBinding(this.tcb.id, attr);
+        }
       }
     }
 
