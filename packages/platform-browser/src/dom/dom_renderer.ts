@@ -166,13 +166,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
     }
 
     const renderer = this.getOrCreateRenderer(element, type);
-    // Renderers have different logic due to different encapsulation behaviours.
-    // Ex: for emulated, an attribute is added to the element.
-    if (renderer instanceof EmulatedEncapsulationDomRenderer2) {
-      renderer.applyToHost(element);
-    } else if (renderer instanceof NoneEncapsulationDomRenderer) {
-      renderer.applyStyles();
-    }
+    renderer.applyStyles?.();
 
     return renderer;
   }
@@ -193,6 +187,7 @@ export class DomRendererFactory2 implements RendererFactory2, OnDestroy {
         case ViewEncapsulation.Emulated:
           renderer = new EmulatedEncapsulationDomRenderer2(
             eventManager,
+            element,
             sharedStylesHost,
             type,
             this.appId,
@@ -267,7 +262,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   constructor(
     private readonly eventManager: EventManager,
-    private readonly doc: Document,
+    protected readonly doc: Document,
     protected readonly ngZone: NgZone,
     private readonly tracingService: TracingService<TracingSnapshot> | null,
   ) {}
@@ -496,35 +491,37 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   constructor(
     eventManager: EventManager,
     private hostEl: any,
-    component: RendererType2,
+    private readonly component: RendererType2,
     doc: Document,
     ngZone: NgZone,
-    nonce: string | null,
+    private readonly nonce: string | null,
     tracingService: TracingService<TracingSnapshot> | null,
     private sharedStylesHost?: SharedStylesHost,
   ) {
     super(eventManager, doc, ngZone, tracingService);
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+  }
 
+  applyStyles(): void {
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
     // This is optional as it is not used by ExperimentalIsolatedShadowDom.
     if (this.sharedStylesHost) {
       this.sharedStylesHost.addHost(this.shadowRoot);
     }
-    let styles = component.styles;
+    let styles = this.component.styles;
     if (ngDevMode) {
       // We only do this in development, as for production users should not add CSS sourcemaps to components.
-      const baseHref = getDOM().getBaseHref(doc) ?? '';
+      const baseHref = getDOM().getBaseHref(this.doc) ?? '';
       styles = addBaseHrefToCssSourceMap(baseHref, styles);
     }
 
-    styles = shimStylesContent(component.id, styles);
+    styles = shimStylesContent(this.component.id, styles);
 
     for (const style of styles) {
       const styleEl = document.createElement('style');
 
-      if (nonce) {
-        styleEl.setAttribute('nonce', nonce);
+      if (this.nonce) {
+        styleEl.setAttribute('nonce', this.nonce);
       }
 
       styleEl.textContent = style;
@@ -537,12 +534,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     // the manual addition of embedded styles directly above, any external stylesheets
     // must be manually added here to ensure ShadowDOM components are correctly styled.
     // TODO: Consider reworking the DOM Renderers to consolidate style handling.
-    const styleUrls = component.getExternalStyles?.();
+    const styleUrls = this.component.getExternalStyles?.();
     if (styleUrls) {
       for (const styleUrl of styleUrls) {
-        const linkEl = createLinkElement(styleUrl, doc);
-        if (nonce) {
-          linkEl.setAttribute('nonce', nonce);
+        const linkEl = createLinkElement(styleUrl, this.doc);
+        if (this.nonce) {
+          linkEl.setAttribute('nonce', this.nonce);
         }
         this.shadowRoot.appendChild(linkEl);
       }
@@ -622,6 +619,7 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
 
   constructor(
     eventManager: EventManager,
+    private readonly hostEl: Element,
     sharedStylesHost: SharedStylesHost,
     component: RendererType2,
     appId: string,
@@ -645,9 +643,9 @@ class EmulatedEncapsulationDomRenderer2 extends NoneEncapsulationDomRenderer {
     this.hostAttr = shimHostAttribute(compId);
   }
 
-  applyToHost(element: any): void {
-    this.applyStyles();
-    this.setAttribute(element, this.hostAttr, '');
+  override applyStyles(): void {
+    super.applyStyles();
+    this.setAttribute(this.hostEl, this.hostAttr, '');
   }
 
   override createElement(parent: any, name: string): Element {
