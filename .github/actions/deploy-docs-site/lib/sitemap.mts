@@ -14,7 +14,7 @@ export async function generateSitemap(deployment: Deployment, distDir: string) {
     .map(
       (route) => `
     <url>
-      <loc>${join(deployment.servingUrl, route)}</loc>
+      <loc>${deployment.servingUrl}${route}</loc>
       <lastmod>${lastModifiedTimestamp}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
