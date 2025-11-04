@@ -33445,7 +33445,7 @@ async function deployToFirebase(deployment, configPath, stagingDir) {
   console.log("Preparing for deployment to firebase...");
   const deployConfigPath = join(stagingDir, "firebase.json");
   const config = JSON.parse(await readFile(configPath, { encoding: "utf-8" }));
-  config["hosting"]["public"] = "./dist";
+  config["hosting"]["public"] = "./browser";
   await writeFile(deployConfigPath, JSON.stringify(config, null, 2));
   firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, stagingDir);
   firebase(`target:apply --config ${deployConfigPath} --project angular-dev-site hosting angular-docs ${deployment.destination}`, stagingDir);
@@ -42823,7 +42823,7 @@ async function deployDocs() {
   const currentBranch = matchedRef[1];
   const configPath = (0, import_core3.getInput)("configPath");
   const stagingDir = await mkdtemp2(join4(tmpdir2(), "deploy-directory"));
-  await cp((0, import_core3.getInput)("distDir"), join4(stagingDir, "dist"), { recursive: true });
+  await cp((0, import_core3.getInput)("distDir"), stagingDir, { recursive: true });
   spawnSync3(`chmod 777 -R ${stagingDir}`, { encoding: "utf-8", shell: true });
   const deployment = (await getDeployments()).get(currentBranch);
   if (deployment === void 0) {

@@ -23,7 +23,7 @@ export async function deployToFirebase(
   const config = JSON.parse(await readFile(configPath, {encoding: 'utf-8'})) as {
     hosting: {public: string};
   };
-  config['hosting']['public'] = './dist';
+  config['hosting']['public'] = './browser';
 
   await writeFile(deployConfigPath, JSON.stringify(config, null, 2));
 
