@@ -18110,7 +18110,7 @@ var require_cjs = __commonJS({
 var require_lib2 = __commonJS({
   ""(exports, module2) {
     var { isexe, sync: isexeSync } = require_cjs();
-    var { join: join3, delimiter, sep: sep2, posix } = __require("path");
+    var { join: join5, delimiter, sep: sep2, posix } = __require("path");
     var isWindows = process.platform === "win32";
     var rSlash = new RegExp(`[${posix.sep}${sep2 === posix.sep ? "" : sep2}]`.replace(/(\\)/g, "\\$1"));
     var rRel = new RegExp(`^\\.${rSlash.source}`);
@@ -18139,7 +18139,7 @@ var require_lib2 = __commonJS({
     var getPathPart = (raw, cmd) => {
       const pathPart = /^".*"$/.test(raw) ? raw.slice(1, -1) : raw;
       const prefix = !pathPart && rRel.test(cmd) ? cmd.slice(0, 2) : "";
-      return prefix + join3(pathPart, cmd);
+      return prefix + join5(pathPart, cmd);
     };
     var which2 = async (cmd, opt = {}) => {
       const { pathEnv, pathExt, pathExtExe } = getPathInfo(cmd, opt);
@@ -33413,7 +33413,7 @@ var import_core3 = __toESM(require_core(), 1);
 var import_github3 = __toESM(require_github(), 1);
 
 // .github/actions/deploy-docs-site/lib/deploy.mjs
-import { cp, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
@@ -33437,24 +33437,21 @@ var githubReleaseTrainReadToken = (0, import_core.getInput)("githubReleaseTrainR
 });
 
 // .github/actions/deploy-docs-site/lib/deploy.mjs
-async function deployToFirebase(deployment, configPath, distDirPath) {
+async function deployToFirebase(deployment, configPath, stagingDir) {
   if (deployment.destination == void 0) {
     console.log(`No deployment necessary for docs created from: ${deployment.branch}`);
     return;
   }
   console.log("Preparing for deployment to firebase...");
-  const tmpDeployDir = await mkdtemp(join(tmpdir(), "deploy-directory"));
-  const deployConfigPath = join(tmpDeployDir, "firebase.json");
+  const deployConfigPath = join(stagingDir, "firebase.json");
   const config = JSON.parse(await readFile(configPath, { encoding: "utf-8" }));
   config["hosting"]["public"] = "./dist";
   await writeFile(deployConfigPath, JSON.stringify(config, null, 2));
-  await cp(distDirPath, join(tmpDeployDir, "dist"), { recursive: true });
-  spawnSync(`chmod 777 -R ${tmpDeployDir}`, { encoding: "utf-8", shell: true });
-  firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, tmpDeployDir);
-  firebase(`target:apply --config ${deployConfigPath} --project angular-dev-site hosting angular-docs ${deployment.destination}`, tmpDeployDir);
-  firebase(`deploy --config ${deployConfigPath} --project angular-dev-site --only hosting --non-interactive`, tmpDeployDir);
-  firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, tmpDeployDir);
-  await rm(tmpDeployDir, { recursive: true });
+  firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, stagingDir);
+  firebase(`target:apply --config ${deployConfigPath} --project angular-dev-site hosting angular-docs ${deployment.destination}`, stagingDir);
+  firebase(`deploy --config ${deployConfigPath} --project angular-dev-site --only hosting --non-interactive`, stagingDir);
+  firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, stagingDir);
+  await rm(stagingDir, { recursive: true });
 }
 async function setupRedirect(deployment) {
   if (deployment.redirect === void 0) {
@@ -42743,7 +42740,8 @@ async function getDeployments() {
   [...ltsBranches.active, ...ltsBranches.inactive].forEach((branch) => {
     docSites.set(branch.name, {
       branch: branch.name,
-      destination: `v${branch.version.major}-angular-dev`
+      destination: `v${branch.version.major}-angular-dev`,
+      servingUrl: `https://v${branch.version.major}.angular.dev`
     });
   });
   docSites.set(releaseTrains.latest.branchName, {
@@ -42752,11 +42750,13 @@ async function getDeployments() {
       from: `v${releaseTrains.latest.version.major}-angular-dev`,
       to: "https://angular.dev"
     },
+    servingUrl: "https://angular.dev",
     destination: "angular-dev-site"
   });
   if (releaseTrains.releaseCandidate) {
     docSites.set(releaseTrains.next.branchName, {
-      branch: releaseTrains.next.branchName
+      branch: releaseTrains.next.branchName,
+      servingUrl: "https://next.angular.dev"
     });
     docSites.set(releaseTrains.releaseCandidate.branchName, {
       branch: releaseTrains.releaseCandidate.branchName,
@@ -42764,18 +42764,45 @@ async function getDeployments() {
       redirect: {
         from: `v${releaseTrains.releaseCandidate.version.major}-angular-dev`,
         to: "https://next.angular.dev"
-      }
+      },
+      servingUrl: "https://next.angular.dev"
     });
   } else {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
-      destination: "next-angular-dev"
+      destination: "next-angular-dev",
+      servingUrl: "https://next.angular.dev"
     });
   }
   return docSites;
 }
 
+// .github/actions/deploy-docs-site/lib/sitemap.mjs
+import { join as join3 } from "path";
+import { readFileSync, writeFileSync } from "fs";
+async function generateSitemap(deployment, distDir) {
+  const lastModifiedTimestamp = (/* @__PURE__ */ new Date()).toISOString();
+  const routes = JSON.parse(readFileSync(join3(distDir, "prerendered-routes.json"), "utf-8"));
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${Object.keys(routes.routes).map((route) => `
+    <url>
+      <loc>${join3(deployment.servingUrl, route)}</loc>
+      <lastmod>${lastModifiedTimestamp}</lastmod>
+      <changefreq>daily</changefreq>
+      <priority>1.0</priority>
+    </url>
+  `).join("")}
+  </urlset>`;
+  writeFileSync(join3(distDir, "browser", "sitemap.xml"), sitemap, "utf-8");
+  console.log(`Generated sitemap with ${Object.keys(routes.routes).length} entries.`);
+}
+
 // .github/actions/deploy-docs-site/lib/main.mts
+import { spawnSync as spawnSync3 } from "child_process";
+import { cp, mkdtemp as mkdtemp2 } from "fs/promises";
+import { tmpdir as tmpdir2 } from "os";
+import { join as join4 } from "path";
 var refMatcher = /refs\/heads\/(.*)/;
 async function deployDocs() {
   setConfig({
@@ -42795,7 +42822,9 @@ async function deployDocs() {
   }
   const currentBranch = matchedRef[1];
   const configPath = (0, import_core3.getInput)("configPath");
-  const distDir = (0, import_core3.getInput)("distDir");
+  const stagingDir = await mkdtemp2(join4(tmpdir2(), "deploy-directory"));
+  await cp((0, import_core3.getInput)("distDir"), join4(stagingDir, "dist"), { recursive: true });
+  spawnSync3(`chmod 777 -R ${stagingDir}`, { encoding: "utf-8", shell: true });
   const deployment = (await getDeployments()).get(currentBranch);
   if (deployment === void 0) {
     console.log(`Current branch (${currentBranch}) does not deploy a documentation site.`);
@@ -42821,7 +42850,8 @@ async function deployDocs() {
     console.log(`  From: ${deployment.redirect.from}`);
     console.log(`  To: ${deployment.redirect.to}`);
   }
-  await deployToFirebase(deployment, configPath, distDir);
+  await generateSitemap(deployment, stagingDir);
+  await deployToFirebase(deployment, configPath, stagingDir);
   await setupRedirect(deployment);
 }
 if (import_github3.context.repo.owner === "angular") {
