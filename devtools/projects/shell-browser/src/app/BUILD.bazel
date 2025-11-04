@@ -92,6 +92,11 @@ ts_project(
 )
 
 ts_project(
+    name = "communication",
+    srcs = ["communication.ts"],
+)
+
+ts_project(
     name = "chrome_message_bus",
     srcs = [
         "chrome-message-bus.ts",
@@ -150,6 +155,7 @@ ts_project(
     ],
     deps = [
         ":chrome_window_extensions",
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/ng-devtools-backend",
         "//devtools/projects/ng-devtools-backend/src/lib:highlighter",
@@ -163,6 +169,7 @@ ts_project(
     ],
     deps = [
         ":chrome_message_bus",
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
     ],
@@ -174,6 +181,7 @@ ts_project(
         "detect-angular-for-extension-icon.ts",
     ],
     deps = [
+        ":communication",
         ":same_page_message_bus",
         "//devtools/projects/protocol",
         "//devtools/projects/shared-utils",
