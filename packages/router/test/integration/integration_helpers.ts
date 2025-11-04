@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {CommonModule} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
 import {Component, NgModule, Type, signal} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
@@ -27,6 +27,19 @@ import {map} from 'rxjs/operators';
 import {timeout} from '../helpers';
 
 export const ROUTER_DIRECTIVES = [RouterLink, RouterLinkActive, RouterOutlet];
+
+/**
+ * Helper that normalizes differences between history and navigation APIs for testing
+ * location changes _outside_ the Router APIs.
+ */
+export function simulateLocationChange(url: string, browserAPI: 'history' | 'navigation') {
+  const location = TestBed.inject(Location);
+  // With navigation API, this is intercepted by the Router. With History, this is unobservable and needs location.go for the popstate event
+  location.go(url);
+  if (browserAPI === 'history') {
+    location.historyGo(0);
+  }
+}
 
 export function expectEvents(events: Event[], pairs: any[]) {
   expect(events.length).toEqual(pairs.length);

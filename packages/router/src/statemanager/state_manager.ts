@@ -39,7 +39,7 @@ export abstract class StateManager {
   protected urlHandlingStrategy = inject(UrlHandlingStrategy);
   protected urlUpdateStrategy = this.options.urlUpdateStrategy || 'deferred';
 
-  private currentUrlTree = new UrlTree();
+  protected currentUrlTree = new UrlTree();
   /**
    * Returns the currently activated `UrlTree`.
    *
@@ -53,7 +53,7 @@ export abstract class StateManager {
     return this.currentUrlTree;
   }
 
-  private rawUrlTree = this.currentUrlTree;
+  protected rawUrlTree = this.currentUrlTree;
   /**
    * Returns a `UrlTree` that is represents what the browser is actually showing.
    *
@@ -104,17 +104,20 @@ export abstract class StateManager {
     }
   }
 
-  private routerState = createEmptyState(null);
+  protected routerState = createEmptyState(null);
 
   /** Returns the current RouterState. */
   getRouterState(): RouterState {
     return this.routerState;
   }
 
-  private stateMemento = this.createStateMemento();
+  private _stateMemento = this.createStateMemento();
+  get stateMemento() {
+    return this._stateMemento;
+  }
 
   protected updateStateMemento(): void {
-    this.stateMemento = this.createStateMemento();
+    this._stateMemento = this.createStateMemento();
   }
 
   private createStateMemento() {

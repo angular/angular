@@ -1180,6 +1180,10 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
+    devDependencies:
+      '@types/dom-navigation':
+        specifier: ^1.0.5
+        version: 1.0.6
 
   packages/service-worker:
     dependencies:

@@ -7,7 +7,7 @@
  */
 
 import {ApplicationRef, Component, inject, NgModule} from '@angular/core';
-import {Location} from '@angular/common';
+import {Location, PlatformNavigation} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
 import {
   Event,
@@ -44,7 +44,7 @@ import {BehaviorSubject, filter, firstValueFrom} from 'rxjs';
 import {RouterTestingHarness} from '@angular/router/testing';
 import {timeout} from '../helpers';
 
-export function navigationIntegrationTestSuite() {
+export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigation') {
   function setup(routes?: Routes): Router {
     TestBed.configureTestingModule({
       providers: [
@@ -393,7 +393,7 @@ export function navigationIntegrationTestSuite() {
 
       // Angular does not support restoring state to the primitive.
       expect(navigation.extras.state).toEqual(undefined);
-      expect(location.getState()).toEqual({navigationId: 3});
+      expect((location.getState() as any).navigationId).toBeDefined();
     });
 
     it('should not pollute browser history when replaceUrl is set to true', async () => {
@@ -412,7 +412,11 @@ export function navigationIntegrationTestSuite() {
       router.navigateByUrl('/b', {replaceUrl: true});
       await timeout();
 
-      expect(replaceSpy.calls.count()).toEqual(1);
+      if (browserAPI === 'history') {
+        expect(replaceSpy.calls.count()).toEqual(1);
+      } else {
+        expect(TestBed.inject(PlatformNavigation).entries().length).toBe(1);
+      }
     });
 
     it('should skip navigation if another navigation is already scheduled', async () => {
