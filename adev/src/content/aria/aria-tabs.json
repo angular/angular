@@ -136,8 +136,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 67,
-        "endLine": 110
+        "startLine": 72,
+        "endLine": 115
       }
     },
     {
@@ -192,16 +192,16 @@
           "isRequiredInput": false
         },
         {
-          "name": "skipDisabled",
+          "name": "softDisabled",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
             "input"
           ],
-          "description": "Whether disabled items in the list should be skipped when navigating.",
+          "description": "Whether to allow disabled items to receive focus.",
           "jsdocTags": [],
-          "inputAlias": "skipDisabled",
+          "inputAlias": "softDisabled",
           "isRequiredInput": false
         },
         {
@@ -471,8 +471,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 117,
-        "endLine": 219
+        "startLine": 122,
+        "endLine": 224
       }
     },
     {
@@ -619,8 +619,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 222,
-        "endLine": 282
+        "startLine": 227,
+        "endLine": 287
       }
     },
     {
@@ -725,8 +725,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 292,
-        "endLine": 344
+        "startLine": 297,
+        "endLine": 349
       }
     },
     {
@@ -741,20 +741,12 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 349,
-        "endLine": 354
+        "startLine": 354,
+        "endLine": 359
       }
     }
   ],
   "symbols": [
-    [
-      "DeferredContent",
-      "@angular/aria/deferred-content"
-    ],
-    [
-      "DeferredContentAware",
-      "@angular/aria/deferred-content"
-    ],
     [
       "_IdGenerator",
       "@angular/cdk/a11y"
@@ -828,6 +820,14 @@
       "@angular/aria/private"
     ],
     [
+      "DeferredContent",
+      "@angular/aria/private"
+    ],
+    [
+      "DeferredContentAware",
+      "@angular/aria/private"
+    ],
+    [
       "Tabs",
       "@angular/aria/tabs"
     ],
@@ -888,7 +888,7 @@
       "@angular/aria/tabs"
     ],
     [
-      "TabList.skipDisabled",
+      "TabList.softDisabled",
       "@angular/aria/tabs"
     ],
     [
