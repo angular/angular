@@ -162,8 +162,9 @@ $code-font-size: 0.875rem;
       }
     }
 
-    &.docs-no-border {
+    &.embedded {
       border-width: 0;
+      border-radius: 0;
     }
   }
 

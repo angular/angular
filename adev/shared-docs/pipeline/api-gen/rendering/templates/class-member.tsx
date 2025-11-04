@@ -72,7 +72,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
       </header>
       {body}
       {isInterfaceEntry(member) ? (
-        <CodeTableOfContents entry={member} hideCopyButton={true} />
+        <CodeTableOfContents entry={member} hideCopyButton={true} embedded={true} />
       ) : (
         <></>
       )}
