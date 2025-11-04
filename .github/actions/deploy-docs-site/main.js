@@ -33478,7 +33478,7 @@ async function deployToFirebase(deployment, configPath, stagingDir) {
   console.log("Preparing for deployment to firebase...");
   const deployConfigPath = join(stagingDir, "firebase.json");
   const config = JSON.parse(await readFile(configPath, { encoding: "utf-8" }));
-  config["hosting"]["public"] = "./dist";
+  config["hosting"]["public"] = "./browser";
   await writeFile(deployConfigPath, JSON.stringify(config, null, 2));
   firebase(`target:clear --config ${deployConfigPath} --project angular-dev-site hosting angular-docs`, stagingDir);
   firebase(`target:apply --config ${deployConfigPath} --project angular-dev-site hosting angular-docs ${deployment.destination}`, stagingDir);
@@ -48162,7 +48162,7 @@ async function getDeployments() {
     docSites.set(branch.name, {
       branch: branch.name,
       destination: `v${branch.version.major}-angular-dev`,
-      servingUrl: `https://v${branch.version.major}.angular.dev`
+      servingUrl: `https://v${branch.version.major}.angular.dev/`
     });
   });
   docSites.set(releaseTrains.latest.branchName, {
@@ -48171,13 +48171,13 @@ async function getDeployments() {
       from: `v${releaseTrains.latest.version.major}-angular-dev`,
       to: "https://angular.dev"
     },
-    servingUrl: "https://angular.dev",
+    servingUrl: "https://angular.dev/",
     destination: "angular-dev-site"
   });
   if (releaseTrains.releaseCandidate) {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
     docSites.set(releaseTrains.releaseCandidate.branchName, {
       branch: releaseTrains.releaseCandidate.branchName,
@@ -48186,13 +48186,13 @@ async function getDeployments() {
         from: `v${releaseTrains.releaseCandidate.version.major}-angular-dev`,
         to: "https://next.angular.dev"
       },
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
   } else {
     docSites.set(releaseTrains.next.branchName, {
       branch: releaseTrains.next.branchName,
       destination: "next-angular-dev",
-      servingUrl: "https://next.angular.dev"
+      servingUrl: "https://next.angular.dev/"
     });
   }
   return docSites;
@@ -48208,7 +48208,7 @@ async function generateSitemap(deployment, distDir) {
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${Object.keys(routes.routes).map((route) => `
     <url>
-      <loc>${join4(deployment.servingUrl, route)}</loc>
+      <loc>${deployment.servingUrl}${route}</loc>
       <lastmod>${lastModifiedTimestamp}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
@@ -48244,7 +48244,7 @@ async function deployDocs() {
   const currentBranch = matchedRef[1];
   const configPath = (0, import_core3.getInput)("configPath");
   const stagingDir = await mkdtemp2(join5(tmpdir2(), "deploy-directory"));
-  await cp((0, import_core3.getInput)("distDir"), join5(stagingDir, "dist"), { recursive: true });
+  await cp((0, import_core3.getInput)("distDir"), stagingDir, { recursive: true });
   spawnSync3(`chmod 777 -R ${stagingDir}`, { encoding: "utf-8", shell: true });
   const deployment = (await getDeployments()).get(currentBranch);
   if (deployment === void 0) {

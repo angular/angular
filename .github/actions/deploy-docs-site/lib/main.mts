@@ -36,7 +36,7 @@ async function deployDocs() {
   const stagingDir = await mkdtemp(join(tmpdir(), 'deploy-directory'));
 
   // Copy all files from the distDir into stagingDir and modify the permissions for editing
-  await cp(getInput('distDir'), join(stagingDir, 'dist'), {recursive: true});
+  await cp(getInput('distDir'), stagingDir, {recursive: true});
   spawnSync(`chmod 777 -R ${stagingDir}`, {encoding: 'utf-8', shell: true});
 
   const deployment = (await getDeployments()).get(currentBranch);
