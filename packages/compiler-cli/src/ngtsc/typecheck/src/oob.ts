@@ -29,6 +29,7 @@ import {
   TmplAstVariable,
   TmplAstViewportDeferredTrigger,
   ParseSourceSpan,
+  BindingType,
 } from '@angular/compiler';
 import ts from 'typescript';
 
@@ -241,7 +242,10 @@ export interface OutOfBandDiagnosticRecorder {
   /**
    * Reports an unsupported binding on a form `Field` node.
    */
-  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void;
+  formFieldUnsupportedBinding(
+    id: TypeCheckId,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute,
+  ): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -857,7 +861,29 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
     );
   }
 
-  formFieldUnsupportedBinding(id: TypeCheckId, node: TmplAstBoundAttribute): void {
+  formFieldUnsupportedBinding(
+    id: TypeCheckId,
+    node: TmplAstBoundAttribute | TmplAstTextAttribute,
+  ): void {
+    let message: string;
+
+    if (node instanceof TmplAstBoundAttribute) {
+      let name: string;
+
+      if (node.type === BindingType.Property) {
+        name = `[${node.name}]`;
+      } else if (node.type === BindingType.Attribute) {
+        name = `[attr.${node.name}]`;
+      } else {
+        // We shouldn't hit this, but we have this logic as a fallback.
+        name = node.name;
+      }
+
+      message = `Binding to '${name}' is not allowed on nodes using the '[field]' directive`;
+    } else {
+      message = `Setting the '${node.name}' attribute is not allowed on nodes using the '[field]' directive`;
+    }
+
     this._diagnostics.push(
       makeTemplateDiagnostic(
         id,
@@ -865,7 +891,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         node.sourceSpan,
         ts.DiagnosticCategory.Error,
         ngErrorCode(ErrorCode.FORM_FIELD_UNSUPPORTED_BINDING),
-        `Binding to '${node.name}' is not allowed on nodes using the [field] directive`,
+        message,
       ),
     );
   }
