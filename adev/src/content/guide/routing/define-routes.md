@@ -245,8 +245,8 @@ export const routes: Routes = [
     loadComponent: () => {
       const flags = inject(FeatureFlags);
       return flags.isPremium
-        ? import('./dashboard/premium-dashboard').then(c => c.PremiumDashboard)
-        : import('./dashboard/basic-dashboard').then(c => c.BasicDashboard);
+        ? import('./dashboard/premium-dashboard').then(m => m.PremiumDashboard)
+        : import('./dashboard/basic-dashboard').then(m => m.BasicDashboard);
     },
   },
 ];
