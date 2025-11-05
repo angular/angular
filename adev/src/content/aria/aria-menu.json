@@ -10,6 +10,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
+          "jsdocTags": []
+        },
+        {
           "name": "element",
           "type": "HTMLButtonElement",
           "memberType": "property",
@@ -91,8 +101,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 43,
-        "endLine": 87
+        "startLine": 42,
+        "endLine": 88
       }
     },
     {
@@ -117,7 +127,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A signal wrapper for directionality.",
+          "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
           "jsdocTags": []
         },
         {
@@ -296,8 +306,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 105,
-        "endLine": 245
+        "startLine": 106,
+        "endLine": 241
       }
     },
     {
@@ -322,7 +332,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A signal wrapper for directionality.",
+          "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
           "jsdocTags": []
         },
         {
@@ -404,8 +414,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 254,
-        "endLine": 329
+        "startLine": 250,
+        "endLine": 320
       }
     },
     {
@@ -560,8 +570,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 336,
-        "endLine": 406
+        "startLine": 327,
+        "endLine": 397
       }
     },
     {
@@ -576,8 +586,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 409,
-        "endLine": 414
+        "startLine": 400,
+        "endLine": 405
       }
     }
   ],
@@ -667,10 +677,6 @@
       "@angular/cdk/a11y"
     ],
     [
-      "toSignal",
-      "@angular/core/rxjs-interop"
-    ],
-    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
@@ -696,6 +702,10 @@
     ],
     [
       "MenuTrigger",
+      "@angular/aria/menu"
+    ],
+    [
+      "MenuTrigger.textDirection",
       "@angular/aria/menu"
     ],
     [
