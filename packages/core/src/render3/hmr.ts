@@ -247,7 +247,7 @@ function recreateLView(
     // with the clone and use it for the newly-created LView.
     if (
       oldDef.encapsulation === ViewEncapsulation.ShadowDom ||
-      oldDef.encapsulation === ViewEncapsulation.IsolatedShadowDom
+      oldDef.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
     ) {
       const newHost = host.cloneNode(false) as HTMLElement;
       host.replaceWith(newHost);

@@ -890,7 +890,7 @@ export class ComponentDecoratorHandler
 
     if (
       (encapsulation === ViewEncapsulation.ShadowDom ||
-        encapsulation === ViewEncapsulation.IsolatedShadowDom) &&
+        encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom) &&
       metadata.selector !== null
     ) {
       const selectorError = checkCustomElementSelectorForErrors(metadata.selector);
