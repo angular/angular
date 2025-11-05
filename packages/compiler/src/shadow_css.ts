@@ -1025,14 +1025,50 @@ class SafeSelector {
       return replaceBy;
     });
 
-    // Replaces the expression in `:nth-child(2n + 1)` with a placeholder.
-    // WS and "+" would otherwise be interpreted as selector separators.
-    this._content = selector.replace(/(:nth-[-\w]+)(\([^)]+\))/g, (_, pseudo, exp) => {
-      const replaceBy = `__ph-${this.index}__`;
-      this.placeholders.push(exp);
-      this.index++;
-      return pseudo + replaceBy;
-    });
+    // Replaces the expression in :nth-child(2n + 1) with a placeholder.
+    // This prevents whitespace and the "+" operator from being interpreted
+    // as selector separators or combinators during the scoping process.
+    // Also handles :nth-of-type, :nth-last-child, :nth-last-of-type, etc.
+    // Example: ":nth-child(2n + 1)" becomes ":nth-child__ph-0__"
+    // The expression "(2n + 1)" is stored in placeholders array and
+    // restored later via restore() method after selector scoping is complete.
+
+    let result = selector;
+    const nthPseudoPattern = /:nth-(?:child|last-child|of-type|last-of-type)\(/g;
+    let match;
+    let offset = 0;
+
+    while ((match = nthPseudoPattern.exec(selector)) !== null) {
+      let openParens = 1;
+      let index = match.index + match[0].length;
+      const startIndex = match.index;
+
+      while (index < selector.length && openParens > 0) {
+        const char = selector[index];
+        if (char === '(') openParens++;
+        else if (char === ')') openParens--;
+        index++;
+      }
+
+      if (openParens === 0) {
+        const fullExpression = selector.slice(startIndex, index);
+        const pseudoFunction = selector.slice(startIndex, match.index + match[0].length - 1);
+        const content = selector.slice(match.index + match[0].length, index - 1);
+
+        const replaceBy = `__ph-${this.index}__`;
+        this.placeholders.push(`(${content})`);
+        this.index++;
+
+        result =
+          result.slice(0, startIndex + offset) +
+          pseudoFunction +
+          replaceBy +
+          result.slice(index + offset);
+        offset += replaceBy.length - fullExpression.length + pseudoFunction.length;
+      }
+    }
+
+    this._content = result;
   }
 
   restore(content: string): string {

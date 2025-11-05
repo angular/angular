@@ -100,6 +100,38 @@ describe('ShadowCss, :host and :host-context', () => {
       );
     });
 
+    it('should handle :host with :nth-child containing nested pseudo-selectors', () => {
+      // Bug case: nested :not() inside :nth-child()
+      expect(shim(':host:nth-child(1 of *:not(.whatever)) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:nth-child(1 of *:not(.whatever)) {}',
+      );
+
+      // More complex nesting
+      expect(shim(':host:nth-child(2n+1 of :not(.foo, .bar)) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:nth-child(2n+1 of :not(.foo, .bar)) {}',
+      );
+
+      // Deeply nested
+      expect(shim(':host:nth-child(1 of :is(.a, :not(.b))) {}', 'contenta', 'a-host')).toEqualCss(
+        '[a-host]:nth-child(1 of :is(.a, :not(.b))) {}',
+      );
+
+      // With descendants
+      expect(
+        shim(':host:nth-child(1 of *:not(.whatever)) .child {}', 'contenta', 'a-host'),
+      ).toEqualCss('[a-host]:nth-child(1 of *:not(.whatever)) .child[contenta] {}');
+    });
+
+    it('should handle regular selectors with :nth-child containing nested pseudo-selectors', () => {
+      expect(shim('.foo:nth-child(1 of *:not(.bar)) {}', 'contenta', 'a-host')).toEqualCss(
+        '.foo[contenta]:nth-child(1 of *:not(.bar)) {}',
+      );
+
+      expect(shim('div:nth-last-child(3 of :is(.a, .b)) {}', 'contenta', 'a-host')).toEqualCss(
+        'div[contenta]:nth-last-child(3 of :is(.a, .b)) {}',
+      );
+    });
+
     // see b/63672152
     it('should handle unexpected selectors in the most reasonable way', () => {
       expect(shim('cmp:host {}', 'contenta', 'a-host')).toEqualCss('cmp[a-host] {}');
