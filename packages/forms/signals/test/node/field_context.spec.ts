@@ -9,12 +9,14 @@
 import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
+  aggregateMetadata,
   applyEach,
   FieldContext,
-  SchemaPath,
-  SchemaPathTree,
   form,
   PathKind,
+  reducedMetadataKey,
+  SchemaPath,
+  SchemaPathTree,
   validate,
 } from '../../public_api';
 
@@ -128,6 +130,27 @@ describe('Field Context', () => {
       1,
       'RuntimeError: cannot access index, parent field is not an array',
     ]);
+  });
+
+  it('pathKeys', () => {
+    const KEYS = reducedMetadataKey(
+      (_: readonly string[], n: readonly string[]) => n,
+      () => [],
+    );
+    const f = form(
+      signal({x: [1]}),
+      (p) => {
+        aggregateMetadata(p, KEYS, ({pathKeys}) => pathKeys());
+        aggregateMetadata(p.x, KEYS, ({pathKeys}) => pathKeys());
+        applyEach(p.x, (it) => {
+          aggregateMetadata(it, KEYS, ({pathKeys}) => pathKeys());
+        });
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+    expect(f().metadata(KEYS)()).toEqual([]);
+    expect(f.x().metadata(KEYS)()).toEqual(['x']);
+    expect(f.x[0]().metadata(KEYS)()).toEqual(['x', '0']);
   });
 
   it('valueOf', () => {
