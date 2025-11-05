@@ -13,10 +13,10 @@ import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
+import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
+import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
 import type {
-  SchemaPath,
   FieldTree,
   LogicFn,
   OneOrMany,
@@ -24,10 +24,10 @@ import type {
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
+  SchemaPath,
   TreeValidationResult,
 } from './types';
 import type {ValidationError} from './validation_errors';
-import {normalizeFormArgs} from '../util/normalize_form_args';
 
 /**
  * Options that may be specified when creating a form.

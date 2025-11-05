@@ -153,26 +153,23 @@ export type AsyncValidationResult<E extends ValidationError = ValidationError> =
  * @experimental 21.0.0
  */
 export type FieldTree<TModel, TKey extends string | number = string | number> =
-  // Unwrapping:
-  // Intentionally using distributive Conditional Types here:
-  // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+  // Note: We use `[TModel]` in several places below to avoid the condition from being distributed
+  // over a recursive union type, which seems to result in infinite type recursion. By adding the
+  // tuple we're not testing a naked type parameter, and thus the condition is not distributed.
+  // (See https://typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
+  // The example below demonstrates the problematic situation we want to avoid:
+  //
+  // ```
+  // type RecursiveType = (number | RecursiveType)[]
+  // type Test = FieldTree<RecursiveType> // Infinite type recursion if condition distributes.
+  // ```
   (() => [TModel] extends [AbstractControl]
     ? CompatFieldState<TModel, TKey>
     : FieldState<TModel, TKey>) &
     // Children:
-    (TModel extends AbstractControl
+    ([TModel] extends [AbstractControl]
       ? unknown
-      : // Note: We use `TValue & {}` below to avoid the condition from being distributed over a recursive
-        // union type, which seems to result in infinite type recursion. By adding `& {}` we're not
-        // testing a naked type parameter, and thus the condition is not distributed.
-        // (See https://www.typescriptlang.org/docs/handbook/2/conditional-types.html)
-        // The example below demonstrates the problematic situation we want to avoid:
-        //
-        // ```
-        // type RecursiveType = (number | RecursiveType)[]
-        // type Test = FieldTree<RecursiveType> // Infinite type recursion if condition distributes.
-        // ```
-        TModel & {} extends Array<infer U>
+      : [TModel] extends [Array<infer U>]
         ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
         : TModel extends Record<string, any>
           ? Subfields<TModel>
