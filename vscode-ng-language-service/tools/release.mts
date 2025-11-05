@@ -69,7 +69,7 @@ async function main(): Promise<void> {
     branchToReleaseFrom = currentBranch.trim();
   }
 
-  if (branchToReleaseFrom !== 'main' && !/\d+\.d+\.x/.test(branchToReleaseFrom)) {
+  if (branchToReleaseFrom !== 'main' && !/^\d+\.\d+\.x$/.test(branchToReleaseFrom)) {
     throw new Error(`Cannot release from non releasable branch ${branchToReleaseFrom}.`);
   }
 
