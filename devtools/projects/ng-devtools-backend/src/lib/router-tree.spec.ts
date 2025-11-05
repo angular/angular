@@ -199,4 +199,104 @@ describe('parseRoutes', () => {
       'isActive': true,
     } as any);
   });
+
+  it('should handle guards with named functions', () => {
+    function canActivateGuard() {
+      return true;
+    }
+
+    const nestedRouter = {
+      config: [
+        {
+          path: 'protected',
+          component: 'ProtectedComponent',
+          canActivate: [canActivateGuard],
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+
+    expect(parsedRoutes.children![0].canActivateGuards).toEqual(['canActivateGuard()']);
+  });
+
+  it('should handle guards with arrow functions', () => {
+    const arrowGuard = () => true;
+
+    const nestedRouter = {
+      config: [
+        {
+          path: 'protected',
+          component: 'ProtectedComponent',
+          canActivate: [arrowGuard],
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+
+    expect(parsedRoutes.children![0].canActivateGuards).toEqual(['arrowGuard()']);
+  });
+
+  it('should handle guards with class instances', () => {
+    class AuthGuard {
+      canActivate() {
+        return true;
+      }
+    }
+
+    const nestedRouter = {
+      config: [
+        {
+          path: 'protected',
+          component: 'ProtectedComponent',
+          canActivate: [AuthGuard],
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+
+    expect(parsedRoutes.children![0].canActivateGuards).toEqual(['AuthGuard']);
+  });
+
+  it('should handle multiple guard types', () => {
+    function canActivateGuard() {
+      return true;
+    }
+    const canMatchGuard = () => true;
+    class CanDeactivateGuard {
+      canDeactivate() {
+        return true;
+      }
+    }
+
+    const nestedRouter = {
+      config: [
+        {
+          path: 'multi-guard',
+          component: 'MultiGuardComponent',
+          canActivate: [
+            canActivateGuard,
+            function () {
+              return true;
+            },
+            () => true,
+          ],
+          canMatch: [canMatchGuard],
+          canDeactivate: [CanDeactivateGuard],
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+
+    expect(parsedRoutes.children![0].canActivateGuards).toEqual([
+      'canActivateGuard()',
+      '[Function]',
+      '[Function]',
+    ]);
+    expect(parsedRoutes.children![0].canMatchGuards).toEqual(['canMatchGuard()']);
+    expect(parsedRoutes.children![0].canDeactivateGuards).toEqual(['CanDeactivateGuard']);
+  });
 });
