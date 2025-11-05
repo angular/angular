@@ -13,11 +13,35 @@
   border-color: var(--red-06);
 }
 
-.chips-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  overflow-wrap: normal;
+button {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  color: var(--quaternary-contrast);
+
+  &:not([disabled]):hover {
+    color: var(--primary-contrast);
+  }
+
+  &[disabled] {
+    cursor: default;
+    color: var(--quinary-contrast);
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+
+    &.view-source {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
 }
 
 td {

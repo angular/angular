@@ -7,8 +7,6 @@ table.ng-table {
   width: 100%;
 
   tr {
-    height: 38px;
-
     th {
       @extend %body-bold-01;
       margin: 0;
@@ -37,6 +35,6 @@ table.ng-table {
     border-bottom: 1px solid var(--senary-contrast);
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 0.375rem;
+    padding: 0.625rem 0.375rem;
   }
 }

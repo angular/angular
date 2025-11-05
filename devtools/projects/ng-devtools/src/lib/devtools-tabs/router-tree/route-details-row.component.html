@@ -1,38 +1,56 @@
 <th>{{label()}}</th>
 <td>
   @switch (type()) {
-    @case ('chip') {
-      <button
-        ng-button
-        size="compact"
-        (click)="btnClick.emit('')"
-        [disabled]="rowValue()?.toString().startsWith('Lazy ')"
-      >
-        {{ rowValue() }}
-      </button>
-    }
     @case ('flag') {
       <span [class]="rowValue() ? 'tag-active' : 'tag-inactive'">
-        {{ rowValue() }}
+        {{ rowValue() || 'false' }}
       </span>
     }
     @case ('list') {
-      <div class="chips-container">
-        @for (provider of dataArray(); track $index) {
-          <button ng-button size="compact" (click)="btnClick.emit(provider)">
-            {{ provider }}
-          </button>
-        }
-      </div>
+      @for (provider of dataArray(); track $index) {
+        <div class="value-container">
+          <span>{{ provider || '[empty string] ' }}</span
+          ><ng-container
+            [ngTemplateOutlet]="actionBtn"
+            [ngTemplateOutletContext]="{ value: provider }"
+          />
+        </div>
+      }
     }
     @default {
-      <span class="row-data">
-        @if (renderValueAsJson()) {
-          {{ rowValue() | json }}
-        } @else {
-          {{ rowValue() }}
-        }
-      </span>
+      <div class="value-container">
+        <span>
+          @if (rowValue() && renderValueAsJson()) {
+            {{ rowValue() | json }}
+          } @else {
+            {{ rowValue() || '[empty string] ' }}
+          }</span
+        ><ng-container
+          [ngTemplateOutlet]="actionBtn"
+          [ngTemplateOutletContext]="{ value: rowValue() }"
+        />
+      </div>
     }
   }
 </td>
+
+<ng-template #actionBtn let-value="value">
+  @if (actionBtnType() !== 'none') {
+    <button
+      ng-button
+      btnType="icon"
+      (click)="actionBtnClick.emit(value)"
+      [matTooltip]="!actionBtnDisabled() ? actionBtnTooltip() || value : null"
+      [disabled]="actionBtnDisabled()"
+    >
+      @switch (actionBtnType()) {
+        @case ('view-source') {
+          <mat-icon class="view-source">code</mat-icon>
+        }
+        @case ('navigate') {
+          <mat-icon class="navigate">output</mat-icon>
+        }
+      }
+    </button>
+  }
+</ng-template>

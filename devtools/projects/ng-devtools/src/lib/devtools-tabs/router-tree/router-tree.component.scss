@@ -29,7 +29,9 @@
 
     .side-pane {
       position: relative;
-      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
 
       .close-btn {
         position: absolute;
@@ -47,10 +49,13 @@
         @extend %heading-400;
         margin: 0;
         padding-top: 0;
+        padding: 1rem;
       }
 
-      table {
-        margin-top: 1rem;
+      .scrollable-wrapper {
+        padding: 0 1rem 1rem 1rem;
+        height: 100%;
+        overflow-y: auto;
       }
     }
 
