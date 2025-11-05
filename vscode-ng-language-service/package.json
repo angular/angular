@@ -245,6 +245,7 @@
   ],
   "main": "../dist/bin/vscode-ng-language-service/client/src/extension.js",
   "scripts": {
+    "vsce": "vsce",
     "build:syntaxes": "bazel run //vscode-ng-language-service/syntaxes:syntaxes",
     "watch": "ibazel build //vscode-ng-language-service/client/src //vscode-ng-language-service/server/src",
     "package": "bazel build //vscode-ng-language-service:development_package --config=release",
@@ -255,7 +256,8 @@
     "test:inspect-client": "bazel run --config=debug //vscode-ng-language-service/client/src/tests:test",
     "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
     "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
-    "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
+    "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test",
+    "release": "tsx ./tools/release.mts"
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",
