@@ -623,7 +623,12 @@ export class NavigationTransitions {
 
             this.currentTransition = overallTransitionState = {
               ...t,
-              guards: getAllRouteGuards(t.targetSnapshot!, t.currentSnapshot, this.rootContexts),
+              guards: getAllRouteGuards(
+                t.targetSnapshot!,
+                t.currentSnapshot,
+                this.rootContexts,
+                this.environmentInjector,
+              ),
             };
             return overallTransitionState;
           }),

@@ -207,6 +207,7 @@ describe('Router', () => {
             futureState,
             empty,
             new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+            TestBed.inject(EnvironmentInjector),
           ),
         } as NavigationTransition;
 
@@ -267,6 +268,7 @@ describe('Router', () => {
             futureState,
             empty,
             new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+            TestBed.inject(EnvironmentInjector),
           ),
         } as NavigationTransition;
 
@@ -325,6 +327,7 @@ describe('Router', () => {
             futureState,
             currentState,
             new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+            TestBed.inject(EnvironmentInjector),
           ),
         } as NavigationTransition;
 
@@ -401,6 +404,7 @@ describe('Router', () => {
             futureState,
             currentState,
             new ChildrenOutletContexts(TestBed.inject(EnvironmentInjector)),
+            TestBed.inject(EnvironmentInjector),
           ),
         } as NavigationTransition;
 
@@ -894,7 +898,7 @@ function checkResolveData(
   // Since we only test the guards and their resolve data function, we don't need to provide
   // a full navigation transition object with all properties set.
   of({
-    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector)),
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector), injector),
   } as NavigationTransition)
     .pipe(resolveDataOperator('emptyOnly', injector))
     .subscribe(check, (e) => {
@@ -911,7 +915,7 @@ function checkGuards(
   // Since we only test the guards, we don't need to provide a full navigation
   // transition object with all properties set.
   of({
-    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector)),
+    guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts(injector), injector),
   } as NavigationTransition)
     .pipe(checkGuardsOperator(injector))
     .subscribe({
