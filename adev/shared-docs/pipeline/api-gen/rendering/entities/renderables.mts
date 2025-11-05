@@ -109,6 +109,11 @@ export interface MemberEntryRenderable extends MemberEntry {
   deprecationMessage: string | null;
   htmlUsageNotes: string;
   displayName?: string;
+
+  stable: {version: string | undefined} | undefined;
+  deprecated: {version: string | undefined} | undefined;
+  developerPreview: {version: string | undefined} | undefined;
+  experimental: {version: string | undefined} | undefined;
 }
 
 /** Sub-entry for a class method augmented transformed content for rendering. */
