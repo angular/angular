@@ -27,7 +27,7 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isNameOnlyAttributeMarker} from '../util/attrs_utils';
-import {getNativeByTNode} from '../util/view_utils';
+import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
 import {setPropertyAndInputs, storePropertyBindingMetadata} from './shared';
@@ -304,8 +304,9 @@ function isNativeControl(tNode: TNode): tNode is TElementNode {
 function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: ɵControl<unknown>) {
   const tView = getTView();
   const renderer = lView[RENDERER];
+  const element = getNativeByTNode(tNode, lView) as NativeControlElement;
+
   const inputListener = () => {
-    const element = getNativeByTNode(tNode, lView) as NativeControlElement;
     const state = control.state();
     state.value.set(getNativeControlValue(element, state.value));
     state.markAsDirty();
@@ -334,6 +335,85 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: �
     blurListener,
     wrapListener(tNode, lView, blurListener),
   );
+
+  // The native `<select>` tracks its `value` by keeping track of the selected `<option>`.
+  // Therefore if we set the value to an arbitrary string *before* the corresponding option has been
+  // created, the `<select>` will ignore it.
+  //
+  // This means that we need to know when an `<option>` is created, destroyed, or has its `value`
+  // changed so that we can re-sync the `<select>` to the field state's value. We implement this
+  // using a `MutationObserver` that we create to observe `<option>` changes.
+  if (element instanceof HTMLSelectElement) {
+    const observer = observeSelectMutations(element, getControlDirective(tNode, lView)!);
+    storeCleanupWithContext(tView, lView, observer, observer.disconnect);
+  }
+}
+
+/**
+ * Creates a `MutationObserver` to observe changes to the available `<option>`s for this select.
+ *
+ * @param select The native `<select>` element to observe.
+ * @param lView The `LView` that contains the native form control.
+ * @param tNode The `TNode` of the native form control.
+ * @returns The newly created `MutationObserver`.
+ */
+function observeSelectMutations(
+  select: HTMLSelectElement,
+  controlDirective: ɵControl<string>,
+): MutationObserver {
+  const observer = new MutationObserver((mutations) => {
+    if (mutations.some((m) => isRelevantSelectMutation(m))) {
+      // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
+      // * check if bindings changed before writing.
+      setNativeControlValue(select, controlDirective.state().value());
+    }
+  });
+  observer.observe(select, {
+    attributes: true,
+    attributeFilter: ['value'],
+    // We watch the character data, because an `<option>` with no explicit `value` property set uses
+    // its text content as its value.
+    // (See https://developer.mozilla.org/en-US/docs/Web/API/HTMLOptionElement/value)
+    characterData: true,
+    childList: true,
+    subtree: true,
+  });
+  return observer;
+}
+
+/**
+ * Checks if a given mutation record is relevant for resyncing a <select>.
+ * In general its relevant if:
+ * - Non comment content of the select changed
+ * - The value attribute of an option changed.
+ */
+function isRelevantSelectMutation(mutation: MutationRecord) {
+  // Consider changes that may add / remove options, or change their text content.
+  if (mutation.type === 'childList' || mutation.type === 'characterData') {
+    // If the target element is a comment its not relevant.
+    if (mutation.target instanceof Comment) {
+      return false;
+    }
+    // Otherwise if any non-comment nodes were added / removed it is relevant.
+    for (const node of mutation.addedNodes) {
+      if (!(node instanceof Comment)) {
+        return true;
+      }
+    }
+    for (const node of mutation.removedNodes) {
+      if (!(node instanceof Comment)) {
+        return true;
+      }
+    }
+    // Otherwise its not relevant.
+    return false;
+  }
+  // If the value attribute of an option changed, its relevant.
+  if (mutation.type === 'attributes' && mutation.target instanceof HTMLOptionElement) {
+    return true;
+  }
+  // Everything else is not relevant.
+  return false;
 }
 
 /**
