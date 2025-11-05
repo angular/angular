@@ -9,10 +9,6 @@ npm_link_all_packages(
     name = "node_modules",
 )
 
-exports_files([
-    "tsconfig.json",
-])
-
 APPLICATION_FILES = [
     "//dev-app/public",
 ] + glob(
@@ -22,16 +18,11 @@ APPLICATION_FILES = [
 
 APPLICATION_DEPS = [
     ":node_modules/typescript",
-    ":node_modules/@types/node",
 ]
 
 TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
 
-TEST_DEPS = [
-    dep
-    for dep in APPLICATION_DEPS
-    if dep != ":node_modules/@types/node"
-] + [
+TEST_DEPS = APPLICATION_DEPS + [
     "@rules_browsers//browsers/chromium",
     ":node_modules/jsdom",
     ":node_modules/vitest",

@@ -2,20 +2,8 @@
   "name": "dev-app",
   "private": true,
   "scripts": {
-    "dev": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || ibazel run //dev-app:build.serve",
-    "dev:build": "[[ -n $CI ]] && echo 'Cannot run this pnpm script on CI' && exit 1 || bazel build //dev-app:build"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "dev": "ibazel run //dev-app:build.serve",
+    "dev:build": "bazel build //dev-app:build"
   },
   "dependencies": {
     "@angular/common": "workspace:*",
