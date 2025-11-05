@@ -106,6 +106,45 @@
           "jsdocTags": [],
           "inputAlias": "colWrap",
           "isRequiredInput": false
+        },
+        {
+          "name": "multi",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether multiple cells in the grid can be selected.",
+          "jsdocTags": [],
+          "inputAlias": "multi",
+          "isRequiredInput": false
+        },
+        {
+          "name": "selectionMode",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The selection strategy used by the grid.",
+          "jsdocTags": [],
+          "inputAlias": "selectionMode",
+          "isRequiredInput": false
+        },
+        {
+          "name": "enableRangeSelection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether enable range selections (with modifier keys or dragging).",
+          "jsdocTags": [],
+          "inputAlias": "enableRangeSelection",
+          "isRequiredInput": false
         }
       ],
       "generics": [],
@@ -121,7 +160,7 @@
       "source": {
         "filePath": "src/aria/grid/grid.ts",
         "startLine": 27,
-        "endLine": 110
+        "endLine": 120
       }
     },
     {
@@ -188,8 +227,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 113,
-        "endLine": 153
+        "startLine": 123,
+        "endLine": 163
       }
     },
     {
@@ -326,8 +365,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 156,
-        "endLine": 228
+        "startLine": 166,
+        "endLine": 239
       }
     },
     {
@@ -406,8 +445,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 231,
-        "endLine": 263
+        "startLine": 242,
+        "endLine": 274
       }
     }
   ],
@@ -514,6 +553,18 @@
     ],
     [
       "Grid.colWrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.multi",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.selectionMode",
+      "@angular/aria/grid"
+    ],
+    [
+      "Grid.enableRangeSelection",
       "@angular/aria/grid"
     ],
     [
