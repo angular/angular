@@ -23,8 +23,8 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  Field,
   disabled,
+  Field,
   form,
   hidden,
   max,
@@ -220,33 +220,32 @@ describe('field directive', () => {
           readonly controls = viewChildren<ElementRef<HTMLInputElement>>('control');
         }
 
+        // Fields in an array are tracked by index.
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        const controlA = component.controls()[0].nativeElement;
-        const controlB = component.controls()[1].nativeElement;
-        expect(controlA.value).toBe('a');
-        expect(controlB.value).toBe('b');
-        expect(controlA.name).toBe('root.0');
-        expect(controlB.name).toBe('root.1');
+        const control0 = component.controls()[0].nativeElement;
+        const control1 = component.controls()[1].nativeElement;
+        expect(control0.value).toBe('a');
+        expect(control1.value).toBe('b');
+        expect(control0.name).toBe('root.0');
+        expect(control1.name).toBe('root.1');
         expect(fixture.nativeElement.innerText).toBe('ab');
 
         act(() => component.f().value.update((items) => [items[1], items[0]]));
 
         // @for should not recreate views when swapped.
-        expect(controlA.isConnected).toBeTrue();
-        expect(controlB.isConnected).toBeTrue();
+        expect(control0.isConnected).toBeTrue();
+        expect(control1.isConnected).toBeTrue();
 
-        pending('TODO: https://github.com/angular/angular/issues/63882');
+        // Controls should have swapped values.
+        expect(control0.value).toBe('b');
+        expect(control1.value).toBe('a');
 
-        // Controls should retain their value.
-        expect(controlA.value).toBe('a');
-        expect(controlB.value).toBe('b');
+        // Controls names should not have changed.
+        expect(control0.name).toBe('root.0');
+        expect(control1.name).toBe('root.1');
 
-        // Controls should have new names to reflect their new position.
-        expect(controlA.name).toBe('root.1');
-        expect(controlB.name).toBe('root.0');
-
-        // DOM order of controls should be swapped.
+        // DOM order of controls should be the same.
         expect(fixture.nativeElement.innerText).toBe('ba');
       });
 
@@ -270,33 +269,32 @@ describe('field directive', () => {
           readonly controls = viewChildren(CustomControl);
         }
 
+        // Fields in an array are tracked by index.
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        const controlA = component.controls()[0];
-        const controlB = component.controls()[1];
-        expect(controlA.value()).toBe('a');
-        expect(controlB.value()).toBe('b');
-        expect(controlA.name()).toBe('root.0');
-        expect(controlB.name()).toBe('root.1');
+        const control0 = component.controls()[0];
+        const control1 = component.controls()[1];
+        expect(control0.value()).toBe('a');
+        expect(control1.value()).toBe('b');
+        expect(control0.name()).toBe('root.0');
+        expect(control1.name()).toBe('root.1');
         expect(fixture.nativeElement.innerText).toBe('ab');
 
         act(() => component.f().value.update((items) => [items[1], items[0]]));
 
         // @for should not recreate views when swapped.
-        expect(component.controls()).toContain(controlA);
-        expect(component.controls()).toContain(controlB);
+        expect(component.controls()).toContain(control0);
+        expect(component.controls()).toContain(control1);
 
-        pending('TODO: https://github.com/angular/angular/issues/63882');
+        // Controls should have swapped values.
+        expect(control0.value()).toBe('b');
+        expect(control1.value()).toBe('a');
 
-        // Controls should retain their values.
-        expect(controlA.value()).toBe('a');
-        expect(controlB.value()).toBe('b');
+        // Controls names should not have changed.
+        expect(control0.name()).toBe('root.0');
+        expect(control1.name()).toBe('root.1');
 
-        // Controls should have new names to reflect their new position.
-        expect(controlA.name()).toBe('root.1');
-        expect(controlB.name()).toBe('root.0');
-
-        // DOM order of controls should be swapped.
+        // DOM order of controls should be the same.
         expect(fixture.nativeElement.innerText).toBe('ba');
       });
     });
