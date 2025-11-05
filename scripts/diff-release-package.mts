@@ -22,13 +22,24 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {glob} from 'tinyglobby';
+import {parseArgs} from 'node:util';
 
 // Do not remove `.git` as we use Git for comparisons later.
 // Also preserve `uniqueId` as it's irrelevant for the diff and not included via Bazel.
 // The `README.md` is also put together outside of Bazel, so ignore it too.
 const SKIP_FILES = [/^README\.md$/, /^uniqueId$/, /\.map$/];
 
-const packageName = process.argv[2];
+const {positionals, values: flags} = parseArgs({
+  options: {
+    write: {
+      type: 'boolean',
+      short: 'w',
+      default: false,
+    },
+  },
+  allowPositionals: true,
+});
+const packageName = positionals[0];
 if (!packageName) {
   console.error('Expected package name to be specified.');
   process.exit(1);
@@ -145,10 +156,17 @@ async function main(packageName: string) {
 
     // Add all files so that new untracked files are also visible in the diff.
     git.run(['add', '-A'], {cwd: tmpDir});
-    const diff = git.run(['diff', 'HEAD', '--color'], {cwd: tmpDir}).stdout;
-
-    console.info('\n\n----- Diff ------');
-    console.info(diff);
+    const diff = git.run(['diff', 'HEAD', flags.write ? '--no-color' : '--color'], {
+      cwd: tmpDir,
+    }).stdout;
+    if (flags.write) {
+      const outputFilePath = path.join(process.cwd(), `${packageName}.diff`);
+      fs.writeFileSync(outputFilePath, diff, 'utf-8');
+      console.info(`Saved diff to: ${outputFilePath}`);
+    } else {
+      console.info('\n\n----- Diff ------');
+      console.info(diff);
+    }
   } finally {
     await deleteDir(tmpDir);
   }
@@ -160,14 +178,19 @@ async function deleteDir(dirPath: string) {
   }
 
   // Needed as Bazel artifacts are readonly and cannot be deleted otherwise.
-  recursiveChmod(dirPath, 'u+w');
+  recursiveChmod(dirPath);
   await fs.promises.rm(dirPath, {recursive: true, force: true, maxRetries: 3});
 }
 
-function recursiveChmod(dirPath: string, permissions: fs.Mode) {
-  fs.chmodSync(dirPath, permissions);
+function recursiveChmod(dirPath: string) {
+  const stats = fs.statSync(dirPath);
 
-  for (const file of fs.readdirSync(dirPath)) {
-    recursiveChmod(path.join(dirPath, file), permissions);
+  // Add user write permission to existing permissions.
+  fs.chmodSync(dirPath, stats.mode | 0o200);
+
+  if (stats.isDirectory()) {
+    for (const file of fs.readdirSync(dirPath)) {
+      recursiveChmod(path.join(dirPath, file));
+    }
   }
 }
