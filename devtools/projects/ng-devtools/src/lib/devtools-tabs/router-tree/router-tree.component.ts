@@ -118,7 +118,7 @@ export class RouterTreeComponent {
     const data = this.selectedRoute()?.data;
     // Check if the selected route is a lazy loaded route or a redirecting route.
     // These routes have no component associated with them.
-    if (data?.isLazy || data?.isRedirect) {
+    if (data?.isLazy || data?.redirectTo) {
       const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
       this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       return;
@@ -131,7 +131,7 @@ export class RouterTreeComponent {
     const data = this.selectedRoute()?.data;
     // Check if the selected route is a lazy loaded route or a redirecting route.
     // These routes have no component associated with them.
-    if (data?.isLazy || data?.isRedirect) {
+    if (data?.isLazy || data?.redirectTo) {
       const message = 'Cannot view source for lazy loaded routes or redirecting routes.';
       this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
       return;
