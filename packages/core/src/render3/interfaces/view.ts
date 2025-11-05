@@ -392,6 +392,12 @@ export interface LViewEnvironment {
    * (always disabled in prod mode).
    */
   ngReflect: boolean;
+
+  /**
+   * Whether Angular version information should be emitted in production builds.
+   * (always disabled in prod mode).
+   */
+  versionEmission: boolean;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

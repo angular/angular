@@ -140,3 +140,4 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
     );
   };
 }
+export {provideVersionEmission, NG_VERSION_EMISSION_FLAG} from './version_config';

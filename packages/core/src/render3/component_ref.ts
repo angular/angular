@@ -82,6 +82,7 @@ import {ViewRef} from './view_ref';
 import {createLView, createTView, getInitialLViewFlagsFromDef} from './view/construction';
 import {BINDING, Binding, BindingInternal, DirectiveWithBindings} from './dynamic_bindings';
 import {NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT} from '../ng_reflect';
+import {NG_VERSION_EMISSION_FLAG} from '../version_config';
 
 export class ComponentFactoryResolver extends AbstractComponentFactoryResolver {
   /**
@@ -175,11 +176,14 @@ function createRootLViewEnvironment(rootLViewInjector: Injector): LViewEnvironme
     ngReflect = rootLViewInjector.get(NG_REFLECT_ATTRS_FLAG, NG_REFLECT_ATTRS_FLAG_DEFAULT);
   }
 
+  const versionEmission = rootLViewInjector.get(NG_VERSION_EMISSION_FLAG, true);
+
   return {
     rendererFactory,
     sanitizer,
     changeDetectionScheduler,
     ngReflect,
+    versionEmission,
   };
 }
 
@@ -266,11 +270,20 @@ export class ComponentFactory<T> extends AbstractComponentFactory<T> {
       const cmpDef = this.componentDef;
       ngDevMode && verifyNotAnOrphanComponent(cmpDef);
 
-      const rootTView = createRootTView(rootSelectorOrNode, cmpDef, componentBindings, directives);
       const rootViewInjector = createRootViewInjector(
         cmpDef,
         environmentInjector || this.ngModule,
         injector,
+      );
+
+      const versionEmission = rootViewInjector.get(NG_VERSION_EMISSION_FLAG, true);
+
+      const rootTView = createRootTView(
+        rootSelectorOrNode,
+        cmpDef,
+        componentBindings,
+        directives,
+        versionEmission,
       );
 
       const environment = createRootLViewEnvironment(rootViewInjector);
@@ -367,11 +380,15 @@ function createRootTView(
   componentDef: ComponentDef<unknown>,
   componentBindings: Binding[] | undefined,
   directives: (Type<unknown> | DirectiveWithBindings<unknown>)[] | undefined,
+  versionEmission = true,
 ): TView {
   const tAttributes = rootSelectorOrNode
-    ? ['ng-version', '0.0.0-PLACEHOLDER']
+    ? versionEmission
+      ? ['ng-version', '0.0.0-PLACEHOLDER']
+      : []
     : // Extract attributes and classes from the first selector only to match VE behavior.
       extractAttrsAndClassesFromSelector(componentDef.selectors[0]);
+
   let creationBindings: Binding[] | null = null;
   let updateBindings: Binding[] | null = null;
   let varsToAllocate = 0;

@@ -5380,6 +5380,35 @@ runInEachFileSystem((os: string) => {
       expect(trim(jsContents)).toContain(trim(hostBindingsFn));
     });
 
+    it('should respect version emission configuration', () => {
+      env.write(
+        'test.ts',
+        `
+    import {Component} from '@angular/core';
+    import {bootstrapApplication} from '@angular/platform-browser';  
+    import {provideVersionEmission} from '@angular/core';
+
+    @Component({
+      selector: 'test-app',
+      template: '<div>Test</div>',
+      standalone: true,
+    })
+    class TestApp {}
+
+    bootstrapApplication(TestApp, {
+      providers: [provideVersionEmission(false)]
+    });
+  `,
+      );
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+
+      // Verify the provider is included in the compiled output
+      expect(jsContents).toContain('provideVersionEmission');
+      expect(jsContents).toContain('NG_VERSION_EMISSION_FLAG');
+    });
+
     it('should throw in case unknown global target is provided', () => {
       env.write(
         `test.ts`,
