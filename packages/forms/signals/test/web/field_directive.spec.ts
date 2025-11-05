@@ -1887,7 +1887,7 @@ describe('field directive', () => {
       expect(controlB.name).toBe('root.0.x');
 
       expect(controlB.compareDocumentPosition(controlA))
-        .withContext('controlB should follow controlA')
+        .withContext('controlA should follow controlB')
         .toEqual(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
