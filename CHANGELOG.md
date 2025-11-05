@@ -1,3 +1,16 @@
+<a name="20.3.10"></a>
+# 20.3.10 (2025-11-05)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [840db59dc1](https://github.com/angular/angular/commit/840db59dc1a9beb0b4e63799b5d56c2f096a1bab) | fix | make required inputs diagnostic less noisy |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a45e6b2b66](https://github.com/angular/angular/commit/a45e6b2b66f669c532d6bffbab65058edabcacd9) | fix | Prevent removal of templates referenced with preceding whitespace characters |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.9"></a>
 # 20.3.9 (2025-10-29)
 
