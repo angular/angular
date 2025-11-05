@@ -39,7 +39,7 @@ export function parseRoutes(router: Router): Route {
 function getGuardNames(child: AngularRoute, type: RouteGuard): string[] {
   const guards = child?.[type] || [];
 
-  const names = guards.map((g: any) => g.name);
+  const names = guards.map((g: any) => getClassOrFunctionName(g));
   return names || [];
 }
 
@@ -119,9 +119,11 @@ function assignChildrenToParent(
  * @returns The formatted name: class name, function name with '()', or '[Function]' for anonymous/arrow functions
  */
 function getClassOrFunctionName(fn: Function, defaultName?: string) {
-  const isArrowWithNoName = !fn.hasOwnProperty('prototype') && fn.name === '';
+  const isArrow = !fn.hasOwnProperty('prototype');
 
-  if (isArrowWithNoName) {
+  const isEmptyName = fn.name === '';
+
+  if ((isArrow && isEmptyName) || isEmptyName) {
     return '[Function]';
   }
 

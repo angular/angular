@@ -124,6 +124,12 @@ export class RouterTreeComponent {
       return;
     }
 
+    if (className === '[Function]') {
+      const message = 'Cannot view the source of functions defined inline (arrow or anonymous).';
+      this.snackBar.open(message, 'Dismiss', {duration: 5000, horizontalPosition: 'left'});
+      return;
+    }
+
     this.appOperations.viewSourceFromRouter(className, type, this.frameManager.selectedFrame()!);
   }
 
