@@ -1067,7 +1067,13 @@ const _cssContentUnscopedRuleRe =
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
-const _parenSuffix = '(?:\\((' + '(?:\\([^)(]*\\)|[^)(]*)+?' + ')\\))';
+// Matches text content with no parentheses, e.g., "foo"
+const _noParens = '[^)(]*';
+// Matches content with at most ONE level of nesting, e.g., "a(b)c"
+const _level1Parens = String.raw`(?:\(${_noParens}\)|${_noParens})+?`;
+// Matches content with at most TWO levels of nesting, e.g., "a(b(c)d)e"
+const _level2Parens = String.raw`(?:\(${_level1Parens}\)|${_noParens})+?`;
+const _parenSuffix = String.raw`(?:\((${_level2Parens})\))`;
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
 // note: :host-context patterns are terminated with `{`, as opposed to :host which
 // is both `{` and `,` because :host-context handles top-level commas differently.
