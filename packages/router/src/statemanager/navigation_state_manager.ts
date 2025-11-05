@@ -97,10 +97,8 @@ export class NavigationStateManager extends HistoryStateManager {
     } else if (e instanceof NavigationSkipped) {
       this.commitTransition(transition);
     } else if (e instanceof RoutesRecognized) {
-      if (this.urlUpdateStrategy === 'eager') {
-        if (!transition.extras.skipLocationChange) {
-          this.createNavigationForTransition(transition);
-        }
+      if (this.urlUpdateStrategy === 'eager' && !transition.extras.skipLocationChange) {
+        this.createNavigationForTransition(transition);
       }
     } else if (e instanceof BeforeActivateRoutes) {
       // Commit the internal router state.
@@ -109,12 +107,11 @@ export class NavigationStateManager extends HistoryStateManager {
         this.createNavigationForTransition(transition);
       }
     } else if (
-      e instanceof NavigationCancel &&
-      e.code !== NavigationCancellationCode.SupersededByNewNavigation &&
-      e.code !== NavigationCancellationCode.Redirect
+      e instanceof NavigationError ||
+      (e instanceof NavigationCancel &&
+        e.code !== NavigationCancellationCode.SupersededByNewNavigation &&
+        e.code !== NavigationCancellationCode.Redirect)
     ) {
-      this.restoreNavigationHistory(transition);
-    } else if (e instanceof NavigationError) {
       this.restoreNavigationHistory(transition);
     } else if (e instanceof NavigationEnd) {
       // Update `activeHistoryEntry` to the new current entry from Navigation API.
