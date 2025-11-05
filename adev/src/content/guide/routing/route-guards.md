@@ -36,6 +36,7 @@ Angular provides four types of route guards, each serving different purposes:
   <docs-pill href="#canactivate" title="CanActivate"/>
   <docs-pill href="#canactivatechild" title="CanActivateChild"/>
   <docs-pill href="#candeactivate" title="CanDeactivate"/>
+  <docs-pill href="#candeactivatechild" title="CanDeactivateChild"/>
   <docs-pill href="#canmatch" title="CanMatch"/>
 </docs-pill-row>
 
@@ -103,6 +104,22 @@ export const unsavedChangesGuard: CanDeactivateFn<FormComponent> = (component: F
 ```
 
 For more information, check out the [API docs for CanDeactivateFn](api/router/CanDeactivateFn).
+
+### CanDeactivateChild
+
+The `CanDeactivateChild` guard determines whether a user can leave child routes of a particular parent route. This is useful when you want to protect an entire section of nested routes. In other words, `canDeactivateChild` runs for _all_ children. If there is a child component with another child component underneath of it, `canDeactivateChild` will run once for each child route.
+
+It has access to the following default arguments:
+
+- `component: T` - The component instance being deactivated
+- `currentRoute: ActivatedRouteSnapshot` - Contains information about the current route
+- `currentState: RouterStateSnapshot` - Contains the current router state
+- `nextState: RouterStateSnapshot` - Contains the next router state being navigated to
+
+It can return the [standard return guard types](#route-guard-return-types).
+
+For more information, check out the [API docs for CanDeactivateChildFn](api/router/CanDeactivateChildFn).
+
 
 ### CanMatch
 

@@ -686,6 +686,12 @@ export interface Route {
    */
   canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
   /**
+   * An array of `CanDeactivateChildFn` in order to determine if child routes can be deactivated by a navigation.
+   *
+   * @see CanDeactivateChildFn
+   */
+  canDeactivateChild?: Array<CanDeactivateChildFn>;
+  /**
    * An array of `CanLoadFn` or DI tokens used to look up `CanLoad()`
    * handlers, in order to determine if the current user is allowed to
    * load the component. By default, any user can load.
@@ -1054,6 +1060,60 @@ export type CanDeactivateFn<T> = (
   currentState: RouterStateSnapshot,
   nextState: RouterStateSnapshot,
 ) => MaybeAsync<GuardResult>;
+
+/**
+ * The signature of a function used as a `canDeactivateChild` guard on a `Route`.
+ *
+ * If all guards return `true`, navigation continues. If any guard returns `false`,
+ * navigation is cancelled. If any guard returns a `UrlTree`, the current navigation
+ * is cancelled and a new navigation begins to the `UrlTree` returned from the guard.
+ *
+ * This guard is invoked whenever a child route is being deactivated, and for each child route being deactivated.
+ * The function receives the child component instance, the child route being deactivated,
+ * the current router state, and the next router state.
+ *
+ * Example usage:
+ *
+ * ```ts
+ * export const canDeactivateChildGuard: CanDeactivateChildFn = (
+ *   childComponent,
+ *   childRoute,
+ *   currentState,
+ *   nextState
+ * ) => {
+ *   // Implement logic to determine if the child route can be deactivated
+ *   return true;
+ * };
+ *
+ * // In your route configuration:
+ * {
+ *   path: 'parent',
+ *   canDeactivateChild: [canDeactivateChildGuard],
+ *   children: [
+ *     { path: 'child', component: ChildComponent }
+ *   ]
+ * }
+ * ```
+ *
+ * @publicApi
+ * @see {@link Route}
+ */
+export type CanDeactivateChildFn = (
+  childComponent: unknown,
+  childRoute: ActivatedRouteSnapshot,
+  currentState: RouterStateSnapshot,
+  nextState: RouterStateSnapshot,
+) => MaybeAsync<GuardResult>;
+
+/**
+ * The signature of a class used as a `canDeactivateChild` guard on a `Route`.
+ *
+ * @see {@link CanDeactivateChildFn}
+ * @see {@link mapToCanDeactivateChild}
+ */
+export interface CanDeactivateChild {
+  canDeactivateChild(...params: Parameters<CanDeactivateChildFn>): MaybeAsync<GuardResult>;
+}
 
 /**
  * @description

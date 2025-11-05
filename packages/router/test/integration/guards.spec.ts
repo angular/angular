@@ -50,6 +50,7 @@ import {
   CanActivateFn,
   CanActivateChildFn,
   CanDeactivateFn,
+  RouterOutlet,
 } from '../../src';
 import {wrapIntoObservable} from '../../src/utils/collection';
 import {RouterTestingHarness} from '../../testing';
@@ -1935,6 +1936,265 @@ export function guardsIntegrationSuite() {
         expect(log.length).toEqual(2);
         expect(log).toEqual(['guard1', 'returnUrlTree']);
         expect(location.path()).toEqual('/redirected');
+      });
+    });
+
+    describe('canDeactivateChild', () => {
+      it('should run deactivate child before canDeactivateChild - deactivates run in reverse', async () => {
+        const guardLog: string[] = [];
+        TestBed.configureTestingModule({
+          providers: [
+            provideRouter([
+              {
+                path: 'parent',
+                canDeactivateChild: [
+                  () => {
+                    guardLog.push('parent canDeactivateChild');
+                    return false;
+                  },
+                ],
+                children: [
+                  {
+                    path: 'child',
+                    component: BlankCmp,
+                    canActivate: [
+                      () => {
+                        guardLog.push('child canActivate');
+                        return true;
+                      },
+                    ],
+                    canDeactivate: [
+                      () => {
+                        guardLog.push('child canDeactivate');
+                        return true;
+                      },
+                    ],
+                  },
+                ],
+              },
+            ]),
+          ],
+        });
+        const harness = await RouterTestingHarness.create('/parent/child');
+        expect(guardLog).toEqual(['child canActivate']);
+        await harness.navigateByUrl('/parent');
+        expect(guardLog).toEqual([
+          'child canActivate',
+          'child canDeactivate',
+          'parent canDeactivateChild',
+        ]);
+        expect(TestBed.inject(Router).url).toEqual('/parent/child');
+      });
+
+      it('should run canDeactivateChild for each descendant being deactivated', async () => {
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Parent {}
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Child {}
+        @Component({
+          template: '',
+          standalone: true,
+        })
+        class GrandChild {}
+        const guardLog: string[] = [];
+        TestBed.configureTestingModule({
+          providers: [
+            provideRouter([
+              {
+                path: 'parent',
+                component: Parent,
+                canDeactivateChild: [
+                  (component: unknown) => {
+                    guardLog.push('canDeactivateChild: ' + component?.constructor?.name);
+                    return true;
+                  },
+                ],
+                children: [
+                  {
+                    path: 'child',
+                    component: Child,
+                    children: [
+                      {
+                        path: 'grandchild',
+                        component: GrandChild,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ]),
+          ],
+        });
+        const harness = await RouterTestingHarness.create('/parent/child/grandchild');
+        await harness.navigateByUrl('/parent');
+        expect(guardLog).toEqual(['canDeactivateChild: GrandChild', 'canDeactivateChild: Child']);
+        expect(TestBed.inject(Router).url).toEqual('/parent');
+      });
+
+      it('should cancel navigation when canDeactivateChild returns false', async () => {
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Parent {}
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Child {}
+        @Component({
+          template: '',
+          standalone: true,
+        })
+        class GrandChild {}
+        const guardLog: string[] = [];
+        TestBed.configureTestingModule({
+          providers: [
+            provideRouter([
+              {
+                path: 'parent',
+                component: Parent,
+                canDeactivateChild: [
+                  (component: unknown) => {
+                    guardLog.push('canDeactivateChild: ' + component?.constructor?.name);
+                    // The guard for GrandChild will run first and return true.
+                    // The guard for Child will run second and return false.
+                    return component?.constructor?.name !== 'Child';
+                  },
+                ],
+                children: [
+                  {
+                    path: 'child',
+                    component: Child,
+                    children: [
+                      {
+                        path: 'grandchild',
+                        component: GrandChild,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {path: 'other', component: BlankCmp},
+            ]),
+          ],
+        });
+        const harness = await RouterTestingHarness.create('/parent/child/grandchild');
+        await harness.navigateByUrl('/other');
+        expect(guardLog).toEqual(['canDeactivateChild: GrandChild', 'canDeactivateChild: Child']);
+        expect(TestBed.inject(Router).url).toEqual('/parent/child/grandchild');
+      });
+
+      it('should redirect when canDeactivateChild returns a UrlTree', async () => {
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Parent {}
+        @Component({
+          template: '',
+          standalone: true,
+        })
+        class Child {}
+
+        TestBed.configureTestingModule({
+          providers: [
+            provideRouter([
+              {
+                path: 'parent',
+                component: Parent,
+                canDeactivateChild: [
+                  () => {
+                    if (
+                      inject(Router).getCurrentNavigation()?.extractedUrl.toString() === '/other'
+                    ) {
+                      return inject(Router).parseUrl('/redirect');
+                    }
+                    return true;
+                  },
+                ],
+                children: [
+                  {
+                    path: 'child',
+                    component: Child,
+                  },
+                ],
+              },
+              {path: 'other', component: BlankCmp},
+              {path: 'redirect', component: SimpleCmp},
+            ]),
+          ],
+        });
+        const harness = await RouterTestingHarness.create('/parent/child');
+        await harness.navigateByUrl('/other');
+        expect(TestBed.inject(Router).url).toEqual('/redirect');
+        expect(TestBed.inject(Location).path()).toEqual('/redirect');
+      });
+
+      it('should receive correct parameters', async () => {
+        let guardParams: any;
+        @Component({
+          template: '<router-outlet />',
+          imports: [RouterOutlet],
+          standalone: true,
+        })
+        class Parent {}
+        @Component({
+          template: '',
+          standalone: true,
+        })
+        class Child {}
+
+        TestBed.configureTestingModule({
+          providers: [
+            provideRouter(
+              [
+                {
+                  path: 'parent/:id',
+                  component: Parent,
+                  canDeactivateChild: [
+                    (childComponent, childRoute, currentState, nextState) => {
+                      guardParams = {
+                        childComponent,
+                        childRoute,
+                        currentStateUrl: currentState.url,
+                        nextStateUrl: nextState.url,
+                      };
+                      return true;
+                    },
+                  ],
+                  children: [
+                    {
+                      path: 'child/:name',
+                      component: Child,
+                    },
+                  ],
+                },
+                {path: 'other', component: BlankCmp},
+              ],
+              withRouterConfig({paramsInheritanceStrategy: 'always'}),
+            ),
+          ],
+        });
+        const harness = await RouterTestingHarness.create('/parent/1/child/a');
+        await harness.navigateByUrl('/other');
+
+        expect(guardParams.childComponent.constructor.name).toBe('Child');
+        expect(guardParams.childRoute.paramMap.get('id')).toBe('1');
+        expect(guardParams.childRoute.paramMap.get('name')).toBe('a');
+        expect(guardParams.currentStateUrl).toBe('/parent/1/child/a');
+        expect(guardParams.nextStateUrl).toBe('/other');
       });
     });
 

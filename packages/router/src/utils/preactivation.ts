@@ -8,7 +8,12 @@
 
 import {Injector, ProviderToken, ɵisInjectable as isInjectable} from '@angular/core';
 
-import {RunGuardsAndResolvers} from '../models';
+import {
+  CanActivateChild,
+  CanActivateChildFn,
+  DeprecatedGuard,
+  RunGuardsAndResolvers,
+} from '../models';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {
   ActivatedRouteSnapshot,
@@ -27,10 +32,15 @@ export class CanActivate {
 }
 
 export class CanDeactivate {
+  readonly route: ActivatedRouteSnapshot;
+  readonly path: ActivatedRouteSnapshot[];
   constructor(
     public component: Object | null,
-    public route: ActivatedRouteSnapshot,
-  ) {}
+    path: Array<TreeNode<ActivatedRouteSnapshot>>,
+  ) {
+    this.path = path.map((c) => c.value);
+    this.route = this.path[this.path.length - 1];
+  }
 }
 
 export declare type Checks = {
@@ -46,38 +56,40 @@ export function getAllRouteGuards(
   const futureRoot = future._root;
   const currRoot = curr ? curr._root : null;
 
-  return getChildRouteGuards(futureRoot, currRoot, parentContexts, [futureRoot.value]);
+  return getChildRouteGuards(futureRoot, currRoot ? [currRoot] : null, parentContexts, [
+    futureRoot.value,
+  ]);
 }
 
 export function getCanActivateChild(
-  p: ActivatedRouteSnapshot,
-): {node: ActivatedRouteSnapshot; guards: any[]} | null {
-  const canActivateChild = p.routeConfig ? p.routeConfig.canActivateChild : null;
-  if (!canActivateChild || canActivateChild.length === 0) return null;
-  return {node: p, guards: canActivateChild};
+  route: ActivatedRouteSnapshot,
+): {route: ActivatedRouteSnapshot; guards: Array<CanActivateChildFn | DeprecatedGuard>} | null {
+  const guards = route.routeConfig ? route.routeConfig.canActivateChild : null;
+  if (!guards || guards.length === 0) return null;
+  return {route, guards};
 }
 
-export function getTokenOrFunctionIdentity<T>(
-  tokenOrFunction: Function | ProviderToken<T>,
+export function getTokenOrFunctionIdentity<TokenType, FunctionType>(
+  tokenOrFunction: FunctionType | ProviderToken<TokenType> | string,
   injector: Injector,
-): Function | T {
+): TokenType | FunctionType {
   const NOT_FOUND = Symbol();
-  const result = injector.get<T | Symbol>(tokenOrFunction, NOT_FOUND);
+  const result = injector.get(tokenOrFunction as ProviderToken<TokenType>, NOT_FOUND);
   if (result === NOT_FOUND) {
     if (typeof tokenOrFunction === 'function' && !isInjectable(tokenOrFunction)) {
       // We think the token is just a function so return it as-is
-      return tokenOrFunction;
+      return tokenOrFunction as FunctionType;
     } else {
       // This will throw the not found error
-      return injector.get<T>(tokenOrFunction);
+      return injector.get(tokenOrFunction as ProviderToken<TokenType>);
     }
   }
-  return result as T;
+  return result as TokenType;
 }
 
 function getChildRouteGuards(
   futureNode: TreeNode<ActivatedRouteSnapshot>,
-  currNode: TreeNode<ActivatedRouteSnapshot> | null,
+  currentPath: Array<TreeNode<ActivatedRouteSnapshot>> | null,
   contexts: ChildrenOutletContexts | null,
   futurePath: ActivatedRouteSnapshot[],
   checks: Checks = {
@@ -85,17 +97,20 @@ function getChildRouteGuards(
     canActivateChecks: [],
   },
 ): Checks {
+  const currNode = currentPath ? currentPath[currentPath.length - 1] : null;
   const prevChildren = nodeChildrenAsMap(currNode);
 
   // Process the children of the future route
   futureNode.children.forEach((c) => {
-    getRouteGuards(c, prevChildren[c.value.outlet], contexts, futurePath.concat([c.value]), checks);
+    const currentChild = prevChildren[c.value.outlet] ?? null;
+    const childPath = currentChild ? [...currentPath!, currentChild] : null;
+    getRouteGuards(c, childPath, contexts, futurePath.concat([c.value]), checks);
     delete prevChildren[c.value.outlet];
   });
 
   // Process any children left from the current route (not active for the future route)
   Object.entries(prevChildren).forEach(([k, v]: [string, TreeNode<ActivatedRouteSnapshot>]) =>
-    deactivateRouteAndItsChildren(v, contexts!.getContext(k), checks),
+    deactivateRouteAndItsChildren([...currentPath!, v], contexts!.getContext(k), checks),
   );
 
   return checks;
@@ -103,7 +118,7 @@ function getChildRouteGuards(
 
 function getRouteGuards(
   futureNode: TreeNode<ActivatedRouteSnapshot>,
-  currNode: TreeNode<ActivatedRouteSnapshot>,
+  currentPath: Array<TreeNode<ActivatedRouteSnapshot>> | null,
   parentContexts: ChildrenOutletContexts | null,
   futurePath: ActivatedRouteSnapshot[],
   checks: Checks = {
@@ -111,6 +126,7 @@ function getRouteGuards(
     canActivateChecks: [],
   },
 ): Checks {
+  const currNode = currentPath ? currentPath[currentPath.length - 1] : null;
   const future = futureNode.value;
   const curr = currNode ? currNode.value : null;
   const context = parentContexts ? parentContexts.getContext(futureNode.value.outlet) : null;
@@ -134,7 +150,7 @@ function getRouteGuards(
     if (future.component) {
       getChildRouteGuards(
         futureNode,
-        currNode,
+        currentPath,
         context ? context.children : null,
         futurePath,
         checks,
@@ -142,15 +158,15 @@ function getRouteGuards(
 
       // if we have a componentless route, we recurse but keep the same outlet map.
     } else {
-      getChildRouteGuards(futureNode, currNode, parentContexts, futurePath, checks);
+      getChildRouteGuards(futureNode, currentPath, parentContexts, futurePath, checks);
     }
 
     if (shouldRun && context && context.outlet && context.outlet.isActivated) {
-      checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, curr));
+      checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, currentPath!));
     }
   } else {
     if (curr) {
-      deactivateRouteAndItsChildren(currNode, context, checks);
+      deactivateRouteAndItsChildren(currentPath!, context, checks);
     }
 
     checks.canActivateChecks.push(new CanActivate(futurePath));
@@ -200,28 +216,31 @@ function shouldRunGuardsAndResolvers(
 }
 
 function deactivateRouteAndItsChildren(
-  route: TreeNode<ActivatedRouteSnapshot>,
+  currentPath: Array<TreeNode<ActivatedRouteSnapshot>>,
   context: OutletContext | null,
   checks: Checks,
 ): void {
+  const route = currentPath[currentPath.length - 1];
   const children = nodeChildrenAsMap(route);
   const r = route.value;
 
   Object.entries(children).forEach(([childName, node]) => {
+    const childPath = [...currentPath, node];
     if (!r.component) {
-      deactivateRouteAndItsChildren(node, context, checks);
+      deactivateRouteAndItsChildren(childPath, context, checks);
     } else if (context) {
-      deactivateRouteAndItsChildren(node, context.children.getContext(childName), checks);
+      deactivateRouteAndItsChildren(childPath, context.children.getContext(childName), checks);
     } else {
-      deactivateRouteAndItsChildren(node, null, checks);
+      deactivateRouteAndItsChildren(childPath, null, checks);
     }
   });
 
+  const childPath = [...currentPath, route];
   if (!r.component) {
-    checks.canDeactivateChecks.push(new CanDeactivate(null, r));
+    checks.canDeactivateChecks.push(new CanDeactivate(null, childPath));
   } else if (context && context.outlet && context.outlet.isActivated) {
-    checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, r));
+    checks.canDeactivateChecks.push(new CanDeactivate(context.outlet.component, childPath));
   } else {
-    checks.canDeactivateChecks.push(new CanDeactivate(null, r));
+    checks.canDeactivateChecks.push(new CanDeactivate(null, childPath));
   }
 }
