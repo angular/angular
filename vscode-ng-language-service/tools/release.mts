@@ -63,11 +63,14 @@ async function main(): Promise<void> {
   // Ensure the user has a clean working directory before starting the release process.
   await checkCleanWorkingDirectory();
 
-  const {stdout: currentBranch} = await exec(`git rev-parse --abbrev-ref HEAD`);
-  const branchToReleaseFrom = currentBranch.trim();
+  let branchToReleaseFrom: string | undefined = process.env['BRANCH_TO_RELEASE'];
+  if (!branchToReleaseFrom) {
+    const {stdout: currentBranch} = await exec(`git rev-parse --abbrev-ref HEAD`);
+    branchToReleaseFrom = currentBranch.trim();
+  }
 
-  if (branchToReleaseFrom !== 'main' && /\d+\.d+\.x/.test(branchToReleaseFrom)) {
-    throw new Error(`Cannot release from non releasble branch ${branchToReleaseFrom}`);
+  if (branchToReleaseFrom !== 'main' && !/\d+\.d+\.x/.test(branchToReleaseFrom)) {
+    throw new Error(`Cannot release from non releasable branch ${branchToReleaseFrom}.`);
   }
 
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
@@ -314,6 +317,7 @@ async function buildExtension(): Promise<void> {
  */
 async function publishExtension(): Promise<void> {
   console.log(chalk.yellow('Publishing the extension to the market place.'));
+  console.log(`VSIX path: ${extensionPath}`);
   console.log(`Please get a PAT token from: http://go/secret-tunnel/1575675884599726`);
 
   console.log('');
