@@ -43668,17 +43668,9 @@ Log.debug = buildLogLevelFunction(() => console.debug, LogLevel.DEBUG, null);
 Log.log = buildLogLevelFunction(() => console.log, LogLevel.LOG, null);
 Log.warn = buildLogLevelFunction(() => console.warn, LogLevel.WARN, source_default.yellow);
 function buildLogLevelFunction(loadCommand, level, defaultColor) {
-  const loggingFunction = (...values) => {
+  return (...values) => {
     runConsoleCommand(loadCommand, level, ...values.map((v4) => typeof v4 === "string" && defaultColor ? defaultColor(v4) : v4));
   };
-  loggingFunction.group = (label, collapsed = false) => {
-    const command2 = collapsed ? console.groupCollapsed : console.group;
-    runConsoleCommand(() => command2, level, defaultColor ? defaultColor(label) : label);
-  };
-  loggingFunction.groupEnd = () => {
-    runConsoleCommand(() => console.groupEnd, level);
-  };
-  return loggingFunction;
 }
 function runConsoleCommand(loadCommand, logLevel, ...text) {
   if (getLogLevel() >= logLevel) {
