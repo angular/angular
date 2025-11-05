@@ -71,17 +71,14 @@ async function main(): Promise<void> {
   }
 
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
-  // Fetch the latest changes from the remote.
-
-  console.log(chalk.blue('Fetching upstream...'));
   await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
-  console.log(chalk.green('Successfully fetched.'));
 
   const newVersion = await getNewVersion();
   const releaseBranch = await createReleaseBranch(newVersion);
   await generateChangelog();
   await updatingPackageJsonVersion(newVersion);
 
+  await installDependencies();
   await buildExtension();
 
   await prepareReleasePullRequest(newVersion, releaseBranch);
@@ -115,12 +112,10 @@ async function createReleaseBranch(newVersion: string): Promise<string> {
  * If the working directory is not clean, an error is thrown.
  */
 async function checkCleanWorkingDirectory(): Promise<void> {
-  console.log(chalk.blue('Checking for a clean working directory...'));
   const {stdout: status} = await exec('git status --porcelain');
   if (status.length > 0) {
     throw new Error('Your working directory is not clean. There are uncommitted changes.');
   }
-  console.log(chalk.green('Working directory is clean.'));
 }
 
 /**
@@ -128,8 +123,7 @@ async function checkCleanWorkingDirectory(): Promise<void> {
  *
  * This is used to determine which commits to include in the changelog.
  *
- * @param version The version to look for in the release commit message. If empty, it finds the
- *   most recent release commit.
+ * @param version The version to look for in the release commit message. If empty, it finds the most recent release commit.
  * @returns A promise that resolves to the SHA of the last release commit.
  */
 async function getLastReleaseSha(version = ''): Promise<string> {
@@ -151,14 +145,11 @@ async function getLastReleaseSha(version = ''): Promise<string> {
  *
  * The current version is read from the `package.json` file and a patch release is suggested. The
  * user is then prompted to enter the new version number. The input is validated to ensure that it
-
  * is a valid semantic version and that it is greater than the current version.
  *
  * @returns A promise that resolves to the new version string.
  */
 async function getNewVersion(): Promise<string> {
-  console.log('');
-  console.log(chalk.blue('Determining new version...'));
   const currentVersion = await getCurrentVersion();
   const suggestedVersion = semver.inc(currentVersion, 'patch') ?? currentVersion;
 
@@ -197,7 +188,6 @@ async function getCurrentVersion(): Promise<string> {
 
 /**
  * Creates the release commit and pushes the release branch to the user's fork.
- *
  * This function stages the `package.json` and `CHANGELOG.md` files, creates a commit with a
  * standardized release message, and pushes the release branch to the `origin` remote. It then
  * provides a URL to create a pull request.
@@ -206,14 +196,10 @@ async function getCurrentVersion(): Promise<string> {
  * @param releaseBranch The name of the release branch to push.
  */
 async function prepareReleasePullRequest(newVersion: string, releaseBranch: string): Promise<void> {
-  console.log('');
-  console.log(chalk.blue('Creating release commit...'));
   await exec(
     `git commit -m "${releaseCommitPrefix}${newVersion}" "${packageJsonPath}" "${changelogPath}"`,
   );
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
-  console.log(chalk.green('Release branch pushed to your fork.'));
-
   const {stdout: remoteUrl} = await exec('git remote get-url origin');
   const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
   const originUser = match ? match[1] : 'angular';
@@ -247,9 +233,6 @@ async function generateChangelog(): Promise<void> {
  * @param newVersion The new version number to set in `package.json`.
  */
 async function updatingPackageJsonVersion(newVersion: string): Promise<void> {
-  console.log('');
-  console.log(chalk.blue('Updating version in package.json...'));
-
   const manifest = JSON.parse(await readFile(packageJsonPath, 'utf-8'));
   manifest.version = newVersion;
   await writeFile(packageJsonPath, JSON.stringify(manifest, undefined, 2));
@@ -258,23 +241,14 @@ async function updatingPackageJsonVersion(newVersion: string): Promise<void> {
 /**
 
  * Waits for the release PR to be merged and then tags the merged commit.
-
  *
-
  * This function prompts the user to confirm that the release PR has been merged. Once confirmed,
-
  * it fetches the latest changes from the upstream repository, finds the SHA of the merged release
-
  * commit, and then creates a Git tag with the format `vsix-<newVersion>` on that commit. Finally,
-
  * it pushes the new tag to the origin.
-
  *
-
  * @param newVersion The new version number used to create the Git tag.
-
  * @param branchToReleaseFrom The branch that the release PR was merged into.
-
  */
 async function waitForPRToBeMergedAndTag(
   newVersion: string,
