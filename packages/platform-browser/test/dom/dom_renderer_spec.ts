@@ -502,7 +502,7 @@ class CmpEncapsulationShadow {}
       color: red;
     }`,
   ],
-  encapsulation: ViewEncapsulation.IsolatedShadowDom,
+  encapsulation: ViewEncapsulation.ExperimentalIsolatedShadowDom,
   standalone: false,
 })
 class CmpEncapsulationIsolatedShadowWithChildren {}

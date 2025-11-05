@@ -798,7 +798,7 @@ function componentUsesShadowDomEncapsulation(lView: LView): boolean {
   const def = getComponentDef(instance.constructor);
   return (
     def?.encapsulation === ViewEncapsulation.ShadowDom ||
-    def?.encapsulation === ViewEncapsulation.IsolatedShadowDom
+    def?.encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom
   );
 }
 
