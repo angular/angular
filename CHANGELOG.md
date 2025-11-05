@@ -1,3 +1,27 @@
+<a name="21.0.0-rc.1"></a>
+# 21.0.0-rc.1 (2025-11-05)
+### compiler-cli
+| Commit | Type | Description |
+| -- | -- | -- |
+| [471da8a311](https://github.com/angular/angular/commit/471da8a311fa7f77815bdf0199943cfa50d45181) | fix | infer type of custom field controls |
+| [96cb0cffda](https://github.com/angular/angular/commit/96cb0cffda55516e01613958d1268872f1070722) | fix | infer types of signal forms set on native inputs |
+| [4c6e29f72f](https://github.com/angular/angular/commit/4c6e29f72f5f79382a81f05b8e95fdc3817efc04) | fix | make required inputs diagnostic less noisy |
+| [c371251e4c](https://github.com/angular/angular/commit/c371251e4c2e7bc1ab6da7c51b05e047bdfe6068) | fix | report invalid bindings on form controls |
+### core
+| Commit | Type | Description |
+| -- | -- | -- |
+| [a453d603c0](https://github.com/angular/angular/commit/a453d603c09154572a0dd1e845f6f388343d98aa) | fix | skip leave animations on view swaps |
+### forms
+| Commit | Type | Description |
+| -- | -- | -- |
+| [507b3466ee](https://github.com/angular/angular/commit/507b3466eec648a706f10d2805e67e53522e9654) | perf | implement change detection for field control bindings |
+### migrations
+| Commit | Type | Description |
+| -- | -- | -- |
+| [e1f933fed0](https://github.com/angular/angular/commit/e1f933fed098ab7a502dc30daf8ee6ecd25da185) | fix | Prevent removal of templates referenced with preceding whitespace characters |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.10"></a>
 # 20.3.10 (2025-11-05)
 ### compiler-cli
