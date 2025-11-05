@@ -258,7 +258,8 @@
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test"
   },
   "dependencies": {
-    "@angular/language-service": "workspace:*"
+    "@angular/language-service": "workspace:*",
+    "typescript": "5.9.3"
   },
   "devDependencies": {
     "@types/jasmine": "~5.1.9",
@@ -271,7 +272,6 @@
     "jasmine-core": "~5.12.0",
     "jasmine-reporters": "~2.5.2",
     "source-map-support": "^0.5.21",
-    "typescript": "5.9.3",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageclient": "7.0.0",
     "vscode-languageserver": "7.0.0",
