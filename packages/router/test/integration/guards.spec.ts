@@ -2395,5 +2395,40 @@ export function guardsIntegrationSuite() {
       await router.navigateByUrl('');
       expect(guardDone).toEqual(['guard1', 'guard2', 'guard3', 'guard4']);
     });
+
+    it('should run in injection context', async () => {
+      @Injectable({providedIn: 'root'})
+      class MyService {
+        canRun = false;
+      }
+
+      let resolveCount = 0;
+      const routes = [
+        {
+          path: 'a',
+          children: [],
+          resolve: {
+            x: () => ++resolveCount,
+          },
+          runGuardsAndResolvers: () => inject(MyService).canRun,
+        },
+      ];
+      const router = TestBed.inject(Router);
+      router.resetConfig(routes);
+      const service = TestBed.inject(MyService);
+
+      await router.navigateByUrl('/a');
+      expect(router.url).toEqual('/a');
+      // Always run on activation
+      expect(resolveCount).toBe(1);
+
+      service.canRun = false;
+      await router.navigateByUrl('/a?q=1');
+      expect(resolveCount).toBe(1);
+
+      service.canRun = true;
+      await router.navigateByUrl('/a?q=2');
+      expect(resolveCount).toBe(2);
+    });
   });
 }
