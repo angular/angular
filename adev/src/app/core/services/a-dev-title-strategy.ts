@@ -10,6 +10,7 @@ import {Injectable, inject} from '@angular/core';
 import {NavigationItem} from '@angular/docs';
 import {Meta, Title} from '@angular/platform-browser';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, TitleStrategy} from '@angular/router';
+import {StructuredDataService} from './structured-data/structured-data.service';
 
 export const ROUTE_TITLE_PROPERTY = 'label';
 export const ROUTE_PARENT_PROPERTY = 'parent';
@@ -26,6 +27,7 @@ export const ALL_TITLE_META_TAGS = [TITLE_OG_META_TAG, TITLE_TWITTER_META_TAG];
 export class ADevTitleStrategy extends TitleStrategy {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly structuredDataService = inject(StructuredDataService);
 
   constructor() {
     super();
@@ -54,6 +56,8 @@ export class ADevTitleStrategy extends TitleStrategy {
       routeTitle.startsWith(DEFAULT_PAGE_TITLE) && data.parent
         ? `${data.parent.label}${TITLE_SEPARATOR}`
         : '';
+
+    this.structuredDataService.setStructuredData(data);
 
     return !!routeTitle ? `${prefix}${routeTitle}${TITLE_SEPARATOR}${TITLE_SUFFIX}` : TITLE_SUFFIX;
   }
