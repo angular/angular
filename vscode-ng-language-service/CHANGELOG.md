@@ -1,3 +1,9 @@
+# 20.3.3
+
+| Commit | Type | Description |
+| -- | -- | -- |
+| [eb74ece723](https://github.com/angular/angular/commit/3ef2edc0765d523928454c1c8d6e49eb74ece723) | fix | build: update typescript dependency for vscode-ng-language-service ([#64912](https://github.com/angular/angular/pull/64912)) |
+
 # 20.3.2
 
 This release includes internal-only changes to packaging to fix an issue with the 20.3.1 release.
