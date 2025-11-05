@@ -47,7 +47,6 @@ import {
   FlatNode as PropertyFlatNode,
 } from './property-resolver/element-property-resolver';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
-import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import {Platform} from '@angular/cdk/platform';
 import {MatSnackBarModule, MatSnackBar} from '@angular/material/snack-bar';
@@ -99,7 +98,6 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     DirectiveForestComponent,
     BreadcrumbsComponent,
     PropertyTabComponent,
-    MatSlideToggle,
     FormsModule,
     MatSnackBarModule,
     SignalsTabComponent,
@@ -122,12 +120,12 @@ export class DirectiveExplorerComponent {
   readonly forest = signal<DevToolsNode[]>([]);
   readonly splitDirection = signal<'horizontal' | 'vertical'>('horizontal');
   readonly parents = signal<FlatNode[] | null>(null);
-  readonly showHydrationNodeHighlights = signal(false);
 
   readonly signalsOpen = signal(false);
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: null | ReturnType<typeof setTimeout> = null;
+  private showHydrationNodeHighlights = false;
 
   private readonly _appOperations = inject(ApplicationOperations);
   private readonly _messageBus = inject<MessageBus<Events>>(MessageBus);
@@ -369,6 +367,15 @@ export class DirectiveExplorerComponent {
     }
   }
 
+  toggleHydrationNodesHighlights(toggle: boolean) {
+    if (toggle) {
+      this.hightlightHydrationNodes();
+    } else {
+      this.removeHydrationNodesHightlights();
+    }
+    this.showHydrationNodeHighlights = toggle;
+  }
+
   hightlightHydrationNodes() {
     this._messageBus.emit('createHydrationOverlay');
   }
@@ -377,8 +384,8 @@ export class DirectiveExplorerComponent {
     this._messageBus.emit('removeHydrationOverlay');
   }
 
-  refreshHydrationNodeHighlightsIfNeeded() {
-    if (this.showHydrationNodeHighlights()) {
+  private refreshHydrationNodeHighlightsIfNeeded() {
+    if (this.showHydrationNodeHighlights) {
       this.removeHydrationNodesHightlights();
       this.hightlightHydrationNodes();
     }

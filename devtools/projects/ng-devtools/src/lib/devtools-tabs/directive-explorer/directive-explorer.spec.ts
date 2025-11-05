@@ -207,15 +207,15 @@ describe('DirectiveExplorerComponent', () => {
       expect(messageBusMock.emit).toHaveBeenCalledWith('removeHydrationOverlay');
     });
 
-    it('should show hydration slide toggle', () => {
+    it('should show hydration checkbox toggle', () => {
       fixture.componentRef.setInput('isHydrationEnabled', true);
       fixture.detectChanges();
-      const toggle = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const toggle = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle).toBeTruthy();
 
       fixture.componentRef.setInput('isHydrationEnabled', false);
       fixture.detectChanges();
-      const toggle2 = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const toggle2 = fixture.debugElement.query(By.css('#show-hydration-overlays'));
       expect(toggle2).toBeFalsy();
     });
   });
