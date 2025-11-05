@@ -200,6 +200,15 @@
             margin-block-start: 1rem;
           }
         }
+
+        .docs-member-tag {
+          color: var(--page-background);
+          background-color: var(--quaternary-contrast);
+          width: max-content;
+          border-radius: 0.25rem;
+          padding: 0.1rem 0.25rem;
+          margin-block-start: 1rem;
+        }
       }
     }
   }

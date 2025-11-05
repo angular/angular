@@ -17,6 +17,7 @@ import {
 } from '../entities/categorization.mjs';
 import {MemberEntryRenderable, MethodEntryRenderable} from '../entities/renderables.mjs';
 import {
+  PARAM_KEYWORD_CLASS_NAME,
   REFERENCE_MEMBER_CARD,
   REFERENCE_MEMBER_CARD_BODY,
   REFERENCE_MEMBER_CARD_HEADER,
@@ -47,6 +48,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
       ) : member.htmlDescription || member.deprecationMessage ? (
         <div className={REFERENCE_MEMBER_CARD_ITEM}>
           <DeprecatedLabel entry={member} />
+          {member.experimental && <span className="docs-member-tag">@experimental</span>}
           <RawHtml value={member.htmlDescription} />
         </div>
       ) : (
