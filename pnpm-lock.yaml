@@ -1304,6 +1304,9 @@ importers:
       '@angular/language-service':
         specifier: workspace:*
         version: link:../packages/language-service
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
     devDependencies:
       '@types/jasmine':
         specifier: ~5.1.9
@@ -1335,9 +1338,6 @@ importers:
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       vscode-jsonrpc:
         specifier: 6.0.0
         version: 6.0.0
