@@ -16,7 +16,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A signal wrapper for directionality.",
+          "description": "Text direction.",
           "jsdocTags": []
         },
         {
@@ -127,7 +127,7 @@
                 {
                   "name": "widget",
                   "description": "",
-                  "type": "ToolbarWidget<V> | ToolbarWidgetGroup<V>",
+                  "type": "ToolbarWidget<V>",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -141,7 +141,7 @@
               {
                 "name": "widget",
                 "description": "",
-                "type": "ToolbarWidget<V> | ToolbarWidgetGroup<V>",
+                "type": "ToolbarWidget<V>",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -176,7 +176,7 @@
                 {
                   "name": "widget",
                   "description": "",
-                  "type": "ToolbarWidget<V> | ToolbarWidgetGroup<V>",
+                  "type": "ToolbarWidget<V>",
                   "isOptional": false,
                   "isRestParam": false
                 }
@@ -190,7 +190,7 @@
               {
                 "name": "widget",
                 "description": "",
-                "type": "ToolbarWidget<V> | ToolbarWidgetGroup<V>",
+                "type": "ToolbarWidget<V>",
                 "isOptional": false,
                 "isRestParam": false
               }
@@ -228,8 +228,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 62,
-        "endLine": 159
+        "startLine": 63,
+        "endLine": 158
       }
     },
     {
@@ -242,10 +242,13 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "readonly"
+            "readonly",
+            "input"
           ],
           "description": "A unique identifier for the widget.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "toolbar",
@@ -288,6 +291,49 @@
             "readonly"
           ],
           "description": "Whether the widget is 'hard' disabled, which is different from `aria-disabled`. A hard disabled widget cannot receive focus.",
+          "jsdocTags": []
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The value associated with the widget.",
+          "jsdocTags": [],
+          "inputAlias": "value",
+          "isRequiredInput": true
+        },
+        {
+          "name": "active",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the widget is currently active (focused).",
+          "jsdocTags": []
+        },
+        {
+          "name": "selected",
+          "type": "() => any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the widget is selected (only relevant in a selection group).",
+          "jsdocTags": []
+        },
+        {
+          "name": "group",
+          "type": "SignalLike<any>",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "",
           "jsdocTags": []
         },
         {
@@ -376,8 +422,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 167,
-        "endLine": 220
+        "startLine": 166,
+        "endLine": 234
       }
     },
     {
@@ -386,16 +432,6 @@
       "entryType": "directive",
       "members": [
         {
-          "name": "id",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A unique identifier for the widget.",
-          "jsdocTags": []
-        },
-        {
           "name": "toolbar",
           "type": "any",
           "memberType": "property",
@@ -403,16 +439,6 @@
             "readonly"
           ],
           "description": "The parent Toolbar UIPattern.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the widget element to be focused on navigation.",
           "jsdocTags": []
         },
         {
@@ -429,80 +455,27 @@
           "isRequiredInput": false
         },
         {
-          "name": "controls",
-          "type": "any",
+          "name": "items",
+          "type": "() => any",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "The controls that can be performed on the widget group.",
+          "description": "The list of toolbar items within the group.",
           "jsdocTags": []
         },
         {
-          "name": "ngOnInit",
-          "signatures": [
-            {
-              "name": "ngOnInit",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
+          "name": "multi",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
           ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnInit",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
+          "description": "Whether the group allows multiple widgets to be selected.",
           "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "ngOnDestroy",
-          "signatures": [
-            {
-              "name": "ngOnDestroy",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
+          "inputAlias": "multi",
+          "isRequiredInput": false
         }
       ],
       "generics": [
@@ -513,17 +486,16 @@
       "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups that\nhave their own internal navigation.",
       "jsdocTags": [],
       "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups that\n * have their own internal navigation.\n */",
-      "implements": [
-        "OnInit",
-        "OnDestroy"
-      ],
+      "implements": [],
       "isStandalone": true,
-      "selector": "",
-      "exportAs": [],
+      "selector": "[ngToolbarWidgetGroup]",
+      "exportAs": [
+        "ngToolbarWidgetGroup"
+      ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 226,
-        "endLine": 270
+        "startLine": 240,
+        "endLine": 268
       }
     }
   ],
@@ -573,6 +545,10 @@
       "@angular/core"
     ],
     [
+      "contentChildren",
+      "@angular/core"
+    ],
+    [
       "ToolbarPattern",
       "@angular/aria/private"
     ],
@@ -585,7 +561,7 @@
       "@angular/aria/private"
     ],
     [
-      "ToolbarWidgetGroupControls",
+      "SignalLike",
       "@angular/aria/private"
     ],
     [
@@ -673,6 +649,22 @@
       "@angular/aria/toolbar"
     ],
     [
+      "ToolbarWidget.value",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidget.active",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidget.selected",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidget.group",
+      "@angular/aria/toolbar"
+    ],
+    [
       "ToolbarWidget.ngOnInit",
       "@angular/aria/toolbar"
     ],
@@ -685,15 +677,7 @@
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidgetGroup.id",
-      "@angular/aria/toolbar"
-    ],
-    [
       "ToolbarWidgetGroup.toolbar",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.element",
       "@angular/aria/toolbar"
     ],
     [
@@ -701,15 +685,11 @@
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidgetGroup.controls",
+      "ToolbarWidgetGroup.items",
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidgetGroup.ngOnInit",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.ngOnDestroy",
+      "ToolbarWidgetGroup.multi",
       "@angular/aria/toolbar"
     ]
   ]
