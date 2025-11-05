@@ -19,6 +19,16 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
+        @if (isHydrationEnabled) {
+          <div class="hydration">
+            <input
+              id="show-hydration-overlays"
+              type="checkbox"
+              (change)="toggleHydrationNodesHighlights($event.target.checked)"
+            />
+            <label for="show-hydration-overlays">Show hydration overlays</label>
+          </div>
+        }
         @if (parents()) {
           <ng-breadcrumbs
             (mouseLeaveNode)="unhighlight()"
@@ -51,14 +61,5 @@
         <p class="no-selected-element">No selected element</p>
       }
     </div>
-    @if (isHydrationEnabled) {
-      <div class="hydration">
-        <mat-slide-toggle
-          [(ngModel)]="showHydrationNodeHighlights"
-          (change)="showHydrationNodeHighlights() ? hightlightHydrationNodes() : removeHydrationNodesHightlights()"
-          >Show hydration overlays</mat-slide-toggle
-        >
-      </div>
-    }
   </as-split-area>
 </as-split>
