@@ -180,7 +180,7 @@ export function locateHostElement(
   const preserveContent =
     preserveHostContent ||
     encapsulation === ViewEncapsulation.ShadowDom ||
-    encapsulation === ViewEncapsulation.IsolatedShadowDom;
+    encapsulation === ViewEncapsulation.ExperimentalIsolatedShadowDom;
   const rootElement = renderer.selectRootElement(elementOrSelector, preserveContent);
   applyRootElementTransform(rootElement as HTMLElement);
   return rootElement;
