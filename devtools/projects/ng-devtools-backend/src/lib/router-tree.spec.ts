@@ -20,7 +20,6 @@ describe('parseRoutes', () => {
       isAux: false,
       isLazy: false,
       isActive: true,
-      isRedirect: false,
     });
   });
 
@@ -37,11 +36,16 @@ describe('parseRoutes', () => {
       'isAux': false,
       'isLazy': false,
       'isActive': true,
-      isRedirect: false,
     });
   });
 
   it('should work with nested routes', () => {
+    function titleResolver() {
+      return 'title';
+    }
+
+    const redirectResolver = () => 'redirect';
+
     const nestedRouter = {
       config: [
         {
@@ -59,22 +63,31 @@ describe('parseRoutes', () => {
           data: {
             name: 'component-two',
           },
+          title: 'Component Two',
           children: [
+            {
+              path: 'component-two-one',
+              component: {
+                name: 'component-two-one',
+              },
+              title: () => 'Component Two One',
+              _loadedConfig: {
+                routes: [
+                  {
+                    path: 'component-two-one-one',
+                    component: {
+                      name: 'component-two-one-one',
+                    },
+                  },
+                ],
+              },
+            },
             {
               path: 'component-two-two',
               component: {
                 name: 'component-two-two',
               },
-              _loadedConfig: {
-                routes: [
-                  {
-                    path: 'component-two-two-two',
-                    component: {
-                      name: 'component-two-two-two',
-                    },
-                  },
-                ],
-              },
+              title: titleResolver,
             },
           ],
         },
@@ -89,6 +102,10 @@ describe('parseRoutes', () => {
         {
           path: 'redirect-fn',
           redirectTo: () => '/target',
+        },
+        {
+          path: 'redirect-named-fn',
+          redirectTo: redirectResolver,
         },
       ],
     };
@@ -110,7 +127,6 @@ describe('parseRoutes', () => {
           'isAux': true,
           'isLazy': false,
           'isActive': undefined,
-          'isRedirect': false,
         },
         {
           'component': 'component-two',
@@ -121,12 +137,27 @@ describe('parseRoutes', () => {
           'providers': [],
           'path': '/component-two',
           'pathMatch': undefined,
+          'title': 'Component Two',
           'data': [{'key': 'name', 'value': 'component-two'}],
           'isAux': false,
           'isLazy': false,
           'isActive': undefined,
-          'isRedirect': false,
           'children': [
+            {
+              'component': 'component-two-one',
+              'canActivateGuards': [],
+              'canActivateChildGuards': [],
+              'canMatchGuards': [],
+              'canDeactivateGuards': [],
+              'providers': [],
+              'path': '/component-two/component-two-one',
+              'pathMatch': undefined,
+              'title': '[Function]',
+              'data': [],
+              'isAux': false,
+              'isLazy': false,
+              'isActive': undefined,
+            },
             {
               'component': 'component-two-two',
               'canActivateGuards': [],
@@ -136,11 +167,11 @@ describe('parseRoutes', () => {
               'providers': [],
               'path': '/component-two/component-two-two',
               'pathMatch': undefined,
+              'title': 'titleResolver()',
               'data': [],
               'isAux': false,
               'isLazy': false,
               'isActive': undefined,
-              'isRedirect': false,
             },
           ],
         },
@@ -157,7 +188,6 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': true,
           'isActive': undefined,
-          'isRedirect': false,
         },
         {
           'component': 'no-name-route',
@@ -172,7 +202,6 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': false,
           'isActive': undefined,
-          'isRedirect': true,
           'redirectTo': 'redirectTo',
         },
         {
@@ -188,13 +217,26 @@ describe('parseRoutes', () => {
           'isAux': false,
           'isLazy': false,
           'isActive': undefined,
-          'isRedirect': true,
           'redirectTo': '[Function]',
+        },
+        {
+          'component': 'no-name-route',
+          'canActivateGuards': [],
+          'canActivateChildGuards': [],
+          'canMatchGuards': [],
+          'canDeactivateGuards': [],
+          'providers': [],
+          'path': '/redirect-named-fn',
+          'pathMatch': undefined,
+          'data': [],
+          'isAux': false,
+          'isLazy': false,
+          'isActive': undefined,
+          'redirectTo': 'redirectResolver()',
         },
       ],
       'isAux': false,
       'isLazy': false,
-      'isRedirect': false,
       'data': [],
       'isActive': true,
     } as any);

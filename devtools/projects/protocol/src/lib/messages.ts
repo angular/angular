@@ -329,7 +329,6 @@ export interface Route {
   isActive: boolean;
   isAux: boolean;
   isLazy: boolean;
-  isRedirect: boolean;
 }
 
 export interface AngularDetection {
