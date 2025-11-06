@@ -47,10 +47,12 @@ import {
   provideNgReflectAttributes,
   ɵSSR_CONTENT_INTEGRITY_MARKER as SSR_CONTENT_INTEGRITY_MARKER,
   provideZoneChangeDetection,
+  signal,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   bootstrapApplication,
+  createApplication,
   BootstrapContext,
   BrowserModule,
   provideClientHydration,
@@ -765,6 +767,24 @@ class HiddenModule {}
       afterEach(() => {
         doc = '<html><head></head><body><app></app></body></html>';
         TestBed.resetTestingModule();
+      });
+
+      it('should render with `createApplication`', async () => {
+        const output = await renderApplication(
+          async (context) => {
+            const appRef = await createApplication(
+              {
+                providers: [provideZoneChangeDetection()],
+              },
+              context,
+            );
+            appRef.bootstrap(createMyAsyncServerApp(true));
+            return appRef;
+          },
+          {document: doc},
+        );
+
+        expect(output).toBe(expectedOutput);
       });
 
       it('using long form should work', async () => {
