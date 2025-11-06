@@ -2,7 +2,7 @@
   "name": "ng-template",
   "displayName": "Angular Language Service",
   "description": "Editor services for Angular templates",
-  "version": "0.0.0",
+  "version": "20.3.3",
   "private": true,
   "publisher": "Angular",
   "icon": "angular.png",
@@ -257,7 +257,7 @@
     "test:inspect-common": "bazel run --config=debug //vscode-ng-language-service/common/tests:test",
     "test:inspect-server": "bazel run --config=debug //vscode-ng-language-service/server/src/tests:test",
     "test:inspect-syntaxes": "bazel run --config=debug //vscode-ng-language-service/syntaxes/test:test",
-    "release": "tsx ./tools/release.mts"
+    "release": "tsx --tsconfig=tools/tsconfig.json tools/release.mts"
   },
   "dependencies": {
     "@angular/language-service": "workspace:*",

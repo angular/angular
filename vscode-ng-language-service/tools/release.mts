@@ -33,6 +33,9 @@ const additionBazelReleaseArgs = [
 /** The absolute path to the repository root. */
 const rootPath = join(import.meta.dirname, '../../');
 
+/** The prefix for all release tags created by this script. */
+const tagPrefix = 'vsix-';
+
 /** The path to the `package.json` file for the extension. */
 const packageJsonPath = 'vscode-ng-language-service/package.json';
 
@@ -76,9 +79,10 @@ async function main(): Promise<void> {
   console.log(chalk.blue(`Releasing from ${branchToReleaseFrom}.`));
   await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
 
-  const newVersion = await getNewVersion();
+  const currentVersion = await getCurrentVersion();
+  const newVersion = await getNewVersion(currentVersion);
   const releaseBranch = await createReleaseBranch(newVersion);
-  await generateChangelog();
+  await generateChangelog(currentVersion, newVersion);
   await updatingPackageJsonVersion(newVersion);
 
   await installDependencies();
@@ -150,10 +154,11 @@ async function getLastReleaseSha(version = ''): Promise<string> {
  * user is then prompted to enter the new version number. The input is validated to ensure that it
  * is a valid semantic version and that it is greater than the current version.
  *
+ * @param currentVersion The current extension version.
+ *
  * @returns A promise that resolves to the new version string.
  */
-async function getNewVersion(): Promise<string> {
-  const currentVersion = await getCurrentVersion();
+async function getNewVersion(currentVersion: string): Promise<string> {
   const suggestedVersion = semver.inc(currentVersion, 'patch') ?? currentVersion;
 
   const newVersion = await input({
@@ -181,7 +186,6 @@ async function getNewVersion(): Promise<string> {
 
 /**
  * Reads the current version from the `package.json` file.
- *
  * @returns A promise that resolves to the current version string.
  */
 async function getCurrentVersion(): Promise<string> {
@@ -216,18 +220,38 @@ async function prepareReleasePullRequest(newVersion: string, releaseBranch: stri
 }
 
 /**
- * Prompts the user to manually update the changelog.
+ * Generates the changelog for the new version.
  *
- * This function is a placeholder for future automation. Currently, it instructs the user to update
- * the `CHANGELOG.md` file and waits for them to confirm that the changes have been saved.
+ * This function gets all commits between the last release and the current `HEAD`, filters them
+ * to include only those that are relevant for the changelog, and then prepends them to the
+ * `CHANGELOG.md` file.
+ *
+ * @param fromVersion The version to generate the changelog from.
+ * @param toVersion The version to generate the changelog for.
  */
-async function generateChangelog(): Promise<void> {
-  // TODO this could be done automatically.
-  console.log(chalk.yellow(`Please update the changelog here: ${changelogPath}`));
+async function generateChangelog(fromVersion: string, toVersion: string): Promise<void> {
+  let {stdout: commits} = await exec(
+    `git log --left-only FETCH_HEAD...${tagPrefix}${fromVersion} -E ` +
+      '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
+      '--format="format:* %s (%h)[https://github.com/angular/angular/commit/%H]"',
+  );
+
+  commits = commits.trim();
+
+  const now = new Date();
+  const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const newChangelogEntry = `## ${toVersion} (${date})\n\n${commits}\n\n`;
+
+  const changelogContents = await readFile(changelogPath, 'utf-8');
+  await writeFile(changelogPath, newChangelogEntry + changelogContents);
+
+  console.log(chalk.yellow(`Please review the changes the changelog here: ${changelogPath}`));
 
   await input({
-    message: 'Press Enter once the changelog has been saved.',
+    message: 'Please press Enter to proceed.',
   });
+
+  await exec(`pnpm ng-dev format "${changelogPath}"`);
 }
 
 /**
@@ -263,16 +287,13 @@ async function waitForPRToBeMergedAndTag(
     message: 'Press Enter once the release PR has been merged.',
   });
 
-  console.log(chalk.blue('Fetching latest changes from upstream...'));
   await exec(`git fetch ${angularRepoRemote} ${branchToReleaseFrom}`);
-  console.log(chalk.green('Successfully fetched latest changes.'));
-
-  console.log(chalk.blue('Finding merged release commit...'));
   const mergedCommitSha = await getLastReleaseSha(newVersion);
 
   console.log(chalk.green(`Tagging the commit: ${mergedCommitSha}`));
-  await exec(`git tag vsix-${newVersion} ${mergedCommitSha}`);
-  await exec('git push origin --tags');
+  const tagName = `${tagPrefix}${newVersion}`;
+  await exec(`git tag ${tagName} ${mergedCommitSha}`);
+  await exec(`git push ${angularRepoRemote} tag ${tagName}`);
   console.log(chalk.green('Release tag pushed to origin.'));
 }
 
