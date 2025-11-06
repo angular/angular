@@ -24,5 +24,5 @@ For example, you could import the global variants for French \(`fr`\) in `main.t
 
 HELPFUL: In an `NgModules` application, you would import it in your `app.module`.
 
-[CliMain]: cli "CLI Overview and Command Reference | Angular"
-[CliBuild]: cli/build "ng build | CLI | Angular"
+[CliMain]: cli 'CLI Overview and Command Reference | Angular'
+[CliBuild]: cli/build 'ng build | CLI | Angular'

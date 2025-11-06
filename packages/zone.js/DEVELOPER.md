@@ -1,7 +1,6 @@
-To run tests
-------------
+## To run tests
 
-*Note*: some of these tests no longer run. Be sure to check that CI is green.
+_Note_: some of these tests no longer run. Be sure to check that CI is green.
 
 Make sure your environment is set up with:
 
@@ -31,8 +30,7 @@ Run all checks (lint/format/browser test/test-node):
 
 `yarn ci`
 
-Before Commit
-------------
+## Before Commit
 
 Please make sure you pass all following checks before commit
 
@@ -41,8 +39,7 @@ Please make sure you pass all following checks before commit
 - yarn promisetest (promise a+ test)
 - yarn bazel test //packages/zone.js/... (all tests)
 
-Webdriver Test
---------------
+## Webdriver Test
 
 `zone.js` also supports running webdriver e2e tests.
 
@@ -66,8 +63,7 @@ yarn webdriver-http
 yarn webdriver-sauce-test
 ```
 
-Releasing
----------
+## Releasing
 
 Releasing `zone.js` is a two step process.
 
@@ -102,7 +98,6 @@ git add packages/zone.js/CHANGELOG.md packages/zone.js/package.json
 git commit -m "release: cut the ${TAG} release"
 git push origin "release_${TAG}"
 ```
-
 
 #### 2. Cutting a release
 

@@ -5,9 +5,9 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Every component must have:
 
-* A TypeScript class with _behaviors_ such as handling user input and fetching data from a server
-* An HTML template that controls what renders into the DOM
-* A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
+- A TypeScript class with _behaviors_ such as handling user input and fetching data from a server
+- An HTML template that controls what renders into the DOM
+- A [CSS selector](https://developer.mozilla.org/docs/Learn/CSS/Building_blocks/Selectors) that defines how the component is used in HTML
 
 You provide Angular-specific information for a component by adding a `@Component` [decorator](https://www.typescriptlang.org/docs/handbook/decorators.html) on top of the TypeScript class:
 
@@ -70,7 +70,7 @@ import {ProfilePhoto} from './profile-photo';
 export class UserProfile { }
 ```
 
-By default, Angular components are *standalone*, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgModule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules) for details.
+By default, Angular components are _standalone_, meaning that you can directly add them to the `imports` array of other components. Components created with an earlier version of Angular may instead specify `standalone: false` in their `@Component` decorator. For these components, you instead import the `NgModule` in which the component is defined. See the full [`NgModule` guide](guide/ngmodules) for details.
 
 Important: In Angular versions before 19.0.0, the `standalone` option defaults to `false`.
 
@@ -97,8 +97,8 @@ You show a component by creating a matching HTML element in the template of _oth
 export class ProfilePhoto { }
 
 @Component({
-  imports: [ProfilePhoto],
-  template: `<profile-photo />`
+imports: [ProfilePhoto],
+template: `<profile-photo />`
 })
 export class UserProfile { }
 </docs-code>
@@ -120,6 +120,5 @@ flowchart TD
     D[ProfilePic]
     E[UserBio]
 ```
-
 
 This tree structure is important to understanding several other Angular concepts, including [dependency injection](guide/di) and [child queries](guide/components/queries).

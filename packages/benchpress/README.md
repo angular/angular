@@ -28,7 +28,6 @@ use those tools in an automated way to measure web app performance, especially n
 
 Benchpress tries to fill this gap, i.e. allow to access all kinds of performance metrics in an automated way.
 
-
 # How it works
 
 Benchpress uses webdriver to read out the so-called "performance log" of browsers. This contains all kinds of interesting
@@ -36,28 +35,25 @@ data, e.g. when a script started/ended executing, gc started/ended, the browser 
 
 As browsers are different, benchpress has plugins to normalizes these events.
 
-
 # Features
 
-* Provides a loop (so-called "Sampler") that executes the benchmark multiple times
-* Automatically waits/detects until the browser is "warm"
-* Reporters provide a normalized way to store results:
+- Provides a loop (so-called "Sampler") that executes the benchmark multiple times
+- Automatically waits/detects until the browser is "warm"
+- Reporters provide a normalized way to store results:
   - console reporter
   - file reporter
   - Google Big Query reporter (coming soon)
-* Supports micro benchmarks as well via `console.time()` / `console.timeEnd()`
+- Supports micro benchmarks as well via `console.time()` / `console.timeEnd()`
   - `console.time()` / `console.timeEnd()` mark the timeline in the DevTools, so it makes sense
     to use them in micro benchmark to visualize and understand them, with or without benchpress.
   - running micro benchmarks in benchpress leverages the already existing reporters,
     the sampler and the auto warmup feature of benchpress.
 
-
 # Supported browsers
 
-* Chrome on all platforms
-* Mobile Safari (iOS)
-* Firefox (work in progress)
-
+- Chrome on all platforms
+- Mobile Safari (iOS)
+- Firefox (work in progress)
 
 # How to write a benchmark
 
@@ -66,7 +62,6 @@ and a benchmark driver. The application under test is the
 actual application consisting of html/css/js that should be tests.
 A benchmark driver is a webdriver test that interacts with the
 application under test.
-
 
 ## A simple benchmark
 
@@ -146,7 +141,7 @@ take the average for it.
 
 A test driver for this would look like this:
 
-````
+```
 driver.get('.../index.html');
 
 var measureBtn = driver.findElement(By.id('measure'));
@@ -159,7 +154,7 @@ runner.sample({
     measureBtn.click();
   }
 });
-````
+```
 
 When looking into the DevTools Timeline, we see a marker as well:
 ![Marked Timeline](docs/marked_timeline.png)
@@ -232,30 +227,30 @@ To collect these metrics, you need the following corresponding extra providers:
 
 # Best practices
 
-* Use normalized environments
+- Use normalized environments
   - metrics that are dependent on the performance of the execution environment must be executed on a normalized machine
   - e.g. a real mobile device whose cpu frequency is set to a fixed value.
-      * see our [build script](https://github.com/angular/angular/blob/2.4.9/scripts/ci/android_cpu.sh)
-      * this requires root access, e.g. via a userdebug build of Android on a Google Nexus device
-        (see [here](https://source.android.com/source/building) and [here](https://source.android.com/source/building#obtaining-proprietary-binaries))
+    - see our [build script](https://github.com/angular/angular/blob/2.4.9/scripts/ci/android_cpu.sh)
+    - this requires root access, e.g. via a userdebug build of Android on a Google Nexus device
+      (see [here](https://source.android.com/source/building) and [here](https://source.android.com/source/building#obtaining-proprietary-binaries))
   - e.g. a calibrated machine that does not run background jobs, has a fixed cpu frequency, ...
 
-* Use relative comparisons
+- Use relative comparisons
   - relative comparisons are less likely to change over time and help to interpret the results of benchmarks
   - e.g. compare an example written using a ui framework against a hand coded example and track the ratio
 
-* Assert post-commit for commit ranges
+- Assert post-commit for commit ranges
   - running benchmarks can take some time. Running them before every commit is usually too slow.
   - when a regression is detected for a commit range, use bisection to find the problematic commit
 
-* Repeat benchmarks multiple times in a fresh window
+- Repeat benchmarks multiple times in a fresh window
   - run the same benchmark multiple times in a fresh window and then take the minimal average value of each benchmark run
 
-* Use force gc with care
+- Use force gc with care
   - forcing gc can skew the script execution time and gcTime numbers,
     but might be needed to get stable gc time / gc amount numbers
 
-* Open a new window for every test
+- Open a new window for every test
   - browsers (e.g. chrome) might keep JIT statistics over page reloads and optimize pages differently depending on what has been loaded before
 
 # Detailed overview
@@ -264,42 +259,40 @@ To collect these metrics, you need the following corresponding extra providers:
 
 Definitions:
 
-* valid sample: a sample that represents the world that should be measured in a good way.
-* complete sample: sample of all measure values collected so far
+- valid sample: a sample that represents the world that should be measured in a good way.
+- complete sample: sample of all measure values collected so far
 
 Components:
 
-* Runner
+- Runner
   - contains a default configuration
   - creates a new injector for every sample call, via which all other components are created
 
-* Sampler
+- Sampler
   - gets data from the metrics
   - reports measure values immediately to the reporters
   - loops until the validator is able to extract a valid sample out of the complete sample (see below).
   - reports the valid sample and the complete sample to the reporters
 
-* Metric
+- Metric
   - gets measure values from the browser
   - e.g. reads out performance logs, DOM values, JavaScript values
 
-* Validator
+- Validator
   - extracts a valid sample out of the complete sample of all measure values.
   - e.g. wait until there are 10 samples and take them as valid sample (would include warmup time)
   - e.g. wait until the regression slope for the metric `scriptTime` through the last 10 measure values is >=0, i.e. the values for the `scriptTime` metric are no more decreasing
 
-* Reporter
+- Reporter
   - reports measure values, the valid sample and the complete sample to backends
   - e.g. a reporter that prints to the console, a reporter that reports values into Google BigQuery, ...
 
-* WebDriverAdapter
+- WebDriverAdapter
   - abstraction over the used web driver client
   - one implementation for every webdriver client
     E.g. one for selenium-webdriver Node.js module, dart async webdriver, dart sync webdriver, ...
 
-* WebDriverExtension
+- WebDriverExtension
   - implements additional methods that are standardized in the webdriver protocol using the WebDriverAdapter
   - provides functionality like force gc, read out performance logs in a normalized format
   - one implementation per browser, e.g. one for Chrome, one for mobile Safari, one for Firefox
-
-

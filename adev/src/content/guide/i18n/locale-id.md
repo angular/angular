@@ -1,13 +1,13 @@
 # Refer to locales by ID
 
-Angular uses the Unicode *locale identifier* \(Unicode locale ID\) to find the correct locale data for internationalization of text strings.
+Angular uses the Unicode _locale identifier_ \(Unicode locale ID\) to find the correct locale data for internationalization of text strings.
 
 <docs-callout title="Unicode locale ID">
 
-* A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification].
-    For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleIDs].
+- A locale ID conforms to the [Unicode Common Locale Data Repository (CLDR) core specification][UnicodeCldrDevelopmentCoreSpecification].
+  For more information about locale IDs, see [Unicode Language and Locale Identifiers][UnicodeCldrDevelopmentCoreSpecificationLocaleIDs].
 
-* CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID
+- CLDR and Angular use [BCP 47 tags][RfcEditorInfoBcp47] as the base for the locale ID
 
 </docs-callout>
 
@@ -26,7 +26,7 @@ The differences include grammar, punctuation, formats for currency, decimal numb
 For the examples in this guide, use the following languages and locales.
 
 | Language | Locale                   | Unicode locale ID |
-|:---      |:---                      |:---               |
+| :------- | :----------------------- | :---------------- |
 | English  | Canada                   | `en-CA`           |
 | English  | United States of America | `en-US`           |
 | French   | Canada                   | `fr-CA`           |
@@ -48,6 +48,7 @@ To change the source locale of your project for the build, complete the followin
 
 1. Open the [`angular.json`][GuideWorkspaceConfig] workspace build configuration file.
 2. Add or modify the `sourceLocale` field inside the `i18n` section:
+
 ```json
 {
   "projects": {
@@ -66,12 +67,8 @@ To change the source locale of your project for the build, complete the followin
   <docs-pill href="guide/i18n/format-data-locale" title="Format data based on locale"/>
 </docs-pill-row>
 
-[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
-
-[GithubAngularAngularTreeMasterPackagesCommonLocales]: <https://github.com/angular/angular/tree/main/packages/common/locales> "angular/packages/common/locales | angular/angular | GitHub"
-
-[RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 "BCP 47 | RFC Editor"
-
-[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/index/cldr-spec "Core Specification | Unicode CLDR Project"
-
-[UnicodeCldrDevelopmentCoreSpecificationLocaleID]: https://cldr.unicode.org/index/cldr-spec/picking-the-right-language-code "Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project"
+[GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'
+[GithubAngularAngularTreeMasterPackagesCommonLocales]: https://github.com/angular/angular/tree/main/packages/common/locales 'angular/packages/common/locales | angular/angular | GitHub'
+[RfcEditorInfoBcp47]: https://www.rfc-editor.org/info/bcp47 'BCP 47 | RFC Editor'
+[UnicodeCldrDevelopmentCoreSpecification]: https://cldr.unicode.org/index/cldr-spec 'Core Specification | Unicode CLDR Project'
+[UnicodeCldrDevelopmentCoreSpecificationLocaleID]: https://cldr.unicode.org/index/cldr-spec/picking-the-right-language-code 'Unicode Language and Locale Identifiers - Core Specification | Unicode CLDR Project'

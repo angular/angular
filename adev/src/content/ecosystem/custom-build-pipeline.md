@@ -8,9 +8,9 @@ This page explores the **rare use cases** when you need a custom build pipeline 
 
 There are some niche use cases when you may want to maintain a custom build pipeline. For example:
 
-* You have an existing app using a different toolchain and you’d like to add Angular to it
-* You’re strongly coupled to [module federation](https://module-federation.io/) and unable to adopt bundler-agnostic [native federation](https://www.npmjs.com/package/@angular-architects/native-federation)
-* You’d like to create an short-lived experiment using your favorite build tool
+- You have an existing app using a different toolchain and you’d like to add Angular to it
+- You’re strongly coupled to [module federation](https://module-federation.io/) and unable to adopt bundler-agnostic [native federation](https://www.npmjs.com/package/@angular-architects/native-federation)
+- You’d like to create an short-lived experiment using your favorite build tool
 
 ## What are the options?
 

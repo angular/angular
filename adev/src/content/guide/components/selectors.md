@@ -120,7 +120,6 @@ default, the Angular CLI uses `app-`.
 
 IMPORTANT: Angular uses the `ng` selector prefix for its own framework APIs. Never use `ng` as a selector prefix for your own custom components.
 
-
 ### When to use an attribute selector
 
 You should consider an attribute selector when you want to create a component on a standard native

@@ -12,73 +12,73 @@ You can also configure routes to guard against unexpected or unauthorized behavi
 
 ## Objectives
 
-* Organize a sample application's features into modules.
-* Define how to navigate to a component.
-* Pass information to a component using a parameter.
-* Structure routes by nesting several routes.
-* Check whether users can access a route.
-* Control whether the application can discard unsaved changes.
-* Improve performance by pre-fetching route data and lazy loading feature modules.
-* Require specific criteria to load components.
+- Organize a sample application's features into modules.
+- Define how to navigate to a component.
+- Pass information to a component using a parameter.
+- Structure routes by nesting several routes.
+- Check whether users can access a route.
+- Control whether the application can discard unsaved changes.
+- Improve performance by pre-fetching route data and lazy loading feature modules.
+- Require specific criteria to load components.
 
 ## Create a sample application
 
-Using the Angular CLI, create a new application, *angular-router-sample*.
-This application will have two components: *crisis-list* and *heroes-list*.
+Using the Angular CLI, create a new application, _angular-router-sample_.
+This application will have two components: _crisis-list_ and _heroes-list_.
 
-1. Create a new Angular project, *angular-router-sample*.
+1. Create a new Angular project, _angular-router-sample_.
 
-    <docs-code language="shell">
-    ng new angular-router-sample
-    </docs-code>
+   <docs-code language="shell">
+   ng new angular-router-sample
+   </docs-code>
 
-    When prompted with `Would you like to add Angular routing?`, select `N`.
+   When prompted with `Would you like to add Angular routing?`, select `N`.
 
-    When prompted with `Which stylesheet format would you like to use?`, select `CSS`.
+   When prompted with `Which stylesheet format would you like to use?`, select `CSS`.
 
-    After a few moments, a new project, `angular-router-sample`, is ready.
+   After a few moments, a new project, `angular-router-sample`, is ready.
 
 1. From your terminal, navigate to the `angular-router-sample` directory.
-1. Create a component, *crisis-list*.
+1. Create a component, _crisis-list_.
 
-    <docs-code language="shell">
-    ng generate component crisis-list
-    </docs-code>
+<docs-code language="shell">
+ng generate component crisis-list
+</docs-code>
 
 1. In your code editor, locate the file, `crisis-list.component.html` and replace the placeholder content with the following HTML.
 
-    <docs-code header="src/app/crisis-list/crisis-list.component.html" path="adev/src/content/examples/router-tutorial/src/app/crisis-list/crisis-list.component.html"/>
+<docs-code header="src/app/crisis-list/crisis-list.component.html" path="adev/src/content/examples/router-tutorial/src/app/crisis-list/crisis-list.component.html"/>
 
-1. Create a second component, *heroes-list*.
+1. Create a second component, _heroes-list_.
 
-    <docs-code language="shell">
-    ng generate component heroes-list
-    </docs-code>
+<docs-code language="shell">
+ng generate component heroes-list
+</docs-code>
 
 1. In your code editor, locate the file, `heroes-list.component.html` and replace the placeholder content with the following HTML.
 
-    <docs-code header="src/app/heroes-list/heroes-list.component.html" path="adev/src/content/examples/router-tutorial/src/app/heroes-list/heroes-list.component.html"/>
+<docs-code header="src/app/heroes-list/heroes-list.component.html" path="adev/src/content/examples/router-tutorial/src/app/heroes-list/heroes-list.component.html"/>
 
 1. In your code editor, open the file, `app.component.html` and replace its contents with the following HTML.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="setup"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="setup"/>
 
 1. Verify that your new application runs as expected by running the `ng serve` command.
 
-    <docs-code language="shell">
-    ng serve
-    </docs-code>
+<docs-code language="shell">
+ng serve
+</docs-code>
 
 1. Open a browser to `http://localhost:4200`.
 
-    You should see a single web page, consisting of a title and the HTML of your two components.
+   You should see a single web page, consisting of a title and the HTML of your two components.
 
 ## Define your routes
 
 In this section, you'll define two routes:
 
-* The route `/crisis-center` opens the `crisis-center` component.
-* The route `/heroes-list` opens the `heroes-list` component.
+- The route `/crisis-center` opens the `crisis-center` component.
+- The route `/heroes-list` opens the `heroes-list` component.
 
 A route definition is a JavaScript object.
 Each route typically has two properties.
@@ -88,18 +88,18 @@ The second property, `component`, is a string that specifies what component your
 1. From your code editor, create and open the `app.routes.ts` file.
 1. Create and export a routes list for your application:
 
-    ```ts
-    import {Routes} from '@angular/router';
+   ```ts
+   import {Routes} from '@angular/router';
 
-    export const routes = [];
-    ```
+   export const routes = [];
+   ```
 
 1. Add two routes for your first two components:
 
-    ```ts
-    {path: 'crisis-list', component: CrisisListComponent},
-    {path: 'heroes-list', component: HeroesListComponent},
-    ```
+   ```ts
+   {path: 'crisis-list', component: CrisisListComponent},
+   {path: 'heroes-list', component: HeroesListComponent},
+   ```
 
 This routes list is an array of JavaScript objects, with each object defining the properties of a route.
 
@@ -112,16 +112,16 @@ You import this provider function from `@angular/router`.
 1. From your code editor, open the `app.config.ts` file.
 1. Add the following import statements:
 
-    ```ts
-    import { provideRouter } from '@angular/router';
-    import { routes } from './app.routes';
-    ```
+   ```ts
+   import { provideRouter } from '@angular/router';
+   import { routes } from './app.routes';
+   ```
 
 1. Update the providers in the `appConfig`:
 
-    ```ts
-    providers: [provideRouter(routes)]
-    ```
+   ```ts
+   providers: [provideRouter(routes)]
+   ```
 
 For `NgModule` based applications, put the `provideRouter` in the `providers` list of the `AppModule`, or whichever module is passed to `bootstrapModule` in the application.
 
@@ -136,17 +136,17 @@ To implement this functionality, you add the `router-outlet` directive to your t
 1. From your code editor, open the `app.component.html` file.
 1. Delete the following lines.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="components"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="components"/>
 
 1. Add the `router-outlet` directive.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="router-outlet"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="router-outlet"/>
 
 1. Add `RouterOutlet` to the imports of the `AppComponent` in `app.component.ts`
 
-    ```ts
-    imports: [RouterOutlet],
-    ```
+   ```ts
+   imports: [RouterOutlet],
+   ```
 
 View your updated application in your browser.
 You should see only the application title.
@@ -176,16 +176,16 @@ You'll add that functionality in the next section.
 
 1. Open the `app.component.html` file and add the following HTML below the title.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="nav"/>
+   <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="nav"/>
 
-    This HTML uses an Angular directive, `routerLink`.
-    This directive connects the routes you defined to your template files.
+   This HTML uses an Angular directive, `routerLink`.
+   This directive connects the routes you defined to your template files.
 
 1. Add the `RouterLink` directive to the imports list of `AppComponent` in `app.component.ts`.
 
 1. Open the `app.component.css` file and add the following styles.
 
-    <docs-code header="src/app/app.component.css" path="adev/src/content/examples/router-tutorial/src/app/app.component.css"/>
+<docs-code header="src/app/app.component.css" path="adev/src/content/examples/router-tutorial/src/app/app.component.css"/>
 
 If you view your application in the browser, you should see these two links.
 When you click on a link, the corresponding component appears.
@@ -198,7 +198,8 @@ Add this functionality using Angular's `routerLinkActive` directive.
 1. From your code editor, open the `app.component.html` file.
 1. Update the anchor tags to include the `routerLinkActive` directive.
 
-    <docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="routeractivelink"/>
+<docs-code header="src/app/app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="routeractivelink"/>
+
 1. Add the `RouterLinkActive` directive to the `imports` list of `AppComponent` in `app.component.ts`.
 
 View your application again.
@@ -215,17 +216,17 @@ In this step of the tutorial, you add a route that redirects the user to display
 1. From your code editor, open the `app.routes.ts` file.
 1. Update the `routes` section as follows.
 
-    ```ts
-    {path: '', redirectTo: '/heroes-list', pathMatch: 'full'},
-    ```
+   ```ts
+   {path: '', redirectTo: '/heroes-list', pathMatch: 'full'},
+   ```
 
-    Notice that this new route uses an empty string as its path.
-    In addition, it replaces the `component` property with two new ones:
+   Notice that this new route uses an empty string as its path.
+   In addition, it replaces the `component` property with two new ones:
 
-    | Properties   | Details |
-    |:---        |:---    |
-    | `redirectTo` | This property instructs Angular to redirect from an empty path to the `heroes-list` path.                                                                                                                                                       |
-    | `pathMatch`  | This property instructs Angular on how much of the URL to match. For this tutorial, you should set this property to `full`. This strategy is recommended when you have an empty string for a path. For more information about this property, see the [Route API documentation](api/router/Route). |
+   | Properties   | Details                                                                                                                                                                                                                                                                                           |
+   | :----------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+   | `redirectTo` | This property instructs Angular to redirect from an empty path to the `heroes-list` path.                                                                                                                                                                                                         |
+   | `pathMatch`  | This property instructs Angular on how much of the URL to match. For this tutorial, you should set this property to `full`. This strategy is recommended when you have an empty string for a path. For more information about this property, see the [Route API documentation](api/router/Route). |
 
 Now when you open your application, it displays the `heroes-list` component by default.
 
@@ -237,23 +238,23 @@ In this section, you'll create a 404 page and update your route configuration to
 
 1. From the terminal, create a new component, `PageNotFound`.
 
-    <docs-code language="shell">
-    ng generate component page-not-found
-    </docs-code>
+<docs-code language="shell">
+ng generate component page-not-found
+</docs-code>
 
 1. From your code editor, open the `page-not-found.component.html` file and replace its contents with the following HTML.
 
-    <docs-code header="src/app/page-not-found/page-not-found.component.html" path="adev/src/content/examples/router-tutorial/src/app/page-not-found/page-not-found.component.html"/>
+<docs-code header="src/app/page-not-found/page-not-found.component.html" path="adev/src/content/examples/router-tutorial/src/app/page-not-found/page-not-found.component.html"/>
 
 1. Open the `app.routes.ts` file and add the following route to the routes list:
 
-    ```ts
-    {path: '**', component: PageNotFoundComponent}
-    ```
+   ```ts
+   {path: '**', component: PageNotFoundComponent}
+   ```
 
-    The new route uses a path, `**`.
-    This path is how Angular identifies a wildcard route.
-    Any route that does not match an existing route in your configuration will use this route.
+   The new route uses a path, `**`.
+   This path is how Angular identifies a wildcard route.
+   Any route that does not match an existing route in your configuration will use this route.
 
 IMPORTANT: Notice that the wildcard route is placed at the end of the array.
 The order of your routes is important, as Angular applies routes in order and uses the first match it finds.

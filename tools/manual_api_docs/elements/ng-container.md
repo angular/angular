@@ -22,8 +22,8 @@ all under the same root element. That can be easily done by wrapping them in suc
 
 <code-example format="html" language="html">
 
-&lt;ng-container *ngIf="condition"&gt;
-  &hellip;
+&lt;ng-container \*ngIf="condition"&gt;
+&hellip;
 &lt;/ng-container&gt;
 
 </code-example>
@@ -32,11 +32,11 @@ This can also be augmented with an `else` statement alongside an `<ng-template>`
 
 <code-example format="html" language="html">
 
-&lt;ng-container *ngIf="condition; else templateA"&gt;
-  &hellip;
+&lt;ng-container \*ngIf="condition; else templateA"&gt;
+&hellip;
 &lt;/ng-container&gt;
 &lt;ng-template #templateA&gt;
-  &hellip;
+&hellip;
 &lt;/ng-template&gt;
 
 </code-example>
@@ -54,9 +54,9 @@ tempted to try something like:
 <code-example format="html" language="html">
 
 &lt;ul&gt;
-  &lt;li *ngFor="let item of items" *ngIf="item.isValid"&gt;
-    {{ item.name }}
-  &lt;/li&gt;
+&lt;li *ngFor="let item of items" *ngIf="item.isValid"&gt;
+{{ item.name }}
+&lt;/li&gt;
 &lt;/ul&gt;
 
 </code-example>
@@ -67,11 +67,11 @@ an `<ng-container>` element, which would then wrap the other one, like so:
 <code-example format="html" language="html">
 
 &lt;ul&gt;
-  &lt;ng-container *ngFor="let item of items"&gt;
-    &lt;li *ngIf="item.isValid"&gt;
-      {{ item.name }}
-    &lt;/li&gt;
-  &lt;/ng-container&gt;
+&lt;ng-container *ngFor="let item of items"&gt;
+&lt;li *ngIf="item.isValid"&gt;
+{{ item.name }}
+&lt;/li&gt;
+&lt;/ng-container&gt;
 &lt;/ul&gt;
 
 </code-example>
@@ -98,22 +98,21 @@ Like so:
 
 &lt;!-- &hellip; --&gt;
 
-&lt;ng-container *ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'Hello'}"&gt;
+&lt;ng-container \*ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'Hello'}"&gt;
 &lt;/ng-container&gt;
 
 &lt;!-- &hellip; --&gt;
 
-&lt;ng-container *ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'World'}"&gt;
+&lt;ng-container \*ngTemplateOutlet="tmpl; context: {&dollar;implicit: 'World'}"&gt;
 &lt;/ng-container&gt;
 
 &lt;!-- &hellip; --&gt;
 
 &lt;ng-template #tmpl let-text&gt;
-  &lt;h1&gt;{{ text }}&lt;/h1&gt;
+&lt;h1&gt;{{ text }}&lt;/h1&gt;
 &lt;/ng-template&gt;
 
 </code-example>
 
 For more information regarding `NgTemplateOutlet`, see
 the [`NgTemplateOutlet`s api documentation page](api/common/NgTemplateOutlet).
-

@@ -21,9 +21,9 @@ import { DI_TOKEN } from './token';
 
 @Component()
 export class MyComp {
-  constructor(
-    private service: MyService,
-    @Inject(DI_TOKEN) @Optional() readonly token: string) {}
+constructor(
+private service: MyService,
+@Inject(DI_TOKEN) @Optional() readonly token: string) {}
 }
 </docs-code>
 
@@ -36,8 +36,8 @@ import { DI_TOKEN } from './token';
 
 @Component()
 export class MyComp {
-  private service = inject(MyService);
-  readonly token = inject(DI_TOKEN, { optional: true });
+private service = inject(MyService);
+readonly token = inject(DI_TOKEN, { optional: true });
 }
 </docs-code>
 
@@ -73,7 +73,7 @@ import { MyService } from './service';
 
 @Component()
 export class MyComp {
-  constructor(private service: MyService) {}
+constructor(private service: MyService) {}
 }
 </docs-code>
 
@@ -85,12 +85,12 @@ import { MyService } from './service';
 
 @Component()
 export class MyComp {
-  private service = inject(MyService);
+private service = inject(MyService);
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
+/\*_ Inserted by Angular inject() migration for backwards compatibility _/
+constructor(...args: unknown[]);
 
-  constructor() {}
+constructor() {}
 }
 </docs-code>
 
@@ -114,9 +114,9 @@ import { TOKEN_ONE, TOKEN_TWO } from './token';
 
 @Component()
 export class MyComp {
-  constructor(
-    @Inject(TOKEN_ONE) @Optional() private tokenOne: number,
-    @Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null) {}
+constructor(
+@Inject(TOKEN_ONE) @Optional() private tokenOne: number,
+@Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null) {}
 }
 </docs-code>
 
@@ -128,10 +128,10 @@ import { TOKEN_ONE, TOKEN_TWO } from './token';
 
 @Component()
 export class MyComp {
-  // Note the `!` at the end.
-  private tokenOne = inject(TOKEN_ONE, { optional: true })!;
+// Note the `!` at the end.
+private tokenOne = inject(TOKEN_ONE, { optional: true })!;
 
-  // Does not have `!` at the end, because the type was already nullable.
-  private tokenTwo = inject(TOKEN_TWO, { optional: true });
+// Does not have `!` at the end, because the type was already nullable.
+private tokenTwo = inject(TOKEN_TWO, { optional: true });
 }
 </docs-code>

@@ -1,6 +1,6 @@
 # Caretaker
 
-The *caretaker* is a role responsible for merging PRs and syncing into Google's
+The _caretaker_ is a role responsible for merging PRs and syncing into Google's
 internal code repository. The caretaker role rotates weekly.
 
 ## Responsibilities
@@ -40,6 +40,7 @@ tested. The `requires: TGP` label is automatically added to PRs that affect file
 matching `separateFilePatterns` in [`.ng-dev/google-sync-config.json`](https://github.com/angular/angular/blob/main/.ng-dev/google-sync-config.json).
 
 An example of specifying a `TESTED=` comment:
+
 ```
 TESTED=docs only update and does not need a TGP
 ```

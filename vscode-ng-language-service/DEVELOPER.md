@@ -16,12 +16,14 @@ TypeScript's [project references](https://www.typescriptlang.org/docs/handbook/p
 As a result, some projects depend on the `.d.ts` output of their dependencies, like `client`
 and `server` depend on `common`. In order to navigate the projects in your IDE,
 you need to first build them by running
+
 ```shell
 pnpm compile
 ```
 
 If you'd like to force a clean build, you can delete the existing build artifacts
 by running
+
 ```shell
 pnpm bazel build //:npm --config=release
 ```

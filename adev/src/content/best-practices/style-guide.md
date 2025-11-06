@@ -112,10 +112,10 @@ When in doubt, go with the approach that leads to smaller files.
 
 Prefer using the `inject` function over injecting constructor parameters. The `inject` function works the same way as constructor parameter injection, but offers several style advantages:
 
-*   `inject` is generally more readable, especially when a class injects many dependencies.
-*   It's more syntactically straightforward to add comments to injected dependencies
-*   `inject` offers better type inference.
-*   When targeting ES2022+ with [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig/#useDefineForClassFields), you can avoid separating field declaration and initialization when fields read on injected dependencies.
+- `inject` is generally more readable, especially when a class injects many dependencies.
+- It's more syntactically straightforward to add comments to injected dependencies
+- `inject` offers better type inference.
+- When targeting ES2022+ with [`useDefineForClassFields`](https://www.typescriptlang.org/tsconfig/#useDefineForClassFields), you can avoid separating field declaration and initialization when fields read on injected dependencies.
 
 [You can refactor existing code to `inject` with an automatic tool](reference/migrations/inject-function).
 

@@ -1,14 +1,16 @@
 # Standalone migration
+
 `ng generate` schematic that helps users to convert an application to `standalone` components,
 directives and pipes. The migration can be run with `ng generate @angular/core:standalone` and it
 has the following options:
 
-* `mode` - Configures the mode that migration should run in. The different modes are clarified
-further down in this document.
-* `path` - Relative path within the project that the migration should apply to. Can be used to
-migrate specific sub-directories individually. Defaults to the project root.
+- `mode` - Configures the mode that migration should run in. The different modes are clarified
+  further down in this document.
+- `path` - Relative path within the project that the migration should apply to. Can be used to
+  migrate specific sub-directories individually. Defaults to the project root.
 
 ## Migration flow
+
 The standalone migration involves multiple distinct operations, and as such has to be run multiple
 times. Authors should verify that the app still works between each of the steps. If the application
 is large, it can be easier to use the `path` option to migrate specific sub-sections of the app
@@ -20,6 +22,7 @@ failures. The application should compile, but it's expected that the author will
 formatting and linting failures.
 
 An example migration could look as follows:
+
 1. `ng generate @angular/core:standalone`.
 2. Select the "Convert all components, directives and pipes to standalone" option.
 3. Verify that the app works and commit the changes.
@@ -32,13 +35,16 @@ An example migration could look as follows:
 10. Run your linting and formatting checks, and fix any failures. Commit the result.
 
 ## Migration modes
+
 The migration is made up the following modes that are intended to be run in the order they are
 listed in:
+
 1. Convert declarations to standalone.
 2. Remove unnecessary NgModules.
 3. Switch to standalone bootstrapping API.
 
 ### Convert declarations to standalone
+
 In this mode, the migration will find all of the components, directives and pipes, and convert them
 to standalone by removing `standalone: false` and adding any dependencies to the `imports` array.
 
@@ -48,6 +54,7 @@ instead of `bootstrapModule`. Their declarations will be converted automatically
 "Switch to standalone bootstrapping API" step.
 
 **Before:**
+
 ```typescript
 // app.module.ts
 @NgModule({
@@ -82,6 +89,7 @@ export class MyPipe {}
 ```
 
 **After:**
+
 ```typescript
 // app.module.ts
 @NgModule({
@@ -115,6 +123,7 @@ export class MyPipe {}
 ```
 
 ### Remove unnecessary NgModules
+
 After converting all declarations to standalone, a lot of NgModules won't be necessary anymore!
 This step identifies such modules and deletes them, including as many references to them, as
 possible. If a module reference can't be deleted automatically, the migration will leave a TODO
@@ -122,13 +131,15 @@ comment saying `TODO(standalone-migration): clean up removed NgModule reference 
 the author can delete it themselves.
 
 A module is considered "safe to remove" if it:
-* Has no `declarations`.
-* Has no `providers`.
-* Has no `bootstrap` components.
-* Has no `imports` that reference a `ModuleWithProviders` symbol or a module that can't be removed.
-* Has no class members. Empty constructors are ignored.
+
+- Has no `declarations`.
+- Has no `providers`.
+- Has no `bootstrap` components.
+- Has no `imports` that reference a `ModuleWithProviders` symbol or a module that can't be removed.
+- Has no class members. Empty constructors are ignored.
 
 **Before:**
+
 ```typescript
 // importer.module.ts
 
@@ -159,6 +170,7 @@ export {ImporterModule, ConfigurerModule} from './modules/index';
 ```
 
 **After:**
+
 ```typescript
 // importer.module.ts
 // Deleted!
@@ -182,18 +194,20 @@ export {ConfigurerModule} from './modules/index';
 ```
 
 ### Switch to standalone bootstrapping API
+
 Converts any usages of the old `bootstrapModule` API to the new `bootstrapApplication`. To do this
 in a safe way, the migration has to make the following changes to the application's code:
+
 1. Generate the `bootstrapApplication` call to replace the `bootstrapModule` one.
 2. Convert the `declarations` of the module that is being bootstrapped to `standalone`. These
-modules were skipped explicitly in the first step of the migration.
+   modules were skipped explicitly in the first step of the migration.
 3. Copy any `providers` from the bootstrapped module into the `providers` option of
-`bootstrapApplication`.
+   `bootstrapApplication`.
 4. Copy any classes from the `imports` array of the rootModule to the `providers` option of
-`bootstrapApplication` and wrap them in an `importsProvidersFrom` function call.
+   `bootstrapApplication` and wrap them in an `importsProvidersFrom` function call.
 5. Adjust any dynamic import paths so that they're correct when they're copied over.
 6. If an API with a standalone equivalent is detected, it may be converted automatically as well.
-E.g. `RouterModule.forRoot` will become `provideRouter`.
+   E.g. `RouterModule.forRoot` will become `provideRouter`.
 7. Remove the root module.
 
 If the migration detects that the `providers` or `imports` of the root module are referencing code
@@ -202,6 +216,7 @@ location. If some of that code is exported, it will be imported in the new locat
 will be copied over.
 
 **Before:**
+
 ```typescript
 // ./app/app.module.ts
 import {NgModule, InjectionToken} from '@angular/core';
@@ -257,6 +272,7 @@ platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
 ```
 
 **After:**
+
 ```typescript
 // ./app/app.module.ts
 import {NgModule, InjectionToken} from '@angular/core';

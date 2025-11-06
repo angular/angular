@@ -29,9 +29,9 @@ In the code editor:
 
 <docs-code header="Update HousingLocation template in housing-location.ts" path="adev/src/content/tutorials/first-app/steps/08-ngFor/src/app/housing-location/housing-location.ts" visibleLines="[6,17]"/>
 
-  In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
+In this updated template code you have used property binding to bind the `housingLocation.photo` to the `src` attribute. The `alt` attribute uses interpolation to give more context to the alt text of the image.
 
-  You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
+You use interpolation to include the values for `name`, `city` and `state` of the `housingLocation` property.
 
 </docs-step>
 

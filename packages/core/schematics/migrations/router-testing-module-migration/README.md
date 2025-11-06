@@ -23,6 +23,7 @@ This migration automatically converts deprecated `RouterTestingModule` usages to
 The migration runs automatically as part of `ng update @angular/core` for v21.0.0+.
 
 To run manually:
+
 ```bash
 ng update @angular/core --migrate-only router-testing-to-provide-router
 ```

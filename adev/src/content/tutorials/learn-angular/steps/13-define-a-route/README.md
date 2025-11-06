@@ -48,11 +48,11 @@ import {Routes} from '@angular/router';
 import {Home} from './home/home';
 
 export const routes: Routes = [
-  {
-    path: '',
-    title: 'App Home Page',
-    component: Home,
-  },
+{
+path: '',
+title: 'App Home Page',
+component: Home,
+},
 ];
 </docs-code>
 

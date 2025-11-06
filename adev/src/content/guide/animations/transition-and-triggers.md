@@ -11,7 +11,7 @@ In Angular, transition states can be defined explicitly through the [`state()`](
 
 ### Wildcard state
 
-An asterisk `*` or *wildcard* matches any animation state.
+An asterisk `*` or _wildcard_ matches any animation state.
 This is useful for defining transitions that apply regardless of the HTML element's start or end state.
 
 For example, a transition of `open => *` applies when the element's state changes from open to anything else.
@@ -45,7 +45,7 @@ Transitions are matched in the order in which they are defined.
 Thus, you can apply other transitions on top of the `* => *` transition.
 For example, define style changes or animations that would apply just to `open => closed`, then use `* => *` as a fallback for state pairings that aren't otherwise called out.
 
-To do this, list the more specific transitions *before* `* => *`.
+To do this, list the more specific transitions _before_ `* => *`.
 
 ### Use wildcards with styles
 
@@ -63,9 +63,9 @@ See [Animating entering and leaving a view](guide/legacy-animations/transition-a
 
 Combine wildcard and void states in a transition to trigger animations that enter and leave the page:
 
-* A transition of `* => void` applies when the element leaves a view, regardless of what state it was in before it left
-* A transition of `void => *` applies when the element enters a view, regardless of what state it assumes when entering
-* The wildcard state `*` matches to *any* state, including `void`
+- A transition of `* => void` applies when the element leaves a view, regardless of what state it was in before it left
+- A transition of `void => *` applies when the element enters a view, regardless of what state it assumes when entering
+- The wildcard state `*` matches to _any_ state, including `void`
 
 ## Animate entering and leaving a view
 
@@ -73,8 +73,8 @@ This section shows how to animate elements entering or leaving a page.
 
 Add a new behavior:
 
-* When you add a hero to the list of heroes, it appears to fly onto the page from the left
-* When you remove a hero from the list, it appears to fly out to the right
+- When you add a hero to the list of heroes, it appears to fly onto the page from the left
+- When you remove a hero from the list, it appears to fly out to the right
 
 <docs-code header="src/app/hero-list-enter-leave.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-enter-leave.component.ts" visibleRegion="animationdef"/>
 
@@ -87,8 +87,8 @@ These aliases are used by several animation functions.
 
 <docs-code hideCopy language="typescript">
 
-transition ( ':enter', [ … ] );  // alias for void => *
-transition ( ':leave', [ … ] );  // alias for * => void
+transition ( ':enter', [ … ] ); // alias for void => _
+transition ( ':leave', [ … ] ); // alias for _ => void
 
 </docs-code>
 
@@ -167,11 +167,11 @@ You can't selectively turn off multiple animations on a single element.<!-- vale
 
 A selective child animations can still be run on a disabled parent in one of the following ways:
 
-* A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
-    Those elements can still animate.
+- A parent animation can use the [`query()`](api/animations/query) function to collect inner elements located in disabled areas of the HTML template.
+Those elements can still animate.
 <!-- vale on -->
 
-* A child animation can be queried by a parent and then later animated with the `animateChild()` function
+- A child animation can be queried by a parent and then later animated with the `animateChild()` function
 
 #### Disable all animations
 
@@ -183,7 +183,7 @@ HELPFUL: Disabling animations application-wide is useful during end-to-end \(E2E
 
 ## Animation callbacks
 
-The animation `trigger()` function emits *callbacks* when it starts and when it finishes.
+The animation `trigger()` function emits _callbacks_ when it starts and when it finishes.
 The following example features a component that contains an `openClose` trigger.
 
 <docs-code header="src/app/open-close.component.ts" path="adev/src/content/examples/animations/src/app/open-close.component.ts" visibleRegion="events1"/>
@@ -199,7 +199,7 @@ For example, an **InProgress** button can be set up to have its own looping anim
 Another animation can be called when the current animation finishes.
 For example, the button goes from the `inProgress` state to the `closed` state when the API call is completed.
 
-An animation can influence an end user to *perceive* the operation as faster, even when it is not.
+An animation can influence an end user to _perceive_ the operation as faster, even when it is not.
 
 Callbacks can serve as a debugging tool, for example in conjunction with `console.warn()` to view the application's progress in a browser's Developer JavaScript Console.
 The following code snippet creates console log output for the original example, a button with the two states of `open` and `closed`.
@@ -208,7 +208,7 @@ The following code snippet creates console log output for the original example, 
 
 ## Keyframes
 
-To create an animation with multiple steps run in sequence, use *keyframes*.
+To create an animation with multiple steps run in sequence, use _keyframes_.
 
 Angular's `keyframe()` function allows several style changes within a single timing segment.
 For example, the button, instead of fading, could change color several times over a single 2-second time span.
@@ -243,8 +243,8 @@ Use keyframes to create a pulse effect in your animations by defining styles at 
 
 Here's an example of using keyframes to create a pulse effect:
 
-* The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second
-* A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe
+- The original `open` and `closed` states, with the original changes in height, color, and opacity, occurring over a timeframe of 1 second
+- A keyframes sequence inserted in the middle that causes the button to appear to pulsate irregularly over the course of that same 1 second timeframe
 
 <img alt="keyframes with irregular pulsation" src="assets/images/guide/animations/keyframes-pulsation.png">
 
@@ -260,14 +260,14 @@ The W3C maintains a list of animatable properties on its [CSS Transitions](https
 
 For properties with a numeric value, define a unit by providing the value as a string, in quotes, with the appropriate suffix:
 
-* 50 pixels:
-    `'50px'`
+- 50 pixels:
+  `'50px'`
 
-* Relative font size:
-    `'3em'`
+- Relative font size:
+  `'3em'`
 
-* Percentage:
-    `'100%'`
+- Percentage:
+  `'100%'`
 
 You can also provide the value as a number. In such cases Angular assumes a default unit of pixels, or `px`.
 Expressing 50 pixels as `50` is the same as saying `'50px'`.
