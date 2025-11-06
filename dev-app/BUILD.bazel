@@ -26,6 +26,7 @@ TEST_DEPS = APPLICATION_DEPS + [
     "@rules_browsers//browsers/chromium",
     ":node_modules/jsdom",
     ":node_modules/vitest",
+    ":tsconfig.app.json",
 ]
 
 ng_config(name = "ng_config")
