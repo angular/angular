@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "ts_config", "ts_project", "zoneless_jasmine_test",
 
 ts_config(
     name = "tsconfig_test",
-    src = "tsconfig.json",
+    src = "tsconfig-test.json",
     deps = [
         "//:node_modules/@types/dom-navigation",
         "//packages:tsconfig_test",
