@@ -106,7 +106,7 @@ import {TypeCheckShimGenerator} from './shim';
 import {DirectiveSourceManager} from './source';
 import {findTypeCheckBlock, getSourceMapping, TypeCheckSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
-import {findAllMatchingNodes} from './comments';
+import {ExpressionIdentifier, findAllMatchingNodes, hasExpressionIdentifier} from './comments';
 
 const REGISTRY = new DomElementSchemaRegistry();
 /**
