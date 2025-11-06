@@ -4,6 +4,7 @@ package(default_visibility = ["//packages/compiler-cli:__subpackages__"])
 
 ts_project(
     name = "testing",
+    testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
