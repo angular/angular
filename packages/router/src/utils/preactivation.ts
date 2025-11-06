@@ -14,7 +14,6 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import {RunGuardsAndResolvers} from '../models';
-import {getClosestRouteInjector} from './config';
 
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {
@@ -49,18 +48,11 @@ export function getAllRouteGuards(
   future: RouterStateSnapshot,
   curr: RouterStateSnapshot,
   parentContexts: ChildrenOutletContexts,
-  environmentInjector: EnvironmentInjector,
 ): Checks {
   const futureRoot = future._root;
   const currRoot = curr ? curr._root : null;
 
-  return getChildRouteGuards(
-    futureRoot,
-    currRoot,
-    parentContexts,
-    [futureRoot.value],
-    environmentInjector,
-  );
+  return getChildRouteGuards(futureRoot, currRoot, parentContexts, [futureRoot.value]);
 }
 
 export function getCanActivateChild(
@@ -94,7 +86,6 @@ function getChildRouteGuards(
   currNode: TreeNode<ActivatedRouteSnapshot> | null,
   contexts: ChildrenOutletContexts | null,
   futurePath: ActivatedRouteSnapshot[],
-  environmentInjector: EnvironmentInjector,
   checks: Checks = {
     canDeactivateChecks: [],
     canActivateChecks: [],
@@ -104,14 +95,7 @@ function getChildRouteGuards(
 
   // Process the children of the future route
   futureNode.children.forEach((c) => {
-    getRouteGuards(
-      c,
-      prevChildren[c.value.outlet],
-      contexts,
-      futurePath.concat([c.value]),
-      environmentInjector,
-      checks,
-    );
+    getRouteGuards(c, prevChildren[c.value.outlet], contexts, futurePath.concat([c.value]), checks);
     delete prevChildren[c.value.outlet];
   });
 
@@ -128,7 +112,6 @@ function getRouteGuards(
   currNode: TreeNode<ActivatedRouteSnapshot>,
   parentContexts: ChildrenOutletContexts | null,
   futurePath: ActivatedRouteSnapshot[],
-  environmentInjector: EnvironmentInjector,
   checks: Checks = {
     canDeactivateChecks: [],
     canActivateChecks: [],
@@ -144,7 +127,6 @@ function getRouteGuards(
       curr,
       future,
       future.routeConfig!.runGuardsAndResolvers,
-      environmentInjector,
     );
     if (shouldRun) {
       checks.canActivateChecks.push(new CanActivate(futurePath));
@@ -161,20 +143,12 @@ function getRouteGuards(
         currNode,
         context ? context.children : null,
         futurePath,
-        environmentInjector,
         checks,
       );
 
       // if we have a componentless route, we recurse but keep the same outlet map.
     } else {
-      getChildRouteGuards(
-        futureNode,
-        currNode,
-        parentContexts,
-        futurePath,
-        environmentInjector,
-        checks,
-      );
+      getChildRouteGuards(futureNode, currNode, parentContexts, futurePath, checks);
     }
 
     if (shouldRun && context && context.outlet && context.outlet.isActivated) {
@@ -188,25 +162,11 @@ function getRouteGuards(
     checks.canActivateChecks.push(new CanActivate(futurePath));
     // If we have a component, we need to go through an outlet.
     if (future.component) {
-      getChildRouteGuards(
-        futureNode,
-        null,
-        context ? context.children : null,
-        futurePath,
-        environmentInjector,
-        checks,
-      );
+      getChildRouteGuards(futureNode, null, context ? context.children : null, futurePath, checks);
 
       // if we have a componentless route, we recurse but keep the same outlet map.
     } else {
-      getChildRouteGuards(
-        futureNode,
-        null,
-        parentContexts,
-        futurePath,
-        environmentInjector,
-        checks,
-      );
+      getChildRouteGuards(futureNode, null, parentContexts, futurePath, checks);
     }
   }
 
@@ -217,11 +177,9 @@ function shouldRunGuardsAndResolvers(
   curr: ActivatedRouteSnapshot,
   future: ActivatedRouteSnapshot,
   mode: RunGuardsAndResolvers | undefined,
-  environmentInjector: EnvironmentInjector,
 ): boolean {
   if (typeof mode === 'function') {
-    const injector = getClosestRouteInjector(future) ?? environmentInjector;
-    return runInInjectionContext(injector, () => mode(curr, future));
+    return runInInjectionContext(future._environmentInjector, () => mode(curr, future));
   }
   switch (mode) {
     case 'pathParamsChange':
