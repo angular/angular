@@ -181,7 +181,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
 }
 
 // @public
-export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey> : FieldState<TModel, TKey>) & (TModel extends AbstractControl ? unknown : TModel extends Array<infer U> ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TModel extends Record<string, any> ? Subfields<TModel> : unknown);
+export type FieldTree<TModel, TKey extends string | number = string | number> = (() => [TModel] extends [AbstractControl] ? CompatFieldState<TModel, TKey> : FieldState<TModel, TKey>) & ([TModel] extends [AbstractControl] ? unknown : [TModel] extends [Array<infer U>] ? ReadonlyArrayLike<MaybeFieldTree<U, number>> : TModel extends Record<string, any> ? Subfields<TModel> : unknown);
 
 // @public
 export type FieldValidator<TValue, TPathKind extends PathKind = PathKind.Root> = LogicFn<TValue, ValidationResult<ValidationError.WithoutField>, TPathKind>;
