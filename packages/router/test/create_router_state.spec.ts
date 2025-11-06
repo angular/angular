@@ -32,7 +32,7 @@ describe('create router state', () => {
     reuseStrategy = new DefaultRouteReuseStrategy();
   });
 
-  const emptyState = () => createEmptyState(RootComponent);
+  const emptyState = () => createEmptyState(RootComponent, TestBed.inject(EnvironmentInjector));
 
   it('should create new state', async () => {
     const state = createRouterState(

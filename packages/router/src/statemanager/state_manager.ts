@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {inject, Injectable} from '@angular/core';
+import {EnvironmentInjector, inject, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {
@@ -104,7 +104,7 @@ export abstract class StateManager {
     }
   }
 
-  protected routerState = createEmptyState(null);
+  protected routerState = createEmptyState(null, inject(EnvironmentInjector));
 
   /** Returns the current RouterState. */
   getRouterState(): RouterState {

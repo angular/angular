@@ -631,7 +631,6 @@
       "getCanActivateChild",
       "getChildRouteGuards",
       "getClosestRElement",
-      "getClosestRouteInjector",
       "getClosureSafeProperty",
       "getComponentDef",
       "getComponentId",

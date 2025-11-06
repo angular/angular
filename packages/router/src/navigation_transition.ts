@@ -80,7 +80,6 @@ import {UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree} from './url_tree';
 import {Checks, getAllRouteGuards} from './utils/preactivation';
 import {CREATE_VIEW_TRANSITION} from './utils/view_transition';
-import {getClosestRouteInjector} from './utils/config';
 import {abortSignalToObservable} from './utils/abort_signal_to_observable';
 
 /**
@@ -572,7 +571,10 @@ export class NavigationTransitions {
                 restoredState,
               );
               this.events.next(navStart);
-              const targetSnapshot = createEmptyState(this.rootComponentType).snapshot;
+              const targetSnapshot = createEmptyState(
+                this.rootComponentType,
+                this.environmentInjector,
+              ).snapshot;
 
               this.currentTransition = overallTransitionState = {
                 ...t,
@@ -623,17 +625,12 @@ export class NavigationTransitions {
 
             this.currentTransition = overallTransitionState = {
               ...t,
-              guards: getAllRouteGuards(
-                t.targetSnapshot!,
-                t.currentSnapshot,
-                this.rootContexts,
-                this.environmentInjector,
-              ),
+              guards: getAllRouteGuards(t.targetSnapshot!, t.currentSnapshot, this.rootContexts),
             };
             return overallTransitionState;
           }),
 
-          checkGuards(this.environmentInjector, (evt: Event) => this.events.next(evt)),
+          checkGuards((evt: Event) => this.events.next(evt)),
 
           switchMap((t) => {
             overallTransitionState.guardsResult = t.guardsResult;
@@ -674,7 +671,7 @@ export class NavigationTransitions {
 
             let dataResolved = false;
             return of(t).pipe(
-              resolveData(this.paramsInheritanceStrategy, this.environmentInjector),
+              resolveData(this.paramsInheritanceStrategy),
               tap({
                 next: () => {
                   dataResolved = true;
@@ -708,7 +705,7 @@ export class NavigationTransitions {
               if (route.routeConfig?._loadedComponent) {
                 route.component = route.routeConfig?._loadedComponent;
               } else if (route.routeConfig?.loadComponent) {
-                const injector = getClosestRouteInjector(route) ?? this.environmentInjector;
+                const injector = route._environmentInjector;
                 loaders.push(
                   this.configLoader
                     .loadComponent(injector, route.routeConfig)
