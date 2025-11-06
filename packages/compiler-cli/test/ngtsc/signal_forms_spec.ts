@@ -360,5 +360,57 @@ runInEachFileSystem(() => {
         `The types of 'required[SIGNAL].transformFn' are incompatible between these types.`,
       );
     });
+
+    it('should not report `value` as a missing required input when the `Field` directive is present', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          export class CustomControl implements FormValueControl<string> {
+            readonly value = model.required<string>();
+          }
+
+          @Component({
+            template: '<custom-control [field]="f"/>',
+            imports: [Field, CustomControl]
+          })
+          export class Comp {
+            f = form(signal(''));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not report `checked` as a missing required input when the `Field` directive is present', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form, FormCheckboxControl} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          export class CustomControl implements FormCheckboxControl {
+            readonly checked = model.required<boolean>();
+          }
+
+          @Component({
+            template: '<custom-control [field]="f"/>',
+            imports: [Field, CustomControl]
+          })
+          export class Comp {
+            f = form(signal(false));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
   });
 });
