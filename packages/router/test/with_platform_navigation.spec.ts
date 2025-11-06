@@ -89,11 +89,13 @@ describe('withPlatformNavigation feature', () => {
 
   describe('NavigateEvent and NavigationTransition', () => {
     useAutoTick();
-
     let router: Router;
-    beforeEach(() => {
+    let navigation: PlatformNavigation;
+    beforeEach(async () => {
       router = TestBed.inject(Router);
       router.initialNavigation();
+      navigation = TestBed.inject(PlatformNavigation);
+      await navigation.transition?.finished;
     });
 
     it('should keep non-router triggered navigation unfinished while waiting for guards', async () => {
@@ -106,14 +108,44 @@ describe('withPlatformNavigation feature', () => {
           children: [],
         },
       ]);
-      const {finished} = TestBed.inject(PlatformNavigation).navigate('/somepath');
+      const {finished} = navigation.navigate('/somepath');
       await timeout(5);
       // note that this finished promise will be rejected because the Router will create a separate 'replace' navigate
       // since we cannot redirect the original navigation without precommit handler support
       await expectAsync(finished).not.toBeResolved();
-      expect(TestBed.inject(PlatformNavigation).transition).not.toBeNull();
+      expect(navigation.transition).not.toBeNull();
       await timeout(10);
-      expect(TestBed.inject(PlatformNavigation).transition).toBeNull();
+      expect(navigation.transition).toBeNull();
+    });
+
+    // Needs update to FakeNavigation to match recent spec changes
+    it('aborts ongoing router transition if navigation is aborted', async () => {
+      router.resetConfig([
+        {
+          path: 'blocked',
+          children: [],
+          canActivate: [() => new Promise((r) => setTimeout(() => r(true), 50))],
+        },
+        {path: '**', children: []},
+      ]);
+      // set up navigation
+      navigation.addEventListener(
+        'navigate',
+        (e: any) => e.intercept({handler: () => new Promise((_, reject) => setTimeout(reject, 5))}),
+        {once: true},
+      );
+
+      navigation.navigate('/blocked');
+      await timeout();
+      expect(navigation.transition).not.toBeNull();
+      expect(router.currentNavigation()).not.toBeNull();
+
+      // wait for the rejection of the one-off handler, which will cancel the router transition
+      await timeout(10);
+      expect(router.currentNavigation()).toBeNull();
+      // wait for "rollback" navigation which is resetting the state
+      await timeout();
+      expect(navigation.transition).toBeNull();
     });
   });
 
