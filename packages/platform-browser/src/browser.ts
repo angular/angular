@@ -131,8 +131,7 @@ export async function bootstrapApplication(
 ): Promise<ApplicationRef> {
   const config = {
     rootComponent,
-    platformRef: context?.platformRef,
-    ...createProvidersConfig(options),
+    ...createProvidersConfig(options, context),
   };
 
   if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
@@ -150,20 +149,27 @@ export async function bootstrapApplication(
  *
  * @param options Extra configuration for the application environment, see `ApplicationConfig` for
  *     additional info.
+ * @param context Optional context object that can be used to provide a pre-existing
+ *     platform injector. This is useful for advanced use-cases, for example, server-side
+ *     rendering, where the platform is created for each request.
  * @returns A promise that returns an `ApplicationRef` instance once resolved.
  *
  * @publicApi
  */
-export async function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
+export async function createApplication(
+  options?: ApplicationConfig,
+  context?: BootstrapContext,
+): Promise<ApplicationRef> {
   if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
     await resolveJitResources();
   }
 
-  return internalCreateApplication(createProvidersConfig(options));
+  return internalCreateApplication(createProvidersConfig(options, context));
 }
 
-function createProvidersConfig(options?: ApplicationConfig) {
+function createProvidersConfig(options?: ApplicationConfig, context?: BootstrapContext) {
   return {
+    platformRef: context?.platformRef,
     appProviders: [...BROWSER_MODULE_PROVIDERS, ...(options?.providers ?? [])],
     platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   };

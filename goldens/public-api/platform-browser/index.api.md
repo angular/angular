@@ -52,7 +52,7 @@ export class By {
 }
 
 // @public
-export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef>;
+export function createApplication(options?: ApplicationConfig, context?: BootstrapContext): Promise<ApplicationRef>;
 
 // @public
 export function disableDebugTools(): void;
