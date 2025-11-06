@@ -29,6 +29,9 @@ export const format: FormatConfig = {
 
       // Ignore testing data files for language service
       '!vscode-ng-language-service/syntaxes/test/data/*.ts',
+
+      // Ignore goldens MD files
+      '!/goldens/**/*.md',
     ],
   },
   'buildifier': true,
