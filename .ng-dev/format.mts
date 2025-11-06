@@ -31,7 +31,7 @@ export const format: FormatConfig = {
       '!vscode-ng-language-service/syntaxes/test/data/*.ts',
 
       // Ignore goldens MD files
-      '!/goldens/**/*.md',
+      '!/goldens/**/*.api.md',
     ],
   },
   'buildifier': true,
