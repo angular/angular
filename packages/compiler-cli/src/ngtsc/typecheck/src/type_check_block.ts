@@ -4095,8 +4095,25 @@ function getComponentTagName(node: TmplAstComponent): string {
 }
 
 function isFieldDirective(meta: TypeCheckableDirectiveMeta): boolean {
+  if (meta.name !== 'Field') {
+    return false;
+  }
+
+  // Fast path, relevant for all external users.
+  if (meta.ref.bestGuessOwningModule?.specifier === '@angular/forms/signals') {
+    return true;
+  }
+
+  // Slightly slower, but more accurate path.
   return (
-    meta.name === 'Field' && meta.ref.bestGuessOwningModule?.specifier === '@angular/forms/signals'
+    ts.isClassDeclaration(meta.ref.node) &&
+    meta.ref.node.members.some(
+      (member) =>
+        ts.isPropertyDeclaration(member) &&
+        ts.isComputedPropertyName(member.name) &&
+        ts.isIdentifier(member.name.expression) &&
+        member.name.expression.text === 'ɵCONTROL',
+    )
   );
 }
 
