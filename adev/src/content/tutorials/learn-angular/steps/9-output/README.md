@@ -1,4 +1,4 @@
-# Component output properties 
+# Component output properties
 
 When working with components it may be required to notify other components that something has happened. Perhaps a button has been clicked, an item has been added/removed from a list or some other important update has occurred. In this scenario components need to communicate with parent components.
 
@@ -25,10 +25,10 @@ Now the component can generate events that can be listened to by the parent comp
 class Child {
   ...
 
-  onClick() {
-    this.count++;
-    this.incrementCountEvent.emit(this.count);
-  }
+onClick() {
+this.count++;
+this.incrementCountEvent.emit(this.count);
+}
 }
 </docs-code>
 

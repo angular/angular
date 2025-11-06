@@ -131,13 +131,13 @@ Create a file named `builders.json` that looks like this:
 <docs-code header="builders.json" language="json">
 
 {
-  "builders": {
-    "copy": {
-      "implementation": "./dist/my-builder.js",
-      "schema": "./src/schema.json",
-      "description": "Copies a file."
-    }
-  }
+"builders": {
+"copy": {
+"implementation": "./dist/my-builder.js",
+"schema": "./src/schema.json",
+"description": "Copies a file."
+}
+}
 }
 
 </docs-code>
@@ -147,14 +147,14 @@ In the `package.json` file, add a `builders` key that tells the Architect tool w
 <docs-code header="package.json" language="json">
 
 {
-  "name": "@example/copy-file",
-  "version": "1.0.0",
-  "description": "Builder for copying files",
-  "builders": "builders.json",
-  "dependencies": {
-    "@angular-devkit/architect": "~0.1200.0",
-    "@angular-devkit/core": "^12.0.0"
-  }
+"name": "@example/copy-file",
+"version": "1.0.0",
+"description": "Builder for copying files",
+"builders": "builders.json",
+"dependencies": {
+"@angular-devkit/architect": "~0.1200.0",
+"@angular-devkit/core": "^12.0.0"
+}
 }
 
 </docs-code>
@@ -182,31 +182,31 @@ By default, for example, the `ng build` command runs the builder `@angular-devki
 …
 
 "myApp": {
-  …
-  "architect": {
-    "build": {
-      "builder": "@angular-devkit/build-angular:browser",
-      "options": {
-        "outputPath": "dist/myApp",
-        "index": "src/index.html",
-        …
-      },
-      "configurations": {
-        "production": {
-          "fileReplacements": [
-            {
-              "replace": "src/environments/environment.ts",
-              "with": "src/environments/environment.prod.ts"
-            }
-          ],
-          "optimization": true,
-          "outputHashing": "all",
-          …
-        }
-      }
-    },
-    …
-  }
+…
+"architect": {
+"build": {
+"builder": "@angular-devkit/build-angular:browser",
+"options": {
+"outputPath": "dist/myApp",
+"index": "src/index.html",
+…
+},
+"configurations": {
+"production": {
+"fileReplacements": [
+{
+"replace": "src/environments/environment.ts",
+"with": "src/environments/environment.prod.ts"
+}
+],
+"optimization": true,
+"outputHashing": "all",
+…
+}
+}
+},
+…
+}
 }
 
 …
@@ -274,31 +274,31 @@ If you create a new project with `ng new builder-test`, the generated `angular.j
 <docs-code header="angular.json" language="json">
 
 {
-  "projects": {
-    "builder-test": {
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            // more options...
-            "outputPath": "dist/builder-test",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json"
-          },
-          "configurations": {
-            "production": {
-              // more options...
-              "optimization": true,
-              "aot": true,
-              "buildOptimizer": true
-            }
-          }
-        }
-      }
-    }
-  }
+"projects": {
+"builder-test": {
+"architect": {
+"build": {
+"builder": "@angular-devkit/build-angular:browser",
+"options": {
+// more options...
+"outputPath": "dist/builder-test",
+"index": "src/index.html",
+"main": "src/main.ts",
+"polyfills": "src/polyfills.ts",
+"tsConfig": "src/tsconfig.app.json"
+},
+"configurations": {
+"production": {
+// more options...
+"optimization": true,
+"aot": true,
+"buildOptimizer": true
+}
+}
+}
+}
+}
+}
 }
 </docs-code>
 
@@ -316,21 +316,22 @@ This target tells the builder to copy the `package.json` file.
 < header="angular.json" language="json">
 
 {
-  "projects": {
-    "builder-test": {
-      "architect": {
-        "copy-package": {
-          "builder": "@example/copy-file:copy",
-          "options": {
-            "source": "package.json",
-            "destination": "package-copy.json"
-          }
-        },
+"projects": {
+"builder-test": {
+"architect": {
+"copy-package": {
+"builder": "@example/copy-file:copy",
+"options": {
+"source": "package.json",
+"destination": "package-copy.json"
+}
+},
 
         // Existing targets...
       }
     }
-  }
+
+}
 }
 </docs-code>
 

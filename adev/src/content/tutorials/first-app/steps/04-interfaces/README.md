@@ -6,8 +6,8 @@ This tutorial lesson demonstrates how to create an interface and include it in a
 
 ## What you'll learn
 
-* Your app has a new interface that it can use as a data type.
-* Your app has an instance of the new interface with sample data.
+- Your app has a new interface that it can use as a data type.
+- Your app has an instance of the new interface with sample data.
 
 ## Conceptual preview of interfaces
 
@@ -29,17 +29,17 @@ In the **Terminal** pane of your IDE:
 1. In your project directory, navigate to the `first-app` directory.
 1. In the `first-app` directory, run this command to create the new interface.
 
-    <docs-code language="shell">
+   <docs-code language="shell">
 
-    ng generate interface housinglocation
+   ng generate interface housinglocation
 
-    </docs-code>
+   </docs-code>
 
 1. Run `ng serve` to build the app and serve it to `http://localhost:4200`.
 1. In a browser, open `http://localhost:4200` to see your app.
 1. Confirm that the app builds without error.
-    Correct any errors before you continue to the next step.
-</docs-step>
+   Correct any errors before you continue to the next step.
+   </docs-step>
 
 <docs-step title="Add properties to the new interface">
 This step adds the properties to the interface that your app needs to represent a housing location.
@@ -48,7 +48,7 @@ This step adds the properties to the interface that your app needs to represent 
 1. In the **Edit** pane of your IDE, open the `src/app/housinglocation.ts` file.
 1. In `housinglocation.ts`, replace the default content with the following code to make your new interface to match this example.
 
-    <docs-code header="Update src/app/housinglocation.ts to match this code" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/housinglocation.ts" visibleLines="[1,10]" />
+<docs-code header="Update src/app/housinglocation.ts to match this code" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/housinglocation.ts" visibleLines="[1,10]" />
 
 1. Save your changes and confirm the app does not display any errors. Correct any errors before you continue to the next step.
 
@@ -66,24 +66,24 @@ There are a few more lessons to complete before that happens.
 1. In the **Edit** pane of your IDE, open `src/app/home/home.ts`.
 1. In `src/app/home/home.ts`, add this import statement after the existing `import` statements so that `Home` can use the new interface.
 
-    <docs-code header="Import Home in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[3]"/>
+<docs-code header="Import Home in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[3]"/>
 
 1. In `src/app/home/home.ts`, replace the empty `export class Home {}` definition with this code to create a single instance of the new interface in the component.
 
-    <docs-code header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
+<docs-code header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
 
 1. Confirm that your `home.ts` file matches this example.
 
-    <docs-code header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[[1,7],[9,36]]" />
+   <docs-code header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[[1,7],[9,36]]" />
 
-    By adding the `housingLocation` property of type `HousingLocation` to the `Home` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
+   By adding the `housingLocation` property of type `HousingLocation` to the `Home` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
 
 1. Save your changes and confirm the app does not have any errors. Open the browser and confirm that your application still displays the message "housing-location works!"
 
-    <img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!'" src="assets/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
+<img alt="browser frame of homes-app displaying logo, filter text input box and search button and the message 'housing-location works!'" src="assets/images/tutorials/first-app/homes-app-lesson-03-step-2.png">
 
 1. Correct any errors before you continue to the next step.
-</docs-step>
+   </docs-step>
 
 </docs-workflow>
 

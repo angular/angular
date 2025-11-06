@@ -29,8 +29,8 @@ If the `when` condition evaluates to `false`, the `defer` block is not reverted 
 
 You can define multiple event triggers at once, these triggers will be evaluated as OR conditions.
 
-* Ex: `@defer (on viewport; on timer(2s))`
-* Ex: `@defer (on viewport; when customizedCondition)`
+- Ex: `@defer (on viewport; on timer(2s))`
+- Ex: `@defer (on viewport; when customizedCondition)`
 
 In this activity, you'll learn how to use triggers to specify the condition to load the deferrable views.
 
@@ -63,8 +63,9 @@ Next, update the template to include a button with the label "Show all comments"
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover) {
-  <article-comments />
+<article-comments />
 } @placeholder (minimum 1s) {
+
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
@@ -84,8 +85,9 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 <button type="button" #showComments>Show all comments</button>
 
 @defer (on hover; on interaction(showComments)) {
-  <article-comments />
+<article-comments />
 } @placeholder (minimum 1s) {
+
   <p>Placeholder for comments</p>
 } @loading (minimum 1s; after 500ms) {
   <p>Loading comments...</p>
@@ -95,8 +97,9 @@ Update the `@defer` block in the template to use the `on interaction` trigger. P
 </docs-code>
 
 With these changes, the page will wait for one of the following conditions before rendering the comments section:
-* User hovers the comments section’s placeholder
-* User clicks on the “Show all comments" button
+
+- User hovers the comments section’s placeholder
+- User clicks on the “Show all comments" button
 
 You can reload the page to try out different triggers to render the comments section.
 </docs-step>

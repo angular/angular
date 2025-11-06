@@ -18,127 +18,127 @@ Your app will use data from a JSON server
 JSON Server is an open source tool used to create mock REST APIs. You'll use it to serve the housing location data that is currently stored in the housing service.
 
 1. Install `json-server` from npm by using the following command.
-    <docs-code language="bash">
-        npm install -g json-server
-    </docs-code>
+   <docs-code language="bash">
+   npm install -g json-server
+   </docs-code>
 
 1. In the root directory of your project, create a file called `db.json`. This is where you will store the data for the `json-server`.
 
 1. Open `db.json` and copy the following code into the file
-    <docs-code language="json">
-    {
-      "locations": [
-        {
-          "id": 0,
-          "name": "Acme Fresh Start Housing",
-          "city": "Chicago",
-          "state": "IL",
-          "photo": "https://angular.dev/assets/images/tutorials/common/bernard-hermant-CLKGGwIBTaY-unsplash.jpg",
-          "availableUnits": 4,
-          "wifi": true,
-          "laundry": true
-        },
-        {
-          "id": 1,
-          "name": "A113 Transitional Housing",
-          "city": "Santa Monica",
-          "state": "CA",
-          "photo": "https://angular.dev/assets/images/tutorials/common/brandon-griggs-wR11KBaB86U-unsplash.jpg",
-          "availableUnits": 0,
-          "wifi": false,
-          "laundry": true
-        },
-        {
-          "id": 2,
-          "name": "Warm Beds Housing Support",
-          "city": "Juneau",
-          "state": "AK",
-          "photo": "https://angular.dev/assets/images/tutorials/common/i-do-nothing-but-love-lAyXdl1-Wmc-unsplash.jpg",
-          "availableUnits": 1,
-          "wifi": false,
-          "laundry": false
-        },
-        {
-          "id": 3,
-          "name": "Homesteady Housing",
-          "city": "Chicago",
-          "state": "IL",
-          "photo": "https://angular.dev/assets/images/tutorials/common/ian-macdonald-W8z6aiwfi1E-unsplash.jpg",
-          "availableUnits": 1,
-          "wifi": true,
-          "laundry": false
-        },
-        {
-          "id": 4,
-          "name": "Happy Homes Group",
-          "city": "Gary",
-          "state": "IN",
-          "photo": "https://angular.dev/assets/images/tutorials/common/krzysztof-hepner-978RAXoXnH4-unsplash.jpg",
-          "availableUnits": 1,
-          "wifi": true,
-          "laundry": false
-        },
-        {
-          "id": 5,
-          "name": "Hopeful Apartment Group",
-          "city": "Oakland",
-          "state": "CA",
-          "photo": "https://angular.dev/assets/images/tutorials/common/r-architecture-JvQ0Q5IkeMM-unsplash.jpg",
-          "availableUnits": 2,
-          "wifi": true,
-          "laundry": true
-        },
-        {
-          "id": 6,
-          "name": "Seriously Safe Towns",
-          "city": "Oakland",
-          "state": "CA",
-          "photo": "https://angular.dev/assets/images/tutorials/common/phil-hearing-IYfp2Ixe9nM-unsplash.jpg",
-          "availableUnits": 5,
-          "wifi": true,
-          "laundry": true
-        },
-        {
-          "id": 7,
-          "name": "Hopeful Housing Solutions",
-          "city": "Oakland",
-          "state": "CA",
-          "photo": "https://angular.dev/assets/images/tutorials/common/r-architecture-GGupkreKwxA-unsplash.jpg",
-          "availableUnits": 2,
-          "wifi": true,
-          "laundry": true
-        },
-        {
-          "id": 8,
-          "name": "Seriously Safe Towns",
-          "city": "Oakland",
-          "state": "CA",
-          "photo": "https://angular.dev/assets/images/tutorials/common/saru-robert-9rP3mxf8qWI-unsplash.jpg",
-          "availableUnits": 10,
-          "wifi": false,
-          "laundry": false
-        },
-        {
-          "id": 9,
-          "name": "Capital Safe Towns",
-          "city": "Portland",
-          "state": "OR",
-          "photo": "https://angular.dev/assets/images/tutorials/common/webaliser-_TPTXZd9mOo-unsplash.jpg",
-          "availableUnits": 6,
-          "wifi": true,
-          "laundry": true
-        }
-      ]
-    }
-    </docs-code>
+   <docs-code language="json">
+   {
+   "locations": [
+   {
+   "id": 0,
+   "name": "Acme Fresh Start Housing",
+   "city": "Chicago",
+   "state": "IL",
+   "photo": "https://angular.dev/assets/images/tutorials/common/bernard-hermant-CLKGGwIBTaY-unsplash.jpg",
+   "availableUnits": 4,
+   "wifi": true,
+   "laundry": true
+   },
+   {
+   "id": 1,
+   "name": "A113 Transitional Housing",
+   "city": "Santa Monica",
+   "state": "CA",
+   "photo": "https://angular.dev/assets/images/tutorials/common/brandon-griggs-wR11KBaB86U-unsplash.jpg",
+   "availableUnits": 0,
+   "wifi": false,
+   "laundry": true
+   },
+   {
+   "id": 2,
+   "name": "Warm Beds Housing Support",
+   "city": "Juneau",
+   "state": "AK",
+   "photo": "https://angular.dev/assets/images/tutorials/common/i-do-nothing-but-love-lAyXdl1-Wmc-unsplash.jpg",
+   "availableUnits": 1,
+   "wifi": false,
+   "laundry": false
+   },
+   {
+   "id": 3,
+   "name": "Homesteady Housing",
+   "city": "Chicago",
+   "state": "IL",
+   "photo": "https://angular.dev/assets/images/tutorials/common/ian-macdonald-W8z6aiwfi1E-unsplash.jpg",
+   "availableUnits": 1,
+   "wifi": true,
+   "laundry": false
+   },
+   {
+   "id": 4,
+   "name": "Happy Homes Group",
+   "city": "Gary",
+   "state": "IN",
+   "photo": "https://angular.dev/assets/images/tutorials/common/krzysztof-hepner-978RAXoXnH4-unsplash.jpg",
+   "availableUnits": 1,
+   "wifi": true,
+   "laundry": false
+   },
+   {
+   "id": 5,
+   "name": "Hopeful Apartment Group",
+   "city": "Oakland",
+   "state": "CA",
+   "photo": "https://angular.dev/assets/images/tutorials/common/r-architecture-JvQ0Q5IkeMM-unsplash.jpg",
+   "availableUnits": 2,
+   "wifi": true,
+   "laundry": true
+   },
+   {
+   "id": 6,
+   "name": "Seriously Safe Towns",
+   "city": "Oakland",
+   "state": "CA",
+   "photo": "https://angular.dev/assets/images/tutorials/common/phil-hearing-IYfp2Ixe9nM-unsplash.jpg",
+   "availableUnits": 5,
+   "wifi": true,
+   "laundry": true
+   },
+   {
+   "id": 7,
+   "name": "Hopeful Housing Solutions",
+   "city": "Oakland",
+   "state": "CA",
+   "photo": "https://angular.dev/assets/images/tutorials/common/r-architecture-GGupkreKwxA-unsplash.jpg",
+   "availableUnits": 2,
+   "wifi": true,
+   "laundry": true
+   },
+   {
+   "id": 8,
+   "name": "Seriously Safe Towns",
+   "city": "Oakland",
+   "state": "CA",
+   "photo": "https://angular.dev/assets/images/tutorials/common/saru-robert-9rP3mxf8qWI-unsplash.jpg",
+   "availableUnits": 10,
+   "wifi": false,
+   "laundry": false
+   },
+   {
+   "id": 9,
+   "name": "Capital Safe Towns",
+   "city": "Portland",
+   "state": "OR",
+   "photo": "https://angular.dev/assets/images/tutorials/common/webaliser-_TPTXZd9mOo-unsplash.jpg",
+   "availableUnits": 6,
+   "wifi": true,
+   "laundry": true
+   }
+   ]
+   }
+   </docs-code>
 
 1. Save this file.
 
 1. Time to test your configuration. From the command line, at the root of your project run the following commands.
 
-    <docs-code language="bash">
-        json-server --watch db.json
-    </docs-code>
+<docs-code language="bash">
+    json-server --watch db.json
+</docs-code>
 
 1. In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
 
@@ -154,15 +154,15 @@ The data source has been configured, the next step is to update your web app to 
 
 1. Add a string property called `url` and set its value to `'http://localhost:3000/locations'`
 
-    <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8]"/>
+   <docs-code header="Add url property to housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[8]"/>
 
-    This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
+   This code will result in errors in the rest of the file because it depends on the `housingLocationList` property. We're going to update the service methods next.
 
 1. Update the `getAllHousingLocations` function to make a call to the web server you configured.
 
     <docs-code header="Update the getAllHousingLocations method in housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[10,13]"/>
 
-    The code now uses asynchronous code to make a **GET** request over HTTP.
+   The code now uses asynchronous code to make a **GET** request over HTTP.
 
    HELPFUL: For this example, the code uses `fetch`. For more advanced use cases consider using `HttpClient` provided by Angular.
 
@@ -174,7 +174,7 @@ The data source has been configured, the next step is to update your web app to 
 
 1. Once all the updates are complete, your updated service should match the following code.
 
-    <docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
+<docs-code header="Final version of housing.service.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/housing.service.ts" visibleLines="[1,25]" />
 
 </docs-step>
 
@@ -183,15 +183,16 @@ The server is now reading data from the HTTP request but the components that rel
 
 1. In `src/app/home/home.ts`, update the `constructor` to use the new asynchronous version of the `getAllHousingLocations` method.
 
-    <docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[29,36]"/>
+<docs-code header="Update constructor in home.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/home/home.ts" visibleLines="[29,36]"/>
 
 1. In `src/app/details/details.ts`, update the `constructor` to use the new asynchronous version of the `getHousingLocationById` method.
 
-    <docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[59,64]"/>
-2. Save your code.
+<docs-code header="Update constructor in details.ts" path="adev/src/content/tutorials/first-app/steps/14-http/src-final/app/details/details.ts" visibleLines="[59,64]"/>
 
-3. Open the application in the browser and confirm that it runs without any errors.
-</docs-step>
+1. Save your code.
+
+1. Open the application in the browser and confirm that it runs without any errors.
+   </docs-step>
 
 </docs-workflow>
 

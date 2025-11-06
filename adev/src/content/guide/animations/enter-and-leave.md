@@ -3,9 +3,9 @@
 Well-designed animations can make your application more fun and straightforward to use, but they aren't just cosmetic.
 Animations can improve your application and user experience in a number of ways:
 
-* Without animations, web page transitions can seem abrupt and jarring
-* Motion greatly enhances the user experience, so animations give users a chance to detect the application's response to their actions
-* Good animations can smoothly direct the user's attention throughout a workflow
+- Without animations, web page transitions can seem abrupt and jarring
+- Motion greatly enhances the user experience, so animations give users a chance to detect the application's response to their actions
+- Good animations can smoothly direct the user's attention throughout a workflow
 
 Angular provides `animate.enter` and `animate.leave` to animate your application's elements. These two features apply enter and leave CSS classes at the appropriate times or call functions to apply animations from third party libraries. `animate.enter` and `animate.leave` are not directives. They are special API supported directly by the Angular compiler. They can be used on elements directly and can also be used as a host binding.
 

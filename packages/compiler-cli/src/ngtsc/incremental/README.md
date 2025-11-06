@@ -11,12 +11,12 @@ nature of any changes made to files in the program between its prior and current
 the semantic effect of those changes, ngtsc may perform 3 different optimizations as it processes
 the new build:
 
-* It can reuse analysis work performed in the previous program
+- It can reuse analysis work performed in the previous program
 
 ngtsc receives the analyses of all decorated classes performed as part of the previous compilation,
 and can reuse that work for a class if it can prove that the results are not stale.
 
-* It can skip emitting a file
+- It can skip emitting a file
 
 Emitting a file is a very expensive operation in TypeScript, involving the execution of many
 internal TS transforms (downleveling, module system, etc) as well as the synthesis of a large text
@@ -26,7 +26,7 @@ stale, that file may still need to be re-emitted if other changes in the program
 semantics. For example, a change to a component selector affects other components which use that
 selector in their templates, even though no direct dependency exists between them.
 
-* It can reuse template type-checking code
+- It can reuse template type-checking code
 
 Template type-checking code is generated using semantic information extracted from the user's
 program. This generation can be expensive, and ngtsc attempts to reuse previous results as much as
@@ -59,8 +59,8 @@ for example in the `@NgModule` which declares the component.
 However, analysis _can_ depend on information outside of the decorated class's file. This can happen
 in two ways:
 
-* External resources, such as templates or stylesheets, are covered by analysis.
-* The partial evaluation of expressions within a class's metadata may descend into symbols imported
+- External resources, such as templates or stylesheets, are covered by analysis.
+- The partial evaluation of expressions within a class's metadata may descend into symbols imported
   from other files.
 
 For example, a directive's selector may be determined via an imported constant:
@@ -99,8 +99,8 @@ operation.
 In Angular applications, however, this optimization is not nearly so simple. The emit of a `.js`
 file in Angular is affected in four main ways:
 
-* Just as in plain TS, it depends on the contents of the input `.ts` file.
-* It can be affected by expressions that were statically evaluated during analysis of any decorated
+- Just as in plain TS, it depends on the contents of the input `.ts` file.
+- It can be affected by expressions that were statically evaluated during analysis of any decorated
   classes in the input, and these expressions can depend on other files.
 
 For example, the directive with its selector specified via the imported `DIR_SELECTOR` constant
@@ -110,11 +110,11 @@ if `dir.ts` itself is unchanged. The compiler therefore will re-emit `dir.js` if
 is determined to have _logically_ changed, using the same dependency graph that powers analysis
 reuse.
 
-* Components can have external templates and CSS stylesheets which influence their compilation.
+- Components can have external templates and CSS stylesheets which influence their compilation.
 
 These are incorporated into a component's analysis dependencies.
 
-* Components (and NgModules) are influenced by the NgModule graph, which controls which directives
+- Components (and NgModules) are influenced by the NgModule graph, which controls which directives
   and pipes are "in scope" for each component's template.
 
 This last relationship is the most difficult, as there is no import relationship between a component
@@ -183,12 +183,12 @@ data regarding that class that's involved in these "indirect" relationships. Dur
 compiler's `resolve` phase, these `SemanticSymbol`s are connected together to form a "semantic
 dependency graph". Two classes of data are recorded:
 
-* Information about the public shape API of the class.
+- Information about the public shape API of the class.
 
 For example, directives have a public API which includes their selector, any inputs or outputs, and
 their `exportAs` name if any.
 
-* Information about the emit shape of the class, including any dependencies on
+- Information about the emit shape of the class, including any dependencies on
   other `SemanticSymbol`s.
 
 This information allows the compiler to determine which classes have been semantically affected by
@@ -204,7 +204,7 @@ The first step of this algorithm is to determine, for each `SemanticSymbol`, if 
 been affected. Doing this requires knowing which `SemanticSymbol` in the previous program
 corresponds to the current version of the symbol. There are two ways that symbols can be "matched":
 
-* The old and new symbols share the same `ts.ClassDeclaration`.
+- The old and new symbols share the same `ts.ClassDeclaration`.
 
 This is true whenever the `ts.SourceFile` declaring the class has not changed between the old and
 new programs. The public API of the symbol may still have changed (such as when a directive's
@@ -212,7 +212,7 @@ selector is determined by a constant imported from another file, like in one of 
 But if the declaration file itself has not changed, then the previous symbol can be directly found
 this way.
 
-* By its unique path and name.
+- By its unique path and name.
 
 If the file _has_ changed, then symbols can be located by their declaration path plus their name, if
 they have a name that's guaranteed to be unique. Currently, this means that the classes are declared
@@ -255,10 +255,10 @@ emit, `SemanticSymbol`s also track the type-checking shape of decorated classes.
 data which is not public API, but upon which the TCB generation for components might depend. Such
 data includes:
 
-* Type-checking API shape from any base classes, since TCB generation uses information from the full
+- Type-checking API shape from any base classes, since TCB generation uses information from the full
   inheritance chain of a directive/pipe.
-* The generic signature shape of the class.
-* Private field names for `@Input`s and `@Output`s.
+- The generic signature shape of the class.
+- Private field names for `@Input`s and `@Output`s.
 
 Using a similar algorithm to the `emit` optimization, the compiler can determine which files need
 their type-checking code regenerated, and which can continue to use TCB code from the previous
@@ -282,8 +282,8 @@ compilation. Thus, if compilation A succeeds, and a subsequent compilation B fai
 will begin using the state of compilation A as a starting point. This requires tracking of two
 important pieces of state:
 
-* Reusable information, such as analysis results, from the last known good compilation.
-* The accumulated set of files which have physically changed since the last known good compilation.
+- Reusable information, such as analysis results, from the last known good compilation.
+- The accumulated set of files which have physically changed since the last known good compilation.
 
 Using this information, ngtsc is able to "forget" about the intermediate failed attempts and begin
 each new compilation as if it were a single step from the last successful build. It can then ensure

@@ -53,6 +53,7 @@ keeps the outputs up-to-date as you save sources.
 The ellipsis in the examples above are not meant to be substituted by a package name, but
 are used by Bazel as a wildcard to execute all tests in the specified path. To execute all the tests for a
 single package, the commands are (exemplary):
+
 - `pnpm test //packages/core/...` for all tests, or
 - `pnpm test //packages/core/test:test` for a particular test suite.
 
@@ -73,6 +74,7 @@ using the proper flags with your Bazel test runs in Angular.
   any given `BUILD.bazel`.
 
 ### Debugging a Node Test in Chrome DevTools
+
 <a id="debugging"></a>
 
 - Open Chrome at: [chrome://inspect](chrome://inspect)
@@ -93,6 +95,7 @@ For more, see the [rules_nodejs Debugging documentation](https://bazelbuild.gith
 ### Debugging a Node Test in VSCode
 
 First time setup:
+
 - Go to Debug > Add configuration (in the menu bar) to open `launch.json`
 - Add the following to the `configurations` array:
 
@@ -133,11 +136,13 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 Open `external` directory which contains everything that bazel downloaded while executing the
 workspace file:
+
 ```sh
 open $(pnpm -s bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):
+
 ```sh
 pnpm bazel build //packages/core:package -s
 ```
@@ -214,12 +219,14 @@ pnpm bazel analyze-profile filename_name.profile
 This will show the phase summary, individual phase information and critical path.
 
 You can also list all individual tasks and the time they took using `--task_tree`.
+
 ```sh
 pnpm bazel analyze-profile filename_name.profile --task_tree ".*"
 ```
 
 To show all tasks that take longer than a certain threshold, use the `--task_tree_threshold` flag.
 The default behavior is to use a 50ms threshold.
+
 ```sh
 pnpm bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
 ```
@@ -227,6 +234,7 @@ pnpm bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_th
 `--task_tree` takes a regexp as argument that filters by the text shown after the time taken.
 
 Compiling TypeScript shows as:
+
 ```
 70569 ACTION_EXECUTE (10974.826 ms) Compiling TypeScript (devmode) //packages/compiler:compiler []
 ```
@@ -273,6 +281,7 @@ of time is spent.
 ### Windows
 
 #### bazel run
+
 If you see the following error:
 
 ```
@@ -295,7 +304,9 @@ Require stack:
 e.g: `pnpm bazel test packages/core/test/bundling/forms:symbol_test`
 
 #### mkdir missing
+
 If you see the following error::
+
 ```
 ERROR: An error occurred during the fetch of repository 'npm':
    Traceback (most recent call last):
@@ -305,6 +316,7 @@ ERROR: An error occurred during the fetch of repository 'npm':
                 fail("mkdir -p %s failed: \nSTDOUT:\n%s\nSTDERR:\n%s" % (dirname, result.stdout, result.stderr))
 Error in fail: mkdir -p _ failed:
 ```
+
 The `msys64` library and associated tools (like `mkdir`) are required to build Angular.
 
 Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`.

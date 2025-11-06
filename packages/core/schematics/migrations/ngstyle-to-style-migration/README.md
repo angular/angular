@@ -1,8 +1,9 @@
-
 # ngStyle to style migration
+
 This schematic helps developers to convert ngStyle directive usages to style bindings where possible.
 
 ## How to run this migration?
+
 The migration can be run using the following command:
 
 ```bash
@@ -16,6 +17,7 @@ ng generate @angular/core:ngstyle-to-style --path src/app/sub-component
 ```
 
 ### How does it work?
+
 The schematic will attempt to find all the places in the templates where the directive is used and check if it can be converted to [style].
 
 Example:

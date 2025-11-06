@@ -6,6 +6,7 @@ The release will be done from the current branch unless the `BRANCH_TO_RELEASE` 
 ## Post release
 
 After the release update release notes in GitHub
+
 1. Go to the Releases section.
 2. Click "Draft new release".
 3. Copy the text added to the `CHANGELOG.md`.

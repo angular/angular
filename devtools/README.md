@@ -57,6 +57,7 @@ Before running end-to-end tests, you need to start the development server using:
 ```shell
 pnpm devtools:devserver
 ```
+
 You have two options for running cypress, you can use the interactive cypress UI or you can run Cypress in headless mode.
 
 To open Cypress for Angular DevTools in interactive mode, run:
@@ -90,4 +91,3 @@ guide from [here](https://developer.chrome.com/docs/extensions/get-started/tutor
 For Firefox, to load the extension, you can go to the about:debugging page, click the "This Firefox" option and then
 click the Load Temporary Add-on button. You'll have to select the manifest file in
 `dist/bin/devtools/projects/shell-browser/src/prodapp` directly.
-

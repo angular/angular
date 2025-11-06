@@ -130,7 +130,7 @@ When you write your own structural directives, use the following syntax:
 
 <docs-code hideCopy language="typescript">
 
-*:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )*"
+_:prefix="( :let | :expression ) (';' | ',')? ( :let | :as | :keyExp )_"
 
 </docs-code>
 
@@ -154,23 +154,23 @@ let = "let" :local "=" :export ";"?
 
 Angular translates structural directive shorthand into the normal binding syntax as follows:
 
-| Shorthand | Translation |
-|:--- |:--- |
-| `prefix` and naked `expression` | `[prefix]="expression"` |
-| `keyExp` | `[prefixKey]="expression"` (The `prefix` is added to the `key`) |
-| `let local` | `let-local="export"` |
+| Shorthand                       | Translation                                                     |
+| :------------------------------ | :-------------------------------------------------------------- |
+| `prefix` and naked `expression` | `[prefix]="expression"`                                         |
+| `keyExp`                        | `[prefixKey]="expression"` (The `prefix` is added to the `key`) |
+| `let local`                     | `let-local="export"`                                            |
 
 ### Shorthand examples
 
 The following table provides shorthand examples:
 
-| Shorthand | How Angular interprets the syntax |
-|:--- |:--- |
-| `*myDir="let item of [1,2,3]"` | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">` |
+| Shorthand                                                             | How Angular interprets the syntax                                                                             |
+| :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `*myDir="let item of [1,2,3]"`                                        | `<ng-template myDir let-item [myDirOf]="[1, 2, 3]">`                                                          |
 | `*myDir="let item of [1,2,3] as items; trackBy: myTrack; index as i"` | `<ng-template myDir let-item [myDirOf]="[1,2,3]" let-items="myDirOf" [myDirTrackBy]="myTrack" let-i="index">` |
-| `*ngComponentOutlet="componentClass";` | `<ng-template [ngComponentOutlet]="componentClass">` |
-| `*ngComponentOutlet="componentClass; inputs: myInputs";` | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">` |
-| `*myDir="exp as value"` | `<ng-template [myDir]="exp" let-value="myDir">` |
+| `*ngComponentOutlet="componentClass";`                                | `<ng-template [ngComponentOutlet]="componentClass">`                                                          |
+| `*ngComponentOutlet="componentClass; inputs: myInputs";`              | `<ng-template [ngComponentOutlet]="componentClass" [ngComponentOutletInputs]="myInputs">`                     |
+| `*myDir="exp as value"`                                               | `<ng-template [myDir]="exp" let-value="myDir">`                                                               |
 
 ## Improving template type checking for custom directives
 
@@ -178,11 +178,11 @@ You can improve template type checking for custom directives by adding template 
 These guards help the Angular template type checker find mistakes in the template at compile time, which can avoid runtime errors.
 Two different types of guards are possible:
 
-* `ngTemplateGuard_(input)` lets you control how an input expression should be narrowed based on the type of a specific input.
-* `ngTemplateContextGuard` is used to determine the type of the context object for the template, based on the type of the directive itself.
+- `ngTemplateGuard_(input)` lets you control how an input expression should be narrowed based on the type of a specific input.
+- `ngTemplateContextGuard` is used to determine the type of the context object for the template, based on the type of the directive itself.
 
 This section provides examples of both kinds of guards.
-For more information, see [Template type checking](tools/cli/template-typecheck "Template type-checking guide").
+For more information, see [Template type checking](tools/cli/template-typecheck 'Template type-checking guide').
 
 ### Type narrowing with template guards
 
@@ -190,8 +190,8 @@ A structural directive in a template controls whether that template is rendered 
 
 There are two narrowings which are possible with input guards:
 
-* Narrowing the input expression based on a TypeScript type assertion function.
-* Narrowing the input expression based on its truthiness.
+- Narrowing the input expression based on a TypeScript type assertion function.
+- Narrowing the input expression based on its truthiness.
 
 To narrow the input expression by defining a type assertion function:
 

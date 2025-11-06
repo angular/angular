@@ -11,19 +11,17 @@ For example index `123` may point to a component instance in the `LView` but a c
 
 The layout is as such:
 
-| Section    | `LView`                                                  | `TView.data`
-| ---------- | ------------------------------------------------------------ | --------------------------------------------------
-| `HEADER`   | contextual data                                              |  mostly `null`
-| `DECLS`    | DOM, pipe, and local ref instances                           |
-| `VARS`     | binding values                                               |  property names
-| `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
-
+| Section   | `LView`                                                      | `TView.data`                                               |
+| --------- | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| `HEADER`  | contextual data                                              | mostly `null`                                              |
+| `DECLS`   | DOM, pipe, and local ref instances                           |
+| `VARS`    | binding values                                               | property names                                             |
+| `EXPANDO` | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null` |
 
 ## `HEADER`
 
 `HEADER` is a fixed array size which contains contextual information about the template.
 Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
-
 
 ## `DECLS`
 
@@ -57,23 +55,24 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LView`         | `TView.data`
-| ----: | -----------         | ------------
+| Index | `LView` | `TView.data` |
+| ----: | ------- | ------------ |
+
 | `HEADER`
 | `DECLS`
-| 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
-| 11    | `#text(Hello )`     | `{type: Element, index: 11, parent: tView.data[10]}`
-| 12    | `<b>`               | `{type: Element, index: 12, parent: tView.data[10]}`
-| 13    | `#text(World)`      | `{type: Element, index: 13, parent: tView.data[12]}`
-| 14    | `#text(!)`          | `{type: Element, index: 14, parent: tView.data[10]}`
-| ...   | ...                 | ...
+| 10 | `<div>` | `{type: Element, index: 10, parent: null}`
+| 11 | `#text(Hello )` | `{type: Element, index: 11, parent: tView.data[10]}`
+| 12 | `<b>` | `{type: Element, index: 12, parent: tView.data[10]}`
+| 13 | `#text(World)` | `{type: Element, index: 13, parent: tView.data[12]}`
+| 14 | `#text(!)` | `{type: Element, index: 14, parent: tView.data[10]}`
+| ... | ... | ...
 
 NOTE:
+
 - The `10` is not the actual size of `HEADER` but it is left here for simplification.
 - `LView` contains DOM instances only
 - `TView.data` contains information on relationships such as where the parent is.
   You need the `TView.data` information to make sense of the `LView` information.
-
 
 ## `VARS`
 
@@ -110,27 +109,28 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LView`         | `TView.data`
-| ----: | -----------         | ------------
+| Index | `LView` | `TView.data` |
+| ----: | ------- | ------------ |
+
 | `HEADER`
 | `DECLS`
-| 10    | `<div>`             | `{type: Element, index: 10, parent: null}`
-| 11    | `#text()`           | `{type: Element, index: 11, parent: tView.data[10]}`
+| 10 | `<div>` | `{type: Element, index: 10, parent: null}`
+| 11 | `#text()` | `{type: Element, index: 11, parent: tView.data[10]}`
 | `VARS`
-| 12    | `'World'`           | `'title'`
-| 13    | `'World'`           | `null`
-| ...   | ...                 | ...
+| 12 | `'World'` | `'title'`
+| 13 | `'World'` | `null`
+| ... | ... | ...
 
 NOTE:
+
 - `LView` contain DOM instances and previous binding values only
 - `TView.data` contains information on relationships and property labels.
-
-
 
 ## `EXPANDO`
 
 `EXPANDO` contains information on data which size is not known at compile time.
 Examples include:
+
 - `Component`/`Directives` since we don't know at compile time which directives will match.
 - Host bindings, since until we match the directives it is unclear how many host bindings need to be allocated.
 
@@ -180,23 +180,22 @@ class Tooltip {
 }
 ```
 
-
 The above will create the following layout:
 
-| Index | `LView`         | `TView.data`
-| ----: | -----------         | ------------
+| Index | `LView` | `TView.data` |
+| ----: | ------- | ------------ |
+
 | `HEADER`
 | `DECLS`
-| 10    | `[<child>, ...]`    | `{type: Element, index: 10, parent: null}`
+| 10 | `[<child>, ...]` | `{type: Element, index: 10, parent: null}`
 | `VARS`
 | `EXPANDO`
-| 11..18| cumulativeBloom     | templateBloom
-| 19    | `new Child()`       | `Child`
-| 20    | `new Tooltip()`     | `Tooltip`
-| 21    | `'Hello World!'`    | `'tooltip'`
-| 22    | `'greeting'`        | `'title'`
-| ...   | ...                 | ...
-
+| 11..18| cumulativeBloom | templateBloom
+| 19 | `new Child()` | `Child`
+| 20 | `new Tooltip()` | `Tooltip`
+| 21 | `'Hello World!'` | `'tooltip'`
+| 22 | `'greeting'` | `'title'`
+| ... | ... | ...
 
 ## `EXPANDO` and Injection
 
@@ -205,6 +204,7 @@ This is because at the time of compilation we don't know about all of the inject
 (The injection tokens are part of the Component hence hide behind a selector and are not available to the parent component.)
 
 Injection needs to store three things:
+
 - The injection token stored in `TView.data`
 - The token factory stored in `LProtoViewData` and subsequently in `LView`
 - The value for the injection token stored in `LView`. (Replacing token factory upon creation).
@@ -213,6 +213,7 @@ To save time when creating `LView` we use an array clone operation to copy data 
 The `LProtoViewData` is initialized by the `ProvidesFeature`.
 
 Injection tokens are sorted into three sections:
+
 1. `directives`: Used to denote eagerly created items representing directives and component.
 2. `providers`: Used to denote items visible to component, component's view and component's content.
 3. `viewProviders`: Used to denote items only visible to the component's view.
@@ -271,31 +272,34 @@ class Child {
 
 The above will create the following layout:
 
-| Index | `LView`                                  | `TView.data`
-| ----: | ------------                                 | -------------
+| Index | `LView` | `TView.data` |
+| ----: | ------- | ------------ |
+
 | `HEADER`
 | `DECLS`
-| 10    | `[<child>, ...]`                             | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
+| 10 | `[<child>, ...]` | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
 | `VARS`
 | `EXPANDO`
-| 11..18| cumulativeBloom                              | templateBloom
-|       | *sub-section: `component` and `directives`*
-| 19    | `factory(Child.ɵcmp.factory)`*               | `Child`
-|       | *sub-section: `providers`*
-| 20    | `factory(ServiceA.ɵprov.factory)`*           | `ServiceA`
-| 22    | `'someServiceBValue'`*                       | `ServiceB`
-|       | *sub-section: `viewProviders`*
-| 22    | `factory(()=> new Service())`*               | `ServiceC`
-| 22    | `factory(()=> directiveInject(ServiceE))`*   | `ServiceD`
-| ...   | ...                   | ...
+| 11..18| cumulativeBloom | templateBloom
+| | _sub-section: `component` and `directives`_
+| 19 | `factory(Child.ɵcmp.factory)`* | `Child`
+| | *sub-section: `providers`_
+| 20 | `factory(ServiceA.ɵprov.factory)`_ | `ServiceA`
+| 22 | `'someServiceBValue'`* | `ServiceB`
+| | *sub-section: `viewProviders`_
+| 22 | `factory(()=> new Service())`_ | `ServiceC`
+| 22 | `factory(()=> directiveInject(ServiceE))`\* | `ServiceD`
+| ... | ... | ...
 
 NOTICE:
+
 - `*` denotes initial value copied from the `LProtoViewData`, as the tokens get instantiated the factories are replaced with actual value.
 - That `TView.data` has `expando` and `expandoInjectorCount` properties which point to where the element injection data is stored.
 - That all injectable tokens are stored in linear sequence making it easy to search for instances to match.
 - That `directive` sub-section gets eagerly instantiated.
 
 Where `factory` is a function which wraps the factory into object which can be monomorphically detected at runtime in an efficient way.
+
 ```TypeScript
 class Factory {
   /// Marker set to true during factory invocation to see if we get into recursive loop.
@@ -314,6 +318,7 @@ function isFactory(obj: any): obj is Factory {
 ```
 
 Pseudo code:
+
 1. Check if bloom filter has the value of the token. (If not exit)
 2. Locate the token in the expando honoring `directives`, `providers` and `viewProvider` rules by limiting the search scope.
 3. Read the value of `lView[index]` at that location.
@@ -380,8 +385,6 @@ function inject(token: any): any {
   return lookupTokenInExpando(token);
 }
 ```
-
-
 
 # `LContainer`
 

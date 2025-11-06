@@ -15,7 +15,7 @@ ng test
 
 </docs-code>
 
-The `ng test` command builds the application in *watch mode*,
+The `ng test` command builds the application in _watch mode_,
 and launches the [Karma test runner](https://karma-runner.github.io).
 
 The console output looks like below:
@@ -67,23 +67,23 @@ Each library and runner has its own distinctive installation procedures, configu
 
 Inside the `src/app` folder the Angular CLI generated a test file for the `AppComponent` named `app.component.spec.ts`.
 
-IMPORTANT: The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests \(also known as a *spec* file\).
+IMPORTANT: The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests \(also known as a _spec_ file\).
 
 The `app.component.ts` and `app.component.spec.ts` files are siblings in the same folder.
 The root file names \(`app.component`\) are the same for both files.
 
-Adopt these two conventions in your own projects for *every kind* of test file.
+Adopt these two conventions in your own projects for _every kind_ of test file.
 
 #### Place your spec file next to the file it tests
 
 It's a good idea to put unit test spec files in the same folder
 as the application source code files that they test:
 
-* Such tests are painless to find
-* You see at a glance if a part of your application lacks tests
-* Nearby tests can reveal how a part works in context
-* When you move the source \(inevitable\), you remember to move the test
-* When you rename the source file \(inevitable\), you remember to rename the test file
+- Such tests are painless to find
+- You see at a glance if a part of your application lacks tests
+- Nearby tests can reveal how a part works in context
+- When you move the source \(inevitable\), you remember to move the test
+- When you rename the source file \(inevitable\), you remember to rename the test file
 
 #### Place your spec files in a test folder
 
@@ -113,13 +113,13 @@ ng test --no-watch --no-progress --browsers=ChromeHeadless
 
 After you've set up your application for testing, you might find the following testing guides useful.
 
-|                                                                    | Details |
-|:---                                                                |:---     |
+|                                                                    | Details                                                                           |
+| :----------------------------------------------------------------- | :-------------------------------------------------------------------------------- |
 | [Code coverage](guide/testing/code-coverage)                       | How much of your app your tests are covering and how to specify required amounts. |
 | [Testing services](guide/testing/services)                         | How to test the services your application uses.                                   |
 | [Basics of testing components](guide/testing/components-basics)    | Basics of testing Angular components.                                             |
 | [Component testing scenarios](guide/testing/components-scenarios)  | Various kinds of component testing scenarios and use cases.                       |
 | [Testing attribute directives](guide/testing/attribute-directives) | How to test your attribute directives.                                            |
 | [Testing pipes](guide/testing/pipes)                               | How to test pipes.                                                                |
-| [Debugging tests](guide/testing/debugging)                            | Common testing bugs.                                                              |
+| [Debugging tests](guide/testing/debugging)                         | Common testing bugs.                                                              |
 | [Testing utility APIs](guide/testing/utility-apis)                 | Angular testing features.                                                         |

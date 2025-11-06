@@ -42,7 +42,7 @@ Track expressions can only reference `$index`, the item, and fields from the com
 Inside `@for` contents, several implicit variables are always available:
 
 | Variable | Meaning                                       |
-|----------|-----------------------------------------------|
+| -------- | --------------------------------------------- |
 | `$count` | Number of items in a collection iterated over |
 | `$index` | Index of the current row                      |
 | `$first` | Whether the current row is the first row      |

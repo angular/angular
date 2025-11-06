@@ -62,8 +62,8 @@ change outside major releases.
 
 ## Golden files
 
-Angular tracks the status of the public API in a *golden file*, maintained with a tool called the
-*public API guard*.
+Angular tracks the status of the public API in a _golden file_, maintained with a tool called the
+_public API guard_.
 If you modify any part of a public API in one of the supported public packages, the PR will fail a
 test in CI with an error message that instructs you to accept the golden file.
 

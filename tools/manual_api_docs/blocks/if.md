@@ -1,4 +1,4 @@
-The `@if` block conditionally displays its content when its condition expression is truthy. 
+The `@if` block conditionally displays its content when its condition expression is truthy.
 
 ## Syntax
 
