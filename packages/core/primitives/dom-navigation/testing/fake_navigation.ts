@@ -466,7 +466,7 @@ export class FakeNavigation implements Navigation {
       return;
     }
     const abortReason = reason ?? new DOMException('Navigation aborted', 'AbortError');
-    this.navigateEvent.cancel(abortReason);
+    this.navigateEvent.abort(abortReason);
   }
 
   /**
@@ -786,7 +786,7 @@ interface InternalFakeNavigateEvent extends FakeNavigateEvent {
   focusResetBehavior: 'after-transition' | 'manual' | null;
 
   abortController: AbortController;
-  cancel(reason: Error): void;
+  abort(reason: Error): void;
 }
 
 /**
@@ -917,6 +917,20 @@ function dispatchNavigateEvent({
     }
   }
 
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#process-navigate-event-handler-failure
+  function processNavigateEventHandlerFailure(reason: any) {
+    if (event.abortController.signal.aborted) {
+      return;
+    }
+    if (event !== navigation.navigateEvent) {
+      throw new Error('Event is no longer the current navigation event');
+    }
+    if (event.interceptionState !== 'intercepted') {
+      finishNavigationEvent(event, false);
+    }
+    event.abort(reason);
+  }
+
   // https://html.spec.whatwg.org/multipage/nav-history-apis.html#commit-a-navigate-event
   // "To commit a navigate event given a NavigateEvent..."
   function commit() {
@@ -972,31 +986,15 @@ function dispatchNavigateEvent({
         (navigation.transition as InternalNavigationTransition)?.finishedResolve();
         navigation.transition = null;
       })
-      .catch((reason) => {
-        if (!event.abortController.signal.aborted) {
-          event.cancel(reason);
-        }
-      });
+      .catch(processNavigateEventHandlerFailure);
   }
 
   // Internal only.
-  // https://whatpr.org/html/10919/nav-history-apis.html#inner-navigate-event-firing-algorithm
-  // "Let cancel be the following steps given reason"
-  event.cancel = function (this: InternalFakeNavigateEvent, reason: Error) {
-    if (result.signal.aborted) {
-      return;
-    }
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#abort-a-navigateevent
+  // "To abort a NavigateEvent event given reason:"
+  event.abort = function (this: InternalFakeNavigateEvent, reason: Error) {
     this.abortController.abort(reason);
-    const isCurrentGlobalNavigationEvent = this === navigation.navigateEvent;
-    if (isCurrentGlobalNavigationEvent) {
-      navigation.navigateEvent = null;
-    }
-    if (this.interceptionState !== 'intercepted' && this.interceptionState !== 'finished') {
-      finishNavigationEvent(this, false);
-    } else if (this.interceptionState === 'intercepted') {
-      this.interceptionState = 'finished';
-    }
-    result.committedReject(reason);
+    navigation.navigateEvent = null;
     result.finishedReject(reason);
     const navigateerrorEvent = new Event('navigateerror', {
       bubbles: false,
@@ -1016,7 +1014,7 @@ function dispatchNavigateEvent({
 
     if (event.interceptionState === 'intercepted') {
       if (!navigation.currentEntry) {
-        event.cancel(
+        event.abort(
           new DOMException(
             'Cannot create transition without a currentEntry for intercepted navigation.',
             'InvalidStateError',
@@ -1032,7 +1030,7 @@ function dispatchNavigateEvent({
     }
     if (!dispatchResult && event.cancelable) {
       if (!event.abortController.signal.aborted) {
-        event.cancel(
+        event.abort(
           new DOMException('Navigation prevented by event.preventDefault()', 'AbortError'),
         );
       }
@@ -1053,15 +1051,7 @@ function dispatchNavigateEvent({
         });
         Promise.all(precommitPromisesList)
           .then(() => commit())
-          .catch((reason: Error) => {
-            if (event.abortController.signal.aborted) {
-              return;
-            }
-            if (navigation.transition) {
-              (navigation.transition as InternalNavigationTransition).committedReject(reason);
-            }
-            event.cancel(reason);
-          });
+          .catch(processNavigateEventHandlerFailure);
       }
     }
   }
@@ -1290,9 +1280,10 @@ class InternalNavigationResult {
         }
         resolve(this.committedTo);
       };
+      // https://html.spec.whatwg.org/multipage/nav-history-apis.html#reject-the-finished-promise
       this.finishedReject = (reason: Error) => {
+        this.committedReject(reason);
         reject(reason);
-        this.abortController.abort(reason);
       };
     });
     // All rejections are handled.
