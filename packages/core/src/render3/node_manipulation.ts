@@ -79,7 +79,7 @@ import {
 } from './interfaces/view';
 import {assertTNodeType} from './node_assert';
 import {profiler} from './profiler';
-import {ProfilerEvent} from './profiler_types';
+import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
 import {getLViewParent, getNativeByTNode, unwrapRNode} from './util/view_utils';
 import {allLeavingAnimations} from '../animation/longest_animation';
 import {Injector} from '../di';

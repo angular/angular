@@ -20,7 +20,7 @@ import {
   unwrapRNode,
 } from '../util/view_utils';
 import {profiler} from '../profiler';
-import {ProfilerEvent} from '../profiler_types';
+import {ProfilerEvent} from '../../../primitives/profiler/src/profiler_types';
 import {markViewDirty} from '../instructions/mark_view_dirty';
 import type {RElement} from '../interfaces/renderer_dom';
 import type {GlobalTargetResolver, Renderer} from '../interfaces/renderer';
