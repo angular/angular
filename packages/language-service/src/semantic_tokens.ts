@@ -37,7 +37,8 @@ import {
   TmplAstDirective,
   ParseSourceSpan,
 } from '@angular/compiler';
-import {NgCompiler, PotentialDirective} from '@angular/compiler-cli/private/language_service';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {PotentialDirective} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 import {TypeCheckInfo} from './utils';
 

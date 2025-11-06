@@ -5,17 +5,18 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {AbsoluteFsPath, resolve} from '@angular/compiler-cli';
+
 import {
   CompilationTicket,
   freshCompilationTicket,
   incrementalFromCompilerTicket,
   NgCompiler,
-  NgCompilerOptions,
-  ProgramDriver,
   resourceChangeTicket,
-  TrackedIncrementalBuildStrategy,
-} from '@angular/compiler-cli/private/language_service';
+} from '@angular/compiler-cli/src/ngtsc/core';
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
+import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 
 import {LanguageServiceAdapter} from './adapters';
 

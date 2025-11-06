@@ -6,14 +6,6 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-export {
-  DiagnosticCategoryLabel,
-  InternalOptions,
-  LegacyNgcOptions,
-  NgCompilerAdapter,
-  NgCompilerOptions,
-  TypeCheckingOptions,
-  UnifiedModulesHost,
-} from './api';
 export * from './src/compiler';
 export {NgCompilerHost} from './src/host';
+export {UnifiedModulesHost, NgCompilerOptions, DiagnosticCategoryLabel} from './api';
