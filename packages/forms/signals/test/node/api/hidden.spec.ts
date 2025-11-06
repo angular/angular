@@ -89,7 +89,7 @@ describe('hidden', () => {
     expect(f().valid()).toBeFalse();
   });
 
-  xit('disables touch state propagation?', () => {
+  it('disables touch state propagation', () => {
     const cat = signal({name: 'Pirojok-the-cat', age: 5});
     const f = form(
       cat,
