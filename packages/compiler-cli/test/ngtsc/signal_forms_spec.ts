@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import ts from 'typescript';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
 import {NgtscTestEnvironment} from './env';
-import ts from 'typescript';
 
 const testFiles = loadStandardTestFiles({forms: true});
 
@@ -44,7 +44,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'null' is not assignable to type '() => FieldState<string, string | number>'.`,
+        `Type 'null' is not assignable to type 'FieldTree<string, string | number>'.`,
       );
     });
 
@@ -100,7 +100,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type '() => FieldState<number, string | number>' is not assignable to type '() => FieldState<string, string | number>'.`,
+        `Type 'FieldTree<number, string | number>' is not assignable to type 'FieldTree<string, string | number>'.`,
       );
     });
 
@@ -124,7 +124,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type '() => FieldState<unknown, string | number>' is not assignable to type '() => FieldState<string | number | Date | null, string | number>'.`,
+        `Type 'FieldTree<unknown, string | number>' is not assignable to type 'FieldTree<string | number | Date | null, string | number>'.`,
       );
     });
 
@@ -187,7 +187,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type '() => FieldState<string, string | number>' is not assignable to type '() => FieldState<boolean, string | number>'.`,
+        `Type 'FieldTree<string, string | number>' is not assignable to type 'FieldTree<boolean, string | number>'.`,
       );
     });
 
