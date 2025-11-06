@@ -17,11 +17,9 @@ import {
   TmplAstRecursiveVisitor,
   tmplAstVisitAll,
 } from '@angular/compiler';
-import {
-  NgCompiler,
-  isExternalResource,
-  isNamedClassDeclaration,
-} from '@angular/compiler-cli/private/language_service';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import ts from 'typescript';
 
 import {getFirstComponentForTemplateFile, isTypeScriptFile, toTextSpan} from './utils';

@@ -33,14 +33,14 @@ import {
   TmplAstLetDeclaration,
   TmplAstSwitchBlock,
 } from '@angular/compiler';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {
-  NgCompiler,
   CompletionKind,
   PotentialDirective,
   SymbolKind,
   TemplateDeclarationSymbol,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/private/language_service';
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {

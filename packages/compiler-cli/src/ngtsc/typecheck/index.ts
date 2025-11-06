@@ -11,4 +11,3 @@ export {TypeCheckContextImpl, getTemplateDiagnostics} from './src/context';
 export {TypeCheckShimGenerator} from './src/shim';
 export {typeCheckFilePath} from './src/type_check_file';
 export {createHostElement} from './src/host_bindings';
-export {ExpressionIdentifier, findFirstMatchingNode, hasExpressionIdentifier} from './src/comments';

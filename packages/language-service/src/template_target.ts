@@ -50,7 +50,8 @@ import {
   tmplAstVisitAll,
   TmplAstVisitor,
 } from '@angular/compiler';
-import {NgCompiler, findFirstMatchingNode} from '@angular/compiler-cli/private/language_service';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import tss from 'typescript';
 
 import {

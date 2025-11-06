@@ -6,20 +6,21 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CompilerOptions, getFileSystem} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/private/language_service';
+import {CompilerOptions} from '@angular/compiler-cli';
+import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import ts from 'typescript';
 import {
-  FieldIncompatibilityReason,
   getMessageForClassIncompatibility,
   getMessageForFieldIncompatibility,
+  FieldIncompatibilityReason,
   KnownInputInfo,
   MigrationConfig,
   nonIgnorableFieldIncompatibilities,
   SignalInputMigration,
 } from '@angular/core/schematics/migrations/signal-migration/src';
-import {getProgramInfoFromBaseInfo} from '@angular/core/schematics/utils/tsurge';
 import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
-import ts from 'typescript';
+import {getProgramInfoFromBaseInfo} from '@angular/core/schematics/utils/tsurge';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 
 export async function applySignalInputRefactoring(
