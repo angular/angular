@@ -261,6 +261,457 @@ IMPORTANT: Be aware that asynchronous tasks that happen inside the `fakeAsync` z
 wait for them to complete (i.e. using `fixture.whenStable`) without using the
 `fakeAsync` test helpers to advance time, your test will likely fail. See below for more information.
 
+### Testing Asynchronous Operations with Different Testing Frameworks
+
+Angular now supports multiple testing frameworks (Jasmine, Karma, and Vitest), each with different approaches to
+handling fake timers and asynchronous operations. This guide covers common scenarios and best practices for each
+framework.
+
+## Understanding Fake Timers Across Frameworks
+
+### Angular's `fakeAsync()` and `tick()`
+
+Angular provides `fakeAsync()` zone that wraps your test and allows synchronous control of asynchronous operations:
+
+- `tick(milliseconds)` - advances the virtual clock
+- `flush()` - exhausts all pending timers
+- `flushMicrotasks()` - processes microtask queue (Promises)
+
+### Jasmine's `jasmine.clock()`
+
+Jasmine provides its own timer mocking through `jasmine.clock()`:
+
+- `jasmine.clock().install()` - enables fake timers
+- `jasmine.clock().tick(milliseconds)` - advances time
+- `jasmine.clock().uninstall()` - restores real timers
+
+### Vitest's Fake Timers
+
+Vitest offers `vi.useFakeTimers()` and related utilities:
+
+- `vi.useFakeTimers()` - enables fake timers
+- `vi.advanceTimersByTimeAsync(milliseconds)` - advances time asynchronously
+- `vi.runAllTimersAsync()` - runs all pending timers asynchronously
+- `vi.restoreAllTimers()` - restores real timers
+
+### Vitest Browser Mode Considerations
+
+When using fake timers, be aware that any retry mechanism that waits for asynchronous operations to complete (such as
+Vitest's `expect.element()` in browser mode) can interfere with mock clocks. This can cause tests to hang or behave
+unexpectedly because the timers won't advance automatically.
+
+To address this, you can configure Vitest to advance timers automatically:
+
+```typescript
+vi.useFakeTimers({ shouldAdvanceTime: true });
+```
+
+⚠️ **Important**: Don't mix Angular's `fakeAsync()` with framework-specific fake timers in the same test. Choose one
+approach and use it consistently.
+
+---
+
+## Common Testing Scenarios
+
+### Scenario 1: Component with Mock Service Returning Promises
+
+When a component depends on a service that returns Promises, you need to ensure the Promise resolves and change
+detection completes.
+
+#### Example Component
+
+```typescript
+
+@Component({
+  selector: 'app-user-profile',
+  template: `
+    <div *ngIf="loading">Loading...</div>
+    <div *ngIf="user">{{ user.name }}</div>
+  `
+})
+export class UserProfileComponent implements OnInit {
+  user?: User;
+  loading = true;
+
+  constructor(private userService: UserService) {
+  }
+
+  ngOnInit() {
+    this.userService.getUser().then(user => {
+      this.user = user;
+      this.loading = false;
+    });
+  }
+}
+```
+
+---
+
+### Scenario 2: Component Using `setTimeout` and `setInterval`
+
+Components that use native timer functions require careful handling depending on the testing framework.
+
+#### Example Component
+
+```typescript
+
+@Component({
+  selector: 'app-countdown',
+  template: `<div>Time left: {{ timeLeft }}</div>`,
+})
+export class CountdownComponent implements OnInit, OnDestroy {
+  timeLeft = 10;
+  private intervalId?: number;
+
+  ngOnInit() {
+    this.intervalId = window.setInterval(() => {
+      if (this.timeLeft > 0) {
+        this.timeLeft--;
+      }
+    }, 1000);
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+}
+```
+
+### Scenario 3: RxJS Operators (`delay`, `debounceTime`)
+
+RxJS timer-based operators work with all testing approaches but require different handling strategies.
+
+#### Example Component with `debounceTime`
+
+```typescript
+import {Component} from '@angular/core';
+import {Subject} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+
+@Component({
+  selector: 'app-search',
+  template: `
+    <input (input)="onSearch($event)" />
+    <div class="results">{{ results }}</div>
+  `,
+})
+export class SearchComponent implements OnInit {
+  private searchSubject = new Subject<string>();
+  results = '';
+
+  ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+    ).subscribe(term => {
+      this.results = `Searching for: ${term}`;
+    });
+  }
+
+  onSearch(event: Event) {
+    const term = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(term);
+  }
+}
+```
+
+---
+
+## Vitest Browser Mode: Special Considerations
+
+Vitest browser mode provides `expect.element()` with automatic retry functionality that can interfere with fake timers
+and `fixture.whenStable()`.
+
+### The Problem with `expect.element()` Retries
+
+`expect.element()` retries assertions every N milliseconds (typically 50-100ms). When combined with fake timers, this
+can cause:
+
+- `fixture.whenStable()` to never resolve (zone thinks there are always pending tasks)
+- Unpredictable test behavior
+- Timeouts
+
+### Solution 1: Avoid Fake Timers with `expect.element()`
+
+When using `expect.element()`, prefer real async/await over fake timers:
+
+```typescript
+import {expect as vitestExpect} from 'vitest';
+
+describe('SearchComponent in Vitest Browser Mode', () => {
+  let component: SearchComponent;
+  let fixture: ComponentFixture<SearchComponent>;
+
+  beforeEach(() => {
+// DO NOT use vi.useFakeTimers() here
+    TestBed.configureTestingModule({
+      declarations: [SearchComponent]
+    });
+    fixture = TestBed.createComponent(SearchComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should work with expect.element retries', async () => {
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input');
+    const resultsDiv = fixture.nativeElement.querySelector('.results');
+
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
+
+    // Use real timeouts or whenStable
+    await new Promise(resolve => setTimeout(resolve, 350));
+    // OR
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    // Now safe to use expect.element()
+    await vitestExpect.element(resultsDiv).toHaveTextContent('Searching for: test');
+  });
+});
+```
+
+### Solution 2: Use Standard Assertions Instead
+
+If you need fake timers, use standard Vitest assertions instead of `expect.element()`:
+
+```typescript
+import {vi, expect} from 'vitest';
+
+describe('SearchComponent with fake timers', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+// ... setup
+  });
+
+  afterEach(() => {
+    vi.restoreAllTimers();
+  });
+
+  it('should work with standard expect', () => {
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input');
+
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
+
+    vi.advanceTimersByTime(300);
+
+    // Use standard expect, not expect.element()
+    expect(component.results).toBe('Searching for: test');
+  });
+});
+```
+
+---
+
+## Best Practices and Decision Guide
+
+### When to Use Each Approach
+
+| Scenario                   | Recommended Approach           | Alternative                                   |
+| -------------------------- | ------------------------------ | --------------------------------------------- |
+| Simple Promises            | `async/await` + `whenStable()` | `fakeAsync()` + `tick()`                      |
+| `setTimeout`/`setInterval` | `fakeAsync()` + `tick()`       | Framework fake timers                         |
+| RxJS operators             | `fakeAsync()` + `tick()`       | Framework fake timers                         |
+| Vitest browser mode        | `async/await` (no fake timers) | Standard fake timers with standard assertions |
+| Complex mixed async        | `async/await` + `whenStable()` | Break into smaller tests                      |
+
+### General Guidelines
+
+1. **Choose One Timer Mechanism**: Never mix `fakeAsync()` with `jasmine.clock()` or `vi.useFakeTimers()` in the same
+   test
+
+2. **Always Clean Up Timers**:
+
+   ```typescript
+   afterEach(() => {
+   component.ngOnDestroy(); // Stop component timers
+   discardPeriodicTasks(); // For fakeAsync
+   // OR
+   jasmine.clock().uninstall();
+   // OR
+   vi.restoreAllTimers();
+   });
+   ```
+
+3. **Prefer `fakeAsync()` for Angular-Centric Tests**: It integrates best with Angular's zone.js and RxJS
+
+4. **Use `whenStable()` When Uncertain**: If you're not sure when all async operations complete, use
+   `fixture.whenStable()`
+
+5. **Vitest Browser Mode**: Avoid fake timers when using `expect.element()`, or use standard assertions
+
+### Framework Compatibility Matrix
+
+| Feature                   | fakeAsync + tick                   | jasmine.clock    | vi.useFakeTimers          | async/await       |
+| ------------------------- | ---------------------------------- | ---------------- | ------------------------- | ----------------- |
+| Promises                  | ✅ `tick()` or `flushMicrotasks()` | ❌ Not supported | ✅ Auto-advances          | ✅ Native support |
+| setTimeout                | ✅                                 | ✅               | ✅                        | ⚠️ Real time      |
+| setInterval               | ✅                                 | ✅               | ✅                        | ⚠️ Real time      |
+| RxJS timers               | ✅                                 | ✅               | ✅                        | ⚠️ Real time      |
+| requestAnimationFrame     | ✅ `flush()`                       | ✅               | ✅                        | ⚠️ Real time      |
+| `whenStable()`            | ⚠️ May hang with active timers     | ✅               | ⚠️ Issues in browser mode | ✅                |
+| Vitest `expect.element()` | ❌ Conflicts                       | ❌ Conflicts     | ❌ Conflicts              | ✅                |
+
+---
+
+## Troubleshooting Common Issues
+
+### `fixture.whenStable()` Never Resolves
+
+**Symptoms**: Test hangs indefinitely waiting for `whenStable()` to complete.
+
+**Causes**:
+
+- Active `setInterval` or recurring timers
+- Fake timers preventing zone stabilization
+- Vitest browser mode with `expect.element()` retries
+
+**Solutions**:
+
+```typescript
+// Solution 1: Clean up timers first
+it('test', async () => {
+  fixture.detectChanges();
+  component.ngOnDestroy(); // Stop any intervals
+  await fixture.whenStable();
+  // assertions
+});
+
+// Solution 2: Use fakeAsync instead
+it('test', fakeAsync(() => {
+  fixture.detectChanges();
+  tick(1000);
+  flush(); // Exhaust all timers
+// assertions
+}));
+
+// Solution 3: Avoid whenStable with fake timers
+it('test', fakeAsync(() => {
+  fixture.detectChanges();
+  tick(300); // Advance time explicitly
+  fixture.detectChanges();
+// assertions
+}));
+```
+
+### RxJS Operators Not Working with Fake Timers
+
+**Symptoms**: RxJS `delay()`, `debounceTime()`, etc. don't advance with `tick()`.
+
+**Solution**: Ensure you're inside a `fakeAsync()` zone. RxJS automatically respects it:
+
+```typescript
+import {fakeAsync, tick} from '@angular/core/testing';
+
+it('should work with RxJS', fakeAsync(() => {
+// RxJS operators automatically use fake timers in fakeAsync
+  observable$.pipe(delay(1000)).subscribe(value => {
+    expect(value).toBe('test');
+  });
+
+  tick(1000); // Advances RxJS schedulers
+}));
+```
+
+### Vitest: Timer Mismatch Errors
+
+**Symptoms**: "Timers are still running" or unexpected behavior in Vitest.
+
+**Solution**: Always restore timers and clean up:
+
+```typescript
+afterEach(() => {
+  vi.clearAllTimers(); // Clear pending timers
+  vi.restoreAllTimers(); // Restore real timers
+});
+```
+
+### Mixing Fake Timers with Real HTTP Calls
+
+**Symptoms**: HTTP requests hang or fail when using fake timers.
+
+**Solution**: Mock HTTP calls separately from timer control:
+
+```typescript
+it('test with HTTP and timers', fakeAsync(() => {
+  const httpMock = TestBed.inject(HttpTestingController);
+
+  component.loadData(); // Makes HTTP + uses timer
+
+  const req = httpMock.expectOne('/api/data');
+  req.flush({data: 'test'}); // Resolve HTTP first
+
+  tick(1000); // Then advance timers
+
+  httpMock.verify();
+}));
+```
+
+---
+
+## Migration Examples
+
+### From Jasmine to Vitest
+
+```typescript
+// Before (Jasmine)
+describe('MyComponent', () => {
+  beforeEach(() => {
+    jasmine.clock().install();
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+
+  it('test', () => {
+    jasmine.clock().tick(1000);
+    expect(component.value).toBe(10);
+  });
+});
+
+// After (Vitest)
+import {vi} from 'vitest';
+
+describe('MyComponent', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.restoreAllTimers();
+  });
+
+  it('test', () => {
+    vi.advanceTimersByTime(1000);
+    expect(component.value).toBe(10);
+  });
+});
+```
+
+### From `fakeAsync` to `async/await`
+
+```typescript
+// Before (fakeAsync)
+it('test', fakeAsync(() => {
+  fixture.detectChanges();
+  tick();
+  fixture.detectChanges();
+  expect(component.data).toBeDefined();
+}));
+
+// After (async/await)
+it('test', async () => {
+  fixture.detectChanges();
+  await fixture.whenStable();
+  fixture.detectChanges();
+  expect(component.data).toBeDefined();
+});
+```
+
 ### The `tick()` function
 
 You do have to call [tick()](api/core/testing/tick) to advance the virtual clock.
