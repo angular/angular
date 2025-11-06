@@ -36,6 +36,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/router-tree",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/tab-update",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/transfer-state",
+        "//devtools/projects/ng-devtools/src/lib/shared/button",
         "//devtools/projects/protocol",
     ],
 )

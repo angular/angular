@@ -1,12 +1,18 @@
 <section class="main-toolbar">
   <div class="tools">
     <button
-      class="toolbar-btn"
+      ng-button
+      btnType="icon"
+      class="toolbar-btn inspect-btn"
       (click)="toggleInspector()"
       matTooltip="Inspect element"
       aria-label="Inspect element"
     >
-      <mat-icon [class.inspector-active]="inspectorRunning()"> pin_end </mat-icon>
+      <svg viewBox="0 0 24 24" [class.inspect-active]="inspectorRunning()">
+        <path
+          d="M4,20C3.45,20 2.979,19.804 2.588,19.413C2.196,19.021 2,18.55 2,18L2,6C2,5.45 2.196,4.979 2.588,4.587C2.979,4.196 3.45,4 4,4L20,4C20.55,4 21.021,4.196 21.413,4.587C21.804,4.979 22,5.45 22,6L22,16.6L20,14.6L20,6L4,6L4,18L14.575,18L16.575,20L4,20ZM19.575,20L12.388,12.813L12.388,15.038L10.388,15.038L10.388,9.388L16.038,9.388L16.038,11.388L13.788,11.388L20.975,18.575L19.575,20Z"
+        />
+      </svg>
     </button>
   </div>
 
@@ -44,10 +50,19 @@
 
   <div class="settings">
     <div class="ver-ruler"></div>
-    <button class="toolbar-btn" [matMenuTriggerFor]="info" matTooltip="Info" aria-label="Info">
+    <button
+      ng-button
+      btnType="icon"
+      class="toolbar-btn"
+      [matMenuTriggerFor]="info"
+      matTooltip="Info"
+      aria-label="Info"
+    >
       <mat-icon> info </mat-icon>
     </button>
     <button
+      ng-button
+      btnType="icon"
       class="toolbar-btn"
       [matMenuTriggerFor]="menu"
       matTooltip="Open settings"
