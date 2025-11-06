@@ -41,6 +41,7 @@ import {TransferStateComponent} from './transfer-state/transfer-state.component'
 import {TabUpdate} from './tab-update/index';
 import {Settings} from '../application-services/settings';
 import {SUPPORTED_APIS} from '../application-providers/supported_apis';
+import {ButtonComponent} from '../shared/button/button.component';
 
 type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transfer State';
 
@@ -63,6 +64,7 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
     InjectorTreeComponent,
     TransferStateComponent,
     MatSlideToggle,
+    ButtonComponent,
   ],
   providers: [TabUpdate],
   changeDetection: ChangeDetectionStrategy.OnPush,
