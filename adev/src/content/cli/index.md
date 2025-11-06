@@ -53,7 +53,7 @@ If the current working directory is not the right place for your project, you ca
 
 ## Workspaces and project files
 
-The [ng new](cli/new) command creates an *Angular workspace* folder and generates a new application skeleton.
+The [ng new](cli/new) command creates an _Angular workspace_ folder and generates a new application skeleton.
 A workspace can contain multiple applications and libraries.
 The initial application created by the [ng new](cli/new) command is at the top level of the workspace.
 When you generate an additional application or library in a workspace, it goes into a `projects/` subfolder.
@@ -65,7 +65,7 @@ You can edit the generated files directly, or add to and modify them using CLI c
 Use the [ng generate](cli/generate) command to add new files for additional components and services, and code for new pipes, directives, and so on.
 Commands such as [add](cli/add) and [generate](cli/generate), which create or operate on applications and libraries, must be executed from within a workspace or project folder.
 
-*   See more about the [Workspace file structure](guide/file-structure).
+- See more about the [Workspace file structure](guide/file-structure).
 
 ### Workspace and project configuration
 
@@ -81,32 +81,32 @@ Option names in the configuration file must use [camelCase](guide/glossary#case-
 
 </div>
 
-*   See more about [Workspace Configuration](guide/workspace-config).
+- See more about [Workspace Configuration](guide/workspace-config).
 
 ## CLI command-language syntax
 
 Command syntax is shown as follows:
 
-`ng` *<command-name>* *<required-arg>* [*optional-arg*] `[options]`
+`ng` _<command-name>_ _<required-arg>_ [*optional-arg*] `[options]`
 
-*   Most commands, and some options, have aliases.
-    Aliases are shown in the syntax statement for each command.
+- Most commands, and some options, have aliases.
+  Aliases are shown in the syntax statement for each command.
 
-*   Option names are prefixed with a double dash \(`--`\) characters.
-    Option aliases are prefixed with a single dash \(`-`\) character.
-    Arguments are not prefixed.
-    For example:
+- Option names are prefixed with a double dash \(`--`\) characters.
+  Option aliases are prefixed with a single dash \(`-`\) character.
+  Arguments are not prefixed.
+  For example:
 
-    <code-example format="shell" language="shell">
+  <code-example format="shell" language="shell">
 
-    ng build my-app -c production
+  ng build my-app -c production
 
-    </code-example>
+  </code-example>
 
-*   Typically, the name of a generated artifact can be given as an argument to the command or specified with the `--name` option.
+- Typically, the name of a generated artifact can be given as an argument to the command or specified with the `--name` option.
 
-*   Arguments and option names must be given in [dash-case](guide/glossary#case-types).
-    For example: `--my-option-name`
+- Arguments and option names must be given in [dash-case](guide/glossary#case-types).
+  For example: `--my-option-name`
 
 ### Boolean options
 
@@ -124,7 +124,7 @@ Options that specify files can be given as absolute paths, or as paths relative 
 ### Schematics
 
 The [ng generate](cli/generate) and [ng add](cli/add) commands take, as an argument, the artifact or library to be generated or added to the current project.
-In addition to any general options, each artifact or library defines its own options in a *schematic*.
+In addition to any general options, each artifact or library defines its own options in a _schematic_.
 Schematic options are supplied to the command in the same format as immediate command options.
 
 <!-- links -->

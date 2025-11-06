@@ -1,7 +1,9 @@
 ## Move `DOCUMENT` migration
+
 Replaces imports of `DOCUMENT` from `@angular/core` to `@angular/common`:
 
 ### Before
+
 ```typescript
 import { Component, inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
@@ -13,6 +15,7 @@ export class MyComp {
 ```
 
 ### After
+
 ```typescript
 import { Component, inject, DOCUMENT } from '@angular/core';
 

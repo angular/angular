@@ -12,7 +12,6 @@ ng generate @angular/core:self-closing-tag
 
 </docs-code>
 
-
 #### Before
 
 <docs-code language="angular-html">

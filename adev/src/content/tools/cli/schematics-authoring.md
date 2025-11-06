@@ -42,10 +42,10 @@ import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
 // You can also have more than one rule factory per file.
-export function helloWorld(_options: any): Rule {
- return (tree: Tree,_context: SchematicContext) => {
-   return tree;
- };
+export function helloWorld(\_options: any): Rule {
+return (tree: Tree,\_context: SchematicContext) => {
+return tree;
+};
 }
 
 </docs-code>
@@ -59,13 +59,13 @@ Look for helper functions for working with modules, dependencies, TypeScript, AS
 <docs-code header="index.ts" language="typescript">
 
 import {
-  JsonAstObject,
-  JsonObject,
-  JsonValue,
-  Path,
-  normalize,
-  parseJsonAst,
-  strings,
+JsonAstObject,
+JsonObject,
+JsonValue,
+Path,
+normalize,
+parseJsonAst,
+strings,
 } from '@angular-devkit/core';
 
 </docs-code>
@@ -82,16 +82,16 @@ For example, the hypothetical "Hello World" schematic might have the following s
 <docs-code header="src/hello-world/schema.json" language="json">
 
 {
-    "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "default": "world"
-        },
-        "useColor": {
-            "type": "boolean"
-        }
-    }
+"properties": {
+"name": {
+"type": "string",
+"minLength": 1,
+"default": "world"
+},
+"useColor": {
+"type": "boolean"
+}
+}
 }
 </docs-code>
 
@@ -113,18 +113,18 @@ The schema with both prompts would be as follows.
 <docs-code header="src/hello-world/schema.json" language="json">
 
 {
-    "properties": {
-        "name": {
-            "type": "string",
-            "minLength": 1,
-            "default": "world",
-            "x-prompt": "What is your name?"
-        },
-        "useColor": {
-            "type": "boolean",
-            "x-prompt": "Would you like the response in color?"
-        }
-    }
+"properties": {
+"name": {
+"type": "string",
+"minLength": 1,
+"default": "world",
+"x-prompt": "What is your name?"
+},
+"useColor": {
+"type": "boolean",
+"x-prompt": "Would you like the response in color?"
+}
+}
 }
 </docs-code>
 
@@ -161,17 +161,17 @@ In the following example, the property takes an enumerated value, so the schemat
 <docs-code header="schema.json" language="json">
 
 "style": {
-  "description": "The file extension or preprocessor to use for style files.",
-  "type": "string",
-  "default": "css",
-  "enum": [
-    "css",
-    "scss",
-    "sass",
-    "less",
-    "styl"
-  ],
-  "x-prompt": "Which stylesheet format would you like to use?"
+"description": "The file extension or preprocessor to use for style files.",
+"type": "string",
+"default": "css",
+"enum": [
+"css",
+"scss",
+"sass",
+"less",
+"styl"
+],
+"x-prompt": "Which stylesheet format would you like to use?"
 }
 
 </docs-code>
@@ -198,25 +198,25 @@ By using the long form, the schematic can provide more explicit formatting of th
 <docs-code header="package/schematics/angular/application/schema.json" language="json">
 
 "style": {
-  "description": "The file extension or preprocessor to use for style files.",
-  "type": "string",
-  "default": "css",
-  "enum": [
-    "css",
-    "scss",
-    "sass",
-    "less"
-  ],
-  "x-prompt": {
-    "message": "Which stylesheet format would you like to use?",
-    "type": "list",
-    "items": [
-      { "value": "css",  "label": "CSS" },
-      { "value": "scss", "label": "SCSS   [ https://sass-lang.com/documentation/syntax#scss                ]" },
-      { "value": "sass", "label": "Sass   [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
-      { "value": "less", "label": "Less   [ https://lesscss.org/                                            ]" }
-    ]
-  },
+"description": "The file extension or preprocessor to use for style files.",
+"type": "string",
+"default": "css",
+"enum": [
+"css",
+"scss",
+"sass",
+"less"
+],
+"x-prompt": {
+"message": "Which stylesheet format would you like to use?",
+"type": "list",
+"items": [
+{ "value": "css", "label": "CSS" },
+{ "value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]" },
+{ "value": "sass", "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
+{ "value": "less", "label": "Less [ https://lesscss.org/ ]" }
+]
+},
 },
 
 </docs-code>
@@ -230,33 +230,33 @@ The following JSON schema is a complete description of the long-form syntax for 
 <docs-code header="x-prompt schema" language="json">
 
 {
-    "oneOf": [
-        { "type": "string" },
-        {
-            "type": "object",
-            "properties": {
-                "type": { "type": "string" },
-                "message": { "type": "string" },
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "oneOf": [
-                            { "type": "string" },
-                            {
-                                "type": "object",
-                                "properties": {
-                                    "label": { "type": "string" },
-                                    "value": { }
-                                },
-                                "required": [ "value" ]
-                            }
-                        ]
-                    }
-                }
-            },
-            "required": [ "message" ]
-        }
-    ]
+"oneOf": [
+{ "type": "string" },
+{
+"type": "object",
+"properties": {
+"type": { "type": "string" },
+"message": { "type": "string" },
+"items": {
+"type": "array",
+"items": {
+"oneOf": [
+{ "type": "string" },
+{
+"type": "object",
+"properties": {
+"label": { "type": "string" },
+"value": { }
+},
+"required": [ "value" ]
+}
+]
+}
+}
+},
+"required": [ "message" ]
+}
+]
 }
 
 </docs-code>

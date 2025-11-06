@@ -18,20 +18,20 @@ export function query<T>(
 }
 ```
 
-Notice that `query()` takes the `QueryReadType` as enumeration. 
+Notice that `query()` takes the `QueryReadType` as enumeration.
 
 ```
 function readFromNodeInjector(
     nodeInjector: LInjector, node: LNode, read: QueryReadType | Type<any>): any {
   if (read === QueryReadType.ElementRef) {
     return getOrCreateElementRef(nodeInjector);
-  } 
+  }
   if (read === QueryReadType.ViewContainerRef) {
     return getOrCreateContainerRef(nodeInjector);
   }
   if (read === QueryReadType.TemplateRef) {
     return getOrCreateTemplateRef(nodeInjector);
-  } 
+  }
   const matchingIdx = geIdxOfMatchingDirective(node, read);
   if (matchingIdx !== null) {
     return node.view.data[matchingIdx];
@@ -44,7 +44,7 @@ Sometimes later in the above code the `readFromNodeInjector` takes the `QueryRea
 
 The issue is that once the `query` instruction is pulled in it will pull in `ElementRef`, `ContainerRef`, and `TemplateRef` regardless if the `query` instruction queries for them.
 
-A better way to do this is to encapsulate the work into an object or function which will then be passed into the `query` instead of the enumeration. 
+A better way to do this is to encapsulate the work into an object or function which will then be passed into the `query` instead of the enumeration.
 
 ```
 function queryElementRefFeature() {...}
@@ -61,7 +61,7 @@ function readFromNodeInjector(
     nodeInjector: LInjector, node: LNode, readFn: (injector: Injector) => any) | Type<any>): any {
   if (isFeature(readFn)) {
     return readFn(nodeInjector);
-  } 
+  }
   const matchingIdx = geIdxOfMatchingDirective(node, readFn);
   if (matchingIdx !== null) {
     return node.view.data[matchingIdx];

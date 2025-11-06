@@ -38,7 +38,7 @@ import { Event, Router, NavigationStart, NavigationEnd } from '@angular/router';
 @Component({ ... })
 export class RouterEventsComponent {
   private readonly router = inject(Router);
-  
+
   constructor() {
     // Subscribe to router events and react to events
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event: Event) => {
@@ -102,7 +102,7 @@ import { map } from 'rxjs/operators';
 })
 export class AppComponent {
   private router = inject(Router);
-  
+
   readonly loading = toSignal(
     this.router.events.pipe(
       map(() => !!this.router.getCurrentNavigation())

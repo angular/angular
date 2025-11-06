@@ -1,8 +1,10 @@
 ## Remove `InjectFlags` migration
+
 Replaces the usages of the deprecated `InjectFlags` symbol with its non-deprecated equivalent,
 for example:
 
 ### Before
+
 ```typescript
 import { inject, InjectFlags, Directive, ElementRef } from '@angular/core';
 
@@ -13,6 +15,7 @@ export class Dir {
 ```
 
 ### After
+
 ```typescript
 import { inject, Directive, ElementRef } from '@angular/core';
 

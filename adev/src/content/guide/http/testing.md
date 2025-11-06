@@ -152,10 +152,10 @@ This behavior can be enforced with the use of an interceptor:
 export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const authService = inject(AuthService);
 
-  const clonedRequest = request.clone({
-    headers: request.headers.append('X-Authentication-Token', authService.getAuthToken()),
-  });
-  return next(clonedRequest);
+const clonedRequest = request.clone({
+headers: request.headers.append('X-Authentication-Token', authService.getAuthToken()),
+});
+return next(clonedRequest);
 }
 </docs-code>
 
@@ -188,12 +188,12 @@ A similar interceptor could be implemented with class based interceptors:
 export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    const clonedRequest = request.clone({
-      headers: request.headers.append('X-Authentication-Token', this.authService.getAuthToken()),
-    });
-    return next.handle(clonedRequest);
-  }
+intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+const clonedRequest = request.clone({
+headers: request.headers.append('X-Authentication-Token', this.authService.getAuthToken()),
+});
+return next.handle(clonedRequest);
+}
 }
 </docs-code>
 

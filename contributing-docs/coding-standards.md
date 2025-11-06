@@ -22,6 +22,7 @@ the original author. When collaborators are in the same room, this hurts product
 When collaborators are in different timezones, this can be devastating to productivity.
 
 For example, this is a not-very-useful comment:
+
 ```typescript
 // Set default tabindex.
 if (!attributes['tabindex']) {
@@ -30,6 +31,7 @@ if (!attributes['tabindex']) {
 ```
 
 While this is much more useful:
+
 ```typescript
 // Unless the user specifies otherwise, the calendar should not be a tab stop.
 // This prevents ngAria from overzealously adding a tabindex to anything with an ng-model.
@@ -85,13 +87,13 @@ Avoid `any` where possible. If you find yourself using `any`, consider whether a
 Getters and setters introduce openings for side effects, add more complexity for code readers,
 and generate additional code when targeting older browsers.
 
-* Only use getters and setters for `@Input` properties or when otherwise required for API
-compatibility.
-* Avoid long or complex getters and setters. If the logic of an accessor would take more than
-three lines, introduce a new method to contain the logic.
-* A getter should immediately precede its corresponding setter.
-* Decorators such as `@Input` should be applied to the getter and not the setter.
-* Always use a `readonly` property instead of a getter (with no setter) when possible.
+- Only use getters and setters for `@Input` properties or when otherwise required for API
+  compatibility.
+- Avoid long or complex getters and setters. If the logic of an accessor would take more than
+  three lines, introduce a new method to contain the logic.
+- A getter should immediately precede its corresponding setter.
+- Decorators such as `@Input` should be applied to the getter and not the setter.
+- Always use a `readonly` property instead of a getter (with no setter) when possible.
 
   ```typescript
   /** YES */
@@ -116,10 +118,11 @@ All public APIs must have user-facing comments. These are extracted for API docu
 in IDEs.
 
 Private and internal APIs should have JsDoc when they are not obvious. Ultimately it is the purview
-of the code reviewer as to what is "obvious", but the rule of thumb is that *most* classes,
+of the code reviewer as to what is "obvious", but the rule of thumb is that _most_ classes,
 properties, and methods should have a JsDoc description.
 
 Properties should have a concise description of what the property means:
+
 ```typescript
   /** The label position relative to the checkbox. Defaults to 'after' */
   @Input() labelPosition: 'before' | 'after' = 'after';
@@ -127,6 +130,7 @@ Properties should have a concise description of what the property means:
 
 Methods blocks should describe what the function does and provide a description for each parameter
 and the return value:
+
 ```typescript
   /**
    * Opens a modal dialog containing the given component.
@@ -138,6 +142,7 @@ and the return value:
 ```
 
 Boolean properties and return values should use "Whether..." as opposed to "True if...":
+
 ```ts
   /** Whether the button is disabled. */
   disabled: boolean = false;
@@ -164,17 +169,17 @@ Use `readonly` members wherever possible.
 
 ##### General
 
-* Prefer writing out words instead of using abbreviations.
-* Prefer *exact* names over short names (within reason). For example, `labelPosition` is better than
-`align` because the former much more exactly communicates what the property means.
-* Except for `@Input()` properties, use `is` and `has` prefixes for boolean properties / methods.
-* Name identifiers based on their responsibility. Names should capture what the code *does*,
+- Prefer writing out words instead of using abbreviations.
+- Prefer _exact_ names over short names (within reason). For example, `labelPosition` is better than
+  `align` because the former much more exactly communicates what the property means.
+- Except for `@Input()` properties, use `is` and `has` prefixes for boolean properties / methods.
+- Name identifiers based on their responsibility. Names should capture what the code _does_,
   not how it is used:
 
   ```typescript
   /** NO: */
   class DefaultRouteReuseStrategy { }
-  
+
   /** YES: */
   class NonStoringRouteReuseStrategy { }
   ```
@@ -185,19 +190,19 @@ Don't suffix observables with `$`.
 
 ##### Classes
 
-* Use PascalCase (aka UpperCamelCase).
-* Class names should not end in `Impl`.
+- Use PascalCase (aka UpperCamelCase).
+- Class names should not end in `Impl`.
 
 ##### Interfaces
 
-* Do not prefix interfaces with `I`.
-* Do not suffix interfaces with `Interface`.
+- Do not prefix interfaces with `I`.
+- Do not suffix interfaces with `Interface`.
 
 ##### Functions and methods
 
 Use camelCase (aka lowerCamelCase).
 
-The name of a function should capture the action performed *by* that method rather than
+The name of a function should capture the action performed _by_ that method rather than
 describing when the method will be called. For example:
 
 ```typescript

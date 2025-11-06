@@ -11,7 +11,7 @@ Use schematics to enforce architectural rules and conventions, making your proje
 ## Schematics for the Angular CLI
 
 Schematics are part of the Angular ecosystem.
-The Angular CLI  uses schematics to apply transforms to a web-app project.
+The Angular CLI uses schematics to apply transforms to a web-app project.
 You can modify these schematics, and define new ones to do things like update your code to fix breaking changes in a dependency, for example, or to add a new configuration option or framework to an existing project.
 
 Schematics that are included in the `@schematics/angular` collection are run by default by the commands `ng generate` and `ng add`.
@@ -46,9 +46,9 @@ The schema describes the options available to the CLI for each of the `ng genera
 
 As a library developer, you can create your own collections of custom schematics to integrate your library with the Angular CLI.
 
-* An *add schematic* lets developers install your library in an Angular workspace using `ng add`
-* *Generation schematics* can tell the `ng generate` sub-commands how to modify projects, add configurations and scripts, and scaffold artifacts that are defined in your library
-* An *update schematic* can tell the `ng update` command how to update your library's dependencies and adjust for breaking changes when you release a new version
+- An _add schematic_ lets developers install your library in an Angular workspace using `ng add`
+- _Generation schematics_ can tell the `ng generate` sub-commands how to modify projects, add configurations and scripts, and scaffold artifacts that are defined in your library
+- An _update schematic_ can tell the `ng update` command how to update your library's dependencies and adjust for breaking changes when you release a new version
 
 For more details of what these look like and how to create them, see:
 
@@ -59,16 +59,16 @@ For more details of what these look like and how to create them, see:
 
 ### Add schematics
 
-An *add schematic* is typically supplied with a library, so that the library can be added to an existing project with `ng add`.
+An _add schematic_ is typically supplied with a library, so that the library can be added to an existing project with `ng add`.
 The `add` command uses your package manager to download new dependencies, and invokes an installation script that is implemented as a schematic.
 
 For example, the [`@angular/material`](https://material.angular.dev/guide/schematics) schematic tells the `add` command to install and set up Angular Material and theming, and register new starter components that can be created with `ng generate`.
 Look at this one as an example and model for your own add schematic.
 
 Partner and third party libraries also support the Angular CLI with add schematics.
-For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io)  to an app, and  `@clr/angular` installs and sets up [Clarity from VMWare](https://clarity.design/documentation/get-started).
+For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io) to an app, and `@clr/angular` installs and sets up [Clarity from VMWare](https://clarity.design/documentation/get-started).
 
-An *add schematic* can also update a project with configuration changes, add additional dependencies \(such as polyfills\), or scaffold package-specific initialization code.
+An _add schematic_ can also update a project with configuration changes, add additional dependencies \(such as polyfills\), or scaffold package-specific initialization code.
 For example, the `@angular/pwa` schematic turns your application into a PWA by adding an application manifest and service worker.
 
 ### Generation schematics
@@ -87,8 +87,8 @@ ng generate @angular/material:table <component-name>
 
 ### Update schematics
 
- The `ng update` command can be used to update your workspace's library dependencies.
- If you supply no options or use the help option, the command examines your workspace and suggests libraries to update.
+The `ng update` command can be used to update your workspace's library dependencies.
+If you supply no options or use the help option, the command examines your workspace and suggests libraries to update.
 
 ```shell
 
@@ -114,7 +114,7 @@ Try updating specific dependencies first.
 
 For more about how the `ng update` command works, see [Update Command](https://github.com/angular/angular-cli/blob/main/docs/specifications/update.md).
 
-If you create a new version of your library that introduces potential breaking changes, you can provide an *update schematic* to enable the `ng update` command to automatically resolve any such changes in the project being updated.
+If you create a new version of your library that introduces potential breaking changes, you can provide an _update schematic_ to enable the `ng update` command to automatically resolve any such changes in the project being updated.
 
 For example, suppose you want to update the Angular Material library.
 

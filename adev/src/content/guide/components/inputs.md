@@ -10,10 +10,10 @@ When you use a component, you commonly want to pass some data to it. A component
 <docs-code language="ts" highlight="[5]">
 import {Component, input} from '@angular/core';
 
-@Component({/*...*/})
+@Component({/_..._/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero.
-  value = input(0);
+// Declare an input named 'value' with a default value of zero.
+value = input(0);
 }
 </docs-code>
 
@@ -60,13 +60,13 @@ The `input` function returns an `InputSignal`. You can read the value by calling
 <docs-code language="ts" highlight="[5]">
 import {Component, input} from '@angular/core';
 
-@Component({/*...*/})
+@Component({/_..._/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero. 
-  value = input(0);
+// Declare an input named 'value' with a default value of zero.
+value = input(0);
 
-  // Create a computed expression that reads the value input
-  label = computed(() => `The slider's value is ${this.value()}`); 
+// Create a computed expression that reads the value input
+label = computed(() => `The slider's value is ${this.value()}`);
 }
 </docs-code>
 
@@ -106,7 +106,7 @@ export class CustomSlider {
 }
 
 function trimString(value: string | undefined): string {
-  return value?.trim() ?? '';
+return value?.trim() ?? '';
 }
 </docs-code>
 
@@ -133,7 +133,7 @@ export class CustomSlider {
 }
 
 function appendPx(value: number): string {
-  return `${value}px`;
+return `${value}px`;
 }
 </docs-code>
 
@@ -146,10 +146,10 @@ Angular includes two built-in transform functions for the two most common scenar
 <docs-code language="ts">
 import {Component, input, booleanAttribute, numberAttribute} from '@angular/core';
 
-@Component({/*...*/})
+@Component({/_..._/})
 export class CustomSlider {
-  disabled = input(false, {transform: booleanAttribute}); 
-  value = input(0, {transform: numberAttribute}); 
+disabled = input(false, {transform: booleanAttribute});
+value = input(0, {transform: numberAttribute});
 }
 </docs-code>
 

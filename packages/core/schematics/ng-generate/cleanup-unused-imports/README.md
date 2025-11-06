@@ -1,4 +1,5 @@
 ## Cleanup unused imports migration
+
 Automated migration that removes all unused standalone imports across the entire project. It can be
 run using:
 
@@ -7,6 +8,7 @@ ng generate @angular/core:cleanup-unused-imports
 ```
 
 **Before:**
+
 ```typescript
 import { Component } from '@angular/core';
 import { UnusedDirective } from './unused';
@@ -19,6 +21,7 @@ export class MyComp {}
 ```
 
 **After:**
+
 ```typescript
 import { Component } from '@angular/core';
 

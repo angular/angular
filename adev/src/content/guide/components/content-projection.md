@@ -177,7 +177,7 @@ elements that don't match one of the component's placeholders do not render into
 
 ## Fallback content
 
-Angular can show *fallback content* for a component's `<ng-content>` placeholder if that component doesn't have any matching child content. You can specify fallback content by adding child content to the `<ng-content>` element itself.
+Angular can show _fallback content_ for a component's `<ng-content>` placeholder if that component doesn't have any matching child content. You can specify fallback content by adding child content to the `<ng-content>` element itself.
 
 ```angular-html
 <!-- Component template -->

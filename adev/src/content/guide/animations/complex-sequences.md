@@ -8,26 +8,26 @@ You can choose to run multiple animations in parallel, or run discrete animation
 
 The functions that control complex animation sequences are:
 
-| Functions                         | Details |
-|:---                               |:---     |
-| `query()`                         | Finds one or more inner HTML elements. |
+| Functions                         | Details                                                        |
+| :-------------------------------- | :------------------------------------------------------------- |
+| `query()`                         | Finds one or more inner HTML elements.                         |
 | `stagger()`                       | Applies a cascading delay to animations for multiple elements. |
-| [`group()`](api/animations/group) | Runs multiple animation steps in parallel. |
-| `sequence()`                      | Runs animation steps one after another. |
+| [`group()`](api/animations/group) | Runs multiple animation steps in parallel.                     |
+| `sequence()`                      | Runs animation steps one after another.                        |
 
 ## The query() function
 
 Most complex animations rely on the `query()` function to find child elements and apply animations to them, basic examples of such are:
 
-| Examples                               | Details |
-|:---                                    |:---     |
-| `query()` followed by `animate()`      | Used to query simple HTML elements and directly apply animations to them.                                                                                                                            |
+| Examples                               | Details                                                                                                                                                                                               |
+| :------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `query()` followed by `animate()`      | Used to query simple HTML elements and directly apply animations to them.                                                                                                                             |
 | `query()` followed by `animateChild()` | Used to query child elements, which themselves have animations metadata applied to them and trigger such animation \(which would be otherwise be blocked by the current/parent element's animation\). |
 
 The first argument of `query()` is a [css selector](https://developer.mozilla.org/docs/Web/CSS/CSS_Selectors) string which can also contain the following Angular-specific tokens:
 
-| Tokens                     | Details |
-|:---                        |:---     |
+| Tokens                     | Details                                      |
+| :------------------------- | :------------------------------------------- |
 | `:enter` <br /> `:leave`   | For entering/leaving elements.               |
 | `:animating`               | For elements currently animating.            |
 | `@*` <br /> `@triggerName` | For elements with any—or a specific—trigger. |
@@ -47,12 +47,12 @@ After having queried child elements via `query()`, the `stagger()` function lets
 
 The following example demonstrates how to use the `query()` and `stagger()` functions to animate a list \(of heroes\) adding each in sequence, with a slight delay, from top to bottom.
 
-* Use `query()` to look for an element entering the page that meets certain criteria
-* For each of these elements, use `style()` to set the same initial style for the element.
-    Make it transparent and use `transform` to move it out of position so that it can slide into place.
+- Use `query()` to look for an element entering the page that meets certain criteria
+- For each of these elements, use `style()` to set the same initial style for the element.
+  Make it transparent and use `transform` to move it out of position so that it can slide into place.
 
-* Use `stagger()` to delay each animation by 30 milliseconds
-* Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it
+- Use `stagger()` to delay each animation by 30 milliseconds
+- Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it
 
 <docs-code header="src/app/hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" visibleRegion="page-animations"/>
 
@@ -63,7 +63,7 @@ But you might also want to configure animations that happen in parallel.
 For example, you might want to animate two CSS properties of the same element but use a different `easing` function for each one.
 For this, you can use the animation [`group()`](api/animations/group) function.
 
-HELPFUL: The [`group()`](api/animations/group) function is used to group animation *steps*, rather than animated elements.
+HELPFUL: The [`group()`](api/animations/group) function is used to group animation _steps_, rather than animated elements.
 
 The following example uses [`group()`](api/animations/group)s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
 
@@ -77,8 +77,8 @@ But what if you want to create an animation involving several animations happeni
 A second function called `sequence()` lets you run those same animations one after the other.
 Within `sequence()`, the animation steps consist of either `style()` or `animate()` function calls.
 
-* Use `style()` to apply the provided styling data immediately.
-* Use `animate()` to apply styling data over a given time interval.
+- Use `style()` to apply the provided styling data immediately.
+- Use `animate()` to apply styling data over a given time interval.
 
 ## Filter animation example
 
@@ -99,16 +99,16 @@ The `filterAnimation` in the component's decorator contains three transitions.
 
 The code in this example performs the following tasks:
 
-* Skips animations when the user first opens or navigates to this page \(the filter animation narrows what is already there, so it only works on elements that already exist in the DOM\)
-* Filters heroes based on the search input's value
+- Skips animations when the user first opens or navigates to this page \(the filter animation narrows what is already there, so it only works on elements that already exist in the DOM\)
+- Filters heroes based on the search input's value
 
 For each change:
 
-* Hides an element leaving the DOM by setting its opacity and width to 0
-* Animates an element entering the DOM over 300 milliseconds.
-    During the animation, the element assumes its default width and opacity.
+- Hides an element leaving the DOM by setting its opacity and width to 0
+- Animates an element entering the DOM over 300 milliseconds.
+  During the animation, the element assumes its default width and opacity.
 
-* If there are multiple elements entering or leaving the DOM, staggers each animation starting at the top of the page, with a 50-millisecond delay between each element
+- If there are multiple elements entering or leaving the DOM, staggers each animation starting at the top of the page, with a 50-millisecond delay between each element
 
 ## Animating the items of a reordering list
 

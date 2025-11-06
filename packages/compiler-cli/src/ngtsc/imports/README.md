@@ -133,7 +133,6 @@ When compiling an NgModule, re-exports are added under a stable name for each di
 
 When importing that NgModule, alias `Expression`s are added to all the `Reference`s for those directives/pipes that are guaranteed to be from a direct dependency.
 
-
 ### Private re-exports for non-APF packages
 
 A `PrivateExportAliasingHost` is used to add re-exports of directives/pipes in the case where the compiler cannot determine that all directives/pipes are re-exported from a common entrypoint (like in the case of an Angular Package Format compilation).
@@ -204,7 +203,6 @@ import Foo from './foo';
 ```
 
 Then the generated code depends on a few factors (target/module/esModuleInterop settings), but roughly looks like:
-
 
 ```javascript
 let foo_1 = require('./foo');

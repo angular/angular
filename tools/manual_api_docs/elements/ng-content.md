@@ -1,10 +1,10 @@
 The `<ng-content>` element specifies where to project content inside a component template.
 
-## Attributes 
+## Attributes
 
-| Attribute     | Description                                                             |
-|---------------|-------------------------------------------------------------------------|
-| `select`      | CSS selector. Matching elements are projected into this `<ng-content>`. |
+| Attribute | Description                                                             |
+| --------- | ----------------------------------------------------------------------- |
+| `select`  | CSS selector. Matching elements are projected into this `<ng-content>`. |
 
 Only select elements from the projected content that match the given CSS `selector`.
 

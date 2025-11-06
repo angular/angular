@@ -11,8 +11,6 @@ The main advantages to removing ZoneJS as a dependency are:
 
 ## Enabling Zoneless in an application
 
-
-
 ```typescript
 // standalone bootstrap
 bootstrapApplication(MyApp, {providers: [
@@ -87,7 +85,6 @@ If you are using SSR with Angular, you may know that it relies on ZoneJS to help
 is "stable" and can be serialized. If there are asynchronous tasks that should prevent serialization, an application
 not using ZoneJS must make Angular aware of these with the [PendingTasks](/api/core/PendingTasks) service. Serialization
 will wait for the first moment that all pending tasks have been removed.
-
 
 The two most straightforward uses of pending tasks are the `run` method:
 
