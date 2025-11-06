@@ -28,7 +28,10 @@
             ],
             "styles": ["src/styles.css"],
             "server": "src/main.server.ts",
-            "outputMode": "static"
+            "outputMode": "static",
+            "sourceMap": {
+              "vendor": true
+            }
           },
           "configurations": {
             "production": {
@@ -36,8 +39,7 @@
             },
             "development": {
               "optimization": false,
-              "extractLicenses": false,
-              "sourceMap": true
+              "extractLicenses": false
             }
           },
           "defaultConfiguration": "production"
