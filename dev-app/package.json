@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "ibazel run //dev-app:build.serve",
+    "dev:prod": "ibazel run //dev-app:build.production.serve",
     "dev:build": "bazel build //dev-app:build"
   },
   "dependencies": {
