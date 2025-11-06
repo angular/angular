@@ -40,8 +40,8 @@ importers:
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(5bae044a390de675219241ea5a6e5e79)
       '@angular/cdk':
-        specifier: 21.0.0-rc.0
-        version: 21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 21.0.0-rc.1
+        version: 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@types/node@20.19.23)(chokidar@4.0.3)
@@ -70,8 +70,8 @@ importers:
         specifier: 'workspace: *'
         version: link:packages/localize
       '@angular/material':
-        specifier: 21.0.0-rc.0
-        version: 21.0.0-rc.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 21.0.0-rc.1
+        version: 21.0.0-rc.1(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:packages/platform-browser
@@ -269,7 +269,7 @@ importers:
         version: 0.1.1(@angular/common@packages+common)(@angular/core@packages+core)
       ngx-progressbar:
         specifier: ^14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: ^0.1.1
         version: 0.1.1
@@ -521,8 +521,8 @@ importers:
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.0)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/cdk':
-        specifier: 21.0.0-rc.0
-        version: 21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        specifier: 21.0.0-rc.1
+        version: 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/cli':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@types/node@24.10.0)(chokidar@4.0.3)
@@ -545,8 +545,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/forms
       '@angular/material':
-        specifier: 21.0.0-rc.0
-        version: 21.0.0-rc.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
+        specifier: 21.0.0-rc.1
+        version: 21.0.0-rc.1(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)
       '@angular/platform-browser':
         specifier: workspace:*
         version: link:../packages/platform-browser
@@ -690,7 +690,7 @@ importers:
         version: 11.12.1
       ngx-progressbar:
         specifier: 14.0.0
-        version: 14.0.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+        version: 14.0.0(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       open-in-idx:
         specifier: 0.1.1
         version: 0.1.1
@@ -1775,8 +1775,8 @@ packages:
       vitest:
         optional: true
 
-  '@angular/cdk@21.0.0-rc.0':
-    resolution: {integrity: sha512-bcUYmpXhjOdNmIzbDi9K1Zx394IVDpUoi4SVC9hjUJSlrveFSwm+RmllCYEYZnKnitG7MICI3F6xH/nc+Xkx/Q==}
+  '@angular/cdk@21.0.0-rc.1':
+    resolution: {integrity: sha512-7h4BWSg/Ah6S/YSf8IxSCQNTBSkKJNvJInRIoyQa1eDt3rMLOOu93nbrjyiwDbuuENeqrpiRJbulZDyO67LQEw==}
     peerDependencies:
       '@angular/common': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/core': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
@@ -1842,10 +1842,10 @@ packages:
     resolution: {tarball: https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b}
     version: 2.1.6
 
-  '@angular/material@21.0.0-rc.0':
-    resolution: {integrity: sha512-ohBIZLdMCQ8VInX+AMD6WIRzm4iR4c42at+6cISNe04qJsCxaFw8yoIK9wWOLURKxDa7tYiRseFM8vllB/78Ag==}
+  '@angular/material@21.0.0-rc.1':
+    resolution: {integrity: sha512-NJi30CrDu9h2vAMMq7xOG8XpAZ4CdSezO+Ss+ZZ5fsD9LEaR7HiLj1SUtObp12wakGa0vBj/rFkHlbaxyEZF1Q==}
     peerDependencies:
-      '@angular/cdk': 21.0.0-rc.0
+      '@angular/cdk': 21.0.0-rc.1
       '@angular/common': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/core': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       '@angular/forms': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
@@ -13590,7 +13590,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)':
+  '@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)':
     dependencies:
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
@@ -13706,9 +13706,9 @@ snapshots:
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
-  '@angular/material@21.0.0-rc.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
+  '@angular/material@21.0.0-rc.1(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(@angular/forms@packages+forms)(@angular/platform-browser@packages+platform-browser)(rxjs@7.8.2)':
     dependencies:
-      '@angular/cdk': 21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       '@angular/forms': link:packages/forms
@@ -23917,9 +23917,9 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
+  ngx-progressbar@14.0.0(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2):
     dependencies:
-      '@angular/cdk': 21.0.0-rc.0(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/cdk': 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
       '@angular/common': link:packages/common
       '@angular/core': link:packages/core
       rxjs: 7.8.2
