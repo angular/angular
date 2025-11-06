@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {WritableSignal} from '@angular/core';
+import {signal, WritableSignal} from '@angular/core';
 import {form, required, schema, SchemaFn} from '../../public_api';
 
 interface Order {
@@ -81,6 +81,11 @@ function typeVerificationOnlyDoNotRunMe() {
         // @ts-expect-error
         required(p.c);
       });
+    });
+
+    it('should allow FieldTree of recursive type', () => {
+      type RecursiveType = (number | RecursiveType)[];
+      form(signal<RecursiveType>([5]));
     });
   });
 }
