@@ -8,11 +8,23 @@
 
 let _DOM: DomAdapter = null!;
 
+/**
+ * Retrieves the global DomAdapter instance.
+ * Used internally by Angular to access DOM operations in an environment-agnostic way.
+ * @returns The current DomAdapter instance, or null if not set.
+ */
 export function getDOM(): DomAdapter {
   return _DOM;
 }
 
-export function setRootDomAdapter(adapter: DomAdapter) {
+
+
+/**
+ * Sets the global DomAdapter instance.
+ * Should be called early in the application initialization to provide a platform-specific DOM adapter.
+ * @param adapter - The DomAdapter instance to set as the global adapter.
+ * @throws May fail silently if called after the adapter is already initialized.
+ */export function setRootDomAdapter(adapter: DomAdapter) {
   _DOM ??= adapter;
 }
 
@@ -24,12 +36,15 @@ export function setRootDomAdapter(adapter: DomAdapter) {
  */
 export abstract class DomAdapter {
   // Needs Domino-friendly test utility
-  abstract dispatchEvent(el: any, evt: any): any;
+  
+    /** Dispatches a DOM event on the specified element. */abstract dispatchEvent(el: any, evt: any): any;
   abstract readonly supportsDOMEvents: boolean;
 
   // Used by Meta
-  abstract remove(el: any): void;
-  abstract createElement(tagName: any, doc?: any): HTMLElement;
+  
+    /** Removes an element from the DOM tree. */abstract remove(el: any): void;
+  
+    /** Creates an HTML element with the specified tag name. */abstract createElement(tagName: any, doc?: any): HTMLElement;
   abstract createHtmlDocument(): Document;
   abstract getDefaultDocument(): Document;
 
