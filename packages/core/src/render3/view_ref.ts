@@ -34,6 +34,7 @@ import {
   TVIEW,
 } from './interfaces/view';
 import {destroyLView, detachMovedView, detachViewFromDOM} from './node_manipulation';
+import {CheckNoChangesMode} from './state';
 import {
   markViewForRefresh,
   storeLViewOnDestroy,

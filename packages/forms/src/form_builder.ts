@@ -9,7 +9,7 @@
 import {inject, Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {AbstractControl, AbstractControlOptions} from './model/abstract_model';
+import {AbstractControl, AbstractControlOptions, FormHooks} from './model/abstract_model';
 import {FormArray, UntypedFormArray} from './model/form_array';
 import {
   FormControl,

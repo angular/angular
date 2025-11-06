@@ -14,6 +14,7 @@ import {
   exitCodeFromResult,
   ParsedConfiguration,
   performCompilation,
+  PerformCompilationResult,
   readConfiguration,
 } from './perform_compile';
 import * as api from './transformers/api';

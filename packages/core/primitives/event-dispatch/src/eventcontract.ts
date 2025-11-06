@@ -30,7 +30,11 @@
  * possible and thus its dependencies to a minimum.
  */
 
-import {EarlyJsactionData, removeAllEventListeners} from './earlyeventcontract';
+import {
+  EarlyJsactionData,
+  EarlyJsactionDataContainer,
+  removeAllEventListeners,
+} from './earlyeventcontract';
 import * as eventLib from './event';
 import {EventContractContainerManager} from './event_contract_container';
 import {MOUSE_SPECIAL_SUPPORT} from './event_contract_defines';

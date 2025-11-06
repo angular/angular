@@ -16,7 +16,7 @@ import {
   Provider,
 } from '../di';
 import {inject} from '../di/injector_compatibility';
-import {formatRuntimeError, RuntimeErrorCode} from '../errors';
+import {formatRuntimeError, RuntimeError, RuntimeErrorCode} from '../errors';
 import {enableLocateOrCreateContainerRefImpl} from '../linker/view_container_ref';
 import {enableLocateOrCreateI18nNodeImpl} from '../render3/i18n/i18n_apply';
 import {enableLocateOrCreateElementNodeImpl} from '../render3/instructions/element';

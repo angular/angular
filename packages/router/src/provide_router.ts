@@ -24,6 +24,7 @@ import {
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
+  NgZone,
   provideAppInitializer,
   Provider,
   runInInjectionContext,
@@ -45,6 +46,7 @@ import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
+import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
 import {
   CREATE_VIEW_TRANSITION,
