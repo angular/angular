@@ -23,7 +23,6 @@ APPLICATION_DEPS = [
 TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
 
 TEST_DEPS = APPLICATION_DEPS + [
-    "@rules_browsers//browsers/chromium",
     ":node_modules/jsdom",
     ":node_modules/vitest",
     ":tsconfig.app.json",
@@ -47,9 +46,6 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
-        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
-        # Furthermore, the current RBE machine pool lacks high-spec machines.
-        "no-remote-exec",
     ],
 )
 
@@ -69,24 +65,13 @@ ng_application(
     tags = [
         # Tagged as manual as both build and build.production use the same output directory.
         "manual",
-        # RBE significantly slows down the build because the CLI executes multiple CPU-intensive instances of esbuild.
-        # Furthermore, the current RBE machine pool lacks high-spec machines.
-        "no-remote-exec",
     ],
 )
 
 ng_test(
     name = "test",
     srcs = TEST_FILES + TEST_DEPS,
-    env = {
-        # Move one level up because we are in `//adev`
-        "CHROME_BIN": "../" + "$(CHROME-HEADLESS-SHELL)",
-        "CHROMEDRIVER_BIN": "../" + "$(CHROMEDRIVER)",
-    },
     ng_config = ":ng_config",
     node_modules = ":node_modules",
     project_name = "dev-app",
-    toolchains = [
-        "@rules_browsers//browsers/chromium:toolchain_alias",
-    ],
 )
