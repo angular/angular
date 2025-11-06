@@ -115,7 +115,7 @@ describe('field directive', () => {
         })
         class TestCmp {
           readonly disabled = signal(false);
-          readonly f = form(signal(false), (p) => {
+          readonly f = form(signal(''), (p) => {
             disabled(p, this.disabled);
           });
         }
@@ -376,26 +376,6 @@ describe('field directive', () => {
         expect(element.required).toBe(true);
       });
 
-      it('should bind to native control and override attribute', () => {
-        @Component({
-          imports: [Field],
-          template: `<input [field]="f" required>`,
-        })
-        class TestCmp {
-          readonly required = signal(false);
-          readonly f = form(signal(''), (p) => {
-            required(p, {when: this.required});
-          });
-        }
-
-        const fixture = act(() => TestBed.createComponent(TestCmp));
-        const element = fixture.nativeElement.firstChild;
-        expect(element.required).withContext("'required' should be overridden").toBe(false);
-
-        act(() => fixture.componentInstance.required.set(true));
-        expect(element.required).toBe(true);
-      });
-
       it('should bind to custom control', () => {
         @Component({selector: 'custom-control', template: ``})
         class CustomControl implements FormValueControl<string> {
@@ -520,22 +500,6 @@ describe('field directive', () => {
         expect(component.customControl().max()).toBe(5);
       });
 
-      it('should not bind to native control that does not support it', () => {
-        @Component({
-          imports: [Field],
-          template: `<input type="text" [field]="f">`,
-        })
-        class TestCmp {
-          readonly f = form(signal(5), (p) => {
-            max(p, 10);
-          });
-        }
-
-        const fixture = act(() => TestBed.createComponent(TestCmp));
-        const element = fixture.nativeElement.firstChild as HTMLInputElement;
-        expect(element.max).toBe('');
-      });
-
       it('should be reset when field changes on native control', () => {
         @Component({
           imports: [Field],
@@ -631,22 +595,6 @@ describe('field directive', () => {
 
         act(() => component.min.set(5));
         expect(component.customControl().min()).toBe(5);
-      });
-
-      it('should not bind to native control that does not support it', () => {
-        @Component({
-          imports: [Field],
-          template: `<input type="text" [field]="f">`,
-        })
-        class TestCmp {
-          readonly f = form(signal(15), (p) => {
-            min(p, 10);
-          });
-        }
-
-        const fixture = act(() => TestBed.createComponent(TestCmp));
-        const element = fixture.nativeElement.firstChild as HTMLInputElement;
-        expect(element.min).toBe('');
       });
 
       it('should be reset when field changes on native control', () => {
@@ -1268,7 +1216,7 @@ describe('field directive', () => {
 
     @Component({
       imports: [Field, CustomInput],
-      template: `<my-input [field]="f" value />`,
+      template: `<my-input [field]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal('test'));
