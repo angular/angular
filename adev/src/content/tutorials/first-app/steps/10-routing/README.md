@@ -65,7 +65,7 @@ In the previous step you removed the reference to the `<app-home>` component in 
    1. Define a variable called `routeConfig` of type `Routes` and define two routes for the app:
       <docs-code header="Add routes to the app" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[5,18]"/>
 
-      The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `Home` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
+   The entries in the `routeConfig` array represent the routes in the application. The first entry navigates to the `Home` whenever the url matches `''`. The second entry uses some special formatting that will be revisited in a future lesson.
 
 1. Save all changes and confirm that the application works in the browser. The application should still display the list of housing locations.
    </docs-step>
