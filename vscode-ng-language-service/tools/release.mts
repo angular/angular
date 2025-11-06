@@ -233,7 +233,7 @@ async function generateChangelog(fromVersion: string, toVersion: string): Promis
   let {stdout: commits} = await exec(
     `git log --left-only FETCH_HEAD...${tagPrefix}${fromVersion} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
-      '--format="format:* %s (%h)[https://github.com/angular/angular/commit/%H]"',
+      '--format="format:- %s (%h)[https://github.com/angular/angular/commit/%H]"',
   );
 
   commits = commits.trim();
