@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "ts_project")
 
-package(default_visibility = ["//packages/compiler-cli:__subpackages__"])
+package(default_visibility = ["//visibility:public"])
 
 ts_project(
     name = "logging",
