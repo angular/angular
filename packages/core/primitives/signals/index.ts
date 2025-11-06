@@ -13,6 +13,7 @@ export {
   ComputationFn,
   LinkedSignalNode,
   LinkedSignalGetter,
+  PreviousValue,
   createLinkedSignal,
   linkedSignalSetFn,
   linkedSignalUpdateFn,
@@ -45,6 +46,7 @@ export {
   runPostProducerCreatedFn,
   setActiveConsumer,
   setPostProducerCreatedFn,
+  Version,
 } from './src/graph';
 export {
   SIGNAL_NODE,
