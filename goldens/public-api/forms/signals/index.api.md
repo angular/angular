@@ -27,6 +27,7 @@ import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
+import { ɵInteropControl } from '@angular/core';
 
 // @public
 export function aggregateMetadata<TValue, TMetadataItem, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: AggregateMetadataKey<any, TMetadataItem>, logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>): void;
@@ -139,19 +140,14 @@ export class Field<T> implements ɵControl<T> {
     readonly [ɵCONTROL]: undefined;
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
+    protected getOrCreateNgControl(): InteropNgControl;
     // (undocumented)
     readonly state: i0.Signal<[T] extends [_angular_forms.AbstractControl<any, any, any>] ? CompatFieldState<T, string | number> : FieldState<T, string | number>>;
     // (undocumented)
     static ɵdir: i0.ɵɵDirectiveDeclaration<Field<any>, "[field]", never, { "field": { "alias": "field"; "required": true; "isSignal": true; }; }, {}, never, never, true, never>;
     // (undocumented)
     static ɵfac: i0.ɵɵFactoryDeclaration<Field<any>, never>;
-    ɵgetOrCreateNgControl(): InteropNgControl;
-    // (undocumented)
-    get ɵhasInteropControl(): boolean;
-    // (undocumented)
-    ɵinteropControlCreate(): void;
-    // (undocumented)
-    ɵinteropControlUpdate(): void;
+    get ɵinteropControl(): ɵInteropControl | undefined;
     // (undocumented)
     ɵregister(): void;
 }
