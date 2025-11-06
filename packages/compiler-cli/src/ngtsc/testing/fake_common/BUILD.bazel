@@ -1,9 +1,6 @@
 load("//tools:defaults.bzl", "ng_package", "ts_project")
 
-package(default_visibility = [
-    "//packages/compiler-cli:__subpackages__",
-    "//packages/language-service/test:__subpackages__",
-])
+package(default_visibility = ["//visibility:public"])
 
 ts_project(
     name = "fake_common",
