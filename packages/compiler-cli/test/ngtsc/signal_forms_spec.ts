@@ -271,6 +271,33 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should allow binding to `value` on radio controls', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: \`
+              <form>
+                <input type="radio" value="a" [field]="f">
+                <input type="radio" value="b" [field]="f">
+                <input type="radio" value="c" [field]="f">
+              </form>
+            \`,
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal('a'), {name: 'test'});
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
     it('should report unsupported static attributes of a field', () => {
       env.write(
         'test.ts',
