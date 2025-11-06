@@ -17,6 +17,7 @@ import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentHost} from '../interfaces/type_checks';
 import {LView, RENDERER, TView} from '../interfaces/view';
 import {Signal} from '../reactivity/api';
+import {untracked} from '../reactivity/untracked';
 import {
   getBindingIndex,
   getCurrentTNode,
@@ -71,7 +72,7 @@ export function ɵɵcontrolCreate(): void {
   } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
     listenToCustomControl(lView, tNode, control, 'checked');
   } else if (tNode.flags & TNodeFlags.isInteropControl) {
-    control.ɵinteropControlCreate();
+    listenToInteropControl(control);
   } else {
     listenToNativeControl(lView, tNode, control);
   }
@@ -108,7 +109,7 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
       updateCustomControl(tNode, lView, control, 'checked');
     } else if (tNode.flags & TNodeFlags.isInteropControl) {
-      control.ɵinteropControlUpdate();
+      updateInteropControl(lView, control);
     } else {
       updateNativeControl(tNode, lView, control);
     }
@@ -164,7 +165,7 @@ function getControlDirectiveFirstCreatePass<T>(
     }
   }
 
-  if (control.ɵhasInteropControl) {
+  if (control.ɵinteropControl) {
     tNode.flags |= TNodeFlags.isInteropControl;
     return control;
   }
@@ -279,6 +280,21 @@ function listenToCustomControl(
       }),
     );
   }
+}
+
+/**
+ * Adds event listeners to an interoperable form control to notify the `field` of changes.
+ *
+ * @param control The `ɵControl` directive instance.
+ */
+function listenToInteropControl(control: ɵControl<unknown>): void {
+  const interopControl = control.ɵinteropControl!;
+  interopControl.registerOnChange((value: unknown) => {
+    const state = control.state();
+    state.value.set(value);
+    state.markAsDirty();
+  });
+  interopControl.registerOnTouched(() => control.state().markAsTouched());
 }
 
 /**
@@ -480,6 +496,33 @@ function maybeUpdateInput(
     const value = state[key]?.();
     if (controlBindingUpdated(bindings, key, value)) {
       writeToDirectiveInput(componentDef, component, inputName, value);
+    }
+  }
+}
+
+/**
+ * Updates the properties of an interop form control with the latest state from the `field`.
+ *
+ * @param lView The `LView` that contains the native form control.
+ * @param control The `ɵControl` directive instance.
+ */
+function updateInteropControl(lView: LView, control: ɵControl<unknown>): void {
+  const interopControl = control.ɵinteropControl!;
+  const bindings = getControlBindings(lView);
+  const state = control.state();
+
+  const value = state.value();
+  if (controlBindingUpdated(bindings, VALUE, value)) {
+    // We don't know if the interop control has underlying signals, so we must use `untracked` to
+    // prevent writing to a signal in a reactive context.
+    untracked(() => interopControl.writeValue(value));
+  }
+
+  // Only check `disabled` for changes if the interop control supports it.
+  if (interopControl.setDisabledState) {
+    const disabled = state.disabled();
+    if (controlBindingUpdated(bindings, DISABLED, disabled)) {
+      untracked(() => interopControl.setDisabledState!(disabled));
     }
   }
 }

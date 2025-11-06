@@ -14,14 +14,14 @@ import {
   InjectionToken,
   Injector,
   input,
-  untracked,
   ɵCONTROL,
   ɵControl,
+  ɵInteropControl,
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
+import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import type {FieldNode} from '../field/node';
-import type {FieldState, FieldTree} from './types';
+import type {FieldTree} from './types';
 
 /**
  * Lightweight DI token provided by the {@link Field} directive.
@@ -56,7 +56,7 @@ export const FIELD = new InjectionToken<Field<unknown>>(
   selector: '[field]',
   providers: [
     {provide: FIELD, useExisting: Field},
-    {provide: NgControl, useFactory: () => inject(Field).ɵgetOrCreateNgControl()},
+    {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
   ],
 })
 export class Field<T> implements ɵControl<T> {
@@ -72,45 +72,13 @@ export class Field<T> implements ɵControl<T> {
   private interopNgControl: InteropNgControl | undefined;
 
   /** A `ControlValueAccessor`, if configured, for the host component. */
-  private get controlValueAccessor(): ControlValueAccessor | undefined {
+  get ɵinteropControl(): ɵInteropControl | undefined {
     return this.controlValueAccessors?.[0] ?? this.interopNgControl?.valueAccessor ?? undefined;
   }
 
-  get ɵhasInteropControl() {
-    return this.controlValueAccessor !== undefined;
-  }
-
   /** Lazily instantiates a fake `NgControl` for this field. */
-  ɵgetOrCreateNgControl(): InteropNgControl {
+  protected getOrCreateNgControl(): InteropNgControl {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
-  }
-
-  ɵinteropControlCreate() {
-    const controlValueAccessor = this.controlValueAccessor!;
-    controlValueAccessor.registerOnChange((value: T) => {
-      const state = this.state() as FieldState<T>;
-      state.value.set(value);
-      state.markAsDirty();
-    });
-    controlValueAccessor.registerOnTouched(() => this.state().markAsTouched());
-  }
-
-  ɵinteropControlUpdate() {
-    const controlValueAccessor = this.controlValueAccessor!;
-    // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-    // * check if values changed since last update before writing.
-
-    // These values remain reactive
-    const value = this.state().value();
-    const disabled = this.state().disabled();
-
-    // The CVA is accessed in a reactive context (the template execution)
-    // Since we don't control the implementation of the CVA and it can have underlying signals
-    // We need to untrack to prevent writing to a signal in a reactive context
-    untracked(() => {
-      controlValueAccessor.writeValue(value);
-      controlValueAccessor.setDisabledState?.(disabled);
-    });
   }
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
