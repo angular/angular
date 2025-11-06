@@ -746,7 +746,28 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
  */
 abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
-  private unsupportedBindingFields: Set<string>;
+  protected readonly unsupportedBindingFields = new Set([
+    // Should be kept in sync with the `FormUiControl` bindings,
+    // defined in `packages/forms/signals/src/api/control.ts`.
+    'value',
+    'checked',
+    'errors',
+    'invalid',
+    'disabled',
+    'disabledReasons',
+    'name',
+    'readonly',
+    'touched',
+    'max',
+    'maxlength',
+    'maxLength',
+    'min',
+    'minLength',
+    'minlength',
+    'pattern',
+    'required',
+    'type',
+  ]);
 
   constructor(
     protected tcb: Context,
@@ -755,32 +776,6 @@ abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
     protected dir: TypeCheckableDirectiveMeta,
   ) {
     super();
-
-    // Should be kept in sync with the `FormUiControl` bindings,
-    // defined in `packages/forms/signals/src/api/control.ts`.
-    const commonUnsupportedNames = [
-      'value',
-      'checked',
-      'errors',
-      'invalid',
-      'disabled',
-      'disabledReasons',
-      'name',
-      'readonly',
-      'touched',
-      'max',
-      'maxlength',
-      'maxLength',
-      'min',
-      'minLength',
-      'minlength',
-      'pattern',
-      'required',
-      'type',
-    ];
-
-    // `type` can't be bound, but is allowed as a static attribute.
-    this.unsupportedBindingFields = new Set(commonUnsupportedNames);
   }
 
   override get optional() {
@@ -840,6 +835,23 @@ abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
  * A `TcbOp` which constructs an instance of the signal forms `Field` directive on a native element.
  */
 class TcbNativeFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
+  private readonly inputType: string | null;
+
+  constructor(tcb: Context, scope: Scope, node: DirectiveOwner, dir: TypeCheckableDirectiveMeta) {
+    super(tcb, scope, node, dir);
+
+    this.inputType =
+      (node instanceof TmplAstElement &&
+        node.name === 'input' &&
+        node.attributes.find((attr) => attr.name === 'type')?.value) ||
+      null;
+
+    // Radio control are allowed to set the `value`.
+    if (this.inputType === 'radio') {
+      this.unsupportedBindingFields.delete('value');
+    }
+  }
+
   protected override getExpectedType(): ts.TypeNode {
     if (this.node instanceof TmplAstElement) {
       return this.getExpectedTypeFromDomNode(this.node);
@@ -858,9 +870,7 @@ class TcbNativeFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
       return this.getUnsupportedType();
     }
 
-    const inputType = node.attributes.find((attr) => attr.name === 'type')?.value;
-
-    switch (inputType) {
+    switch (this.inputType) {
       case 'checkbox':
         return ts.factory.createKeywordTypeNode(ts.SyntaxKind.BooleanKeyword);
 
