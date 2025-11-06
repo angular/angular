@@ -107,6 +107,10 @@ export class FieldNodeContext implements FieldContext<unknown> {
     return this.node.structure.keyInParent;
   }
 
+  get pathKeys(): Signal<readonly string[]> {
+    return this.node.structure.pathKeys;
+  }
+
   readonly index = computed(() => {
     // Attempt to read the key first, this will throw an error if we're on a root field.
     const key = this.key();

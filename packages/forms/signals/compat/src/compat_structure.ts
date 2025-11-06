@@ -18,8 +18,8 @@ import {
 
 import {toSignal} from '@angular/core/rxjs-interop';
 import {AbstractControl} from '@angular/forms';
-import {extractControlPropToSignal} from './compat_field_node';
 import {map, takeUntil} from 'rxjs/operators';
+import {extractControlPropToSignal} from './compat_field_node';
 
 /**
  * Child Field Node options also exposing control property.
@@ -105,7 +105,7 @@ export class CompatStructure extends FieldNodeStructure {
     throw new Error('Compat nodes do not use keyInParent.');
   }) as unknown as Signal<string>;
   override root: FieldNode;
-  override pathKeys: Signal<readonly PropertyKey[]>;
+  override pathKeys: Signal<readonly string[]>;
   override readonly children = signal([]);
   override readonly childrenMap = signal(undefined);
   override readonly parent: ParentFieldNode | undefined;

@@ -566,13 +566,15 @@ export interface RootFieldContext<TValue> {
   /** Gets the value of the field represented by the given path. */
   valueOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): PValue;
 
+  /** Gets the state of the field represented by the given path. */
   stateOf<PControl extends AbstractControl>(
     p: CompatSchemaPath<PControl>,
   ): CompatFieldState<PControl>;
-
   stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): FieldState<PValue>;
-
+  /** Gets the field represented by the given path. */
   fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
+  /** The list of keys that lead from the root field to the current field. */
+  readonly pathKeys: Signal<readonly string[]>;
 }
 
 /**
