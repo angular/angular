@@ -12,22 +12,24 @@ import {BasicFieldAdapter, FieldAdapter} from '../field/field_adapter';
 import {FormFieldManager} from '../field/manager';
 import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
+import {DYNAMIC} from '../schema/logic';
 import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent, isSchemaOrSchemaFn, SchemaImpl} from '../schema/schema';
+import {assertPathIsCurrent, SchemaImpl} from '../schema/schema';
+import {normalizeFormArgs} from '../util/normalize_form_args';
 import {isArray} from '../util/type_guards';
 import type {
-  SchemaPath,
   FieldTree,
+  ItemType,
   LogicFn,
   OneOrMany,
   PathKind,
   Schema,
   SchemaFn,
   SchemaOrSchemaFn,
+  SchemaPath,
   TreeValidationResult,
 } from './types';
 import type {ValidationError} from './validation_errors';
-import {normalizeFormArgs} from '../util/normalize_form_args';
 
 /**
  * Options that may be specified when creating a form.
@@ -227,13 +229,21 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * @category structure
  * @experimental 21.0.0
  */
-export function applyEach<TValue>(
-  path: SchemaPath<TValue[]>,
-  schema: NoInfer<SchemaOrSchemaFn<TValue, PathKind.Item>>,
+export function applyEach<TValue extends ReadonlyArray<any>>(
+  path: SchemaPath<TValue>,
+  schema: NoInfer<SchemaOrSchemaFn<TValue[number], PathKind.Item>>,
+): void;
+export function applyEach<TValue extends Object>(
+  path: SchemaPath<TValue>,
+  schema: NoInfer<SchemaOrSchemaFn<ItemType<TValue>, PathKind.Child>>,
+): void;
+export function applyEach<TValue extends Object>(
+  path: SchemaPath<TValue>,
+  schema: NoInfer<SchemaOrSchemaFn<ItemType<TValue>, PathKind.Item>>,
 ): void {
   assertPathIsCurrent(path);
 
-  const elementPath = FieldPathNode.unwrapFieldPath(path).element.fieldPathProxy;
+  const elementPath = FieldPathNode.unwrapFieldPath(path).getChild(DYNAMIC).fieldPathProxy;
   apply(elementPath, schema as Schema<TValue>);
 }
 

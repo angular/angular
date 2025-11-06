@@ -7,10 +7,10 @@
  */
 
 import {Signal, ɵFieldState} from '@angular/core';
+import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
 import {AggregateMetadataKey, MetadataKey} from './metadata';
 import type {ValidationError} from './validation_errors';
-import {AbstractControl} from '@angular/forms';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.
@@ -595,3 +595,10 @@ export interface ItemFieldContext<TValue> extends ChildFieldContext<TValue> {
   /** The index of the current field in its parent field. */
   readonly index: Signal<number>;
 }
+
+/**
+ * Gets the item type of an object that is possibly an array.
+ *
+ * @experimental 21.0.0
+ */
+export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number] : T[keyof T];
