@@ -7,7 +7,6 @@
   <!-- TODO: Add a link to the Accordion API reference. -->
 </docs-pill-row>
 
-
 <!-- TODO: Add a top level component preview with code example hidden.
 
 <docs-code-multifile preview themed hideCode path="adev/src/content/examples/aria/src/accordion/app/app.component.ts">

@@ -1,6 +1,6 @@
 # Setting up the local environment and workspace
 
-This guide explains how to set up your environment for Angular development using the [Angular CLI](cli "CLI command reference").
+This guide explains how to set up your environment for Angular development using the [Angular CLI](cli 'CLI command reference').
 It includes information about installing the CLI, creating an initial workspace and starter app, and running that app locally to verify your setup.
 
 <docs-callout title="Try Angular without local setup">
@@ -76,7 +76,7 @@ Carefully read the message displayed after executing the command and follow the 
 
 ### Unix permissions
 
-On some Unix-like setups, global  scripts may be owned by the root user, so to the above command may fail with a permission error.
+On some Unix-like setups, global scripts may be owned by the root user, so to the above command may fail with a permission error.
 Run with `sudo` to execute the command as the root user and enter your password when prompted:
 
 <docs-code-multifile>
@@ -156,16 +156,16 @@ Each application has a `src` folder that contains its components, data, and asse
 You can edit the generated files directly, or add to and modify them using CLI commands.
 Use the [`ng generate`](cli/generate) command to add new files for additional components, directives, pipes, services, and more.
 Commands such as [`ng add`](cli/add) and [`ng generate`](cli/generate), which create or operate on applications and libraries, must be executed
-from within a workspace. By contrast, commands such as `ng new` must be executed *outside* a workspace because they will create a new one.
+from within a workspace. By contrast, commands such as `ng new` must be executed _outside_ a workspace because they will create a new one.
 
 ## Next steps
 
-* Learn more about the [file structure](reference/configs/file-structure) and [configuration](reference/configs/workspace-config) of the generated workspace.
+- Learn more about the [file structure](reference/configs/file-structure) and [configuration](reference/configs/workspace-config) of the generated workspace.
 
-* Test your new application with [`ng test`](cli/test).
+- Test your new application with [`ng test`](cli/test).
 
-* Generate boilerplate like components, directives, and pipes with [`ng generate`](cli/generate).
+- Generate boilerplate like components, directives, and pipes with [`ng generate`](cli/generate).
 
-* Deploy your new application and make it available to real users with [`ng deploy`](cli/deploy).
+- Deploy your new application and make it available to real users with [`ng deploy`](cli/deploy).
 
-* Set up and run end-to-end tests of your application with [`ng e2e`](cli/e2e).
+- Set up and run end-to-end tests of your application with [`ng e2e`](cli/e2e).

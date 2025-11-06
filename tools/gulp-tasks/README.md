@@ -4,6 +4,7 @@ This folder contains one file for each task (or group of related tasks) for the 
 The dependencies between the tasks is kept in the gulpfile.
 
 ## Task File Structure
+
 Each task is defined by a factory function that accepts `gulp` as a parameter.
 Each file exports either one factory or an object of factories.
 

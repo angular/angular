@@ -5,10 +5,11 @@ existing usages of `*ngIf`, `*ngFor`, and `*ngSwitch` to their equivalent block
 syntax. Existing ng-templates are preserved in case they are used elsewhere in
 the template. It has the following option:
 
-* `path` - Relative path within the project that the migration should apply to. Can be used to
-migrate specific sub-directories individually. Defaults to the project root.
+- `path` - Relative path within the project that the migration should apply to. Can be used to
+  migrate specific sub-directories individually. Defaults to the project root.
 
 #### Before
+
 ```ts
 import {Component} from '@angular/core';
 
@@ -20,8 +21,8 @@ export class MyComp {
 }
 ```
 
-
 #### After
+
 ```ts
 import {Component} from '@angular/core';
 

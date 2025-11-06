@@ -29,7 +29,6 @@ To mark the greeting for translation, add the `i18n` attribute to the `<h1>` tag
 
 <docs-code header="src/app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute"/>
 
-
 ### using conditional statement with `i18n`
 
 The following `<div>` tag will display translated text as part of `div` and `aria-label` based on toggle status
@@ -124,8 +123,6 @@ $localize`string_to_translate ${variable_name}:placeholder_name:`;
 <docs-code language="typescript">
 return this.show ? $localize`Show Tabs` : $localize`Hide tabs`;
 </docs-code>
-
-
 
 ## i18n metadata for translation
 

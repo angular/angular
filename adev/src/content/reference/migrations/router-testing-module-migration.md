@@ -23,6 +23,7 @@ ng generate @angular/core:router-testing-module-migration
 ### Preserve router options
 
 Before:
+
 ```ts
 import { RouterTestingModule } from '@angular/router/testing';
 import { SpyLocation } from '@angular/common/testing';
@@ -88,7 +89,7 @@ import { SpyLocation } from '@angular/common/testing';
 
 describe('test', () => {
   let spy : SpyLocation;
-  
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterModule],

@@ -9,11 +9,11 @@ merging PRs and publishing releases. Before reading, you should understand
 Angular's branching relates directly to versions published on npm. We will reference these [npm
 distribution tags](https://docs.npmjs.com/cli/v6/commands/npm-dist-tag#purpose) throughout:
 
-| Tag    | Description                                                                       |
-|--------|-----------------------------------------------------------------------------------|
-| latest | The most recent stable version.                                                   |
-| next   | The most recent pre-release version of Angular for testing. May not always exist. |
-| v*-lts | The most recent LTS release for the specified version, such as `v9-lts`.          |
+| Tag     | Description                                                                       |
+| ------- | --------------------------------------------------------------------------------- |
+| latest  | The most recent stable version.                                                   |
+| next    | The most recent pre-release version of Angular for testing. May not always exist. |
+| v\*-lts | The most recent LTS release for the specified version, such as `v9-lts`.          |
 
 ## Branch naming
 
@@ -32,18 +32,19 @@ Angular releases a major version roughly every six months. Following a major rel
 through a consistent lifecycle to the next major release, and repeat. At a high level, this
 process proceeds as follows:
 
-* A major release occurs. The `main` branch now represents the next minor version.
-* Six weeks later, a minor release occurs. The `main` branch now represents the next minor
+- A major release occurs. The `main` branch now represents the next minor version.
+- Six weeks later, a minor release occurs. The `main` branch now represents the next minor
   version.
-* Six weeks later, a second minor release occurs. The `main` branch now represents the next major
+- Six weeks later, a second minor release occurs. The `main` branch now represents the next major
   version.
-* Three months later, a major release occurs and the process repeats.
+- Three months later, a major release occurs and the process repeats.
 
 ### Example
-* Angular publishes `11.0.0`. At this point in time, the `main` branch represents `11.1.0`.
-* Six weeks later, we publish `11.1.0` and `main` represents `11.2.0`.
-* Six weeks later, we publish `11.2.0` and `main` represents `12.0.0`.
-* Three months later, this cycle repeats with the publication of `12.0.0`.
+
+- Angular publishes `11.0.0`. At this point in time, the `main` branch represents `11.1.0`.
+- Six weeks later, we publish `11.1.0` and `main` represents `11.2.0`.
+- Six weeks later, we publish `11.2.0` and `main` represents `12.0.0`.
+- Three months later, this cycle repeats with the publication of `12.0.0`.
 
 ### Feature freeze and release candidates
 
@@ -77,7 +78,7 @@ additional branches into which a pull request will be cherry-picked.
 There are five labels that target PRs to versions:
 
 | Label         | Description                                                                 |
-|---------------|-----------------------------------------------------------------------------|
+| ------------- | --------------------------------------------------------------------------- |
 | target: major | A change that includes a backwards-incompatible behavior or API change.     |
 | target: minor | A change that introduces a new, backwards-compatible functionality.         |
 | target: patch | A backwards-compatible bug fix.                                             |
@@ -101,10 +102,10 @@ major version.
 
 Two additional target labels do not map to specific versions while still defining which branch to merge into.
 
-| Label                | Description                                                                 |
-|----------------------|-----------------------------------------------------------------------------|
-| target: automation   | A automated change made by the angular-robot account.                       |
-| target: feature      | A change to be made in a feature branch.                                    |
+| Label              | Description                                           |
+| ------------------ | ----------------------------------------------------- |
+| target: automation | A automated change made by the angular-robot account. |
+| target: feature    | A change to be made in a feature branch.              |
 
 Changes made to a feature branch, outside of our typical branching and merging process utilize the
 `target: feature` branch. Additionally, the `target: automation` label, which is only able to be

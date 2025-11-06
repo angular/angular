@@ -65,15 +65,14 @@ Consider the following example.
 <docs-code language="typescript" header="User interface">
 
 interface User {
-  name: string;
-  address: {
-    city: string;
-    state: string;
-  }
+name: string;
+address: {
+city: string;
+state: string;
+}
 }
 
 </docs-code>
-
 
 ```html
 

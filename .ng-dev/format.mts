@@ -6,6 +6,7 @@ import {FormatConfig} from '@angular/ng-dev';
 export const format: FormatConfig = {
   'prettier': {
     'matchers': [
+      '**/*.md',
       '**/*.{yaml,yml}',
       '**/*.{js,ts,mjs,mts,cjs,cts,tsx}',
       'devtools/**/*.{js,ts,mjs,mts,cjs,cts,html,scss}',
@@ -28,6 +29,9 @@ export const format: FormatConfig = {
 
       // Ignore testing data files for language service
       '!vscode-ng-language-service/syntaxes/test/data/*.ts',
+
+      // Ignore goldens MD files
+      '!/goldens/**/*.api.md',
     ],
   },
   'buildifier': true,

@@ -186,10 +186,10 @@ Compilers will also not take Typescript nodes directly as input, but will operat
 
 For example, the input to the `@Component` compiler will be:
 
-* A reference to the class of the component.
-* The template and style resources of the component.
-* The selector of the component.
-* A selector map for the module to which the component belongs.
+- A reference to the class of the component.
+- The template and style resources of the component.
+- The selector of the component.
+- A selector map for the module to which the component belongs.
 
 #### Need for static value resolution
 
@@ -267,8 +267,8 @@ The process of reference inversion is to turn the list of selector targets produ
 
 1. Add all the type declared in the `declarations` field.
 2. For each module that is imported.
-    - Add the exported components, directives, and pipes
-    - Repeat these sub-steps for with each exported module
+   - Add the exported components, directives, and pipes
+   - Repeat these sub-steps for with each exported module
 
 For each type in the list produced above, parse the selector and convert them all into a selector matcher that, given a target, produces the type that matches the selector. This is referred to as the selector scope.
 
@@ -306,9 +306,9 @@ The types of directives can be found using a selector scope as described for ref
 
 When `ngtsc` starts running, it first parses the `tsconfig.json` file and then creates a `ts.Program`. Several things need to happen before the transforms described above can run:
 
-* Metadata must be collected for input source files which contain decorators.
-* Resource files listed in `@Component` decorators must be resolved asynchronously. The CLI, for example, may wish to run webpack to produce the `.css` input to the `styleUrls` property of an `@Component`.
-* Diagnostics must be run, which creates the `TypeChecker` and touches every node in the program (a decently expensive operation).
+- Metadata must be collected for input source files which contain decorators.
+- Resource files listed in `@Component` decorators must be resolved asynchronously. The CLI, for example, may wish to run webpack to produce the `.css` input to the `styleUrls` property of an `@Component`.
+- Diagnostics must be run, which creates the `TypeChecker` and touches every node in the program (a decently expensive operation).
 
 Because resource loading is asynchronous (and in particular, may actually be concurrent via subprocesses), it's desirable to kick off as much resource loading as possible before doing anything expensive.
 
@@ -316,7 +316,7 @@ Thus, the compiler flow looks like:
 
 1. Create the `ts.Program`
 2. Scan source files for top-level declarations which have trivially detectable `@Component` annotations. This avoids creating the `TypeChecker`.
-    * For each such declaration that has a `templateUrl` or `styleUrls`, kick off resource loading for that URL and add the `Promise` to a queue.
+   - For each such declaration that has a `templateUrl` or `styleUrls`, kick off resource loading for that URL and add the `Promise` to a queue.
 3. Get diagnostics and report any initial error messages. At this point, the `TypeChecker` is primed.
 4. Do a thorough scan for `@Component` annotations, using the `TypeChecker` and the metadata system to resolve any complex expressions.
 5. Wait on all resources to be resolved.
@@ -441,9 +441,9 @@ Compiling a package in `ngcc` involves the following steps:
 1. Parse the JS files of the package with the Typescript parser.
 2. Invoke the `StaticReflector` system from the legacy `@angular/compiler` to parse the `.metadata.json` files.
 3. Run through each Angular decorator in the Ivy system and compile:
-    1. Use the JS AST plus the information from the `StaticReflector` to construct the input to the annotation's Compiler.
-    2. Run the annotation's Compiler which will produce a partial class and its type declaration.
-    3. Extract the static property definition from the partial class.
+   1. Use the JS AST plus the information from the `StaticReflector` to construct the input to the annotation's Compiler.
+   2. Run the annotation's Compiler which will produce a partial class and its type declaration.
+   3. Extract the static property definition from the partial class.
 4. Combine the compiler outputs with the JS AST to produce the resulting `.js` and `.d.ts` files, and write them to disk.
 5. Copy over all other files.
 
@@ -451,8 +451,8 @@ Compiling a package in `ngcc` involves the following steps:
 
 At first glance it is desirable for each Compiler's output to be patched into the AST for the modules being compiled, and then to generate the resulting JS code and sourcemaps using Typescript's emit on the AST. This is undesirable for several reasons:
 
-* The round-trip through the Typescript parser and emitter might subtly change the input JS code - dropping comments, reformatting code, etc. This is not ideal, as users expect the input code to remain as unchanged as possible.
-* It isn't possible in Typescript to directly emit without going through any of Typescript's own transformations. This may cause expressions to be reformatted, code to be downleveled, and requires configuration of an output module system into which the code will be transformed.
+- The round-trip through the Typescript parser and emitter might subtly change the input JS code - dropping comments, reformatting code, etc. This is not ideal, as users expect the input code to remain as unchanged as possible.
+- It isn't possible in Typescript to directly emit without going through any of Typescript's own transformations. This may cause expressions to be reformatted, code to be downleveled, and requires configuration of an output module system into which the code will be transformed.
 
 For these reasons, `ngcc` will not use the TS emitter to produce the final patched `.js` files. Instead, the JS text will be manipulated directly, with the help of the `magic-string` or similar library to ensure the changes are reflected in the output sourcemaps. The AST which is parsed from the JS files contains position information of all the types in the JS source, and this information can be used to determine the correct insertion points for the Ivy static fields.
 

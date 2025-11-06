@@ -2,7 +2,6 @@
 
 This folder contains sanitization related code.
 
-
 ## History
 
 It used to be that sanitization related code used to be in `@angular/platform-browser` since it is platform related. While this is true, in practice the compiler schema is permanently tied to the DOM and hence the fact that sanitizer could in theory be replaced is not used in practice.

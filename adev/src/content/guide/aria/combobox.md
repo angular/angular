@@ -7,7 +7,6 @@
   <!-- TODO: Add a link to the Combobox API reference. -->
 </docs-pill-row>
 
-
 <!-- TODO: Add a top level component preview with code example hidden.
 
 <docs-code-multifile preview themed hideCode path="adev/src/content/examples/aria/src/combobox/app/app.component.ts">

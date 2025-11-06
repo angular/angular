@@ -25,12 +25,12 @@ export class CustomCardHeader {
 }
 
 @Component({
-  selector: 'custom-card',
-  template: '<custom-card-header>Visit sunny California!</custom-card-header>',
+selector: 'custom-card',
+template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
 export class CustomCard {
-  header = viewChild(CustomCardHeader);
-  headerText = computed(() => this.header()?.text);
+header = viewChild(CustomCardHeader);
+headerText = computed(() => this.header()?.text);
 }
 </docs-code>
 
@@ -50,15 +50,14 @@ export class CustomCardAction {
 }
 
 @Component({
-  selector: 'custom-card',
-  template: `
-    <custom-card-action>Save</custom-card-action>
+selector: 'custom-card',
+template: `     <custom-card-action>Save</custom-card-action>
     <custom-card-action>Cancel</custom-card-action>
   `,
 })
 export class CustomCard {
-  actions = viewChildren(CustomCardAction);
-  actionsTexts = computed(() => this.actions().map(action => action.text);
+actions = viewChildren(CustomCardAction);
+actionsTexts = computed(() => this.actions().map(action => action.text);
 }
 </docs-code>
 
@@ -80,19 +79,18 @@ export class CustomToggle {
 }
 
 @Component({
-  selector: 'custom-expando',
-  /*...*/
+selector: 'custom-expando',
+/_..._/
 })
 export class CustomExpando {
-  toggle = contentChild(CustomToggle);
-  toggleText = computed(() => this.toggle()?.text);
+toggle = contentChild(CustomToggle);
+toggleText = computed(() => this.toggle()?.text);
 }
 
-@Component({ 
-  /* ... */
-  // CustomToggle is used inside CustomExpando as content.  
-  template: `
-    <custom-expando>
+@Component({
+/_ ... _/
+// CustomToggle is used inside CustomExpando as content.  
+ template: `     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
   `
@@ -118,18 +116,17 @@ export class CustomMenuItem {
 }
 
 @Component({
-  selector: 'custom-menu',
-  /*...*/
+selector: 'custom-menu',
+/_..._/
 })
 export class CustomMenu {
-  items = contentChildren(CustomMenuItem);
-  itemTexts = computed(() => this.items().map(item => item.text));
+items = contentChildren(CustomMenuItem);
+itemTexts = computed(() => this.items().map(item => item.text));
 }
 
 @Component({
-  selector: 'user-profile',
-  template: `
-    <custom-menu>
+selector: 'user-profile',
+template: `     <custom-menu>
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>
@@ -146,7 +143,7 @@ export class UserProfile { }
 
 If a child query (`viewChild` or `contentChild`) does not find a result, its value is `undefined`. This may occur if the target element is hidden by a control flow statement like `@if` or `@for`. Because of this, the child queries return a signal that include `undefined` in their value type.
 
-In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a *required query*.
+In some cases, especially with `viewChild`, you know with certainty that a specific child is always available. In other cases, you may want to strictly enforce that a specific child is present. For these cases, you can use a _required query_.
 
 ```angular-ts
 @Component({/* ... */})
@@ -230,7 +227,7 @@ Developers most commonly use `read` to retrieve `ElementRef` and `TemplateRef`.
 ### Content descendants
 
 By default, `contentChildren` queries find only _direct_ children of the component and do not traverse into descendants.
-`contentChild` queries do traverse into descendants by default. 
+`contentChild` queries do traverse into descendants by default.
 
 <docs-code language="angular-ts" highlight="[13, 14, 15, 16]">
 @Component({
@@ -243,9 +240,8 @@ export class CustomExpando {
 }
 
 @Component({
-  selector: 'user-profile',
-  template: `
-    <custom-expando>
+selector: 'user-profile',
+template: `     <custom-expando>
       <some-other-component>
         <custom-toggle>Show</custom-toggle>
       </some-other-component>
@@ -260,6 +256,7 @@ In the example above, `CustomExpando` cannot find `<custom-toggle>` with `conten
 View queries do not have this option because they _always_ traverse into descendants.
 
 ## Decorator-based queries
+
 TIP: While the Angular team recommends using the signal-based query function for new projects, the
 original decorator-based query APIs remain fully supported.
 
@@ -279,15 +276,15 @@ export class CustomCardHeader {
 }
 
 @Component({
-  selector: 'custom-card',
-  template: '<custom-card-header>Visit sunny California!</custom-card-header>',
+selector: 'custom-card',
+template: '<custom-card-header>Visit sunny California!</custom-card-header>',
 })
 export class CustomCard {
-  @ViewChild(CustomCardHeader) header: CustomCardHeader;
+@ViewChild(CustomCardHeader) header: CustomCardHeader;
 
-  ngAfterViewInit() {
-    console.log(this.header.text);
-  }
+ngAfterViewInit() {
+console.log(this.header.text);
+}
 }
 </docs-code>
 
@@ -309,20 +306,19 @@ export class CustomCardAction {
 }
 
 @Component({
-  selector: 'custom-card',
-  template: `
-    <custom-card-action>Save</custom-card-action>
+selector: 'custom-card',
+template: `     <custom-card-action>Save</custom-card-action>
     <custom-card-action>Cancel</custom-card-action>
   `,
 })
 export class CustomCard {
-  @ViewChildren(CustomCardAction) actions: QueryList<CustomCardAction>;
+@ViewChildren(CustomCardAction) actions: QueryList<CustomCardAction>;
 
-  ngAfterViewInit() {
-    this.actions.forEach(action => {
-      console.log(action.text);
-    });
-  }
+ngAfterViewInit() {
+this.actions.forEach(action => {
+console.log(action.text);
+});
+}
 }
 </docs-code>
 
@@ -342,21 +338,20 @@ export class CustomToggle {
 }
 
 @Component({
-  selector: 'custom-expando',
-  /*...*/
+selector: 'custom-expando',
+/_..._/
 })
 export class CustomExpando {
-  @ContentChild(CustomToggle) toggle: CustomToggle;
+@ContentChild(CustomToggle) toggle: CustomToggle;
 
-  ngAfterContentInit() {
-    console.log(this.toggle.text);
-  }
+ngAfterContentInit() {
+console.log(this.toggle.text);
+}
 }
 
 @Component({
-  selector: 'user-profile',
-  template: `
-    <custom-expando>
+selector: 'user-profile',
+template: `     <custom-expando>
       <custom-toggle>Show</custom-toggle>
     </custom-expando>
   `
@@ -382,23 +377,22 @@ export class CustomMenuItem {
 }
 
 @Component({
-  selector: 'custom-menu',
-  /*...*/
+selector: 'custom-menu',
+/_..._/
 })
 export class CustomMenu {
-  @ContentChildren(CustomMenuItem) items: QueryList<CustomMenuItem>;
+@ContentChildren(CustomMenuItem) items: QueryList<CustomMenuItem>;
 
-  ngAfterContentInit() {
-    this.items.forEach(item => {
-      console.log(item.text);
-    });
-  }
+ngAfterContentInit() {
+this.items.forEach(item => {
+console.log(item.text);
+});
+}
 }
 
 @Component({
-  selector: 'user-profile',
-  template: `
-    <custom-menu>
+selector: 'user-profile',
+template: `     <custom-menu>
       <custom-menu-item>Cheese</custom-menu-item>
       <custom-menu-item>Tomato</custom-menu-item>
     </custom-menu>

@@ -26,14 +26,14 @@ This is especially useful for when there are no open clients when a notification
 <docs-code language="json">
 
 {
-  "notification": {
-    "title": "New Notification!",
-    "data": {
-      "onActionClick": {
-        "default": {"operation": "openWindow", "url": "foo"}
-      }
-    }
-  }
+"notification": {
+"title": "New Notification!",
+"data": {
+"onActionClick": {
+"default": {"operation": "openWindow", "url": "foo"}
+}
+}
+}
 }
 
 </docs-code>
@@ -42,12 +42,12 @@ This is especially useful for when there are no open clients when a notification
 
 The Angular service worker supports the following operations:
 
-| Operations                  | Details |
-|:---                         |:---     |
+| Operations                  | Details                                                                                                                                          |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
 | `openWindow`                | Opens a new tab at the specified URL.                                                                                                            |
 | `focusLastFocusedOrOpen`    | Focuses the last focused client. If there is no client open, then it opens a new tab at the specified URL.                                       |
 | `navigateLastFocusedOrOpen` | Focuses the last focused client and navigates it to the specified URL. If there is no client open, then it opens a new tab at the specified URL. |
-| `sendRequest`               | Send a simple GET request to the specified URL.                                                                                                                                                          |
+| `sendRequest`               | Send a simple GET request to the specified URL.                                                                                                  |
 
 IMPORTANT: URLs are resolved relative to the service worker's registration scope.<br />If an `onActionClick` item does not define a `url`, then the service worker's registration scope is used.
 
@@ -63,25 +63,25 @@ In addition, using the `onActionClick` property on the `data` object, you can ti
 <docs-code language="typescript">
 
 {
-  "notification": {
-    "title": "New Notification!",
-    "actions": [
-      {"action": "foo", "title": "Open new tab"},
-      {"action": "bar", "title": "Focus last"},
-      {"action": "baz", "title": "Navigate last"},
-      {"action": "qux", "title": "Send request in the background"},
-      {"action": "other", "title": "Just notify existing clients"}
-    ],
-    "data": {
-      "onActionClick": {
-        "default": {"operation": "openWindow"},
-        "foo": {"operation": "openWindow", "url": "/absolute/path"},
-        "bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
-        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"},
-        "qux": {"operation": "sendRequest", "url": "https://yet.another.domain.com/"}
-      }
-    }
-  }
+"notification": {
+"title": "New Notification!",
+"actions": [
+{"action": "foo", "title": "Open new tab"},
+{"action": "bar", "title": "Focus last"},
+{"action": "baz", "title": "Navigate last"},
+{"action": "qux", "title": "Send request in the background"},
+{"action": "other", "title": "Just notify existing clients"}
+],
+"data": {
+"onActionClick": {
+"default": {"operation": "openWindow"},
+"foo": {"operation": "openWindow", "url": "/absolute/path"},
+"bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
+"baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"},
+"qux": {"operation": "sendRequest", "url": "https://yet.another.domain.com/"}
+}
+}
+}
 }
 
 </docs-code>

@@ -38,18 +38,18 @@ That service in turn might depend on the `HttpClient` service to fetch heroes as
 import { inject } from "@angular/core";
 
 export class HeroService {
-  private heroes: Hero[] = [];
+private heroes: Hero[] = [];
 
-  private backend = inject(BackendService);
-  private logger = inject(Logger);
+private backend = inject(BackendService);
+private logger = inject(Logger);
 
-  async getHeroes() {
-    // Fetch
-    this.heroes = await this.backend.getAll(Hero);
-    // Log
-    this.logger.log(`Fetched ${this.heroes.length} heroes.`);
-    return this.heroes;
-  }
+async getHeroes() {
+// Fetch
+this.heroes = await this.backend.getAll(Hero);
+// Log
+this.logger.log(`Fetched ${this.heroes.length} heroes.`);
+return this.heroes;
+}
 }
 </docs-code>
 
@@ -71,7 +71,7 @@ This command creates the following default `HeroService`:
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root',
+providedIn: 'root',
 })
 export class HeroService {}
 </docs-code>
@@ -86,14 +86,14 @@ import { Injectable } from '@angular/core';
 import { HEROES } from './mock-heroes';
 
 @Injectable({
-  // declares that this service should be created
-  // by the root application injector.
-  providedIn: 'root',
+// declares that this service should be created
+// by the root application injector.
+providedIn: 'root',
 })
 export class HeroService {
-  getHeroes() {
-    return HEROES;
-  }
+getHeroes() {
+return HEROES;
+}
 }
 </docs-code>
 
@@ -110,7 +110,7 @@ The type of `heroService` is `HeroService`.
 import { inject } from "@angular/core";
 
 export class HeroListComponent {
-  private heroService = inject(HeroService);
+private heroService = inject(HeroService);
 }
 </docs-code>
 
@@ -134,15 +134,15 @@ import { HEROES } from './mock-heroes';
 import { Logger } from '../logger.service';
 
 @Injectable({
-  providedIn: 'root',
+providedIn: 'root',
 })
 export class HeroService {
-  private logger = inject(Logger);
+private logger = inject(Logger);
 
-  getHeroes() {
-    this.logger.log('Getting heroes.');
-    return HEROES;
-  }
+getHeroes() {
+this.logger.log('Getting heroes.');
+return HEROES;
+}
 }
 </docs-code>
 

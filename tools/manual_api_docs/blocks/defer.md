@@ -27,7 +27,7 @@ Supported sections of a defer block. Note: only the @defer block template fragme
 loaded. The remaining optional blocks are eagerly loaded.
 
 | block          | Description                                              |
-|----------------|----------------------------------------------------------|
+| -------------- | -------------------------------------------------------- |
 | `@defer`       | The defer loaded block of content                        |
 | `@placeholder` | Content shown prior to defer loading (Optional)          |
 | `@loading`     | Content shown during defer loading (Optional)            |
@@ -38,8 +38,8 @@ loaded. The remaining optional blocks are eagerly loaded.
 Triggers provide conditions for when defer loading occurs. Some allow a template reference variable
 as an optional parameter. Separate multiple triggers with a semicolon.
 
-| trigger                         | Triggers...                                   | 
-|---------------------------------|-----------------------------------------------|
+| trigger                         | Triggers...                                   |
+| ------------------------------- | --------------------------------------------- |
 | `on idle`                       | when the browser reports idle state (default) |
 | `on viewport(<elementRef>?)`    | when the element enters the viewport          |
 | `on interaction(<elementRef>?)` | when clicked, touched, or focused             |

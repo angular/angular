@@ -20,7 +20,7 @@ Use simple Jasmine to explore the expected cases and the edge cases.
 
 ## Writing DOM tests to support a pipe test
 
-These are tests of the pipe *in isolation*.
+These are tests of the pipe _in isolation_.
 They can't tell if the `TitleCasePipe` is working properly as applied in the application components.
 
 Consider adding component tests such as this one:

@@ -5,7 +5,7 @@ If your tests aren't working as you expect them to, you can inspect and debug th
 Debug specs in the browser in the same way that you debug an application.
 
 1. Reveal the Karma browser window.
-    See [Set up testing](guide/testing#set-up-testing) if you need help with this step.
+   See [Set up testing](guide/testing#set-up-testing) if you need help with this step.
 
 1. Click the **DEBUG** button to open a new browser tab and re-run the tests.
 1. Open the browser's **Developer Tools**. On Windows, press `Ctrl-Shift-I`. On macOS, press `Command-Option-I`.

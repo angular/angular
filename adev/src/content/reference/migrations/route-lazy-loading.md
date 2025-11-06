@@ -41,15 +41,15 @@ The migration will check all the components in the routes, check if they are sta
 import { HomeComponent } from './home/home.component';
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot([
-      {
-        path: 'home',
-        // HomeComponent is standalone and eagerly loaded
-        component: HomeComponent,
-      },
-    ]),
-  ],
+imports: [
+RouterModule.forRoot([
+{
+path: 'home',
+// HomeComponent is standalone and eagerly loaded
+component: HomeComponent,
+},
+]),
+],
 })
 export class AppModule {}
 </docs-code>

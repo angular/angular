@@ -15,10 +15,10 @@ If `@angular/localize` is not installed and you try to build a localized version
 
 ## Options
 
-| OPTION           | DESCRIPTION | VALUE TYPE | DEFAULT VALUE
-|:---              |:---    |:------     |:------
-| `--project`      | The name of the project. | `string` |
-| `--use-at-runtime` | If set, then `$localize` can be used at runtime. Also `@angular/localize` gets included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default.  | `boolean` | `false`
+| OPTION             | DESCRIPTION                                                                                                                                                                                   | VALUE TYPE | DEFAULT VALUE |
+| :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------- | :------------ |
+| `--project`        | The name of the project.                                                                                                                                                                      | `string`   |
+| `--use-at-runtime` | If set, then `$localize` can be used at runtime. Also `@angular/localize` gets included in the `dependencies` section of `package.json`, rather than `devDependencies`, which is the default. | `boolean`  | `false`       |
 
 For more available options, see `ng add` in [Angular CLI][CliMain].
 
@@ -28,8 +28,6 @@ For more available options, see `ng add` in [Angular CLI][CliMain].
   <docs-pill href="guide/i18n/locale-id" title="Refer to locales by ID"/>
 </docs-pill-row>
 
-[CliMain]: cli "CLI Overview and Command Reference | Angular"
-
-[GuideNpmPackages]: reference/configs/npm-packages "Workspace npm dependencies | Angular"
-
-[GuideTsConfig]: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html "TypeScript Configuration"
+[CliMain]: cli 'CLI Overview and Command Reference | Angular'
+[GuideNpmPackages]: reference/configs/npm-packages 'Workspace npm dependencies | Angular'
+[GuideTsConfig]: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html 'TypeScript Configuration'
