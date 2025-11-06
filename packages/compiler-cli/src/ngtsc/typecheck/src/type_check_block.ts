@@ -975,7 +975,7 @@ class TcbCustomFieldDirectiveTypeOp extends TcbFieldDirectiveTypeBaseOp {
     const id = this.tcb.allocateId();
     const targetType = ts.factory.createTypeReferenceNode(
       targetTypeRef.typeName,
-      isCheckbox ? undefined : [ts.factory.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword)],
+      isCheckbox ? undefined : [ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)],
     );
     this.scope.addStatement(tsDeclareVariable(id, targetType));
 
