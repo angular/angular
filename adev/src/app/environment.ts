@@ -13,7 +13,7 @@ export default {
   algolia: {
     appId: 'L1XWT2UJ7F',
     apiKey: 'dfca7ed184db27927a512e5c6668b968',
-    indexName: 'angular_v17',
+    indexName: 'angular_v19',
   },
   googleAnalyticsId: 'G-XB6NEVW32B',
 };
