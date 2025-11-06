@@ -705,7 +705,7 @@ export class ModalComponent { }
 - Must be provided wherever needed
 - Always included in the same JavaScript bundle as the component or directive, even if the value is never injected
 
-Note: If multiple directives on the same element provide the same token, one will win, but which one is undefined.
+NOTE: If multiple directives on the same element provide the same token, one will win, but which one is undefined.
 
 ### Route providers
 
