@@ -18,8 +18,6 @@ $toolbar-height: 30px;
     box-sizing: border-box;
 
     .toolbar-btn {
-      background: none;
-      border: none;
       color: var(--secondary-contrast);
       padding-inline: 0.375rem;
       cursor: pointer;
@@ -36,8 +34,30 @@ $toolbar-height: 30px;
     .tools {
       display: flex;
 
-      .inspector-active {
-        color: var(--dynamic-blue-02);
+      .inspect-btn {
+        $size: 20px;
+        height: $size;
+        padding-right: 0;
+
+        svg {
+          width: $size;
+          height: $size;
+          fill-rule: evenodd;
+          clip-rule: evenodd;
+          stroke-linejoin: round;
+          stroke-miterlimit: 2;
+
+          path {
+            fill-rule: nonzero;
+            fill: var(--secondary-contrast);
+          }
+
+          &.inspect-active {
+            path {
+              fill: var(--dynamic-blue-02);
+            }
+          }
+        }
       }
     }
 
