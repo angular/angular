@@ -1811,6 +1811,9 @@ export interface StreamingResourceOptions<T, R> extends BaseResourceOptions<T, R
 }
 
 // @public
+export type StyleRoot = Document | ShadowRoot;
+
+// @public
 export class TemplateRef<C> {
     createEmbeddedView(context: C, injector?: Injector): EmbeddedViewRef<C>;
     readonly elementRef: ElementRef;
