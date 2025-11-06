@@ -71,6 +71,7 @@ export class NavigationStateManager extends StateManager {
    * `navigate` event. This includes the router's internal `Navigation` object.
    */
   private currentNavigation: {
+    removeAbortListener?: () => void;
     /** The Angular Router's internal representation of the ongoing navigation. */
     routerTransition?: RouterNavigation;
     /** Function to reject the intercepted navigation event. */
@@ -139,7 +140,7 @@ export class NavigationStateManager extends StateManager {
     e: Event | PrivateRouterEvents,
     transition: RouterNavigation,
   ): Promise<void> {
-    this.currentNavigation.routerTransition = transition;
+    this.currentNavigation = {...this.currentNavigation, routerTransition: transition};
     if (e instanceof NavigationStart) {
       this.updateStateMemento();
     } else if (e instanceof NavigationSkipped) {
@@ -158,8 +159,12 @@ export class NavigationStateManager extends StateManager {
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
       void this.cancel(transition, e);
     } else if (e instanceof NavigationEnd) {
-      const {resolveHandler} = this.currentNavigation;
+      const {resolveHandler, removeAbortListener} = this.currentNavigation;
       this.currentNavigation = {};
+      // We no longer care about aborts for this navigation once it's successfully ended.
+      // Since we're delaying the resolution of the handler until after next render, it's
+      // technically possible for it to still get aborted in that window, so we remove the listener here.
+      removeAbortListener?.();
       // Update `activeHistoryEntry` to the new current entry from Navigation API.
       this.activeHistoryEntry = this.navigation.currentEntry!;
       // Resolve handler after next render to defer scroll and focus reset.
@@ -168,6 +173,10 @@ export class NavigationStateManager extends StateManager {
   }
 
   private createNavigationForTransition(transition: RouterNavigation) {
+    // Before we create a navigation for the Router transition, we have to remove any abort listeners
+    // from the previous navigation event. Creating the new navigation will cause the signal
+    // to be aborted, and we don't want that to cause our router transition to be aborted.
+    this.currentNavigation.removeAbortListener?.();
     const path = this.createBrowserPath(transition);
     this.navigate(path, transition);
   }
@@ -330,6 +339,17 @@ export class NavigationStateManager extends StateManager {
       }
     }
 
+    this.currentNavigation = {...this.currentNavigation};
+    // Setup an abort handler. If the `NavigateEvent` is aborted (e.g., user clicks stop,
+    // or another navigation supersedes this one), we need to abort the Angular Router's
+    // internal navigation transition as well.
+    const abortHandler = () => {
+      this.currentNavigation.routerTransition?.abort();
+    };
+    event.signal.addEventListener('abort', abortHandler);
+    this.currentNavigation.removeAbortListener = () =>
+      event.signal.removeEventListener('abort', abortHandler);
+
     let scroll = this.inMemoryScrollingEnabled
       ? 'manual'
       : (this.currentNavigation.routerTransition?.extras.scroll ?? 'after-transition');
@@ -342,8 +362,14 @@ export class NavigationStateManager extends StateManager {
       resolve: resolveHandler,
       reject: rejectHandler,
     } = promiseWithResolvers<void>();
-    this.currentNavigation.resolveHandler = resolveHandler;
-    this.currentNavigation.rejectNavigateEvent = rejectHandler;
+    this.currentNavigation.resolveHandler = () => {
+      this.currentNavigation.removeAbortListener?.();
+      resolveHandler();
+    };
+    this.currentNavigation.rejectNavigateEvent = () => {
+      this.currentNavigation.removeAbortListener?.();
+      rejectHandler();
+    };
     // Prevent unhandled promise rejections from internal promises.
     handlerPromise.catch(() => {});
     interceptOptions.handler = () => handlerPromise;
