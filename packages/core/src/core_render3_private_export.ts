@@ -269,7 +269,10 @@ export {
 } from './render3/jit/partial';
 export {compilePipe as ɵcompilePipe} from './render3/jit/pipe';
 export {isNgModule as ɵisNgModule} from './render3/jit/util';
-export {Profiler as ɵProfiler, ProfilerEvent as ɵProfilerEvent} from './render3/profiler_types';
+export {
+  Profiler as ɵProfiler,
+  ProfilerEvent as ɵProfilerEvent,
+} from '../primitives/profiler/src/profiler_types';
 export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,

@@ -46,7 +46,7 @@ import {TESTABILITY} from '../testability/testability';
 import {NgZone} from '../zone/ng_zone';
 
 import {profiler} from '../render3/profiler';
-import {ProfilerEvent} from '../render3/profiler_types';
+import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
 import {EffectScheduler} from '../render3/reactivity/root_effect_scheduler';
 import {isReactiveLViewConsumer} from '../render3/reactive_lview_consumer';
 import {ApplicationInitStatus} from './application_init';

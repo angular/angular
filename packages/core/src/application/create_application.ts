@@ -19,7 +19,7 @@ import {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_
 import {ChangeDetectionSchedulerImpl} from '../change_detection/scheduling/zoneless_scheduling_impl';
 import {bootstrap} from '../platform/bootstrap';
 import {profiler} from '../render3/profiler';
-import {ProfilerEvent} from '../render3/profiler_types';
+import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {PlatformRef} from '../platform/platform_ref';

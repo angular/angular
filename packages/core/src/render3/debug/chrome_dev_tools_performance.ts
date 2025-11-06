@@ -10,7 +10,7 @@ import {isTypeProvider} from '../../di/provider_collection';
 import {assertDefined, assertEqual} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
 import {setProfiler} from '../profiler';
-import {Profiler, ProfilerEvent} from '../profiler_types';
+import {Profiler, ProfilerEvent} from '../../../primitives/profiler/src/profiler_types';
 import {stringifyForError} from '../util/stringify_utils';
 import {
   InjectorProfiler,

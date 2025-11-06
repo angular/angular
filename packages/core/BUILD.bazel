@@ -39,6 +39,7 @@ ng_project(
         "//packages/core/primitives/di",
         "//packages/core/primitives/dom-navigation",
         "//packages/core/primitives/event-dispatch",
+        "//packages/core/primitives/profiler",
         "//packages/core/primitives/signals",
         "//packages/core/src/compiler",
         "//packages/core/src/di/interface",

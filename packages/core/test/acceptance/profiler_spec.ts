@@ -7,7 +7,7 @@
  */
 
 import {setProfiler, profiler} from '../../src/render3/profiler';
-import {ProfilerEvent} from '../../src/render3/profiler_types';
+import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
 import {TestBed} from '../../testing';
 
 import {
