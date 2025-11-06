@@ -14,6 +14,35 @@ import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {RendererStyleFlags2, RendererType2} from './api_flags';
 
 /**
+ * A location where CSS stylesheets may be added.
+ *
+ * @publicApi
+ */
+export type StyleRoot = Document | ShadowRoot;
+
+/**
+ * Asserts that the given node is a {@link StyleRoot}. Useful for converting the return value of
+ * {@link Node.prototype.getRootNode} into a {@link StyleRoot}. If the root is a detached node,
+ * this returns `undefined` as there is no meaningful style root to attach styles to.
+ *
+ * @param root The root node of a DOM tree to convert to a {@link StyleRoot}.
+ * @returns The given root as a {@link StyleRoot} if it is a valid root for styles. Otherwise
+ *     returns `undefined`.
+ */
+export function asStyleRoot(root: Node): StyleRoot | undefined {
+  // Need to feature-detect `ShadowRoot` for Node environments where DOM emulation does not
+  // support it.
+  if (
+    root instanceof Document ||
+    (typeof ShadowRoot !== 'undefined' && root instanceof ShadowRoot)
+  ) {
+    return root;
+  }
+
+  return undefined;
+}
+
+/**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
  *
  * @publicApi
