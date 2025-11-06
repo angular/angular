@@ -37,16 +37,16 @@ This requires access to a given injector, like the `EnvironmentInjector`, for ex
 <docs-code header="src/app/heroes/hero.service.ts" language="typescript"
            highlight="[9]">
 @Injectable({
-providedIn: 'root',
+  providedIn: 'root',
 })
 export class HeroService {
-private environmentInjector = inject(EnvironmentInjector);
+  private environmentInjector = inject(EnvironmentInjector);
 
-someMethod() {
-runInInjectionContext(this.environmentInjector, () => {
-inject(SomeService); // Do what you need with the injected service
-});
-}
+  someMethod() {
+    runInInjectionContext(this.environmentInjector, () => {
+      inject(SomeService); // Do what you need with the injected service
+    });
+  }
 }
 </docs-code>
 
