@@ -19,9 +19,13 @@ The Angular CLI MCP server provides several tools to assist you in your developm
 
 Some tools are provided in experimental / preview status since they are new or not fully tested. Enable them individually with the [`--experimental-tool`](#command-options) option and use them with caution.
 
-| Name        | Description                                                                                                                                                                                            | `local-only` | `read-only` |
-| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `modernize` | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](https://angular.dev/reference/migrations) |      ✅      |     ❌      |
+| Name                       | Description                                                                                                                                                                                                                                                         | `local-only` | `read-only` |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------: | :---------: |
+| `build`                    | Perform a one-off, non-watched build using `ng build`.                                                                                                                                                                                                              |      ✅      |     ❌      |
+| `modernize`                | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](https://angular.dev/reference/migrations)                                                              |      ✅      |     ❌      |
+| `start_devserver`          | Asynchronously starts a development server that watches the workspace for changes, similar to running `ng serve`. Since this is asynchronous it returns immediately. To manage the resulting server, use the `stop_devserver` and `wait_for_devserver_build` tools. |      ✅      |     ✅      |
+| `stop_devserver`           | Stops a development server started by `start_devserver`.                                                                                                                                                                                                            |      ✅      |     ✅      |
+| `wait_for_devserver_build` | Returns the output logs of the most recent build in a running development server started by `start_devserver`. If a build is currently ongoing, it will first wait for that build to complete and then return the logs.                                             |      ✅      |     ✅      |
 
 ## Get Started
 
