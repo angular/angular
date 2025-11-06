@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {DOCUMENT, Injectable, VERSION, computed, inject} from '@angular/core';
+import {DOCUMENT, Injectable, Signal, VERSION, computed, inject} from '@angular/core';
 import {httpResource} from '@angular/common/http';
+import {Meta} from '@angular/platform-browser';
 
 import versionJson from '../../../assets/others/versions.json';
+import {DOC_SEARCH_VERSION_TAG, SEARCH_VERSION_FILTER} from '@angular/docs';
 
 export interface Version {
   displayName: string;
@@ -35,6 +37,8 @@ type VersionJson = {version: string; url: string};
 })
 export class VersionManager {
   private document = inject(DOCUMENT);
+  private readonly meta = inject(Meta);
+  private readonly searchVersionFilter = inject(SEARCH_VERSION_FILTER);
 
   readonly currentDocsVersionMode = computed<VersionMode>(() => {
     const hostname = this.document.location.hostname;
@@ -53,7 +57,7 @@ export class VersionManager {
   });
 
   // This handle the fallback if the resource fails.
-  readonly versions = computed(() => {
+  readonly versions: Signal<Version[]> = computed(() => {
     return this.remoteVersions.hasValue() ? this.remoteVersions.value() : this.localVersions;
   });
 
@@ -101,4 +105,15 @@ export class VersionManager {
 
     return this.versions().find((v) => v.displayName.includes(VERSION.major)) ?? this.versions()[0];
   });
+
+  setDocSearchVersion(version: Version) {
+    const normalizedVersion = version.displayName.replace(/^v/, '');
+
+    this.meta.updateTag({
+      name: DOC_SEARCH_VERSION_TAG,
+      content: normalizedVersion,
+    });
+
+    this.searchVersionFilter.set(normalizedVersion);
+  }
 }

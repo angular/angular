@@ -29,7 +29,7 @@ import {NavigationEnd, Router, RouterLink} from '@angular/router';
 import {filter, map, startWith} from 'rxjs/operators';
 import {DOCS_ROUTES, REFERENCE_ROUTES, TUTORIALS_ROUTES} from '../../../routing/routes';
 import {Theme, ThemeManager} from '../../services/theme-manager.service';
-import {VersionManager} from '../../services/version-manager.service';
+import {Version, VersionManager} from '../../services/version-manager.service';
 import {ConnectionPositionPair} from '@angular/cdk/overlay';
 import {ANGULAR_LINKS} from '../../constants/links';
 import {PRIMARY_NAV_ID, SECONDARY_NAV_ID} from '../../constants/element-ids';
@@ -106,6 +106,7 @@ export class Navigation {
     this.listenToRouteChange();
     this.preventToScrollContentWhenSecondaryNavIsOpened();
     this.closeMobileNavOnPrimaryRouteChange();
+    this.setVersion(this.versions()[0]);
   }
 
   protected setTheme(theme: Theme): void {
@@ -204,5 +205,9 @@ export class Navigation {
         this.document.body.style.removeProperty('overflow-y');
       }
     });
+  }
+
+  setVersion(version: Version) {
+    this.versionManager.setDocSearchVersion(version);
   }
 }

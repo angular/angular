@@ -14,6 +14,8 @@ import {
   linkedSignal,
   resource,
   signal,
+  VERSION,
+  WritableSignal,
 } from '@angular/core';
 import {ENVIRONMENT} from '../providers/index';
 import type {Environment, SearchResult, SearchResultItem, SnippetResult} from '../interfaces/index';
@@ -23,6 +25,11 @@ import {
   SearchResponses,
   SearchResult as AlgoliaSearchResult,
 } from 'algoliasearch/lite';
+
+// https://docsearch.algolia.com/docs/required-configuration
+// https://docsearch.algolia.com/docs/v3/docsearch/#filtering-your-search
+
+export const DOC_SEARCH_VERSION_TAG = 'docsearch:version';
 
 export const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
@@ -39,6 +46,13 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   };
 };
 
+export const SEARCH_VERSION_FILTER = new InjectionToken<WritableSignal<string>>(
+  'Search version filter',
+  {
+    factory: () => signal(VERSION.major),
+  },
+);
+
 @Injectable({
   providedIn: 'root',
 })
@@ -47,6 +61,7 @@ export class Search {
 
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
+  private readonly versionFilter = inject(SEARCH_VERSION_FILTER);
 
   readonly resultsResource = resource({
     params: () => this.searchQuery() || undefined, // coerces empty string to undefined
@@ -60,6 +75,7 @@ export class Search {
             indexName: this.config.algolia.indexName,
             params: {
               query: query,
+              facetFilters: [`version:${this.versionFilter()}`],
               maxValuesPerFacet: MAX_VALUE_PER_FACET,
               attributesToRetrieve: [
                 'hierarchy.lvl0',

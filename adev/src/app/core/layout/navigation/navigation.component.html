@@ -178,6 +178,7 @@
                   cdkMenuItem
                   [href]="item.url"
                   [attr.aria-label]="item.displayName"
+                  (click)="setVersion(item)"
                 >
                   <span>{{ item.displayName }}</span>
               </a>
