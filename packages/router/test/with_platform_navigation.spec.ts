@@ -7,14 +7,21 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {provideRouter} from '../src';
+import {provideRouter, Router} from '../src';
 import {withPlatformNavigation} from '../src/provide_router';
-import {PlatformLocation, Location, PlatformNavigation} from '@angular/common';
+import {withBody} from '@angular/private/testing';
+import {
+  PlatformLocation,
+  Location,
+  PlatformNavigation,
+  BrowserPlatformLocation,
+} from '@angular/common';
 import {
   ɵFakeNavigation as FakeNavigation,
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
 } from '@angular/common/testing';
+import {EnvironmentInjector} from '@angular/core';
 
 /// <reference types="dom-navigation" />
 
@@ -89,3 +96,36 @@ describe('configuration error', () => {
     expect(() => TestBed.inject(Location)).toThrowError(/SpyLocation.*provideLocationMocks/);
   });
 });
+
+if (typeof window !== 'undefined' && 'navigation' in window) {
+  describe('real platform navigation', () => {
+    const navigation = window.navigation as Navigation;
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter([{path: '**', children: []}], withPlatformNavigation()),
+          {provide: PlatformLocation, useClass: BrowserPlatformLocation},
+          {provide: PlatformNavigation, useFactory: () => navigation},
+        ],
+      });
+    });
+
+    let router: Router;
+    beforeEach(async () => {
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+      await new Promise((r) => setTimeout(r));
+    });
+
+    // This would cause tests to fail without the navigation API support with an error like:
+    // "Tests were interrupted because the page navigated to <localhost>/somewhere. This can happen when clicking a link, submitting a form or interacting with window.location."
+    it(
+      'should convert navigations from regular anchors to same-document router navigations',
+      withBody('<a href="/somewhere">link</a>', async () => {
+        document.querySelector('a')!.click();
+        await new Promise((r) => setTimeout(r));
+        expect(router.url).toBe('/somewhere');
+      }),
+    );
+  });
+}
