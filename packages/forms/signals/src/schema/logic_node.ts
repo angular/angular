@@ -16,7 +16,7 @@ import type {
 } from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
-import {BoundPredicate, LogicContainer, Predicate} from './logic';
+import {BoundPredicate, DYNAMIC, LogicContainer, Predicate} from './logic';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -146,6 +146,24 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
+    // Close off the current builder if the key is DYNAMIC and the current builder already has logic
+    // for some non-DYNAMIC key. This guarantees that all of the DYNAMIC logic always comes before
+    // all of the specific-key logic for any given instance of `NonMergeableLogicNodeBuilder`.
+    // We rely on this fact in `getAllChildBuilder` to know that we can return the DYNAMIC logic,
+    // followed by the property-specific logic, in that order.
+    if (key === DYNAMIC) {
+      const children = this.getCurrent().children;
+      // Use the children size to determine if there is logic registered for a property other than
+      // the DYNAMIC property.
+      // - If the children map doesn't have DYNAMIC logic, but the size is still >0 then we know it
+      //   has logic for some other property.
+      // - If the children map does have DYNAMIC logic then its size is going to be at least 1,
+      //   because it has the DYNAMIC key. However if it is >1, then we again know it contains other
+      //   keys.
+      if (children.size > (children.has(DYNAMIC) ? 1 : 0)) {
+        this.current = undefined;
+      }
+    }
     return this.getCurrent().getChild(key);
   }
 
@@ -435,13 +453,19 @@ function getAllChildBuilders(
       return children;
     });
   } else if (builder instanceof NonMergeableLogicNodeBuilder) {
-    if (builder.children.has(key)) {
-      return [{builder: builder.children.get(key)!, predicates: []}];
-    }
+    return [
+      // DYNAMIC logic always comes first for any individual `NonMergeableLogicNodeBuilder`.
+      // This assumption is guaranteed by the behavior of `LogicNodeBuilder.getChild`.
+      // Therefore we can return all of the DYNAMIC logic, followed by all of the property-specific
+      // logic.
+      ...(key !== DYNAMIC && builder.children.has(DYNAMIC)
+        ? [{builder: builder.getChild(DYNAMIC), predicates: []}]
+        : []),
+      ...(builder.children.has(key) ? [{builder: builder.getChild(key), predicates: []}] : []),
+    ];
   } else {
     throw new Error('Unknown LogicNodeBuilder type');
   }
-  return [];
 }
 
 /**
