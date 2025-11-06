@@ -222,32 +222,10 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        const controlA = component.controls()[0].nativeElement;
-        const controlB = component.controls()[1].nativeElement;
-        expect(controlA.value).toBe('a');
-        expect(controlB.value).toBe('b');
-        expect(controlA.name).toBe('root.0');
-        expect(controlB.name).toBe('root.1');
-        expect(fixture.nativeElement.innerText).toBe('ab');
-
-        act(() => component.f().value.update((items) => [items[1], items[0]]));
-
-        // @for should not recreate views when swapped.
-        expect(controlA.isConnected).toBeTrue();
-        expect(controlB.isConnected).toBeTrue();
-
-        pending('TODO: https://github.com/angular/angular/issues/63882');
-
-        // Controls should retain their value.
-        expect(controlA.value).toBe('a');
-        expect(controlB.value).toBe('b');
-
-        // Controls should have new names to reflect their new position.
-        expect(controlA.name).toBe('root.1');
-        expect(controlB.name).toBe('root.0');
-
-        // DOM order of controls should be swapped.
-        expect(fixture.nativeElement.innerText).toBe('ba');
+        const control0 = component.controls()[0].nativeElement;
+        const control1 = component.controls()[1].nativeElement;
+        expect(control0.name).toBe('root.0');
+        expect(control1.name).toBe('root.1');
       });
 
       it('should bind to custom control', () => {
@@ -272,32 +250,11 @@ describe('field directive', () => {
 
         const fixture = act(() => TestBed.createComponent(TestCmp));
         const component = fixture.componentInstance;
-        const controlA = component.controls()[0];
-        const controlB = component.controls()[1];
-        expect(controlA.value()).toBe('a');
-        expect(controlB.value()).toBe('b');
-        expect(controlA.name()).toBe('root.0');
-        expect(controlB.name()).toBe('root.1');
+        const control0 = component.controls()[0];
+        const control1 = component.controls()[1];
+        expect(control0.name()).toBe('root.0');
+        expect(control1.name()).toBe('root.1');
         expect(fixture.nativeElement.innerText).toBe('ab');
-
-        act(() => component.f().value.update((items) => [items[1], items[0]]));
-
-        // @for should not recreate views when swapped.
-        expect(component.controls()).toContain(controlA);
-        expect(component.controls()).toContain(controlB);
-
-        pending('TODO: https://github.com/angular/angular/issues/63882');
-
-        // Controls should retain their values.
-        expect(controlA.value()).toBe('a');
-        expect(controlB.value()).toBe('b');
-
-        // Controls should have new names to reflect their new position.
-        expect(controlA.name()).toBe('root.1');
-        expect(controlB.name()).toBe('root.0');
-
-        // DOM order of controls should be swapped.
-        expect(fixture.nativeElement.innerText).toBe('ba');
       });
     });
 
@@ -1902,6 +1859,143 @@ describe('field directive', () => {
     expect(() => act(() => TestBed.createComponent(TestCmp))).toThrowError(
       /'<div>' is an invalid \[field\] directive host\./,
     );
+  });
+
+  describe('array tracking', () => {
+    it('should track primitive values in an array by index', () => {
+      @Component({
+        imports: [Field],
+        template: `
+            @for (item of f; track item) {
+              <input #control [field]="item">
+            }
+          `,
+      })
+      class TestCmp {
+        readonly f = form(signal(['a', 'b']), {name: 'root'});
+        readonly controls = viewChildren<ElementRef<HTMLInputElement>>('control');
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+      const control0 = component.controls()[0].nativeElement;
+      const control1 = component.controls()[1].nativeElement;
+      expect(control0.value).toBe('a');
+      expect(control1.value).toBe('b');
+      expect(control0.name).toBe('root.0');
+      expect(control1.name).toBe('root.1');
+      expect(control1.compareDocumentPosition(control0))
+        .withContext('control0 should precede control1')
+        .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
+
+      act(() => component.f().value.update((items) => [items[1], items[0]]));
+
+      // @for should not recreate views when swapped.
+      expect(control0.isConnected).toBeTrue();
+      expect(control1.isConnected).toBeTrue();
+
+      // Controls should have swapped values.
+      expect(control0.value).toBe('b');
+      expect(control1.value).toBe('a');
+
+      // Controls names should not have changed.
+      expect(control0.name).toBe('root.0');
+      expect(control1.name).toBe('root.1');
+
+      expect(control1.compareDocumentPosition(control0))
+        .withContext('control0 should precede control1')
+        .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
+    });
+
+    it('should track object values in an array by TrackingKey symbol', () => {
+      @Component({
+        imports: [Field],
+        template: `
+            @for (item of f; track item) {
+              <input #control [field]="item.x">
+            }
+          `,
+      })
+      class TestCmp {
+        readonly f = form(signal([{x: 'a'}, {x: 'b'}]), {name: 'root'});
+        readonly controls = viewChildren<ElementRef<HTMLInputElement>>('control');
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+      const controlA = component.controls()[0].nativeElement;
+      const controlB = component.controls()[1].nativeElement;
+      expect(controlA.value).toBe('a');
+      expect(controlB.value).toBe('b');
+      expect(controlA.name).toBe('root.0.x');
+      expect(controlB.name).toBe('root.1.x');
+      expect(controlB.compareDocumentPosition(controlA))
+        .withContext('controlA should precede controlB')
+        .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
+
+      act(() => component.f().value.update((items) => [items[1], items[0]]));
+
+      // @for should not recreate views when swapped.
+      expect(controlA.isConnected).toBeTrue();
+      expect(controlB.isConnected).toBeTrue();
+
+      // Controls should have same value.
+      expect(controlA.value).toBe('a');
+      expect(controlB.value).toBe('b');
+
+      // Controls names should have updated.
+      expect(controlA.name).toBe('root.1.x');
+      expect(controlB.name).toBe('root.0.x');
+
+      expect(controlB.compareDocumentPosition(controlA))
+        .withContext('controlA should follow controlB')
+        .toEqual(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it('should track child arrays in an array by index', () => {
+      @Component({
+        imports: [Field],
+        template: `
+            @for (item of f; track item) {
+              <input #control [field]="item[0]">
+            }
+          `,
+      })
+      class TestCmp {
+        readonly f = form(signal([['a'], ['b']]), {name: 'root'});
+        readonly controls = viewChildren<ElementRef<HTMLInputElement>>('control');
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const component = fixture.componentInstance;
+      const control0 = component.controls()[0].nativeElement;
+      const control1 = component.controls()[1].nativeElement;
+      expect(control0.value).toBe('a');
+      expect(control1.value).toBe('b');
+      expect(control0.name).toBe('root.0.0');
+      expect(control1.name).toBe('root.1.0');
+      expect(control1.compareDocumentPosition(control0))
+        .withContext('control0 should precede control1')
+        .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
+
+      act(() => component.f().value.update((items) => [items[1], items[0]]));
+
+      // @for should not recreate views when swapped.
+      expect(control0.isConnected).toBeTrue();
+      expect(control1.isConnected).toBeTrue();
+
+      // Controls should have swapped values.
+      expect(control0.value).toBe('b');
+      expect(control1.value).toBe('a');
+
+      // Controls names should not have changed.
+      expect(control0.name).toBe('root.0.0');
+      expect(control1.name).toBe('root.1.0');
+
+      expect(control1.compareDocumentPosition(control0))
+        .withContext('control0 should precede control1')
+        .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
+    });
   });
 });
 
