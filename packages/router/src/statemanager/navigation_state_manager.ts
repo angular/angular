@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {inject, Injectable} from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 
 import {PlatformLocation, PlatformNavigation} from '@angular/common';
-import {HistoryStateManager} from './state_manager';
+import {HistoryStateManager, StateManager} from './state_manager';
 import {RestoredState, Navigation as RouterNavigation} from '../navigation_transition';
 import {
   BeforeActivateRoutes,
@@ -24,9 +24,9 @@ import {
 } from '../events';
 import {Subject, SubscriptionLike} from 'rxjs';
 import {UrlTree} from '../url_tree';
+import {ROUTER_SCROLLER} from '../router_scroller';
 
-/** Marker to identify navigation events as triggered by the Router. */
-const routerInfo = {ɵrouterInfo: {}};
+type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
 
 @Injectable({providedIn: 'root'})
 /**
@@ -42,8 +42,9 @@ const routerInfo = {ɵrouterInfo: {}};
  * providing the right state on popstate. It needs to manage the whole lifecycle of the navigation
  * by intercepting the navigation event.
  */
-export class NavigationStateManager extends HistoryStateManager {
+export class NavigationStateManager extends StateManager {
   private readonly navigation = inject(PlatformNavigation);
+  private readonly inMemoryScrollingEnabled = inject(ROUTER_SCROLLER, {optional: true}) !== null;
   /** The base origin of the application, extracted from PlatformLocation. */
   private readonly base = new URL(inject(PlatformLocation).href).origin;
   /** The root URL of the Angular application, considering the base href. */
@@ -56,6 +57,15 @@ export class NavigationStateManager extends HistoryStateManager {
    * It's updated on `navigatesuccess`.
    */
   private activeHistoryEntry: NavigationHistoryEntry = this.navigation.currentEntry!;
+
+  /**
+   * Holds state related to the currently processing navigation that was intercepted from a
+   * `navigate` event. This includes the router's internal `Navigation` object.
+   */
+  private currentNavigation: {
+    /** The Angular Router's internal representation of the ongoing navigation. */
+    routerTransition?: RouterNavigation;
+  } = {};
 
   /**
    * Subject used to notify listeners (typically the `Router`) of URL/state changes
@@ -75,9 +85,13 @@ export class NavigationStateManager extends HistoryStateManager {
 
     // Listen to the 'navigate' event from the Navigation API.
     // This is the primary entry point for intercepting and handling navigations.
-    this.navigation.addEventListener('navigate', (event: NavigateEvent) => {
+    const navigateListener = (event: NavigateEvent) => {
       this.handleNavigate(event);
-    });
+    };
+    this.navigation.addEventListener('navigate', navigateListener);
+    inject(DestroyRef).onDestroy(() =>
+      this.navigation.removeEventListener('navigate', navigateListener),
+    );
   }
 
   /**
@@ -92,9 +106,11 @@ export class NavigationStateManager extends HistoryStateManager {
     e: Event | PrivateRouterEvents,
     transition: RouterNavigation,
   ): Promise<void> {
+    this.currentNavigation.routerTransition = transition;
     if (e instanceof NavigationStart) {
       this.updateStateMemento();
     } else if (e instanceof NavigationSkipped) {
+      this.currentNavigation = {};
       this.commitTransition(transition);
     } else if (e instanceof RoutesRecognized) {
       if (this.urlUpdateStrategy === 'eager' && !transition.extras.skipLocationChange) {
@@ -106,14 +122,10 @@ export class NavigationStateManager extends HistoryStateManager {
       if (this.urlUpdateStrategy === 'deferred' && !transition.extras.skipLocationChange) {
         this.createNavigationForTransition(transition);
       }
-    } else if (
-      e instanceof NavigationError ||
-      (e instanceof NavigationCancel &&
-        e.code !== NavigationCancellationCode.SupersededByNewNavigation &&
-        e.code !== NavigationCancellationCode.Redirect)
-    ) {
-      this.restoreNavigationHistory(transition);
+    } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
+      this.cancel(transition, e);
     } else if (e instanceof NavigationEnd) {
+      this.currentNavigation = {};
       // Update `activeHistoryEntry` to the new current entry from Navigation API.
       this.activeHistoryEntry = this.navigation.currentEntry!;
     }
@@ -144,7 +156,7 @@ export class NavigationStateManager extends HistoryStateManager {
       navigationId: transition.id,
     };
 
-    const info = routerInfo;
+    const info: NavigationInfo = {ɵrouterInfo: {intercept: true}};
 
     // Determine if this should be a 'push' or 'replace' history operation.
     const history =
@@ -169,13 +181,23 @@ export class NavigationStateManager extends HistoryStateManager {
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
    */
-  private restoreNavigationHistory(transition: RouterNavigation) {
+  private cancel(transition: RouterNavigation, cause: NavigationCancel | NavigationError) {
+    this.currentNavigation = {};
+    // Do not reset state if we're redirecting or navigation is superseded by a new one.
+    if (
+      cause instanceof NavigationCancel &&
+      (cause.code === NavigationCancellationCode.SupersededByNewNavigation ||
+        cause.code === NavigationCancellationCode.Redirect)
+    ) {
+      return;
+    }
     // Determine if the rollback should be a traversal to a specific previous entry
     // or a replacement of the current URL.
     const isTraversalReset =
       this.canceledNavigationResolution === 'computed' &&
       this.navigation.currentEntry!.key !== this.activeHistoryEntry.key;
-    this.resetRouterState(transition.finalUrl, isTraversalReset);
+    this.resetInternalState(transition.finalUrl, isTraversalReset);
+
     // If the current browser entry ID is already the same as our target active entry,
     // no browser history manipulation is needed.
     if (this.navigation.currentEntry!.id === this.activeHistoryEntry.id) {
@@ -186,7 +208,7 @@ export class NavigationStateManager extends HistoryStateManager {
       // Traverse back to the specific `NavigationHistoryEntry` that was active before.
       handleResultRejections(
         this.navigation.traverseTo(this.activeHistoryEntry.key, {
-          info: routerInfo,
+          info: {ɵrouterInfo: {intercept: false}} satisfies NavigationInfo,
         }),
       );
     } else {
@@ -197,13 +219,13 @@ export class NavigationStateManager extends HistoryStateManager {
         this.navigation.navigate(pathOrUrl, {
           state: this.activeHistoryEntry.getState(),
           history: 'replace',
-          info: routerInfo,
+          info: {ɵrouterInfo: {intercept: false}} satisfies NavigationInfo,
         }),
       );
     }
   }
 
-  private resetRouterState(finalUrl: UrlTree | undefined, traversalReset: boolean): void {
+  private resetInternalState(finalUrl: UrlTree | undefined, traversalReset: boolean): void {
     this.routerState = this.stateMemento.routerState;
     this.currentUrlTree = this.stateMemento.currentUrlTree;
     this.rawUrlTree = traversalReset
@@ -240,12 +262,32 @@ export class NavigationStateManager extends HistoryStateManager {
       return;
     }
 
-    const routerInfo = ((event?.info as any)?.ɵrouterInfo as {}) ?? null;
+    const routerInfo = (event?.info as NavigationInfo | undefined)?.ɵrouterInfo;
+    if (routerInfo && !routerInfo.intercept) {
+      return;
+    }
+    const isTriggeredByRouterTransition = !!routerInfo;
+    if (
+      !isTriggeredByRouterTransition &&
+      (!this.nonRouterEntryChangeListener || this.nonRouterEntryChangeListener.closed)
+    ) {
+      // If the router isn't set up to listen for these yet. Do not convert it to a router navigation.
+      return;
+    }
+
+    let scroll = this.inMemoryScrollingEnabled
+      ? 'manual'
+      : (this.currentNavigation.routerTransition?.extras.scroll ?? 'after-transition');
+    const interceptOptions: NavigationInterceptOptions = {
+      scroll,
+    };
+
+    // Intercept the navigation event with the configured options.
+    event.intercept(interceptOptions);
 
     // If `routerInfo` is null, this `NavigateEvent` was not triggered by one of the Router's
     // own `this.navigation.navigate()` calls. It's an external navigation (e.g., user click,
     // browser back/forward that the Navigation API surfaces). We need to inform the Router.
-    const isTriggeredByRouterTransition = !!routerInfo;
     if (!isTriggeredByRouterTransition) {
       this.handleNavigateEventTriggeredOutsideRouterAPIs(event);
     }
@@ -262,10 +304,6 @@ export class NavigationStateManager extends HistoryStateManager {
    * @param event The `NavigateEvent` from the Navigation API.
    */
   private handleNavigateEventTriggeredOutsideRouterAPIs(event: NavigateEvent) {
-    if (!this.nonRouterEntryChangeListener) {
-      // If the router isn't set up to listen for these yet. Do not convert it to a router navigation.
-      return;
-    }
     // TODO(atscott): Consider if the destination URL doesn't start with `appRootURL`.
     // Should we ignore it or not intercept in the first place?
 

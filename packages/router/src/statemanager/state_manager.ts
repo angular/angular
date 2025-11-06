@@ -128,22 +128,10 @@ export abstract class StateManager {
     };
   }
 
-  protected resetInternalState({finalUrl}: Navigation): void {
-    this.routerState = this.stateMemento.routerState;
-    this.currentUrlTree = this.stateMemento.currentUrlTree;
-    // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
-    // configured to handle only part of the navigation URL. This means we would only want to reset
-    // the part of the navigation handled by the Angular router rather than the whole URL. In
-    // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
-    // when merging, such as the query params so they are not lost on a refresh.
-    this.rawUrlTree = this.urlHandlingStrategy.merge(
-      this.currentUrlTree,
-      finalUrl ?? this.rawUrlTree,
-    );
-  }
-
   /** Returns the current state stored by the browser for the current history entry. */
-  abstract restoredState(): RestoredState | null | undefined;
+  restoredState(): RestoredState | null | undefined {
+    return this.location.getState() as RestoredState | null | undefined;
+  }
 
   /**
    * Registers a listener that is called whenever the current history entry changes by some API
@@ -177,10 +165,6 @@ export class HistoryStateManager extends StateManager {
    */
   private currentPageId: number = 0;
   private lastSuccessfulId: number = -1;
-
-  override restoredState(): RestoredState | null | undefined {
-    return this.location.getState() as RestoredState | null | undefined;
-  }
 
   /**
    * The ɵrouterPageId of whatever page is currently active in the browser history. This is
@@ -291,6 +275,20 @@ export class HistoryStateManager extends StateManager {
       }
       this.resetUrlToCurrentUrlTree();
     }
+  }
+
+  private resetInternalState({finalUrl}: Navigation): void {
+    this.routerState = this.stateMemento.routerState;
+    this.currentUrlTree = this.stateMemento.currentUrlTree;
+    // Note here that we use the urlHandlingStrategy to get the reset `rawUrlTree` because it may be
+    // configured to handle only part of the navigation URL. This means we would only want to reset
+    // the part of the navigation handled by the Angular router rather than the whole URL. In
+    // addition, the URLHandlingStrategy may be configured to specifically preserve parts of the URL
+    // when merging, such as the query params so they are not lost on a refresh.
+    this.rawUrlTree = this.urlHandlingStrategy.merge(
+      this.currentUrlTree,
+      finalUrl ?? this.rawUrlTree,
+    );
   }
 
   private resetUrlToCurrentUrlTree(): void {
