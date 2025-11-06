@@ -14,44 +14,45 @@ import {
   SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundEvent,
-  TmplAstComponent,
-  TmplAstDirective,
-  TmplAstElement,
   TmplAstLetDeclaration,
   TmplAstNode,
-  TmplAstRecursiveVisitor,
+  TmplAstElement,
   TmplAstReference,
   TmplAstTextAttribute,
   TmplAstVariable,
+  TmplAstComponent,
+  TmplAstDirective,
+  TmplAstRecursiveVisitor,
   tmplAstVisitAll,
 } from '@angular/compiler';
-import {absoluteFrom} from '@angular/compiler-cli';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
-  DirectiveMeta,
   DirectiveSymbol,
-  ExpressionIdentifier,
-  hasExpressionIdentifier,
-  NgCompiler,
-  PipeMeta,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
   Symbol,
   SymbolKind,
   TcbLocation,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/private/language_service';
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {
+  ExpressionIdentifier,
+  hasExpressionIdentifier,
+} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
   getTemplateLocationFromTcbLocation,
   isWithin,
-  toTextSpan,
   TypeCheckInfo,
+  toTextSpan,
 } from './utils';
-import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 
 /** Represents a location in a file. */
 export interface FilePosition {

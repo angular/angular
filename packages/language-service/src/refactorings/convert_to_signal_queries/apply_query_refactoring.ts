@@ -6,22 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CompilerOptions, getFileSystem} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/private/language_service';
+import {CompilerOptions} from '@angular/compiler-cli';
+import {getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import ts from 'typescript';
+import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
+import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import {
   MigrationConfig,
   SignalQueriesMigration,
 } from '@angular/core/schematics/migrations/signal-queries-migration';
-import {groupReplacementsByFile} from '@angular/core/schematics/utils/tsurge/helpers/group_replacements';
 import assert from 'assert';
-import ts from 'typescript';
+import {projectFile, getProgramInfoFromBaseInfo} from '../../../../core/schematics/utils/tsurge';
 import {FieldIncompatibilityReason} from '../../../../core/schematics/migrations/signal-migration/src';
 import {
   isFieldIncompatibility,
   nonIgnorableFieldIncompatibilities,
 } from '../../../../core/schematics/migrations/signal-migration/src/passes/problematic_patterns/incompatibility';
-import {getProgramInfoFromBaseInfo, projectFile} from '../../../../core/schematics/utils/tsurge';
-import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 
 export async function applySignalQueriesRefactoring(
   compiler: NgCompiler,

@@ -15,14 +15,13 @@ import {
   TmplAstTemplate,
   TmplAstTextAttribute,
 } from '@angular/compiler';
-import {absoluteFrom} from '@angular/compiler-cli';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {isExternalResource, Resource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {
   DirectiveSymbol,
   DomBindingSymbol,
   ElementSymbol,
-  isExternalResource,
-  NgCompiler,
-  Resource,
   SelectorlessComponentSymbol,
   SelectorlessDirectiveSymbol,
   Symbol,
@@ -30,23 +29,23 @@ import {
   TcbLocation,
   TemplateSymbol,
   TemplateTypeChecker,
-} from '@angular/compiler-cli/private/language_service';
+} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import ts from 'typescript';
 
 import {convertToTemplateDocumentSpan} from './references_and_rename_utils';
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
+import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 import {
   getDirectiveMatchesForAttribute,
   getDirectiveMatchesForElementTag,
+  getTypeCheckInfoAtPosition,
   getTemplateLocationFromTcbLocation,
   getTextSpanOfNode,
-  getTypeCheckInfoAtPosition,
   isDollarEvent,
   isTypeScriptFile,
-  toTextSpan,
   TypeCheckInfo,
+  toTextSpan,
 } from './utils';
-import {findTightestNode, getParentClassDeclaration} from './utils/ts_utils';
 
 interface DefinitionMeta {
   node: AST | TmplAstNode;
