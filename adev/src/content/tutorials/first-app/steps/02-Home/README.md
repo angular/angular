@@ -109,8 +109,8 @@ In the **Edit** pane of your IDE:
    <docs-code header="Replace in src/app/home/home.css" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.css"/>
 
 1. Confirm that the app builds without error.
-You should find the filter query box and button in your app and they should be styled.
-Correct any errors before you continue to the next step.
+   You should find the filter query box and button in your app and they should be styled.
+   Correct any errors before you continue to the next step.
 
 <img alt="browser frame of homes-app displaying logo, filter text input box and search button" src="assets/images/tutorials/first-app/homes-app-lesson-02-step-3.png">
 </docs-step>

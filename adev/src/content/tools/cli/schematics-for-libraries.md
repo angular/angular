@@ -23,7 +23,7 @@ The following steps show you how to add initial support without modifying any pr
      It contains the description, and points to the factory function that is called when your schematic is executed.
 
 1. In your library project's `package.json` file, add a "schematics" entry with the path to your schema file.
-The Angular CLI uses this entry to find named schematics in your collection when it runs commands.
+   The Angular CLI uses this entry to find named schematics in your collection when it runs commands.
 
 <docs-code header="projects/my-lib/package.json (Schematics Collection Reference)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/package.json" visibleRegion="collection"/>
 
@@ -156,7 +156,6 @@ Schematic templates support special syntax to execute code and variable substitu
 
    </docs-code>
    - The `classify` and `dasherize` methods are utility functions that your schematic uses to transform your source template and filename.
-
    - The `name` is provided as a property from your factory function.
      It is the same `name` you defined in the schema.
 
@@ -172,7 +171,7 @@ For details of these data structures and syntax, see the [Schematics README](htt
 
 1. Create the main file `index.ts` and add the source code for your schematic factory function.
 1. First, import the schematics definitions you will need.
-The Schematics framework offers many utility functions to create and use rules when running a schematic.
+   The Schematics framework offers many utility functions to create and use rules when running a schematic.
 
 <docs-code header="projects/my-lib/schematics/my-service/index.ts (Imports)" path="adev/src/content/examples/schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" visibleRegion="schematics-imports"/>
 

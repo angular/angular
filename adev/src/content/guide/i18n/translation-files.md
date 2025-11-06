@@ -143,7 +143,7 @@ The following actions describe the translation process for French.
    In a more complex translation, the information and context in the [description and meaning elements][GuideI18nCommonPrepareAddHelpfulDescriptionsAndMeanings] help you choose the right words for translation.
 
 1. Translate the other text nodes.
-The following example displays the way to translate.
+   The following example displays the way to translate.
 
 <docs-code header="src/locale/messages.fr.xlf (<trans-unit>)" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" visibleRegion="translated-other-nodes"/>
 

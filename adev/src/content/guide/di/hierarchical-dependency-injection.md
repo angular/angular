@@ -515,6 +515,7 @@ In the logical tree, this is represented as follows:
 <app-root @ApplicationConfig
 @Inject(FlowerService) flower=>"🌺">
 <#VIEW>
+
 <p>Emoji from FlowerService: {{flower.emoji}} (🌺)</p>
 <app-child @Provide(FlowerService="🌻")
 @Inject(FlowerService)=>"🌻"> <!-- search ends here -->
@@ -624,6 +625,7 @@ The logic tree for this example of `viewProviders` is as follows:
 <app-child>
 <#VIEW @Provide(AnimalService="🐶")
 @Inject(AnimalService=>"🐶")>
+
 <!-- ^^using viewProviders means AnimalService is available in <#VIEW>-->
 <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
 </#VIEW>
@@ -727,6 +729,7 @@ The `AnimalService` in the logical tree would look like this:
 <app-child>
 <#VIEW @Provide(AnimalService="🐶")
 @Inject(AnimalService=>"🐶")>
+
 <!-- ^^using viewProviders means AnimalService is available in <#VIEW>-->
 <p>Emoji from AnimalService: {{animal.emoji}} (🐶)</p>
 
@@ -785,7 +788,9 @@ In a logical tree, this same idea might look like this:
 <#VIEW>
 <app-child @Provide(FlowerService="🌻")>
 <#VIEW @Inject(FlowerService, SkipSelf)=>"🌺">
+
 <!-- With SkipSelf, the injector looks to the next injector up the tree (app-root) -->
+
 </#VIEW>
 </app-child>
 </#VIEW>
@@ -843,7 +848,9 @@ The logical tree looks like this with `skipSelf` in `<app-child>`:
 <app-child>
 <#VIEW @Provide(AnimalService="🐶")
 @Inject(AnimalService, SkipSelf=>"🐳")>
+
 <!--Add skipSelf -->
+
 </#VIEW>
 </app-child>
 </#VIEW>
@@ -930,6 +937,7 @@ The logical tree representation shows why this is:
 @Inject(AnimalService=>"🐳")>
 <#VIEW @Provide(AnimalService="🦔")
 @Inject(AnimalService, @Optional)=>"🦔">
+
 <!-- ^^skipSelf starts here,  host stops here^^ -->
 <app-child>
 <#VIEW @Provide(AnimalService="🐶")
