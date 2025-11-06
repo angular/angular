@@ -168,12 +168,12 @@ export type FieldTree<TModel, TKey extends string | number = string | number> =
     : FieldState<TModel, TKey>) &
     // Children:
     ([TModel] extends [AbstractControl]
-      ? unknown
+      ? object
       : [TModel] extends [Array<infer U>]
         ? ReadonlyArrayLike<MaybeFieldTree<U, number>>
         : TModel extends Record<string, any>
           ? Subfields<TModel>
-          : unknown);
+          : object);
 
 /**
  * The sub-fields that a user can navigate to from a `FieldTree<TModel>`.
