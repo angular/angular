@@ -15,10 +15,14 @@ export const ɵCONTROL: unique symbol = Symbol('CONTROL');
  * A directive that binds a {@link ɵFieldState} to a form control.
  */
 export interface ɵControl<T> {
+  /** The presence of this property is used to identify {@link ɵControl} implementations. */
   readonly [ɵCONTROL]: undefined;
 
   /** The state of the field bound to this control. */
   readonly state: Signal<ɵFieldState<T>>;
+
+  /** A reference to the interoperable control, if one is present. */
+  readonly ɵinteropControl: ɵInteropControl | undefined;
 
   /**
    * Registers this directive as a control of its associated form field.
@@ -29,29 +33,21 @@ export interface ɵControl<T> {
    * and do nothing.
    */
   ɵregister(): void;
+}
 
-  /**
-   * Indicates whether this field is bound to an interoperable control.
-   *
-   * This is used for interoperability between signal forms and reactive forms.
-   */
-  readonly ɵhasInteropControl: boolean;
+/** Mirrors the `ControlValueAccessor` interface for interoperability.  */
+export interface ɵInteropControl {
+  /** Registers a callback function that is called when the control's value changes. */
+  registerOnChange(fn: Function): void;
 
-  /**
-   * Adds event listeners to the associated interoperable control.
-   *
-   * This method should only be called from a template function in create mode if this
-   * {@link ɵhasInteropControl}.
-   */
-  ɵinteropControlCreate(): void;
+  /** Registers a callback function that is called when the control is touched. */
+  registerOnTouched(fn: Function): void;
 
-  /**
-   * Updates the associated interoperable control.
-   *
-   * This method should only be called from a template function in update mode if this
-   * {@link ɵhasInteropControl}.
-   */
-  ɵinteropControlUpdate(): void;
+  /** Writes a new value to the control. */
+  writeValue(value: unknown): void;
+
+  /** Sets the disabled status of the control. */
+  setDisabledState?(value: boolean): void;
 }
 
 /**
