@@ -30,12 +30,12 @@ Modifies how Angular-specific annotations are emitted to improve tree-shaking.
 Non-Angular annotations are not affected.
 One of `static fields` or `decorators`. The default value is `static fields`.
 
-* By default, the compiler replaces decorators with a static field in the class, which allows advanced tree-shakers like [Closure compiler](https://github.com/google/closure-compiler) to remove unused classes
-* The `decorators` value leaves the decorators in place, which makes compilation faster.
-    TypeScript emits calls to the `__decorate` helper.
-    Use `--emitDecoratorMetadata` for runtime reflection.
+- By default, the compiler replaces decorators with a static field in the class, which allows advanced tree-shakers like [Closure compiler](https://github.com/google/closure-compiler) to remove unused classes
+- The `decorators` value leaves the decorators in place, which makes compilation faster.
+  TypeScript emits calls to the `__decorate` helper.
+  Use `--emitDecoratorMetadata` for runtime reflection.
 
-    HELPFUL: That the resulting code cannot tree-shake properly.
+  HELPFUL: That the resulting code cannot tree-shake properly.
 
 ### `annotateForClosureCompiler`
 
@@ -51,8 +51,8 @@ Default is `false`.
 Specifies the compilation mode to use.
 The following modes are available:
 
-| Modes       | Details |
-|:---         |:---     |
+| Modes       | Details                                                                                             |
+| :---------- | :-------------------------------------------------------------------------------------------------- |
 | `'full'`    | Generates fully AOT-compiled code according to the version of Angular that is currently being used. |
 | `'partial'` | Generates code in a stable, but intermediate form suitable for a published library.                 |
 
@@ -231,4 +231,4 @@ The `ngc` command is a wrapper around TypeScript's `tsc` compiler command. The A
 
 Besides the configuration file, you can also use [`tsc` command line options](https://www.typescriptlang.org/docs/handbook/compiler-options.html) to configure `ngc`.
 
-[GuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n/prepare#mark-text-in-component-template "Mark text in component template - Prepare component for translation | Angular"
+[GuideI18nCommonPrepareMarkTextInComponentTemplate]: guide/i18n/prepare#mark-text-in-component-template 'Mark text in component template - Prepare component for translation | Angular'

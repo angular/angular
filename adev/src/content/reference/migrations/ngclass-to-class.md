@@ -9,13 +9,11 @@ Run the schematic using the following command:
 ng generate @angular/core:ngclass-to-class
 ```
 
-
 #### Before
 
 ```html
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
 ```
-
 
 #### After
 
@@ -31,7 +29,6 @@ The migration supports a few options for fine tuning the migration to your speci
 
 By default, the migration avoids migrating usages of `NgClass` in which object literal keys contain space-separated class names.
 When the --migrate-space-separated-key flag is enabled, a binding is created for each individual key.
-
 
 ```html
 <div [ngClass]="{'class1 class2': condition}"></div>

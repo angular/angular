@@ -1,5 +1,5 @@
-| Sports           | Season |
-| ---------------- | ------ |
-| Skiing           | Winter |
-| Baseball | Summer |
-| Running |  Year Round |
+| Sports   | Season     |
+| -------- | ---------- |
+| Skiing   | Winter     |
+| Baseball | Summer     |
+| Running  | Year Round |

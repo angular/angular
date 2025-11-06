@@ -7,7 +7,7 @@ The `application` build system is the default for all newly created projects.
 
 ## Installing dependencies
 
-Some packages are required for the new builder to work. In order to install the new packages, run the following command : 
+Some packages are required for the new builder to work. In order to install the new packages, run the following command :
 
 <docs-code language="bash">
 
@@ -54,7 +54,7 @@ ng test
 
 </docs-code>
 
-The `ng test` command builds the application in *watch mode*, and launches the configured runner.
+The `ng test` command builds the application in _watch mode_, and launches the configured runner.
 
 The console output looks like below:
 
@@ -63,10 +63,10 @@ The console output looks like below:
    ✓ App > should create the app 22ms
    ✓ App > should render title 8ms
 
- Test Files  1 passed (1)
-      Tests  2 passed (2)
-   Start at  14:24:15
-   Duration  1.16s (transform 628ms, setup 703ms, collect 64ms, tests 31ms, environment 188ms, prepare 33ms)
+Test Files 1 passed (1)
+Tests 2 passed (2)
+Start at 14:24:15
+Duration 1.16s (transform 628ms, setup 703ms, collect 64ms, tests 31ms, environment 188ms, prepare 33ms)
 </docs-code>
 
 Watch mode is enabled by default when using an interactive terminal and not running on CI.

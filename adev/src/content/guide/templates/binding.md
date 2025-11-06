@@ -30,18 +30,19 @@ Bindings that change over time should read values from [signals](/guide/signals)
 ```angular-ts
 @Component({
   template: `
-    <!-- Does not necessarily update when `welcomeMessage` changes. --> 
-    <p>{{ welcomeMessage }}</p> 
+    <!-- Does not necessarily update when `welcomeMessage` changes. -->
+    <p>{{ welcomeMessage }}</p>
 
     <p>Your color preference is {{ theme() }}.</p> <!-- Always updates when the value of the `name` signal changes. -->
   `
   ...
 })
 export class AppComponent {
-  welcomeMessage = "Welcome, enjoy this app that we built for you"; 
+  welcomeMessage = "Welcome, enjoy this app that we built for you";
   theme = signal('dark');
 }
 ```
+
 For more details, see the [Signals guide](/guide/signals).
 
 Continuing the theme example, if a user clicks on a button that updates the `theme` signal to `'light'` after the page loads, the page updates accordingly to:
@@ -193,7 +194,7 @@ When binding `class` to an array or an object, Angular compares the previous val
 
 If an element has multiple bindings for the same CSS class, Angular resolves collisions by following its style precedence order.
 
-NOTE: Class bindings do not support space-separated class names in a single key. They also don't support mutations on objects as the reference of the binding remains the same. If you need one or the other, use the [ngClass](/api/common/NgClass) directive. 
+NOTE: Class bindings do not support space-separated class names in a single key. They also don't support mutations on objects as the reference of the binding remains the same. If you need one or the other, use the [ngClass](/api/common/NgClass) directive.
 
 ### CSS style properties
 

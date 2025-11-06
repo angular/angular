@@ -7,16 +7,15 @@ Implements _Zones_ for JavaScript, inspired by [Dart](https://dart.dev/articles/
 > If you're using zone.js via unpkg (i.e. using `https://unpkg.com/zone.js`)
 > and you're using any of the following libraries, make sure you import them first
 
-> * 'newrelic' as it patches global.Promise before zone.js does
-> * 'async-listener' as it patches global.setTimeout, global.setInterval before zone.js does
-> * 'continuation-local-storage' as it uses async-listener
+> - 'newrelic' as it patches global.Promise before zone.js does
+> - 'async-listener' as it patches global.setTimeout, global.setInterval before zone.js does
+> - 'continuation-local-storage' as it uses async-listener
 
 ## Development Status of Zone.js
 
 As Angular moves towards a zoneless application development model, Zone.js is no longer accepting new features, including additional patches for native platform APIs. The team will also not be accepting any low priority bug fixes. Any critical bug fixes that relate to Angular's direct use of Zone.js will still be accepted.
 
 While still a supported part of Angular, the Angular team strongly discourages using Zone.js outside of Angular application contexts.
-
 
 ## NEW Zone.js POST-v0.6.0
 
@@ -48,7 +47,7 @@ Starting with Zone.js `v0.11.1+` the import changes to:
 import 'zone.js';
 ```
 
-Prior to `v0.11.1` the import would load the `ES5` bundle in `UMD` format from `dist/zone.js`. 
+Prior to `v0.11.1` the import would load the `ES5` bundle in `UMD` format from `dist/zone.js`.
 Starting with `v0.11.1` the import loads the `ES2015` bundle in `ESM` format instead.
 
 This is a breaking change for legacy browsers such as `IE11`.
@@ -72,10 +71,11 @@ See this video from ng-conf 2014 for a detailed explanation:
 [![screenshot of the zone.js presentation and ng-conf 2014](./presentation.png)](//www.youtube.com/watch?v=3IqtmUscE_U&t=150)
 
 ## See also
-* [async-listener](https://github.com/othiym23/async-listener) - a similar library for node
-* [Async stack traces in Chrome](https://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
-* [strongloop/zone](https://github.com/strongloop/zone) (Deprecated)
-* [vizone](https://github.com/gilbox/vizone) - control flow visualizer that uses zone.js
+
+- [async-listener](https://github.com/othiym23/async-listener) - a similar library for node
+- [Async stack traces in Chrome](https://www.html5rocks.com/en/tutorials/developertools/async-call-stack/)
+- [strongloop/zone](https://github.com/strongloop/zone) (Deprecated)
+- [vizone](https://github.com/gilbox/vizone) - control flow visualizer that uses zone.js
 
 ## Standard API support
 
@@ -100,19 +100,19 @@ see [MODULE.md](MODULE.md).
 
 ## Bundles
 
-Starting with `v0.11.0`, `zone.js`  uses `Angular Package Format` for bundle distribution.
+Starting with `v0.11.0`, `zone.js` uses `Angular Package Format` for bundle distribution.
 (For backwards compatibility, all bundles can still be accessed from `dist` folder.)
 
-|Bundle|Summary|
-|---|---|
-|`zone.js`| The default bundle. Contains the most used APIs such as `setTimeout/Promise/EventTarget...`, it also supports differential loading by importing  this bundle using `import zone.js`.  In legacy browsers it includes some additional patches such as `registerElement` and `EventTarget` like APIs.|
-|`zone-testing.js`| The bundle for zone testing support of `jasmine` / `mocha` / `jest`. Also includes test utility functions `async` / `fakeAsync` / `sync`.|
-|`zone-node.js`|The NodeJS support bundle.|
-|`zone-mix.js`|A mixed bundle which supports both browser and NodeJS. Useful for mixed environment such as Electron.|
-|`zone-externs.js`|the API definitions for `closure compiler`.|
+| Bundle            | Summary                                                                                                                                                                                                                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `zone.js`         | The default bundle. Contains the most used APIs such as `setTimeout/Promise/EventTarget...`, it also supports differential loading by importing this bundle using `import zone.js`. In legacy browsers it includes some additional patches such as `registerElement` and `EventTarget` like APIs. |
+| `zone-testing.js` | The bundle for zone testing support of `jasmine` / `mocha` / `jest`. Also includes test utility functions `async` / `fakeAsync` / `sync`.                                                                                                                                                         |
+| `zone-node.js`    | The NodeJS support bundle.                                                                                                                                                                                                                                                                        |
+| `zone-mix.js`     | A mixed bundle which supports both browser and NodeJS. Useful for mixed environment such as Electron.                                                                                                                                                                                             |
+| `zone-externs.js` | the API definitions for `closure compiler`.                                                                                                                                                                                                                                                       |
 
 Additional optional patches not included in the `zone.js` bundles which extend functionality.
-The additional bundles can  be found under `zone.js/plugins` folder.
+The additional bundles can be found under `zone.js/plugins` folder.
 To use these bundles, add the following code after importing zone.js bundle.
 
 ```
@@ -121,25 +121,26 @@ import 'zone.js';
 import 'zone.js/plugins/zone-patch-canvas';
 ```
 
-|Patch|Summary|
-|---|---|
-|`webapis-media-query.js`|patch for `MediaQuery APIs`|
-|`webapis-notification.js`|patch for `Notification APIs`|
-|`webapis-rtc-peer-connection.js`|patch for `RTCPeerConnection APIs`|
-|`webapis-shadydom.js`|patch for `Shady DOM APIs`|
-|`zone-bluebird.js`|patch for `Bluebird APIs`|
-|`zone-error.js`|patch for `Error Global Object`, supports adding zone information to stack frame, and also removing unrelated stack frames from `zone.js` internally|
-|`zone-patch-canvas.js`|patch for `Canvas API`|
-|`zone-patch-cordova.js`|patch for `Cordova API`|
-|`zone-patch-electron.js`|patch for `Electron API`|
-|`zone-patch-fetch.js`|patch for `Fetch API`|
-|`zone-patch-jsonp.js`|helper utility for `jsonp API`|
-|`zone-patch-resize-observer.js`|patch for `ResizeObserver API`|
-|`zone-patch-rxjs.js`|patch for `rxjs API`|
-|`zone-patch-rxjs-fake-async.js`|patch for `rxjs fakeasync test`|
-|`zone-patch-socket-io.js`|patch for `socket-io`|
-|`zone-patch-user-media.js`|patch for `UserMedia API`|
-|`zone-patch-message-port.js`|patch for `MessagePort API`|
+| Patch                            | Summary                                                                                                                                              |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `webapis-media-query.js`         | patch for `MediaQuery APIs`                                                                                                                          |
+| `webapis-notification.js`        | patch for `Notification APIs`                                                                                                                        |
+| `webapis-rtc-peer-connection.js` | patch for `RTCPeerConnection APIs`                                                                                                                   |
+| `webapis-shadydom.js`            | patch for `Shady DOM APIs`                                                                                                                           |
+| `zone-bluebird.js`               | patch for `Bluebird APIs`                                                                                                                            |
+| `zone-error.js`                  | patch for `Error Global Object`, supports adding zone information to stack frame, and also removing unrelated stack frames from `zone.js` internally |
+| `zone-patch-canvas.js`           | patch for `Canvas API`                                                                                                                               |
+| `zone-patch-cordova.js`          | patch for `Cordova API`                                                                                                                              |
+| `zone-patch-electron.js`         | patch for `Electron API`                                                                                                                             |
+| `zone-patch-fetch.js`            | patch for `Fetch API`                                                                                                                                |
+| `zone-patch-jsonp.js`            | helper utility for `jsonp API`                                                                                                                       |
+| `zone-patch-resize-observer.js`  | patch for `ResizeObserver API`                                                                                                                       |
+| `zone-patch-rxjs.js`             | patch for `rxjs API`                                                                                                                                 |
+| `zone-patch-rxjs-fake-async.js`  | patch for `rxjs fakeasync test`                                                                                                                      |
+| `zone-patch-socket-io.js`        | patch for `socket-io`                                                                                                                                |
+| `zone-patch-user-media.js`       | patch for `UserMedia API`                                                                                                                            |
+| `zone-patch-message-port.js`     | patch for `MessagePort API`                                                                                                                          |
 
 ## License
+
 MIT

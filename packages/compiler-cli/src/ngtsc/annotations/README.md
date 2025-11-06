@@ -8,12 +8,12 @@ The 'transform' package of the compiler provides an abstraction for a `Decorator
 
 Each handler implemented here performs some similar operations:
 
-* It uses the `PartialEvaluator` to resolve expressions within the decorator metadata or other decorated fields that need to be understood statically.
-* It extracts information from constructors of decorated classes which is required to generate dependency injection instructions.
-* It reports errors when developers have misused or misconfigured the decorators.
-* It populates registries that describe decorated classes to the rest of the compiler.
-* It uses those same registries to understand decorated classes within the context of the compilation (for example, to understand which dependencies are used in a given template).
-* It creates `SemanticSymbol`s which allow for accurate incremental compilation when reacting to input changes.
-* It builds metadata objects for `@angular/compiler` which describe the decorated classes, which can then perform the actual code generation.
+- It uses the `PartialEvaluator` to resolve expressions within the decorator metadata or other decorated fields that need to be understood statically.
+- It extracts information from constructors of decorated classes which is required to generate dependency injection instructions.
+- It reports errors when developers have misused or misconfigured the decorators.
+- It populates registries that describe decorated classes to the rest of the compiler.
+- It uses those same registries to understand decorated classes within the context of the compilation (for example, to understand which dependencies are used in a given template).
+- It creates `SemanticSymbol`s which allow for accurate incremental compilation when reacting to input changes.
+- It builds metadata objects for `@angular/compiler` which describe the decorated classes, which can then perform the actual code generation.
 
 Since there is significant overlap between `DecoratorHandler` implementations, much of this functionality is implemented in a shared 'common' sub-package.

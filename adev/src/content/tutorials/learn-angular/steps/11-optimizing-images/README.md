@@ -35,8 +35,7 @@ To enable the `NgOptimizedImage` directive, swap out the `src` attribute for `ng
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
-  template: `
-    ...
+template: `     ...
     <li>
       Static Image:
       <img ngSrc="/assets/logo.svg" alt="Angular logo" width="32" height="32" />
@@ -47,7 +46,7 @@ import { NgOptimizedImage } from '@angular/common';
     </li>
     ...
   `,
-  imports: [NgOptimizedImage],
+imports: [NgOptimizedImage],
 })
 </docs-code>
 

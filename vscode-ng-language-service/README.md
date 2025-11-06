@@ -7,10 +7,10 @@
 This extension provides a rich editing experience for Angular templates, both inline
 and external templates including:
 
-* Completions lists
-* AOT Diagnostic messages
-* Quick info
-* Go to definition
+- Completions lists
+- AOT Diagnostic messages
+- Quick info
+- Go to definition
 
 ## Download
 
@@ -53,7 +53,7 @@ For more information, please see [#594](https://github.com/angular/vscode-ng-lan
 
 Download the `.vsix` file for the release that you want to install from the [releases](https://github.com/angular/vscode-ng-language-service/releases) tab.
 
-*Do not open the .vsix file directly*. Instead, in Visual Studio code, go to the extensions tab. Click on the "..." menu in the upper right corner of the extensions tab, select "Install from vsix..." and then select the .vsix file for the release you just downloaded.
+_Do not open the .vsix file directly_. Instead, in Visual Studio code, go to the extensions tab. Click on the "..." menu in the upper right corner of the extensions tab, select "Install from vsix..." and then select the .vsix file for the release you just downloaded.
 
 The extension can also be installed with the following command:
 

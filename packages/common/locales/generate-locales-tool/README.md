@@ -32,11 +32,11 @@ In the snippet above, you might wonder why values for `NZD` or `USD` are missing
 
 Aside from the default locale (`en`) which is generated separately, this tool generates locale files for all other locales the CLDR package provides data for. Locale files currently provide the following locale data:
 
-* Date time settings (describes how dates are formatted, e.g. the locale-based label for Monday)
-* Number settings (describing how numbers are formatted, e.g. what the plus symbol is)
-* Currency settings (describing how to format currencies for current locale)
-* Currency symbols based on the given locale. e.g. in `en-AU` `USD` is the currency symbol.
-* Directionality of the locale (i.e. whether text is displayed in RTL or LTR)
+- Date time settings (describes how dates are formatted, e.g. the locale-based label for Monday)
+- Number settings (describing how numbers are formatted, e.g. what the plus symbol is)
+- Currency settings (describing how to format currencies for current locale)
+- Currency symbols based on the given locale. e.g. in `en-AU` `USD` is the currency symbol.
+- Directionality of the locale (i.e. whether text is displayed in RTL or LTR)
 
 All the data is stored in an array where the Angular framework can read specific data using the corresponding index (see `LocaleDataIndex` for details on how data is read).
 
@@ -55,7 +55,6 @@ Additionally, if locale data is equal to locale data at a previous index, then t
 ```
 
 If `labelsForDayPeriodsAbbreviated` for example is equal to `labelsForDayPeriodsNarrow`, then the tool will not set a value for the abbreviated labels. Instead, it will set `undefined` as that minifies to: `[labelsForDayPeriodsNarrow, undefined]`.
-
 
 ### Where are the CLDR data files stored?
 

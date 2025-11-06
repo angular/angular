@@ -19,8 +19,8 @@ import { Component } from '@angular/core';
 import { UnusedDirective } from './unused';
 
 @Component({
-  template: 'Hello',
-  imports: [UnusedDirective],
+template: 'Hello',
+imports: [UnusedDirective],
 })
 export class MyComp {}
 </docs-code>
@@ -31,8 +31,8 @@ export class MyComp {}
 import { Component } from '@angular/core';
 
 @Component({
-  template: 'Hello',
-  imports: [],
+template: 'Hello',
+imports: [],
 })
 export class MyComp {}
 </docs-code>

@@ -49,7 +49,7 @@ From a **Terminal** window:
 
 1. Run the following command: `node --version`
 1. Confirm that the version number displayed meets the requirements.
-</docs-step>
+   </docs-step>
 
 <docs-step title="Install the correct version of `node.js` for Angular">
 If you do not have a version of `node.js` installed, please follow the [directions for installation on nodejs.org](https://nodejs.org/en/download/)
@@ -67,7 +67,7 @@ You are free to use any tool you prefer to build apps with Angular. We recommend
 1. [Visual Studio Code](https://code.visualstudio.com/)
 2. As an optional, but recommended step you can further improve your developer experience by installing the [Angular Language Service](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template)
 3. [WebStorm](https://www.jetbrains.com/webstorm/)
-</docs-step>
+   </docs-step>
 
 <docs-step title="Optional: set-up your AI powered IDE">
 
