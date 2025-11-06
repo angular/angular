@@ -460,10 +460,9 @@ export class RequiredValidationError extends _NgValidationError {
 // @public
 export interface RootFieldContext<TValue> {
     readonly field: FieldTree<TValue>;
-    // (undocumented)
     fieldTreeOf<PModel>(p: SchemaPathTree<PModel>): FieldTree<PModel>;
+    readonly pathKeys: Signal<readonly string[]>;
     readonly state: FieldState<TValue>;
-    // (undocumented)
     stateOf<PControl extends AbstractControl>(p: CompatSchemaPath<PControl>): CompatFieldState<PControl>;
     // (undocumented)
     stateOf<PValue>(p: SchemaPath<PValue, SchemaPathRules>): FieldState<PValue>;
