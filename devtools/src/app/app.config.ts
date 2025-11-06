@@ -21,7 +21,7 @@ import {
 import {DemoApplicationEnvironment} from '../demo-application-environment';
 import {DemoApplicationOperations} from '../demo-application-operations';
 import {serializeTransferState} from './transfer-state';
-import {provideHttpClient, ɵwithHttpTransferCache} from '@angular/common/http';
+import {provideHttpClient} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [

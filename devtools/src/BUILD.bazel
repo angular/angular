@@ -97,3 +97,8 @@ ng_project(
         "//devtools/projects/protocol",
     ],
 )
+
+ng_project(
+    name = "communication",
+    srcs = ["communication.ts"],
+)
