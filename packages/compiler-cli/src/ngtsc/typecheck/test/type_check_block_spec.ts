@@ -2658,7 +2658,7 @@ describe('type check blocks', () => {
       expect(block).toContain(
         'var _t1 = null! as i0.Field<i1.ɵExtractFormControlValue<i0.CustomControl>>;',
       );
-      expect(block).toContain('var _t2 = null! as i2.FormValueControl<unknown>;');
+      expect(block).toContain('var _t2 = null! as i2.FormValueControl<any>;');
       expect(block).toContain('if (_t2) _t2 = null! as i0.CustomControl;');
       expect(block).toContain('_t1.field = (((this).f));');
     });
