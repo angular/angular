@@ -70,30 +70,40 @@ const SHARED_ANIMATION_PROVIDERS: Provider[] = [
 /**
  * Separate providers from the actual module so that we can do a local modification in Google3 to
  * include them in the BrowserTestingModule.
+ * Note: Using an IIFE here to ensure that the spread assignment is not considered
+ * a side-effect, ending up preserving `BROWSER_NOOP_ANIMATIONS_PROVIDERS` and `SHARED_ANIMATION_PROVIDERS`.
  */
-export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = [
-  {provide: AnimationDriver, useClass: NoopAnimationDriver},
-  {provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'},
-  ...SHARED_ANIMATION_PROVIDERS,
-];
+export const BROWSER_NOOP_ANIMATIONS_PROVIDERS: Provider[] = /* @__PURE__ */ (() => {
+  return [
+    {provide: AnimationDriver, useClass: NoopAnimationDriver},
+    {provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations'},
+    ...SHARED_ANIMATION_PROVIDERS,
+  ];
+})();
 
 /**
  * Separate providers from the actual module so that we can do a local modification in Google3 to
  * include them in the BrowserModule.
+ * Note: Using an IIFE here to ensure that the spread assignment is not considered
+ * a side-effect, ending up preserving `BROWSER_ANIMATIONS_PROVIDERS` and `SHARED_ANIMATION_PROVIDERS`.
  */
-export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = [
-  // Note: the `ngServerMode` happen inside factories to give the variable time to initialize.
-  {
-    provide: AnimationDriver,
-    useFactory: () =>
-      typeof ngServerMode !== 'undefined' && ngServerMode
-        ? new NoopAnimationDriver()
-        : new WebAnimationsDriver(),
-  },
-  {
-    provide: ANIMATION_MODULE_TYPE,
-    useFactory: () =>
-      typeof ngServerMode !== 'undefined' && ngServerMode ? 'NoopAnimations' : 'BrowserAnimations',
-  },
-  ...SHARED_ANIMATION_PROVIDERS,
-];
+export const BROWSER_ANIMATIONS_PROVIDERS: Provider[] = /* @__PURE__ */ (() => {
+  return [
+    // Note: the `ngServerMode` happen inside factories to give the variable time to initialize.
+    {
+      provide: AnimationDriver,
+      useFactory: () =>
+        typeof ngServerMode !== 'undefined' && ngServerMode
+          ? new NoopAnimationDriver()
+          : new WebAnimationsDriver(),
+    },
+    {
+      provide: ANIMATION_MODULE_TYPE,
+      useFactory: () =>
+        typeof ngServerMode !== 'undefined' && ngServerMode
+          ? 'NoopAnimations'
+          : 'BrowserAnimations',
+    },
+    ...SHARED_ANIMATION_PROVIDERS,
+  ];
+})();
