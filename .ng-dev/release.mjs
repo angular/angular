@@ -1,7 +1,9 @@
-import {ReleaseConfig} from '@angular/ng-dev';
-
-/** Configuration for the `ng-dev release` command. */
-export const release: ReleaseConfig = {
+/**
+ * Configuration for the `ng-dev release` command.
+ *
+ * @type { import("@angular/ng-dev").ReleaseConfig }
+ */
+export const release = {
   publishRegistry: 'https://wombat-dressing-room.appspot.com',
   representativeNpmPackage: '@angular/core',
   npmPackages: [

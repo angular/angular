@@ -31,7 +31,7 @@
     "symbol-extractor:check": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js test",
     "symbol-extractor:update": "node tools/symbol-extractor/run_all_symbols_extractor_tests.js accept",
     "ts-circular-deps:check": "pnpm -s ng-dev ts-circular-deps check --config ./packages/circular-deps-test.conf.js",
-    "check-tooling-setup": "tsc --project .ng-dev/tsconfig.json && tsc --project scripts/tsconfig.json",
+    "check-tooling-setup": "tsc --project scripts/tsconfig.json",
     "devtools:devserver": "ibazel run //devtools/src:devserver",
     "devtools:test:e2e": "cypress run --project ./devtools/cypress",
     "devtools:e2e:open": "cypress open --project ./devtools/cypress",
