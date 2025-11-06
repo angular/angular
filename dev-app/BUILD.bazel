@@ -1,0 +1,77 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@rules_angular//src/architect:ng_application.bzl", "ng_application")
+load("@rules_angular//src/architect:ng_config.bzl", "ng_config")
+load("@rules_angular//src/architect:ng_test.bzl", "ng_test")
+
+package(default_visibility = ["//visibility:public"])
+
+npm_link_all_packages(
+    name = "node_modules",
+)
+
+APPLICATION_FILES = [
+    "//dev-app/public",
+] + glob(
+    ["src/**/*"],
+    exclude = ["src/**/*.spec.ts"],
+)
+
+APPLICATION_DEPS = [
+    ":node_modules/typescript",
+]
+
+TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
+
+TEST_DEPS = APPLICATION_DEPS + [
+    ":node_modules/jsdom",
+    ":node_modules/vitest",
+    ":tsconfig.app.json",
+]
+
+ng_config(name = "ng_config")
+
+ng_application(
+    name = "build",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "development",
+    ],
+    env = {
+        "NG_BUILD_PARTIAL_SSR": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+    ],
+)
+
+ng_application(
+    name = "build.production",
+    srcs = APPLICATION_FILES + APPLICATION_DEPS,
+    args = [
+        "--configuration",
+        "production",
+    ],
+    env = {
+        "NG_BUILD_OPTIMIZE_CHUNKS": "1",
+    },
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+    tags = [
+        # Tagged as manual as both build and build.production use the same output directory.
+        "manual",
+    ],
+)
+
+ng_test(
+    name = "test",
+    srcs = TEST_FILES + TEST_DEPS,
+    ng_config = ":ng_config",
+    node_modules = ":node_modules",
+    project_name = "dev-app",
+)
