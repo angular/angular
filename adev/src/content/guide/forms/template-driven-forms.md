@@ -85,7 +85,6 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    The initial template defines the layout for a form with two form groups and a submit button.
    The form groups correspond to two properties of the Actor data model, name and studio.
    Each group has a label and a box for user input.
-
    - The **Name** `<input>` control element has the HTML5 `required` attribute
    - The **Studio** `<input>` control element does not because `studio` is optional
 
@@ -204,7 +203,6 @@ To see how the classes are added and removed by the framework, open the browser'
    </docs-code>
 
 1. Take the following actions on the **Name** `<input>` box, and observe which classes appear.
-
    - Look but don't touch.
      The classes indicate that it is untouched, pristine, and valid.
 

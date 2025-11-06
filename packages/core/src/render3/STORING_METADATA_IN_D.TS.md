@@ -7,6 +7,7 @@ The above is mostly true.
 Unfortunately, in order for `ngtsc` to generate code which is tree shakable `ngtsc` does need to have global knowledge.
 
 Here is an abbreviated example of breakage of tree-shake-ability.
+
 ```typescript
 @Directive({
   selector: '[tooltip]'
@@ -47,7 +48,7 @@ class MyAppModule {
 
 Notice that `ngtsc` can't remove `TooltipDirective` because it would need to know its selector and see if the directive matches in the component's template.
 Knowing the selector breaks locality and so we make an exception for some locality information such as selector, inputs and outputs.
-Since we are breaking the locality rule, we need to store the information someplace since `ngtsc` can't  have access to the `TooltipDirective` source.
+Since we are breaking the locality rule, we need to store the information someplace since `ngtsc` can't have access to the `TooltipDirective` source.
 We store the information in the `.d.ts` file like so.
 
 ```typescript

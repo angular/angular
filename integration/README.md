@@ -38,6 +38,7 @@ The API for each test is:
 - The test runner will run `yarn` and `pnpm test` on the package
 
 This means that the test should be started by test script, like
+
 ```
 "scripts": {"test": "runProgramA && assertResultIsGood"}
 ```
@@ -54,7 +55,6 @@ directly from `file:../../node_modules`.
 > (wrt the non-local dependencies - i.e. dependencies whose versions do not start with `file:`).
 >
 > You can update a `yarn.lock` file by running `pnpm install` in the project subdirectory.
-
 
 ## Running integration tests
 
@@ -119,11 +119,11 @@ Karma automatically finds a free port so no effort is needed there.
 
 The manually configured ports are as follows:
 
-| TEST | PORT | CONFIGURATION |
-| ---------------------------- | ---------------- | -------------------------------------- |
-| dynamic-compiler             |      4201        | /e2e/browser.config.json: "port": 4201 |
-| ng_elements                  |      4205        | /e2e/browser.config.json: "port": 4205 |
-| platform-server              |      4206        | /src/server.ts: app.listen(4206,...    |
+| TEST             | PORT | CONFIGURATION                          |
+| ---------------- | ---- | -------------------------------------- |
+| dynamic-compiler | 4201 | /e2e/browser.config.json: "port": 4201 |
+| ng_elements      | 4205 | /e2e/browser.config.json: "port": 4205 |
+| platform-server  | 4206 | /src/server.ts: app.listen(4206,...    |
 
 **Note**: This will become obsolete soon once we start running integration tests with RBE and within a sandbox environment.
 
@@ -142,11 +142,11 @@ See: https://github.com/puppeteer/puppeteer/blob/v1.0.0/docs/troubleshooting.md#
 
 So that browsers are not popping up and tearing down when running these tests we run Chrome in headless mode. The `--headless` flag puts Chrome in headless mode and a number of other flags are recommended in this mode as well:
 
-* `--headless`
-* `--disable-gpu`
-* `--disable-dev-shm-usage`
-* `--hide-scrollbars`
-* `--mute-audio`
+- `--headless`
+- `--disable-gpu`
+- `--disable-dev-shm-usage`
+- `--hide-scrollbars`
+- `--mute-audio`
 
 These come from the flags that puppeteer passes to chrome when it launches it in headless mode: https://github.com/puppeteer/puppeteer/blob/18f2ecdffdfc70e891750b570bfe8bea5b5ca8c2/lib/Launcher.js#L91
 

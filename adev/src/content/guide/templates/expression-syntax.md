@@ -27,7 +27,7 @@ Angular supports a subset of [literal values](https://developer.mozilla.org/en-U
 ### Unsupported value literals
 
 | Literal type | Example values |
-|--------------|----------------|
+| ------------ | -------------- |
 | BigInt       | `1n`           |
 
 ## Globals

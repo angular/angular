@@ -2,8 +2,8 @@
 
 The Angular extractor generates a file with a translation unit entry each of the following instances.
 
-* Each `i18n` attribute in a component template
-* Each [`$localize`][ApiLocalizeInitLocalize] tagged message string in component code
+- Each `i18n` attribute in a component template
+- Each [`$localize`][ApiLocalizeInitLocalize] tagged message string in component code
 
 As described in [How meanings control text extraction and merges][GuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges], Angular assigns each translation unit a unique ID.
 
@@ -93,6 +93,5 @@ Both elements now use the same translation \(`Bonjour`\), because both were defi
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/rendered-output.html"/>
 
-[ApiLocalizeInitLocalize]: api/localize/init/$localize "$localize | init - localize - API | Angular"
-
-[GuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n/prepare#h1-example "How meanings control text extraction and merges - Prepare components for translations | Angular"
+[ApiLocalizeInitLocalize]: api/localize/init/$localize '$localize | init - localize - API | Angular'
+[GuideI18nCommonPrepareHowMeaningsControlTextExtractionAndMerges]: guide/i18n/prepare#h1-example 'How meanings control text extraction and merges - Prepare components for translations | Angular'

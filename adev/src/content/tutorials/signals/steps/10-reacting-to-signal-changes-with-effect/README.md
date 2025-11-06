@@ -103,8 +103,9 @@ Excellent! You've now learned how to use effects with signals. Key concepts to r
 - **Automatic tracking**: Effects automatically track which signals they read and re-run when those signals change
 
 **Remember: Use effects sparingly!** The examples in this lesson (localStorage sync, logging, timers) are appropriate uses. Avoid effects for:
+
 - Deriving values from other signals - use `computed()` instead
-- Creating writable derived state - use `linkedSignal()` instead  
+- Creating writable derived state - use `linkedSignal()` instead
 - Copying data between signals - restructure to use a shared source of truth
 
 Effects are powerful but should be your last resort when `computed()` and `linkedSignal()` can't solve your use case.

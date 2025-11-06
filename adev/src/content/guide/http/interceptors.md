@@ -12,15 +12,15 @@ Interceptors are generally functions which you can run for each request, and hav
 
 You can use interceptors to implement a variety of common patterns, such as:
 
-* Adding authentication headers to outgoing requests to a particular API.
-* Retrying failed requests with exponential backoff.
-* Caching responses for a period of time, or until invalidated by mutations.
-* Customizing the parsing of responses.
-* Measuring server response times and log them.
-* Driving UI elements such as a loading spinner while network operations are in progress.
-* Collecting and batch requests made within a certain timeframe.
-* Automatically failing requests after a configurable deadline or timeout.
-* Regularly polling the server and refreshing results.
+- Adding authentication headers to outgoing requests to a particular API.
+- Retrying failed requests with exponential backoff.
+- Caching responses for a period of time, or until invalidated by mutations.
+- Customizing the parsing of responses.
+- Measuring server response times and log them.
+- Driving UI elements such as a loading spinner while network operations are in progress.
+- Collecting and batch requests made within a certain timeframe.
+- Automatically failing requests after a configurable deadline or timeout.
+- Regularly polling the server and refreshing results.
 
 ## Defining an interceptor
 
@@ -85,7 +85,7 @@ CRITICAL: The body of a request or response is **not** protected from deep mutat
 
 ## Dependency injection in interceptors
 
-Interceptors are run in the _injection context_ of the injector which registered them, and can use  Angular's `inject` API to retrieve dependencies.
+Interceptors are run in the _injection context_ of the injector which registered them, and can use Angular's `inject` API to retrieve dependencies.
 
 For example, suppose an application has a service called `AuthService`, which creates authentication tokens for outgoing requests. An interceptor can inject and use this service:
 
@@ -94,11 +94,11 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
   // Inject the current `AuthService` and use it to get an authentication token:
   const authToken = inject(AuthService).getAuthToken();
 
-  // Clone the request to add the authentication header.
-  const newReq = req.clone({
-    headers: req.headers.append('X-Authentication-Token', authToken),
-  });
-  return next(newReq);
+// Clone the request to add the authentication header.
+const newReq = req.clone({
+headers: req.headers.append('X-Authentication-Token', authToken),
+});
+return next(newReq);
 }
 </docs-code>
 
@@ -222,7 +222,7 @@ bootstrapApplication(AppComponent, {providers: [
     withInterceptorsFromDi(),
   ),
 
-  {provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true},
+{provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true},
 ]});
 </docs-code>
 

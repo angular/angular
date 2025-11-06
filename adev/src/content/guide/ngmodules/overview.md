@@ -2,7 +2,7 @@
 
 IMPORTANT: The Angular team recommends using [standalone components](guide/components/anatomy-of-components#-imports-in-the-component-decorator) instead of `NgModule` for all new code. Use this guide to understand existing code built with `@NgModule`.
 
-An NgModule is a class marked by the `@NgModule` decorator. This decorator accepts *metadata* that tells Angular how to compile component templates and configure dependency injection.
+An NgModule is a class marked by the `@NgModule` decorator. This decorator accepts _metadata_ that tells Angular how to compile component templates and configure dependency injection.
 
 ```typescript
 import {NgModule} from '@angular/core';
@@ -14,8 +14,9 @@ export class CustomMenuModule { }
 ```
 
 An NgModule has two main responsibilities:
-* Declaring components, directives, and pipes that belong to the NgModule
-* Add providers to the injector for components, directives, and pipes that import the NgModule
+
+- Declaring components, directives, and pipes that belong to the NgModule
+- Add providers to the injector for components, directives, and pipes that import the NgModule
 
 ## Declarations
 
@@ -80,27 +81,27 @@ The `imports` array accepts other NgModules, as well as standalone components, d
 
 An NgModule can _export_ its declared components, directives, and pipes such that they're available to other components and NgModules.
 
- ```typescript
+```typescript
 @NgModule({
-  imports: [PopupTrigger, SelectionIndicator],
-  declarations: [CustomMenu, CustomMenuItem],
+ imports: [PopupTrigger, SelectionIndicator],
+ declarations: [CustomMenu, CustomMenuItem],
 
-  // Make CustomMenu and CustomMenuItem available to
-  // components and NgModules that import CustomMenuModule.
-  exports: [CustomMenu, CustomMenuItem],
+ // Make CustomMenu and CustomMenuItem available to
+ // components and NgModules that import CustomMenuModule.
+ exports: [CustomMenu, CustomMenuItem],
 })
 export class CustomMenuModule { }
 ```
 
 The `exports` property is not limited to declarations, however. An NgModule can also export any other components, directives, pipes, and NgModules that it imports.
 
- ```typescript
+```typescript
 @NgModule({
-  imports: [PopupTrigger, SelectionIndicator],
-  declarations: [CustomMenu, CustomMenuItem],
+ imports: [PopupTrigger, SelectionIndicator],
+ declarations: [CustomMenu, CustomMenuItem],
 
-  // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
-  exports: [CustomMenu, CustomMenuItem, PopupTrigger],
+ // Also make PopupTrigger available to any component or NgModule that imports CustomMenuModule.
+ exports: [CustomMenu, CustomMenuItem, PopupTrigger],
 })
 export class CustomMenuModule { }
 ```
@@ -110,8 +111,9 @@ export class CustomMenuModule { }
 TIP: See the [Dependency Injection guide](guide/di) for information on dependency injection and providers.
 
 An `NgModule` can specify `providers` for injected dependencies. These providers are available to:
-* Any standalone component, directive, or pipe that imports the NgModule, and
-* The `declarations` and `providers` of any _other_ NgModule that imports the NgModule.
+
+- Any standalone component, directive, or pipe that imports the NgModule, and
+- The `declarations` and `providers` of any _other_ NgModule that imports the NgModule.
 
 ```typescript
 @NgModule({
@@ -133,10 +135,11 @@ export class UserProfileModule { }
 ```
 
 In the example above:
-* The `CustomMenuModule` provides `OverlayManager`.
-* The `CustomMenu` and `CustomMenuItem` components can inject `OverlayManager` because they're declared in `CustomMenuModule`.
-* `UserProfile` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
-* `UserDataClient` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
+
+- The `CustomMenuModule` provides `OverlayManager`.
+- The `CustomMenu` and `CustomMenuItem` components can inject `OverlayManager` because they're declared in `CustomMenuModule`.
+- `UserProfile` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
+- `UserDataClient` can inject `OverlayManager` because its NgModule imports `CustomMenuModule`.
 
 ### The `forRoot` and `forChild` pattern
 

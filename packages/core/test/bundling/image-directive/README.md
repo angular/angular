@@ -1,4 +1,4 @@
-* NgOptimizedImage directive testing
+- NgOptimizedImage directive testing
 
 This folder contains a simple application that can be used as a playground for the `NgOptimizedImage` directive testing. You can run the following command to start the dev server:
 

@@ -87,6 +87,7 @@ flowchart TD
 Here, the `UserProfile` component uses several other components to produce the final page.
 
 To import and use a component, you need to:
+
 1. In your component's TypeScript file, add an `import` statement for the component you want to use.
 2. In your `@Component` decorator, add an entry to the `imports` array for the component you want to use.
 3. In your component's template, add an element that matches the selector of the component you want to use.

@@ -1,7 +1,9 @@
 # Drag and drop
 
 ## Overview
+
 This page describes the drag and drop directives which lets you quickly create drag and drop interfaces with the following:
+
 - Free dragging
 - Create a list of reorderable draggable elements
 - Transfer draggable elements between lists
@@ -32,9 +34,9 @@ import {Component} from '@angular/core';
 import {CdkDrag} from '@angular/cdk/drag-drop';
 
 @Component({
-  selector: 'my-custom-component',
-  templateUrl: 'my-custom-component.html',
-  imports: [CdkDrag],
+selector: 'my-custom-component',
+templateUrl: 'my-custom-component.html',
+imports: [CdkDrag],
 })
 export class DragDropExample {}
 </docs-code>
@@ -48,7 +50,6 @@ You can make any element draggable by adding the `cdkDrag` directive. By default
   <docs-code header="app/app.component.ts" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.ts"/>
   <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/overview/app/app.component.css"/>
 </docs-code-multifile>
-
 
 ## Create a list of reorderable draggable elements
 
@@ -67,6 +68,7 @@ You can use the `CDK_DROP_LIST` injection token that can be used to reference in
 ## Transfer draggable elements between lists
 
 The `cdkDropList` directive supports transferring draggable elements between connected drop lists. There are two ways to connect one or more `cdkDropList` instances together:
+
 - Set the `cdkDropListConnectedTo` property to another drop list.
 - Wrap the elements in an element with the `cdkDropListGroup` attribute.
 
@@ -143,7 +145,6 @@ By default, the user can drag the entire `cdkDrag` element to move it around. To
   <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/custom-handle/app/app.component.css"/>
 </docs-code-multifile>
 
-
 You can use the `CDK_DRAG_HANDLE` injection token that can be used to reference instances of `cdkDragHandle`. For more information see the [dependency injection guide](https://angular.dev/guide/di) and the [drag handle injection token API](api/cdk/drag-drop/CDK_DRAG_HANDLE).
 
 ### Customize drag preview
@@ -168,11 +169,11 @@ By default, Angular inserts the `cdkDrag` preview into the `<body>` of the page 
 
 You can change where Angular inserts the preview using the `cdkDragPreviewContainer` input on `cdkDrag`. The possible values are:
 
-| Value                         | Description                                                                             | Advantages                                                                                                                  | Disadvantages                                                                                                                                                             |
-|:---                           |:---                                                                                     |:---                                                                                                                         |:---                                                                                                                                                                       |
-| `global`                      | Default value. Angular inserts the preview into the <body> or the closest shadow root.  | Preview won't be affected by `z-index` or `overflow: hidden`. It also won't affect `:nth-child` selectors and flex layouts. | Doesn't retain inherited styles.                                                                                                                                          |
-| `parent`                      | Angular inserts the preview inside the parent of the element that is being dragged.     | Preview inherits the same styles as the dragged element.                                                                    | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts. |
-| `ElementRef` or `HTMLElement` | Angular inserts the preview into the specified element.                                 | Preview inherits styles from the specified container element.                                                               | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts. |
+| Value                         | Description                                                                            | Advantages                                                                                                                  | Disadvantages                                                                                                                                                             |
+| :---------------------------- | :------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `global`                      | Default value. Angular inserts the preview into the <body> or the closest shadow root. | Preview won't be affected by `z-index` or `overflow: hidden`. It also won't affect `:nth-child` selectors and flex layouts. | Doesn't retain inherited styles.                                                                                                                                          |
+| `parent`                      | Angular inserts the preview inside the parent of the element that is being dragged.    | Preview inherits the same styles as the dragged element.                                                                    | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts. |
+| `ElementRef` or `HTMLElement` | Angular inserts the preview into the specified element.                                | Preview inherits styles from the specified container element.                                                               | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts. |
 
 Alternatively, you can modify the `CDK_DRAG_CONFIG` injection token to update `previewContainer` within the config if the value is `global` or `parent`. For more information see the [dependency injection guide](https://angular.dev/guide/di), [drag config injection token API](api/cdk/drag-drop/CDK_DRAG_CONFIG), and the [drag drop config API](api/cdk/drag-drop/DragDropConfig).
 
@@ -260,7 +261,7 @@ If you want to disable dragging for a particular drag item, set the `cdkDragDisa
   <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/disable-drag/app/app.component.css"/>
 </docs-code-multifile>
 
-Alternatively, you can modify the `CDK_DRAG_CONFIG` injection token to update `draggingDisabled` within the config.  For more information see the [dependency injection guide](https://angular.dev/guide/di), [drag config injection token API](api/cdk/drag-drop/CDK_DRAG_CONFIG), and the [drag drop config API](api/cdk/drag-drop/DragDropConfig).
+Alternatively, you can modify the `CDK_DRAG_CONFIG` injection token to update `draggingDisabled` within the config. For more information see the [dependency injection guide](https://angular.dev/guide/di), [drag config injection token API](api/cdk/drag-drop/CDK_DRAG_CONFIG), and the [drag drop config API](api/cdk/drag-drop/DragDropConfig).
 
 ## Sorting customizations
 
@@ -298,7 +299,6 @@ By default, `cdkDrag` elements are sorted into any position inside of a `cdkDrop
   <docs-code header="app/app.component.css" path="adev/src/content/examples/drag-drop/src/sort-predicate/app/app.component.css"/>
 </docs-code-multifile>
 
-
 ### Disable sorting
 
 There are cases where draggable elements can be dragged out of one `cdkDropList` into another, however the user shouldn't be able to sort them within the source list. For these cases, add the `cdkDropListSortingDisabled` attribute to prevent the draggable elements in a `cdkDropList` from sorting. This preserves the dragged element's initial position in the source list if it does not get dragged to a new valid position.
@@ -328,33 +328,33 @@ Combining `cdkDropListHasAnchor` with `cdkDropListSortingDisabled` makes it poss
 ## Customize animations
 
 Drag and drop supports animations for both:
+
 - Sorting an draggable element inside a list
 - Moving the draggable element from the position that the user dropped it to the final position inside the list
 
 To set up your animations, define a CSS transition that targets the transform property. The following classes can be used for animations:
 
-| CSS class name      | Result of adding transition                                                                                                                                                                                 |
-|:---                 |:---                                                                                                                                                                                                         |
-| .cdk-drag           | Animate draggable elements as they are being sorted.                                                                                                                                                        |
-| .cdk-drag-animating | Animate the draggable element from its dropped position to the final position within the `cdkDropList`.<br><br>This CSS class is applied to a `cdkDrag` element only when the dragging action has stopped.  |
+| CSS class name      | Result of adding transition                                                                                                                                                                                |
+| :------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| .cdk-drag           | Animate draggable elements as they are being sorted.                                                                                                                                                       |
+| .cdk-drag-animating | Animate the draggable element from its dropped position to the final position within the `cdkDropList`.<br><br>This CSS class is applied to a `cdkDrag` element only when the dragging action has stopped. |
 
 ## Styling
 
 Both `cdkDrag` and `cdkDropList` directives only apply essential styles needed for functionality. Applications can customize their styles by targeting these specified CSS classes.
 
-
-| CSS class name            | Description                                                                                                                                                                                                                                                                                             |
-|:---                       |:---                                                                                                                                                                                                                                                                                                     |
-| .cdk-drop-list            | Selector for the `cdkDropList` container elements.                                                                                                                                                                                                                                                      |
-| .cdk-drag                 | Selector for `cdkDrag` elements.                                                                                                                                                                                                                                                                        |
-| .cdk-drag-disabled        | Selector for disabled `cdkDrag` elements.                                                                                                                                                                                                                                                               |
-| .cdk-drag-handle          | Selector for the host element of the `cdkDragHandle`.                                                                                                                                                                                                                                                   |
-| .cdk-drag-preview         | Selector for the drag preview element. This is the element that appears next to the cursor as a user drags an element in a sortable list.<br><br>The element looks exactly like the element that is being dragged unless customized with a custom template through `*cdkDragPreview`.                   |
-| .cdk-drag-placeholder     | Selector for the drag placeholder element. This is the element that is shown in the spot where the draggable element will be dragged to once the dragging action ends.<br><br>This element looks exactly like the element that is being sorted unless customized with the cdkDragPlaceholder directive. |
-| .cdk-drop-list-dragging   | Selector for `cdkDropList` container element that has a draggable element currently being dragged.                                                                                                                                                                                                      |
-| .cdk-drop-list-disabled   | Selector for `cdkDropList` container elements that are disabled.                                                                                                                                                                                                                                        |
-| .cdk-drop-list-receiving  | Selector for `cdkDropList` container element that has a draggable element it can receive from a connected drop list that is currently being dragged.                                                                                                                                                    |
-| .cdk-drag-anchor          | Selector for the anchor element that is created when `cdkDropListHasAnchor` is enabled. This element indicates the position from which the dragged item started.                                                                                                                                         |
+| CSS class name           | Description                                                                                                                                                                                                                                                                                             |
+| :----------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| .cdk-drop-list           | Selector for the `cdkDropList` container elements.                                                                                                                                                                                                                                                      |
+| .cdk-drag                | Selector for `cdkDrag` elements.                                                                                                                                                                                                                                                                        |
+| .cdk-drag-disabled       | Selector for disabled `cdkDrag` elements.                                                                                                                                                                                                                                                               |
+| .cdk-drag-handle         | Selector for the host element of the `cdkDragHandle`.                                                                                                                                                                                                                                                   |
+| .cdk-drag-preview        | Selector for the drag preview element. This is the element that appears next to the cursor as a user drags an element in a sortable list.<br><br>The element looks exactly like the element that is being dragged unless customized with a custom template through `*cdkDragPreview`.                   |
+| .cdk-drag-placeholder    | Selector for the drag placeholder element. This is the element that is shown in the spot where the draggable element will be dragged to once the dragging action ends.<br><br>This element looks exactly like the element that is being sorted unless customized with the cdkDragPlaceholder directive. |
+| .cdk-drop-list-dragging  | Selector for `cdkDropList` container element that has a draggable element currently being dragged.                                                                                                                                                                                                      |
+| .cdk-drop-list-disabled  | Selector for `cdkDropList` container elements that are disabled.                                                                                                                                                                                                                                        |
+| .cdk-drop-list-receiving | Selector for `cdkDropList` container element that has a draggable element it can receive from a connected drop list that is currently being dragged.                                                                                                                                                    |
+| .cdk-drag-anchor         | Selector for the anchor element that is created when `cdkDropListHasAnchor` is enabled. This element indicates the position from which the dragged item started.                                                                                                                                        |
 
 ## Dragging in a scrollable container
 

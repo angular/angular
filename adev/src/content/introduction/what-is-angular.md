@@ -21,26 +21,26 @@ prefer following step-by-step instructions.
 system" href="guide/components" link="Get started with Components">
   Angular components make it easy to split your code into well-encapsulated parts.
 
-  The versatile dependency injection helps you keep your code modular, loosely-coupled, and
-  testable.
-  </docs-card>
-  <docs-card title="Get fast state updates with fine-grained reactivity based on Signals" href="guide/signals" link="Explore Angular Signals">
-  Our fine-grained reactivity model, combined with compile-time optimizations, simplifies development and helps build faster apps by default.
+The versatile dependency injection helps you keep your code modular, loosely-coupled, and
+testable.
+</docs-card>
+<docs-card title="Get fast state updates with fine-grained reactivity based on Signals" href="guide/signals" link="Explore Angular Signals">
+Our fine-grained reactivity model, combined with compile-time optimizations, simplifies development and helps build faster apps by default.
 
-  Granularly track how and where state is used throughout an application, giving the framework the power to render fast updates via highly optimized instructions.
-  </docs-card>
-  <docs-card title="Meet your performance targets with SSR, SSG, hydration, and next-generation deferred loading" href="guide/ssr" link="Read about SSR">
-    Angular supports both server-side rendering (SSR) and static site generation (SSG) along
-    with full DOM hydration. `@defer` blocks in templates make it simple to declaratively divide
-    your templates into lazy-loadable parts.
-  </docs-card>
-  <docs-card title="Guarantee everything works together with Angular's first-party modules for forms, routing, and
+Granularly track how and where state is used throughout an application, giving the framework the power to render fast updates via highly optimized instructions.
+</docs-card>
+<docs-card title="Meet your performance targets with SSR, SSG, hydration, and next-generation deferred loading" href="guide/ssr" link="Read about SSR">
+Angular supports both server-side rendering (SSR) and static site generation (SSG) along
+with full DOM hydration. `@defer` blocks in templates make it simple to declaratively divide
+your templates into lazy-loadable parts.
+</docs-card>
+<docs-card title="Guarantee everything works together with Angular's first-party modules for forms, routing, and
 more">
-  [Angular's router](guide/routing) provides a feature-rich navigation toolkit, including support
-  for route guards, data resolution, lazy-loading, and much more.
+[Angular's router](guide/routing) provides a feature-rich navigation toolkit, including support
+for route guards, data resolution, lazy-loading, and much more.
 
-  [Angular's forms module](guide/forms) provides a standardized system for form participation and validation.
-  </docs-card>
+[Angular's forms module](guide/forms) provides a standardized system for form participation and validation.
+</docs-card>
 </docs-card-container>
 
 ## Develop applications faster than ever
@@ -73,17 +73,17 @@ more">
   Every Angular commit is checked against _hundreds of thousands_ of tests in Google's internal code
   repository, representing countless real-world scenarios.
 
-  Angular is committed to stability for some of Google’s largest products, including Google Cloud.
-  This commitment ensures changes are well-tested, backwards compatible, and include migration tools
-  whenever possible.
-  </docs-card>
-  <docs-card title="Clear support policies and predictable release schedule" href="reference/releases" link="Versioning & releasing">
-  Angular's predictable, time-based release schedule gives your organization confidence in the
-  stability and backwards compatibility of the framework. Long Term Support (LTS) windows make sure
-  you get critical security fixes when you need them. First-party update tools, guides and automated
-  migration schematics help keep your apps up-to-date with the latest advancements to the framework
-  and the web platform.
-  </docs-card>
+Angular is committed to stability for some of Google’s largest products, including Google Cloud.
+This commitment ensures changes are well-tested, backwards compatible, and include migration tools
+whenever possible.
+</docs-card>
+<docs-card title="Clear support policies and predictable release schedule" href="reference/releases" link="Versioning & releasing">
+Angular's predictable, time-based release schedule gives your organization confidence in the
+stability and backwards compatibility of the framework. Long Term Support (LTS) windows make sure
+you get critical security fixes when you need them. First-party update tools, guides and automated
+migration schematics help keep your apps up-to-date with the latest advancements to the framework
+and the web platform.
+</docs-card>
 </docs-card-container>
 
 ## Works at any scale
@@ -135,10 +135,10 @@ more">
   <docs-card title="Partnering with other Google technologies">
   Angular partners closely with other Google technologies and teams to improve the web.
 
-  Our ongoing partnership with Chrome’s Aurora actively explores improvements to user experience across the web, developing built-in performance optimizations like NgOptimizedImage and improvements to Angular’s Core Web Vitals.
+Our ongoing partnership with Chrome’s Aurora actively explores improvements to user experience across the web, developing built-in performance optimizations like NgOptimizedImage and improvements to Angular’s Core Web Vitals.
 
-  We are also working with [Firebase](https://firebase.google.com/), [Tensorflow](https://www.tensorflow.org/), [Flutter](https://flutter.dev/), [Material Design](https://m3.material.io/), and [Google Cloud](https://cloud.google.com/) to ensure we provide meaningful integrations across the developer workflow.
-  </docs-card>
+We are also working with [Firebase](https://firebase.google.com/), [Tensorflow](https://www.tensorflow.org/), [Flutter](https://flutter.dev/), [Material Design](https://m3.material.io/), and [Google Cloud](https://cloud.google.com/) to ensure we provide meaningful integrations across the developer workflow.
+</docs-card>
 </docs-card-container>
 
 <docs-callout title="Join the momentum!">

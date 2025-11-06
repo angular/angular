@@ -35,8 +35,6 @@ The following example displays an Apache configuration.
 
 <docs-code path="adev/src/content/examples/i18n/doc-files/apache2.conf" language="apache"/>
 
-[CliBuild]: cli/build "ng build | CLI | Angular"
-
-[GuideDeployment]: tools/cli/deployment "Deployment | Angular"
-
-[GuideWorkspaceConfig]: reference/configs/workspace-config "Angular workspace configuration | Angular"
+[CliBuild]: cli/build 'ng build | CLI | Angular'
+[GuideDeployment]: tools/cli/deployment 'Deployment | Angular'
+[GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'

@@ -58,7 +58,8 @@ export class ReversePipe implements PipeTransform {
     }
 
     return reverse;
-  }
+
+}
 }
 </docs-code>
 

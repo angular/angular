@@ -4,7 +4,7 @@
 
 The Angular project has comprehensive unit tests for the core packages and the tools.
 Packages are tested both in the browser (via Karma) and on the server (via node.js).
-Angular uses the Jasmine test framework. 
+Angular uses the Jasmine test framework.
 
 You can focus your debugging on one test at a time by changing that test to be
 defined using the `fit(...)` function, rather than `it(...)`. Moreover, it can be helpful

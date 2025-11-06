@@ -170,6 +170,7 @@ For scroll-blocking events like `touchstart`, `touchmove`, `wheel` and `mousewhe
 you can optimize scrolling performance by passing the `passive` option to the
 `addEvent` function. This allows the browser to continue scrolling smoothly even
 while the event listener is processing. For example:
+
 ```javascript
 eventContract.addEvent(eventType, prefixedEventType, /* passive= */ true);
 ```

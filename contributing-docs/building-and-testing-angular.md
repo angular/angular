@@ -32,24 +32,24 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following on your development machine:
 
-* [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and
+- [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and
   Windows);
   [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source
   of information.\
   **Windows Users**: Git Bash or an equivalent shell is required\
-  *Windows Powershell and cmd shells are not
-  supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail*
+  _Windows Powershell and cmd shells are not
+  supported [#46780](https://github.com/angular/angular/issues/46780) so some commands might fail_
 
-* [Node.js](https://nodejs.org), (version specified in [`.nvmrc`](../.nvmrc)) which is used to run a
+- [Node.js](https://nodejs.org), (version specified in [`.nvmrc`](../.nvmrc)) which is used to run a
   development web server,
   run tests, and generate distributable files.
   `.nvmrc` is read by [nvm](https://github.com/nvm-sh/nvm) commands like `nvm install`
   and `nvm use`.
 
-* [pnpm](https://pnpm.io/) (version specified in the engines field
+- [pnpm](https://pnpm.io/) (version specified in the engines field
   of [`package.json`](../package.json)) which is used to install dependencies.
 
-* On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
+- On Windows: [MSYS2](https://www.msys2.org/) which is used by Bazel. Follow
   the [instructions](https://bazel.build/install/windows#installing-compilers-and-language-runtimes)
 
 ## Getting the Sources
@@ -91,7 +91,7 @@ To build Angular run:
 pnpm build
 ```
 
-* Results are put in the `dist/packages-dist` folder.
+- Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
@@ -160,7 +160,7 @@ You can automatically format your code by running:
 
 You can check that your code is properly formatted and adheres to coding style by running:
 
-``` shell
+```shell
 pnpm lint
 ```
 
@@ -182,14 +182,14 @@ builds. Before being able to publish the packages, you need to build them locall
 
 First time, you need to create the GitHub repositories:
 
-``` shell
+```shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
 $ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 ```
 
 For subsequent snapshots, just run:
 
-``` shell
+```shell
 $ ./scripts/ci/publish-build-artifacts.sh [GitHub username]
 ```
 

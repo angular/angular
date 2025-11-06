@@ -18,8 +18,8 @@ service.
 
 The scope of analysis performed by the module includes
 
--   indexing template syntax identifiers in a component template
--   generating information about directives used in a template
--   generating metadata about component and template source files
+- indexing template syntax identifiers in a component template
+- generating information about directives used in a template
+- generating metadata about component and template source files
 
 The module does not support indexing TypeScript source code.

@@ -49,18 +49,18 @@ export class MyComponent {
 import {Component, input} from '@angular/core';
 
 @Component({
-  template: `Name: {{name() ?? ''}}`
+template: `Name: {{name() ?? ''}}`
 })
 export class MyComponent {
-  readonly name = input<string>();
+readonly name = input<string>();
 
-  someMethod(): number {
-    const name = this.name();
-    if (name) {
-      return name.length;
-    }
-    return -1;
-  }
+someMethod(): number {
+const name = this.name();
+if (name) {
+return name.length;
+}
+return -1;
+}
 }
 </docs-code>
 
@@ -103,7 +103,7 @@ references outside this directory are silently skipped, potentially breaking you
 
 ## VSCode extension
 
-![Screenshot of the VSCode extension and clicking on an `@Input` field](assets/images/migrations/signal-inputs-vscode.png "Screenshot of the VSCode extension and clicking on an `@Input` field.")
+![Screenshot of the VSCode extension and clicking on an `@Input` field](assets/images/migrations/signal-inputs-vscode.png 'Screenshot of the VSCode extension and clicking on an `@Input` field.')
 
 The migration is available as a [code refactor action](https://code.visualstudio.com/docs/typescript/typescript-refactoring#_refactoring) in VSCode.
 

@@ -1,4 +1,3 @@
-
 # Find out how much code you're testing
 
 The Angular CLI can run unit tests and create code coverage reports.
