@@ -6,12 +6,32 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {REACTIVE_NODE, ReactiveNode} from '../../primitives/signals';
+import {REACTIVE_NODE, type ReactiveNode} from '../../primitives/signals';
+import type {ChangeDetectionScheduler} from '../change_detection/scheduling/zoneless_scheduling';
+import {assertDefined} from '../util/assert';
 
-import {LView, REACTIVE_TEMPLATE_CONSUMER, TVIEW, TView, TViewType} from './interfaces/view';
+import {
+  ENVIRONMENT,
+  type LView,
+  REACTIVE_TEMPLATE_CONSUMER,
+  TVIEW,
+  type TView,
+  TViewType,
+} from './interfaces/view';
 import {getLViewParent, markAncestorsForTraversal, markViewForRefresh} from './util/view_utils';
 
-let freeConsumers: ReactiveNode[] = [];
+/**
+ * Pool of free reactive consumers, scoped per `ChangeDetectionScheduler`.
+ *
+ * Using a WeakMap ensures that when an application (and its `ChangeDetectionScheduler`) is destroyed,
+ * the associated consumer pool is automatically garbage collected. This prevents memory leaks
+ * in scenarios where multiple Angular applications are created and destroyed in the same
+ * JavaScript context (e.g., SSR, micro-frontends, HMR).
+ *
+ * Each `ChangeDetectionScheduler` maintains its own pool, so multiple concurrent applications
+ * don't interfere with each other's consumer recycling.
+ */
+const freeConsumers = new WeakMap<ChangeDetectionScheduler, ReactiveNode[]>();
 export interface ReactiveLViewConsumer extends ReactiveNode {
   lView: LView | null;
 }
@@ -25,19 +45,55 @@ export function getOrBorrowReactiveLViewConsumer(lView: LView): ReactiveLViewCon
   return lView[REACTIVE_TEMPLATE_CONSUMER] ?? borrowReactiveLViewConsumer(lView);
 }
 
+/**
+ * Borrows a reactive consumer from the pool associated with the environment's `ChangeDetectionScheduler`.
+ * If no free consumers are available in the pool, creates a new one.
+ *
+ * @param lView The LView that needs a reactive consumer
+ * @returns A reactive consumer (either recycled from the pool or newly created)
+ */
 function borrowReactiveLViewConsumer(lView: LView): ReactiveLViewConsumer {
-  const consumer = freeConsumers.pop() ?? Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
+  const scheduler = lView[ENVIRONMENT].changeDetectionScheduler;
+
+  if (!scheduler) {
+    // No scheduler available - create consumer without pooling.
+    const consumer = Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
+    consumer.lView = lView;
+    return consumer;
+  }
+
+  const pool = freeConsumers.get(scheduler) ?? [];
+  const consumer = pool.pop() ?? Object.create(REACTIVE_LVIEW_CONSUMER_NODE);
   consumer.lView = lView;
   return consumer;
 }
 
+/**
+ * Returns a reactive consumer to the pool for future reuse, if it hasn't been committed.
+ *
+ * Consumers are only returned to the pool if they weren't committed (i.e., they didn't
+ * actually track any signals). This function also ensures that the consumer is returned
+ * to the correct pool based on its associated `ChangeDetectionScheduler`.
+ *
+ * @param consumer The reactive consumer to potentially return to the pool
+ */
 export function maybeReturnReactiveLViewConsumer(consumer: ReactiveLViewConsumer): void {
   if (consumer.lView![REACTIVE_TEMPLATE_CONSUMER] === consumer) {
     // The consumer got committed.
     return;
   }
+
+  const scheduler = consumer.lView![ENVIRONMENT].changeDetectionScheduler!;
+  if (!scheduler) {
+    // If there's no scheduler, we can't return it to a pool, so let it be GC'd.
+    return;
+  }
+
   consumer.lView = null;
-  freeConsumers.push(consumer);
+
+  const pool = freeConsumers.get(scheduler) ?? [];
+  pool.push(consumer);
+  freeConsumers.set(scheduler, pool);
 }
 
 export const REACTIVE_LVIEW_CONSUMER_NODE: Omit<ReactiveLViewConsumer, 'lView'> = {
