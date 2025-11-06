@@ -917,14 +917,13 @@ function dispatchNavigateEvent({
     }
   }
 
-  // https://whatpr.org/html/10919/nav-history-apis.html#inner-navigate-event-firing-algorithm
-  // "Let commit be the following steps:"
+  // https://html.spec.whatwg.org/multipage/nav-history-apis.html#commit-a-navigate-event
+  // "To commit a navigate event given a NavigateEvent..."
   function commit() {
     if (result.signal.aborted) {
       return;
     }
-    (navigation.transition as InternalNavigationTransition)?.committedResolve();
-    if (event.interceptionState === 'intercepted') {
+    if (event.interceptionState !== 'none') {
       event.interceptionState = 'committed';
       switch (event.navigationType) {
         case 'push':
@@ -942,6 +941,7 @@ function dispatchNavigateEvent({
         }
       }
     }
+    (navigation.transition as InternalNavigationTransition)?.committedResolve();
     const promisesList = handlers.map((handler) => handler());
     if (promisesList.length === 0) {
       promisesList.push(Promise.resolve());
