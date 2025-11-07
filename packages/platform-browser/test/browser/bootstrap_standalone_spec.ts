@@ -19,10 +19,10 @@ import {
   ɵR3Injector as R3Injector,
   ɵNoopNgZone as NoopNgZone,
   APP_ID,
+  signal,
 } from '@angular/core';
-import {withBody} from '@angular/private/testing';
-
-import {bootstrapApplication, BrowserModule} from '../../src/browser';
+import {isNode, withBody} from '@angular/private/testing';
+import {bootstrapApplication, BrowserModule, createApplication} from '../../src/browser';
 
 describe('bootstrapApplication for standalone components', () => {
   beforeEach(destroyPlatform);
@@ -270,4 +270,55 @@ describe('bootstrapApplication for standalone components', () => {
       }
     });
   });
+});
+
+describe('createApplication', () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
+  it(
+    'creates an `ApplicationRef` which can bootstrap a component',
+    withBody('<test-app></test-app>', async () => {
+      @Component({
+        selector: 'test-app',
+        template: `Hello, {{ name() }}!`,
+      })
+      class TestComp {
+        protected readonly name = signal('Dev');
+      }
+
+      const appRef = await createApplication();
+      appRef.bootstrap(TestComp);
+
+      expect(document.body.textContent.trim()).toBe('Hello, Dev!');
+    }),
+  );
+
+  it(
+    'creates an `ApplicationRef` which can bootstrap a JIT component with an external resource',
+    withBody('<test-app></test-app>', async () => {
+      // Resolving resources only makes sense in the browser.
+      if (isNode) {
+        expect().nothing();
+        return;
+      }
+
+      const templateUrl = URL.createObjectURL(new Blob(['Hello, {{ name() }}!']));
+
+      @Component({
+        selector: 'test-app',
+        templateUrl,
+      })
+      class TestComp {
+        protected readonly name = signal('Dev');
+      }
+
+      const appRef = await createApplication();
+      appRef.bootstrap(TestComp);
+
+      expect(document.body.textContent.trim()).toBe('Hello, Dev!');
+
+      URL.revokeObjectURL(templateUrl);
+    }),
+  );
 });

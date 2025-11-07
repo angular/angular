@@ -124,7 +124,7 @@ export interface BootstrapContext {
  *
  * @publicApi
  */
-export function bootstrapApplication(
+export async function bootstrapApplication(
   rootComponent: Type<unknown>,
   options?: ApplicationConfig,
   context?: BootstrapContext,
@@ -135,15 +135,8 @@ export function bootstrapApplication(
     ...createProvidersConfig(options),
   };
 
-  // Attempt to resolve component resources before bootstrapping in JIT mode,
-  // however don't interrupt the bootstrapping process.
   if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
-    return resolveComponentResources(fetch)
-      .catch((error) => {
-        console.error(error);
-        return Promise.resolve();
-      })
-      .then(() => internalCreateApplication(config));
+    await resolveJitResources();
   }
 
   return internalCreateApplication(config);
@@ -161,7 +154,11 @@ export function bootstrapApplication(
  *
  * @publicApi
  */
-export function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
+export async function createApplication(options?: ApplicationConfig): Promise<ApplicationRef> {
+  if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
+    await resolveJitResources();
+  }
+
   return internalCreateApplication(createProvidersConfig(options));
 }
 
@@ -170,6 +167,17 @@ function createProvidersConfig(options?: ApplicationConfig) {
     appProviders: [...BROWSER_MODULE_PROVIDERS, ...(options?.providers ?? [])],
     platformProviders: INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   };
+}
+
+/** Attempt to resolve component resources before bootstrapping in JIT mode. */
+async function resolveJitResources(): Promise<void> {
+  try {
+    return await resolveComponentResources(fetch);
+  } catch (error) {
+    // Log, but don't block bootstrapping on error.
+    // tslint:disable-next-line:no-console
+    console.error(error);
+  }
 }
 
 /**
