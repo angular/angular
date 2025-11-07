@@ -58,8 +58,6 @@ APPLICATION_DEPS = [
     ":node_modules/open-in-idx",
     ":node_modules/tailwindcss",
     ":node_modules/typescript",
-    ":node_modules/xhr2",
-    ":node_modules/@types/node",
     ":node_modules/@types/dom-navigation",
 
     # The imports below are packages that our code does not directly import, but our upstream deps import from
@@ -83,11 +81,14 @@ APPLICATION_DEPS = [
 
 TEST_FILES = APPLICATION_FILES + glob(["src/app/**/*.spec.ts"])
 
-TEST_DEPS = [
-    dep
-    for dep in APPLICATION_DEPS
-    if dep != ":node_modules/@types/node"
-] + [
+TEST_DEPS = APPLICATION_DEPS + [
+    ":node_modules/@types/jasmine",
+    ":node_modules/karma",
+    ":node_modules/karma-chrome-launcher",
+    ":node_modules/karma-jasmine",
+    ":node_modules/karma-coverage",
+    ":node_modules/karma-jasmine-html-reporter",
+    ":node_modules/jasmine-core",
     "@rules_browsers//browsers/chromium",
 ]
 
