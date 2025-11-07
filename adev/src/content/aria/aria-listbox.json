@@ -200,6 +200,39 @@
           "rawComment": "",
           "memberType": "method",
           "memberTags": []
+        },
+        {
+          "name": "gotoFirst",
+          "signatures": [
+            {
+              "name": "gotoFirst",
+              "entryType": "function",
+              "description": "Navigates to the first item in the listbox.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Navigates to the first item in the listbox. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "gotoFirst",
+            "description": "Navigates to the first item in the listbox.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Navigates to the first item in the listbox. */"
+          },
+          "entryType": "function",
+          "description": "Navigates to the first item in the listbox.",
+          "jsdocTags": [],
+          "rawComment": "/** Navigates to the first item in the listbox. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -214,7 +247,7 @@
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
         "startLine": 42,
-        "endLine": 190
+        "endLine": 195
       }
     },
     {
@@ -325,8 +358,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 193,
-        "endLine": 252
+        "startLine": 198,
+        "endLine": 257
       }
     }
   ],
@@ -469,6 +502,10 @@
     ],
     [
       "Listbox.scrollActiveItemIntoView",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Listbox.gotoFirst",
       "@angular/aria/listbox"
     ],
     [
