@@ -15,9 +15,9 @@ import {NodeNavigationStep, REFERENCE_NODE_BODY, REFERENCE_NODE_HOST} from './in
  *  - the `b` char which indicates that the lookup should start from the `document.body`
  *  - the `h` char to start lookup from the component host node (`lView[HOST]`)
  */
-const REF_EXTRACTOR_REGEXP = /* @__PURE__ */ new RegExp(
-  `^(\\d+)*(${REFERENCE_NODE_BODY}|${REFERENCE_NODE_HOST})*(.*)`,
-);
+const REF_EXTRACTOR_REGEXP: RegExp = /* @__PURE__ */ (() => {
+  return new RegExp(`^(\\d+)*(${REFERENCE_NODE_BODY}|${REFERENCE_NODE_HOST})*(.*)`);
+})();
 
 /**
  * Helper function that takes a reference node location and a set of navigation steps
