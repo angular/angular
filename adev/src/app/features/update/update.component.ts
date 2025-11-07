@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ChangeDetectionStrategy, Component, HostListener, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Step, RECOMMENDATIONS} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CdkMenuModule} from '@angular/cdk/menu';
@@ -26,6 +26,8 @@ interface Option {
   description: string;
 }
 
+const isWindows = typeof window !== 'undefined' && window.navigator.userAgent.includes('Windows');
+
 @Component({
   selector: 'adev-update-guide',
   templateUrl: './update.component.html',
@@ -40,6 +42,9 @@ interface Option {
     IconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(click)': 'copyCode($event)',
+  },
 })
 export default class UpdateComponent {
   private readonly snackBar = inject(MatSnackBar);
@@ -50,7 +55,7 @@ export default class UpdateComponent {
   protected options: Record<string, boolean> = {
     ngUpgrade: false,
     material: false,
-    windows: isWindows(),
+    windows: isWindows,
   };
 
   protected readonly optionList: Option[] = [
@@ -128,7 +133,6 @@ export default class UpdateComponent {
     }
   }
 
-  @HostListener('click', ['$event'])
   copyCode(event: Event) {
     const {tagName, textContent} = event.target as Element;
 
@@ -249,7 +253,7 @@ export default class UpdateComponent {
     if (this.to.number < 600) {
       const actionMessage = `Update all of your dependencies to the latest Angular and the right version of TypeScript.`;
 
-      if (isWindows()) {
+      if (isWindows) {
         const packages =
           angularPackages
             .map((packageName) => `@angular/${packageName}@${angularVersion}`)
@@ -298,14 +302,4 @@ export default class UpdateComponent {
     newAction = newAction.replace('${packageManagerInstall}', this.packageManager);
     return newAction;
   }
-}
-
-/** Whether or not the user is running on a Windows OS. */
-function isWindows(): boolean {
-  if (typeof navigator === 'undefined') {
-    return false;
-  }
-
-  const platform = navigator.platform.toLowerCase();
-  return platform.includes('windows') || platform.includes('win32');
 }
