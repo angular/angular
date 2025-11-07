@@ -686,6 +686,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ? [
             {
               label: 'Angular Aria',
+              // TODO: Mark status: 'new' after unwrapped from dev mode
               children: [
                 {
                   label: 'Overview',
@@ -696,6 +697,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   label: 'Accordion',
                   path: 'guide/aria/accordion',
                   contentPath: 'guide/aria/accordion',
+                },
+                {
+                  label: 'Autocomplete',
+                  path: 'guide/aria/autocomplete',
+                  contentPath: 'guide/aria/autocomplete',
                 },
                 {
                   label: 'Combobox',
@@ -740,7 +746,19 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
               ],
             },
           ]
-        : []),
+        : [
+            // TODO: Uncomment & modify for PR Previews
+            // {
+            //   label: 'Angular Aria',
+            //   children: [
+            //     {
+            //       label: 'Autocomplete',
+            //       path: 'guide/aria/autocomplete',
+            //       contentPath: 'guide/aria/autocomplete',
+            //     },
+            //   ],
+            // },
+          ]),
     ],
   },
   {

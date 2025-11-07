@@ -517,6 +517,9 @@ importers:
       '@angular/animations':
         specifier: workspace:*
         version: link:../packages/animations
+      '@angular/aria':
+        specifier: 21.0.0-rc.0
+        version: 21.0.0-rc.0(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
@@ -1642,6 +1645,12 @@ packages:
   '@angular-devkit/schematics@21.0.0-rc.1':
     resolution: {integrity: sha512-pIvbsWQGWMxkbiqLB5Jqz/KIuABK18m2aTMFJLTc8eaftTZ1zlIprYb2VD5de6cw9GDi8Few3BjJAeojBm4S0Q==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+
+  '@angular/aria@21.0.0-rc.0':
+    resolution: {integrity: sha512-RHGi+ddZuTjqyQlKgDViTV8pqw9VGwbhZIhM7VIOhCox86Ks49PDd0txTsU9qz378hv0diUnhQOgL3izftmDwg==}
+    peerDependencies:
+      '@angular/cdk': 21.0.0-rc.0
+      '@angular/core': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
 
   '@angular/build@21.0.0-rc.1':
     resolution: {integrity: sha512-awLzEE/veUtJ09GH/GCuS3BO4vl5p8ScVnENrvSBSHutXbXlBA1tk0ShCYKs7lhyCwjwiZuWu1BPfbvPgfRlAw==}
@@ -10561,7 +10570,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
@@ -13211,6 +13219,12 @@ snapshots:
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
+
+  '@angular/aria@21.0.0-rc.0(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)':
+    dependencies:
+      '@angular/cdk': 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
+      '@angular/core': link:packages/core
+      tslib: 2.8.1
 
   '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
