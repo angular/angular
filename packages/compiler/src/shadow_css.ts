@@ -512,11 +512,13 @@ export class ShadowCss {
     return cssText.replace(_cssColonHostRe, (_, hostSelectors: string, otherSelectors: string) => {
       if (hostSelectors) {
         const convertedSelectors: string[] = [];
-        const hostSelectorArray = hostSelectors.split(',').map((p) => p.trim());
-        for (const hostSelector of hostSelectorArray) {
-          if (!hostSelector) break;
+        for (const hostSelector of this._splitOnTopLevelCommas(hostSelectors)) {
+          const trimmedHostSelector = hostSelector.trim();
+          if (!trimmedHostSelector) break;
           const convertedSelector =
-            _polyfillHostNoCombinator + hostSelector.replace(_polyfillHost, '') + otherSelectors;
+            _polyfillHostNoCombinator +
+            trimmedHostSelector.replace(_polyfillHost, '') +
+            otherSelectors;
           convertedSelectors.push(convertedSelector);
         }
         return convertedSelectors.join(',');
