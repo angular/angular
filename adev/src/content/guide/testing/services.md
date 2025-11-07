@@ -7,34 +7,6 @@ Here are some synchronous and asynchronous unit tests of the `ValueService` writ
 
 <docs-code header="app/demo/demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="ValueService"/>
 
-## Services with dependencies
-
-Services often depend on other services that Angular injects into the constructor.
-In many cases, you can create and _inject_ these dependencies by hand while calling the service's constructor.
-
-The `MasterService` is a simple example:
-
-<docs-code header="app/demo/demo.ts" path="adev/src/content/examples/testing/src/app/demo/demo.ts" visibleRegion="MasterService"/>
-
-`MasterService` delegates its only method, `getValue`, to the injected `ValueService`.
-
-Here are several ways to test it.
-
-<docs-code header="app/demo/demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="MasterService"/>
-
-The first test creates a `ValueService` with `new` and passes it to the `MasterService` constructor.
-
-However, injecting the real service rarely works well as most dependent services are difficult to create and control.
-
-Instead, mock the dependency, use a dummy value, or create a [spy](https://jasmine.github.io/tutorials/your_first_suite#section-Spies) on the pertinent service method.
-
-HELPFUL: Prefer spies as they are usually the best way to mock services.
-
-These standard testing techniques are great for unit testing services in isolation.
-
-However, you almost always inject services into application classes using Angular dependency injection and you should have tests that reflect that usage pattern.
-Angular testing utilities make it straightforward to investigate how injected services behave.
-
 ## Testing services with the `TestBed`
 
 Your application relies on Angular [dependency injection (DI)](guide/di) to create services.
