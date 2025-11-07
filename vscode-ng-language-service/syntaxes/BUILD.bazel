@@ -35,12 +35,12 @@ write_source_files(
 
 js_library(
     name = "json",
-    srcs = glob(["*.json"]),
-    visibility = ["//vscode-ng-language-service/syntaxes:__subpackages__"],
-)
-
-filegroup(
-    name = "npm_files",
-    srcs = glob(["*.json"]),
-    visibility = ["//vscode-ng-language-service:__pkg__"],
+    srcs = glob(
+        include = ["*.json"],
+        exclude = ["tsconfig.json"],
+    ),
+    visibility = [
+        "//vscode-ng-language-service:__pkg__",
+        "//vscode-ng-language-service/syntaxes:__subpackages__",
+    ],
 )
