@@ -434,7 +434,9 @@ class OutletInjector implements Injector {
   }
 }
 
-export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>('');
+export const INPUT_BINDER = new InjectionToken<RoutedComponentInputBinder>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Router Input Binder' : '',
+);
 
 /**
  * Injectable used as a tree-shakable provider for opting in to binding router data to component

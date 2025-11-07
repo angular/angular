@@ -22,7 +22,9 @@ import {
 import {NavigationTransitions} from './navigation_transition';
 import {UrlSerializer} from './url_tree';
 
-export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>('');
+export const ROUTER_SCROLLER = new InjectionToken<RouterScroller>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Router Scroller' : '',
+);
 
 @Injectable()
 export class RouterScroller implements OnDestroy {
