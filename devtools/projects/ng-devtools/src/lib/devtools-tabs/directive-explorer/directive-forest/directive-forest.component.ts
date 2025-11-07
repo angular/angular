@@ -54,6 +54,12 @@ const RESIZE_OBSERVER_DEBOUNCE = 250; // ms
     CdkVirtualForOf,
     TreeNodeComponent,
   ],
+  host: {
+    '(document:keydown.ArrowUp)': 'navigateUp($event)',
+    '(document:keydown.ArrowDown)': 'navigateDown($event)',
+    '(document:keydown.ArrowLeft)': 'collapseCurrent($event)',
+    '(document:keydown.ArrowRight)': 'expandCurrent($event)',
+  },
 })
 export class DirectiveForestComponent {
   private readonly tabUpdate = inject(TabUpdate);
@@ -174,7 +180,6 @@ export class DirectiveForestComponent {
     this.setParents.emit(null);
   }
 
-  @HostListener('document:keydown.ArrowUp', ['$event'])
   navigateUp(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -199,7 +204,6 @@ export class DirectiveForestComponent {
     this.selectAndEnsureVisible(data[prevIdx]);
   }
 
-  @HostListener('document:keydown.ArrowDown', ['$event'])
   navigateDown(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -227,7 +231,6 @@ export class DirectiveForestComponent {
     this.selectAndEnsureVisible(data[idx]);
   }
 
-  @HostListener('document:keydown.ArrowLeft', ['$event'])
   collapseCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
@@ -240,7 +243,6 @@ export class DirectiveForestComponent {
     event.preventDefault();
   }
 
-  @HostListener('document:keydown.ArrowRight', ['$event'])
   expandCurrent(event: Event): void {
     if (this.isEditingDirectiveState(event)) {
       return;
