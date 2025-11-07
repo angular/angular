@@ -57,7 +57,7 @@ export class AggregateMetadataKey<TAcc, TItem> {
  */
 export function reducedMetadataKey<TAcc, TItem>(
   reduce: (acc: TAcc, item: TItem) => TAcc,
-  getInitial: () => TAcc,
+  getInitial: NoInfer<() => TAcc>,
 ): AggregateMetadataKey<TAcc, TItem> {
   return new (AggregateMetadataKey as new (
     reduce: (acc: TAcc, item: TItem) => TAcc,
@@ -71,7 +71,7 @@ export function reducedMetadataKey<TAcc, TItem>(
  * @experimental 21.0.0
  */
 export function listMetadataKey<TItem>(): AggregateMetadataKey<TItem[], TItem | undefined> {
-  return reducedMetadataKey<TItem[], TItem | undefined>(
+  return reducedMetadataKey(
     (acc, item) => (item === undefined ? acc : [...acc, item]),
     () => [],
   );
@@ -83,7 +83,7 @@ export function listMetadataKey<TItem>(): AggregateMetadataKey<TItem[], TItem | 
  * @experimental 21.0.0
  */
 export function minMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey<number | undefined, number | undefined>(
+  return reducedMetadataKey(
     (prev, next) => {
       if (prev === undefined) {
         return next;
@@ -103,7 +103,7 @@ export function minMetadataKey(): AggregateMetadataKey<number | undefined, numbe
  * @experimental 21.0.0
  */
 export function maxMetadataKey(): AggregateMetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey<number | undefined, number | undefined>(
+  return reducedMetadataKey(
     (prev, next) => {
       if (prev === undefined) {
         return next;
@@ -191,5 +191,4 @@ export const MAX_LENGTH: AggregateMetadataKey<number | undefined, number | undef
  * @category validation
  * @experimental 21.0.0
  */
-export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined> =
-  listMetadataKey<RegExp>();
+export const PATTERN: AggregateMetadataKey<RegExp[], RegExp | undefined> = listMetadataKey();
