@@ -67,11 +67,6 @@ export interface Resource<T> {
   readonly isLoading: Signal<boolean>;
 
   /**
-   * The current state of this resource, represented as a `ResourceSnapshot`.
-   */
-  readonly snapshot: Signal<ResourceSnapshot<T>>;
-
-  /**
    * Whether this resource has a valid current value.
    *
    * This function is reactive.
@@ -238,14 +233,3 @@ export type ResourceOptions<T, R> = PromiseResourceOptions<T, R> | StreamingReso
  * @experimental
  */
 export type ResourceStreamItem<T> = {value: T} | {error: Error};
-
-/**
- * An explicit representation of a resource's state.
- *
- * @experimental
- */
-export type ResourceSnapshot<T> =
-  | {readonly status: 'idle'; readonly value: T}
-  | {readonly status: 'loading' | 'reloading'; readonly value: T}
-  | {readonly status: 'resolved' | 'local'; readonly value: T}
-  | {readonly status: 'error'; readonly error: Error};

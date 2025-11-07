@@ -21,7 +21,6 @@ import {
   StreamingResourceOptions,
   ResourceStreamItem,
   ResourceLoaderParams,
-  ResourceSnapshot,
 } from './api';
 
 import {Injector} from '../di/injector';
@@ -139,18 +138,6 @@ abstract class BaseWritableResource<T> implements WritableResource<T> {
 
     return this.value() !== undefined;
   });
-
-  private _snapshot: Signal<ResourceSnapshot<T>> | undefined;
-  get snapshot(): Signal<ResourceSnapshot<T>> {
-    return (this._snapshot ??= computed(() => {
-      const status = this.status();
-      if (status === 'error') {
-        return {status: 'error', error: this.error()!};
-      } else {
-        return {status, value: this.value()};
-      }
-    }));
-  }
 
   hasValue(): this is ResourceRef<Exclude<T, undefined>> {
     return this.isValueDefined();
@@ -478,7 +465,7 @@ export function encapsulateResourceError(error: unknown): Error {
   return new ResourceWrappedError(error);
 }
 
-export class ResourceValueError extends Error {
+class ResourceValueError extends Error {
   constructor(error: Error) {
     super(
       ngDevMode

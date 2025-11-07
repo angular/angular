@@ -1615,7 +1615,6 @@ export interface Resource<T> {
     // (undocumented)
     hasValue(): boolean;
     readonly isLoading: Signal<boolean>;
-    readonly snapshot: Signal<ResourceSnapshot<T>>;
     readonly status: Signal<ResourceStatus>;
     readonly value: Signal<T>;
 }
@@ -1627,9 +1626,6 @@ export function resource<T, R>(options: ResourceOptions<T, R> & {
 
 // @public
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
-
-// @public
-export function resourceFromSnapshots<T>(source: () => ResourceSnapshot<T>): Resource<T>;
 
 // @public
 export type ResourceLoader<T, R> = (param: ResourceLoaderParams<R>) => PromiseLike<T>;
@@ -1657,21 +1653,6 @@ export interface ResourceRef<T> extends WritableResource<T> {
     // (undocumented)
     hasValue(): boolean;
 }
-
-// @public
-export type ResourceSnapshot<T> = {
-    readonly status: 'idle';
-    readonly value: T;
-} | {
-    readonly status: 'loading' | 'reloading';
-    readonly value: T;
-} | {
-    readonly status: 'resolved' | 'local';
-    readonly value: T;
-} | {
-    readonly status: 'error';
-    readonly error: Error;
-};
 
 // @public
 export type ResourceStatus = 'idle' | 'error' | 'loading' | 'reloading' | 'resolved' | 'local';
