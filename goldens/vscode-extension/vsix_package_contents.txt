@@ -24,4 +24,3 @@ syntaxes/let-declaration.json
 syntaxes/template-blocks.json
 syntaxes/template-tag.json
 syntaxes/template.json
-syntaxes/tsconfig.json
