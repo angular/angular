@@ -19,7 +19,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "externalDependencies": ["path"],
+            "externalDependencies": ["path", "xhr2"],
             "outputMode": "static",
             "outputPath": "dist",
             "index": "src/index.html",
