@@ -24,7 +24,7 @@ import type {RouterConfigLoader} from '../router_config_loader';
 import type {UrlSerializer} from '../url_tree';
 
 const RECOGNIZE_IMPL = new InjectionToken<typeof recognizeFn | typeof recognizeFnRxjs>(
-  'RECOGNIZE_IMPL',
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'RECOGNIZE_IMPL' : '',
   {
     factory: () => {
       const USE_ASYNC_RECOGNIZE = true;

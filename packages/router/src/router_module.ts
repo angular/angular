@@ -20,7 +20,6 @@ import {
   InjectionToken,
   ModuleWithProviders,
   NgModule,
-  NgZone,
   Provider,
   ɵRuntimeError as RuntimeError,
 } from '@angular/core';
@@ -31,7 +30,7 @@ import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
 import {RuntimeErrorCode} from './errors';
 import {Routes} from './models';
-import {NAVIGATION_ERROR_HANDLER, NavigationTransitions} from './navigation_transition';
+import {NAVIGATION_ERROR_HANDLER} from './navigation_transition';
 import {
   getBootstrapListener,
   rootRoute,

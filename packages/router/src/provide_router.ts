@@ -24,7 +24,6 @@ import {
   InjectionToken,
   Injector,
   makeEnvironmentProviders,
-  NgZone,
   provideAppInitializer,
   Provider,
   runInInjectionContext,
@@ -46,7 +45,6 @@ import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
 import {ActivatedRoute} from './router_state';
-import {UrlSerializer} from './url_tree';
 import {afterNextNavigation} from './utils/navigations';
 import {
   CREATE_VIEW_TRANSITION,
@@ -142,9 +140,12 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
  * called.
  */
-export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>('', {
-  factory: () => false,
-});
+export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Router is provided' : '',
+  {
+    factory: () => false,
+  },
+);
 
 const routerIsProvidedDevModeCheck = {
   provide: ENVIRONMENT_INITIALIZER,
