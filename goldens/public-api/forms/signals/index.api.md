@@ -428,7 +428,7 @@ export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(pat
 export type ReadonlyArrayLike<T> = Pick<ReadonlyArray<T>, number | 'length' | typeof Symbol.iterator>;
 
 // @public
-export function reducedMetadataKey<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: () => TAcc): AggregateMetadataKey<TAcc, TItem>;
+export function reducedMetadataKey<TAcc, TItem>(reduce: (acc: TAcc, item: TItem) => TAcc, getInitial: NoInfer<() => TAcc>): AggregateMetadataKey<TAcc, TItem>;
 
 // @public
 export type RemoveStringIndexUnknownKey<K, V> = string extends K ? unknown extends V ? never : K : K;
