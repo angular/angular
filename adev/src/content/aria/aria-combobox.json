@@ -88,6 +88,16 @@
           "jsdocTags": []
         },
         {
+          "name": "alwaysExpanded",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "",
+          "jsdocTags": []
+        },
+        {
           "name": "inputElement",
           "type": "any",
           "memberType": "property",
@@ -109,8 +119,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 32,
-        "endLine": 117
+        "startLine": 33,
+        "endLine": 132
       }
     },
     {
@@ -155,8 +165,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 119,
-        "endLine": 156
+        "startLine": 134,
+        "endLine": 176
       }
     },
     {
@@ -171,8 +181,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 158,
-        "endLine": 163
+        "startLine": 178,
+        "endLine": 183
       }
     },
     {
@@ -217,8 +227,83 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 165,
-        "endLine": 177
+        "startLine": 185,
+        "endLine": 200
+      }
+    },
+    {
+      "name": "ComboboxDialog",
+      "isAbstract": false,
+      "entryType": "directive",
+      "members": [
+        {
+          "name": "element",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The dialog element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "combobox",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The combobox that the dialog belongs to.",
+          "jsdocTags": []
+        },
+        {
+          "name": "close",
+          "signatures": [
+            {
+              "name": "close",
+              "entryType": "function",
+              "description": "",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "close",
+            "description": "",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": ""
+          },
+          "entryType": "function",
+          "description": "",
+          "jsdocTags": [],
+          "rawComment": "",
+          "memberType": "method",
+          "memberTags": []
+        }
+      ],
+      "generics": [],
+      "description": "",
+      "jsdocTags": [],
+      "rawComment": "",
+      "implements": [],
+      "isStandalone": true,
+      "selector": "dialog[ngComboboxDialog]",
+      "exportAs": [
+        "ngComboboxDialog"
+      ],
+      "source": {
+        "filePath": "src/aria/combobox/combobox.ts",
+        "startLine": 202,
+        "endLine": 249
       }
     }
   ],
@@ -288,6 +373,10 @@
       "@angular/aria/private"
     ],
     [
+      "ComboboxDialogPattern",
+      "@angular/aria/private"
+    ],
+    [
       "Directionality",
       "@angular/cdk/bidi"
     ],
@@ -309,6 +398,10 @@
     ],
     [
       "ComboboxPopup",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog",
       "@angular/aria/combobox"
     ],
     [
@@ -348,6 +441,10 @@
       "@angular/aria/combobox"
     ],
     [
+      "Combobox.alwaysExpanded",
+      "@angular/aria/combobox"
+    ],
+    [
       "Combobox.inputElement",
       "@angular/aria/combobox"
     ],
@@ -377,6 +474,22 @@
     ],
     [
       "ComboboxPopup.controls",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.element",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.combobox",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxDialog.close",
       "@angular/aria/combobox"
     ]
   ]
