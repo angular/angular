@@ -140,9 +140,12 @@ function routerFeature<FeatureKind extends RouterFeatureKind>(
  * An Injection token used to indicate whether `provideRouter` or `RouterModule.forRoot` was ever
  * called.
  */
-export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>('', {
-  factory: () => false,
-});
+export const ROUTER_IS_PROVIDED = new InjectionToken<boolean>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Router is provided' : '',
+  {
+    factory: () => false,
+  },
+);
 
 const routerIsProvidedDevModeCheck = {
   provide: ENVIRONMENT_INITIALIZER,
