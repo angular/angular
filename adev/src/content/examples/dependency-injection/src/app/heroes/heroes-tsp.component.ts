@@ -11,7 +11,7 @@ import {HeroListComponent} from './hero-list.component';
   selector: 'app-heroes-tsp',
   template: `
     <h2>Heroes</h2>
-    <app-hero-list></app-hero-list>
+    <app-hero-list />
   `,
   imports: [HeroListComponent],
 })

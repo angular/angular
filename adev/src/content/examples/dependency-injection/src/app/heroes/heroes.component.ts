@@ -8,7 +8,7 @@ import {HeroListComponent} from './hero-list.component';
   providers: [heroServiceProvider],
   template: `
     <h2>Heroes</h2>
-    <app-hero-list></app-hero-list>
+    <app-hero-list />
   `,
   imports: [HeroListComponent],
 })
