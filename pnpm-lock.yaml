@@ -727,12 +727,6 @@ importers:
       w3c-keyname:
         specifier: 2.2.8
         version: 2.2.8
-      xhr2:
-        specifier: 0.2.1
-        version: 0.2.1
-      zone.js:
-        specifier: 0.15.1
-        version: 0.15.1
     devDependencies:
       autoprefixer:
         specifier: 10.4.21
@@ -10561,7 +10555,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qjobs@1.2.0:
