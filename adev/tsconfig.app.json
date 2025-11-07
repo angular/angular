@@ -3,7 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
-    "types": ["node", "dom-navigation"],
+    "types": ["dom-navigation"],
     // Path mappings can result in two versions of e.g. `@angular/core`.
     // core may be linked in `adev/node_modules`, but also ESBuild does
     // respect the tsconfig path mappings.
