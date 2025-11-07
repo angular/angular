@@ -190,7 +190,7 @@ export function generateHomeAnimationDefinition(
     hideLetter(U_LETTER, 2.5),
     hideLetter(G_LETTER, 3),
     hideLetter(N_LETTER, 3.5),
-    // Make sure that the last letter disappers at the end of layer transition,
+    // Make sure that the last letter disappears at the end of layer transition,
     // i.e. 4 + 1 = 5th second end time
     hideLetter(CAPITAL_A_LETTER, 4),
     {
