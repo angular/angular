@@ -1029,9 +1029,9 @@ class SafeSelector {
 
     // Replaces the expression in `:nth-child(2n + 1)` with a placeholder.
     // WS and "+" would otherwise be interpreted as selector separators.
-    this._content = selector.replace(/(:nth-[-\w]+)(\([^)]+\))/g, (_, pseudo, exp) => {
+    this._content = selector.replace(nthRegex, (_, pseudo, exp) => {
       const replaceBy = `__ph-${this.index}__`;
-      this.placeholders.push(exp);
+      this.placeholders.push(`(${exp})`);
       this.index++;
       return pseudo + replaceBy;
     });
@@ -1076,6 +1076,7 @@ const _level1Parens = String.raw`(?:\(${_noParens}\)|${_noParens})+?`;
 // Matches content with at most TWO levels of nesting, e.g., "a(b(c)d)e"
 const _level2Parens = String.raw`(?:\(${_level1Parens}\)|${_noParens})+?`;
 const _parenSuffix = String.raw`(?:\((${_level2Parens})\))`;
+const nthRegex = new RegExp(String.raw`(:nth-[-\w]+)` + _parenSuffix, 'g');
 const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix + '?([^,{]*)', 'gim');
 // note: :host-context patterns are terminated with `{`, as opposed to :host which
 // is both `{` and `,` because :host-context handles top-level commas differently.
