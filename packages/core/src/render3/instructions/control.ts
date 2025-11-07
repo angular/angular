@@ -391,9 +391,7 @@ function observeSelectMutations(
 ): MutationObserver {
   const observer = new MutationObserver((mutations) => {
     if (mutations.some((m) => isRelevantSelectMutation(m))) {
-      // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131711472
-      // * check if bindings changed before writing.
-      setNativeControlValue(select, controlDirective.state().value());
+      select.value = controlDirective.state().value();
     }
   });
   observer.observe(select, {
