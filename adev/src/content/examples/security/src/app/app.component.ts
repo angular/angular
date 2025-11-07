@@ -7,8 +7,8 @@ import {InnerHtmlBindingComponent} from './inner-html-binding.component';
   selector: 'app-root',
   template: `
     <h1>Security</h1>
-    <app-inner-html-binding></app-inner-html-binding>
-    <app-bypass-security></app-bypass-security>
+    <app-inner-html-binding />
+    <app-bypass-security />
   `,
   imports: [BypassSecurityComponent, InnerHtmlBindingComponent],
 })

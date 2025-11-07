@@ -8,8 +8,8 @@ import {HeroesComponent} from './heroes/heroes.component';
   selector: 'app-root',
   template: `
     <h1>{{title}}</h1>
-    <app-car></app-car>
-    <app-heroes></app-heroes>
+    <app-car />
+    <app-heroes />
   `,
   imports: [CarComponent, HeroesComponent],
 })
