@@ -109,7 +109,7 @@ export class HomeAnimationComponent {
     });
   }
 
-  /** Calculte the dimensions and sizes of a meteor – width, height, tail, tilt angle, etc. */
+  /** Calculate the dimensions and sizes of a meteor – width, height, tail, tilt angle, etc. */
   private calculateMeteorDimensions(): MeteorDimensions {
     let width = METEOR_WIDTH_DEFAULT;
 
