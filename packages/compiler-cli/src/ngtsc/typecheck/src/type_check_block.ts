@@ -747,26 +747,12 @@ class TcbGenericDirectiveTypeWithAnyParamsOp extends TcbDirectiveTypeOpBase {
 abstract class TcbFieldDirectiveTypeBaseOp extends TcbOp {
   /** Bindings that aren't supported on signal form fields. */
   protected readonly unsupportedBindingFields = new Set([
-    // Should be kept in sync with the `FormUiControl` bindings,
-    // defined in `packages/forms/signals/src/api/control.ts`.
+    ...formControlInputFields,
     'value',
     'checked',
-    'errors',
-    'invalid',
-    'disabled',
-    'disabledReasons',
-    'name',
-    'readonly',
-    'touched',
-    'max',
-    'maxlength',
-    'maxLength',
-    'min',
-    'minLength',
-    'minlength',
-    'pattern',
-    'required',
     'type',
+    'maxlength',
+    'minlength',
   ]);
 
   constructor(
@@ -3144,10 +3130,14 @@ class Scope {
     if (allDirectiveMatches.some(isFieldDirective)) {
       const customFieldType = getCustomFieldDirectiveType(dir);
 
-      if (customFieldType === 'value') {
-        ignoredRequiredInputs = new Set(['value']);
-      } else if (customFieldType === 'checkbox') {
-        ignoredRequiredInputs = new Set(['checked']);
+      if (customFieldType !== null) {
+        ignoredRequiredInputs = new Set(formControlInputFields);
+
+        if (customFieldType === 'value') {
+          ignoredRequiredInputs.add('value');
+        } else if (customFieldType === 'checkbox') {
+          ignoredRequiredInputs.add('checked');
+        }
       }
     }
 
@@ -4123,6 +4113,25 @@ function hasModel(name: string, meta: TypeCheckableDirectiveMeta): boolean {
     meta.outputs.hasBindingPropertyName(name + 'Change')
   );
 }
+
+/** Names of the input fields on custom controls. */
+const formControlInputFields = [
+  // Should be kept in sync with the `FormUiControl` bindings,
+  // defined in `packages/forms/signals/src/api/control.ts`.
+  'errors',
+  'invalid',
+  'disabled',
+  'disabledReasons',
+  'name',
+  'readonly',
+  'touched',
+  'max',
+  'maxLength',
+  'min',
+  'minLength',
+  'pattern',
+  'required',
+] as const;
 
 function getCustomFieldDirectiveType(
   meta: TypeCheckableDirectiveMeta,
