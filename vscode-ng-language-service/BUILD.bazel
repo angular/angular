@@ -1,7 +1,9 @@
 load("@aspect_bazel_lib//lib:expand_template.bzl", "expand_template_rule")
-load("@aspect_rules_js//js:defs.bzl", "js_library")
+load("@aspect_rules_js//js:defs.bzl", "js_library", "js_run_binary")
 load("@aspect_rules_js//npm:defs.bzl", "npm_package")
 load("@aspect_rules_ts//ts:defs.bzl", "ts_config")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
 load("@npm//:defs.bzl", "npm_link_all_packages")
 load("@npm//vscode-ng-language-service:@vscode/vsce/package_json.bzl", vsce_bin = "bin")
 
@@ -103,4 +105,38 @@ npm_package(
         "vscode-ng-language-service",
     ],
     visibility = ["//vscode-ng-language-service/integration/e2e:__subpackages__"],
+)
+
+diff_test(
+    name = "vsix_contents_golden_test",
+    failure_message = """
+
+    To accept the new golden file, execute:
+    pnpm bazel run //vscode-ng-language-service:vsix_contents_golden.accept
+    """,
+    file1 = "//goldens/vscode-extension:vsix_package_contents.txt.golden",
+    file2 = ":vsix_contents_golden",
+)
+
+js_run_binary(
+    name = "vsix_contents_golden",
+    srcs = [":vsix_sandbox"],
+    outs = ["vsix_package_contents.txt"],
+    args = [
+        "$(rootpath vsix_package_contents.txt)",
+    ],
+    tool = "//vscode-ng-language-service/tools:vsix_contents_goldens",
+)
+
+write_file(
+    name = "vsix_contents_golden.accept",
+    out = "vsix_contents_golden.accept.sh",
+    content =
+        [
+            "#!/usr/bin/env bash",
+            "cd ${BUILD_WORKSPACE_DIRECTORY}",
+            "pnpm bazel build //vscode-ng-language-service:vsix_contents_golden",
+            "cp -fv dist/bin/vscode-ng-language-service/vsix_package_contents.txt goldens/vscode-extension/vsix_package_contents.txt.golden",
+        ],
+    is_executable = True,
 )
