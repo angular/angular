@@ -176,3 +176,4 @@ export {TimerScheduler as ɵTimerScheduler} from './defer/timer_scheduler';
 export {ɵassertType} from './type_checking';
 export {ANIMATIONS_DISABLED as ɵANIMATIONS_DISABLED} from './animation/interfaces';
 export {allLeavingAnimations as ɵallLeavingAnimations} from './animation/longest_animation';
+export {promiseWithResolvers as ɵpromiseWithResolvers} from './util/promise_with_resolvers';

@@ -5,7 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {afterNextRender, DestroyRef, EnvironmentInjector, inject, Injectable} from '@angular/core';
+import {
+  afterNextRender,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  Injectable,
+} from '@angular/core';
 
 import {PlatformLocation, PlatformNavigation} from '@angular/common';
 import {StateManager} from './state_manager';
@@ -25,7 +32,6 @@ import {
 import {Subject, SubscriptionLike} from 'rxjs';
 import {UrlTree} from '../url_tree';
 import {ROUTER_SCROLLER} from '../router_scroller';
-import {promiseWithResolvers} from '../utils/promise_with_resolvers';
 
 type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
 
@@ -150,7 +156,7 @@ export class NavigationStateManager extends StateManager {
         this.createNavigationForTransition(transition);
       }
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
-      this.cancel(transition, e);
+      void this.cancel(transition, e);
     } else if (e instanceof NavigationEnd) {
       const {resolveHandler} = this.currentNavigation;
       this.currentNavigation = {};
@@ -331,7 +337,11 @@ export class NavigationStateManager extends StateManager {
       scroll,
     };
 
-    const [handlerPromise, resolveHandler, rejectHandler] = promiseWithResolvers();
+    const {
+      promise: handlerPromise,
+      resolve: resolveHandler,
+      reject: rejectHandler,
+    } = promiseWithResolvers<void>();
     this.currentNavigation.resolveHandler = resolveHandler;
     this.currentNavigation.rejectNavigateEvent = rejectHandler;
     // Prevent unhandled promise rejections from internal promises.
