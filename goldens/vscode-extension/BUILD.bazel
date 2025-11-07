@@ -1,1 +1,1 @@
-exports_files(["vsix_package_contents.txt.golden"])
+exports_files(["vsix_package_contents.txt"])
