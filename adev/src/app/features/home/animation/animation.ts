@@ -20,7 +20,7 @@ import {CssPropertyValue, cssValueParser, stringifyParsedValue} from './parser';
 import {calculateNextCssValue} from './calculations';
 import {AnimationPlugin} from './plugins/types';
 
-// The string seperator between a layed ID and an object selector.
+// The string separator between a laid ID and an object selector.
 const SEL_SEPARATOR = '>>';
 
 // One millisecond.
@@ -230,7 +230,7 @@ export class Animation {
     if (time >= 0) {
       this.updateFrame(time);
 
-      // Un-complete the animation, if it was completed.
+      // Incomplete the animation, if it was completed.
       this.completed = false;
     }
   }
@@ -314,7 +314,7 @@ export class Animation {
       let sourceStyles: ParsedStyles; // Opposite direction styles
       let relativeDeltaT: number;
 
-      // Determine the change direction. Negative Dt means going back in time; postive – forward.
+      // Determine the change direction. Negative Dt means going back in time; positive – forward.
       //
       // It's important to calculate the relative time since the global current time might go out of
       // rule boundaries which will scew the final change rate calculations.
