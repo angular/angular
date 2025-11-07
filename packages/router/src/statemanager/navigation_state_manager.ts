@@ -5,10 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import {DestroyRef, inject, Injectable} from '@angular/core';
+import {
+  afterNextRender,
+  ɵpromiseWithResolvers as promiseWithResolvers,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  Injectable,
+} from '@angular/core';
 
 import {PlatformLocation, PlatformNavigation} from '@angular/common';
-import {HistoryStateManager, StateManager} from './state_manager';
+import {StateManager} from './state_manager';
 import {RestoredState, Navigation as RouterNavigation} from '../navigation_transition';
 import {
   BeforeActivateRoutes,
@@ -43,6 +50,7 @@ type NavigationInfo = {ɵrouterInfo: {intercept: boolean}};
  * by intercepting the navigation event.
  */
 export class NavigationStateManager extends StateManager {
+  private readonly injector = inject(EnvironmentInjector);
   private readonly navigation = inject(PlatformNavigation);
   private readonly inMemoryScrollingEnabled = inject(ROUTER_SCROLLER, {optional: true}) !== null;
   /** The base origin of the application, extracted from PlatformLocation. */
@@ -65,6 +73,10 @@ export class NavigationStateManager extends StateManager {
   private currentNavigation: {
     /** The Angular Router's internal representation of the ongoing navigation. */
     routerTransition?: RouterNavigation;
+    /** Function to reject the intercepted navigation event. */
+    rejectNavigateEvent?: (reason?: any) => void;
+    /** Function to resolve the intercepted navigation event. */
+    resolveHandler?: (v: void) => void;
   } = {};
 
   /**
@@ -79,6 +91,11 @@ export class NavigationStateManager extends StateManager {
   }>();
 
   nonRouterEntryChangeListener?: SubscriptionLike;
+  private get registered() {
+    return (
+      this.nonRouterEntryChangeListener !== undefined && !this.nonRouterEntryChangeListener.closed
+    );
+  }
 
   constructor() {
     super();
@@ -92,6 +109,22 @@ export class NavigationStateManager extends StateManager {
     inject(DestroyRef).onDestroy(() =>
       this.navigation.removeEventListener('navigate', navigateListener),
     );
+  }
+
+  override registerNonRouterCurrentEntryChangeListener(
+    listener: (
+      url: string,
+      state: RestoredState | null | undefined,
+      trigger: NavigationTrigger,
+    ) => void,
+  ): SubscriptionLike {
+    this.activeHistoryEntry = this.navigation.currentEntry!;
+    this.nonRouterEntryChangeListener = this.nonRouterCurrentEntryChangeSubject.subscribe(
+      ({path, state}) => {
+        listener(path, state, 'popstate');
+      },
+    );
+    return this.nonRouterEntryChangeListener;
   }
 
   /**
@@ -110,7 +143,7 @@ export class NavigationStateManager extends StateManager {
     if (e instanceof NavigationStart) {
       this.updateStateMemento();
     } else if (e instanceof NavigationSkipped) {
-      this.currentNavigation = {};
+      this.finishNavigation();
       this.commitTransition(transition);
     } else if (e instanceof RoutesRecognized) {
       if (this.urlUpdateStrategy === 'eager' && !transition.extras.skipLocationChange) {
@@ -123,11 +156,14 @@ export class NavigationStateManager extends StateManager {
         this.createNavigationForTransition(transition);
       }
     } else if (e instanceof NavigationCancel || e instanceof NavigationError) {
-      this.cancel(transition, e);
+      void this.cancel(transition, e);
     } else if (e instanceof NavigationEnd) {
+      const {resolveHandler} = this.currentNavigation;
       this.currentNavigation = {};
       // Update `activeHistoryEntry` to the new current entry from Navigation API.
       this.activeHistoryEntry = this.navigation.currentEntry!;
+      // Resolve handler after next render to defer scroll and focus reset.
+      afterNextRender({read: () => resolveHandler?.()}, {injector: this.injector});
     }
   }
 
@@ -178,11 +214,22 @@ export class NavigationStateManager extends StateManager {
   }
 
   /**
+   * Finalizes the current navigation by committing the URL (if not already done)
+   * and resolving the post-commit handler promise. Clears the `currentNavigation` state.
+   */
+  private finishNavigation() {
+    this.currentNavigation?.resolveHandler?.();
+    this.currentNavigation = {};
+  }
+
+  /**
    * Performs the necessary rollback action to restore the browser URL to the
    * state before the transition.
    */
-  private cancel(transition: RouterNavigation, cause: NavigationCancel | NavigationError) {
-    this.currentNavigation = {};
+  private async cancel(transition: RouterNavigation, cause: NavigationCancel | NavigationError) {
+    this.currentNavigation.rejectNavigateEvent?.();
+    const clearedState = {}; // Marker to detect if a new navigation started during async ops.
+    this.currentNavigation = clearedState;
     // Do not reset state if we're redirecting or navigation is superseded by a new one.
     if (
       cause instanceof NavigationCancel &&
@@ -202,6 +249,24 @@ export class NavigationStateManager extends StateManager {
     // no browser history manipulation is needed.
     if (this.navigation.currentEntry!.id === this.activeHistoryEntry.id) {
       return;
+    }
+
+    // If the cancellation was not due to a guard or resolver (e.g., superseded by another
+    // navigation, or aborted by user), there's a race condition. Another navigation might
+    // have already started. A delay is used to see if `currentNavigation` changes,
+    // indicating a new navigation has taken over.
+    // We have no way of knowing if a navigation was aborted by another incoming navigation
+    // https://github.com/WICG/navigation-api/issues/288
+    if (
+      cause instanceof NavigationCancel &&
+      cause.code !== NavigationCancellationCode.GuardRejected &&
+      cause.code !== NavigationCancellationCode.NoDataFromResolver
+    ) {
+      await Promise.resolve();
+      if (this.currentNavigation !== clearedState) {
+        // A new navigation has started, so don't attempt to roll back this one.
+        return;
+      }
     }
 
     if (isTraversalReset) {
@@ -233,22 +298,6 @@ export class NavigationStateManager extends StateManager {
       : this.urlHandlingStrategy.merge(this.currentUrlTree, finalUrl ?? this.rawUrlTree);
   }
 
-  override registerNonRouterCurrentEntryChangeListener(
-    listener: (
-      url: string,
-      state: RestoredState | null | undefined,
-      trigger: NavigationTrigger,
-    ) => void,
-  ): SubscriptionLike {
-    this.activeHistoryEntry = this.navigation.currentEntry!;
-    this.nonRouterEntryChangeListener = this.nonRouterCurrentEntryChangeSubject.subscribe(
-      ({path, state}) => {
-        listener(path, state, 'popstate');
-      },
-    );
-    return this.nonRouterEntryChangeListener;
-  }
-
   /**
    * Handles the `navigate` event from the browser's Navigation API.
    * This is the core interception point.
@@ -267,12 +316,18 @@ export class NavigationStateManager extends StateManager {
       return;
     }
     const isTriggeredByRouterTransition = !!routerInfo;
-    if (
-      !isTriggeredByRouterTransition &&
-      (!this.nonRouterEntryChangeListener || this.nonRouterEntryChangeListener.closed)
-    ) {
-      // If the router isn't set up to listen for these yet. Do not convert it to a router navigation.
-      return;
+    if (!isTriggeredByRouterTransition) {
+      // If there's an ongoing navigation in the Angular Router, abort it. This new navigation
+      // supersedes it. If the navigation was triggered by the Router, it may be the navigation
+      // happening from _inside_ the navigation transition, or a separate Router.navigate call
+      // that would have already handled cleanup of the previous navigation.
+      this.currentNavigation.routerTransition?.abort();
+
+      if (!this.registered) {
+        // If the router isn't set up to listen for these yet. Do not convert it to a router navigation.
+        this.finishNavigation();
+        return;
+      }
     }
 
     let scroll = this.inMemoryScrollingEnabled
@@ -281,6 +336,17 @@ export class NavigationStateManager extends StateManager {
     const interceptOptions: NavigationInterceptOptions = {
       scroll,
     };
+
+    const {
+      promise: handlerPromise,
+      resolve: resolveHandler,
+      reject: rejectHandler,
+    } = promiseWithResolvers<void>();
+    this.currentNavigation.resolveHandler = resolveHandler;
+    this.currentNavigation.rejectNavigateEvent = rejectHandler;
+    // Prevent unhandled promise rejections from internal promises.
+    handlerPromise.catch(() => {});
+    interceptOptions.handler = () => handlerPromise;
 
     // Intercept the navigation event with the configured options.
     event.intercept(interceptOptions);

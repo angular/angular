@@ -8,7 +8,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {provideRouter, Router} from '../src';
-import {withPlatformNavigation} from '../src/provide_router';
+import {withPlatformNavigation, withRouterConfig} from '../src/provide_router';
 import {withBody} from '@angular/private/testing';
 import {
   PlatformLocation,
@@ -21,7 +21,7 @@ import {
   ɵFakeNavigationPlatformLocation as FakeNavigationPlatformLocation,
   provideLocationMocks,
 } from '@angular/common/testing';
-import {EnvironmentInjector} from '@angular/core';
+import {timeout, useAutoTick} from './helpers';
 
 /// <reference types="dom-navigation" />
 
@@ -84,6 +84,74 @@ describe('withPlatformNavigation feature', () => {
       expect(changed).toBeFalse();
       await new Promise((resolve) => setTimeout(resolve, 1));
       expect(changed).toBeTrue();
+    });
+  });
+
+  describe('NavigateEvent and NavigationTransition', () => {
+    useAutoTick();
+
+    let router: Router;
+    beforeEach(() => {
+      router = TestBed.inject(Router);
+      router.initialNavigation();
+    });
+
+    it('should keep non-router triggered navigation unfinished while waiting for guards', async () => {
+      router.resetConfig([
+        {
+          path: '**',
+          canActivate: [
+            () => new Promise<boolean>((resolve) => setTimeout(() => resolve(true), 10)),
+          ],
+          children: [],
+        },
+      ]);
+      const {finished} = TestBed.inject(PlatformNavigation).navigate('/somepath');
+      await timeout(5);
+      // note that this finished promise will be rejected because the Router will create a separate 'replace' navigate
+      // since we cannot redirect the original navigation without precommit handler support
+      await expectAsync(finished).not.toBeResolved();
+      expect(TestBed.inject(PlatformNavigation).transition).not.toBeNull();
+      await timeout(10);
+      expect(TestBed.inject(PlatformNavigation).transition).toBeNull();
+    });
+  });
+
+  describe('eager url update', () => {
+    useAutoTick();
+    let router: Router;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideRouter(
+            [{path: '**', children: []}],
+            withPlatformNavigation(),
+            withRouterConfig({urlUpdateStrategy: 'eager'}),
+          ),
+        ],
+      });
+      router = TestBed.inject(Router);
+    });
+
+    it('should keep router triggered navigation unfinished while waiting for guards', async () => {
+      router.resetConfig([
+        {
+          path: '**',
+          canActivate: [
+            () => new Promise<boolean>((resolve) => setTimeout(() => resolve(true), 10)),
+          ],
+          children: [],
+        },
+      ]);
+      router.navigateByUrl('/somepath');
+      await timeout(5);
+      const navigation = TestBed.inject(PlatformNavigation);
+      const {finished} = navigation.transition!;
+      expect(navigation.transition).not.toBeNull();
+      await timeout(10);
+      expect(navigation.transition).toBeNull();
+      await expectAsync(finished).toBeResolved();
     });
   });
 });
