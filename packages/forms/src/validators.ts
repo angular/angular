@@ -74,6 +74,8 @@ function lengthOrSize(value: unknown): number | null {
  * }
  * ```
  *
+ * @see [Defining custom validators](guide/forms/form-validation#defining-custom-validators)
+ *
  * @publicApi
  */
 export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Function>>(
@@ -106,6 +108,8 @@ export const NG_VALIDATORS = new InjectionToken<ReadonlyArray<Validator | Functi
  *   }
  * }
  * ```
+ *
+ * @see [Implementing a custom async validator](guide/forms/form-validation#implementing-a-custom-async-validator)
  *
  * @publicApi
  */
