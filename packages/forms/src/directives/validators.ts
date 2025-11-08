@@ -55,6 +55,8 @@ function toFloat(value: string | number): number {
  * @description
  * Defines the map of errors returned from failed validation checks.
  *
+ * @see [Defining custom validators](guide/forms/form-validation#defining-custom-validators)
+ *
  * @publicApi
  */
 export type ValidationErrors = {
@@ -318,6 +320,8 @@ export class MinValidator extends AbstractValidatorDirective {
  * }
  * ```
  *
+ * @see [Creating asynchronous validators](guide/forms/form-validation#creating-asynchronous-validators)
+ *
  * @publicApi
  */
 export interface AsyncValidator extends Validator {
@@ -505,6 +509,8 @@ export class EmailValidator extends AbstractValidatorDirective {
  * A function that receives a control and synchronously returns a map of
  * validation errors if present, otherwise null.
  *
+ * @see [Defining custom validators](guide/forms/form-validation#defining-custom-validators)
+ *
  * @publicApi
  */
 export interface ValidatorFn {
@@ -515,6 +521,8 @@ export interface ValidatorFn {
  * @description
  * A function that receives a control and returns a Promise or observable
  * that emits validation errors if present, otherwise null.
+ *
+ * @see [Creating asynchronous validators](guide/forms/form-validation#creating-asynchronous-validators)
  *
  * @publicApi
  */
