@@ -1,5 +1,8 @@
 # Profiling with the Chrome DevTools
 
+NOTE:
+The `enableProfiling()` function used in this guide is currently experimental and may change in future versions of Angular.
+
 Angular integrates with the [Chrome DevTools extensibility API](https://developer.chrome.com/docs/devtools/performance/extension) to present framework-specific data and insights directly in the [Chrome DevTools performance panel](https://developer.chrome.com/docs/devtools/performance/overview).
 
 With the integration enabled, you can [record a performance profile](https://developer.chrome.com/docs/devtools/performance#record) containing two sets of data:
