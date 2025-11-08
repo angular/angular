@@ -261,6 +261,14 @@ export class NavigationCancel extends RouterEvent {
   }
 }
 
+export function isRedirectingEvent(event: Event): boolean {
+  return (
+    event instanceof NavigationCancel &&
+    (event.code === NavigationCancellationCode.Redirect ||
+      event.code === NavigationCancellationCode.SupersededByNewNavigation)
+  );
+}
+
 /**
  * An event triggered when a navigation is skipped.
  * This can happen for a couple reasons including onSameUrlHandling
