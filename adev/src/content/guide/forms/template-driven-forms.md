@@ -59,26 +59,26 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 
 1. The provided sample application creates the `Actor` class which defines the data model reflected in the form.
 
-<docs-code header="src/app/actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
+<docs-code header="actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
 
 1. The form layout and details are defined in the `ActorFormComponent` class.
 
-   <docs-code header="src/app/actor-form/actor-form.component.ts (v1)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="v1"/>
+   <docs-code header="actor-form.component.ts (v1)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="v1"/>
 
    The component's `selector` value of "app-actor-form" means you can drop this form in a parent template using the `<app-actor-form>` tag.
 
-1. The following code creates a new actor instance, so that the initial form can show an example actor.
+2. The following code creates a new actor instance, so that the initial form can show an example actor.
 
    <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="Marilyn"/>
 
    This demo uses dummy data for `model` and `skills`.
    In a real app, you would inject a data service to get and save real data, or expose these properties as inputs and outputs.
 
-1. The component enables the Forms feature by importing the `FormsModule` module.
+3. The component enables the Forms feature by importing the `FormsModule` module.
 
    <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="imports"/>
 
-1. The form is displayed in the application layout defined by the root component's template.
+4. The form is displayed in the application layout defined by the root component's template.
 
    <docs-code header="src/app/app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
 
@@ -91,7 +91,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    The **Submit** button has some classes on it for styling.
    At this point, the form layout is all plain HTML5, with no bindings or directives.
 
-1. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
+5. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
    To use these styles, the application's style sheet imports the library.
 
 <docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
@@ -99,7 +99,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 1. The form requires that an actor's skill is chosen from a predefined list of `skills` maintained internally in `ActorFormComponent`.
    The Angular `@for` loop iterates over the data values to populate the `<select>` element.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
+<docs-code header="actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
 
 If you run the application right now, you see the list of skills in the selection control.
 The input elements are not yet bound to data values or events, so they are still blank and have no behavior.
@@ -115,7 +115,7 @@ When you include the directive using the syntax for two-way data binding, `[(ngM
 1. Find the `<input>` tag next to the **Name** label.
 1. Add the `ngModel` directive, using two-way data binding syntax `[(ngModel)]="..."`.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngModelName-1"/>
+<docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngModelName-1"/>
 
 HELPFUL: This example has a temporary diagnostic interpolation after each input tag, `{{model.name}}`, to show the current data value of the corresponding property. The comment reminds you to remove the diagnostic lines when you have finished observing the two-way data binding at work.
 
@@ -128,7 +128,7 @@ To get access to the `NgForm` and the overall form status, declare a [template r
 1. Edit the template file `actor-form.component.html`.
 1. Update the `<form>` tag with a template reference variable, `#actorForm`, and set its value as follows.
 
-   <docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="template-variable"/>
+   <docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="template-variable"/>
 
    The `actorForm` template variable is now a reference to the `NgForm` directive instance that governs the form as a whole.
 
@@ -153,7 +153,7 @@ Any unique value will do, but using a descriptive name is helpful.
 
 After these revisions, the form template should look like the following:
 
-<docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngModel-2"/>
+<docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngModel-2"/>
 
 You'll notice that:
 
@@ -261,12 +261,12 @@ Add a `<div>` that contains a suitable error message.
 Show or hide the error message by binding properties of the `name` control to the message `<div>` element's `hidden` property.
 </docs-step>
 
-<docs-code header="src/app/actor-form/actor-form.component.html (hidden-error-msg)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="hidden-error-msg"/>
+<docs-code header="actor-form.component.html (hidden-error-msg)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="hidden-error-msg"/>
 
 <docs-step title="Add a conditional error message to name">
 Add a conditional error message to the `name` input box, as in the following example.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="name-with-error-msg"/>
+<docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="name-with-error-msg"/>
 </docs-step>
 </docs-workflow>
 
@@ -291,11 +291,11 @@ To let form users add a new actor, you will add a **New Actor** button that resp
 1. In the template, place a "New Actor" `<button>` element at the bottom of the form.
 1. In the component file, add the actor-creation method to the actor data model.
 
-<docs-code header="src/app/actor-form/actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
+<docs-code header="actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
 
 1. Bind the button's click event to an actor-creation method, `newActor()`.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
+<docs-code header="actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
 
 1. Run the application again and click the **New Actor** button.
 
@@ -310,7 +310,7 @@ To let form users add a new actor, you will add a **New Actor** button that resp
 
 1. To restore the pristine state of the form controls, clear all of the flags imperatively by calling the form's `reset()` method after calling the `newActor()` method.
 
-   <docs-code header="src/app/actor-form/actor-form.component.html (Reset the form)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-form-reset"/>
+   <docs-code header="actor-form.component.html (Reset the form)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-form-reset"/>
 
    Now clicking **New Actor** resets both the form and its control flags.
 
@@ -326,7 +326,7 @@ To respond to this event, take the following steps.
 <docs-step title="Listen to ngOnSubmit">
 Bind the form's [`ngSubmit`](api/forms/NgForm#properties) event property to the actor-form component's `onSubmit()` method.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (ngSubmit)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngSubmit"/>
+<docs-code header="actor-form.component.html (ngSubmit)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="ngSubmit"/>
 </docs-step>
 
 <docs-step title="Bind the disabled property">
@@ -334,7 +334,7 @@ Use the template reference variable, `#actorForm` to access the form that contai
 
 You will bind the form property that indicates its overall validity to the **Submit** button's `disabled` property.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (submit-button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="submit-button"/>
+<docs-code header="actor-form.component.html (submit-button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="submit-button"/>
 </docs-step>
 
 <docs-step title="Run the application">
@@ -357,11 +357,11 @@ To show a response to form submission, you can hide the data entry area and disp
 <docs-step title="Wrap the form">
 Wrap the entire form in a `<div>` and bind its `hidden` property to the `ActorFormComponent.submitted` property.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="edit-div"/>
+<docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="edit-div"/>
 
 The main form is visible from the start because the `submitted` property is false until you submit the form, as this fragment from the `ActorFormComponent` shows:
 
-<docs-code header="src/app/actor-form/actor-form.component.ts (submitted)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="submitted"/>
+<docs-code header="actor-form.component.ts (submitted)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="submitted"/>
 
 When you click the **Submit** button, the `submitted` flag becomes true and the form disappears.
 </docs-step>
@@ -369,7 +369,7 @@ When you click the **Submit** button, the `submitted` flag becomes true and the 
 <docs-step title="Add the submitted state">
 To show something else while the form is in the submitted state, add the following HTML below the new `<div>` wrapper.
 
-<docs-code header="src/app/actor-form/actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="submitted"/>
+<docs-code header="actor-form.component.html (excerpt)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="submitted"/>
 
 This `<div>`, which shows a read-only actor with interpolation bindings, appears only while the component is in the submitted state.
 
@@ -399,8 +399,8 @@ framework features to provide support for data modification, validation, and mor
 Here's the code for the final version of the application:
 
 <docs-code-multifile>
-    <docs-code header="actor-form/actor-form.component.ts" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="final"/>
-    <docs-code header="actor-form/actor-form.component.html" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="final"/>
+    <docs-code header="actor-form.component.ts" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="final"/>
+    <docs-code header="actor-form.component.html" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="final"/>
     <docs-code header="actor.ts" path="adev/src/content/examples/forms/src/app/actor.ts"/>
     <docs-code header="app.component.html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
     <docs-code header="app.component.ts" path="adev/src/content/examples/forms/src/app/app.component.ts"/>
