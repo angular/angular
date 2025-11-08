@@ -19,6 +19,7 @@ import {StateManager} from './state_manager';
 import {RestoredState, Navigation as RouterNavigation} from '../navigation_transition';
 import {
   BeforeActivateRoutes,
+  isRedirectingEvent,
   NavigationCancel,
   NavigationCancellationCode,
   NavigationEnd,
@@ -240,11 +241,7 @@ export class NavigationStateManager extends StateManager {
     const clearedState = {}; // Marker to detect if a new navigation started during async ops.
     this.currentNavigation = clearedState;
     // Do not reset state if we're redirecting or navigation is superseded by a new one.
-    if (
-      cause instanceof NavigationCancel &&
-      (cause.code === NavigationCancellationCode.SupersededByNewNavigation ||
-        cause.code === NavigationCancellationCode.Redirect)
-    ) {
+    if (isRedirectingEvent(cause)) {
       return;
     }
     // Determine if the rollback should be a traversal to a specific previous entry
