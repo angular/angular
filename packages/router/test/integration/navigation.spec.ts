@@ -393,7 +393,13 @@ export function navigationIntegrationTestSuite(browserAPI: 'history' | 'navigati
 
       // Angular does not support restoring state to the primitive.
       expect(navigation.extras.state).toEqual(undefined);
-      expect((location.getState() as any).navigationId).toBeDefined();
+      // On a traversal, we really can't add state when using the navigation API.
+      // A traversal is a strict restoration of a previous state. To add our own state to the entry,
+      // we would need to perform a replaceState under the hood, and that would cancel/reject
+      // the traversal NavigateEvent and break scroll and focus restoration.
+      if (browserAPI === 'history') {
+        expect((location.getState() as any).navigationId).toBeDefined();
+      }
     });
 
     it('should not pollute browser history when replaceUrl is set to true', async () => {

@@ -79,6 +79,7 @@ export class NavigationStateManager extends StateManager {
     rejectNavigateEvent?: (reason?: any) => void;
     /** Function to resolve the intercepted navigation event. */
     resolveHandler?: (v: void) => void;
+    navigationEvent?: NavigateEvent;
   } = {};
 
   /**
@@ -174,6 +175,19 @@ export class NavigationStateManager extends StateManager {
   }
 
   private createNavigationForTransition(transition: RouterNavigation) {
+    const {navigationEvent} = this.currentNavigation;
+    // If we are currently handling a traversal navigation, we do not need a new navigation for it
+    // because we are strictly restoring a previous state. If we are instead handling a navigation
+    // initiated outside the router, we do need to replace it with a router-triggered navigation
+    // to add the router-specific state.
+    if (
+      navigationEvent &&
+      (navigationEvent.navigationType === 'traverse' ||
+        navigationEvent.navigationType === 'reload') &&
+      this.eventAndRouterDestinationsMatch(navigationEvent, transition)
+    ) {
+      return;
+    }
     // Before we create a navigation for the Router transition, we have to remove any abort listeners
     // from the previous navigation event. Creating the new navigation will cause the signal
     // to be aborted, and we don't want that to cause our router transition to be aborted.
@@ -263,11 +277,7 @@ export class NavigationStateManager extends StateManager {
     // indicating a new navigation has taken over.
     // We have no way of knowing if a navigation was aborted by another incoming navigation
     // https://github.com/WICG/navigation-api/issues/288
-    if (
-      cause instanceof NavigationCancel &&
-      cause.code !== NavigationCancellationCode.GuardRejected &&
-      cause.code !== NavigationCancellationCode.NoDataFromResolver
-    ) {
+    if (cause instanceof NavigationCancel && cause.code === NavigationCancellationCode.Aborted) {
       await Promise.resolve();
       if (this.currentNavigation !== clearedState) {
         // A new navigation has started, so don't attempt to roll back this one.
@@ -337,6 +347,7 @@ export class NavigationStateManager extends StateManager {
     }
 
     this.currentNavigation = {...this.currentNavigation};
+    this.currentNavigation.navigationEvent = event;
     // Setup an abort handler. If the `NavigateEvent` is aborted (e.g., user clicks stop,
     // or another navigation supersedes this one), we need to abort the Angular Router's
     // internal navigation transition as well.
@@ -400,6 +411,17 @@ export class NavigationStateManager extends StateManager {
     const path = event.destination.url.substring(this.appRootURL.length - 1);
     const state = event.destination.getState() as RestoredState | null | undefined;
     this.nonRouterCurrentEntryChangeSubject.next({path, state});
+  }
+
+  private eventAndRouterDestinationsMatch(
+    navigateEvent: NavigateEvent,
+    transition: RouterNavigation,
+  ): boolean {
+    const internalPath = this.createBrowserPath(transition);
+    const eventDestination = new URL(navigateEvent.destination.url);
+    // this might be a path or an actual URL depending on the baseHref
+    const routerDestination = this.location.prepareExternalUrl(internalPath);
+    return new URL(routerDestination, eventDestination.origin).href === eventDestination.href;
   }
 }
 
