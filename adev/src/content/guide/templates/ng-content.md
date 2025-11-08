@@ -20,14 +20,14 @@ export class BaseButton {}
 ```angular-ts
 // ./app.component.ts
 import { Component } from '@angular/core';
-import { BaseButton } from './base-button/base-button.component.ts';
+import { BaseButton } from './base-button/base-button.component';
 
 @Component({
   selector: 'app-root',
   imports: [BaseButton],
   template: `
     <button baseButton>
-      Next <span class="icon arrow-right" />
+      Next <span class="icon arrow-right"></span>
     </button>
   `,
 })
