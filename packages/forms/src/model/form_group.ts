@@ -180,6 +180,9 @@ export type ɵOptionalKeys<T> = {
  * Notice that `c.value.one` has type `string|null|undefined`. This is because calling `c.reset({})`
  * without providing the optional key `one` will cause it to become `null`.
  *
+ * @see [Grouping form controls](guide/forms/reactive-forms#grouping-form-controls)
+ * @see [FormGroup and FormRecord](guide/forms/typed-forms#formgroup-and-formrecord)
+ *
  * @publicApi
  */
 export class FormGroup<
@@ -728,6 +731,8 @@ export const isFormGroup = (control: unknown): control is FormGroup => control i
  * numbers.addControl('bob', new FormControl('415-234-567'));
  * numbers.removeControl('bill');
  * ```
+ *
+ * @see [FormGroup and FormRecord](guide/forms/typed-forms#formgroup-and-formrecord)
  *
  * @publicApi
  */
