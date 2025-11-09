@@ -40,21 +40,25 @@ To install the Angular CLI, open a terminal window and run the following command
 <docs-code-multifile>
    <docs-code
      header="npm"
+     language="shell"
      >
      npm install -g @angular/cli
      </docs-code>
    <docs-code
      header="pnpm"
+     language="shell"
      >
      pnpm install -g @angular/cli
      </docs-code>
    <docs-code
      header="yarn"
+     language="shell"
      >
      yarn global add @angular/cli
      </docs-code>
    <docs-code
      header="bun"
+     language="shell"
      >
      bun install -g @angular/cli
      </docs-code>
@@ -82,21 +86,25 @@ Run with `sudo` to execute the command as the root user and enter your password 
 <docs-code-multifile>
    <docs-code
      header="npm"
+     language="shell"
      >
      sudo npm install -g @angular/cli
      </docs-code>
    <docs-code
      header="pnpm"
+     language="shell"
      >
      sudo pnpm install -g @angular/cli
      </docs-code>
    <docs-code
      header="yarn"
+     language="shell"
      >
      sudo yarn global add @angular/cli
      </docs-code>
    <docs-code
      header="bun"
+     language="shell"
      >
      sudo bun install -g @angular/cli
      </docs-code>
