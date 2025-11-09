@@ -325,6 +325,18 @@ export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Ro
 export class MetadataKey<TValue> {
 }
 
+// @public (undocumented)
+export class MetadataRegistry {
+    // (undocumented)
+    get(token: any): () => any;
+    // (undocumented)
+    register(token: any, getter: () => any): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MetadataRegistry, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<MetadataRegistry>;
+}
+
 // @public
 export const MIN: AggregateMetadataKey<number | undefined, number | undefined>;
 

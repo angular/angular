@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {ɵWritable as Writable} from '@angular/core';
+import {ɵWritable as Writable, inject} from '@angular/core';
+import {MetadataRegistry} from '../signals/metadata_registry';
 
 import {AsyncValidatorFn, ValidatorFn} from '../directives/validators';
 import {removeListItem} from '../util';
@@ -451,6 +452,15 @@ export const FormControl: ɵFormControlCtor = class FormControl<TValue = any>
   extends AbstractControl<TValue>
   implements FormControlInterface<TValue>
 {
+  /** Provides access to built-in and custom validator metadata (safe for non-DI usage) */
+  readonly metadata = (() => {
+    try {
+      return inject(MetadataRegistry);
+    } catch {
+      return null;
+    }
+  })();
+
   /** @publicApi */
   public defaultValue: TValue = null as unknown as TValue;
 

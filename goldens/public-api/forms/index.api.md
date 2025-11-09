@@ -648,6 +648,18 @@ export class MaxValidator extends AbstractValidatorDirective {
     static ɵfac: i0.ɵɵFactoryDeclaration<MaxValidator, never>;
 }
 
+// @public (undocumented)
+export class MetadataRegistry {
+    // (undocumented)
+    get(token: any): () => any;
+    // (undocumented)
+    register(token: any, getter: () => any): void;
+    // (undocumented)
+    static ɵfac: i0.ɵɵFactoryDeclaration<MetadataRegistry, never>;
+    // (undocumented)
+    static ɵprov: i0.ɵɵInjectableDeclaration<MetadataRegistry>;
+}
+
 // @public
 export class MinLengthValidator extends AbstractValidatorDirective {
     minlength: string | number | null;

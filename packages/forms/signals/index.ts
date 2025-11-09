@@ -12,3 +12,4 @@
 // names.
 
 export * from './public_api';
+export * from '../src/signals/metadata_registry';
