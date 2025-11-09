@@ -160,12 +160,12 @@ The `RouteReuseStrategy` class provides five methods that control the lifecycle 
 The following example demonstrates a custom route reuse strategy that selectively preserves component state based on route metadata:
 
 ```ts
-import { RouteReuseStrategy, ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
+import { RouteReuseStrategy, Route, ActivatedRouteSnapshot, DetachedRouteHandle } from '@angular/router';
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CustomRouteReuseStrategy implements RouteReuseStrategy {
-  private handlers = new Map<string, DetachedRouteHandle>();
+  private handlers = new Map<Route | null, DetachedRouteHandle>();
 
   shouldDetach(route: ActivatedRouteSnapshot): boolean {
     // Determines if a route should be stored for later reuse
@@ -197,11 +197,13 @@ export class CustomRouteReuseStrategy implements RouteReuseStrategy {
     return future.routeConfig === curr.routeConfig;
   }
 
-  private getRouteKey(route: ActivatedRouteSnapshot): string {
-    return route.routeConfig ?? '';
+  private getRouteKey(route: ActivatedRouteSnapshot): Route | null {
+    return route.routeConfig;
   }
 }
 ```
+
+NOTE: Avoid using the route path as the key when `canMatch` guards are involved, as it may lead to duplicate entries.
 
 ### Configuring a route to use a custom route reuse strategy
 
