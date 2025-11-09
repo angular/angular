@@ -169,6 +169,10 @@ export class NavigationStateManager extends StateManager {
       removeAbortListener?.();
       // Update `activeHistoryEntry` to the new current entry from Navigation API.
       this.activeHistoryEntry = this.navigation.currentEntry!;
+      // TODO(atscott): Consider initiating scroll here since it will be attempted periodically.
+      // We have to wait for render to resolve because focus reset is only done once in the spec.
+      // Render is not synchronous with NavigationEnd today. The Router's navigation promise resolve
+      // is what _causes_ the render to happen with ZoneJS...
       // Resolve handler after next render to defer scroll and focus reset.
       afterNextRender({read: () => resolveHandler?.()}, {injector: this.injector});
     }
