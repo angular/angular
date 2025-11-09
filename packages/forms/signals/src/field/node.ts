@@ -192,10 +192,24 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * Marks this specific field as untouched.
+   */
+  markAsUntouched(): void {
+    this.nodeState.markAsUntouched();
+  }
+
+  /**
    * Marks this specific field as dirty.
    */
   markAsDirty(): void {
     this.nodeState.markAsDirty();
+  }
+
+  /**
+   * Marks this specific field as dirty.
+   */
+  markAsPristine(): void {
+    this.nodeState.markAsPristine();
   }
 
   /**
