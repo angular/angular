@@ -9,7 +9,6 @@
 import {DOCUMENT} from '@angular/common';
 import {
   forwardRef,
-  Inject,
   Injectable,
   Sanitizer,
   SecurityContext,
@@ -25,6 +24,7 @@ import {
   ɵRuntimeError as RuntimeError,
   ɵunwrapSafeValue as unwrapSafeValue,
   ɵXSS_SECURITY_URL as XSS_SECURITY_URL,
+  inject,
 } from '@angular/core';
 
 import {RuntimeErrorCode} from '../errors';
@@ -164,9 +164,7 @@ export abstract class DomSanitizer implements Sanitizer {
 
 @Injectable({providedIn: 'root'})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) {
-    super();
-  }
+  private readonly _doc = inject(DOCUMENT);
 
   override sanitize(ctx: SecurityContext, value: SafeValue | string | null): string | null {
     if (value == null) return null;

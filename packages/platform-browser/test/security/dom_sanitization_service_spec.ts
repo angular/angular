@@ -7,12 +7,18 @@
  */
 
 import {SecurityContext} from '@angular/core';
-import {DomSanitizerImpl} from '../../src/security/dom_sanitization_service';
+import {DomSanitizer, DomSanitizerImpl} from '../../src/security/dom_sanitization_service';
+import {TestBed} from '@angular/core/testing';
 
 describe('DOM Sanitization Service', () => {
+  let sanitizer: DomSanitizer;
+
+  beforeEach(() => {
+    sanitizer = TestBed.inject(DomSanitizerImpl);
+  });
+
   it('accepts resource URL values for resource contexts', () => {
-    const svc = new DomSanitizerImpl(null);
-    const resourceUrl = svc.bypassSecurityTrustResourceUrl('http://hello/world');
-    expect(svc.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
+    const resourceUrl = sanitizer.bypassSecurityTrustResourceUrl('http://hello/world');
+    expect(sanitizer.sanitize(SecurityContext.URL, resourceUrl)).toBe('http://hello/world');
   });
 });
