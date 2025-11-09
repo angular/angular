@@ -42781,18 +42781,22 @@ async function getDeployments() {
 import { join as join3 } from "path";
 import { readFileSync, writeFileSync } from "fs";
 async function generateSitemap(deployment, distDir) {
+  const servingUrlWithoutEndingSlash = deployment.servingUrl.endsWith("/") ? deployment.servingUrl.slice(0, -1) : deployment.servingUrl;
   const lastModifiedTimestamp = (/* @__PURE__ */ new Date()).toISOString();
   const routes = JSON.parse(readFileSync(join3(distDir, "prerendered-routes.json"), "utf-8"));
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${Object.keys(routes.routes).map((route) => `
+  ${Object.keys(routes.routes).map((route) => {
+    const routeWithoutLeadingSlash = route.startsWith("/") ? route.slice(1) : route;
+    return `
     <url>
-      <loc>${deployment.servingUrl}${route}</loc>
+      <loc>${servingUrlWithoutEndingSlash}/${routeWithoutLeadingSlash}</loc>
       <lastmod>${lastModifiedTimestamp}</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
     </url>
-  `).join("")}
+        `;
+  }).join("")}
   </urlset>`;
   writeFileSync(join3(distDir, "browser", "sitemap.xml"), sitemap, "utf-8");
   console.log(`Generated sitemap with ${Object.keys(routes.routes).length} entries.`);
