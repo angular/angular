@@ -105,4 +105,32 @@ describe('self-closing-tags migration', () => {
       '  -> Migrated 1 components to self-closing tags in 1 component files.',
     );
   });
+
+  it('should only migrate files in specified path', async () => {
+    writeFile(
+      '/app/app.component.ts',
+      `
+    import {Component} from '@angular/core';
+    @Component({ template: '<my-cmp></my-cmp>' })
+    export class AppComponent {}
+  `,
+    );
+
+    writeFile(
+      '/other/other.component.ts',
+      `
+    import {Component} from '@angular/core';
+    @Component({ template: '<my-other></my-other>' })
+    export class OtherComponent {}
+  `,
+    );
+
+    await runMigration({path: 'app'});
+
+    const appContent = tree.readContent('/app/app.component.ts');
+    expect(appContent).toContain('<my-cmp />');
+
+    const otherContent = tree.readContent('/other/other.component.ts');
+    expect(otherContent).toContain('<my-other></my-other>');
+  });
 });

@@ -9,6 +9,7 @@
 import {Rule} from '@angular-devkit/schematics';
 import {SelfClosingTagsMigration} from '../../migrations/self-closing-tags-migration/self-closing-tags-migration';
 import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
+import {filterSourceFilesByPath} from '../../utils/tsurge/helpers/filter_by_path';
 
 interface Options {
   path: string;
@@ -34,6 +35,9 @@ export function migrate(options: Options): Rule {
         } else {
           context.logger.info(`Running migration for: ${tsconfigPath}...`);
         }
+      },
+      afterProgramCreation: (info, fs) => {
+        info.sourceFiles = filterSourceFilesByPath(info.sourceFiles, options.path, fs);
       },
       beforeUnitAnalysis: (tsconfigPath) => {
         context.logger.info(`Scanning for component tags: ${tsconfigPath}...`);
