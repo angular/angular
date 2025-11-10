@@ -225,7 +225,7 @@ export function insertTStylingBinding(
       tStylingKey === null ||
       keyValueArrayIndexOf(staticKeyValueArray, tStylingKey as string) > 0
     ) {
-      // tStylingKey is present in the statics, need to mark it as duplicate.
+      // tStylingKey is present in the statistics, need to mark it as duplicate.
       isKeyDuplicateOfStatic = true;
     }
   } else {
@@ -451,14 +451,14 @@ function isStylingMatch(tStylingKeyCursor: TStylingKey, tStylingKey: TStylingKey
   if (
     tStylingKeyCursor === null || // If the cursor is `null` it means that we have map at that
     // location so we must assume that we have a match.
-    tStylingKey == null || // If `tStylingKey` is `null` then it is a map therefor assume that it
+    tStylingKey == null || // If `tStylingKey` is `null` then it is a map therefore assume that it
     // contains a match.
     (Array.isArray(tStylingKeyCursor) ? tStylingKeyCursor[1] : tStylingKeyCursor) === tStylingKey // If the keys match explicitly than we are a match.
   ) {
     return true;
   } else if (Array.isArray(tStylingKeyCursor) && typeof tStylingKey === 'string') {
     // if we did not find a match, but `tStylingKeyCursor` is `KeyValueArray` that means cursor has
-    // statics and we need to check those as well.
+    // statistics and we need to check those as well.
     return keyValueArrayIndexOf(tStylingKeyCursor, tStylingKey) >= 0; // see if we are matching the key
   }
   return false;
