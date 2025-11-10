@@ -16,6 +16,7 @@ import {DEVTOOLS_BACKEND_URI, DEVTOOLS_FRONTEND_URI} from '../../communication';
 
 import {DemoAppComponent} from './demo-app.component';
 import {ZippyComponent} from './zippy.component';
+import {AuxiliaryComponent} from './auxiliary/auxiliary.component';
 
 export const DEMO_ROUTES: Routes = [
   {
@@ -25,6 +26,11 @@ export const DEMO_ROUTES: Routes = [
       {
         path: '',
         loadChildren: () => import('./todo/app.module').then((m) => m.AppModule),
+      },
+      {
+        path: 'aux',
+        component: AuxiliaryComponent,
+        outlet: 'aux',
       },
     ],
     providers: [

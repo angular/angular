@@ -7,7 +7,7 @@
  */
 
 import {Route} from '../../../protocol';
-import type {Route as AngularRoute} from '@angular/router';
+import type {Route as AngularRoute, ActivatedRoute} from '@angular/router';
 
 export type RoutePropertyType = RouteGuard | 'providers' | 'component' | 'redirectTo' | 'title';
 
@@ -18,15 +18,64 @@ const routeGuards = ['canActivate', 'canActivateChild', 'canDeactivate', 'canMat
 type Routes = any;
 type Router = any;
 
+/**
+ * Recursively traverses the ActivatedRoute tree and collects all routeConfig objects.
+ * @param activatedRoute - The ActivatedRoute to start traversal from
+ * @param activeRoutes - Set to collect active Route configuration objects
+ * @returns Set of active Route configuration objects
+ */
+function collectActiveRouteConfigs(
+  activatedRoute: ActivatedRoute,
+  activeRoutes: Set<AngularRoute> = new Set(),
+): Set<AngularRoute> {
+  // Get the routeConfig for this ActivatedRoute
+  const routeConfig = activatedRoute.routeConfig;
+  if (routeConfig) {
+    activeRoutes.add(routeConfig);
+  }
+
+  // Recursively process all children
+  const children = activatedRoute.children || [];
+  for (const child of children) {
+    collectActiveRouteConfigs(child, activeRoutes);
+  }
+
+  return activeRoutes;
+}
+
+/**
+ * Gets the set of currently active Route configuration objects from the router state.
+ * This function synchronously reads the current router state without waiting for navigation events.
+ *
+ * @param router - The Angular Router instance
+ * @returns A Set containing all Route configuration objects that are currently active
+ *
+ * @example
+ * ```ts
+ * const activeRoutes = getActiveRouteConfigs(router);
+ * // activeRoutes is a Set<Route> containing all currently active route configurations
+ * ```
+ */
+export function getActiveRouteConfigs(router: Router): Set<AngularRoute> {
+  const rootActivatedRoute = router.routerState?.root;
+  if (!rootActivatedRoute) {
+    return new Set();
+  }
+
+  return collectActiveRouteConfigs(rootActivatedRoute);
+}
+
 export function parseRoutes(router: Router): Route {
-  const currentUrl = router.stateManager?.routerState?.snapshot?.url;
   const rootName = 'App Root';
   const rootChildren = router.config;
+
+  // Get the set of active Route configuration objects from the router state
+  const activeRouteConfigs = getActiveRouteConfigs(router);
 
   const root: Route = {
     component: rootName,
     path: rootName,
-    children: rootChildren ? assignChildrenToParent(null, rootChildren, currentUrl) : [],
+    children: rootChildren ? assignChildrenToParent(null, rootChildren, activeRouteConfigs) : [],
     isAux: false,
     isLazy: false,
     isActive: true, // Root is always active.
@@ -52,7 +101,7 @@ function getProviderName(child: any): string[] {
 function assignChildrenToParent(
   parentPath: string | null,
   children: Routes,
-  currentUrl: string,
+  activeRouteConfigs: Set<AngularRoute>,
 ): Route[] {
   return children.map((child: AngularRoute) => {
     const childName = childRouteName(child);
@@ -66,8 +115,9 @@ function assignChildrenToParent(
     const isAux = Boolean(child.outlet);
     const isLazy = Boolean(child.loadChildren || child.loadComponent);
 
-    const pathWithoutParams = routePath.split('/:')[0];
-    const isActive = currentUrl?.startsWith(pathWithoutParams);
+    // Check if this route configuration object is in the active routes set
+    // This is the direct reference to the Route object from router.config
+    const isActive = activeRouteConfigs.has(child);
 
     const routeConfig: Route = {
       pathMatch: child.pathMatch,
@@ -93,7 +143,11 @@ function assignChildrenToParent(
     }
 
     if (childDescendents) {
-      routeConfig.children = assignChildrenToParent(routeConfig.path, childDescendents, currentUrl);
+      routeConfig.children = assignChildrenToParent(
+        routeConfig.path,
+        childDescendents,
+        activeRouteConfigs,
+      );
     }
 
     if (child.data) {
