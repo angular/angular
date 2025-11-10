@@ -35,6 +35,9 @@ export class SwUpdate {
    *
    * Emits a `VersionReadyEvent` event whenever a new version has been downloaded and is ready for
    * activation.
+   *
+   * @see [Version updates](ecosystem/service-workers/communications#version-updates)
+   *
    */
   readonly versionUpdates: Observable<VersionEvent>;
 
