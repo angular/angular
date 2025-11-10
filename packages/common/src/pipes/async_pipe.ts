@@ -133,6 +133,8 @@ const _subscribableStrategy = new SubscribableStrategy();
  *
  * {@example common/pipes/ts/async_pipe.ts region='AsyncPipeObservable'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({
