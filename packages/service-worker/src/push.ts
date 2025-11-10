@@ -89,6 +89,7 @@ import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
  * @see [MDN: Push API](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
  * @see [MDN: Notifications API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API)
  * @see [MDN: Web Push API Notifications best practices](https://developer.mozilla.org/en-US/docs/Web/API/Push_API/Best_Practices)
+ * @see [Push notifications guide](ecosystem/service-workers/push-notifications)
  *
  * @publicApi
  */
@@ -109,6 +110,9 @@ export class SwPush {
    * object that also includes the `title` of the [Notification][Mozilla Notification] object.
    *
    * [Mozilla Notification]: https://developer.mozilla.org/en-US/docs/Web/API/Notification
+   *
+   * @see [Notification click handling](ecosystem/service-workers/push-notifications#notification-click-handling)
+   *
    */
   readonly notificationClicks: Observable<{
     action: string;
