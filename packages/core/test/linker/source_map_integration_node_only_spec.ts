@@ -243,7 +243,7 @@ describe('jit source mapping', () => {
   }
 
   function createResolver(contents: string) {
-    return async (_url: string) => contents;
+    return (_url: string) => Promise.resolve(contents);
   }
 
   async function resolveCompileAndCreateComponent(comType: any, template: string) {
