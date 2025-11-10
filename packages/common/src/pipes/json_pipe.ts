@@ -21,6 +21,8 @@ import {Pipe, PipeTransform} from '@angular/core';
  *
  * {@example common/pipes/ts/json_pipe.ts region='JsonPipe'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({
