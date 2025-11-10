@@ -8,91 +8,83 @@ To create a custom service worker that extends Angular's functionality:
 
 1. Create a custom service worker file (e.g., `custom-sw.js`) in your `src` directory:
 
-<docs-code language="javascript">
-
+```js
 // Import the Angular service worker
 importScripts('./ngsw-worker.js');
 
 (function () {
-'use strict';
+  'use strict';
 
-// Add custom notification click handler
-self.addEventListener('notificationclick', (event) => {
-console.log('Custom notification click handler');
-console.log('Notification details:', event.notification);
+  // Add custom notification click handler
+  self.addEventListener('notificationclick', (event) => {
+    console.log('Custom notification click handler');
+    console.log('Notification details:', event.notification);
 
     // Handle notification click - open URL if provided
     if (clients.openWindow && event.notification.data.url) {
       event.waitUntil(clients.openWindow(event.notification.data.url));
       console.log('Opening URL:', event.notification.data.url);
     }
+  });
 
-});
-
-// Add custom background sync handler
-self.addEventListener('sync', (event) => {
-console.log('Custom background sync handler');
+  // Add custom background sync handler
+  self.addEventListener('sync', (event) => {
+    console.log('Custom background sync handler');
 
     if (event.tag === 'background-sync') {
       event.waitUntil(doBackgroundSync());
     }
+  });
 
-});
-
-function doBackgroundSync() {
-// Implement your background sync logic here
-return fetch('https://example.com/api/sync')
-.then(response => response.json())
-.then(data => console.log('Background sync completed:', data))
-.catch(error => console.error('Background sync failed:', error));
-}
+  function doBackgroundSync() {
+    // Implement your background sync logic here
+    return fetch('https://example.com/api/sync')
+      .then((response) => response.json())
+      .then((data) => console.log('Background sync completed:', data))
+      .catch((error) => console.error('Background sync failed:', error));
+  }
 })();
-
-</docs-code>
+```
 
 2. Update your `angular.json` file to use the custom service worker:
 
-<docs-code language="json">
-
+```json
 {
-"projects": {
-"your-app": {
-"architect": {
-"build": {
-"options": {
-"assets": [
-{
-"glob": "**/*",
-"input": "public"
-},
-"app/src/custom-sw.js"
-]
-},
+  "projects": {
+    "your-app": {
+      "architect": {
+        "build": {
+          "options": {
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              },
+              "app/src/custom-sw.js"
+            ]
+          }
+        }
+      }
+    }
+  }
 }
-}
-}
-}
-}
-
-</docs-code>
+```
 
 3. Configure the service worker registration to use your custom script:
 
-<docs-code language="typescript">
-
+```ts
 import { ApplicationConfig, isDevMode } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
-providers: [
-provideServiceWorker('custom-sw.js', {
-enabled: !isDevMode(),
-registrationStrategy: 'registerWhenStable:30000'
-}),
-],
+  providers: [
+    provideServiceWorker('custom-sw.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
+  ],
 };
-
-</docs-code>
+```
 
 ### Best practices for custom service workers
 
