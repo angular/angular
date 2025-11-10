@@ -824,6 +824,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'ai/mcp',
         contentPath: 'ai/mcp-server-setup',
       },
+      {
+        label: 'Angular AI Tutor',
+        path: 'ai/ai-tutor',
+        contentPath: 'ai/ai-tutor',
+      },
     ],
   },
   {
