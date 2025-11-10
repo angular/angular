@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "@algolia/client-common": "5.42.0",
-    "@algolia/client-search": "5.42.0",
-    "@algolia/requester-browser-xhr": "5.42.0",
-    "@algolia/requester-node-http": "5.42.0",
+    "@algolia/client-common": "5.43.0",
+    "@algolia/client-search": "5.43.0",
+    "@algolia/requester-browser-xhr": "5.43.0",
+    "@algolia/requester-node-http": "5.43.0",
     "@angular/animations": "workspace:*",
     "@angular/build": "21.0.0-rc.1",
     "@angular/cdk": "21.0.0-rc.1",
@@ -48,7 +48,7 @@
     "@webcontainer/api": "1.6.1",
     "@xterm/addon-fit": "0.10.0",
     "@xterm/xterm": "5.5.0",
-    "algoliasearch": "5.42.0",
+    "algoliasearch": "5.43.0",
     "angular-split": "20.0.0",
     "crelt": "1.0.6",
     "diff": "8.0.2",
