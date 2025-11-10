@@ -23,20 +23,18 @@ The default behavior for the `notificationclick` event is to close the notificat
 You can specify an additional operation to be executed on `notificationclick` by adding an `onActionClick` property to the `data` object, and providing a `default` entry.
 This is especially useful for when there are no open clients when a notification is clicked.
 
-<docs-code language="json">
-
+```json
 {
-"notification": {
-"title": "New Notification!",
-"data": {
-"onActionClick": {
-"default": {"operation": "openWindow", "url": "foo"}
+  "notification": {
+    "title": "New Notification!",
+    "data": {
+      "onActionClick": {
+        "default": {"operation": "openWindow", "url": "foo"}
+      }
+    }
+  }
 }
-}
-}
-}
-
-</docs-code>
+```
 
 ### Operations
 
@@ -60,31 +58,29 @@ Each action is represented as an action button that the user can click to intera
 
 In addition, using the `onActionClick` property on the `data` object, you can tie each action to an operation to be performed when the corresponding action button is clicked:
 
-<docs-code language="typescript">
-
+```json
 {
-"notification": {
-"title": "New Notification!",
-"actions": [
-{"action": "foo", "title": "Open new tab"},
-{"action": "bar", "title": "Focus last"},
-{"action": "baz", "title": "Navigate last"},
-{"action": "qux", "title": "Send request in the background"},
-{"action": "other", "title": "Just notify existing clients"}
-],
-"data": {
-"onActionClick": {
-"default": {"operation": "openWindow"},
-"foo": {"operation": "openWindow", "url": "/absolute/path"},
-"bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
-"baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"},
-"qux": {"operation": "sendRequest", "url": "https://yet.another.domain.com/"}
+  "notification": {
+    "title": "New Notification!",
+    "actions": [
+      {"action": "foo", "title": "Open new tab"},
+      {"action": "bar", "title": "Focus last"},
+      {"action": "baz", "title": "Navigate last"},
+      {"action": "qux", "title": "Send request in the background"},
+      {"action": "other", "title": "Just notify existing clients"}
+    ],
+    "data": {
+      "onActionClick": {
+        "default": {"operation": "openWindow"},
+        "foo": {"operation": "openWindow", "url": "/absolute/path"},
+        "bar": {"operation": "focusLastFocusedOrOpen", "url": "relative/path"},
+        "baz": {"operation": "navigateLastFocusedOrOpen", "url": "https://other.domain.com/"},
+        "qux": {"operation": "sendRequest", "url": "https://yet.another.domain.com/"}
+      }
+    }
+  }
 }
-}
-}
-}
-
-</docs-code>
+```
 
 IMPORTANT: If an action does not have a corresponding `onActionClick` entry, then the notification is closed and `SwPush.notificationClicks` is notified on existing clients.
 
@@ -93,7 +89,6 @@ IMPORTANT: If an action does not have a corresponding `onActionClick` entry, the
 You might also be interested in the following:
 
 <docs-pill-row>
-
   <docs-pill href="ecosystem/service-workers/communications" title="Communicating with the Service Worker"/>
   <docs-pill href="ecosystem/service-workers/devops" title="Service Worker devops"/>
 </docs-pill-row>
