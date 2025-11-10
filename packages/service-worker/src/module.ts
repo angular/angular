@@ -13,6 +13,10 @@ import {SwPush} from './push';
 import {SwUpdate} from './update';
 
 /**
+ *
+ * @see [Custom service worker script](ecosystem/service-workers/custom-service-worker-scripts)
+ * @see [Service worker configuration](ecosystem/service-workers/getting-started#service-worker-configuration)
+ *
  * @publicApi
  */
 @NgModule({providers: [SwPush, SwUpdate]})
