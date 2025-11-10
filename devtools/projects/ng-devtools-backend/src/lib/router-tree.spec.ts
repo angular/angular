@@ -126,7 +126,7 @@ describe('parseRoutes', () => {
           'data': [],
           'isAux': true,
           'isLazy': false,
-          'isActive': undefined,
+          'isActive': false,
         },
         {
           'component': 'component-two',
@@ -141,7 +141,7 @@ describe('parseRoutes', () => {
           'data': [{'key': 'name', 'value': 'component-two'}],
           'isAux': false,
           'isLazy': false,
-          'isActive': undefined,
+          'isActive': false,
           'children': [
             {
               'component': 'component-two-one',
@@ -156,7 +156,7 @@ describe('parseRoutes', () => {
               'data': [],
               'isAux': false,
               'isLazy': false,
-              'isActive': undefined,
+              'isActive': false,
             },
             {
               'component': 'component-two-two',
@@ -171,7 +171,7 @@ describe('parseRoutes', () => {
               'data': [],
               'isAux': false,
               'isLazy': false,
-              'isActive': undefined,
+              'isActive': false,
             },
           ],
         },
@@ -187,7 +187,7 @@ describe('parseRoutes', () => {
           'data': [],
           'isAux': false,
           'isLazy': true,
-          'isActive': undefined,
+          'isActive': false,
         },
         {
           'component': 'no-name-route',
@@ -201,7 +201,7 @@ describe('parseRoutes', () => {
           'data': [],
           'isAux': false,
           'isLazy': false,
-          'isActive': undefined,
+          'isActive': false,
           'redirectTo': 'redirectTo',
         },
         {
@@ -216,7 +216,7 @@ describe('parseRoutes', () => {
           'data': [],
           'isAux': false,
           'isLazy': false,
-          'isActive': undefined,
+          'isActive': false,
           'redirectTo': '[Function]',
         },
         {
@@ -231,7 +231,7 @@ describe('parseRoutes', () => {
           'data': [],
           'isAux': false,
           'isLazy': false,
-          'isActive': undefined,
+          'isActive': false,
           'redirectTo': 'redirectResolver()',
         },
       ],

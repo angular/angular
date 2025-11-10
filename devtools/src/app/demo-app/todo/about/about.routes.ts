@@ -8,12 +8,20 @@
 
 import {Routes} from '@angular/router';
 
-import {AboutComponent} from './about.component';
+import {AboutComponent, ProtectedAboutComponent} from './about.component';
 
 export const ABOUT_ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
     component: AboutComponent,
+  },
+];
+
+export const PROTECTED_ABOUT_ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: ProtectedAboutComponent,
   },
 ];

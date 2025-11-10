@@ -15,6 +15,7 @@ import {ZoneUnawareIFrameMessageBus} from '../../zone-unaware-iframe-message-bus
 
 import {DemoAppComponent} from './demo-app.component';
 import {ZippyComponent} from './zippy.component';
+import {AuxiliaryComponent} from './auxiliary/auxiliary.component';
 
 export const DEMO_ROUTES: Routes = [
   {
@@ -24,6 +25,11 @@ export const DEMO_ROUTES: Routes = [
       {
         path: '',
         loadChildren: () => import('./todo/app.module').then((m) => m.AppModule),
+      },
+      {
+        path: 'aux',
+        component: AuxiliaryComponent,
+        outlet: 'aux',
       },
     ],
     providers: [

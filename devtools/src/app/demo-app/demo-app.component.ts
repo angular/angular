@@ -26,7 +26,7 @@ import {
 import {ZippyComponent} from './zippy.component';
 import {HeavyComponent} from './heavy.component';
 import {SamplePropertiesComponent} from './sample-properties.component';
-import {RouterOutlet} from '@angular/router';
+import {RouterOutlet, RouterModule} from '@angular/router';
 import {CookieRecipe} from './cookies.component';
 
 // structual directive example
@@ -57,6 +57,7 @@ export class StructuralDirective {
     HeavyComponent,
     SamplePropertiesComponent,
     RouterOutlet,
+    RouterModule,
     CookieRecipe,
   ],
 })

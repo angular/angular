@@ -26,6 +26,7 @@ ng_project(
         "//devtools/src:demo_application_environment",
         "//devtools/src:demo_application_operations",
         "//devtools/src/app/demo-app",
+        "//devtools/src/app/demo-app/auxiliary",
         "//devtools/src/app/devtools-app",
     ],
 )

@@ -10,7 +10,8 @@ import {afterRenderEffect, Component, inject, Injectable, signal, viewChild} fro
 import {MatDialog} from '@angular/material/dialog';
 
 import {DialogComponent} from './dialog.component';
-import {RouterOutlet} from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
+import {AllowGuardService} from './app.module';
 
 @Injectable()
 export class MyServiceA {}
@@ -29,10 +30,21 @@ export class AppTodoComponent {
   viewChildWillThrowAnError = viewChild.required('thisSignalWillThrowAnError');
   routerOutlet = viewChild(RouterOutlet);
   readonly dialog = inject(MatDialog);
+  readonly router = inject(Router);
+  readonly allowGuardService = inject(AllowGuardService);
 
   /** Only for Signal graph purposes */
 
   counter = signal(0);
+
+  // Expose the signal from the service directly
+  readonly allowGuard = this.allowGuardService.allowGuard;
+
+  toggleAllowGuard(): void {
+    this.allowGuardService.toggle();
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl(currentUrl, {onSameUrlNavigation: 'reload'});
+  }
 
   // tslint:disable-next-line:require-internal-with-underscore
   _ = afterRenderEffect({
