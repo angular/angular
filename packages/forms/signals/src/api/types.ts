@@ -220,6 +220,16 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
   | FieldTree<Exclude<TModel, undefined>, TKey>;
 
 /**
+ * Helper type that conditionally excludes max, maxLength, min, minLength from ɵFieldState
+ * when TValue is not a primitive type (string, number, Date).
+ *
+ * These properties only make sense for primitive field values, not for object or array fields.
+ */
+type FieldStateBase<TValue> = [TValue] extends [string | number | Date]
+  ? ɵFieldState<TValue>
+  : Omit<ɵFieldState<TValue>, 'max' | 'maxLength' | 'min' | 'minLength'>;
+
+/**
  * Contains all of the state (e.g. value, statuses, etc.) associated with a `FieldTree`, exposed as
  * signals.
  *
@@ -227,7 +237,7 @@ export type MaybeFieldTree<TModel, TKey extends string | number = string | numbe
  * @experimental 21.0.0
  */
 export interface FieldState<TValue, TKey extends string | number = string | number>
-  extends ɵFieldState<TValue> {
+  extends FieldStateBase<TValue> {
   /**
    * A signal indicating whether field value has been changed by user.
    */
