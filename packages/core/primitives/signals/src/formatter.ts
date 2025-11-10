@@ -47,7 +47,7 @@ const formatter = {
     try {
       value = sig();
     } catch {
-      // In case the signl throws, we don't want to break the formatting.
+      // In case the signal throws, we don't want to break the formatting.
       return ['span', 'Signal(⚠️ Error)'];
     }
 
@@ -103,7 +103,7 @@ const formatter = {
       [
         'div',
         {style: `padding-left: .5rem;`},
-        ['object', {object: sig, config: {...config, skipFormatting: true}}],
+        ['object', {object: sig, config: {...config, ngSkipFormatting: true}}],
       ],
     ];
   },
@@ -137,7 +137,7 @@ function prettifyPreview(
       }
     }
     default: {
-      return ['object', {object: value, config: {skipFormatting: true}}];
+      return ['object', {object: value, config: {ngSkipFormatting: true}}];
     }
   }
 }
