@@ -43,6 +43,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * {@example common/pipes/ts/slice_pipe.ts region='SlicePipe_string'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({

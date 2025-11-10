@@ -49,6 +49,8 @@ export interface KeyValue<K, V> {
  *
  * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({

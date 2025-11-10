@@ -214,6 +214,8 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
  * }
  * ```
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @publicApi
  */
 @Pipe({

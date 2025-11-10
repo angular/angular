@@ -22,6 +22,8 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * {@example common/pipes/ts/lowerupper_pipe.ts region='LowerUpperPipe'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @ngModule CommonModule
  * @publicApi
  */
@@ -70,6 +72,8 @@ const unicodeWordMatch =
  *
  * {@example common/pipes/ts/titlecase_pipe.ts region='TitleCasePipe'}
  *
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
+ *
  * @ngModule CommonModule
  * @publicApi
  */
@@ -100,6 +104,7 @@ export class TitleCasePipe implements PipeTransform {
  * Transforms text to all upper case.
  * @see {@link LowerCasePipe}
  * @see {@link TitleCasePipe}
+ * @see [Built-in Pipes](guide/templates/pipes#built-in-pipes)
  *
  * @ngModule CommonModule
  * @publicApi
