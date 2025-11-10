@@ -45,9 +45,9 @@ export interface SearchResult {
 export interface Hierarchy {
   /* It's kind of the page i.e `Docs`, `Tutorials`, `Reference` etc. */
   lvl0: string | null;
-  /* Typicaly it's the content of H1 of the page */
+  /* Typically it's the content of H1 of the page */
   lvl1: string | null;
-  /* Typicaly it's the content of H2 of the page */
+  /* Typically it's the content of H2 of the page */
   lvl2: string | null;
   lvl3: string | null;
   lvl4: string | null;
