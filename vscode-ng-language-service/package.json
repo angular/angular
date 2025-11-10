@@ -269,7 +269,7 @@
     "@types/node": "^24.5.2",
     "@types/vscode": "^1.74.3",
     "@vscode/test-electron": "~2.5.2",
-    "@vscode/vsce": "~3.6.1",
+    "@vscode/vsce": "~3.7.0",
     "jasmine": "~5.12.0",
     "jasmine-core": "~5.12.0",
     "jasmine-reporters": "~2.5.2",
