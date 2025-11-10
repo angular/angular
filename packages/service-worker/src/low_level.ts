@@ -109,7 +109,7 @@ export type VersionEvent =
  * service worker cache has been partially cleaned by the browser, removing some files of a previous
  * app version but not all.
  *
- * @see {@link /ecosystem/service-workers/communications Service Worker Communication Guide}
+ * @see [Handling an unrecoverable state](ecosystem/service-workers/communications#handling-an-unrecoverable-state)
 
  *
  * @publicApi
