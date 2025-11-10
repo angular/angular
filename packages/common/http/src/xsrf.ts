@@ -32,7 +32,6 @@ export const XSRF_DEFAULT_COOKIE_NAME = 'XSRF-TOKEN';
 export const XSRF_COOKIE_NAME = new InjectionToken<string>(
   typeof ngDevMode !== undefined && ngDevMode ? 'XSRF_COOKIE_NAME' : '',
   {
-    providedIn: 'root',
     factory: () => XSRF_DEFAULT_COOKIE_NAME,
   },
 );
@@ -41,7 +40,6 @@ export const XSRF_DEFAULT_HEADER_NAME = 'X-XSRF-TOKEN';
 export const XSRF_HEADER_NAME = new InjectionToken<string>(
   typeof ngDevMode !== undefined && ngDevMode ? 'XSRF_HEADER_NAME' : '',
   {
-    providedIn: 'root',
     factory: () => XSRF_DEFAULT_HEADER_NAME,
   },
 );

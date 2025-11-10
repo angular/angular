@@ -17,7 +17,6 @@ import {
 import {FakeNavigation} from './fake_navigation';
 
 const FAKE_NAVIGATION = new InjectionToken<FakeNavigation>('fakeNavigation', {
-  providedIn: 'root',
   factory: () => {
     const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
     const baseFallback = 'http://_empty_/';
