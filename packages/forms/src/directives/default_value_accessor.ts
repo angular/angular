@@ -11,9 +11,8 @@ import {
   Directive,
   ElementRef,
   forwardRef,
-  Inject,
+  inject,
   InjectionToken,
-  Optional,
   Provider,
   Renderer2,
 } from '@angular/core';
@@ -101,12 +100,11 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>(
 export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
+  private readonly _compositionMode = inject(COMPOSITION_BUFFER_MODE, {
+    optional: true,
+  });
 
-  constructor(
-    renderer: Renderer2,
-    elementRef: ElementRef,
-    @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean,
-  ) {
+  constructor(renderer: Renderer2, elementRef: ElementRef) {
     super(renderer, elementRef);
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();

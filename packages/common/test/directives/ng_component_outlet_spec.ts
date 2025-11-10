@@ -9,19 +9,16 @@
 import {CommonModule} from '../../index';
 import {NgComponentOutlet} from '../../src/directives/ng_component_outlet';
 import {
-  Compiler,
   Component,
   ComponentRef,
   createEnvironmentInjector,
   EnvironmentInjector,
-  Inject,
+  inject,
   InjectionToken,
   Injector,
   Input,
   NgModule,
-  NgModuleFactory,
   NO_ERRORS_SCHEMA,
-  Optional,
   QueryList,
   TemplateRef,
   Type,
@@ -387,7 +384,9 @@ const TEST_TOKEN = new InjectionToken('TestToken');
   standalone: false,
 })
 class InjectedComponent {
-  constructor(@Optional() @Inject(TEST_TOKEN) public testToken: any) {}
+  public testToken = inject(TEST_TOKEN, {optional: true});
+
+  constructor() {}
 }
 
 @Component({

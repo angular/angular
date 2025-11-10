@@ -9,9 +9,8 @@
 import {
   Directive,
   DoCheck,
-  Host,
+  inject,
   Input,
-  Optional,
   ɵRuntimeError as RuntimeError,
   TemplateRef,
   ViewContainerRef,
@@ -213,16 +212,16 @@ export class NgSwitchCase implements DoCheck {
    */
   @Input() ngSwitchCase: any;
 
-  constructor(
-    viewContainer: ViewContainerRef,
-    templateRef: TemplateRef<Object>,
-    @Optional() @Host() private ngSwitch: NgSwitch,
-  ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+  readonly ngSwitch = inject(NgSwitch, {
+    optional: true,
+    host: true,
+  });
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this.ngSwitch) {
       throwNgSwitchProviderNotFoundError('ngSwitchCase', 'NgSwitchCase');
     }
 
-    ngSwitch._addCase();
+    this.ngSwitch!._addCase();
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
@@ -231,7 +230,7 @@ export class NgSwitchCase implements DoCheck {
    * @docs-private
    */
   ngDoCheck() {
-    this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase));
+    this._view.enforceState(this.ngSwitch!._matchCase(this.ngSwitchCase));
   }
 }
 
@@ -255,16 +254,17 @@ export class NgSwitchCase implements DoCheck {
   selector: '[ngSwitchDefault]',
 })
 export class NgSwitchDefault {
-  constructor(
-    viewContainer: ViewContainerRef,
-    templateRef: TemplateRef<Object>,
-    @Optional() @Host() ngSwitch: NgSwitch,
-  ) {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !ngSwitch) {
+  readonly ngSwitch = inject(NgSwitch, {
+    optional: true,
+    host: true,
+  });
+
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>) {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && !this.ngSwitch) {
       throwNgSwitchProviderNotFoundError('ngSwitchDefault', 'NgSwitchDefault');
     }
 
-    ngSwitch._addDefault(new SwitchView(viewContainer, templateRef));
+    this.ngSwitch!._addDefault(new SwitchView(viewContainer, templateRef));
   }
 }
 

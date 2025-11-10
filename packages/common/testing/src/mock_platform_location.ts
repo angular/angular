@@ -12,7 +12,7 @@ import {
   PlatformLocation,
   PlatformNavigation,
 } from '../../index';
-import {Inject, inject, Injectable, InjectionToken, Optional} from '@angular/core';
+import {inject, Injectable, InjectionToken} from '@angular/core';
 import {Subject} from 'rxjs';
 
 import {FakeNavigation} from './navigation/fake_navigation';
@@ -125,9 +125,9 @@ export class MockPlatformLocation implements PlatformLocation {
     state: unknown;
   }[] = [{hostname: '', protocol: '', port: '', pathname: '/', search: '', hash: '', state: null}];
 
-  constructor(
-    @Inject(MOCK_PLATFORM_LOCATION_CONFIG) @Optional() config?: MockPlatformLocationConfig,
-  ) {
+  constructor() {
+    const config = inject(MOCK_PLATFORM_LOCATION_CONFIG, {optional: true});
+
     if (config) {
       this.baseHref = config.appBaseHref || '';
 

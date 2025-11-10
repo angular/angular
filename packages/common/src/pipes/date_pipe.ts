@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Inject, InjectionToken, LOCALE_ID, Optional, Pipe, PipeTransform} from '@angular/core';
+import {inject, InjectionToken, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 
 import {formatDate} from '../i18n/format_date';
 
@@ -220,11 +220,9 @@ export const DATE_PIPE_DEFAULT_OPTIONS = new InjectionToken<DatePipeConfig>(
   name: 'date',
 })
 export class DatePipe implements PipeTransform {
-  constructor(
-    @Inject(LOCALE_ID) private locale: string,
-    @Inject(DATE_PIPE_DEFAULT_TIMEZONE) @Optional() private defaultTimezone?: string | null,
-    @Inject(DATE_PIPE_DEFAULT_OPTIONS) @Optional() private defaultOptions?: DatePipeConfig | null,
-  ) {}
+  private readonly locale = inject(LOCALE_ID);
+  private readonly defaultTimezone = inject(DATE_PIPE_DEFAULT_TIMEZONE, {optional: true});
+  private readonly defaultOptions = inject(DATE_PIPE_DEFAULT_OPTIONS, {optional: true});
 
   /**
    * @param value The date expression: a `Date` object,  a number
