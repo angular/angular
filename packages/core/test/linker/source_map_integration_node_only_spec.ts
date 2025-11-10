@@ -243,12 +243,12 @@ describe('jit source mapping', () => {
   }
 
   function createResolver(contents: string) {
-    return (_url: string) => Promise.resolve(contents);
+    return async (_url: string) => contents;
   }
 
   async function resolveCompileAndCreateComponent(comType: any, template: string) {
     await resolveComponentResources(createResolver(template));
-    return await compileAndCreateComponent(comType);
+    return compileAndCreateComponent(comType);
   }
 
   let ɵcompilerFacade: CompilerFacade;

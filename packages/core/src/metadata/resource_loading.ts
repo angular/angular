@@ -8,8 +8,12 @@
 
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
-
 import type {Component} from './directives';
+
+let componentResourceResolutionQueue = new Map<Type<any>, Component>();
+
+// Track when existing ɵcmp for a Type is waiting on resources.
+const componentDefPendingResolution = new Set<Type<any>>();
 
 /**
  * Used to resolve resource URLs on `@Component` when used with JIT compilation.
@@ -20,8 +24,7 @@ import type {Component} from './directives';
  *   selector: 'my-comp',
  *   templateUrl: 'my-comp.html', // This requires asynchronous resolution
  * })
- * class MyComponent{
- * }
+ * class MyComponent { }
  *
  * // Calling `renderComponent` will fail because `renderComponent` is a synchronous process
  * // and `MyComponent`'s `@Component.templateUrl` needs to be resolved asynchronously.
@@ -31,90 +34,90 @@ import type {Component} from './directives';
  *
  * // Use browser's `fetch()` function as the default resource resolution strategy.
  * resolveComponentResources(fetch).then(() => {
- *   // After resolution all URLs have been converted into `template` strings.
- *   renderComponent(MyComponent);
+ * // After resolution all URLs have been converted into `template` strings.
+ * renderComponent(MyComponent);
  * });
  *
  * ```
  *
- * NOTE: In AOT the resolution happens during compilation, and so there should be no need
+ * @remarks In AOT the resolution happens during compilation, and so there should be no need
  * to call this method outside JIT mode.
  *
  * @param resourceResolver a function which is responsible for returning a `Promise` to the
  * contents of the resolved URL. Browser's `fetch()` method is a good default implementation.
  */
-export function resolveComponentResources(
+export async function resolveComponentResources(
   resourceResolver: (url: string) => Promise<string | {text(): Promise<string>; status?: number}>,
 ): Promise<void> {
-  // Store all promises which are fetching the resources.
-  const componentResolved: Promise<void>[] = [];
+  const currentQueue = componentResourceResolutionQueue;
+  componentResourceResolutionQueue = new Map();
 
   // Cache so that we don't fetch the same resource more than once.
-  const urlMap = new Map<string, Promise<string>>();
+  const urlCache = new Map<string, Promise<string>>();
+
+  // Helper to dedupe resource fetches
   function cachedResourceResolve(url: string): Promise<string> {
-    let promise = urlMap.get(url);
-    if (!promise) {
-      const resp = resourceResolver(url);
-      urlMap.set(url, (promise = resp.then((res) => unwrapResponse(url, res))));
+    const promiseCached = urlCache.get(url);
+    if (promiseCached) {
+      return promiseCached;
     }
+
+    const promise = resourceResolver(url).then((response) => unwrapResponse(url, response));
+    urlCache.set(url, promise);
+
     return promise;
   }
 
-  componentResourceResolutionQueue.forEach((component: Component, type: Type<any>) => {
-    const promises: Promise<void>[] = [];
-    if (component.templateUrl) {
-      promises.push(
-        cachedResourceResolve(component.templateUrl).then((template) => {
-          component.template = template;
-        }),
-      );
-    }
-    const styles =
-      typeof component.styles === 'string' ? [component.styles] : component.styles || [];
-    component.styles = styles;
-
+  const resolutionPromises = Array.from(currentQueue).map(async ([type, component]) => {
     if (component.styleUrl && component.styleUrls?.length) {
       throw new Error(
         '@Component cannot define both `styleUrl` and `styleUrls`. ' +
           'Use `styleUrl` if the component has one stylesheet, or `styleUrls` if it has multiple',
       );
-    } else if (component.styleUrls?.length) {
-      const styleOffset = component.styles.length;
-      const styleUrls = component.styleUrls;
-      component.styleUrls.forEach((styleUrl, index) => {
-        styles.push(''); // pre-allocate array.
-        promises.push(
-          cachedResourceResolve(styleUrl).then((style) => {
-            styles[styleOffset + index] = style;
-            styleUrls.splice(styleUrls.indexOf(styleUrl), 1);
-            if (styleUrls.length == 0) {
-              component.styleUrls = undefined;
-            }
-          }),
-        );
-      });
-    } else if (component.styleUrl) {
-      promises.push(
-        cachedResourceResolve(component.styleUrl).then((style) => {
-          styles.push(style);
-          component.styleUrl = undefined;
+    }
+
+    const componentTasks: Promise<void>[] = [];
+
+    if (component.templateUrl) {
+      componentTasks.push(
+        cachedResourceResolve(component.templateUrl).then((template) => {
+          component.template = template;
         }),
       );
     }
 
-    const fullyResolved = Promise.all(promises).then(() => componentDefResolved(type));
-    componentResolved.push(fullyResolved);
+    const styles =
+      typeof component.styles === 'string' ? [component.styles] : (component.styles ?? []);
+    component.styles = styles;
+
+    let {styleUrl, styleUrls} = component;
+    if (styleUrl) {
+      styleUrls = [styleUrl];
+      component.styleUrl = undefined;
+    }
+
+    if (styleUrls?.length) {
+      const allFetched = Promise.all(styleUrls.map((url) => cachedResourceResolve(url))).then(
+        (fetchedStyles) => {
+          styles.push(...fetchedStyles);
+          component.styleUrls = undefined;
+        },
+      );
+
+      componentTasks.push(allFetched);
+    }
+
+    await Promise.all(componentTasks);
+    componentDefPendingResolution.delete(type);
   });
-  clearResolutionOfComponentResourcesQueue();
-  return Promise.all(componentResolved).then(() => undefined);
+
+  await Promise.all(resolutionPromises);
 }
 
-let componentResourceResolutionQueue = new Map<Type<any>, Component>();
-
-// Track when existing ɵcmp for a Type is waiting on resources.
-const componentDefPendingResolution = new Set<Type<any>>();
-
-export function maybeQueueResolutionOfComponentResources(type: Type<any>, metadata: Component) {
+export function maybeQueueResolutionOfComponentResources(
+  type: Type<any>,
+  metadata: Component,
+): void {
   if (componentNeedsResolution(metadata)) {
     componentResourceResolutionQueue.set(type, metadata);
     componentDefPendingResolution.add(type);
@@ -128,10 +131,11 @@ export function isComponentDefPendingResolution(type: Type<any>): boolean {
 export function componentNeedsResolution(component: Component): boolean {
   return !!(
     (component.templateUrl && !component.hasOwnProperty('template')) ||
-    (component.styleUrls && component.styleUrls.length) ||
+    component.styleUrls?.length ||
     component.styleUrl
   );
 }
+
 export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Component> {
   const old = componentResourceResolutionQueue;
   componentResourceResolutionQueue = new Map();
@@ -140,32 +144,30 @@ export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Compo
 
 export function restoreComponentResolutionQueue(queue: Map<Type<any>, Component>): void {
   componentDefPendingResolution.clear();
-  queue.forEach((_, type) => componentDefPendingResolution.add(type));
+  for (const type of queue.keys()) {
+    componentDefPendingResolution.add(type);
+  }
   componentResourceResolutionQueue = queue;
 }
 
-export function isComponentResourceResolutionQueueEmpty() {
+export function isComponentResourceResolutionQueueEmpty(): boolean {
   return componentResourceResolutionQueue.size === 0;
 }
 
-function unwrapResponse(
+async function unwrapResponse(
   url: string,
   response: string | {text(): Promise<string>; status?: number},
-): string | Promise<string> {
+): Promise<string> {
   if (typeof response === 'string') {
     return response;
   }
+
   if (response.status !== undefined && response.status !== 200) {
-    return Promise.reject(
-      new RuntimeError(
-        RuntimeErrorCode.EXTERNAL_RESOURCE_LOADING_FAILED,
-        ngDevMode && `Could not load resource: ${url}. Response status: ${response.status}`,
-      ),
+    throw new RuntimeError(
+      RuntimeErrorCode.EXTERNAL_RESOURCE_LOADING_FAILED,
+      ngDevMode && `Could not load resource: ${url}. Response status: ${response.status}`,
     );
   }
-  return response.text();
-}
 
-function componentDefResolved(type: Type<any>): void {
-  componentDefPendingResolution.delete(type);
+  return response.text();
 }
