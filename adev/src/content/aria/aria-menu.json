@@ -197,6 +197,16 @@
           "jsdocTags": []
         },
         {
+          "name": "expansionDelay",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The delay in milliseconds before expanding sub-menus on hover.",
+          "jsdocTags": []
+        },
+        {
           "name": "close",
           "signatures": [
             {
@@ -307,7 +317,7 @@
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
         "startLine": 106,
-        "endLine": 241
+        "endLine": 244
       }
     },
     {
@@ -414,8 +424,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 250,
-        "endLine": 320
+        "startLine": 253,
+        "endLine": 323
       }
     },
     {
@@ -570,8 +580,8 @@
       ],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 327,
-        "endLine": 397
+        "startLine": 330,
+        "endLine": 400
       }
     },
     {
@@ -586,8 +596,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
-        "startLine": 400,
-        "endLine": 405
+        "startLine": 403,
+        "endLine": 408
       }
     }
   ],
@@ -762,6 +772,10 @@
     ],
     [
       "Menu.onSelect",
+      "@angular/aria/menu"
+    ],
+    [
+      "Menu.expansionDelay",
       "@angular/aria/menu"
     ],
     [
