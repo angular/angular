@@ -177,7 +177,7 @@
                   type="button"
                   cdkMenuItem
                   [href]="item.url"
-                  [attr.aria-label]="item.displayName"
+                  [aria-label]="item.displayName"
                 >
                   <span>{{ item.displayName }}</span>
               </a>
@@ -209,7 +209,7 @@
           </svg>
           <span
             class="adev-nav-item__label adev-search-desktop"
-            [attr.aria-label]="'Open search dialog with ' + searchTitle"
+            [aria-label]="'Open search dialog with ' + searchTitle"
           >
             <kbd>{{ searchLabel }}</kbd>
             <kbd>K</kbd>
@@ -446,17 +446,20 @@
           </ul>
         </ng-template>
       </div>
-      <!-- TODO: Refactor this and make it better. Accessible, animated, etc. -->
+      <!-- Theme Picker -->
       <div class="adev-nav-item" [class.adev-nav-item--active]="openedMenu() === 'theme-picker'">
         <button
           type="button"
           [cdkMenuTriggerFor]="themeMiniMenu"
           [cdkMenuPosition]="miniMenuPositions"
-          aria-label="Open theme picker"
+          [aria-label]="'Change theme. Current theme: ' + theme()"
+          aria-controls="theme-mini-menu"
+          [aria-expanded]="openedMenu() === 'theme-picker'"
+          aria-haspopup="menu"
           (cdkMenuClosed)="closeMenu()"
           (cdkMenuOpened)="openMenu('theme-picker')"
         >
-          <docs-icon role="presentation">
+          <docs-icon role="presentation" class="adev-theme-icon">
             @switch (theme()) {
               @case ('light') {
                 {{ 'light_mode' }}
@@ -472,37 +475,49 @@
         </button>
 
         <ng-template #themeMiniMenu>
-          <ul class="adev-mini-menu" cdkMenu>
-            <li>
+          <ul
+            class="adev-mini-menu"
+            cdkMenu
+            id="theme-mini-menu"
+            role="menu"
+            aria-label="Theme options"
+          >
+            <li role="none">
               <button
                 type="button"
                 cdkMenuItem
+                role="menuitemradio"
+                [aria-checked]="theme() === 'auto'"
                 (click)="setTheme('auto')"
                 aria-label="Set default system theme"
               >
-                <docs-icon class="docs-icon_high-contrast">routine</docs-icon>
+                <docs-icon class="docs-icon_high-contrast" aria-hidden="true">routine</docs-icon>
                 <span>System</span>
               </button>
             </li>
-            <li>
+            <li role="none">
               <button
                 type="button"
                 cdkMenuItem
+                role="menuitemradio"
+                [aria-checked]="theme() === 'dark'"
                 (click)="setTheme('dark')"
                 aria-label="Set dark theme"
               >
-                <docs-icon class="docs-icon_high-contrast">dark_mode</docs-icon>
+                <docs-icon class="docs-icon_high-contrast" aria-hidden="true">dark_mode</docs-icon>
                 <span>Dark</span>
               </button>
             </li>
-            <li>
+            <li role="none">
               <button
                 type="button"
                 cdkMenuItem
+                role="menuitemradio"
+                [aria-checked]="theme() === 'light'"
                 (click)="setTheme('light')"
                 aria-label="Set light theme"
               >
-                <docs-icon class="docs-icon_high-contrast">light_mode</docs-icon>
+                <docs-icon class="docs-icon_high-contrast" aria-hidden="true">light_mode</docs-icon>
                 <span>Light</span>
               </button>
             </li>
