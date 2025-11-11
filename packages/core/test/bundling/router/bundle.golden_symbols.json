@@ -218,6 +218,7 @@
       "PendingTasksInternal",
       "PlatformLocation",
       "Position",
+      "ProfilerEvent",
       "QUERIES",
       "QUERY_PARAM_RE",
       "QUERY_PARAM_VALUE_RE",

@@ -201,6 +201,7 @@
       "PendingTasksInternal",
       "PlatformRef",
       "PristineChangeEvent",
+      "ProfilerEvent",
       "QUERIES",
       "R3Injector",
       "R3ViewContainerRef",

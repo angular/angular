@@ -201,6 +201,7 @@
       "PRESERVE_HOST_CONTENT",
       "PRESERVE_HOST_CONTENT_DEFAULT",
       "PendingTasksInternal",
+      "ProfilerEvent",
       "QUERIES",
       "QUEUED_CLASSNAME",
       "QUEUED_SELECTOR",

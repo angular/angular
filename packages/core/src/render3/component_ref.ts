@@ -72,7 +72,7 @@ import {
   stringifyCSSSelectorList,
 } from './node_selector_matcher';
 import {profiler} from './profiler';
-import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {executeContentQueries} from './queries/query_execution';
 import {enterView, leaveView} from './state';
 import {debugStringifyTypeForError, stringifyForError} from './util/stringify_utils';

@@ -52,7 +52,7 @@ import {
   getTemplateIndexForState,
 } from './utils';
 import {profiler} from '../render3/profiler';
-import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {addLViewToLContainer, removeLViewFromLContainer} from '../render3/view/container';
 
 /**

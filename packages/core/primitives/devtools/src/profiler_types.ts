@@ -1,4 +1,4 @@
-/*!
+/**
  * @license
  * Copyright Google LLC All Rights Reserved.
  *
@@ -14,7 +14,7 @@
  * Profiler events is an enum used by the profiler to distinguish between different calls of user
  * code invoked throughout the application lifecycle.
  */
-export const enum ProfilerEvent {
+export enum ProfilerEvent {
   /**
    * Corresponds to the point in time before the runtime has called the template function of a
    * component with `RenderFlags.Create`.

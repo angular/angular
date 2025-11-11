@@ -30,7 +30,6 @@ import {
 } from './interfaces/public_definitions';
 import {ɵɵsetComponentScope, ɵɵsetNgModuleScope} from './scope';
 import {
-  Framework,
   BaseDirectiveDebugMetadata,
   AngularDirectiveDebugMetadata,
   AngularComponentDebugMetadata,
@@ -215,7 +214,6 @@ export {
   ComponentDef,
   ComponentTemplate,
   ComponentType,
-  Framework,
   BaseDirectiveDebugMetadata,
   AngularDirectiveDebugMetadata,
   AngularComponentDebugMetadata,
