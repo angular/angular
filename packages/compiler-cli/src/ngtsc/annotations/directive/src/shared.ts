@@ -438,7 +438,6 @@ export function extractDirectiveMetadata(
     queries: contentQueries,
     viewQueries,
     selector,
-    fullInheritance: false,
     type,
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: createSourceSpan(clazz.name),

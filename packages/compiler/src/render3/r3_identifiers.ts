@@ -433,11 +433,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  static CopyDefinitionFeature: o.ExternalReference = {
-    name: 'ɵɵCopyDefinitionFeature',
-    moduleName: CORE,
-  };
-
   static ProvidersFeature: o.ExternalReference = {name: 'ɵɵProvidersFeature', moduleName: CORE};
 
   static HostDirectivesFeature: o.ExternalReference = {
