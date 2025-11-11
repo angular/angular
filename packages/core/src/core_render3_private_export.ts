@@ -97,7 +97,6 @@ export {
   ɵɵcontrolCreate,
   ɵExtractFormControlValue,
   ɵɵcomponentInstance,
-  ɵɵCopyDefinitionFeature,
   ɵɵdefineComponent,
   ɵɵdefineDirective,
   ɵɵdefineNgModule,

@@ -92,11 +92,6 @@ export interface R3DirectiveMetadata {
   usesInheritance: boolean;
 
   /**
-   * Whether or not the component or directive inherits its entire decorator from its base class.
-   */
-  fullInheritance: boolean;
-
-  /**
    * Reference name under which to export the directive's type in a template,
    * if any.
    */
