@@ -13,7 +13,7 @@ packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 pnpmfileChecksum: sha256-vPvk/mBsTHwJvR6NXsWAPUB+5p/66ODkNQwJchPTYMM=
 
 patchedDependencies:
-  dagre-d3-es@7.0.11:
+  dagre-d3-es:
     hash: 08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd
     path: tools/pnpm-patches/dagre-d3-es+7.0.11.patch
 
@@ -215,7 +215,7 @@ importers:
         version: 7.9.0
       dagre-d3-es:
         specifier: ^7.0.11
-        version: 7.0.13
+        version: 7.0.13(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd)
       diff:
         specifier: ^8.0.0
         version: 8.0.2
@@ -20690,7 +20690,7 @@ snapshots:
       d3: 7.9.0
       lodash-es: 4.17.21
 
-  dagre-d3-es@7.0.13:
+  dagre-d3-es@7.0.13(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd):
     dependencies:
       d3: 7.9.0
       lodash-es: 4.17.21
@@ -24328,7 +24328,7 @@ snapshots:
       cytoscape-fcose: 2.2.0(cytoscape@3.33.1)
       d3: 7.9.0
       d3-sankey: 0.12.3
-      dagre-d3-es: 7.0.13
+      dagre-d3-es: 7.0.13(patch_hash=08ae1f30d46402ef53e1486454faa875683cf4152a8aab71ac255078ebfaccdd)
       dayjs: 1.11.18
       dompurify: 3.3.0
       katex: 0.16.25
