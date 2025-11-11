@@ -21,7 +21,7 @@ Angular helps you follow these principles by making it easy to factor your appli
 
 Here's an example of a service class that logs to the browser console:
 
-<docs-code header="src/app/logger.service.ts (class)" language="typescript">
+<docs-code header="logger.service.ts (class)" language="typescript">
 export class Logger {
   log(msg: unknown) { console.log(msg); }
   error(msg: unknown) { console.error(msg); }
@@ -33,7 +33,7 @@ Services can depend on other services.
 For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes.
 That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server:
 
-<docs-code header="src/app/hero.service.ts" language="typescript"
+<docs-code header="hero.service.ts" language="typescript"
            highlight="[7,8,12,13]">
 import { inject } from "@angular/core";
 
@@ -67,7 +67,7 @@ ng generate service heroes/hero
 
 This command creates the following default `HeroService`:
 
-<docs-code header="src/app/heroes/hero.service.ts (CLI-generated)" language="typescript">
+<docs-code header="heroes/hero.service.ts (CLI-generated)" language="typescript">
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -81,7 +81,7 @@ The metadata, `providedIn: 'root'`, means that the `HeroService` is provided thr
 
 Add a `getHeroes()` method that returns the heroes from `mock.heroes.ts` to get the hero mock data:
 
-<docs-code header="src/app/heroes/hero.service.ts" language="typescript">
+<docs-code header="heroes/hero.service.ts" language="typescript">
 import { Injectable } from '@angular/core';
 import { HEROES } from './mock-heroes';
 
@@ -106,7 +106,7 @@ To inject a service as a dependency into a component, you can declare a class fi
 The following example specifies the `HeroService` in the `HeroListComponent`.
 The type of `heroService` is `HeroService`.
 
-<docs-code header="src/app/heroes/hero-list.component.ts" language="typescript">
+<docs-code header="heroes/hero-list.component.ts" language="typescript">
 import { inject } from "@angular/core";
 
 export class HeroListComponent {
@@ -116,7 +116,7 @@ private heroService = inject(HeroService);
 
 It is also possible to inject a service into a component using the component's constructor:
 
-<docs-code header="src/app/heroes/hero-list.component.ts (constructor signature)" language="typescript">
+<docs-code header="heroes/hero-list.component.ts (constructor signature)" language="typescript">
   constructor(private heroService: HeroService)
 </docs-code>
 
@@ -127,7 +127,7 @@ The `inject` method can be used in both classes and functions, while the constru
 When a service depends on another service, follow the same pattern as injecting into a component.
 In the following example, `HeroService` depends on a `Logger` service to report its activities:
 
-<docs-code header="src/app/heroes/hero.service.ts" language="typescript"
+<docs-code header="heroes/hero.service.ts" language="typescript"
            highlight="[3,9,12]">
 import { inject, Injectable } from '@angular/core';
 import { HEROES } from './mock-heroes';

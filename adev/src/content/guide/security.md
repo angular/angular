@@ -72,7 +72,7 @@ In development mode, Angular prints a console warning when it has to change a va
 
 The following template binds the value of `htmlSnippet`. Once by interpolating it into an element's content, and once by binding it to the `innerHTML` property of an element:
 
-<docs-code header="src/app/inner-html-binding.component.html" path="adev/src/content/examples/security/src/app/inner-html-binding.component.html"/>
+<docs-code header="inner-html-binding.component.html" path="adev/src/content/examples/security/src/app/inner-html-binding.component.html"/>
 
 Interpolated content is always escaped —the HTML isn't interpreted and the browser displays angle brackets in the element's text content.
 
@@ -80,7 +80,7 @@ For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`.
 Be aware that binding a value that an attacker might control into `innerHTML` normally causes an XSS vulnerability.
 For example, one could run JavaScript in a following way:
 
-<docs-code header="src/app/inner-html-binding.component.ts (class)" path="adev/src/content/examples/security/src/app/inner-html-binding.component.ts" visibleRegion="class"/>
+<docs-code header="inner-html-binding.component.ts (class)" path="adev/src/content/examples/security/src/app/inner-html-binding.component.ts" visibleRegion="class"/>
 
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `script` element but keeps safe content such as the `<b>` element.
 
@@ -116,12 +116,12 @@ To mark a value as trusted, inject `DomSanitizer` and call one of the following 
 Remember, whether a value is safe depends on context, so choose the right context for your intended use of the value.
 Imagine that the following template needs to bind a URL to a `javascript:alert(...)` call:
 
-<docs-code header="src/app/bypass-security.component.html (URL)" path="adev/src/content/examples/security/src/app/bypass-security.component.html" visibleRegion="URL"/>
+<docs-code header="bypass-security.component.html (URL)" path="adev/src/content/examples/security/src/app/bypass-security.component.html" visibleRegion="URL"/>
 
 Normally, Angular automatically sanitizes the URL, disables the dangerous code, and in development mode, logs this action to the console.
 To prevent this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
 
-<docs-code header="src/app/bypass-security.component.ts (trust-url)" path="adev/src/content/examples/security/src/app/bypass-security.component.ts" visibleRegion="trust-url"/>
+<docs-code header="bypass-security.component.ts (trust-url)" path="adev/src/content/examples/security/src/app/bypass-security.component.ts" visibleRegion="trust-url"/>
 
 <img alt="A screenshot showing an alert box created from a trusted URL" src="assets/images/guide/security/bypass-security-component.png#medium">
 
@@ -130,9 +130,9 @@ The following template lets users enter a YouTube video ID and load the correspo
 The `<iframe src>` attribute is a resource URL security context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users could run.
 To prevent this, call a method on the component to construct a trusted video URL, which causes Angular to let binding into `<iframe src>`:
 
-<docs-code header="src/app/bypass-security.component.html (iframe)" path="adev/src/content/examples/security/src/app/bypass-security.component.html" visibleRegion="iframe"/>
+<docs-code header="bypass-security.component.html (iframe)" path="adev/src/content/examples/security/src/app/bypass-security.component.html" visibleRegion="iframe"/>
 
-<docs-code header="src/app/bypass-security.component.ts (trust-video-url)" path="adev/src/content/examples/security/src/app/bypass-security.component.ts" visibleRegion="trust-video-url"/>
+<docs-code header="bypass-security.component.ts (trust-video-url)" path="adev/src/content/examples/security/src/app/bypass-security.component.ts" visibleRegion="trust-video-url"/>
 
 ### Content security policy
 
