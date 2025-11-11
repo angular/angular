@@ -78,7 +78,9 @@ export interface FormOptions {
  * @category structure
  * @experimental 21.0.0
  */
-export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
+export function form<TModel>(
+  model: WritableSignal<TModel>,
+): Omit<FieldTree<TModel>, 'max' | 'maxLength' | 'min' | 'minLength'>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
@@ -128,7 +130,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
 export function form<TModel>(
   model: WritableSignal<TModel>,
   schemaOrOptions: SchemaOrSchemaFn<TModel> | FormOptions,
-): FieldTree<TModel>;
+): Omit<FieldTree<TModel>, 'max' | 'maxLength' | 'min' | 'minLength'>;
 
 /**
  * Creates a form wrapped around the given model data. A form is represented as simply a `FieldTree`
@@ -177,7 +179,7 @@ export function form<TModel>(
   model: WritableSignal<TModel>,
   schema: SchemaOrSchemaFn<TModel>,
   options: FormOptions,
-): FieldTree<TModel>;
+): Omit<FieldTree<TModel>, 'max' | 'maxLength' | 'min' | 'minLength'>;
 
 export function form<TModel>(...args: any[]): FieldTree<TModel> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
