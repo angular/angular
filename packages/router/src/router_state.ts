@@ -315,6 +315,8 @@ export function getInherited(
  * }
  * ```
  *
+ * @see [Understanding route snapshots](guide/routing/read-route-state#understanding-route-snapshots)
+ *
  * @publicApi
  */
 export class ActivatedRouteSnapshot {

@@ -119,6 +119,94 @@ provideRouter(routes, withRouterConfig({ defaultQueryParamsHandling: 'merge' }))
 
 This is especially helpful for search and filter pages to automatically retain existing filters when additional parameters are provided.
 
+## Control when guards and resolvers execute
+
+[`runGuardsAndResolvers`](/api/router/RunGuardsAndResolvers) determines when route guards and resolvers re-execute during navigation. You can configure this on individual routes to control when guards and resolvers should re-run.
+
+By default `'paramsChange'`, guards and resolvers only run when path or path param changes.
+
+When using `'paramsOrQueryParamsChange'`, guards and resolvers re-run when path, query, or [matrix parameters](guide/routing/read-route-state#matrix-parameters) change:
+
+```ts
+const routes: Routes = [
+  {
+    path: 'products/:category',
+    component: ProductList,
+    resolve: { products: productsResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange'
+  }
+];
+```
+
+With this configuration, navigating from `/products/electronics?sort=name` to `/products/electronics?sort=price` will re-run the resolver, allowing it to fetch products with the new sort order.
+
+When using `'pathParamsChange'`, guards and resolvers re-run when path parameters change, ignoring query and [matrix parameters](guide/routing/read-route-state#matrix-parameters):
+
+```ts
+const routes: Routes = [
+  {
+    path: 'user/:id',
+    component: User,
+    resolve: { user: userResolver },
+    runGuardsAndResolvers: 'pathParamsChange'
+  }
+];
+```
+
+This means navigating from `/user/1?tab=profile` to `/user/1?tab=settings` will not re-run the resolver, while `/user/1` to `/user/2` will.
+
+When using `'pathParamsOrQueryParamsChange'`, guards and resolvers re-run when path or query parameters change, but not [matrix parameters](guide/routing/read-route-state#matrix-parameters):
+
+```ts
+const routes: Routes = [
+  {
+    path: 'search/:query',
+    component: Search,
+    resolve: { results: searchResolver },
+    runGuardsAndResolvers: 'pathParamsOrQueryParamsChange'
+  }
+];
+```
+
+This will re-run for both `/search/angular` to `/search/typescript` and `/search/angular?page=1` to `/search/angular?page=2`.
+
+When using `'always'`, guards and resolvers run on every navigation to that route:
+
+```ts
+const routes: Routes = [
+  {
+    path: 'dashboard',
+    component: Dashboard,
+    resolve: { data: dashboardResolver },
+    canActivate: [authGuard],
+    runGuardsAndResolvers: 'always'
+  }
+];
+```
+
+This ensures fresh data even when navigating to the same route.
+
+You can also provide a custom function for fine-grained control:
+
+```ts
+function customRerunLogic(from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot): boolean {
+  // Only re-run when the category or filter changes, but not for page changes
+  return from.params['category'] !== to.params['category'] ||
+         from.queryParams['filter'] !== to.queryParams['filter'];
+}
+
+const routes: Routes = [
+  {
+    path: 'products/:category',
+    component: ProductList,
+    resolve: { products: productsResolver },
+    runGuardsAndResolvers: customRerunLogic
+  }
+];
+```
+
+This allows pagination (e.g., `?page=2`) without re-running expensive resolvers, while still responding to filter changes.
+
 Angular Router exposes four main areas for customization:
 
   <docs-pill-row>

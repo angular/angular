@@ -26,6 +26,8 @@ export const IMPERATIVE_NAVIGATION = 'imperative';
 /**
  * Identifies the type of a router event.
  *
+ * @see [Router Lifecycle and Events](guide/routing/lifecycle-and-events)
+ *
  * @publicApi
  */
 export enum EventType {
