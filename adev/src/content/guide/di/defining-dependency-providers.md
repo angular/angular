@@ -208,7 +208,7 @@ This hierarchy enables:
 
 In Angular, any element with a component or directive can provide values to all of its descendants.
 
-`mermaid
+```mermaid
 graph TD
     subgraph platform
         subgraph root
@@ -218,7 +218,7 @@ graph TD
             C --> D[FriendEntry]
         end
     end
-`
+```
 
 In the example above:
 
