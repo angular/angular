@@ -1,6 +1,6 @@
 # 9장: TaskMaster 구축하기 - 모든 것을 하나로
 
-> *"실제로 뭔가를 만들어보자!"*
+> *"배운 모든 것을 사용하는 실제 무언가를 만들어보자!"*
 
 ## 소개
 
@@ -17,11 +17,21 @@
 
 이제 **TaskMaster** - 모든 개념을 실제 컨텍스트에서 보여주는 완전한 작업 관리 애플리케이션을 만들 시간입니다.
 
+## 요구사항
+
+TaskMaster는 다음과 같아야 합니다:
+
+1. **빠름** - 최적화된 변경 감지, lazy loading
+2. **확장 가능** - 확장을 위한 플러그인 아키텍처
+3. **현대적** - Signal 기반 상태 관리
+4. **테스트됨** - 테스트 가능성을 위한 적절한 DI
+5. **프로덕션 준비** - 에러 처리, 로딩 상태, 오프라인 지원
+
 ## 아키텍처 개요
 
 ```
 TaskMaster 애플리케이션
-├── Core (싱글톤 서비스)
+├── Core 모듈 (싱글톤 서비스)
 │   ├── AuthService (providedIn: 'root')
 │   ├── StateService (Signal 기반)
 │   └── ApiService (HTTP 클라이언트 래퍼)
@@ -33,31 +43,45 @@ TaskMaster 애플리케이션
 │   │   └── TaskFormComponent (Reactive Forms)
 │   │
 │   ├── Analytics Feature
-│   │   └── DashboardComponent (runOutsideAngular로 차트)
+│   │   ├── DashboardComponent (OnPush)
+│   │   └── ChartsComponent (runOutsideAngular)
 │   │
 │   └── Settings Feature
+│       └── SettingsComponent
 │
 ├── Shared
-│   └── UI Components (OnPush, Standalone)
+│   ├── UI Components (OnPush, Standalone)
+│   └── Pipes & Directives
 │
 └── Plugins (확장 포인트)
+    ├── Plugin Interface
     ├── Export Plugin (PDF/CSV)
     └── Integration Plugin (Slack/Email)
 ```
 
 ## 1단계: Signals로 상태 관리
 
+먼저, Alex는 Angular Signals를 사용하여 상태 레이어를 만들었습니다:
+
 ```typescript
-// task.state.ts
+// src/app/core/state/task.state.ts
+
+import { Injectable, signal, computed } from '@angular/core';
+import { Task, TaskFilter } from '../models/task.model';
+
 @Injectable({ providedIn: 'root' })
 export class TaskState {
   // Private signals (내부 상태)
   private _tasks = signal<Task[]>([]);
   private _filter = signal<TaskFilter>('all');
+  private _loading = signal(false);
+  private _error = signal<string | null>(null);
 
   // Public read-only signals
   readonly tasks = this._tasks.asReadonly();
   readonly filter = this._filter.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
 
   // Computed signals (파생 상태)
   readonly filteredTasks = computed(() => {
@@ -65,9 +89,12 @@ export class TaskState {
     const filter = this._filter();
 
     switch (filter) {
-      case 'active': return tasks.filter(t => !t.completed);
-      case 'completed': return tasks.filter(t => t.completed);
-      default: return tasks;
+      case 'active':
+        return tasks.filter(t => !t.completed);
+      case 'completed':
+        return tasks.filter(t => t.completed);
+      default:
+        return tasks;
     }
   });
 
@@ -80,95 +107,293 @@ export class TaskState {
     };
   });
 
-  // Actions
+  // Actions (상태 변경)
+  setTasks(tasks: Task[]): void {
+    this._tasks.set(tasks);
+  }
+
   addTask(task: Task): void {
     this._tasks.update(tasks => [...tasks, task]);
   }
 
   updateTask(id: string, updates: Partial<Task>): void {
     this._tasks.update(tasks =>
-      tasks.map(task => task.id === id ? { ...task, ...updates } : task)
+      tasks.map(task =>
+        task.id === id ? { ...task, ...updates } : task
+      )
     );
+  }
+
+  deleteTask(id: string): void {
+    this._tasks.update(tasks => tasks.filter(t => t.id !== id));
+  }
+
+  setFilter(filter: TaskFilter): void {
+    this._filter.set(filter);
+  }
+
+  setLoading(loading: boolean): void {
+    this._loading.set(loading);
+  }
+
+  setError(error: string | null): void {
+    this._error.set(error);
   }
 }
 ```
 
 **왜 Signals인가?**
-1. 세밀한 반응성 - 변경된 signal을 사용하는 컴포넌트만 업데이트
-2. 자동 의존성 추적
-3. 타입 안전
-4. 간단한 멘탈 모델
+
+1. **세밀한 반응성** - 변경된 signal을 사용하는 컴포넌트만 업데이트
+2. **자동 의존성 추적** - Computed signals가 의존성을 자동으로 추적
+3. **타입 안전** - 완전한 TypeScript 지원
+4. **간단한 멘탈 모델** - 관리할 구독 없음
 
 ## 2단계: OnPush로 최적화된 컴포넌트
 
+다음으로, Alex는 OnPush 전략으로 컴포넌트를 만들었습니다:
+
 ```typescript
+// src/app/features/tasks/task-list.component.ts
+
+import { Component, ChangeDetectionStrategy, effect } from '@angular/core';
+import { TaskState } from '../../core/state/task.state';
+import { TaskService } from '../../core/services/task.service';
+
 @Component({
   selector: 'app-task-list',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [CommonModule, TaskCardComponent],
   template: `
-    @for (task of taskState.filteredTasks(); track task.id) {
-      <app-task-card [task]="task" />
-    }
-    @empty {
-      <app-empty-state message="작업 없음" />
-    }
+    <div class="task-list">
+      <!-- 로딩 상태 -->
+      @if (taskState.loading()) {
+        <app-spinner />
+      }
+
+      <!-- 에러 상태 -->
+      @if (taskState.error(); as error) {
+        <app-error [message]="error" />
+      }
+
+      <!-- 작업 -->
+      @for (task of taskState.filteredTasks(); track task.id) {
+        <app-task-card
+          [task]="task"
+          (toggle)="onToggle($event)"
+          (delete)="onDelete($event)"
+        />
+      }
+
+      <!-- 빈 상태 -->
+      @empty {
+        <app-empty-state message="작업이 없습니다" />
+      }
+
+      <!-- 통계 푸터 -->
+      <app-task-stats [stats]="taskState.stats()" />
+    </div>
   `
 })
 export class TaskListComponent {
-  constructor(public taskState: TaskState) {}
+  constructor(
+    public taskState: TaskState,
+    private taskService: TaskService
+  ) {
+    // effect를 사용하여 초기화 시 작업 로드
+    effect(() => {
+      if (!this.taskState.loading()) {
+        this.loadTasks();
+      }
+    });
+  }
+
+  private loadTasks(): void {
+    this.taskState.setLoading(true);
+    this.taskService.getTasks().subscribe({
+      next: (tasks) => {
+        this.taskState.setTasks(tasks);
+        this.taskState.setLoading(false);
+      },
+      error: (error) => {
+        this.taskState.setError(error.message);
+        this.taskState.setLoading(false);
+      }
+    });
+  }
+
+  onToggle(taskId: string): void {
+    const task = this.taskState.tasks().find(t => t.id === taskId);
+    if (task) {
+      this.taskState.updateTask(taskId, { completed: !task.completed });
+      // 백엔드에 저장
+      this.taskService.updateTask(taskId, { completed: !task.completed })
+        .subscribe();
+    }
+  }
+
+  onDelete(taskId: string): void {
+    this.taskState.deleteTask(taskId);
+    this.taskService.deleteTask(taskId).subscribe();
+  }
 }
 ```
 
 **OnPush 이점:**
+
 - ✅ signals 변경 시에만 컴포넌트 확인
-- ✅ 템플릿에서 signal()을 통해 자동
+- ✅ 템플릿의 signal()을 통해 자동
 - ✅ 수동 ChangeDetectorRef 불필요
 - ✅ 변경 감지 사이클 90% 감소
 
-## 3단계: DI로 플러그인 시스템
+## 3단계: 계층적 의존성 주입
+
+Alex는 DI를 사용하여 플러그인 시스템을 구현했습니다:
 
 ```typescript
-// plugin.interface.ts
+// src/app/core/plugins/plugin.interface.ts
+
 export interface Plugin {
   name: string;
+  version: string;
+  initialize(): void;
   execute(context: PluginContext): Promise<void>;
 }
 
-// plugin.token.ts
-export const TASK_PLUGINS = new InjectionToken<Plugin[]>('TASK_PLUGINS');
+export interface PluginContext {
+  tasks: Task[];
+  format?: string;
+}
 
-// plugin.service.ts
+// src/app/core/plugins/plugin.token.ts
+
+import { InjectionToken } from '@angular/core';
+
+export const TASK_PLUGINS = new InjectionToken<Plugin[]>('TASK_PLUGINS', {
+  providedIn: 'root',
+  factory: () => []
+});
+
+// src/app/core/services/plugin.service.ts
+
+import { Injectable, Inject } from '@angular/core';
+import { TASK_PLUGINS } from '../plugins/plugin.token';
+import { Plugin } from '../plugins/plugin.interface';
+
 @Injectable({ providedIn: 'root' })
 export class PluginService {
   private plugins = new Map<string, Plugin>();
 
   constructor(@Inject(TASK_PLUGINS) registeredPlugins: Plugin[]) {
+    // multi-provider를 통해 제공된 모든 플러그인 등록
     registeredPlugins.forEach(plugin => this.register(plugin));
+  }
+
+  register(plugin: Plugin): void {
+    plugin.initialize();
+    this.plugins.set(plugin.name, plugin);
   }
 
   async execute(pluginName: string, context: PluginContext): Promise<void> {
     const plugin = this.plugins.get(pluginName);
-    if (!plugin) throw new Error(`Plugin not found: ${pluginName}`);
+    if (!plugin) {
+      throw new Error(`Plugin not found: ${pluginName}`);
+    }
     await plugin.execute(context);
+  }
+
+  listPlugins(): Plugin[] {
+    return Array.from(this.plugins.values());
   }
 }
 
-// app.config.ts
+// src/app/plugins/export/csv-export.plugin.ts
+
+import { Injectable } from '@angular/core';
+import { Plugin, PluginContext } from '../../core/plugins/plugin.interface';
+
+@Injectable()
+export class CsvExportPlugin implements Plugin {
+  name = 'CSV Export';
+  version = '1.0.0';
+
+  initialize(): void {
+    console.log('CSV Export Plugin initialized');
+  }
+
+  async execute(context: PluginContext): Promise<void> {
+    const csv = this.convertToCSV(context.tasks);
+    this.downloadCSV(csv, 'tasks.csv');
+  }
+
+  private convertToCSV(tasks: any[]): string {
+    const headers = Object.keys(tasks[0]).join(',');
+    const rows = tasks.map(task =>
+      Object.values(task).join(',')
+    ).join('\n');
+    return `${headers}\n${rows}`;
+  }
+
+  private downloadCSV(csv: string, filename: string): void {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+}
+
+// main.ts 또는 app.config.ts에서 플러그인 등록
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: TASK_PLUGINS, useClass: CsvExportPlugin, multi: true },
-    { provide: TASK_PLUGINS, useClass: PdfExportPlugin, multi: true }
+    provideRouter(routes),
+    {
+      provide: TASK_PLUGINS,
+      useClass: CsvExportPlugin,
+      multi: true
+    },
+    {
+      provide: TASK_PLUGINS,
+      useClass: PdfExportPlugin,
+      multi: true
+    }
   ]
 };
 ```
 
 ## 4단계: Zone.js로 성능 최적화
 
+무거운 차트 렌더링이 있는 분석 대시보드의 경우:
+
 ```typescript
-// 무거운 차트 렌더링이 있는 분석 대시보드
-@Component({...})
+// src/app/features/analytics/dashboard.component.ts
+
+import { Component, NgZone, effect } from '@angular/core';
+import { TaskState } from '../../core/state/task.state';
+import * as d3 from 'd3';
+
+@Component({
+  selector: 'app-analytics-dashboard',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="dashboard">
+      <div #chartContainer class="chart-container"></div>
+      <app-stats-cards [stats]="taskState.stats()" />
+    </div>
+  `
+})
 export class AnalyticsDashboardComponent {
-  constructor(private ngZone: NgZone, public taskState: TaskState) {
+  @ViewChild('chartContainer', { static: true })
+  chartContainer!: ElementRef;
+
+  constructor(
+    public taskState: TaskState,
+    private ngZone: NgZone
+  ) {
+    // 작업이 변경될 때 차트 업데이트
     effect(() => {
       const tasks = this.taskState.filteredTasks();
 
@@ -179,78 +404,301 @@ export class AnalyticsDashboardComponent {
       });
     });
   }
+
+  private renderChart(tasks: Task[]): void {
+    // 복잡한 D3 시각화
+    // 많은 DOM 업데이트, 애니메이션 등
+    const container = d3.select(this.chartContainer.nativeElement);
+
+    // 여기서 수백 개의 DOM 업데이트...
+    // 하지만 변경 감지 트리거되지 않음!
+
+    // 이전 차트 지우기
+    container.selectAll('*').remove();
+
+    // 새 시각화 생성
+    const svg = container.append('svg')
+      .attr('width', 800)
+      .attr('height', 400);
+
+    // ... 복잡한 D3 렌더링 로직 ...
+  }
 }
 ```
+
+**이점:**
+
+- ✅ 차트 렌더링 중 변경 감지 없음
+- ✅ 부드러운 애니메이션 (60fps)
+- ✅ 필요할 때만 CD 실행 (통계 카드 업데이트)
 
 ## 5단계: Guards와 Lazy Loading이 있는 라우터
 
 ```typescript
-// app.routes.ts
-const authGuard: CanActivateFn = () => inject(AuthService).isAuthenticated();
+// src/app/app.routes.ts
+
+import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { AuthService } from './core/services/auth.service';
+
+// 함수형 guard
+const authGuard = () => {
+  const authService = inject(AuthService);
+  return authService.isAuthenticated();
+};
+
+// 함수형 resolver
+const taskResolver = (route: ActivatedRouteSnapshot) => {
+  const taskService = inject(TaskService);
+  return taskService.getTask(route.params['id']);
+};
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'tasks',
+    pathMatch: 'full'
+  },
+  {
     path: 'tasks',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/tasks/tasks.routes')
+    loadChildren: () =>
+      import('./features/tasks/tasks.routes').then(m => m.TASKS_ROUTES)
   },
   {
     path: 'analytics',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/analytics/dashboard.component')
+    loadComponent: () =>
+      import('./features/analytics/dashboard.component')
+        .then(m => m.AnalyticsDashboardComponent)
+  },
+  {
+    path: 'settings',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/settings/settings.component')
+        .then(m => m.SettingsComponent)
   }
 ];
 ```
 
-## 완전한 애플리케이션 플로우
+## 6단계: 완전한 애플리케이션 플로우
+
+모든 시스템을 통한 완전한 사용자 상호작용을 추적해봅시다:
 
 ### 시나리오: 사용자가 작업 토글
 
 ```typescript
-// 1. 템플릿에서 사용자 클릭
-<input type="checkbox" (change)="onToggle(task.id)" />
+// 1. 템플릿에서 사용자가 체크박스 클릭
+<input
+  type="checkbox"
+  [checked]="task.completed"
+  (change)="onToggle(task.id)"  // ← 클릭 이벤트
+/>
 
 // 2. 이벤트 핸들러 실행
 onToggle(taskId: string): void {
-  // 3. signal 상태 업데이트
-  this.taskState.updateTask(taskId, { completed: !task.completed });
-  
+  // 3. signal 상태 업데이트 (computed signals 트리거)
+  this.taskState.updateTask(taskId, {
+    completed: !this.currentTask.completed
+  });
+
   // 4. 백엔드에 저장
   this.taskService.updateTask(taskId, updates).subscribe();
 }
 
 // 5. Signal 업데이트 전파
-// computed signals 자동 재계산
+// TaskState.updateTask()가 _tasks.update() 호출
+this._tasks.update(tasks =>
+  tasks.map(task =>
+    task.id === id ? { ...task, ...updates } : task
+  )
+);
 
-// 6. 템플릿이 signal 읽기
-{{ taskState.stats().completed }}
+// 6. Computed signals 재계산
+this.stats = computed(() => {
+  const tasks = this._tasks(); // signal 읽기 - 의존성 추적
+  return { /* ... 계산된 통계 ... */ };
+});
 
-// 7. 변경 감지 실행 (OnPush)
-// - signal 변경으로 컴포넌트 dirty 표시
+// 7. 템플릿이 signal 읽기
+{{ taskState.stats().completed }}  // ← 템플릿에서 signal 읽기
+
+// 8. 변경 감지 실행 (OnPush)
+// - 컴포넌트 dirty 표시 (signal 변경됨)
 // - 이 컴포넌트만 CD 확인
 // - DOM에 새 값 렌더링
+
+// 9. LView 업데이트 (Render3)
+// - ɵɵtextInterpolate1() 명령어
+// - DOM 텍스트 노드 업데이트
+// - 효율적인 패치, 전체 재렌더링 아님
 ```
 
 **모든 시스템이 함께 작동:**
-1. ✅ DI: 서비스가 계층적으로 주입됨
-2. ✅ Signals: 세밀한 반응성
-3. ✅ 변경 감지: OnPush + signals = 최적 성능
-4. ✅ 렌더링: Ivy 명령어를 통한 효율적인 DOM 업데이트
-5. ✅ Zone.js: 이벤트가 자동으로 CD 트리거
+
+1. ✅ **DI**: 서비스가 계층적으로 주입됨
+2. ✅ **Signals**: 세밀한 반응성
+3. ✅ **변경 감지**: OnPush + signals = 최적 성능
+4. ✅ **렌더링**: Ivy 명령어를 통한 효율적인 DOM 업데이트
+5. ✅ **Zone.js**: 이벤트가 자동으로 CD 트리거
+
+## 7단계: 내부 구조 지식으로 테스트
+
+내부 구조를 이해하면 테스트가 더 쉬워집니다:
+
+```typescript
+// src/app/features/tasks/task-list.component.spec.ts
+
+import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { TaskListComponent } from './task-list.component';
+import { TaskState } from '../../core/state/task.state';
+import { TaskService } from '../../core/services/task.service';
+
+describe('TaskListComponent', () => {
+  let component: TaskListComponent;
+  let mockTaskState: jasmine.SpyObj<TaskState>;
+  let mockTaskService: jasmine.SpyObj<TaskService>;
+
+  beforeEach(() => {
+    // signals로 mock 상태 생성
+    mockTaskState = jasmine.createSpyObj('TaskState', {
+      loading: signal(false),
+      error: signal(null),
+      filteredTasks: signal([]),
+      stats: signal({ total: 0, active: 0, completed: 0 }),
+      setLoading: undefined,
+      setError: undefined,
+      updateTask: undefined,
+      deleteTask: undefined
+    });
+
+    mockTaskService = jasmine.createSpyObj('TaskService', [
+      'getTasks',
+      'updateTask',
+      'deleteTask'
+    ]);
+
+    TestBed.configureTestingModule({
+      imports: [TaskListComponent],
+      providers: [
+        { provide: TaskState, useValue: mockTaskState },
+        { provide: TaskService, useValue: mockTaskService }
+      ]
+    });
+
+    component = TestBed.createComponent(TaskListComponent).componentInstance;
+  });
+
+  it('should update task on toggle', () => {
+    const task = { id: '1', title: 'Test', completed: false };
+    mockTaskState.tasks.and.returnValue([task]);
+
+    component.onToggle('1');
+
+    expect(mockTaskState.updateTask).toHaveBeenCalledWith('1', {
+      completed: true
+    });
+  });
+});
+```
+
+## 완전한 파일 구조
+
+```
+taskmaster/
+├── src/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── services/
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── task.service.ts
+│   │   │   │   └── plugin.service.ts
+│   │   │   ├── state/
+│   │   │   │   └── task.state.ts
+│   │   │   ├── models/
+│   │   │   │   └── task.model.ts
+│   │   │   └── plugins/
+│   │   │       ├── plugin.interface.ts
+│   │   │       └── plugin.token.ts
+│   │   │
+│   │   ├── features/
+│   │   │   ├── tasks/
+│   │   │   │   ├── task-list.component.ts
+│   │   │   │   ├── task-detail.component.ts
+│   │   │   │   ├── task-form.component.ts
+│   │   │   │   └── tasks.routes.ts
+│   │   │   ├── analytics/
+│   │   │   │   └── dashboard.component.ts
+│   │   │   └── settings/
+│   │   │       └── settings.component.ts
+│   │   │
+│   │   ├── shared/
+│   │   │   ├── components/
+│   │   │   │   ├── spinner.component.ts
+│   │   │   │   ├── error.component.ts
+│   │   │   │   └── empty-state.component.ts
+│   │   │   └── pipes/
+│   │   │       └── date-format.pipe.ts
+│   │   │
+│   │   ├── plugins/
+│   │   │   ├── export/
+│   │   │   │   ├── csv-export.plugin.ts
+│   │   │   │   └── pdf-export.plugin.ts
+│   │   │   └── integration/
+│   │   │       └── slack.plugin.ts
+│   │   │
+│   │   ├── app.component.ts
+│   │   ├── app.config.ts
+│   │   └── app.routes.ts
+│   │
+│   └── main.ts
+│
+└── package.json
+```
+
+## 주요 성과
+
+Alex의 TaskMaster 애플리케이션이 보여주는 것:
+
+### 1. **최적화된 성능**
+- 모든 곳에 OnPush → CD 사이클 90% 감소
+- Signals → 세밀한 업데이트
+- runOutsideAngular → 부드러운 애니메이션
+- Lazy loading → 빠른 초기 로드
+
+### 2. **확장 가능한 아키텍처**
+- DI를 통한 플러그인 시스템
+- Feature 모듈
+- 공유 컴포넌트
+- 명확한 관심사 분리
+
+### 3. **현대적 패턴**
+- Signal 기반 상태
+- Standalone 컴포넌트
+- 함수형 guards/resolvers
+- Computed 값
+
+### 4. **프로덕션 준비**
+- 에러 처리
+- 로딩 상태
+- 오프라인 지원 (service workers)
+- 포괄적인 테스트
 
 ## 성능 지표
 
 **최적화 전:**
 - 초기 로드: 2.5초
-- 변경 감지: ~500 사이클/초
-- 메모리: 85MB
-- FPS: 30
+- 변경 감지 사이클: ~500/초
+- 메모리 사용량: 85MB
+- 애니메이션 FPS: 30
 
-**최적화 후:**
-- 초기 로드: 0.8초 (⚡ 69% 빠름)
-- 변경 감지: ~50 사이클/초 (⚡ 90% 감소)
-- 메모리: 45MB (⚡ 47% 감소)
-- FPS: 60 (⚡ 2배 부드러움)
+**내부 구조 지식 적용 후:**
+- 초기 로드: 0.8초 (69% 빠름)
+- 변경 감지 사이클: ~50/초 (90% 감소)
+- 메모리 사용량: 45MB (47% 감소)
+- 애니메이션 FPS: 60 (2배 부드러움)
 
 ## 완전한 예제 실행
 
@@ -264,6 +712,9 @@ npm test
 
 # 프로덕션 빌드
 npm run build
+
+# 번들 분석
+npm run analyze
 ```
 
 ## Alex가 배운 것
@@ -320,6 +771,28 @@ Angular 내부 구조를 통한 Alex의 여정에 함께해 주셔서 감사합�
 계속 탐험하세요. 계속 배우세요. 그리고 기억하세요:
 
 > **"마법은 단지 코드일 뿐입니다. 그리고 이제 당신은 코드를 이해합니다."**
+
+---
+
+## 추가 리소스
+
+- **Angular 소스 코드**: https://github.com/angular/angular
+- **설계 문서**: https://github.com/angular/angular/tree/main/adev/src/content/reference
+- **Angular 블로그**: https://blog.angular.dev
+- **RFCs**: https://github.com/angular/angular/discussions
+- **커뮤니티**: https://discord.gg/angular
+
+## Alex의 일지에서 - 마지막 항목
+
+*"첫 번째 일지 항목을 돌아보면, 얼마나 멀리 왔는지 믿을 수 없습니다. NullInjectorError로 혼란스러워했던 것에서 깊은 내부 구조 지식으로 프로덕션 준비 앱을 만들기까지.*
+
+*여정은 도전적이었지만 그만한 가치가 있었습니다. 더 이상 프레임워크에 겁먹지 않습니다 - 이해합니다.*
+
+*이것을 읽는 모든 분께: 제가 Angular 내부 구조를 배울 수 있다면, 여러분도 할 수 있습니다. 작게 시작하고, 호기심을 가지고, 계속 파헤치세요.*
+
+*이제 Angular에 첫 PR을 기여할 시간입니다. 어디서 시작할지 정확히 알고 있습니다.*
+
+*- Alex"*
 
 ---
 
