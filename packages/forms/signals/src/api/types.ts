@@ -301,7 +301,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Reads an aggregate metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
+  metadata<M>(key: AggregateMetadataKey<any, any, M>): M;
 
   /**
    * Reads a metadata value from the field.

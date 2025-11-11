@@ -48,7 +48,13 @@ export class FieldMetadataState {
     cast<AggregateMetadataKey<unknown, unknown>>(key);
     if (!this.metadata.has(key)) {
       const logic = this.node.logicNode.logic.getAggregateMetadata(key);
-      const result = computed(() => logic.compute(this.node.context));
+      let result = computed(() => logic.compute(this.node.context));
+      if (key.wrap) {
+        result = untracked(() =>
+          runInInjectionContext(this.node.structure.injector, () => key.wrap!(result)),
+        );
+      }
+
       this.metadata.set(key, result);
     }
     return this.metadata.get(key)! as Signal<T>;

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {type ResourceRef, type Signal} from '@angular/core';
+
 /**
  * Represents metadata that may be defined on a field when it is created using a `metadata` rule
  * in the schema. A particular `MetadataKey` can only be defined on a particular field **once**.
@@ -37,13 +39,14 @@ export function createMetadataKey<TValue>(): MetadataKey<TValue> {
  *
  * @experimental 21.0.0
  */
-export class AggregateMetadataKey<TAcc, TItem> {
-  private brand!: [TAcc, TItem];
+export class AggregateMetadataKey<TAcc, TSet, TGet = Signal<TAcc>> {
+  private brand!: [TAcc, TSet, TGet];
 
   /** Use {@link reducedMetadataKey}. */
   private constructor(
-    readonly reduce: (acc: TAcc, item: TItem) => TAcc,
-    readonly getInitial: () => TAcc,
+    readonly reduce: (acc: TAcc, item: TSet) => TAcc,
+    readonly getInitial: NoInfer<() => TAcc>,
+    readonly wrap?: (s: Signal<TAcc>) => TGet,
   ) {}
 }
 
@@ -55,14 +58,16 @@ export class AggregateMetadataKey<TAcc, TItem> {
  *
  * @experimental 21.0.0
  */
-export function reducedMetadataKey<TAcc, TItem>(
-  reduce: (acc: TAcc, item: TItem) => TAcc,
+export function reducedMetadataKey<TAcc, TSet, TGet = Signal<TAcc>>(
+  reduce: (acc: TAcc, item: TSet) => TAcc,
   getInitial: NoInfer<() => TAcc>,
-): AggregateMetadataKey<TAcc, TItem> {
+  wrap?: (s: Signal<TAcc>) => TGet,
+) {
   return new (AggregateMetadataKey as new (
-    reduce: (acc: TAcc, item: TItem) => TAcc,
-    getInitial: () => TAcc,
-  ) => AggregateMetadataKey<TAcc, TItem>)(reduce, getInitial);
+    reduce: (acc: TAcc, item: TSet) => TAcc,
+    getInitial: NoInfer<() => TAcc>,
+    wrap?: (s: Signal<TAcc>) => TGet,
+  ) => AggregateMetadataKey<TAcc, TSet, TGet>)(reduce, getInitial, wrap);
 }
 
 /**
@@ -140,6 +145,16 @@ export function andMetadataKey(): AggregateMetadataKey<boolean, boolean> {
   return reducedMetadataKey(
     (prev, next) => prev && next,
     () => true,
+  );
+}
+
+export function resourceMetadataKey<TParams, TResult>(
+  factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult>,
+): AggregateMetadataKey<TParams | undefined, TParams | undefined, ResourceRef<TResult>> {
+  return reducedMetadataKey(
+    (_, item) => item,
+    () => undefined,
+    factory,
   );
 }
 

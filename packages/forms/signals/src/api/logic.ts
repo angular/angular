@@ -12,12 +12,12 @@ import {assertPathIsCurrent} from '../schema/schema';
 import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './metadata';
 import type {
   FieldContext,
-  SchemaPath,
   FieldValidator,
   LogicFn,
   PathKind,
-  TreeValidator,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidator,
 } from './types';
 import {ensureCustomValidationResult} from './validators/util';
 
@@ -175,7 +175,7 @@ export function aggregateMetadata<
   TPathKind extends PathKind = PathKind.Root,
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: AggregateMetadataKey<any, TMetadataItem>,
+  key: AggregateMetadataKey<any, TMetadataItem, any>,
   logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>,
 ): void {
   assertPathIsCurrent(path);

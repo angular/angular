@@ -7,13 +7,14 @@
  */
 
 import {httpResource, HttpResourceOptions, HttpResourceRequest} from '@angular/common/http';
-import {computed, ResourceRef, Signal} from '@angular/core';
-import {FieldNode} from '../field/node';
+import {ResourceRef, Signal} from '@angular/core';
+import type {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {metadata} from './logic';
-import {FieldContext, SchemaPath, PathKind, TreeValidationResult, SchemaPathRules} from './types';
+import {aggregateMetadata} from './logic';
+import {resourceMetadataKey} from './metadata';
+import {FieldContext, PathKind, SchemaPath, SchemaPathRules, TreeValidationResult} from './types';
 
 /**
  * A function that takes the result of an async operation and the current field context, and maps it
@@ -158,16 +159,14 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const RESOURCE = metadata(path, (ctx) => {
-    const params = computed(() => {
-      const node = ctx.stateOf(path) as FieldNode;
-      const validationState = node.validationState;
-      if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
-        return undefined;
-      }
-      return opts.params(ctx);
-    });
-    return opts.factory(params);
+  const RESOURCE = resourceMetadataKey(opts.factory);
+  aggregateMetadata(path, RESOURCE, (ctx) => {
+    const node = ctx.stateOf(path) as FieldNode;
+    const validationState = node.validationState;
+    if (validationState.shouldSkipValidation() || !validationState.syncValid()) {
+      return undefined;
+    }
+    return opts.params(ctx);
   });
 
   pathNode.builder.addAsyncErrorRule((ctx) => {

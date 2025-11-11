@@ -492,6 +492,10 @@ describe('validation status', () => {
         {injector},
       );
 
+      // Access the validation state to trigger resource creation.
+      // (Metadata is created lazily when first accessed)
+      f().pending();
+
       await promise;
       // Resource needs 2
       await TestBed.tick();
@@ -547,6 +551,10 @@ describe('validation status', () => {
         },
         {injector},
       );
+
+      // Access the validation state to trigger resource creation.
+      // (Metadata is created lazily when first accessed)
+      f().pending();
 
       await invalidPromise;
       await validPromise;
