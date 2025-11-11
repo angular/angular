@@ -10,6 +10,7 @@ import {fakeAsync, tick} from '@angular/core/testing';
 import {
   AbstractControl,
   FormArray,
+  FormBuilder,
   FormControl,
   FormGroup,
   ValidationErrors,
@@ -1023,6 +1024,308 @@ import {asyncValidator} from './util';
         const g = new FormGroup({'array': new FormArray([new FormControl('111')])});
 
         expect(g.get(['array', 0])!.value).toEqual('111');
+      });
+    });
+
+    describe('getAll', () => {
+      it('should return empty array when path is null', () => {
+        const g = new FormGroup({});
+        expect(g.getAll(null!)).toEqual([]);
+      });
+
+      it('should return empty array when path is empty', () => {
+        const g = new FormGroup({});
+        expect(g.getAll([])).toEqual([g]);
+      });
+
+      it('should return empty array when path is invalid', () => {
+        const g = new FormGroup({});
+        expect(g.getAll('invalid')).toEqual([]);
+      });
+
+      it('should return all controls matching wildcard pattern in FormArray', () => {
+        const form = new FormArray([
+          new FormGroup({prop1: new FormControl('a'), prop2: new FormControl('b')}),
+          new FormGroup({prop1: new FormControl('c'), prop2: new FormControl('d')}),
+          new FormGroup({prop1: new FormControl('e'), prop2: new FormControl('f')}),
+        ]);
+
+        const controls = form.getAll('*.prop1');
+        expect(controls.length).toBe(3);
+        expect(controls[0].value).toBe('a');
+        expect(controls[1].value).toBe('c');
+        expect(controls[2].value).toBe('e');
+      });
+
+      it('should return all controls matching wildcard pattern with array path', () => {
+        const form = new FormArray([
+          new FormGroup({prop1: new FormControl('a')}),
+          new FormGroup({prop1: new FormControl('b')}),
+        ]);
+
+        const controls = form.getAll(['*', 'prop1']);
+        expect(controls.length).toBe(2);
+        expect(controls[0].value).toBe('a');
+        expect(controls[1].value).toBe('b');
+      });
+
+      it('should return all controls from nested FormArray', () => {
+        const form = new FormGroup({
+          items: new FormArray([
+            new FormGroup({price: new FormControl(10)}),
+            new FormGroup({price: new FormControl(20)}),
+            new FormGroup({price: new FormControl(30)}),
+          ]),
+        });
+
+        const controls = form.getAll('items.*.price');
+        expect(controls.length).toBe(3);
+        expect(controls[0].value).toBe(10);
+        expect(controls[1].value).toBe(20);
+        expect(controls[2].value).toBe(30);
+      });
+
+      it('should return empty array when wildcard is used on non-FormArray', () => {
+        const form = new FormGroup({
+          prop1: new FormControl('a'),
+        });
+
+        const controls = form.getAll('*.prop1');
+        expect(controls).toEqual([]);
+      });
+
+      it('should return empty array when path after wildcard is invalid', () => {
+        const form = new FormArray([
+          new FormGroup({prop1: new FormControl('a')}),
+        ]);
+
+        const controls = form.getAll('*.invalid');
+        expect(controls).toEqual([]);
+      });
+
+      it('should handle multiple wildcards in path', () => {
+        const form = new FormArray([
+          new FormArray([
+            new FormGroup({value: new FormControl(1)}),
+            new FormGroup({value: new FormControl(2)}),
+          ]),
+          new FormArray([
+            new FormGroup({value: new FormControl(3)}),
+            new FormGroup({value: new FormControl(4)}),
+          ]),
+        ]);
+
+        const controls = form.getAll('*.*.value');
+        expect(controls.length).toBe(4);
+        expect(controls[0].value).toBe(1);
+        expect(controls[1].value).toBe(2);
+        expect(controls[2].value).toBe(3);
+        expect(controls[3].value).toBe(4);
+      });
+
+      it('should return controls from specific index after wildcard', () => {
+        const form = new FormArray([
+          new FormGroup({
+            nested: new FormArray([
+              new FormControl('a'),
+              new FormControl('b'),
+            ]),
+          }),
+          new FormGroup({
+            nested: new FormArray([
+              new FormControl('c'),
+              new FormControl('d'),
+            ]),
+          }),
+        ]);
+
+        const controls = form.getAll('*.nested.0');
+        expect(controls.length).toBe(2);
+        expect(controls[0].value).toBe('a');
+        expect(controls[1].value).toBe('c');
+      });
+
+      it('should work with FormBuilder example from feature request', () => {
+        const fb = new FormBuilder();
+        const form = fb.array([
+          fb.group({
+            prop1: fb.control('value1'),
+            prop2: fb.control('value2'),
+          }),
+          fb.group({
+            prop1: fb.control('value3'),
+            prop2: fb.control('value4'),
+          }),
+        ]);
+
+        const controls = form.getAll('*.prop1');
+        expect(controls.length).toBe(2);
+        expect(controls[0].value).toBe('value1');
+        expect(controls[1].value).toBe('value3');
+      });
+
+      it('should return empty array when FormArray is empty', () => {
+        const form = new FormArray([]);
+        const controls = form.getAll('*.prop1');
+        expect(controls).toEqual([]);
+      });
+
+      it('should return empty array when wildcard is used on FormControl', () => {
+        const form = new FormControl('value');
+        const controls = form.getAll('*.prop1');
+        expect(controls).toEqual([]);
+      });
+
+      it('should handle numeric string indices in paths', () => {
+        const form = new FormArray([
+          new FormGroup({
+            nested: new FormArray([
+              new FormControl('a'),
+              new FormControl('b'),
+            ]),
+          }),
+          new FormGroup({
+            nested: new FormArray([
+              new FormControl('c'),
+              new FormControl('d'),
+            ]),
+          }),
+        ]);
+
+        const controls = form.getAll('*.nested.0');
+        expect(controls.length).toBe(2);
+        expect(controls[0].value).toBe('a');
+        expect(controls[1].value).toBe('c');
+      });
+
+      it('should handle paths with numeric indices in string format', () => {
+        const form = new FormGroup({
+          items: new FormArray([
+            new FormGroup({price: new FormControl(10)}),
+            new FormGroup({price: new FormControl(20)}),
+          ]),
+        });
+
+        const controls = form.getAll('items.0.price');
+        expect(controls.length).toBe(1);
+        expect(controls[0].value).toBe(10);
+      });
+
+      it('should accumulate results when results array is provided', () => {
+        const form = new FormArray([
+          new FormGroup({prop1: new FormControl('a')}),
+          new FormGroup({prop1: new FormControl('b')}),
+        ]);
+
+        const results: AbstractControl[] = [];
+        const controls1 = form.getAll('*.prop1', results);
+        const controls2 = form.getAll('*.prop1', results);
+
+        expect(controls1.length).toBe(2);
+        expect(controls2.length).toBe(4); // Results accumulate in provided array
+        expect(results.length).toBe(4);
+        expect(controls1).toBe(results); // Returns the same array reference
+        expect(controls2).toBe(results); // Returns the same array reference
+      });
+
+      it('should work with validators that validate multiple controls (sum validator example)', () => {
+        // Example validator: sum of all price controls should be less than 100
+        function sumLessThan100(control: AbstractControl): ValidationErrors | null {
+          const prices = control.getAll('*.price') as FormControl<number>[];
+          const sum = prices.reduce((acc, priceControl) => acc + (priceControl.value || 0), 0);
+          return sum < 100 ? null : {sumTooHigh: {actual: sum, max: 100}};
+        }
+
+        const form = new FormArray(
+          [
+            new FormGroup({price: new FormControl(30)}),
+            new FormGroup({price: new FormControl(40)}),
+            new FormGroup({price: new FormControl(20)}),
+          ],
+          sumLessThan100,
+        );
+
+        expect(form.valid).toBe(true);
+        expect(form.errors).toBeNull();
+
+        // Set values that exceed the sum
+        form.controls[0].get('price')!.setValue(50);
+        form.controls[1].get('price')!.setValue(40);
+        form.controls[2].get('price')!.setValue(20);
+
+        expect(form.valid).toBe(false);
+        expect(form.errors).toEqual({sumTooHigh: {actual: 110, max: 100}});
+
+        // Fix the sum
+        form.controls[0].get('price')!.setValue(30);
+        expect(form.valid).toBe(true);
+        expect(form.errors).toBeNull();
+      });
+
+      it('should work with validators using getAll for nested paths', () => {
+        // Validator that checks all nested values
+        function allNestedValuesRequired(control: AbstractControl): ValidationErrors | null {
+          const nestedControls = control.getAll('*.nested.value') as FormControl<string>[];
+          const allHaveValues = nestedControls.every((c) => c.value && c.value.trim() !== '');
+          return allHaveValues ? null : {allNestedRequired: true};
+        }
+
+        const form = new FormArray(
+          [
+            new FormGroup({nested: new FormGroup({value: new FormControl('a')})}),
+            new FormGroup({nested: new FormGroup({value: new FormControl('b')})}),
+          ],
+          allNestedValuesRequired,
+        );
+
+        expect(form.valid).toBe(true);
+
+        form.controls[0].get('nested.value')!.setValue('');
+        expect(form.valid).toBe(false);
+        expect(form.errors).toEqual({allNestedRequired: true});
+      });
+
+      it('should handle paths with only wildcard', () => {
+        const form = new FormArray([
+          new FormControl('a'),
+          new FormControl('b'),
+          new FormControl('c'),
+        ]);
+
+        const controls = form.getAll('*');
+        expect(controls.length).toBe(3);
+        expect(controls[0].value).toBe('a');
+        expect(controls[1].value).toBe('b');
+        expect(controls[2].value).toBe('c');
+      });
+
+      it('should handle FormGroup containing FormArray with getAll', () => {
+        const form = new FormGroup({
+          items: new FormArray([
+            new FormGroup({price: new FormControl(10)}),
+            new FormGroup({price: new FormControl(20)}),
+          ]),
+        });
+
+        const prices = form.getAll('items.*.price');
+        expect(prices.length).toBe(2);
+        expect(prices[0].value).toBe(10);
+        expect(prices[1].value).toBe(20);
+      });
+
+      it('should return same results when called multiple times without results param', () => {
+        const form = new FormArray([
+          new FormGroup({prop1: new FormControl('a')}),
+          new FormGroup({prop1: new FormControl('b')}),
+        ]);
+
+        const controls1 = form.getAll('*.prop1');
+        const controls2 = form.getAll('*.prop1');
+
+        expect(controls1).not.toBe(controls2); // Different array instances
+        expect(controls1).toEqual(controls2); // But same content
+        expect(controls1.length).toBe(2);
+        expect(controls2.length).toBe(2);
       });
     });
 

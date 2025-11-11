@@ -32,7 +32,7 @@ import {
   removeValidators,
   toObservable,
 } from '../validators';
-import type {FormArray} from './form_array';
+import {FormArray} from './form_array';
 import type {FormGroup} from './form_group';
 
 /**
@@ -1556,6 +1556,135 @@ export abstract class AbstractControl<
       (control: AbstractControl | null, name) => control && control._find(name),
       this,
     );
+  }
+
+  /**
+   * Retrieves all child controls that match the given path pattern.
+   *
+   * This method supports wildcard patterns using `*` to match all elements in a FormArray.
+   * For example, `'*.prop1'` will return all `prop1` controls within all elements of a FormArray.
+   *
+   * This is particularly useful for validators that need to validate multiple controls at once,
+   * such as ensuring the sum of values across all array items is within a certain range.
+   *
+   * @param path A dot-delimited string or array of string/number values that define the path pattern.
+   *   Use `*` as a wildcard to match all elements in a FormArray.
+   * @param results Optional array to accumulate results in. If provided, matching controls will be
+   *   added to this array. If not provided, a new array is created.
+   *
+   * @returns An array of matching controls. Returns an empty array if no matches are found.
+   *   If a `results` array was provided, returns that same array reference.
+   *
+   * @usageNotes
+   * ### Retrieve all controls matching a pattern
+   *
+   * For example, to get all `prop1` controls from all elements in a FormArray:
+   *
+   * ```ts
+   * const form = this.fb.array([
+   *   this.fb.group({ prop1: this.fb.control('a'), prop2: this.fb.control('b') }),
+   *   this.fb.group({ prop1: this.fb.control('c'), prop2: this.fb.control('d') }),
+   * ]);
+   * const controls = form.getAll('*.prop1'); // Returns [FormControl('a'), FormControl('c')]
+   * ```
+   *
+   * ### Retrieve controls from nested arrays
+   *
+   * ```ts
+   * const form = this.fb.group({
+   *   items: this.fb.array([
+   *     this.fb.group({ price: this.fb.control(10) }),
+   *     this.fb.group({ price: this.fb.control(20) }),
+   *   ])
+   * });
+   * const prices = form.getAll('items.*.price'); // Returns all price controls
+   * ```
+   *
+   * ### Using with validators
+   *
+   * `getAll` is especially useful for validators that need to validate multiple controls:
+   *
+   * ```ts
+   * function sumLessThan100(control: AbstractControl): ValidationErrors | null {
+   *   const prices = control.getAll('*.price') as FormControl<number>[];
+   *   const sum = prices.reduce((acc, c) => acc + (c.value || 0), 0);
+   *   return sum < 100 ? null : {sumTooHigh: {actual: sum, max: 100}};
+   * }
+   *
+   * const form = this.fb.array([
+   *   this.fb.group({ price: this.fb.control(30) }),
+   *   this.fb.group({ price: this.fb.control(40) }),
+   * ], sumLessThan100);
+   * ```
+   *
+   * ### Notes
+   *
+   * - Wildcards (`*`) only work on FormArray controls. Using a wildcard on a FormGroup or FormControl
+   *   will return an empty array.
+   * - Numeric indices in string paths (e.g., `'items.0.price'`) are automatically converted to numbers
+   *   when accessing FormArray elements.
+   * - If the path is empty, returns an array containing only the current control.
+   * - Multiple wildcards in a single path are supported (e.g., `'*.*.value'`).
+   */
+  getAll(path: string | Array<string | number | '*'>, results?: AbstractControl[]): AbstractControl[] {
+    const resultsArray = results ?? [];
+    if (path == null) {
+      return resultsArray;
+    }
+    
+    let currPath: Array<string | number | '*'>;
+    if (typeof path === 'string') {
+      currPath = path.split('.') as Array<string | number | '*'>;
+    } else {
+      currPath = [...path];
+    }
+    
+    if (currPath.length === 0) {
+      resultsArray.push(this);
+      return resultsArray;
+    }
+
+    return this._getAllRecursive(currPath, resultsArray);
+  }
+
+  /**
+   * @internal
+   * Recursive helper for getAll that handles wildcard matching.
+   */
+  private _getAllRecursive(
+    path: Array<string | number | '*'>,
+    results: AbstractControl[],
+  ): AbstractControl[] {
+    if (path.length === 0) {
+      results.push(this);
+      return results;
+    }
+
+    const [first, ...rest] = path;
+
+    // Handle wildcard: match all elements in a FormArray
+    if (first === '*') {
+      // Check if this is a FormArray
+      if (this instanceof FormArray) {
+        // Iterate through all controls in the array
+        for (let i = 0; i < this.controls.length; i++) {
+          const child = this.controls[i];
+          if (child) {
+            child._getAllRecursive(rest, results);
+          }
+        }
+      }
+      // If not a FormArray, wildcard doesn't match anything
+      return results;
+    }
+
+    // Handle regular path segment
+    const child = this._find(first as string | number);
+    if (child) {
+      child._getAllRecursive(rest, results);
+    }
+
+    return results;
   }
 
   /**
