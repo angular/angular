@@ -8,7 +8,7 @@ Route guards are functions that control whether a user can navigate to or leave 
 
 You can generate a route guard using the Angular CLI:
 
-```bash
+```shell
 ng generate guard CUSTOM_NAME
 ```
 

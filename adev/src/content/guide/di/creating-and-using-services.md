@@ -6,7 +6,7 @@ Services are reusable pieces of code that can be shared across your Angular appl
 
 You can create a service with the [Angular CLI](tools/cli) with the following command:
 
-```bash
+```shell
 ng generate service CUSTOM_NAME
 ```
 

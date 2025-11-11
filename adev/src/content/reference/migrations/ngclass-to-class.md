@@ -5,7 +5,7 @@ It will only migrate usages that are considered safe to migrate.
 
 Run the schematic using the following command:
 
-```bash
+```shell
 ng generate @angular/core:ngclass-to-class
 ```
 

@@ -9,7 +9,7 @@ provides an automated migration that converts `@Input` fields to the new `input(
 
 Run the schematic using the following command:
 
-```bash
+```shell
 ng generate @angular/core:signal-input-migration
 ```
 

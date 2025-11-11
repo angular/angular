@@ -27,7 +27,7 @@ Some tools are provided in experimental / preview status since they are new or n
 
 To get started, run the following command in your terminal:
 
-```bash
+```shell
 ng mcp
 ```
 

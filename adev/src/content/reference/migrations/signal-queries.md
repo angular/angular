@@ -9,7 +9,7 @@ provides an automated migration that converts existing decorator query fields to
 
 Run the schematic using the following command:
 
-```bash
+```shell
 ng generate @angular/core:signal-queries-migration
 ```
 
