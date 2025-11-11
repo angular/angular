@@ -9,7 +9,7 @@
 .docs-viewer {
   display: flex;
   flex-direction: column;
-  padding: 0px;
+  padding: 0;
   box-sizing: border-box;
   padding-inline: var(--layout-padding);
 
@@ -63,27 +63,49 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
+      &:has(code) {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
     }
   }
 
   h1 {
     font-size: 2.5rem;
     margin-block-end: 0;
+
+    @include mq.for-phone-only {
+      font-size: 2rem;
+    }
   }
 
   h2 {
     font-size: 2rem;
     margin-block-end: 0.5rem;
+
+    @include mq.for-phone-only {
+      font-size: 1.5rem;
+    }
   }
 
   h3 {
     font-size: 1.5rem;
     margin-block-end: 0.5rem;
+
+    @include mq.for-phone-only {
+      font-size: 1.25rem;
+    }
   }
 
   h4 {
     font-size: 1.25rem;
     margin-block-end: 0.5rem;
+
+    @include mq.for-phone-only {
+      font-size: 1rem;
+    }
   }
 
   h5 {
@@ -132,6 +154,10 @@
   h1 {
     margin-block: 0;
     font-size: 2.25rem;
+
+    @include mq.for-phone-only {
+      font-size: 1.75rem;
+    }
   }
 
   a {
