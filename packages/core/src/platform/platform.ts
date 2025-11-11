@@ -70,7 +70,7 @@ export function createPlatformFactory(
   providers: StaticProvider[] = [],
 ): (extraProviders?: StaticProvider[]) => PlatformRef {
   const desc = `Platform: ${name}`;
-  const marker = new InjectionToken(desc);
+  const marker = new InjectionToken(typeof ngDevMode !== 'undefined' && ngDevMode ? desc : '');
   return (extraProviders: StaticProvider[] = []) => {
     let platform = getPlatform();
     if (!platform) {

@@ -63,7 +63,7 @@ import {TracingAction, TracingService, TracingSnapshot} from './tracing';
  */
 export const APP_BOOTSTRAP_LISTENER = new InjectionToken<
   ReadonlyArray<(compRef: ComponentRef<any>) => void>
->(ngDevMode ? 'appBootstrapListener' : '');
+>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'appBootstrapListener' : '');
 
 export function publishDefaultGlobalUtils() {
   ngDevMode && _publishDefaultGlobalUtils();

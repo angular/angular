@@ -149,7 +149,7 @@ import {isPromise, isSubscribable} from '../util/lang';
  */
 export const APP_INITIALIZER = new InjectionToken<
   ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>
->(ngDevMode ? 'Application Initializer' : '');
+>(typeof ngDevMode !== 'undefined' && ngDevMode ? 'Application Initializer' : '');
 
 /**
  * @description

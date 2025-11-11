@@ -54,12 +54,16 @@ interface WaitCallback {
  * should be available, this token is used to add a provider that references the `Testability`
  * class. Otherwise, only this token is retained in a bundle, but the `Testability` class is not.
  */
-export const TESTABILITY = new InjectionToken<Testability>('');
+export const TESTABILITY = new InjectionToken<Testability>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Testability' : '',
+);
 
 /**
  * Internal injection token to retrieve Testability getter class instance.
  */
-export const TESTABILITY_GETTER = new InjectionToken<GetTestability>('');
+export const TESTABILITY_GETTER = new InjectionToken<GetTestability>(
+  typeof ngDevMode !== 'undefined' && ngDevMode ? 'Testability Getter' : '',
+);
 
 /**
  * The Testability service provides testing hooks that can be accessed from
