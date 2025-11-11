@@ -185,6 +185,59 @@ describe('debounce', () => {
       await debounceResult.resolve;
       expect(street.value()).toBe('2000 N Shoreline Blvd');
     });
+
+    describe('abort signal', () => {
+      it('should be aborted if control value is set again', async () => {
+        const {promise, resolve} = promiseWithResolvers();
+        const abortSpy = jasmine.createSpy('abort');
+
+        const address = signal({street: ''});
+        const addressForm = form(
+          address,
+          (address) => {
+            debounce(address.street, (_context, signal) => {
+              signal.addEventListener('abort', abortSpy);
+              return promise;
+            });
+          },
+          options(),
+        );
+        const street = addressForm.street();
+
+        street.setControlValue('1600 Amphitheatre Pkwy');
+        expect(abortSpy).not.toHaveBeenCalled();
+
+        street.setControlValue('2000 N Shoreline Blvd');
+        expect(abortSpy).toHaveBeenCalledTimes(1);
+
+        resolve();
+        await promise;
+        expect(street.value()).toBe('2000 N Shoreline Blvd');
+      });
+
+      it('should be aborted on touch', async () => {
+        const abortSpy = jasmine.createSpy('abort');
+        const address = signal({street: ''});
+        const addressForm = form(
+          address,
+          (address) => {
+            debounce(address.street, (_context, signal) => {
+              signal.addEventListener('abort', abortSpy);
+              return forever();
+            });
+          },
+          options(),
+        );
+        const street = addressForm.street();
+
+        street.setControlValue('1600 Amphitheatre Pkwy');
+        expect(abortSpy).not.toHaveBeenCalled();
+
+        street.markAsTouched();
+        expect(abortSpy).toHaveBeenCalledTimes(1);
+        expect(street.value()).toBe('1600 Amphitheatre Pkwy');
+      });
+    });
   });
 
   describe('inheritance', () => {

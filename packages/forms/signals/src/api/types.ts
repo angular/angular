@@ -615,9 +615,9 @@ export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number
 /**
  * A function that defines custom debounce logic for a field.
  *
- * This function receives the {@link FieldContext} for the field and should return a `Promise<void>`
- * to delay an update, or `void` to apply an update immediately.
- *
+ * @param context The field context.
+ * @param abortSignal An `AbortSignal` used to communicate that the debounced operation was aborted.
+ * @returns A `Promise<void>` to debounce an update, or `void` to apply an update immediately.
  * @template TValue The type of value stored in the field.
  * @template TPathKind The kind of path the debouncer is applied to (root field, child field, or item of an array).
  *
@@ -625,4 +625,5 @@ export type ItemType<T extends Object> = T extends ReadonlyArray<any> ? T[number
  */
 export type Debouncer<TValue, TPathKind extends PathKind = PathKind.Root> = (
   context: FieldContext<TValue, TPathKind>,
+  abortSignal: AbortSignal,
 ) => Promise<void> | void;
