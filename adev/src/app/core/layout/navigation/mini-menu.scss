@@ -11,6 +11,14 @@
   z-index: var(--z-index-mini-menu);
   box-shadow: 10px 4px 40px 0 rgba(0, 0, 0, 0.075);
 
+  // Animation for mini-menu appearance
+  animation: menuFadeIn 0.2s ease-out forwards;
+  transform-origin: left center;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+
   @include mq.for-tablet {
     top: 75px;
     left: 5px;
@@ -96,5 +104,34 @@
     top: 30px;
     left: auto;
     bottom: auto;
+  }
+}
+
+// Icon transition animation
+.adev-theme-icon {
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: rotate(20deg) scale(1.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+// Keyframe animations
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
