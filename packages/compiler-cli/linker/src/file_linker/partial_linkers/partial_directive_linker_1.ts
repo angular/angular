@@ -88,7 +88,6 @@ export function toR3DirectiveMeta<TExpression>(
       ? metaObj.getArray('viewQueries').map((entry) => toQueryMetadata(entry.getObject()))
       : [],
     providers: metaObj.has('providers') ? metaObj.getOpaque('providers') : null,
-    fullInheritance: false,
     selector: metaObj.has('selector') ? metaObj.getString('selector') : null,
     exportAs: metaObj.has('exportAs')
       ? metaObj.getArray('exportAs').map((entry) => entry.getString())
