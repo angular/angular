@@ -14,32 +14,33 @@ ng generate @angular/core:inject
 
 #### Before
 
-<docs-code language="typescript">
+```typescript
 import { Component, Inject, Optional } from '@angular/core';
 import { MyService } from './service';
 import { DI_TOKEN } from './token';
 
 @Component()
 export class MyComp {
-constructor(
-private service: MyService,
-@Inject(DI_TOKEN) @Optional() readonly token: string) {}
+  constructor(
+    private service: MyService,
+    @Inject(DI_TOKEN) @Optional() readonly token: string
+  ) {}
 }
-</docs-code>
+```
 
 #### After
 
-<docs-code language="typescript">
+```typescript
 import { Component, inject } from '@angular/core';
 import { MyService } from './service';
 import { DI_TOKEN } from './token';
 
 @Component()
 export class MyComp {
-private service = inject(MyService);
-readonly token = inject(DI_TOKEN, { optional: true });
+  private service = inject(MyService);
+  readonly token = inject(DI_TOKEN, { optional: true });
 }
-</docs-code>
+```
 
 ## Migration options
 
@@ -67,19 +68,19 @@ additional constructor signature to keep it backwards compatible, at the expense
 
 #### Before
 
-<docs-code language="typescript">
+```typescript
 import { Component } from '@angular/core';
 import { MyService } from './service';
 
 @Component()
 export class MyComp {
-constructor(private service: MyService) {}
+  constructor(private service: MyService) {}
 }
-</docs-code>
+```
 
 #### After
 
-<docs-code language="typescript">
+```typescript
 import { Component } from '@angular/core';
 import { MyService } from './service';
 
@@ -92,7 +93,7 @@ constructor(...args: unknown[]);
 
 constructor() {}
 }
-</docs-code>
+```
 
 ### `nonNullableOptional`
 
@@ -108,30 +109,31 @@ because the code that depends on them likely already accounts for their nullabil
 
 #### Before
 
-<docs-code language="typescript">
+```typescript
 import { Component, Inject, Optional } from '@angular/core';
 import { TOKEN_ONE, TOKEN_TWO } from './token';
 
 @Component()
 export class MyComp {
-constructor(
-@Inject(TOKEN_ONE) @Optional() private tokenOne: number,
-@Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null) {}
+  constructor(
+    @Inject(TOKEN_ONE) @Optional() private tokenOne: number,
+    @Inject(TOKEN_TWO) @Optional() private tokenTwo: string | null
+  ) {}
 }
-</docs-code>
+```
 
 #### After
 
-<docs-code language="typescript">
+```typescript
 import { Component, inject } from '@angular/core';
 import { TOKEN_ONE, TOKEN_TWO } from './token';
 
 @Component()
 export class MyComp {
-// Note the `!` at the end.
-private tokenOne = inject(TOKEN_ONE, { optional: true })!;
+  // Note the `!` at the end.
+  private tokenOne = inject(TOKEN_ONE, { optional: true })!;
 
-// Does not have `!` at the end, because the type was already nullable.
-private tokenTwo = inject(TOKEN_TWO, { optional: true });
+  // Does not have `!` at the end, because the type was already nullable.
+  private tokenTwo = inject(TOKEN_TWO, { optional: true });
 }
-</docs-code>
+```

@@ -36,27 +36,27 @@ The migration will check all the components in the routes, check if they are sta
 
 #### Before
 
-<docs-code language="typescript">
+```typescript
 // app.module.ts
-import { HomeComponent } from './home/home.component';
+import {HomeComponent} from './home/home.component';
 
 @NgModule({
-imports: [
-RouterModule.forRoot([
-{
-path: 'home',
-// HomeComponent is standalone and eagerly loaded
-component: HomeComponent,
-},
-]),
-],
+  imports: [
+    RouterModule.forRoot([
+      {
+        path: 'home',
+        // HomeComponent is standalone and eagerly loaded
+        component: HomeComponent,
+      },
+    ]),
+  ],
 })
 export class AppModule {}
-</docs-code>
+```
 
 #### After
 
-<docs-code language="typescript">
+```typescript
 // app.module.ts
 @NgModule({
   imports: [
@@ -70,6 +70,6 @@ export class AppModule {}
   ],
 })
 export class AppModule {}
-</docs-code>
+```
 
 This migration will also collect information about all the components declared in NgModules and output the list of routes that use them (including corresponding location of the file). Consider making those components standalone and run this migration again. You can use an existing migration ([see](reference/migrations/standalone)) to convert those components to standalone.
