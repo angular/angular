@@ -181,7 +181,9 @@ export function form<TModel>(
   options: FormOptions,
 ): Omit<FieldTree<TModel>, 'max' | 'maxLength' | 'min' | 'minLength'>;
 
-export function form<TModel>(...args: any[]): FieldTree<TModel> {
+export function form<TModel>(
+  ...args: any[]
+): Omit<FieldTree<TModel>, 'max' | 'maxLength' | 'min' | 'minLength'> {
   const [model, schema, options] = normalizeFormArgs<TModel>(args);
   const injector = options?.injector ?? inject(Injector);
   const pathNode = runInInjectionContext(injector, () => SchemaImpl.rootCompile(schema));
