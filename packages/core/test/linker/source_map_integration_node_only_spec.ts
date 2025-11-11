@@ -248,7 +248,7 @@ describe('jit source mapping', () => {
 
   async function resolveCompileAndCreateComponent(comType: any, template: string) {
     await resolveComponentResources(createResolver(template));
-    return await compileAndCreateComponent(comType);
+    return compileAndCreateComponent(comType);
   }
 
   let ɵcompilerFacade: CompilerFacade;

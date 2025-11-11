@@ -172,18 +172,17 @@ function maybeUnwrapDefaultExport<T>(input: T | DefaultExport<T>): T {
   return isWrappedDefaultExport(input) ? input['default'] : input;
 }
 
-function maybeResolveResources<T>(value: T): Promise<T> {
+async function maybeResolveResources<T>(value: T): Promise<T> {
   // In JIT mode we usually resolve the resources of components on bootstrap, however
   // that won't have happened for lazy-loaded. Attempt to load any pending
   // resources again here.
   if ((typeof ngJitMode === 'undefined' || ngJitMode) && typeof fetch === 'function') {
-    return resolveComponentResources(fetch)
-      .catch((error) => {
-        console.error(error);
-        return Promise.resolve();
-      })
-      .then(() => value);
+    try {
+      await resolveComponentResources(fetch);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  return Promise.resolve(value);
+  return value;
 }
