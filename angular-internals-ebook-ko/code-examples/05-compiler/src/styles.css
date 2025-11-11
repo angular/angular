@@ -1,0 +1,243 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  color: #333;
+}
+
+h1 {
+  color: #dd0031;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #333;
+  margin: 2rem 0 1rem;
+  border-bottom: 2px solid #dd0031;
+  padding-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+h3 {
+  color: #555;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.section {
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.compilation-flow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.flow-step {
+  background: linear-gradient(135deg, #dd0031 0%, #a50025 100%);
+  color: white;
+  padding: 1.5rem 1rem;
+  margin: 0.5rem;
+  border-radius: 6px;
+  min-width: 150px;
+  text-align: center;
+  font-weight: bold;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+
+.flow-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.flow-arrow {
+  color: #dd0031;
+  font-size: 1.5rem;
+  margin: 0 0.5rem;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  display: block;
+}
+
+.comparison-table th {
+  background: #dd0031;
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: bold;
+}
+
+.comparison-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.comparison-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.comparison-table tr:hover {
+  background: #f0f0f0;
+}
+
+.feature-list, .compiler-list, .optimization-list, .concept-list {
+  list-style: none;
+  padding: 0;
+}
+
+.feature-list li, .compiler-list li, .optimization-list li, .concept-list li {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: #f9f9f9;
+  border-left: 4px solid #dd0031;
+  border-radius: 4px;
+}
+
+.feature-list li:hover, .compiler-list li:hover, .optimization-list li:hover, .concept-list li:hover {
+  background: #f0f0f0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+button {
+  background: linear-gradient(135deg, #dd0031 0%, #a50025 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #dd0031;
+  font-size: 0.9rem;
+}
+
+.output-box {
+  background: #1e1e1e;
+  color: #00ff00;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.info-box {
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.warning-box {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.success-box {
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.template-demo {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  border: 1px solid #eee;
+}
+
+.compiler-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #dd0031;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 0.25rem;
+  font-weight: bold;
+}
+
+.aot-badge {
+  background: #4caf50;
+}
+
+.jit-badge {
+  background: #ff9800;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .compilation-flow {
+    flex-direction: column;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+    margin: 0.5rem 0;
+  }
+
+  body {
+    padding: 1rem;
+  }
+}

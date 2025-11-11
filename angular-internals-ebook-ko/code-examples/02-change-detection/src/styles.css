@@ -1,0 +1,270 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 2rem;
+  background: #f5f5f5;
+  color: #333;
+}
+
+h1 {
+  color: #dd0031;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: #333;
+  margin: 2rem 0 1rem;
+  border-bottom: 2px solid #dd0031;
+  padding-bottom: 0.5rem;
+}
+
+h3 {
+  color: #555;
+  margin: 1rem 0 0.5rem;
+}
+
+.section {
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.demo-container {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.demo-box {
+  flex: 1;
+  min-width: 300px;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border: 2px solid #dd0031;
+  border-radius: 8px;
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.counter-value {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #dd0031;
+  min-width: 80px;
+}
+
+.stats {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  font-weight: bold;
+  color: #666;
+}
+
+.stat-value {
+  color: #dd0031;
+  font-weight: bold;
+}
+
+button {
+  background: #dd0031;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #c3002f;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #dd0031;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #dd0031;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  font-weight: bold;
+}
+
+.badge.default {
+  background: #007bff;
+}
+
+.badge.onpush {
+  background: #28a745;
+}
+
+.output {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  border-left: 4px solid #dd0031;
+}
+
+.note {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.list-items {
+  list-style: none;
+  padding: 0;
+}
+
+.list-items li {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: #f9f9f9;
+  border-left: 4px solid #dd0031;
+  border-radius: 4px;
+}
+
+.performance-chart {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  align-items: flex-end;
+}
+
+.chart-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar {
+  background: #dd0031;
+  border-radius: 4px 4px 0 0;
+  min-width: 40px;
+  transition: height 0.3s;
+}
+
+.bar-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.bar-value {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.comparison-table th {
+  background: #dd0031;
+  color: white;
+  font-weight: bold;
+}
+
+.comparison-table tr:hover {
+  background: #f9f9f9;
+}
+
+.comparison-table .feature {
+  font-weight: bold;
+  color: #333;
+}
+
+.comparison-table .yes {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.comparison-table .no {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .demo-container {
+    flex-direction: column;
+  }
+
+  .demo-box {
+    min-width: auto;
+  }
+
+  body {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+}

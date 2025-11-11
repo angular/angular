@@ -1,0 +1,380 @@
+/* 전역 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #3f51b5;
+  --secondary-color: #ff9800;
+  --success-color: #4caf50;
+  --warning-color: #ff5722;
+  --info-color: #2196f3;
+  --danger-color: #f44336;
+  --light-bg: #f5f5f5;
+  --border-color: #ddd;
+  --text-color: #333;
+  --text-light: #666;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* 메인 컨테이너 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 카드 스타일 */
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card.primary {
+  border-left: 4px solid var(--primary-color);
+}
+
+.card.secondary {
+  border-left: 4px solid var(--secondary-color);
+}
+
+.card.success {
+  border-left: 4px solid var(--success-color);
+}
+
+.card.warning {
+  border-left: 4px solid var(--warning-color);
+}
+
+.card.info {
+  border-left: 4px solid var(--info-color);
+}
+
+.card.danger {
+  border-left: 4px solid var(--danger-color);
+}
+
+/* 제목 스타일 */
+h1 {
+  color: white;
+  text-align: center;
+  margin-bottom: 32px;
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 16px;
+  font-size: 1.8em;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 8px;
+}
+
+h3 {
+  color: var(--text-color);
+  margin: 16px 0 8px 0;
+  font-size: 1.2em;
+}
+
+/* 로그 스타일 */
+.log-container {
+  background: var(--light-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 16px;
+  margin: 16px 0;
+  font-family: 'Courier New', monospace;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.log-entry {
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.log-entry.init {
+  background: #c8e6c9;
+  color: #2e7d32;
+  border-left: 3px solid #4caf50;
+}
+
+.log-entry.changes {
+  background: #bbdefb;
+  color: #1565c0;
+  border-left: 3px solid #2196f3;
+}
+
+.log-entry.check {
+  background: #fff9c4;
+  color: #f57f17;
+  border-left: 3px solid #fbc02d;
+}
+
+.log-entry.content {
+  background: #f0f4c3;
+  color: #827717;
+  border-left: 3px solid #cddc39;
+}
+
+.log-entry.view {
+  background: #ffe0b2;
+  color: #e65100;
+  border-left: 3px solid #ff9800;
+}
+
+.log-entry.destroy {
+  background: #ffccbc;
+  color: #bf360c;
+  border-left: 3px solid #ff5722;
+}
+
+.log-entry.timestamp {
+  font-size: 0.85em;
+  color: #999;
+}
+
+/* 버튼 스타일 */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.3s;
+  background: var(--primary-color);
+  color: white;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+button:hover {
+  background: #303f9f;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button.secondary {
+  background: var(--secondary-color);
+}
+
+button.secondary:hover {
+  background: #f57c00;
+}
+
+button.danger {
+  background: var(--danger-color);
+}
+
+button.danger:hover {
+  background: #da190b;
+}
+
+/* 입력 필드 스타일 */
+input {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1em;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+}
+
+/* 상태 표시기 */
+.status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 500;
+  margin: 4px 0;
+}
+
+.status.active {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.status.inactive {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.status.processing {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+/* 그리드 레이아웃 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* 정보 박스 */
+.info-box {
+  background: #e3f2fd;
+  border-left: 4px solid var(--info-color);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+}
+
+.info-box strong {
+  color: var(--info-color);
+}
+
+/* 성공 메시지 */
+.success-message {
+  background: #e8f5e9;
+  border-left: 4px solid var(--success-color);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+  color: #2e7d32;
+}
+
+/* 경고 메시지 */
+.warning-message {
+  background: #fff3e0;
+  border-left: 4px solid var(--warning-color);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+  color: #e65100;
+}
+
+/* 에러 메시지 */
+.error-message {
+  background: #ffebee;
+  border-left: 4px solid var(--danger-color);
+  padding: 16px;
+  border-radius: 4px;
+  margin: 16px 0;
+  color: #c62828;
+}
+
+/* 리스트 스타일 */
+ul, ol {
+  margin-left: 24px;
+  margin-bottom: 16px;
+}
+
+li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+/* 코드 블록 */
+code {
+  background: var(--light-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #d63384;
+}
+
+pre {
+  background: var(--light-bg);
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+pre code {
+  color: var(--text-color);
+  padding: 0;
+  background: none;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.8em;
+  }
+
+  h2 {
+    font-size: 1.4em;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  body {
+    padding: 10px;
+  }
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--light-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}

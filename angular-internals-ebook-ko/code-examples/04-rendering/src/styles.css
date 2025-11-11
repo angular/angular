@@ -1,0 +1,259 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 2rem;
+  background: #f5f5f5;
+  color: #333;
+}
+
+h1 {
+  color: #dd0031;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: #333;
+  margin: 2rem 0 1rem;
+  border-bottom: 2px solid #dd0031;
+  padding-bottom: 0.5rem;
+}
+
+h3 {
+  color: #555;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.section {
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.subsection {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border-left: 4px solid #dd0031;
+  border-radius: 4px;
+}
+
+.item-list, .performance-list, .rendering-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-list li, .performance-list li, .rendering-list li {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: #f9f9f9;
+  border-left: 4px solid #dd0031;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-list li.completed {
+  background: #e8f5e9;
+  text-decoration: line-through;
+  color: #999;
+}
+
+button {
+  background: #dd0031;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #c3002f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button.small {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  margin: 0.25rem;
+}
+
+input, select {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #dd0031;
+  box-shadow: 0 0 0 3px rgba(221, 0, 49, 0.1);
+}
+
+code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #dd0031;
+  font-size: 0.9rem;
+}
+
+.output {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  border-left: 4px solid #dd0031;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #dd0031;
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.badge.success {
+  background: #4caf50;
+}
+
+.badge.warning {
+  background: #ff9800;
+}
+
+.badge.info {
+  background: #2196f3;
+}
+
+.performance-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  background: white;
+  border-radius: 4px;
+}
+
+.performance-metric span {
+  font-weight: bold;
+  color: #dd0031;
+}
+
+.lview-diagram {
+  background: #fff3e0;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+.lview-diagram code {
+  background: transparent;
+  color: #333;
+  padding: 0;
+}
+
+.render-demo {
+  background: #e3f2fd;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  border: 2px solid #2196f3;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.controls input[type="checkbox"],
+.controls input[type="radio"] {
+  cursor: pointer;
+  margin: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-card {
+  background: white;
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 4px solid #dd0031;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.stat-card h4 {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #dd0031;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}

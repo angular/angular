@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 2rem;
+  background: #f5f5f5;
+  color: #333;
+}
+
+h1 {
+  color: #dd0031;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: #333;
+  margin: 2rem 0 1rem;
+  border-bottom: 2px solid #dd0031;
+  padding-bottom: 0.5rem;
+}
+
+.section {
+  background: white;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.plugin-list, .injector-tree, .provider-list {
+  list-style: none;
+  padding: 0;
+}
+
+.plugin-list li, .injector-tree li, .provider-list li {
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  background: #f9f9f9;
+  border-left: 4px solid #dd0031;
+  border-radius: 4px;
+}
+
+button {
+  background: #dd0031;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+button:hover {
+  background: #c3002f;
+}
+
+code {
+  background: #f4f4f4;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  color: #dd0031;
+}
+
+.injector-level {
+  margin-left: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid #ddd;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #dd0031;
+  color: white;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+}
+
+.output {
+  background: #f4f4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-family: 'Courier New', monospace;
+  white-space: pre-wrap;
+}
