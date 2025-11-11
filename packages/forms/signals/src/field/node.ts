@@ -79,12 +79,18 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
-   * The most recent promise returned by the debouncer, or `undefined` if no debounce is active.
-   * This is used to ensure that only the most recent debounce operation updates the field's value.
+   * The `AbortController` for the currently debounced sync, or `undefined` if there is none.
+   *
+   * This is used to cancel a pending debounced sync when {@link setControlValue} is called again
+   * before the pending debounced sync resolves. It will also cancel any pending debounced sync
+   * automatically when recomputed due to `value` being set directly from others sources.
    */
-  private readonly pendingSync: WritableSignal<Promise<void> | undefined> = linkedSignal({
+  private readonly pendingSync: WritableSignal<AbortController | undefined> = linkedSignal({
     source: () => this.value(),
-    computation: () => undefined,
+    computation: (_source, previous) => {
+      previous?.value?.abort();
+      return undefined;
+    },
   });
 
   get logicNode(): LogicNode {
@@ -202,6 +208,7 @@ export class FieldNode implements FieldState<unknown> {
    */
   markAsTouched(): void {
     this.nodeState.markAsTouched();
+    this.pendingSync()?.abort();
     this.sync();
   }
 
@@ -238,34 +245,36 @@ export class FieldNode implements FieldState<unknown> {
 
   /**
    * Synchronizes the {@link controlValue} with the {@link value} signal immediately.
-   *
-   * This also clears any pending debounce operations.
    */
   private sync() {
     this.value.set(this.controlValue());
-    this.pendingSync.set(undefined);
   }
 
   /**
    * Initiates a debounced {@link sync}.
    *
-   * If a debouncer is configured, the synchronization will occur after the debouncer. If no
-   * debouncer is configured, the synchronization happens immediately. If a new
-   * {@link setControlValue} call occurs while a debounce is pending, the previous debounce
-   * operation is ignored in favor of the new one.
+   * If a debouncer is configured, the synchronization will occur after the debouncer resolves. If
+   * no debouncer is configured, the synchronization happens immediately. If {@link setControlValue}
+   * is called again while a debounce is pending, the previous debounce operation is aborted in
+   * favor of the new one.
    */
-  private debounceSync() {
-    const promise = this.nodeState.debouncer();
-    if (promise) {
-      promise.then(() => {
-        if (promise === this.pendingSync()) {
-          this.sync();
+  private async debounceSync() {
+    this.pendingSync()?.abort();
+
+    const debouncer = this.nodeState.debouncer();
+    if (debouncer) {
+      const controller = new AbortController();
+      const promise = debouncer(controller.signal);
+      if (promise) {
+        this.pendingSync.set(controller);
+        await promise;
+        if (controller.signal.aborted) {
+          return; // Do not sync if the debounce was aborted.
         }
-      });
-      this.pendingSync.set(promise);
-    } else {
-      this.sync();
+      }
     }
+
+    this.sync();
   }
 
   /**
