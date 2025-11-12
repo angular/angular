@@ -6,8 +6,8 @@ import {form, Field, required, email, submit} from '@angular/forms/signals';
  */
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrl: 'app.component.css',
+  templateUrl: 'app.html',
+  styleUrl: 'app.css',
   imports: [Field],
 })
 export class App {
