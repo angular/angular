@@ -7,7 +7,7 @@
  */
 
 import {metadata, validate} from '../logic';
-import {overridableMetadataKey, PATTERN} from '../metadata';
+import {createMetadataKey, PATTERN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {patternError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
@@ -32,7 +32,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = metadata(path, overridableMetadataKey<RegExp | undefined>(), (ctx) =>
+  const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp>(), (ctx) =>
     pattern instanceof RegExp ? pattern : pattern(ctx),
   );
   metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());

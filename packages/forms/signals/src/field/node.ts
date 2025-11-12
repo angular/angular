@@ -157,7 +157,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private metadataOrUndefined<M>(key: MetadataKey<M, any>): Signal<M> | undefined {
+  private metadataOrUndefined<M>(key: MetadataKey<M, any, any>): M | undefined {
     return this.hasMetadata(key) ? this.metadata(key) : undefined;
   }
 
@@ -185,11 +185,11 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataOrUndefined(REQUIRED) ?? FALSE;
   }
 
-  metadata<M>(key: MetadataKey<any, any, M>): M {
+  metadata<M>(key: MetadataKey<M, any, any>): M {
     return this.metadataState.get(key);
   }
 
-  hasMetadata(key: MetadataKey<any, any>): boolean {
+  hasMetadata(key: MetadataKey<any, any, any>): boolean {
     return this.metadataState.has(key);
   }
 

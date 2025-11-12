@@ -301,7 +301,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Reads a metadata value from the field.
    * @param key The metadata key to read.
    */
-  metadata<M>(key: MetadataKey<any, any, M>): M;
+  metadata<M>(key: MetadataKey<M, any, any>): M;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.

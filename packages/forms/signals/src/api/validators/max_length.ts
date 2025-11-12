@@ -7,7 +7,7 @@
  */
 
 import {metadata, validate} from '../logic';
-import {MAX_LENGTH, overridableMetadataKey} from '../metadata';
+import {createMetadataKey, MAX_LENGTH} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxLengthError} from '../validation_errors';
 import {
@@ -43,7 +43,7 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = metadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
     typeof maxLength === 'number' ? maxLength : maxLength(ctx),
   );
   metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());

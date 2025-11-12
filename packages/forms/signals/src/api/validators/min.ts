@@ -7,7 +7,7 @@
  */
 
 import {metadata, validate} from '../logic';
-import {MIN, overridableMetadataKey} from '../metadata';
+import {createMetadataKey, MIN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {minError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
@@ -33,7 +33,7 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+  const MIN_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
     typeof minValue === 'number' ? minValue : minValue(ctx),
   );
   metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());

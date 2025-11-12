@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MetadataKey, overridableMetadataKey} from '../api/metadata';
+import {createMetadataKey, MetadataKey, type ComputedMetadataKey} from '../api/metadata';
 import {Debouncer} from '../api/types';
 
 /**
@@ -14,7 +14,4 @@ import {Debouncer} from '../api/types';
  *
  * This will pick the last `debounce()` rule on a field that is currently applied, if conditional.
  */
-export const DEBOUNCER: MetadataKey<
-  Debouncer<any> | undefined,
-  Debouncer<any>
-> = overridableMetadataKey();
+export const DEBOUNCER: ComputedMetadataKey<Debouncer<any> | undefined> = createMetadataKey();

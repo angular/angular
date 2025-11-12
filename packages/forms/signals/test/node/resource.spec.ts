@@ -7,18 +7,18 @@
  */
 import {provideHttpClient} from '@angular/common/http';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {ApplicationRef, Injector, resource, signal} from '@angular/core';
+import {ApplicationRef, Injector, resource, signal, type Signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
   applyEach,
   applyWhen,
+  createMetadataKey,
   customError,
   form,
   metadata,
   required,
-  resourceMetadataKey,
   schema,
   SchemaOrSchemaFn,
   validate,
@@ -58,11 +58,12 @@ describe('resources', () => {
 
   it('Takes a simple resource which reacts to data changes', async () => {
     const s: SchemaOrSchemaFn<Cat> = function (p) {
-      const RES = resourceMetadataKey<{x: string}, string | undefined>((params) => {
-        return resource({
-          params,
-          loader: async ({params}) => `got: ${params.x}`,
-        });
+      const RES = createMetadataKey({
+        wrap: (params: Signal<{x: string} | undefined>) =>
+          resource({
+            params,
+            loader: async ({params}) => `got: ${params.x}`,
+          }),
       });
       metadata(p.name, RES, ({value}) => ({x: value()}));
 
@@ -106,11 +107,12 @@ describe('resources', () => {
   it('should create a resource per entry in an array', async () => {
     const s: SchemaOrSchemaFn<Cat[]> = function (p) {
       applyEach(p, (p) => {
-        const RES = resourceMetadataKey<{x: string}, string | undefined>((params) => {
-          return resource({
-            params,
-            loader: async ({params}) => `got: ${params.x}`,
-          });
+        const RES = createMetadataKey({
+          wrap: (params: Signal<{x: string} | undefined>) =>
+            resource({
+              params,
+              loader: async ({params}) => `got: ${params.x}`,
+            }),
         });
         metadata(p.name, RES, ({value}) => ({x: value()}));
 

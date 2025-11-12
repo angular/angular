@@ -11,7 +11,7 @@ import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
 import {metadata, validateTree} from '../logic';
-import {overridableMetadataKey} from '../metadata';
+import {createMetadataKey} from '../metadata';
 import type {FieldTree, SchemaPath, SchemaPathTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 
@@ -68,7 +68,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
   type Result = StandardSchemaV1.Result<TSchema> | Promise<StandardSchemaV1.Result<TSchema>>;
   const VALIDATOR_MEMO = metadata(
     path as SchemaPath<TModel>,
-    overridableMetadataKey<Result>(),
+    createMetadataKey<Result>(),
     ({value}) => {
       return schema['~standard'].validate(value());
     },

@@ -11,6 +11,7 @@ import {MetadataKey} from '../api/metadata';
 import {DisabledReason, type FieldContext, type LogicFn, type SchemaPath} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
+import {cast} from '../field/util';
 import {isArray} from '../util/type_guards';
 
 /**
@@ -179,25 +180,25 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
 /** Logic that combines metadata according to the keys's reduce function. */
 export class MetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
-    return this.key.getInitial();
+    return this.key.reducer.getInitial();
   }
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: MetadataKey<TAcc, TItem>,
+    private key: MetadataKey<any, TItem, TAcc>,
   ) {
     super(predicates);
   }
 
   override compute(ctx: FieldContext<any>): TAcc {
     if (this.fns.length === 0) {
-      return this.key.getInitial();
+      return this.key.reducer.getInitial();
     }
-    let acc: TAcc = this.key.getInitial();
+    let acc: TAcc = this.key.reducer.getInitial();
     for (let i = 0; i < this.fns.length; i++) {
       const item = this.fns[i](ctx);
       if (item !== IGNORED) {
-        acc = this.key.reduce(acc, item);
+        acc = this.key.reducer.reduce(acc, item);
       }
     }
     return acc;
@@ -259,7 +260,10 @@ export class LogicContainer {
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError.WithField | 'pending', null>;
   /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly metadata = new Map<MetadataKey<unknown, unknown>, AbstractLogic<unknown>>();
+  private readonly metadata = new Map<
+    MetadataKey<unknown, unknown, unknown>,
+    AbstractLogic<unknown>
+  >();
 
   /**
    * Constructs a new `Logic` container.
@@ -278,7 +282,7 @@ export class LogicContainer {
   }
 
   /** Checks whether there is logic for the given metadata key. */
-  hasMetadata(key: MetadataKey<any, any>) {
+  hasMetadata(key: MetadataKey<any, any, any>) {
     return this.metadata.has(key);
   }
 
@@ -295,14 +299,12 @@ export class LogicContainer {
    * @param key The `MetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getMetadata<T>(key: MetadataKey<any, T>): AbstractLogic<T> {
-    if (!this.metadata.has(key as MetadataKey<unknown, unknown>)) {
-      this.metadata.set(
-        key as MetadataKey<unknown, unknown>,
-        new MetadataMergeLogic(this.predicates, key),
-      );
+  getMetadata<T>(key: MetadataKey<any, T, any>): AbstractLogic<T> {
+    cast<MetadataKey<unknown, unknown, unknown>>(key);
+    if (!this.metadata.has(key)) {
+      this.metadata.set(key, new MetadataMergeLogic(this.predicates, key));
     }
-    return this.metadata.get(key as MetadataKey<unknown, unknown>)! as AbstractLogic<T>;
+    return this.metadata.get(key)! as AbstractLogic<T>;
   }
 
   /**

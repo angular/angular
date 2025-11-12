@@ -7,7 +7,7 @@
  */
 
 import {metadata, validate} from '../logic';
-import {overridableMetadataKey, REQUIRED} from '../metadata';
+import {createMetadataKey, REQUIRED} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {requiredError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
@@ -35,7 +35,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = metadata(path, overridableMetadataKey<boolean>(), (ctx) =>
+  const REQUIRED_MEMO = metadata(path, createMetadataKey<boolean>(), (ctx) =>
     config?.when ? config.when(ctx) : true,
   );
   metadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!()!);

@@ -43,7 +43,7 @@ export abstract class AbstractLogicNodeBuilder {
   abstract addAsyncErrorRule(logic: LogicFn<any, AsyncValidationResult>): void;
 
   /** Adds a rule to compute metadata for a field. */
-  abstract addMetadataRule<M>(key: MetadataKey<unknown, M>, logic: LogicFn<any, M>): void;
+  abstract addMetadataRule<M>(key: MetadataKey<unknown, M, unknown>, logic: LogicFn<any, M>): void;
 
   /**
    * Gets a builder for a child node associated with the given property key.
@@ -120,7 +120,7 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.getCurrent().addAsyncErrorRule(logic);
   }
 
-  override addMetadataRule<T>(key: MetadataKey<any, T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: MetadataKey<unknown, T, any>, logic: LogicFn<any, T>): void {
     this.getCurrent().addMetadataRule(key, logic);
   }
 
@@ -250,7 +250,7 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     this.logic.asyncErrors.push(setBoundPathDepthForResolution(logic, this.depth));
   }
 
-  override addMetadataRule<T>(key: MetadataKey<unknown, T>, logic: LogicFn<any, T>): void {
+  override addMetadataRule<T>(key: MetadataKey<unknown, T, unknown>, logic: LogicFn<any, T>): void {
     this.logic.getMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
   }
 

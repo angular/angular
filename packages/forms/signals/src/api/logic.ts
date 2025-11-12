@@ -9,7 +9,7 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {MetadataKey, type MetadataSetType} from './metadata';
+import {MetadataKey, type MetadataSetterType} from './metadata';
 import type {
   FieldContext,
   FieldValidator,
@@ -179,7 +179,7 @@ export function metadata<
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
   key: TKey,
-  logic: NoInfer<LogicFn<TValue, MetadataSetType<TKey>, TPathKind>>,
+  logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>,
 ): TKey {
   assertPathIsCurrent(path);
 

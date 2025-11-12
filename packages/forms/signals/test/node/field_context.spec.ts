@@ -10,11 +10,11 @@ import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   applyEach,
+  createMetadataKey,
   FieldContext,
   form,
   metadata,
   PathKind,
-  reducedMetadataKey,
   SchemaPath,
   SchemaPathTree,
   validate,
@@ -133,10 +133,12 @@ describe('Field Context', () => {
   });
 
   it('pathKeys', () => {
-    const KEYS = reducedMetadataKey(
-      (_: readonly string[], n: readonly string[]) => n,
-      () => [],
-    );
+    const KEYS = createMetadataKey({
+      reducer: {
+        reduce: (_: readonly string[], n: readonly string[]) => n,
+        getInitial: () => [],
+      },
+    });
     const f = form(
       signal({x: [1]}),
       (p) => {

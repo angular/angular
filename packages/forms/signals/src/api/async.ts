@@ -13,7 +13,7 @@ import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
 import {metadata} from './logic';
-import {resourceMetadataKey} from './metadata';
+import {createMetadataKey} from './metadata';
 import {FieldContext, PathKind, SchemaPath, SchemaPathRules, TreeValidationResult} from './types';
 
 /**
@@ -159,7 +159,7 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const RESOURCE = resourceMetadataKey(opts.factory);
+  const RESOURCE = createMetadataKey({wrap: opts.factory});
   metadata(path, RESOURCE, (ctx) => {
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;

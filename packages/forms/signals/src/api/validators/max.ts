@@ -7,7 +7,7 @@
  */
 
 import {metadata, validate} from '../logic';
-import {MAX, overridableMetadataKey} from '../metadata';
+import {createMetadataKey, MAX} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
@@ -33,7 +33,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = metadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+  const MAX_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
     typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
   metadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());

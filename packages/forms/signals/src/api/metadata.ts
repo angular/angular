@@ -8,87 +8,36 @@
 
 import {type ResourceRef, type Signal} from '@angular/core';
 
-/**
- * Represents metadata that is aggregated from multiple parts according to the key's reducer
- * function. A value can be contributed to the aggregated value for a field using an
- * `metadata` rule in the schema. There may be multiple rules in a schema that contribute
- * values to the same `MetadataKey` of the same field.
- *
- * @experimental 21.0.0
- */
-export class MetadataKey<TAcc, TSet, TGet = Signal<TAcc>> {
-  private brand!: [TAcc, TSet, TGet];
-
-  /** Use {@link reducedMetadataKey}. */
-  private constructor(
-    readonly reduce: (acc: TAcc, item: TSet) => TAcc,
-    readonly getInitial: NoInfer<() => TAcc>,
-    readonly wrap?: (s: Signal<TAcc>) => TGet,
-  ) {}
+export interface MetadataReducer<TAcc, TItem> {
+  reduce: (acc: TAcc, item: TItem) => TAcc;
+  getInitial: NoInfer<() => TAcc>;
 }
 
-export type MetadataSetType<TMeta> = TMeta extends MetadataKey<any, infer TSet, any> ? TSet : never;
-
-/**
- * Creates an {@link MetadataKey} that reduces its individual values into an accumulated
- * value using the given `reduce` and `getInitial` functions.
- * @param reduce The reducer function.
- * @param getInitial A function that gets the initial value for the reduce operation.
- *
- * @experimental 21.0.0
- */
-export function reducedMetadataKey<TAcc, TSet, TGet = Signal<TAcc>>(
-  reduce: (acc: TAcc, item: TSet) => TAcc,
-  getInitial: NoInfer<() => TAcc>,
-  wrap?: (s: Signal<TAcc>) => TGet,
-) {
-  return new (MetadataKey as new (
-    reduce: (acc: TAcc, item: TSet) => TAcc,
-    getInitial: NoInfer<() => TAcc>,
-    wrap?: (s: Signal<TAcc>) => TGet,
-  ) => MetadataKey<TAcc, TSet, TGet>)(reduce, getInitial, wrap);
+export function listMetadataReducer<TItem>(): MetadataReducer<TItem[], TItem | undefined> {
+  return {
+    reduce: (acc, item) => (item === undefined ? acc : [...acc, item]),
+    getInitial: () => [],
+  };
 }
 
-/**
- * Creates an {@link MetadataKey} that reduces its individual values into a list.
- *
- * @experimental 21.0.0
- */
-export function listMetadataKey<TItem>(): MetadataKey<TItem[], TItem | undefined> {
-  return reducedMetadataKey(
-    (acc, item) => (item === undefined ? acc : [...acc, item]),
-    () => [],
-  );
-}
-
-/**
- * Creates {@link MetadataKey} that reduces its individual values by taking their min.
- *
- * @experimental 21.0.0
- */
-export function minMetadataKey(): MetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey(
-    (prev, next) => {
-      if (prev === undefined) {
-        return next;
+export function minMetadataReducer(): MetadataReducer<number | undefined, number | undefined> {
+  return {
+    reduce: (acc, item) => {
+      if (acc === undefined) {
+        return item;
       }
-      if (next === undefined) {
-        return prev;
+      if (item === undefined) {
+        return acc;
       }
-      return Math.min(prev, next);
+      return Math.min(acc, item);
     },
-    () => undefined,
-  );
+    getInitial: () => undefined,
+  };
 }
 
-/**
- * Creates {@link MetadataKey} that reduces its individual values by taking their max.
- *
- * @experimental 21.0.0
- */
-export function maxMetadataKey(): MetadataKey<number | undefined, number | undefined> {
-  return reducedMetadataKey(
-    (prev, next) => {
+export function maxMetadataReducer(): MetadataReducer<number | undefined, number | undefined> {
+  return {
+    reduce: (prev, next) => {
       if (prev === undefined) {
         return next;
       }
@@ -97,99 +46,141 @@ export function maxMetadataKey(): MetadataKey<number | undefined, number | undef
       }
       return Math.max(prev, next);
     },
-    () => undefined,
-  );
+    getInitial: () => undefined,
+  };
+}
+
+export function orMetadataReducer(): MetadataReducer<boolean, boolean> {
+  return {
+    reduce: (prev, next) => prev || next,
+    getInitial: () => false,
+  };
+}
+
+export function andMetadataReducer(): MetadataReducer<boolean, boolean> {
+  return {
+    reduce: (prev, next) => prev && next,
+    getInitial: () => false,
+  };
+}
+
+export function overrideMetadataReducer<T>(): MetadataReducer<T | undefined, T>;
+export function overrideMetadataReducer<T>(getInitial: () => T): MetadataReducer<T, T>;
+export function overrideMetadataReducer<T>(
+  getInitial?: () => T,
+): MetadataReducer<T | undefined, T> {
+  return {
+    reduce: (_, item) => item,
+    getInitial: () => getInitial?.(),
+  };
 }
 
 /**
- * Creates an {@link MetadataKey} that reduces its individual values by logically or-ing
- * them.
+ * Represents metadata that is aggregated from multiple parts according to the key's reducer
+ * function. A value can be contributed to the aggregated value for a field using an
+ * `metadata` rule in the schema. There may be multiple rules in a schema that contribute
+ * values to the same `MetadataKey` of the same field.
  *
  * @experimental 21.0.0
  */
-export function orMetadataKey(): MetadataKey<boolean, boolean> {
-  return reducedMetadataKey(
-    (prev, next) => prev || next,
-    () => false,
-  );
+export class MetadataKey<TGet, TSet, TAcc> {
+  private brand!: [TGet, TSet, TAcc];
+
+  /** Use {@link reducedMetadataKey}. */
+  protected constructor(
+    readonly reducer: MetadataReducer<TAcc, TSet>,
+    readonly wrap?: (s: Signal<TAcc>) => TGet,
+  ) {}
+}
+
+export type MetadataSetterType<TKey> =
+  TKey extends MetadataKey<any, infer TSet, any> ? TSet : never;
+
+export type ComputedMetadataKey<TValue, TSet = TValue> = MetadataKey<Signal<TValue>, TSet, TValue>;
+
+export type ResourceMetadataKey<TResult, TParams> = MetadataKey<
+  ResourceRef<TResult>,
+  TParams,
+  TParams | undefined
+>;
+
+export function createMetadataKey<TValue>(): ComputedMetadataKey<TValue | undefined>;
+export function createMetadataKey<TValue, TSet>(opts: {
+  reducer: MetadataReducer<TValue, TSet>;
+}): ComputedMetadataKey<TValue, TSet>;
+export function createMetadataKey<TGet, TSet>(opts: {
+  wrap: (s: Signal<TSet | undefined>) => TGet;
+}): MetadataKey<TGet, TSet | undefined, TSet | undefined>;
+export function createMetadataKey<TGet, TSet, TAcc>(opts: {
+  reducer: MetadataReducer<TAcc, TSet>;
+  wrap: (s: Signal<TAcc>) => TGet;
+}): MetadataKey<TGet, TSet, TAcc>;
+export function createMetadataKey<TGet, TSet, TAcc>(opts?: {
+  reducer?: MetadataReducer<TAcc, TSet>;
+  wrap?: (s: Signal<TAcc>) => TGet;
+}): MetadataKey<TGet, TSet, TAcc> {
+  return new (MetadataKey as new (
+    reducer: MetadataReducer<TAcc, TSet>,
+    wrap?: (s: Signal<TAcc>) => TGet,
+  ) => MetadataKey<TGet, TSet, TAcc>)(opts?.reducer ?? overrideMetadataReducer<any>(), opts?.wrap);
 }
 
 /**
- * Creates an {@link MetadataKey} that reduces its individual values by logically and-ing
- * them.
- *
- * @experimental 21.0.0
- */
-export function andMetadataKey(): MetadataKey<boolean, boolean> {
-  return reducedMetadataKey(
-    (prev, next) => prev && next,
-    () => true,
-  );
-}
-
-export function overridableMetadataKey<T>(): MetadataKey<T | undefined, T>;
-export function overridableMetadataKey<T>(getInitial: () => T): MetadataKey<T, T>;
-export function overridableMetadataKey<T>(getInitial?: () => T): MetadataKey<T | undefined, T> {
-  return reducedMetadataKey(
-    (_, item) => item,
-    () => getInitial?.(),
-  );
-}
-
-export function resourceMetadataKey<TParams, TResult>(
-  factory: (params: Signal<TParams | undefined>) => ResourceRef<TResult>,
-): MetadataKey<TParams | undefined, TParams | undefined, ResourceRef<TResult>> {
-  return reducedMetadataKey(
-    (_, item) => item,
-    () => undefined,
-    factory,
-  );
-}
-
-/**
- * An {@link MetadataKey} representing whether the field is required.
+ * A {@link MetadataKey} representing whether the field is required.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const REQUIRED: MetadataKey<boolean, boolean> = orMetadataKey();
+export const REQUIRED: ComputedMetadataKey<boolean> = createMetadataKey({
+  reducer: orMetadataReducer(),
+});
 
 /**
- * An {@link MetadataKey} representing the min value of the field.
+ * A {@link MetadataKey} representing the min value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN: MetadataKey<number | undefined, number | undefined> = maxMetadataKey();
+export const MIN: ComputedMetadataKey<number | undefined> = createMetadataKey({
+  reducer: maxMetadataReducer(),
+});
 
 /**
- * An {@link MetadataKey} representing the max value of the field.
+ * A {@link MetadataKey} representing the max value of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX: MetadataKey<number | undefined, number | undefined> = minMetadataKey();
+export const MAX: ComputedMetadataKey<number | undefined> = createMetadataKey({
+  reducer: minMetadataReducer(),
+});
 
 /**
- * An {@link MetadataKey} representing the min length of the field.
+ * A {@link MetadataKey} representing the min length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN_LENGTH: MetadataKey<number | undefined, number | undefined> = maxMetadataKey();
+export const MIN_LENGTH: ComputedMetadataKey<number | undefined> = createMetadataKey({
+  reducer: maxMetadataReducer(),
+});
 
 /**
- * An {@link MetadataKey} representing the max length of the field.
+ * A {@link MetadataKey} representing the max length of the field.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX_LENGTH: MetadataKey<number | undefined, number | undefined> = minMetadataKey();
+export const MAX_LENGTH: ComputedMetadataKey<number | undefined> = createMetadataKey({
+  reducer: minMetadataReducer(),
+});
 
 /**
- * An {@link MetadataKey} representing the patterns the field must match.
+ * A {@link MetadataKey} representing the patterns the field must match.
  *
  * @category validation
  * @experimental 21.0.0
  */
-export const PATTERN: MetadataKey<RegExp[], RegExp | undefined> = listMetadataKey();
+export const PATTERN: ComputedMetadataKey<RegExp[], RegExp | undefined> = createMetadataKey({
+  reducer: listMetadataReducer(),
+});
