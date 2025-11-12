@@ -149,8 +149,13 @@
       ],
       "generics": [],
       "description": "A directive that provides grid-based navigation and selection behavior.",
-      "jsdocTags": [],
-      "rawComment": "/** A directive that provides grid-based navigation and selection behavior. */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that provides grid-based navigation and selection behavior.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGrid]",
@@ -159,8 +164,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 27,
-        "endLine": 120
+        "startLine": 31,
+        "endLine": 124
       }
     },
     {
@@ -217,8 +222,13 @@
       ],
       "generics": [],
       "description": "A directive that represents a row in a grid.",
-      "jsdocTags": [],
-      "rawComment": "/** A directive that represents a row in a grid. */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that represents a row in a grid.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridRow]",
@@ -227,8 +237,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 123,
-        "endLine": 163
+        "startLine": 131,
+        "endLine": 171
       }
     },
     {
@@ -355,8 +365,13 @@
       ],
       "generics": [],
       "description": "A directive that represents a cell in a grid.",
-      "jsdocTags": [],
-      "rawComment": "/** A directive that represents a cell in a grid. */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that represents a cell in a grid.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCell]",
@@ -365,8 +380,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 166,
-        "endLine": 239
+        "startLine": 178,
+        "endLine": 251
       }
     },
     {
@@ -435,8 +450,13 @@
       ],
       "generics": [],
       "description": "A directive that represents a widget inside a grid cell.",
-      "jsdocTags": [],
-      "rawComment": "/** A directive that represents a widget inside a grid cell. */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that represents a widget inside a grid cell.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCellWidget]",
@@ -445,8 +465,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 242,
-        "endLine": 274
+        "startLine": 258,
+        "endLine": 290
       }
     }
   ],

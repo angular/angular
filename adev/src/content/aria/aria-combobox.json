@@ -38,16 +38,6 @@
           "jsdocTags": []
         },
         {
-          "name": "isFocused",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Whether the combobox is focused.",
-          "jsdocTags": []
-        },
-        {
           "name": "disabled",
           "type": "any",
           "memberType": "property",
@@ -94,7 +84,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "",
+          "description": "Whether the combobox popup is always expanded.",
           "jsdocTags": []
         },
         {
@@ -106,6 +96,138 @@
           ],
           "description": "Input element connected to the combobox, if any.",
           "jsdocTags": []
+        },
+        {
+          "name": "open",
+          "signatures": [
+            {
+              "name": "open",
+              "entryType": "function",
+              "description": "Opens the combobox to the selected item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Opens the combobox to the selected item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "open",
+            "description": "Opens the combobox to the selected item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Opens the combobox to the selected item. */"
+          },
+          "entryType": "function",
+          "description": "Opens the combobox to the selected item.",
+          "jsdocTags": [],
+          "rawComment": "/** Opens the combobox to the selected item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "close",
+          "signatures": [
+            {
+              "name": "close",
+              "entryType": "function",
+              "description": "Closes the combobox.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Closes the combobox. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "close",
+            "description": "Closes the combobox.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Closes the combobox. */"
+          },
+          "entryType": "function",
+          "description": "Closes the combobox.",
+          "jsdocTags": [],
+          "rawComment": "/** Closes the combobox. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "expand",
+          "signatures": [
+            {
+              "name": "expand",
+              "entryType": "function",
+              "description": "Expands the combobox popup.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Expands the combobox popup. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "expand",
+            "description": "Expands the combobox popup.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Expands the combobox popup. */"
+          },
+          "entryType": "function",
+          "description": "Expands the combobox popup.",
+          "jsdocTags": [],
+          "rawComment": "/** Expands the combobox popup. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "collapse",
+          "signatures": [
+            {
+              "name": "collapse",
+              "entryType": "function",
+              "description": "Collapses the combobox popup.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Collapses the combobox popup. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "collapse",
+            "description": "Collapses the combobox popup.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Collapses the combobox popup. */"
+          },
+          "entryType": "function",
+          "description": "Collapses the combobox popup.",
+          "jsdocTags": [],
+          "rawComment": "/** Collapses the combobox popup. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [
@@ -114,13 +236,18 @@
         }
       ],
       "description": "",
-      "jsdocTags": [],
-      "rawComment": "",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 33,
-        "endLine": 132
+        "startLine": 37,
+        "endLine": 145
       }
     },
     {
@@ -155,8 +282,13 @@
       ],
       "generics": [],
       "description": "",
-      "jsdocTags": [],
-      "rawComment": "",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "input[ngComboboxInput]",
@@ -165,8 +297,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 134,
-        "endLine": 176
+        "startLine": 150,
+        "endLine": 193
       }
     },
     {
@@ -176,13 +308,18 @@
       "members": [],
       "generics": [],
       "description": "",
-      "jsdocTags": [],
-      "rawComment": "",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 178,
-        "endLine": 183
+        "startLine": 198,
+        "endLine": 203
       }
     },
     {
@@ -217,8 +354,13 @@
         }
       ],
       "description": "",
-      "jsdocTags": [],
-      "rawComment": "",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngComboboxPopup]",
@@ -227,8 +369,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 185,
-        "endLine": 200
+        "startLine": 208,
+        "endLine": 223
       }
     },
     {
@@ -292,8 +434,13 @@
       ],
       "generics": [],
       "description": "",
-      "jsdocTags": [],
-      "rawComment": "",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "dialog[ngComboboxDialog]",
@@ -302,14 +449,18 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 202,
-        "endLine": 249
+        "startLine": 228,
+        "endLine": 275
       }
     }
   ],
   "symbols": [
     [
       "afterRenderEffect",
+      "@angular/core"
+    ],
+    [
+      "booleanAttribute",
       "@angular/core"
     ],
     [
@@ -421,10 +572,6 @@
       "@angular/aria/combobox"
     ],
     [
-      "Combobox.isFocused",
-      "@angular/aria/combobox"
-    ],
-    [
       "Combobox.disabled",
       "@angular/aria/combobox"
     ],
@@ -446,6 +593,22 @@
     ],
     [
       "Combobox.inputElement",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.open",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.close",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.expand",
+      "@angular/aria/combobox"
+    ],
+    [
+      "Combobox.collapse",
       "@angular/aria/combobox"
     ],
     [
