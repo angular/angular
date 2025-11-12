@@ -9,7 +9,6 @@
 import {h} from 'preact';
 import {RawHtml} from './raw-html';
 import {codeToHtml} from '../../../shared/shiki.mjs';
-import {get} from 'http';
 import {getHighlighterInstance} from '../shiki/shiki.mjs';
 
 /** Component to render a header of the CLI page. */
