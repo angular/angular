@@ -126,12 +126,15 @@ function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   if (token.hideCode) {
     el.setAttribute('hideCode', 'true');
   }
-  if (token.language === 'mermaid') {
+
+  const language = token.language;
+
+  if (language === 'mermaid') {
     el.setAttribute('mermaid', 'true');
   }
 
   // Classes
-  if (token.language === 'shell') {
+  if (language === 'shell' || language === 'bash') {
     el.classList.add('shell');
   }
 
