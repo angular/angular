@@ -9,7 +9,13 @@
 import {Route} from '../../../protocol';
 import type {Route as AngularRoute, ActivatedRoute} from '@angular/router';
 
-export type RoutePropertyType = RouteGuard | 'providers' | 'component' | 'redirectTo' | 'title';
+export type RoutePropertyType =
+  | RouteGuard
+  | 'providers'
+  | 'component'
+  | 'redirectTo'
+  | 'title'
+  | 'resolvers';
 
 export type RouteGuard = 'canActivate' | 'canActivateChild' | 'canDeactivate' | 'canMatch';
 
@@ -129,6 +135,7 @@ function assignChildrenToParent(
       providers: getProviderName(child),
       path: routePath,
       data: [],
+      resolvers: [],
       isAux,
       isLazy,
       isActive,
@@ -148,6 +155,17 @@ function assignChildrenToParent(
         childDescendents,
         activeRouteConfigs,
       );
+    }
+
+    if (child.resolve) {
+      for (const el in child.resolve) {
+        if (child.resolve.hasOwnProperty(el)) {
+          routeConfig?.resolvers?.push({
+            key: el,
+            value: getClassOrFunctionName(child.resolve[el]),
+          });
+        }
+      }
     }
 
     if (child.data) {
@@ -229,6 +247,18 @@ export function getElementRefByName(
       //TODO: improve this, not every titleFn has a name property
       if (functionName === name) {
         return element.title;
+      }
+    }
+
+    if (type === 'resolvers' && element.resolve) {
+      for (const key in element.resolve) {
+        if (element.resolve.hasOwnProperty(key)) {
+          const functionName = getClassOrFunctionName(element.resolve[key]);
+          //TODO: improve this, not every ResolverFn has a name property
+          if (functionName === name) {
+            return element.resolve[key];
+          }
+        }
       }
     }
 

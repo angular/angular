@@ -15,9 +15,18 @@ sass_binary(
     src = "route-details-row.component.scss",
 )
 
+sass_binary(
+    name = "route_data_tree_styles",
+    src = "route-data-tree/route-data-tree.component.scss",
+    deps = [
+        "//devtools/projects/ng-devtools/src/styles:typography",
+    ],
+)
+
 ng_project(
     name = "router-tree",
     srcs = [
+        "route-data-tree/route-data-tree.component.ts",
         "route-details-row.component.ts",
         "router-tree.component.ts",
         "router-tree-fns.ts",
@@ -27,6 +36,8 @@ ng_project(
         ":router_tree_styles",
         ":route-details-row.component.html",
         ":router_details_row_styles",
+        ":route-data-tree/route-data-tree.component.html",
+        ":route_data_tree_styles",
     ],
     deps = [
         "//:node_modules/@angular/common",

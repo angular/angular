@@ -1,0 +1,34 @@
+<mat-tree #tree [dataSource]="treeData()" [childrenAccessor]="childrenAccessor">
+  <mat-tree-node matTreeNodePaddingIndent="14" *matTreeNodeDef="let node" matTreeNodePadding>
+    <div class="data-row non-expandable-row">
+      <span class="name">{{ node.name }}</span
+      >:
+      <span class="value">{{ node.preview }}</span>
+      @if (showViewSourceButton()) {
+        <button
+          type="button"
+          (click)="handleViewSource(node)"
+          [matTooltip]="'View source'"
+          class="data-action-btn"
+        >
+          <mat-icon class="view-source">code</mat-icon>
+        </button>
+      }
+    </div>
+  </mat-tree-node>
+  <mat-tree-node
+    matTreeNodePaddingIndent="14"
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    [isExpandable]="node.isExpandable"
+  >
+    <button matTreeNodeToggle class="data-row expandable-row">
+      <mat-icon class="expand-icon">
+        {{ tree.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+      </mat-icon>
+      <span class="name">{{ node.name }}</span
+      >:
+      <span class="value">{{ node.preview }}</span>
+    </button>
+  </mat-tree-node>
+</mat-tree>
