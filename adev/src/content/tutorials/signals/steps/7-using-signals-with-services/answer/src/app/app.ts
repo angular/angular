@@ -15,7 +15,7 @@ import {CartDisplay} from './cart-display';
       </header>
       
       <main>
-        <cart-display />
+        <cart-display></cart-display>
       </main>
     </div>
   `,

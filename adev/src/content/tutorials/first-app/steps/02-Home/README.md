@@ -37,17 +37,17 @@ In the **Terminal** pane of your IDE:
 1. In your project directory, navigate to the `first-app` directory.
 1. Run this command to create a new `Home`
 
-<docs-code language="shell">
-ng generate component home
-</docs-code>
+   ```shell
+   ng generate component home
+   ```
 
 1. Run this command to build and serve your app.
 
    NOTE: This step is only for your local environment!
 
-   <docs-code language="shell">
+   ```shell
    ng serve
-   </docs-code>
+   ```
 
 1. Open a browser and navigate to `http://localhost:4200` to find the application.
 
@@ -74,7 +74,7 @@ In the **Edit** pane of your IDE:
 
 1. In `app.ts`, in `@Component`, update the `template` property to include the following HTML code.
 
-<docs-code header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[7,16]"/>
+<docs-code language="angular-ts" header="Replace in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/app.ts" visibleLines="[7,16]"/>
 
 1. Save your changes to `app.ts`.
 1. If `ng serve` is running, the app should update.
@@ -100,7 +100,7 @@ In the **Edit** pane of your IDE:
 1. In the `first-app` directory, open `home.ts` in the editor.
 1. In `home.ts`, in `@Component`, update the `template` property with this code.
 
-<docs-code header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[5,12]"/>
+<docs-code language="angular-ts" header="Replace in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/03-HousingLocation/src/app/home/home.ts" visibleLines="[5,12]"/>
 
 1. Next, open `home.css` in the editor and update the content with these styles.
 

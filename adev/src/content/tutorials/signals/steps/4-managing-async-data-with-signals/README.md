@@ -75,7 +75,7 @@ Part 1. **Add click handlers to the buttons:**
 
 Part 2. **Replace the placeholder with resource state handling:**
 
-```html
+```angular-html
 @if (isLoading()) {
   <p>Loading user...</p>
 } @else if (hasError()) {

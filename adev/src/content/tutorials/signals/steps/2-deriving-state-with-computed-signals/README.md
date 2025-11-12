@@ -68,7 +68,7 @@ The template already has placeholders showing "Loading...". Replace them with yo
 
 1. For notifications, replace `Loading...` with an @if block:
 
-```html
+```angular-html
 @if (notificationsEnabled()) {
   Enabled
 } @else {
@@ -78,13 +78,13 @@ The template already has placeholders showing "Loading...". Replace them with yo
 
 2. For the message, replace `Loading...` with:
 
-```html
+```angular-html
 {{ statusMessage() }}
 ```
 
 3. For working hours, replace `Loading...` with an @if block:
 
-```html
+```angular-html
 @if (isWithinWorkingHours()) {
   Yes
 } @else {

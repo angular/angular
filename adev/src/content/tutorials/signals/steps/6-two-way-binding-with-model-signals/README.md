@@ -83,7 +83,7 @@ Part 1. **Uncomment the checkboxes and add two-way binding:**
 
 Part 2. **Replace the `???` placeholders with @if blocks:**
 
-```html
+```angular-html
 @if (agreedToTerms()) {
   Yes
 } @else {

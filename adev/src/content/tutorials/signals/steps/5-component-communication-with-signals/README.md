@@ -27,7 +27,7 @@ Notice how `input.required()` creates an input that must be provided, while `inp
 <docs-step title="Connect inputs to the template">
 Update the template in `product-card` to display the signal input values.
 
-```html
+```angular-html
 <div class="product-card">
   <h3>{{ name() }}</h3>
   <p class="price">\${{ price() }}</p>
