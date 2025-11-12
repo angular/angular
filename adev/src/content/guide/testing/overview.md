@@ -1,29 +1,29 @@
-# Testing
+# Unit testing
 
-Testing your Angular application helps you check that your application is working as you expect.
+Testing your Angular application helps you check that it is working as you expect.
+
+NOTE: This guide focuses on the default testing setup for new Angular CLI projects. If you are migrating an existing project from Karma to Vitest, see the [Migrating from Karma to Vitest guide](guide/testing/migrating-to-vitest).
 
 NOTE: While Vitest is the default test runner, Karma is still fully supported. For information on testing with Karma, see the [Karma testing guide](guide/testing/karma).
 
-## Set up testing
+## Set up for testing
 
-The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev).
+The Angular CLI downloads and installs everything you need to test an Angular application with the [Vitest testing framework](https://vitest.dev). By default, new projects include `vitest` and `jsdom`.
 
-The project you create with the CLI is immediately ready to test.
-Just run the [`ng test`](cli/test) CLI command:
+Vitest runs your unit tests in a Node.js environment, using `jsdom` to emulate the DOM. This allows for faster test execution by avoiding the overhead of launching a browser. You can also use `happy-dom` as an alternative by installing it and removing `jsdom`. The CLI will automatically detect and use `happy-dom` if it is present.
+
+The project you create with the CLI is immediately ready to test. Just run the [`ng test`](cli/test) CLI command:
 
 ```shell
-
 ng test
-
 ```
 
 The `ng test` command builds the application in _watch mode_ and launches the [Vitest test runner](https://vitest.dev).
 
-The console output looks like below:
+The console output looks like this:
 
 ```shell
-
- ✓ src/app/app.component.spec.ts (3)
+ ✓ src/app/app.spec.ts (3)
    ✓ AppComponent should create the app
    ✓ AppComponent should have as title 'my-app'
    ✓ AppComponent should render title
@@ -31,74 +31,172 @@ The console output looks like below:
       Tests  3 passed (3)
    Start at  18:18:01
    Duration  2.46s (transform 615ms, setup 2ms, collect 2.21s, tests 5ms)
-
 ```
 
-Meanwhile, the `ng test` command is watching for changes.
-
-To see this in action, make a small change to `app.ts` and save.
-The tests run again, and the new test results appear in the console.
+The `ng test` command also watches for changes. To see this in action, make a small change to `app.ts` and save it. The tests run again, and the new results appear in the console.
 
 ## Configuration
 
-The Angular CLI takes care of the Vitest configuration for you. It constructs the full configuration in memory, based on options specified in the `angular.json` file.
+The Angular CLI handles most of the Vitest configuration for you. For many common use cases, you can adjust the test behavior by modifying options directly in your `angular.json` file.
 
-If you want to customize Vitest, you can create a `vitest-base.config.ts` by running the following command:
+### Built-in configuration options
 
-```shell
+You can change the following options in the `test` target of your `angular.json` file:
 
-ng generate config vitest
+- `include`: Glob patterns for files to include for testing. Defaults to `['**/*.spec.ts', '**/*.test.ts']`.
+- `exclude`: Glob patterns for files to exclude from testing.
+- `setupFiles`: A list of paths to global setup files that are executed before your tests.
+- `providersFile`: The path to a file that exports a default array of Angular providers for the test environment. This is useful for setting up global test providers.
+- `coverage`: A boolean to enable or disable code coverage reporting. Defaults to `false`.
+- `browsers`: An array of browser names to run tests in (e.g., `["chromium"]`). Requires a browser provider to be installed.
 
+For example, you could create a `src/test-providers.ts` file to provide `provideHttpClientTesting` to all your tests:
+
+```typescript
+import { Provider } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+
+const testProviders: Provider[] = [
+  provideHttpClient(),
+  provideHttpClientTesting(),
+];
+
+export default testProviders;
 ```
 
-IMPORTANT: Using a custom `vitest-base.config.ts` provides powerful customization options. However, the Angular team does not provide support for the specific contents of this file or for any third-party plugins used within it.
+You would then reference this file in your `angular.json`:
+
+```json
+{
+  "projects": {
+    "your-project-name": {
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "include": ["src/**/*.spec.ts"],
+            "setupFiles": ["src/test-setup.ts"],
+            "providersFile": "src/test-providers.ts",
+            "coverage": true,
+            "browsers": ["chromium"]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Advanced: Custom Vitest configuration
+
+For advanced use cases, you can provide a custom Vitest configuration file.
+
+IMPORTANT: While using a custom configuration enables advanced options, the Angular team does not provide direct support for the specific contents of the configuration file or for any third-party plugins used within it. The CLI will also override certain properties (`test.projects`, `test.include`) to ensure proper operation.
+
+You can create a Vitest configuration file (e.g., `vitest.config.ts`) and reference it in your `angular.json` using the `runnerConfig` option.
+
+```json
+{
+  "projects": {
+    "your-project-name": {
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "runnerConfig": "vitest.config.ts"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+You can also generate a base configuration file using the CLI:
+
+```shell
+ng generate config vitest
+```
+
+This creates a `vitest-base.config.ts` file that you can customize.
 
 HELPFUL: Read more about Vitest configuration in the [Vitest configuration guide](https://vitest.dev/config/).
 
-### Other test frameworks
+## Code coverage
 
-You can also unit test an Angular application with other testing libraries and test runners.
-Each library and runner has its own distinctive installation procedures, configuration, and syntax.
+You can generate code coverage reports by adding the `--coverage` flag to the `ng test` command. The report is generated in the `coverage/` directory.
 
-### Test file name and location
+For more detailed information on prerequisites, enforcing coverage thresholds, and advanced configuration, see the [Code coverage guide](guide/testing/code-coverage).
 
-Inside the `src/app` folder the Angular CLI generated a test file for the `App` component named `app.spec.ts`.
+## Running tests in a browser
 
-IMPORTANT: The test file extension **must be `.spec.ts` or `.test.ts`** so that tooling can identify it as a file with tests \(also known as a _spec_ file\).
+While the default Node.js environment is faster for most unit tests, you can also run your tests in a real browser. This is useful for tests that rely on browser-specific APIs (like rendering) or for debugging.
 
-The `app.ts` and `app.spec.ts` files are siblings in the same folder.
-The root file names \(`app`\) are the same for both files.
+To run tests in a browser, you must first install a browser provider.
+Choose one of the following browser providers based on your needs:
 
-Adopt these two conventions in your own projects for _every kind_ of test file.
+- **Playwright**: `@vitest/browser-playwright` for Chromium, Firefox, and WebKit.
+- **WebdriverIO**: `@vitest/browser-webdriverio` for Chrome, Firefox, Safari, and Edge.
+- **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
 
-#### Place your spec file next to the file it tests
+<docs-code-multifile>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/browser-playwright playwright
+  </docs-code>
+  <docs-code header="npm" language="shell">
+    npm install --save-dev @vitest/browser-playwright playwright
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add --dev @vitest/browser-playwright playwright
+  </docs-code>
+</docs-code-multifile>
 
-It's a good idea to put unit test spec files in the same folder
-as the application source code files that they test:
+Once the provider is installed, you can run your tests in the browser using the `--browsers` flag:
 
-- Such tests are painless to find
-- You see at a glance if a part of your application lacks tests
-- Nearby tests can reveal how a part works in context
-- When you move the source \(inevitable\), you remember to move the test
-- When you rename the source file \(inevitable\), you remember to rename the test file
+```bash
+# Example for Playwright
+ng test --browsers=chromium
 
-#### Place your spec files in a test folder
+# Example for WebdriverIO
+ng test --browsers=chrome
+```
 
-Application integration specs can test the interactions of multiple parts
-spread across folders and modules.
-They don't really belong to any part in particular, so they don't have a
-natural home next to any one file.
+Headless mode is enabled automatically if the `CI` environment variable is set. Otherwise, tests will run in a headed browser.
+
+## Other test frameworks
+
+You can also unit test an Angular application with other testing libraries and test runners. Each library and runner has its own distinctive installation procedures, configuration, and syntax.
+
+## Test file name and location
+
+Inside the `src/app` folder, the Angular CLI generates a test file for the `App` named `app.spec.ts`.
+
+IMPORTANT: The test file extension **must be `.spec.ts` or `.test.ts`** so that tooling can identify it as a file with tests (also known as a _spec_ file).
+
+The `app.ts` and `app.spec.ts` files are siblings in the same folder. The root file names (`app`) are the same for both files.
+
+Adopt these two conventions in your own projects for every kind of test file.
+
+### Place your spec file next to the file it tests
+
+It's a good practice to put unit test spec files in the same folder as the application source code files that they test:
+
+- Such tests are painless to find.
+- You see at a glance if a part of your application lacks tests.
+- Nearby tests can reveal how a part works in context.
+- When you move the source, you remember to move the test.
+- When you rename the source file, you remember to rename the test file.
+
+### Place your spec files in a test folder
+
+Application integration specs can test the interactions of multiple parts spread across folders and modules. They don't belong to any single part, so they don't have a natural home next to any one file.
 
 It's often better to create an appropriate folder for them in the `tests` directory.
 
-Of course specs that test the test helpers belong in the `test` folder,
-next to their corresponding helper files.
-
 ## Testing in continuous integration
 
-One of the best ways to keep your project bug-free is through a test suite, but you might forget to run tests all the time.
-
-Continuous integration \(CI\) servers let you set up your project repository so that your tests run on every commit and pull request.
+A robust test suite is a key part of a continuous integration (CI) pipeline. CI servers let you set up your project repository so that your tests run on every commit and pull request.
 
 To test your Angular application in a continuous integration (CI) server, you can typically run the standard test command:
 

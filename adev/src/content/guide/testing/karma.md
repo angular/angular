@@ -180,3 +180,19 @@ ng test --no-watch --no-progress --browsers=ChromeHeadless
 ```
 
 NOTE: The `--no-watch` and `--no-progress` flags are crucial for Karma in CI environments to ensure tests run once and exit cleanly. The `--browsers=ChromeHeadless` flag is also essential for running tests in a browser environment without a graphical interface.
+
+## Debugging tests
+
+If your tests aren't working as you expect, you can inspect and debug them in the browser.
+
+To debug an application with the Karma test runner:
+
+1.  Reveal the Karma browser window. See [Set up for testing](guide/testing/overview#set-up-for-testing) if you need help with this step.
+2.  Click the **DEBUG** button to open a new browser tab and re-run the tests.
+3.  Open the browser's **Developer Tools**. On Windows, press `Ctrl-Shift-I`. On macOS, press `Command-Option-I`.
+4.  Pick the **Sources** section.
+5.  Press `Control/Command-P`, and then start typing the name of your test file to open it.
+6.  Set a breakpoint in the test.
+7.  Refresh the browser, and notice how it stops at the breakpoint.
+
+<img alt="Karma debugging" src="assets/images/guide/testing/karma-1st-spec-debug.png">
