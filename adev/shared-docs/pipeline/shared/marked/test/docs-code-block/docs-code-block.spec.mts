@@ -21,9 +21,25 @@ describe('markdown to html', () => {
     markdownDocument = JSDOM.fragment(await parseMarkdown(markdownContent, rendererContext));
   });
 
-  it('converts triple ticks into a code block', () => {
+  it('should converts triple ticks into a code block', () => {
     const codeBlock = markdownDocument.querySelector('code');
     expect(codeBlock).toBeTruthy();
     expect(codeBlock?.textContent?.trim()).toBe('this is a code block');
+  });
+
+  it('should parse all 3 code blocks', () => {
+    const codeBlocks = markdownDocument.querySelectorAll('.docs-code');
+
+    expect(codeBlocks.length).toBe(3);
+  });
+
+  it('should deindent code blocks correctly', () => {
+    const codeBlock = markdownDocument.querySelectorAll('code')[1];
+    expect(codeBlock.innerHTML).toContain(`  // bar`);
+  });
+
+  it('should handle code blocks without language', () => {
+    const codeBlock = markdownDocument.querySelectorAll('.docs-code')[2];
+    expect(codeBlock).toBeDefined();
   });
 });

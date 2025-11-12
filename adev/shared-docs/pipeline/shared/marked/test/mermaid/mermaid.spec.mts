@@ -41,8 +41,7 @@ describe('markdown to html', () => {
     direction BT
     rootInjector --> elementInjector
     elementInjector --> nullInjector
-\`\`\`;
-    `;
+\`\`\``;
 
     const markedInstance = marked.use({
       async: true,

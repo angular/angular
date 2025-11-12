@@ -107,21 +107,19 @@ npm install --save-dev @angular/language-service
 
 1. Once the package is installed, add the following to the `"compilerOptions"` section of your project's `tsconfig.json`.
 
-   <docs-code header="tsconfig.json" language="json">
-
+   ```json {header:"tsconfig.json"}
    "plugins": [
-   {"name": "@angular/language-service"}
+     {"name": "@angular/language-service"}
    ]
+   ```
 
-   </docs-code>
+2. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
 
-1. In your editor's user preferences \(`Cmd+,` or `Ctrl+,`\), add the following:
-
-   <docs-code header="Sublime Text user preferences" language="json">
+   ```json {header:"Sublime Text user preferences"}
 
    "typescript-tsdk": "<path to your folder>/node_modules/typescript/lib"
 
-   </docs-code>
+   ```
 
 This lets the Angular Language Service provide diagnostics and completions in `.ts` files.
 
@@ -143,7 +141,7 @@ The Angular Language Service uses the tsserver, which doesn't follow the LSP spe
 
    Make sure to substitute the correct paths to your global `node_modules` such that they go to directories which contain `tsserver` and the `ngserver` respectively.
 
-   <docs-code header="CocConfig example file coc-settings.json" language="json">
+   ```json {header:"CocConfig example file coc-settings.json"}
    {
      "languageserver": {
        "angular": {
@@ -151,7 +149,7 @@ The Angular Language Service uses the tsserver, which doesn't follow the LSP spe
          "args": [
            "--stdio",
            "--tsProbeLocations",
-           "/usr/local/lib/node_modules/typescript/lib/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES", 
+           "/usr/local/lib/node_modules/typescript/lib/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES",
            "--ngProbeLocations",
            "/usr/local/lib/node_modules/@angular/language-server/bin/CHANGE/THIS/TO/YOUR/GLOBAL/NODE_MODULES"
          ],
@@ -160,7 +158,7 @@ The Angular Language Service uses the tsserver, which doesn't follow the LSP spe
        }
      }
    }
-   </docs-code>
+   ```
 
 HELPFUL: `/usr/local/lib/node_modules/typescript/lib` and `/usr/local/lib/node_modules/@angular/language-server/bin` above should point to the location of your global node modules, which may be different.
 

@@ -29,32 +29,31 @@ The command performs the following actions.
 1. Configures your project to use web workers, if it isn't already.
 1. Adds the following scaffold code to `src/app/app.worker.ts` to receive messages.
 
-   <docs-code language="typescript" header="src/app/app.worker.ts">
+   ```ts {header:"src/app/app.worker.ts"}
 
-   addEventListener('message', ({ data }) => {
-   const response = `worker response to ${data}`;
-   postMessage(response);
-   });
+     addEventListener('message', ({ data }) => {
+        const response = `worker response to ${data}`;
+        postMessage(response);
+     });
 
-   </docs-code>
+   ```
 
 1. Adds the following scaffold code to `src/app/app.component.ts` to use the worker.
 
-   <docs-code language="typescript" header="src/app/app.component.ts">
+   ```ts {header:"src/app/app.component.ts"}
 
-   if (typeof Worker !== 'undefined') {
-   // Create a new
-   const worker = new Worker(new URL('./app.worker', import.meta.url));
-   worker.onmessage = ({ data }) => {
-   console.log(`page got message: ${data}`);
-   };
-   worker.postMessage('hello');
-   } else {
-   // Web workers are not supported in this environment.
-   // You should add a fallback so that your program still executes correctly.
-   }
-
-   </docs-code>
+     if (typeof Worker !== 'undefined') {
+        // Create a new
+        const worker = new Worker(new URL('./app.worker', import.meta.url));
+        worker.onmessage = ({ data }) => {
+           console.log(`page got message: ${data}`);
+        };
+        worker.postMessage('hello');
+     } else {
+        // Web workers are not supported in this environment.
+        // You should add a fallback so that your program still executes correctly.
+     }
+   ```
 
 After you create this initial scaffold, you must refactor your code to use the web worker by sending messages to and from the worker.
 
