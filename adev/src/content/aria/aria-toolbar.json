@@ -218,8 +218,13 @@
         }
       ],
       "description": "A toolbar widget container.\n\nWidgets such as radio groups or buttons are nested within a toolbar to allow for a single\nplace of reference for focus and navigation. The Toolbar is meant to be used in conjunction\nwith ToolbarWidget and RadioGroup as follows:\n\n```html\n<div ngToolbar>\n <button ngToolbarWidget>Button</button>\n <div ngRadioGroup>\n   <label ngRadioButton value=\"1\">Option 1</label>\n   <label ngRadioButton value=\"2\">Option 2</label>\n   <label ngRadioButton value=\"3\">Option 3</label>\n </div>\n</div>\n```",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A toolbar widget container.\n *\n * Widgets such as radio groups or buttons are nested within a toolbar to allow for a single\n * place of reference for focus and navigation. The Toolbar is meant to be used in conjunction\n * with ToolbarWidget and RadioGroup as follows:\n *\n * ```html\n * <div ngToolbar>\n *  <button ngToolbarWidget>Button</button>\n *  <div ngRadioGroup>\n *    <label ngRadioButton value=\"1\">Option 1</label>\n *    <label ngRadioButton value=\"2\">Option 2</label>\n *    <label ngRadioButton value=\"3\">Option 3</label>\n *  </div>\n * </div>\n * ```\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A toolbar widget container.\n *\n * Widgets such as radio groups or buttons are nested within a toolbar to allow for a single\n * place of reference for focus and navigation. The Toolbar is meant to be used in conjunction\n * with ToolbarWidget and RadioGroup as follows:\n *\n * ```html\n * <div ngToolbar>\n *  <button ngToolbarWidget>Button</button>\n *  <div ngRadioGroup>\n *    <label ngRadioButton value=\"1\">Option 1</label>\n *    <label ngRadioButton value=\"2\">Option 2</label>\n *    <label ngRadioButton value=\"3\">Option 3</label>\n *  </div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngToolbar]",
@@ -228,8 +233,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 63,
-        "endLine": 158
+        "startLine": 65,
+        "endLine": 160
       }
     },
     {
@@ -409,8 +414,13 @@
         }
       ],
       "description": "A widget within a toolbar.\n\nA widget is anything that is within a toolbar. It should be applied to any native HTML element\nthat has the purpose of acting as a widget navigatable within a toolbar.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A widget within a toolbar.\n *\n * A widget is anything that is within a toolbar. It should be applied to any native HTML element\n * that has the purpose of acting as a widget navigatable within a toolbar.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A widget within a toolbar.\n *\n * A widget is anything that is within a toolbar. It should be applied to any native HTML element\n * that has the purpose of acting as a widget navigatable within a toolbar.\n *\n * @developerPreview 21.0\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
@@ -422,8 +432,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 166,
-        "endLine": 234
+        "startLine": 170,
+        "endLine": 238
       }
     },
     {
@@ -484,8 +494,13 @@
         }
       ],
       "description": "A directive that groups toolbar widgets, used for more complex widgets like radio groups that\nhave their own internal navigation.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups that\n * have their own internal navigation.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A directive that groups toolbar widgets, used for more complex widgets like radio groups that\n * have their own internal navigation.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngToolbarWidgetGroup]",
@@ -494,8 +509,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 240,
-        "endLine": 268
+        "startLine": 246,
+        "endLine": 274
       }
     }
   ],
