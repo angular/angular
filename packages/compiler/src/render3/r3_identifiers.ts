@@ -489,7 +489,6 @@ export class Identifiers {
   // type-checking
   static InputSignalBrandWriteType = {name: 'ɵINPUT_SIGNAL_BRAND_WRITE_TYPE', moduleName: CORE};
   static UnwrapDirectiveSignalInputs = {name: 'ɵUnwrapDirectiveSignalInputs', moduleName: CORE};
-  static ExtractFormControlValue = {name: 'ɵExtractFormControlValue', moduleName: CORE};
   static unwrapWritableSignal = {name: 'ɵunwrapWritableSignal', moduleName: CORE};
   static assertType = {name: 'ɵassertType', moduleName: CORE};
 }

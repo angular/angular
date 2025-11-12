@@ -96,7 +96,6 @@ export {
   ɵɵproperty,
   ɵɵcontrol,
   ɵɵcontrolCreate,
-  ɵExtractFormControlValue,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵloadQuery,
