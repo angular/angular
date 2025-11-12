@@ -9,10 +9,12 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {
-  ActivatedRouteSnapshot,
   CanActivateFn,
   RouterModule,
   RouterStateSnapshot,
+  ActivatedRouteSnapshot,
+  Resolve,
+  ResolveFn,
 } from '@angular/router';
 
 import {
@@ -25,6 +27,13 @@ import {
   Service3,
   Service4,
 } from './routes.component';
+
+export const resolverFn: ResolveFn<any> = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
+  return {data: 'Resolved Data from resolverFn'};
+};
 
 export const activateGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -64,6 +73,13 @@ export const activateGuard: CanActivateFn = (
         component: RoutesHomeComponent,
         data: {
           message: 'Hello from route!!',
+        },
+      },
+      {
+        path: 'route-resolver',
+        component: RoutesHomeComponent,
+        resolve: {
+          resolvedData: resolverFn,
         },
       },
     ]),

@@ -18,18 +18,21 @@
       }
     }
     @default {
-      <div class="value-container">
-        <span>
-          @if (rowValue() && renderValueAsJson()) {
-            {{ rowValue() | json }}
-          } @else {
-            {{ rowValue() || '[empty string] ' }}
-          }</span
-        ><ng-container
-          [ngTemplateOutlet]="actionBtn"
-          [ngTemplateOutletContext]="{ value: rowValue() }"
+      @if (rowValue() && renderValueAsJson()) {
+        <ng-route-data-tree
+          (viewSource)="actionBtnClick.emit($event)"
+          [showViewSourceButton]="actionBtnType() === 'view-source'"
+          [data]="rowValue()"
         />
-      </div>
+      } @else {
+        <div class="value-container">
+          <span> {{ rowValue() || '[empty string] ' }} </span
+          ><ng-container
+            [ngTemplateOutlet]="actionBtn"
+            [ngTemplateOutletContext]="{ value: rowValue() }"
+          />
+        </div>
+      }
     }
   }
 </td>

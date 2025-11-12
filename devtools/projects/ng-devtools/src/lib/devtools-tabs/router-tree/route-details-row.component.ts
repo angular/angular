@@ -7,11 +7,12 @@
  */
 
 import {Component, computed, input, output, ChangeDetectionStrategy} from '@angular/core';
-import {JsonPipe, NgTemplateOutlet} from '@angular/common';
+import {NgTemplateOutlet} from '@angular/common';
 import {MatIcon} from '@angular/material/icon';
 import {ButtonComponent} from '../../shared/button/button.component';
 import {RouterTreeNode} from './router-tree-fns';
 import {MatTooltip} from '@angular/material/tooltip';
+import {RouteDataTreeComponent} from './route-data-tree/route-data-tree.component';
 
 export type RowType = 'text' | 'flag' | 'list';
 export type ActionBtnType = 'none' | 'view-source' | 'navigate';
@@ -20,7 +21,7 @@ export type ActionBtnType = 'none' | 'view-source' | 'navigate';
   selector: '[ng-route-details-row]',
   templateUrl: './route-details-row.component.html',
   styleUrls: ['./route-details-row.component.scss'],
-  imports: [NgTemplateOutlet, ButtonComponent, JsonPipe, MatIcon, MatTooltip],
+  imports: [NgTemplateOutlet, ButtonComponent, MatIcon, MatTooltip, RouteDataTreeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouteDetailsRowComponent {

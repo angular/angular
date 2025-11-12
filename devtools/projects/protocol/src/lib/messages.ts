@@ -323,6 +323,7 @@ export interface Route {
   title?: string;
   children?: Array<Route>;
   data?: any;
+  resolvers?: any;
   path: string;
   component: string;
   redirectTo?: string;
