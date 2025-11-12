@@ -1,9 +1,11 @@
 import {Component, signal} from '@angular/core';
 import {form, Field, required, email, submit} from '@angular/forms/signals';
 
-/**
- * @title Login Form with Validation
- */
+interface LoginData {
+  email: string;
+  password: string;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.html',
@@ -11,7 +13,7 @@ import {form, Field, required, email, submit} from '@angular/forms/signals';
   imports: [Field],
 })
 export class App {
-  loginModel = signal({
+  loginModel = signal<LoginData>({
     email: '',
     password: '',
   });
