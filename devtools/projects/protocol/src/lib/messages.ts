@@ -380,7 +380,7 @@ export interface Events {
   inspectorEnd: () => void;
 
   getSignalGraph: (query: ElementPosition) => void;
-  latestSignalGraph: (graph: DebugSignalGraph) => void;
+  latestSignalGraph: (graph: DebugSignalGraph | null) => void;
 
   getSignalNestedProperties: (position: SignalNodePosition, path: string[]) => void;
   signalNestedProperties: (position: SignalNodePosition, data: Properties, path: string[]) => void;

@@ -59,7 +59,7 @@
     }
   }
 
-  .mat-accordion-content:not(:empty):not(:last-child) {
-    border-bottom: 1px solid var(--color-separator);
+  .mat-accordion-content:not(:empty) {
+    border-top: 1px solid var(--color-separator);
   }
 }
