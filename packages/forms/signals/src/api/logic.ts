@@ -9,7 +9,7 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateMetadataKey, type MetadataSetType} from './metadata';
+import {MetadataKey, type MetadataSetType} from './metadata';
 import type {
   FieldContext,
   FieldValidator,
@@ -157,30 +157,33 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 }
 
 /**
- * Adds a value to an {@link AggregateMetadataKey} of a field.
+ * Sets a value for the {@link MetadataKey} for this field.
  *
- * @param path The target path to set the aggregate metadata on.
- * @param key The aggregate metadata key
- * @param logic A function that receives the `FieldContext` and returns a value to add to the aggregate metadata.
+ * This value is combined via a reduce operation defined by the particular key,
+ * since multiple rules in the schema might set values for it.
+ *
+ * @param path The target path to set the metadata for.
+ * @param key The metadata key
+ * @param logic A function that receives the `FieldContext` and returns a value for the metadata.
  * @template TValue The type of value stored in the field the logic is bound to.
- * @template TMetadataItem The type of value the metadata aggregates over.
+ * @template TKey The type of metadata key.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
  * @experimental 21.0.0
  */
-export function aggregateMetadata<
+export function metadata<
   TValue,
-  TMeta extends AggregateMetadataKey<any, any, any>,
+  TKey extends MetadataKey<any, any, any>,
   TPathKind extends PathKind = PathKind.Root,
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: TMeta,
-  logic: NoInfer<LogicFn<TValue, MetadataSetType<TMeta>, TPathKind>>,
-): TMeta {
+  key: TKey,
+  logic: NoInfer<LogicFn<TValue, MetadataSetType<TKey>, TPathKind>>,
+): TKey {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addAggregateMetadataRule(key, logic);
+  pathNode.builder.addMetadataRule(key, logic);
   return key;
 }

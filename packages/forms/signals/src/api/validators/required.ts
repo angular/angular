@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {aggregateMetadata, validate} from '../logic';
+import {metadata, validate} from '../logic';
 import {overridableMetadataKey, REQUIRED} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {requiredError} from '../validation_errors';
@@ -35,10 +35,10 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = aggregateMetadata(path, overridableMetadataKey<boolean>(), (ctx) =>
+  const REQUIRED_MEMO = metadata(path, overridableMetadataKey<boolean>(), (ctx) =>
     config?.when ? config.when(ctx) : true,
   );
-  aggregateMetadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!()!);
+  metadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!()!);
   validate(path, (ctx) => {
     if (ctx.state.metadata(REQUIRED_MEMO)!() && isEmpty(ctx.value())) {
       if (config?.error) {

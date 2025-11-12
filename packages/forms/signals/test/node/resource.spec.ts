@@ -12,11 +12,11 @@ import {TestBed} from '@angular/core/testing';
 import {isNode} from '@angular/private/testing';
 
 import {
-  aggregateMetadata,
   applyEach,
   applyWhen,
   customError,
   form,
+  metadata,
   required,
   resourceMetadataKey,
   schema,
@@ -64,7 +64,7 @@ describe('resources', () => {
           loader: async ({params}) => `got: ${params.x}`,
         });
       });
-      aggregateMetadata(p.name, RES, ({value}) => ({x: value()}));
+      metadata(p.name, RES, ({value}) => ({x: value()}));
 
       validate(p.name, ({state}) => {
         const remote = state.metadata(RES)!;
@@ -112,7 +112,7 @@ describe('resources', () => {
             loader: async ({params}) => `got: ${params.x}`,
           });
         });
-        aggregateMetadata(p.name, RES, ({value}) => ({x: value()}));
+        metadata(p.name, RES, ({value}) => ({x: value()}));
 
         validate(p.name, ({state}) => {
           const remote = state.metadata(RES)!;

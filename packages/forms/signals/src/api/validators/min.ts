@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {aggregateMetadata, validate} from '../logic';
+import {metadata, validate} from '../logic';
 import {MIN, overridableMetadataKey} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {minError} from '../validation_errors';
@@ -33,10 +33,10 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = aggregateMetadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+  const MIN_MEMO = metadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
     typeof minValue === 'number' ? minValue : minValue(ctx),
   );
-  aggregateMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
+  metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

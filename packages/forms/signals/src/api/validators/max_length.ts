@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {aggregateMetadata, validate} from '../logic';
+import {metadata, validate} from '../logic';
 import {MAX_LENGTH, overridableMetadataKey} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxLengthError} from '../validation_errors';
@@ -43,12 +43,10 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = aggregateMetadata(
-    path,
-    overridableMetadataKey<number | undefined>(),
-    (ctx) => (typeof maxLength === 'number' ? maxLength : maxLength(ctx)),
+  const MAX_LENGTH_MEMO = metadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
   );
-  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

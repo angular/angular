@@ -8,15 +8,7 @@
 
 import {computed, linkedSignal, type Signal, type WritableSignal} from '@angular/core';
 import type {Field} from '../api/field_directive';
-import {
-  AggregateMetadataKey,
-  MAX,
-  MAX_LENGTH,
-  MIN,
-  MIN_LENGTH,
-  PATTERN,
-  REQUIRED,
-} from '../api/metadata';
+import {MAX, MAX_LENGTH, MetadataKey, MIN, MIN_LENGTH, PATTERN, REQUIRED} from '../api/metadata';
 import type {DisabledReason, FieldContext, FieldState, FieldTree} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {LogicNode} from '../schema/logic_node';
@@ -165,7 +157,7 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.name;
   }
 
-  private metadataOrUndefined<M>(key: AggregateMetadataKey<M, any>): Signal<M> | undefined {
+  private metadataOrUndefined<M>(key: MetadataKey<M, any>): Signal<M> | undefined {
     return this.hasMetadata(key) ? this.metadata(key) : undefined;
   }
 
@@ -193,11 +185,11 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataOrUndefined(REQUIRED) ?? FALSE;
   }
 
-  metadata<M>(key: AggregateMetadataKey<any, any, M>): M {
+  metadata<M>(key: MetadataKey<any, any, M>): M {
     return this.metadataState.get(key);
   }
 
-  hasMetadata(key: AggregateMetadataKey<any, any>): boolean {
+  hasMetadata(key: MetadataKey<any, any>): boolean {
     return this.metadataState.has(key);
   }
 

@@ -10,7 +10,7 @@ import {resource, ɵisPromise} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
-import {aggregateMetadata, validateTree} from '../logic';
+import {metadata, validateTree} from '../logic';
 import {overridableMetadataKey} from '../metadata';
 import type {FieldTree, SchemaPath, SchemaPathTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
@@ -66,7 +66,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
   // We memoize the result of the validation function here, so that it is only run once for both
   // validators, it can then be passed through both sync & async validation.
   type Result = StandardSchemaV1.Result<TSchema> | Promise<StandardSchemaV1.Result<TSchema>>;
-  const VALIDATOR_MEMO = aggregateMetadata(
+  const VALIDATOR_MEMO = metadata(
     path as SchemaPath<TModel>,
     overridableMetadataKey<Result>(),
     ({value}) => {

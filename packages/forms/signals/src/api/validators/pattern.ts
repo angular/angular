@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {aggregateMetadata, validate} from '../logic';
+import {metadata, validate} from '../logic';
 import {overridableMetadataKey, PATTERN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {patternError} from '../validation_errors';
@@ -32,12 +32,10 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = aggregateMetadata(
-    path,
-    overridableMetadataKey<RegExp | undefined>(),
-    (ctx) => (pattern instanceof RegExp ? pattern : pattern(ctx)),
+  const PATTERN_MEMO = metadata(path, overridableMetadataKey<RegExp | undefined>(), (ctx) =>
+    pattern instanceof RegExp ? pattern : pattern(ctx),
   );
-  aggregateMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
+  metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

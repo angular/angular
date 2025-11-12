@@ -6,18 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, reducedMetadataKey} from '../api/metadata';
+import {MetadataKey, overridableMetadataKey} from '../api/metadata';
 import {Debouncer} from '../api/types';
 
 /**
- * A private {@link AggregateMetadataKey} used to aggregate `debounce()` rules.
+ * A private {@link MetadataKey} used to aggregate `debounce()` rules.
  *
  * This will pick the last `debounce()` rule on a field that is currently applied, if conditional.
  */
-export const DEBOUNCER: AggregateMetadataKey<
+export const DEBOUNCER: MetadataKey<
   Debouncer<any> | undefined,
   Debouncer<any>
-> = reducedMetadataKey(
-  (_, item) => item,
-  () => undefined,
-);
+> = overridableMetadataKey();

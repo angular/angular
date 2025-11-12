@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateMetadataKey} from '../api/metadata';
+import {MetadataKey} from '../api/metadata';
 import {DisabledReason, type FieldContext, type LogicFn, type SchemaPath} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
@@ -176,15 +176,15 @@ export class ArrayMergeLogic<TElement> extends ArrayMergeIgnoreLogic<TElement, n
   }
 }
 
-/** Logic that combines aggregate metadata according to the keys's own reduce function. */
-export class AggregateMetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
+/** Logic that combines metadata according to the keys's reduce function. */
+export class MetadataMergeLogic<TAcc, TItem> extends AbstractLogic<TAcc, TItem> {
   override get defaultValue() {
     return this.key.getInitial();
   }
 
   constructor(
     predicates: ReadonlyArray<BoundPredicate>,
-    private key: AggregateMetadataKey<TAcc, TItem>,
+    private key: MetadataKey<TAcc, TItem>,
   ) {
     super(predicates);
   }
@@ -258,11 +258,8 @@ export class LogicContainer {
   readonly syncTreeErrors: ArrayMergeIgnoreLogic<ValidationError.WithField, null>;
   /** Logic that produces asynchronous validation results (errors or 'pending'). */
   readonly asyncErrors: ArrayMergeIgnoreLogic<ValidationError.WithField | 'pending', null>;
-  /** A map of aggregate metadata keys to the `AbstractLogic` instances that compute their values. */
-  private readonly aggregateMetadataKeys = new Map<
-    AggregateMetadataKey<unknown, unknown>,
-    AbstractLogic<unknown>
-  >();
+  /** A map of metadata keys to the `AbstractLogic` instances that compute their values. */
+  private readonly metadata = new Map<MetadataKey<unknown, unknown>, AbstractLogic<unknown>>();
 
   /**
    * Constructs a new `Logic` container.
@@ -280,34 +277,32 @@ export class LogicContainer {
     );
   }
 
-  /** Checks whether there is logic for the given aggregate metadata key. */
-  hasAggregateMetadata(key: AggregateMetadataKey<any, any>) {
-    return this.aggregateMetadataKeys.has(key);
+  /** Checks whether there is logic for the given metadata key. */
+  hasMetadata(key: MetadataKey<any, any>) {
+    return this.metadata.has(key);
   }
 
   /**
-   * Gets an iterable of [aggregate metadata, logic function] pairs.
-   * @returns An iterable of aggregate metadata entries.
+   * Gets an iterable of [metadata key, logic function] pairs.
+   * @returns An iterable of metadata entries.
    */
-  getAggregateMetadataEntries() {
-    return this.aggregateMetadataKeys.entries();
+  getMetadataEntries() {
+    return this.metadata.entries();
   }
 
   /**
-   * Retrieves or creates the `AbstractLogic` for a given aggregate metadata key.
-   * @param key The `AggregateMetadataKey` for which to get the logic.
+   * Retrieves or creates the `AbstractLogic` for a given metadata key.
+   * @param key The `MetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
    */
-  getAggregateMetadata<T>(key: AggregateMetadataKey<any, T>): AbstractLogic<T> {
-    if (!this.aggregateMetadataKeys.has(key as AggregateMetadataKey<unknown, unknown>)) {
-      this.aggregateMetadataKeys.set(
-        key as AggregateMetadataKey<unknown, unknown>,
-        new AggregateMetadataMergeLogic(this.predicates, key),
+  getMetadata<T>(key: MetadataKey<any, T>): AbstractLogic<T> {
+    if (!this.metadata.has(key as MetadataKey<unknown, unknown>)) {
+      this.metadata.set(
+        key as MetadataKey<unknown, unknown>,
+        new MetadataMergeLogic(this.predicates, key),
       );
     }
-    return this.aggregateMetadataKeys.get(
-      key as AggregateMetadataKey<unknown, unknown>,
-    )! as AbstractLogic<T>;
+    return this.metadata.get(key as MetadataKey<unknown, unknown>)! as AbstractLogic<T>;
   }
 
   /**
@@ -321,8 +316,8 @@ export class LogicContainer {
     this.syncErrors.mergeIn(other.syncErrors);
     this.syncTreeErrors.mergeIn(other.syncTreeErrors);
     this.asyncErrors.mergeIn(other.asyncErrors);
-    for (const [key, metadataLogic] of other.getAggregateMetadataEntries()) {
-      this.getAggregateMetadata(key).mergeIn(metadataLogic);
+    for (const [key, metadataLogic] of other.getMetadataEntries()) {
+      this.getMetadata(key).mergeIn(metadataLogic);
     }
   }
 }

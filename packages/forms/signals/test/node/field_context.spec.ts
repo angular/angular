@@ -9,10 +9,10 @@
 import {Injector, signal, WritableSignal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
-  aggregateMetadata,
   applyEach,
   FieldContext,
   form,
+  metadata,
   PathKind,
   reducedMetadataKey,
   SchemaPath,
@@ -140,10 +140,10 @@ describe('Field Context', () => {
     const f = form(
       signal({x: [1]}),
       (p) => {
-        aggregateMetadata(p, KEYS, ({pathKeys}) => pathKeys());
-        aggregateMetadata(p.x, KEYS, ({pathKeys}) => pathKeys());
+        metadata(p, KEYS, ({pathKeys}) => pathKeys());
+        metadata(p.x, KEYS, ({pathKeys}) => pathKeys());
         applyEach(p.x, (it) => {
-          aggregateMetadata(it, KEYS, ({pathKeys}) => pathKeys());
+          metadata(it, KEYS, ({pathKeys}) => pathKeys());
         });
       },
       {injector: TestBed.inject(Injector)},
