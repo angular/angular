@@ -7,7 +7,7 @@
  */
 
 import {untracked} from '@angular/core';
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import {AggregateMetadataKey} from '../api/metadata';
 import {DisabledReason, type FieldContext, type LogicFn, type SchemaPath} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import type {FieldNode} from '../field/node';
@@ -263,11 +263,6 @@ export class LogicContainer {
     AggregateMetadataKey<unknown, unknown>,
     AbstractLogic<unknown>
   >();
-  /** A map of metadata keys to the factory functions that create their values. */
-  private readonly metadataFactories = new Map<
-    MetadataKey<unknown>,
-    (ctx: FieldContext<unknown>) => unknown
-  >();
 
   /**
    * Constructs a new `Logic` container.
@@ -299,14 +294,6 @@ export class LogicContainer {
   }
 
   /**
-   * Gets an iterable of [metadata, value factory function] pairs.
-   * @returns An iterable of metadata factory entries.
-   */
-  getMetadataFactoryEntries() {
-    return this.metadataFactories.entries();
-  }
-
-  /**
    * Retrieves or creates the `AbstractLogic` for a given aggregate metadata key.
    * @param key The `AggregateMetadataKey` for which to get the logic.
    * @returns The `AbstractLogic` associated with the key.
@@ -324,20 +311,6 @@ export class LogicContainer {
   }
 
   /**
-   * Adds a factory function for a given metadata key.
-   * @param key The `MetadataKey` to associate the factory with.
-   * @param factory The factory function.
-   * @throws If a factory is already defined for the given key.
-   */
-  addMetadataFactory(key: MetadataKey<unknown>, factory: (ctx: FieldContext<unknown>) => unknown) {
-    if (this.metadataFactories.has(key)) {
-      // TODO: name of the metadata key?
-      throw new Error(`Can't define value twice for the same MetadataKey`);
-    }
-    this.metadataFactories.set(key, factory);
-  }
-
-  /**
    * Merges logic from another `Logic` instance into this one.
    * @param other The `Logic` instance to merge from.
    */
@@ -350,9 +323,6 @@ export class LogicContainer {
     this.asyncErrors.mergeIn(other.asyncErrors);
     for (const [key, metadataLogic] of other.getAggregateMetadataEntries()) {
       this.getAggregateMetadata(key).mergeIn(metadataLogic);
-    }
-    for (const [key, metadataFactory] of other.getMetadataFactoryEntries()) {
-      this.addMetadataFactory(key, metadataFactory);
     }
   }
 }

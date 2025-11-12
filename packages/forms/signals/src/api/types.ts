@@ -9,7 +9,7 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
-import {AggregateMetadataKey, MetadataKey} from './metadata';
+import {AggregateMetadataKey} from './metadata';
 import type {ValidationError} from './validation_errors';
 
 /**
@@ -302,17 +302,6 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * @param key The metadata key to read.
    */
   metadata<M>(key: AggregateMetadataKey<any, any, M>): M;
-
-  /**
-   * Reads a metadata value from the field.
-   * @param key The metadata key to read.
-   */
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-
-  /**
-   * Checks whether the given metadata key has been defined for this field.
-   */
-  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
 
   /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.

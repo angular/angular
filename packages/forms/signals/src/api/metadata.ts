@@ -9,29 +9,6 @@
 import {type ResourceRef, type Signal} from '@angular/core';
 
 /**
- * Represents metadata that may be defined on a field when it is created using a `metadata` rule
- * in the schema. A particular `MetadataKey` can only be defined on a particular field **once**.
- *
- * @category logic
- * @experimental 21.0.0
- */
-export class MetadataKey<TValue> {
-  private brand!: TValue;
-
-  /** Use {@link createMetadataKey}. */
-  private constructor() {}
-}
-
-/**
- * Creates a {@link MetadataKey}.
- *
- * @experimental 21.0.0
- */
-export function createMetadataKey<TValue>(): MetadataKey<TValue> {
-  return new (MetadataKey as new () => MetadataKey<TValue>)();
-}
-
-/**
  * Represents metadata that is aggregated from multiple parts according to the key's reducer
  * function. A value can be contributed to the aggregated value for a field using an
  * `aggregateMetadata` rule in the schema. There may be multiple rules in a schema that contribute

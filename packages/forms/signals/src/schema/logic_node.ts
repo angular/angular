@@ -6,14 +6,8 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
-import type {
-  AsyncValidationResult,
-  DisabledReason,
-  FieldContext,
-  LogicFn,
-  ValidationResult,
-} from '../api/types';
+import {AggregateMetadataKey} from '../api/metadata';
+import type {AsyncValidationResult, DisabledReason, LogicFn, ValidationResult} from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {BoundPredicate, DYNAMIC, LogicContainer, Predicate} from './logic';
@@ -54,8 +48,6 @@ export abstract class AbstractLogicNodeBuilder {
     logic: LogicFn<any, M>,
   ): void;
 
-  /** Adds a factory function to produce a data value associated with a field. */
-  abstract addMetadataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.
@@ -136,13 +128,6 @@ export class LogicNodeBuilder extends AbstractLogicNodeBuilder {
     logic: LogicFn<any, T>,
   ): void {
     this.getCurrent().addAggregateMetadataRule(key, logic);
-  }
-
-  override addMetadataFactory<D>(
-    key: MetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
-    this.getCurrent().addMetadataFactory(key, factory);
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {
@@ -276,13 +261,6 @@ class NonMergeableLogicNodeBuilder extends AbstractLogicNodeBuilder {
     logic: LogicFn<any, T>,
   ): void {
     this.logic.getAggregateMetadata(key).push(setBoundPathDepthForResolution(logic, this.depth));
-  }
-
-  override addMetadataFactory<D>(
-    key: MetadataKey<D>,
-    factory: (ctx: FieldContext<any>) => D,
-  ): void {
-    this.logic.addMetadataFactory(key, setBoundPathDepthForResolution(factory, this.depth));
   }
 
   override getChild(key: PropertyKey): LogicNodeBuilder {

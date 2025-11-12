@@ -12,7 +12,6 @@ import {
   AggregateMetadataKey,
   MAX,
   MAX_LENGTH,
-  MetadataKey,
   MIN,
   MIN_LENGTH,
   PATTERN,
@@ -194,12 +193,11 @@ export class FieldNode implements FieldState<unknown> {
     return this.metadataOrUndefined(REQUIRED) ?? FALSE;
   }
 
-  metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
-  metadata<M>(key: MetadataKey<M>): M | undefined;
-  metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
+  metadata<M>(key: AggregateMetadataKey<any, any, M>): M {
     return this.metadataState.get(key);
   }
-  hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
+
+  hasMetadata(key: AggregateMetadataKey<any, any>): boolean {
     return this.metadataState.has(key);
   }
 
