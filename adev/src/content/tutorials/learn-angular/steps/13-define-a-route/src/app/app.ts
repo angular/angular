@@ -9,7 +9,7 @@ import {RouterOutlet} from '@angular/router';
       |
       <a href="/user">User</a>
     </nav>
-    <router-outlet></router-outlet>
+    <router-outlet />
   `,
   imports: [RouterOutlet],
 })

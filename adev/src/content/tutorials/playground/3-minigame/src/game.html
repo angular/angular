@@ -14,7 +14,7 @@
       <div class="arrow" id="static" #staticArrow>
         <div class="center"></div>
         @if(rotateVal() >= 20) {
-        <div class="svg" [style.transform]="getIndicatorRotation()">
+        <div class="svg" [style.transform]="indicatorRotation()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 75 75">
             <defs>
               <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -24,7 +24,7 @@
               </linearGradient>
             </defs>
             <path
-              [style.stroke-dashoffset]="getIndicatorStyle()"
+              [style.stroke-dashoffset]="indicatorStyle()"
               class="svg-arrow"
               stroke="url(#gradient)"
               d="m64.37,45.4c-3.41,11.62-14.15,20.1-26.87,20.1-15.46,0-28-12.54-28-28s12.54-28,28-28,28,12.54,28,28"
@@ -115,7 +115,7 @@
       </div>
       <div
         class="grabbable"
-        [style.transform]="getRotation()"
+        [style.transform]="rotation()"
         (mousedown)="mouseDown()"
         (touchstart)="mouseDown()"
       >

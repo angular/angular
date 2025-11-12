@@ -60,7 +60,7 @@ These methods read the current cart state using `cartItems()` and update quantit
 <docs-step title="Update the main app component">
 Update the main app component in `app.ts` to use the cart service and display the cart component.
 
-```ts
+```angular-ts
 import {Component, inject} from '@angular/core';
 import {CartStore} from './cart-store';
 import {CartDisplay} from './cart-display';
