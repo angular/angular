@@ -50,7 +50,7 @@ This is the key difference: computed signals are read-only, but linked signals c
 <docs-step title="Update the template to add manual notification control">
 Update your template to add a toggle button for notifications:
 
-```html
+```angular-html
 <div class="status-info">
   <div class="notifications">
     <strong>Notifications:</strong>
