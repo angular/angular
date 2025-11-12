@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MAX} from '../metadata';
-import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../types';
+import {aggregateMetadata, validate} from '../logic';
+import {MAX, overridableMetadataKey} from '../metadata';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -34,8 +33,8 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
+  const MAX_MEMO = aggregateMetadata(path, overridableMetadataKey<number | undefined>(), (ctx) =>
+    typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
   aggregateMetadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());
   validate(path, (ctx) => {

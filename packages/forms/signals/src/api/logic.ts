@@ -9,7 +9,12 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './metadata';
+import {
+  AggregateMetadataKey,
+  createMetadataKey,
+  MetadataKey,
+  type MetadataSetType,
+} from './metadata';
 import type {
   FieldContext,
   FieldValidator,
@@ -171,17 +176,18 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
  */
 export function aggregateMetadata<
   TValue,
-  TMetadataItem,
+  TMeta extends AggregateMetadataKey<any, any, any>,
   TPathKind extends PathKind = PathKind.Root,
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: AggregateMetadataKey<any, TMetadataItem, any>,
-  logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>,
-): void {
+  key: TMeta,
+  logic: NoInfer<LogicFn<TValue, MetadataSetType<TMeta>, TPathKind>>,
+): TMeta {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
   pathNode.builder.addAggregateMetadataRule(key, logic);
+  return key;
 }
 
 /**

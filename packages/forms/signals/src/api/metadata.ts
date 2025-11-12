@@ -50,6 +50,9 @@ export class AggregateMetadataKey<TAcc, TSet, TGet = Signal<TAcc>> {
   ) {}
 }
 
+export type MetadataSetType<TMeta> =
+  TMeta extends AggregateMetadataKey<any, infer TSet, any> ? TSet : never;
+
 /**
  * Creates an {@link AggregateMetadataKey} that reduces its individual values into an accumulated
  * value using the given `reduce` and `getInitial` functions.
@@ -145,6 +148,17 @@ export function andMetadataKey(): AggregateMetadataKey<boolean, boolean> {
   return reducedMetadataKey(
     (prev, next) => prev && next,
     () => true,
+  );
+}
+
+export function overridableMetadataKey<T>(): AggregateMetadataKey<T | undefined, T>;
+export function overridableMetadataKey<T>(getInitial: () => T): AggregateMetadataKey<T, T>;
+export function overridableMetadataKey<T>(
+  getInitial?: () => T,
+): AggregateMetadataKey<T | undefined, T> {
+  return reducedMetadataKey(
+    (_, item) => item,
+    () => getInitial?.(),
   );
 }
 
