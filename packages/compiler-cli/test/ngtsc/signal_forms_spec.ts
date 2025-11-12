@@ -48,7 +48,29 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'null' is not assignable to type 'FieldTree<string, string | number>'.`,
+        `Type 'null' is not assignable to type 'FieldTree<any, string | number>'.`,
+      );
+    });
+
+    it('should check that the field type is correct', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component} from '@angular/core';
+          import {Field} from '@angular/forms/signals';
+
+          @Component({
+            template: '<input field="staticString"/>',
+            imports: [Field]
+          })
+          export class Comp {}
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Type 'string' is not assignable to type 'FieldTree<any, string | number>'.`,
       );
     });
 
@@ -103,9 +125,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
-        `Type 'FieldTree<number, string | number>' is not assignable to type 'FieldTree<string, string | number>'.`,
-      );
+      expect(extractMessage(diags[0])).toBe(`Type 'number' is not assignable to type 'string'.`);
     });
 
     it('should infer the type of the field from the input `type`', () => {
@@ -120,7 +140,7 @@ runInEachFileSystem(() => {
             imports: [Field]
           })
           export class Comp {
-            f = form(signal(null as unknown));
+            f = form(signal({}));
           }
         `,
       );
@@ -128,7 +148,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'FieldTree<unknown, string | number>' is not assignable to type 'FieldTree<string | number | Date | null, string | number>'.`,
+        `Type '{}' is not assignable to type 'string | number | Date | null'.`,
       );
     });
 
@@ -162,7 +182,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'FieldTree<{ name: string; }, string | number>' is not assignable to type 'FieldTree<User, string | number>'.`,
+        `Type '{ name: string; }' is missing the following properties from type 'User': firstName, lastName`,
       );
     });
 
@@ -190,8 +210,39 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(`Type 'string' is not assignable to type 'boolean'.`);
+    });
+
+    it('should infer the type of a generic custom control', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model} from '@angular/core';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          export class CustomControl<T> implements FormValueControl<T> {
+            readonly value = model.required<T>();
+          }
+
+          @Component({
+            template: \`
+              <custom-control [field]="f" #comp/>
+              {{expectsString(comp.value())}}
+            \`,
+            imports: [Field, CustomControl]
+          })
+          export class Comp {
+            f = form(signal(0));
+            expectsString(value: string) {}
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Type 'FieldTree<string, string | number>' is not assignable to type 'FieldTree<boolean, string | number>'.`,
+        `Argument of type 'number' is not assignable to parameter of type 'string'.`,
       );
     });
 
@@ -271,6 +322,36 @@ runInEachFileSystem(() => {
       );
     });
 
+    it('should report unsupported property bindings on a field with a custom control', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal, model, input} from '@angular/core';
+          import {Field, form, FormValueControl} from '@angular/forms/signals';
+
+          @Component({selector: 'custom-control', template: ''})
+          export class CustomControl implements FormValueControl<number> {
+            readonly value = model<number>(0);
+            readonly max = input<number | undefined>(1);
+          }
+
+          @Component({
+            template: '<custom-control [field]="f" [max]="2"/>',
+            imports: [Field, CustomControl]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toBe(
+        `Binding to '[max]' is not allowed on nodes using the '[field]' directive`,
+      );
+    });
+
     it('should allow binding to `value` on radio controls', () => {
       env.write(
         'test.ts',
@@ -347,12 +428,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
-        `Type 'UserControl' is not assignable to type 'FormValueControl<any>'.`,
-      );
-      expect((diags[0].messageText as ts.DiagnosticMessageChain).next?.[0].messageText).toBe(
-        `The types of 'required[SIGNAL].transformFn' are incompatible between these types.`,
-      );
+      expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
     });
 
     it('should check that a custom checkbox control conforms to FormCheckboxControl', () => {
@@ -380,12 +456,7 @@ runInEachFileSystem(() => {
 
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
-      expect(extractMessage(diags[0])).toBe(
-        `Type 'UserControl' is not assignable to type 'FormCheckboxControl'.`,
-      );
-      expect((diags[0].messageText as ts.DiagnosticMessageChain).next?.[0].messageText).toBe(
-        `The types of 'required[SIGNAL].transformFn' are incompatible between these types.`,
-      );
+      expect(extractMessage(diags[0])).toBe(`Type 'boolean' is not assignable to type 'number'.`);
     });
 
     it('should not report `value` as a missing required input when the `Field` directive is present', () => {
