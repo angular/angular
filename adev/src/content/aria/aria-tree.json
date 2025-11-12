@@ -100,7 +100,7 @@
           "jsdocTags": []
         },
         {
-          "name": "value",
+          "name": "values",
           "type": "any",
           "memberType": "property",
           "memberTags": [
@@ -325,14 +325,19 @@
           "name": "V"
         }
       ],
-      "description": "A Tree container.\n\nTransforms nested lists into an accessible, ARIA-compliant tree structure.\n\n```html\n<ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n  <li ngTreeItem [value]=\"'leaf1'\">Leaf Item 1</li>\n  <li ngTreeItem [value]=\"'parent1'\">\n    Parent Item 1\n    <ul ngTreeItemGroup [value]=\"'parent1'\">\n      <ng-template ngTreeItemGroupContent>\n        <li ngTreeItem [value]=\"'child1.1'\">Child Item 1.1</li>\n        <li ngTreeItem [value]=\"'child1.2'\">Child Item 1.2</li>\n      </ng-template>\n    </ul>\n  </li>\n  <li ngTreeItem [value]=\"'leaf2'\" [disabled]=\"true\">Disabled Leaf Item 2</li>\n</ul>\n```",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A Tree container.\n *\n * Transforms nested lists into an accessible, ARIA-compliant tree structure.\n *\n * ```html\n * <ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n *   <li ngTreeItem [value]=\"'leaf1'\">Leaf Item 1</li>\n *   <li ngTreeItem [value]=\"'parent1'\">\n *     Parent Item 1\n *     <ul ngTreeItemGroup [value]=\"'parent1'\">\n *       <ng-template ngTreeItemGroupContent>\n *         <li ngTreeItem [value]=\"'child1.1'\">Child Item 1.1</li>\n *         <li ngTreeItem [value]=\"'child1.2'\">Child Item 1.2</li>\n *       </ng-template>\n *     </ul>\n *   </li>\n *   <li ngTreeItem [value]=\"'leaf2'\" [disabled]=\"true\">Disabled Leaf Item 2</li>\n * </ul>\n * ```\n */",
+      "description": "A Tree container.\n\nTransforms nested lists into an accessible, ARIA-compliant tree structure.\n\n```html\n<ul ngTree [(values)]=\"selectedItems\" [multi]=\"true\">\n  <li ngTreeItem [value]=\"'leaf1'\">Leaf Item 1</li>\n  <li ngTreeItem [value]=\"'parent1'\">\n    Parent Item 1\n    <ul ngTreeItemGroup [value]=\"'parent1'\">\n      <ng-template ngTreeItemGroupContent>\n        <li ngTreeItem [value]=\"'child1.1'\">Child Item 1.1</li>\n        <li ngTreeItem [value]=\"'child1.2'\">Child Item 1.2</li>\n      </ng-template>\n    </ul>\n  </li>\n  <li ngTreeItem [value]=\"'leaf2'\" [disabled]=\"true\">Disabled Leaf Item 2</li>\n</ul>\n```",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A Tree container.\n *\n * Transforms nested lists into an accessible, ARIA-compliant tree structure.\n *\n * ```html\n * <ul ngTree [(values)]=\"selectedItems\" [multi]=\"true\">\n *   <li ngTreeItem [value]=\"'leaf1'\">Leaf Item 1</li>\n *   <li ngTreeItem [value]=\"'parent1'\">\n *     Parent Item 1\n *     <ul ngTreeItemGroup [value]=\"'parent1'\">\n *       <ng-template ngTreeItemGroupContent>\n *         <li ngTreeItem [value]=\"'child1.1'\">Child Item 1.1</li>\n *         <li ngTreeItem [value]=\"'child1.2'\">Child Item 1.2</li>\n *       </ng-template>\n *     </ul>\n *   </li>\n *   <li ngTreeItem [value]=\"'leaf2'\" [disabled]=\"true\">Disabled Leaf Item 2</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 70,
-        "endLine": 213
+        "startLine": 72,
+        "endLine": 215
       }
     },
     {
@@ -433,6 +438,56 @@
             "readonly"
           ],
           "description": "The tree root.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the item is active.",
+          "jsdocTags": []
+        },
+        {
+          "name": "expanded",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether this item is currently expanded, returning null if not expandable.",
+          "jsdocTags": []
+        },
+        {
+          "name": "level",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "The level of the current item in a tree.",
+          "jsdocTags": []
+        },
+        {
+          "name": "selected",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the item is selected.",
+          "jsdocTags": []
+        },
+        {
+          "name": "visible",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether this item is visible due to all of its parents being expanded.",
           "jsdocTags": []
         },
         {
@@ -590,8 +645,13 @@
         }
       ],
       "description": "A selectable and expandable Tree Item in a Tree.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A selectable and expandable Tree Item in a Tree.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A selectable and expandable Tree Item in a Tree.\n *\n * @developerPreview 21.0\n */",
       "extends": "DeferredContentAware",
       "implements": [
         "OnInit",
@@ -605,8 +665,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 218,
-        "endLine": 326
+        "startLine": 222,
+        "endLine": 347
       }
     },
     {
@@ -805,16 +865,21 @@
         }
       ],
       "description": "Contains children tree itmes.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Contains children tree itmes.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * Contains children tree itmes.\n *\n * @developerPreview 21.0\n */",
       "implements": [
         "OnInit",
         "OnDestroy"
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 331,
-        "endLine": 369
+        "startLine": 354,
+        "endLine": 392
       }
     }
   ],
@@ -956,7 +1021,7 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree.value",
+      "Tree.values",
       "@angular/aria/tree"
     ],
     [
@@ -1021,6 +1086,26 @@
     ],
     [
       "TreeItem.tree",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.active",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.expanded",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.level",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.selected",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItem.visible",
       "@angular/aria/tree"
     ],
     [

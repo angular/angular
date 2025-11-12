@@ -10,11 +10,21 @@
       "entryType": "undecorated_class",
       "members": [
         {
-          "name": "value",
+          "name": "panelId",
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "A local unique identifier for the panel, used to match with its trigger's value.",
+          "description": "A local unique identifier for the panel, used to match with its trigger's `panelId`.",
+          "jsdocTags": []
+        },
+        {
+          "name": "visible",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the accordion panel is visible. True if the associated trigger is expanded.",
           "jsdocTags": []
         },
         {
@@ -26,17 +36,121 @@
           ],
           "description": "The parent accordion trigger pattern that controls this panel. This is set by AccordionGroup.",
           "jsdocTags": []
+        },
+        {
+          "name": "expand",
+          "signatures": [
+            {
+              "name": "expand",
+              "entryType": "function",
+              "description": "Expands this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Expands this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "expand",
+            "description": "Expands this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Expands this item. */"
+          },
+          "entryType": "function",
+          "description": "Expands this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Expands this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "collapse",
+          "signatures": [
+            {
+              "name": "collapse",
+              "entryType": "function",
+              "description": "Collapses this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Collapses this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "collapse",
+            "description": "Collapses this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Collapses this item. */"
+          },
+          "entryType": "function",
+          "description": "Collapses this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Collapses this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "toggle",
+          "signatures": [
+            {
+              "name": "toggle",
+              "entryType": "function",
+              "description": "Toggles the expansion state of this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Toggles the expansion state of this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "toggle",
+            "description": "Toggles the expansion state of this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Toggles the expansion state of this item. */"
+          },
+          "entryType": "function",
+          "description": "Toggles the expansion state of this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Toggles the expansion state of this item. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [],
       "description": "Represents the content panel of an accordion item. It is controlled by an\nassociated `AccordionTrigger`.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Represents the content panel of an accordion item. It is controlled by an\n * associated `AccordionTrigger`.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * Represents the content panel of an accordion item. It is controlled by an\n * associated `AccordionTrigger`.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 36,
-        "endLine": 80
+        "startLine": 38,
+        "endLine": 100
       }
     },
     {
@@ -45,15 +159,15 @@
       "entryType": "directive",
       "members": [
         {
-          "name": "value",
+          "name": "panelId",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "input"
           ],
-          "description": "A local unique identifier for the trigger, used to match with its panel's value.",
+          "description": "A local unique identifier for the trigger, used to match with its panel's `panelId`.",
           "jsdocTags": [],
-          "inputAlias": "value",
+          "inputAlias": "panelId",
           "isRequiredInput": true
         },
         {
@@ -67,6 +181,26 @@
           "jsdocTags": [],
           "inputAlias": "disabled",
           "isRequiredInput": false
+        },
+        {
+          "name": "active",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the trigger is active.",
+          "jsdocTags": []
+        },
+        {
+          "name": "expanded",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the trigger is expanded.",
+          "jsdocTags": []
         },
         {
           "name": "hardDisabled",
@@ -87,12 +221,116 @@
           ],
           "description": "The accordion panel pattern controlled by this trigger. This is set by AccordionGroup.",
           "jsdocTags": []
+        },
+        {
+          "name": "expand",
+          "signatures": [
+            {
+              "name": "expand",
+              "entryType": "function",
+              "description": "Expands this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Expands this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "expand",
+            "description": "Expands this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Expands this item. */"
+          },
+          "entryType": "function",
+          "description": "Expands this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Expands this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "collapse",
+          "signatures": [
+            {
+              "name": "collapse",
+              "entryType": "function",
+              "description": "Collapses this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Collapses this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "collapse",
+            "description": "Collapses this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Collapses this item. */"
+          },
+          "entryType": "function",
+          "description": "Collapses this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Collapses this item. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "toggle",
+          "signatures": [
+            {
+              "name": "toggle",
+              "entryType": "function",
+              "description": "Toggles the expansion state of this item.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Toggles the expansion state of this item. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "toggle",
+            "description": "Toggles the expansion state of this item.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Toggles the expansion state of this item. */"
+          },
+          "entryType": "function",
+          "description": "Toggles the expansion state of this item.",
+          "jsdocTags": [],
+          "rawComment": "/** Toggles the expansion state of this item. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [],
       "description": "Represents the trigger button for an accordion item. It controls the expansion\nstate of an associated `AccordionPanel`.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Represents the trigger button for an accordion item. It controls the expansion\n * state of an associated `AccordionPanel`.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * Represents the trigger button for an accordion item. It controls the expansion\n * state of an associated `AccordionPanel`.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngAccordionTrigger]",
@@ -101,8 +339,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 86,
-        "endLine": 139
+        "startLine": 108,
+        "endLine": 182
       }
     },
     {
@@ -145,18 +383,18 @@
           "isRequiredInput": false
         },
         {
-          "name": "value",
+          "name": "expandedPanels",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "input",
             "output"
           ],
-          "description": "The values of the current selected/expanded accordions.",
+          "description": "The ids of the current expanded accordion panels.",
           "jsdocTags": [],
-          "inputAlias": "value",
+          "inputAlias": "expandedPanels",
           "isRequiredInput": false,
-          "outputAlias": "valueChange"
+          "outputAlias": "expandedPanelsChange"
         },
         {
           "name": "softDisabled",
@@ -181,12 +419,83 @@
           "jsdocTags": [],
           "inputAlias": "wrap",
           "isRequiredInput": false
+        },
+        {
+          "name": "expandAll",
+          "signatures": [
+            {
+              "name": "expandAll",
+              "entryType": "function",
+              "description": "Expands all accordion panels if multi-expandable.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Expands all accordion panels if multi-expandable. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "expandAll",
+            "description": "Expands all accordion panels if multi-expandable.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Expands all accordion panels if multi-expandable. */"
+          },
+          "entryType": "function",
+          "description": "Expands all accordion panels if multi-expandable.",
+          "jsdocTags": [],
+          "rawComment": "/** Expands all accordion panels if multi-expandable. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "collapseAll",
+          "signatures": [
+            {
+              "name": "collapseAll",
+              "entryType": "function",
+              "description": "Collapses all accordion panels.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Collapses all accordion panels. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "collapseAll",
+            "description": "Collapses all accordion panels.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Collapses all accordion panels. */"
+          },
+          "entryType": "function",
+          "description": "Collapses all accordion panels.",
+          "jsdocTags": [],
+          "rawComment": "/** Collapses all accordion panels. */",
+          "memberType": "method",
+          "memberTags": []
         }
       ],
       "generics": [],
       "description": "Container for a group of accordion items. It manages the overall state and\ninteractions of the accordion, such as keyboard navigation and expansion mode.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * Container for a group of accordion items. It manages the overall state and\n * interactions of the accordion, such as keyboard navigation and expansion mode.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * Container for a group of accordion items. It manages the overall state and\n * interactions of the accordion, such as keyboard navigation and expansion mode.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngAccordionGroup]",
@@ -195,8 +504,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 145,
-        "endLine": 208
+        "startLine": 190,
+        "endLine": 263
       }
     },
     {
@@ -206,13 +515,18 @@
       "members": [],
       "generics": [],
       "description": "A structural directive that marks the `ng-template` to be used as the content\nfor a `AccordionPanel`. This content can be lazily loaded.",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A structural directive that marks the `ng-template` to be used as the content\n * for a `AccordionPanel`. This content can be lazily loaded.\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A structural directive that marks the `ng-template` to be used as the content\n * for a `AccordionPanel`. This content can be lazily loaded.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 214,
-        "endLine": 218
+        "startLine": 271,
+        "endLine": 275
       }
     }
   ],
@@ -310,7 +624,11 @@
       "@angular/aria/accordion"
     ],
     [
-      "AccordionPanel.value",
+      "AccordionPanel.panelId",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionPanel.visible",
       "@angular/aria/accordion"
     ],
     [
@@ -318,15 +636,35 @@
       "@angular/aria/accordion"
     ],
     [
+      "AccordionPanel.expand",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionPanel.collapse",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionPanel.toggle",
+      "@angular/aria/accordion"
+    ],
+    [
       "AccordionTrigger",
       "@angular/aria/accordion"
     ],
     [
-      "AccordionTrigger.value",
+      "AccordionTrigger.panelId",
       "@angular/aria/accordion"
     ],
     [
       "AccordionTrigger.disabled",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.active",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.expanded",
       "@angular/aria/accordion"
     ],
     [
@@ -335,6 +673,18 @@
     ],
     [
       "AccordionTrigger.accordionPanel",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.expand",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.collapse",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionTrigger.toggle",
       "@angular/aria/accordion"
     ],
     [
@@ -354,7 +704,7 @@
       "@angular/aria/accordion"
     ],
     [
-      "AccordionGroup.value",
+      "AccordionGroup.expandedPanels",
       "@angular/aria/accordion"
     ],
     [
@@ -363,6 +713,14 @@
     ],
     [
       "AccordionGroup.wrap",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionGroup.expandAll",
+      "@angular/aria/accordion"
+    ],
+    [
+      "AccordionGroup.collapseAll",
       "@angular/aria/accordion"
     ],
     [
