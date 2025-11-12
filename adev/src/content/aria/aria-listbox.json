@@ -112,7 +112,7 @@
           "jsdocTags": []
         },
         {
-          "name": "value",
+          "name": "values",
           "type": "any",
           "memberType": "property",
           "memberTags": [],
@@ -241,13 +241,18 @@
         }
       ],
       "description": "A listbox container.\n\nListboxes are used to display a list of items for a user to select from. The Listbox is meant\nto be used in conjunction with Option as follows:\n\n```html\n<ul ngListbox>\n  <li [value]=\"1\" ngOption>Item 1</li>\n  <li [value]=\"2\" ngOption>Item 2</li>\n  <li [value]=\"3\" ngOption>Item 3</li>\n</ul>\n```",
-      "jsdocTags": [],
-      "rawComment": "/**\n * A listbox container.\n *\n * Listboxes are used to display a list of items for a user to select from. The Listbox is meant\n * to be used in conjunction with Option as follows:\n *\n * ```html\n * <ul ngListbox>\n *   <li [value]=\"1\" ngOption>Item 1</li>\n *   <li [value]=\"2\" ngOption>Item 2</li>\n *   <li [value]=\"3\" ngOption>Item 3</li>\n * </ul>\n * ```\n */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A listbox container.\n *\n * Listboxes are used to display a list of items for a user to select from. The Listbox is meant\n * to be used in conjunction with Option as follows:\n *\n * ```html\n * <ul ngListbox>\n *   <li [value]=\"1\" ngOption>Item 1</li>\n *   <li [value]=\"2\" ngOption>Item 2</li>\n *   <li [value]=\"3\" ngOption>Item 3</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 42,
-        "endLine": 195
+        "startLine": 44,
+        "endLine": 197
       }
     },
     {
@@ -348,8 +353,13 @@
         }
       ],
       "description": "A selectable option in a Listbox.",
-      "jsdocTags": [],
-      "rawComment": "/** A selectable option in a Listbox. */",
+      "jsdocTags": [
+        {
+          "name": "developerPreview",
+          "comment": "21.0"
+        }
+      ],
+      "rawComment": "/**\n * A selectable option in a Listbox.\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngOption]",
@@ -358,8 +368,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 198,
-        "endLine": 257
+        "startLine": 204,
+        "endLine": 263
       }
     }
   ],
@@ -493,7 +503,7 @@
       "@angular/aria/listbox"
     ],
     [
-      "Listbox.value",
+      "Listbox.values",
       "@angular/aria/listbox"
     ],
     [
