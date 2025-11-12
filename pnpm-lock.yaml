@@ -10,7 +10,7 @@ overrides:
 
 packageExtensionsChecksum: sha256-3L73Fw32UVtE6x5BJxJPBtQtH/mgsr31grNpdhHP1IY=
 
-pnpmfileChecksum: sha256-vPvk/mBsTHwJvR6NXsWAPUB+5p/66ODkNQwJchPTYMM=
+pnpmfileChecksum: sha256-TYPFsbGgXlr65uhno3A1oHE+n2qqt8R+w/szQ+Wq97s=
 
 patchedDependencies:
   dagre-d3-es:

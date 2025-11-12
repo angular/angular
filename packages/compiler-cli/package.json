@@ -39,6 +39,9 @@
     "tslib": "^2.3.0",
     "yargs": "^18.0.0"
   },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "typescript": ">=5.9 <6.0"

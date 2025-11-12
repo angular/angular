@@ -1,5 +1,5 @@
 // TODO: Define these packages in a single common location.
-const localAngularPackages = [
+const localAngularPackages = new Set([
   '@angular/animations',
   '@angular/common',
   '@angular/compiler',
@@ -15,7 +15,9 @@ const localAngularPackages = [
   '@angular/router',
   '@angular/service-worker',
   '@angular/upgrade',
-];
+]);
+
+const peerDepsToChange = new Set(['zone.js', 'rxjs']);
 
 function readPackage(pkg, context) {
   // TODO(devversion): This allows us to make compiler/TS a production dependency of compiler-cli
@@ -25,31 +27,38 @@ function readPackage(pkg, context) {
     pkg.dependencies = {
       ...pkg.dependencies,
       '@angular/compiler': 'workspace:*',
-      'typescript': '5.9.3',
+      'typescript': pkg.devDependencies['typescript'],
     };
+
+    delete pkg.devDependencies['typescript'];
   }
 
-  Object.entries(pkg.peerDependencies).forEach(([key, version]) => {
+  for (const [key, version] of Object.entries(pkg.peerDependencies)) {
     // Any package that has a peerDependency on rxjs or zone.js, should instead treat the peerDependency as a
     // regular dependency.
-    if (['rxjs', 'zone.js'].includes(key)) {
+    if (peerDepsToChange.has(key)) {
       pkg.dependencies = {
         ...pkg.dependencies,
-        [key]: version,
+        [key]: pkg.devDependencies[key] ?? version,
       };
+
+      delete pkg.devDependencies[key];
+
+      continue;
     }
 
     // Change all locally generated packages to directly depend on the other local packages, instead
     // of expecting them as peerDependencies automatically as we do not auto install peer deps. The
     // package is also removed from peerDependencies as it was moved over and will just cause errors.
-    if (localAngularPackages.includes(key) && pkg.version === '0.0.0-PLACEHOLDER') {
+    if (pkg.version === '0.0.0-PLACEHOLDER' && localAngularPackages.has(key)) {
       pkg.dependencies = {
         ...pkg.dependencies,
         [key]: 'workspace: *',
       };
+
       delete pkg.peerDependencies[key];
     }
-  });
+  }
 
   return pkg;
 }
