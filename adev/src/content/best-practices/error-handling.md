@@ -8,7 +8,7 @@ For example, consider a component that fetches user data from an API. The code r
 
 ## Unhandled errors are reported to the `ErrorHandler`
 
-Angular reports unhandled errors to the application's root [ErrorHandler](api/core/ErrorHandler). When providing a custom `ErrorHandler`, provide it in your `ApplicationConfig` as part of calling `bootstrapApplication`.
+Angular reports unhandled errors to the application's root `ErrorHandler`. When providing a custom `ErrorHandler`, provide it in your `ApplicationConfig` as part of calling `bootstrapApplication`.
 
 When building an Angular application, often you write code that is called automatically _by_ the framework. For example, Angular is responsible for calling a component's constructor and lifecycle methods when that component appears in a template. When the framework runs your code, there's nowhere you could reasonably add a `try` block to gracefully handle errors. In situations like this, Angular catches errors and sends them to the `ErrorHandler`.
 
