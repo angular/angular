@@ -13,7 +13,6 @@ import {MatIcon} from '@angular/material/icon';
 import {IndexedNode} from '../../directive-forest/index-forest';
 import {ComponentMetadataComponent} from './component-metadata/component-metadata.component';
 import {ButtonComponent} from '../../../../shared/button/button.component';
-import {Settings} from '../../../../application-services/settings';
 import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
 
 @Component({
@@ -24,7 +23,6 @@ import {SUPPORTED_APIS} from '../../../../application-providers/supported_apis';
   imports: [MatExpansionModule, MatIcon, ComponentMetadataComponent, ButtonComponent],
 })
 export class PropertyTabHeaderComponent {
-  private readonly settings = inject(Settings);
   private readonly supportedApis = inject(SUPPORTED_APIS);
 
   protected readonly currentSelectedElement = input.required<IndexedNode>();

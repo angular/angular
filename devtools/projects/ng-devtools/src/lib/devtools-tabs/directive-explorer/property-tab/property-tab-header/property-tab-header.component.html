@@ -4,7 +4,7 @@
     <mat-expansion-panel [hideToggle]="true" [expanded]="expanded()" disabled>
       <mat-expansion-panel-header collapsedHeight="32px" expandedHeight="32px">
         <mat-panel-title>
-          <div class="element-header">
+          <div class="node-header">
             <button
               class="component-name"
               (click)="expanded.set(!expanded())"
@@ -31,18 +31,7 @@
     </mat-expansion-panel>
   </mat-accordion>
 } @else {
-  <div class="element-header">
-    <div class="element-name">{{ currentSelectedElement().element }}</div>
-    @if (signalGraphEnabled()) {
-      <button
-        ng-button
-        type="button"
-        class="signal-btn"
-        size="compact"
-        (click)="showSignalGraph.emit()"
-      >
-        Show Signal Graph
-      </button>
-    }
+  <div class="node-header">
+    <div class="non-component-name">{{ currentSelectedElement().element }}</div>
   </div>
 }

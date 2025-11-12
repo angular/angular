@@ -654,12 +654,14 @@ const getSignalGraphCallback = (messageBus: MessageBus<Events>) => (element: Ele
     initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest(),
   );
   if (!node) {
+    messageBus.emit('latestSignalGraph', [null]);
     return;
   }
 
   const injector = getInjectorFromElementNode(node.nativeElement!);
 
   if (!injector) {
+    messageBus.emit('latestSignalGraph', [null]);
     return;
   }
 

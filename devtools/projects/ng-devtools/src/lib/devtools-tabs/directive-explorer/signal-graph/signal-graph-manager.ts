@@ -29,8 +29,9 @@ export class SignalGraphManager {
   constructor() {
     this.lastesSignalGraphMessageUnlistenFn = this.messageBus.on(
       'latestSignalGraph',
-      (graph: DebugSignalGraph) => {
-        this.signalGraph.set(graph);
+      (graph: DebugSignalGraph | null) => {
+        // TODO(hawkgs): Drop logical or after/in resource viz PR.
+        this.signalGraph.set(graph || {nodes: [], edges: []});
       },
     );
   }
