@@ -10,10 +10,15 @@ This guide walks you through the core concepts to create forms with Signal Forms
 
 ### 1. Create a form model
 
-When you create a form, you start by creating a signal that holds your form's data:
+Every form starts by creating a signal that holds your form's data model:
 
 ```ts
-const loginModel = signal({
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+const loginModel = signal<LoginData>({
   email: '',
   password: '',
 });
@@ -197,7 +202,7 @@ NOTE: Multiple select (`<select multiple>`) is not supported by the `[field]` di
 
 ## Validation and state
 
-Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`. This function receives a **field path** parameter that allows you to reference the fields in your form model:
+Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`. This function receives a **FieldPath** parameter that allows you to reference the fields in your form model:
 
 ```ts
 const loginForm = form(loginModel, (fieldPath) => {
@@ -205,6 +210,8 @@ const loginForm = form(loginModel, (fieldPath) => {
   email(fieldPath.email);
 });
 ```
+
+NOTE: FieldPath only mirrors the shape of your data and does not allow you to access value or any other state.
 
 Common validators include:
 
