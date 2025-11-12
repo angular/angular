@@ -19,15 +19,15 @@ In the **Terminal** pane of your IDE:
 
 1. Run this command to create a new `HousingLocation`
 
-<docs-code language="shell">
-ng generate component housingLocation
-</docs-code>
+   ```shell
+   ng generate component housingLocation
+   ```
 
 1. Run this command to build and serve your app.
 
-   <docs-code language="shell">
+   ```shell
    ng serve
-   </docs-code>
+   ```
 
    NOTE: This step is only for your local environment!
 
@@ -51,11 +51,11 @@ In the **Edit** pane of your IDE:
 
 1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocation` to the array.
 
-<docs-code header="Add HousingLocation to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
+<docs-code  header="Add HousingLocation to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
 
 1. Now the component is ready for use in the template for the `Home`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location>` tag.
 
-<docs-code header="Add housing location to the component template in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[7,17]"/>
+<docs-code language="angular-ts" header="Add housing location to the component template in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[7,17]"/>
 
 </docs-step>
 

@@ -29,11 +29,11 @@ In the **Terminal** pane of your IDE:
 1. In your project directory, navigate to the `first-app` directory.
 1. In the `first-app` directory, run this command to create the new interface.
 
-   <docs-code language="shell">
+   ```shell
 
    ng generate interface housinglocation
 
-   </docs-code>
+   ```
 
 1. Run `ng serve` to build the app and serve it to `http://localhost:4200`.
 1. In a browser, open `http://localhost:4200` to see your app.
@@ -66,15 +66,15 @@ There are a few more lessons to complete before that happens.
 1. In the **Edit** pane of your IDE, open `src/app/home/home.ts`.
 1. In `src/app/home/home.ts`, add this import statement after the existing `import` statements so that `Home` can use the new interface.
 
-<docs-code header="Import Home in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[3]"/>
+<docs-code language="angular-ts" header="Import Home in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[3]"/>
 
 1. In `src/app/home/home.ts`, replace the empty `export class Home {}` definition with this code to create a single instance of the new interface in the component.
 
-<docs-code header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
+<docs-code language="angular-ts" header="Add sample data to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[22,35]"/>
 
 1. Confirm that your `home.ts` file matches this example.
 
-   <docs-code header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[[1,7],[9,36]]" />
+   <docs-code language="angular-ts" header="src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/05-inputs/src/app/home/home.ts" visibleLines="[[1,7],[9,36]]" />
 
    By adding the `housingLocation` property of type `HousingLocation` to the `Home` class, we're able to confirm that the data matches the description of the interface. If the data didn't satisfy the description of the interface, the IDE has enough information to give us helpful errors.
 
