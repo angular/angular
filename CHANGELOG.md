@@ -1,3 +1,57 @@
+<a name="21.0.0-rc.2"></a>
+
+# 21.0.0-rc.2 (2025-11-12)
+
+### common
+
+| Commit                                                                                           | Type | Description                                             |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------- |
+| [ab98e71c41](https://github.com/angular/angular/commit/ab98e71c413928dbc75703e3de3131cf93100837) | fix  | remove placeholder image listeners once view is removed |
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                        |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------- |
+| [f54cc4f28a](https://github.com/angular/angular/commit/f54cc4f28abb9ded190ae33619e5ca7073df08a6) | fix  | support commas in :host() argument                 |
+| [814b2713f5](https://github.com/angular/angular/commit/814b2713f56f94372db7e15e0a86f089a88f888d) | fix  | support complex selectors in :nth-child()          |
+| [aad6ced0ef](https://github.com/angular/angular/commit/aad6ced0ef5e535d1a6eae7c79df4e03ea73b7f2) | fix  | support one additional level of nesting in :host() |
+
+### compiler-cli
+
+| Commit                                                                                           | Type | Description                                                                 |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------------------------- |
+| [5b55200edf](https://github.com/angular/angular/commit/5b55200edfd12fa7dcdb6570885e0c52a9cc5ec0) | fix  | allow value to be set on radio fields                                       |
+| [bd322ca410](https://github.com/angular/angular/commit/bd322ca4100c8e51df7c71377161c2c9412d1b83) | fix  | do not flag custom control required inputs as missing when field is present |
+| [71ab11ccf0](https://github.com/angular/angular/commit/71ab11ccf0f0daaffb49779d5f90b9e2da76dbd5) | fix  | make field detection logic more robust                                      |
+| [01290ab275](https://github.com/angular/angular/commit/01290ab275599ee6887f9c2139a16f833eaa7071) | fix  | use any when checking field interface conformance                           |
+
+### core
+
+| Commit                                                                                           | Type | Description                                                 |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------- |
+| [c9f977833e](https://github.com/angular/angular/commit/c9f977833ebed6f89afd38f65c03e9b3808f2b07) | fix  | skip Angular formatting when formatting signals recursively |
+
+### forms
+
+| Commit                                                                                           | Type | Description                                           |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------- |
+| [a278ee358c](https://github.com/angular/angular/commit/a278ee358c4d111cf29eb8d3d8eb1fe1799c8495) | feat | add `debounce()` rule for signal forms                |
+| [781a3299f9](https://github.com/angular/angular/commit/781a3299f9e16e16902f12f7e7c80c10f15f788a) | perf | only update interop controls when bound field changes |
+
+### language-server
+
+| Commit                                                                                           | Type | Description                       |
+| ------------------------------------------------------------------------------------------------ | ---- | --------------------------------- |
+| [3f7111a9c3](https://github.com/angular/angular/commit/3f7111a9c38c6fd00af705a3045f2909f47b505b) | fix  | fix directory renaming on Windows |
+
+### language-service
+
+| Commit                                                                                           | Type | Description                                           |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------- |
+| [89095946cf](https://github.com/angular/angular/commit/89095946cff051c5613b8f54ec722d08cd47c709) | fix  | address potential memory leak during project creation |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-rc.1"></a>
 
 # 21.0.0-rc.1 (2025-11-05)
