@@ -1,3 +1,30 @@
+<a name="20.3.11"></a>
+
+# 20.3.11 (2025-11-12)
+
+### common
+
+| Commit                                                                                           | Type | Description                                             |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------------------- |
+| [5047849a4a](https://github.com/angular/angular/commit/5047849a4a1857471b78b7ba874f39ecd6175a6b) | fix  | remove placeholder image listeners once view is removed |
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                        |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------------------- |
+| [f9d0818087](https://github.com/angular/angular/commit/f9d08180876eb0aee5e5c489be734b07a7cc664e) | fix  | support arbitrary nesting in :host-context()       |
+| [106b9040df](https://github.com/angular/angular/commit/106b9040dfe03bd8deb0eabccc29e07f734b6ab5) | fix  | support commas in :host() argument                 |
+| [9419ea348a](https://github.com/angular/angular/commit/9419ea348a296b50f13ac2e23ea9a00b336989b8) | fix  | support complex selectors in :nth-child()          |
+| [036c5d2a07](https://github.com/angular/angular/commit/036c5d2a073f8e48704ec0d405ca997eedb721e9) | fix  | support one additional level of nesting in :host() |
+
+### core
+
+| Commit                                                                                           | Type | Description                         |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------- |
+| [dcdd1bcdbb](https://github.com/angular/angular/commit/dcdd1bcdbbd2a2fb4bd1fc4330259824d0bc8cb9) | fix  | skip leave animations on view swaps |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.10"></a>
 
 # 20.3.10 (2025-11-05)
