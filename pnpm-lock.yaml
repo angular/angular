@@ -23,7 +23,7 @@ importers:
     dependencies:
       '@angular-devkit/build-angular':
         specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(86198432c639ec215851b1e02ea0a2fc)
+        version: 21.0.0-rc.1(9a9e18d0e47298696abdb5fc0d32b3dc)
       '@angular-devkit/core':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(chokidar@4.0.3)
@@ -38,7 +38,7 @@ importers:
         version: link:packages/benchpress
       '@angular/build':
         specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -359,8 +359,8 @@ importers:
         specifier: 0.2100.0-rc.1
         version: 0.2100.0-rc.1(chokidar@4.0.3)
       '@angular/ng-dev':
-        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#308cdfc2c5fb51ccb998ed7afca314da3ba49f14
-        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/308cdfc2c5fb51ccb998ed7afca314da3ba49f14(@modelcontextprotocol/sdk@1.21.1)
+        specifier: https://github.com/angular/dev-infra-private-ng-dev-builds.git#58db89e9679349076ef973b2f2e64d0c808edffa
+        version: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/58db89e9679349076ef973b2f2e64d0c808edffa(@modelcontextprotocol/sdk@1.21.1)
       '@babel/plugin-proposal-async-generator-functions':
         specifier: 7.20.7
         version: 7.20.7(@babel/core@7.28.4)
@@ -522,7 +522,7 @@ importers:
         version: 21.0.0-rc.1(@angular/cdk@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2))(@angular/core@packages+core)
       '@angular/build':
         specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/cdk':
         specifier: 21.0.0-rc.1
         version: 21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(rxjs@7.8.2)
@@ -856,7 +856,7 @@ importers:
         version: link:../packages/benchpress
       '@angular/build':
         specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../packages/common
@@ -940,7 +940,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^21.0.0-next
-        version: 21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)
+        version: 21.0.0-rc.1(@angular/compiler@packages+compiler)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -1027,7 +1027,7 @@ importers:
         version: link:../../../animations
       '@angular/build':
         specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.0)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+        version: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.0)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/common':
         specifier: workspace:*
         version: link:../../../common
@@ -1372,24 +1372,24 @@ importers:
   vscode-ng-language-service/integration/project:
     dependencies:
       '@angular/common':
-        specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/core@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1))(rxjs@7.8.2)
+        specifier: 21.0.0-rc.2
+        version: 21.0.0-rc.2(@angular/core@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/compiler':
-        specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1
+        specifier: 21.0.0-rc.2
+        version: 21.0.0-rc.2
       '@angular/compiler-cli':
-        specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)(typescript@5.9.3)
+        specifier: 21.0.0-rc.2
+        version: 21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(typescript@5.9.3)
       '@angular/core':
-        specifier: 21.0.0-rc.1
-        version: 21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)
+        specifier: 21.0.0-rc.2
+        version: 21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(rxjs@7.8.2)
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
     devDependencies:
       ng-packagr:
-        specifier: 21.0.0-rc.0
-        version: 21.0.0-rc.0(@angular/compiler-cli@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+        specifier: 21.0.0-rc.1
+        version: 21.0.0-rc.1(@angular/compiler-cli@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -1710,26 +1710,26 @@ packages:
     peerDependencies:
       '@angular/core': 18.2.10
 
-  '@angular/common@21.0.0-rc.1':
-    resolution: {integrity: sha512-CDOqiXAOGt8owBKOWXnvcmt1ZhKgEybgWTn44cLFPdFK13l6ial09R5dDe+tqKAT2FOwB0AXpB9My3jEn3FHCA==}
+  '@angular/common@21.0.0-rc.2':
+    resolution: {integrity: sha512-NAu9v3CPxkGHoZvvauywNlr0mPa7WBtyvS03WJlBD6vijruBdbmB5ey9CKTAmAtPWadN0Wld+/SKuy+aVs6VKQ==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
-      '@angular/core': 21.0.0-rc.1
+      '@angular/core': 21.0.0-rc.2
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/compiler-cli@21.0.0-rc.1':
-    resolution: {integrity: sha512-tYBqNDsDOPTF11ol3CHwe1/rNmhC94jM8P6vBMEY7YTfriH6awD3scvFAuJWz3VS1ojzhNu/eX2rzzOcCCC92A==}
+  '@angular/compiler-cli@21.0.0-rc.2':
+    resolution: {integrity: sha512-mAdWUJ2ZWqgs9fQa1NxqcYeXAgoE6jl2l4kcWNKKGP7WLjNSoE0A1MrIx9fsp+bbKXzY8Ly1WpwS9iTABFA9Xg==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
-      '@angular/compiler': 21.0.0-rc.1
+      '@angular/compiler': 21.0.0-rc.2
       typescript: '>=5.9 <6.0'
     peerDependenciesMeta:
       typescript:
         optional: true
 
-  '@angular/compiler@21.0.0-rc.1':
-    resolution: {integrity: sha512-b3RlK+Dznn08rbTg4Oi/ICCPO6A0Vvnb+FsAxeLRtYx9TGFhWcaOPI9N/okU/lPb7Js4HYX9SoVaN/5S3hh8Lw==}
+  '@angular/compiler@21.0.0-rc.2':
+    resolution: {integrity: sha512-wJOwO9GoWhMm0c3ITgLhGN/tglN1Ntx6Mj588pQpHb5SKEdriqdUwEwu66MNrMy3o0FXdfiuahzWuqL37DDR3w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
 
   '@angular/core@18.2.10':
@@ -1741,6 +1741,16 @@ packages:
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@angular/compiler': 21.0.0-rc.1
+    peerDependenciesMeta:
+      '@angular/compiler':
+        optional: true
+
+  '@angular/core@21.0.0-rc.2':
+    resolution: {integrity: sha512-ycxrRfvIcerGomRBdre28lh9N/h7rbxqoeRN0SjycsigJZ5FUBmvN9CyXdQdEXCjNi4ctzSOX3NEvytvJX7M/Q==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
+    peerDependencies:
+      '@angular/compiler': 21.0.0-rc.2
+      rxjs: ^6.5.3 || ^7.4.0
     peerDependenciesMeta:
       '@angular/compiler':
         optional: true
@@ -1759,9 +1769,9 @@ packages:
       '@angular/platform-browser': ^21.0.0-0 || ^21.1.0-0 || ^21.2.0-0 || ^21.3.0-0 || ^22.0.0-0
       rxjs: ^6.5.3 || ^7.4.0
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/308cdfc2c5fb51ccb998ed7afca314da3ba49f14':
-    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/308cdfc2c5fb51ccb998ed7afca314da3ba49f14}
-    version: 0.0.0-b14d0b01760280c36f6fcfdd31f120a465a56501
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/58db89e9679349076ef973b2f2e64d0c808edffa':
+    resolution: {tarball: https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/58db89e9679349076ef973b2f2e64d0c808edffa}
+    version: 0.0.0-b1a3582375c99e7af6487d9eff637242652acbc2
     hasBin: true
 
   '@angular/ssr@21.0.0-rc.1':
@@ -2655,8 +2665,20 @@ packages:
     cpu: [ppc64]
     os: [aix]
 
+  '@esbuild/aix-ppc64@0.27.0':
+    resolution: {integrity: sha512-KuZrd2hRjz01y5JK9mEBSD3Vj3mbCvemhT466rSuJYeE/hjuBrHfjjcjMdTm/sz7au+++sdbJZJmuBwQLuw68A==}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
+    os: [aix]
+
   '@esbuild/android-arm64@0.25.11':
     resolution: {integrity: sha512-9slpyFBc4FPPz48+f6jyiXOx/Y4v34TUeDDXJpZqAWQn/08lKGeD8aDp9TMn9jDz2CiEuHwfhRmGBvpnd/PWIQ==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [android]
+
+  '@esbuild/android-arm64@0.27.0':
+    resolution: {integrity: sha512-CC3vt4+1xZrs97/PKDkl0yN7w8edvU2vZvAFGD16n9F0Cvniy5qvzRXjfO1l94efczkkQE6g1x0i73Qf5uthOQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [android]
@@ -2667,8 +2689,20 @@ packages:
     cpu: [arm]
     os: [android]
 
+  '@esbuild/android-arm@0.27.0':
+    resolution: {integrity: sha512-j67aezrPNYWJEOHUNLPj9maeJte7uSMM6gMoxfPC9hOg8N02JuQi/T7ewumf4tNvJadFkvLZMlAq73b9uwdMyQ==}
+    engines: {node: '>=18'}
+    cpu: [arm]
+    os: [android]
+
   '@esbuild/android-x64@0.25.11':
     resolution: {integrity: sha512-Sgiab4xBjPU1QoPEIqS3Xx+R2lezu0LKIEcYe6pftr56PqPygbB7+szVnzoShbx64MUupqoE0KyRlN7gezbl8g==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [android]
+
+  '@esbuild/android-x64@0.27.0':
+    resolution: {integrity: sha512-wurMkF1nmQajBO1+0CJmcN17U4BP6GqNSROP8t0X/Jiw2ltYGLHpEksp9MpoBqkrFR3kv2/te6Sha26k3+yZ9Q==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [android]
@@ -2679,8 +2713,20 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@esbuild/darwin-arm64@0.27.0':
+    resolution: {integrity: sha512-uJOQKYCcHhg07DL7i8MzjvS2LaP7W7Pn/7uA0B5S1EnqAirJtbyw4yC5jQ5qcFjHK9l6o/MX9QisBg12kNkdHg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
+
   '@esbuild/darwin-x64@0.25.11':
     resolution: {integrity: sha512-+hfp3yfBalNEpTGp9loYgbknjR695HkqtY3d3/JjSRUyPg/xd6q+mQqIb5qdywnDxRZykIHs3axEqU6l1+oWEQ==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@esbuild/darwin-x64@0.27.0':
+    resolution: {integrity: sha512-8mG6arH3yB/4ZXiEnXof5MK72dE6zM9cDvUcPtxhUZsDjESl9JipZYW60C3JGreKCEP+p8P/72r69m4AZGJd5g==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
@@ -2691,8 +2737,20 @@ packages:
     cpu: [arm64]
     os: [freebsd]
 
+  '@esbuild/freebsd-arm64@0.27.0':
+    resolution: {integrity: sha512-9FHtyO988CwNMMOE3YIeci+UV+x5Zy8fI2qHNpsEtSF83YPBmE8UWmfYAQg6Ux7Gsmd4FejZqnEUZCMGaNQHQw==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [freebsd]
+
   '@esbuild/freebsd-x64@0.25.11':
     resolution: {integrity: sha512-Dyq+5oscTJvMaYPvW3x3FLpi2+gSZTCE/1ffdwuM6G1ARang/mb3jvjxs0mw6n3Lsw84ocfo9CrNMqc5lTfGOw==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@esbuild/freebsd-x64@0.27.0':
+    resolution: {integrity: sha512-zCMeMXI4HS/tXvJz8vWGexpZj2YVtRAihHLk1imZj4efx1BQzN76YFeKqlDr3bUWI26wHwLWPd3rwh6pe4EV7g==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [freebsd]
@@ -2703,8 +2761,20 @@ packages:
     cpu: [arm64]
     os: [linux]
 
+  '@esbuild/linux-arm64@0.27.0':
+    resolution: {integrity: sha512-AS18v0V+vZiLJyi/4LphvBE+OIX682Pu7ZYNsdUHyUKSoRwdnOsMf6FDekwoAFKej14WAkOef3zAORJgAtXnlQ==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+
   '@esbuild/linux-arm@0.25.11':
     resolution: {integrity: sha512-TBMv6B4kCfrGJ8cUPo7vd6NECZH/8hPpBHHlYI3qzoYFvWu2AdTvZNuU/7hsbKWqu/COU7NIK12dHAAqBLLXgw==}
+    engines: {node: '>=18'}
+    cpu: [arm]
+    os: [linux]
+
+  '@esbuild/linux-arm@0.27.0':
+    resolution: {integrity: sha512-t76XLQDpxgmq2cNXKTVEB7O7YMb42atj2Re2Haf45HkaUpjM2J0UuJZDuaGbPbamzZ7bawyGFUkodL+zcE+jvQ==}
     engines: {node: '>=18'}
     cpu: [arm]
     os: [linux]
@@ -2715,8 +2785,20 @@ packages:
     cpu: [ia32]
     os: [linux]
 
+  '@esbuild/linux-ia32@0.27.0':
+    resolution: {integrity: sha512-Mz1jxqm/kfgKkc/KLHC5qIujMvnnarD9ra1cEcrs7qshTUSksPihGrWHVG5+osAIQ68577Zpww7SGapmzSt4Nw==}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [linux]
+
   '@esbuild/linux-loong64@0.25.11':
     resolution: {integrity: sha512-DIGXL2+gvDaXlaq8xruNXUJdT5tF+SBbJQKbWy/0J7OhU8gOHOzKmGIlfTTl6nHaCOoipxQbuJi7O++ldrxgMw==}
+    engines: {node: '>=18'}
+    cpu: [loong64]
+    os: [linux]
+
+  '@esbuild/linux-loong64@0.27.0':
+    resolution: {integrity: sha512-QbEREjdJeIreIAbdG2hLU1yXm1uu+LTdzoq1KCo4G4pFOLlvIspBm36QrQOar9LFduavoWX2msNFAAAY9j4BDg==}
     engines: {node: '>=18'}
     cpu: [loong64]
     os: [linux]
@@ -2727,8 +2809,20 @@ packages:
     cpu: [mips64el]
     os: [linux]
 
+  '@esbuild/linux-mips64el@0.27.0':
+    resolution: {integrity: sha512-sJz3zRNe4tO2wxvDpH/HYJilb6+2YJxo/ZNbVdtFiKDufzWq4JmKAiHy9iGoLjAV7r/W32VgaHGkk35cUXlNOg==}
+    engines: {node: '>=18'}
+    cpu: [mips64el]
+    os: [linux]
+
   '@esbuild/linux-ppc64@0.25.11':
     resolution: {integrity: sha512-nbLFgsQQEsBa8XSgSTSlrnBSrpoWh7ioFDUmwo158gIm5NNP+17IYmNWzaIzWmgCxq56vfr34xGkOcZ7jX6CPw==}
+    engines: {node: '>=18'}
+    cpu: [ppc64]
+    os: [linux]
+
+  '@esbuild/linux-ppc64@0.27.0':
+    resolution: {integrity: sha512-z9N10FBD0DCS2dmSABDBb5TLAyF1/ydVb+N4pi88T45efQ/w4ohr/F/QYCkxDPnkhkp6AIpIcQKQ8F0ANoA2JA==}
     engines: {node: '>=18'}
     cpu: [ppc64]
     os: [linux]
@@ -2739,8 +2833,20 @@ packages:
     cpu: [riscv64]
     os: [linux]
 
+  '@esbuild/linux-riscv64@0.27.0':
+    resolution: {integrity: sha512-pQdyAIZ0BWIC5GyvVFn5awDiO14TkT/19FTmFcPdDec94KJ1uZcmFs21Fo8auMXzD4Tt+diXu1LW1gHus9fhFQ==}
+    engines: {node: '>=18'}
+    cpu: [riscv64]
+    os: [linux]
+
   '@esbuild/linux-s390x@0.25.11':
     resolution: {integrity: sha512-HjLqVgSSYnVXRisyfmzsH6mXqyvj0SA7pG5g+9W7ESgwA70AXYNpfKBqh1KbTxmQVaYxpzA/SvlB9oclGPbApw==}
+    engines: {node: '>=18'}
+    cpu: [s390x]
+    os: [linux]
+
+  '@esbuild/linux-s390x@0.27.0':
+    resolution: {integrity: sha512-hPlRWR4eIDDEci953RI1BLZitgi5uqcsjKMxwYfmi4LcwyWo2IcRP+lThVnKjNtk90pLS8nKdroXYOqW+QQH+w==}
     engines: {node: '>=18'}
     cpu: [s390x]
     os: [linux]
@@ -2751,8 +2857,20 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@esbuild/linux-x64@0.27.0':
+    resolution: {integrity: sha512-1hBWx4OUJE2cab++aVZ7pObD6s+DK4mPGpemtnAORBvb5l/g5xFGk0vc0PjSkrDs0XaXj9yyob3d14XqvnQ4gw==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+
   '@esbuild/netbsd-arm64@0.25.11':
     resolution: {integrity: sha512-hr9Oxj1Fa4r04dNpWr3P8QKVVsjQhqrMSUzZzf+LZcYjZNqhA3IAfPQdEh1FLVUJSiu6sgAwp3OmwBfbFgG2Xg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [netbsd]
+
+  '@esbuild/netbsd-arm64@0.27.0':
+    resolution: {integrity: sha512-6m0sfQfxfQfy1qRuecMkJlf1cIzTOgyaeXaiVaaki8/v+WB+U4hc6ik15ZW6TAllRlg/WuQXxWj1jx6C+dfy3w==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [netbsd]
@@ -2763,8 +2881,20 @@ packages:
     cpu: [x64]
     os: [netbsd]
 
+  '@esbuild/netbsd-x64@0.27.0':
+    resolution: {integrity: sha512-xbbOdfn06FtcJ9d0ShxxvSn2iUsGd/lgPIO2V3VZIPDbEaIj1/3nBBe1AwuEZKXVXkMmpr6LUAgMkLD/4D2PPA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [netbsd]
+
   '@esbuild/openbsd-arm64@0.25.11':
     resolution: {integrity: sha512-Qq6YHhayieor3DxFOoYM1q0q1uMFYb7cSpLD2qzDSvK1NAvqFi8Xgivv0cFC6J+hWVw2teCYltyy9/m/14ryHg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openbsd]
+
+  '@esbuild/openbsd-arm64@0.27.0':
+    resolution: {integrity: sha512-fWgqR8uNbCQ/GGv0yhzttj6sU/9Z5/Sv/VGU3F5OuXK6J6SlriONKrQ7tNlwBrJZXRYk5jUhuWvF7GYzGguBZQ==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openbsd]
@@ -2775,8 +2905,20 @@ packages:
     cpu: [x64]
     os: [openbsd]
 
+  '@esbuild/openbsd-x64@0.27.0':
+    resolution: {integrity: sha512-aCwlRdSNMNxkGGqQajMUza6uXzR/U0dIl1QmLjPtRbLOx3Gy3otfFu/VjATy4yQzo9yFDGTxYDo1FfAD9oRD2A==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [openbsd]
+
   '@esbuild/openharmony-arm64@0.25.11':
     resolution: {integrity: sha512-rOREuNIQgaiR+9QuNkbkxubbp8MSO9rONmwP5nKncnWJ9v5jQ4JxFnLu4zDSRPf3x4u+2VN4pM4RdyIzDty/wQ==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [openharmony]
+
+  '@esbuild/openharmony-arm64@0.27.0':
+    resolution: {integrity: sha512-nyvsBccxNAsNYz2jVFYwEGuRRomqZ149A39SHWk4hV0jWxKM0hjBPm3AmdxcbHiFLbBSwG6SbpIcUbXjgyECfA==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [openharmony]
@@ -2787,8 +2929,20 @@ packages:
     cpu: [x64]
     os: [sunos]
 
+  '@esbuild/sunos-x64@0.27.0':
+    resolution: {integrity: sha512-Q1KY1iJafM+UX6CFEL+F4HRTgygmEW568YMqDA5UV97AuZSm21b7SXIrRJDwXWPzr8MGr75fUZPV67FdtMHlHA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [sunos]
+
   '@esbuild/win32-arm64@0.25.11':
     resolution: {integrity: sha512-3XxECOWJq1qMZ3MN8srCJ/QfoLpL+VaxD/WfNRm1O3B4+AZ/BnLVgFbUV3eiRYDMXetciH16dwPbbHqwe1uU0Q==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@esbuild/win32-arm64@0.27.0':
+    resolution: {integrity: sha512-W1eyGNi6d+8kOmZIwi/EDjrL9nxQIQ0MiGqe/AWc6+IaHloxHSGoeRgDRKHFISThLmsewZ5nHFvGFWdBYlgKPg==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
@@ -2799,8 +2953,20 @@ packages:
     cpu: [ia32]
     os: [win32]
 
+  '@esbuild/win32-ia32@0.27.0':
+    resolution: {integrity: sha512-30z1aKL9h22kQhilnYkORFYt+3wp7yZsHWus+wSKAJR8JtdfI76LJ4SBdMsCopTR3z/ORqVu5L1vtnHZWVj4cQ==}
+    engines: {node: '>=18'}
+    cpu: [ia32]
+    os: [win32]
+
   '@esbuild/win32-x64@0.25.11':
     resolution: {integrity: sha512-D7Hpz6A2L4hzsRpPaCYkQnGOotdUpDzSGRIv9I+1ITdHROSFUWW95ZPZWQmGka1Fg7W3zFJowyn9WGwMJ0+KPA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [win32]
+
+  '@esbuild/win32-x64@0.27.0':
+    resolution: {integrity: sha512-aIitBcjQeyOhMTImhLZmtxfdOcuNRpwlPNmlFKPcHQYPhEssw75Cl1TSXJXpMkzaua9FUetx/4OQKq7eJul5Cg==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -4052,8 +4218,8 @@ packages:
     resolution: {integrity: sha512-tNe7a6U4rCpxLMBaR0SIYTdjxGdL0Vwb3G1zY8++sPtHSvy7qd54u8CIB0Z+Y6t5tc9pNYMYCMwhE/wdSY7ltg==}
     engines: {node: '>=18.12'}
 
-  '@pnpm/dependency-path@1001.1.3':
-    resolution: {integrity: sha512-ScPXDrlpNNrvV+l4Z1Mh7HjejkltQWfSa3PIaB+WJ3h+PoC1w5blbgfq6ENdHdkRU7L14ie/3MqUGMIx2gZldA==}
+  '@pnpm/dependency-path@1001.1.4':
+    resolution: {integrity: sha512-AUFsnxZB13ME7JKFis3/zo+Cz4qvYl7PzpzFFrw0bL75OY2+jeXcG3dbNXoVfpjaA3/lyZBtQmxE+Q6xbjyV5Q==}
     engines: {node: '>=18.12'}
 
   '@pnpm/graceful-fs@1000.0.1':
@@ -4068,8 +4234,8 @@ packages:
     resolution: {integrity: sha512-c83qWb22rNRuB0UaVCI0uRPNRr8Z0FWnEIvT47jiHAmOIUHbBOg5XvV7pM5x+rKn9HRpjxquDbXYSXr3fAKFcw==}
     engines: {node: '>=12'}
 
-  '@pnpm/types@1000.9.0':
-    resolution: {integrity: sha512-UvDTCxnbyqkTg2X0dBOuZ4IdFJ8g4UFu0Ybv/5/cZAxCWVhNl1hC/Xc9hR4tZrlBL0NRFePLRhO/iw9LmA1lbw==}
+  '@pnpm/types@1001.0.0':
+    resolution: {integrity: sha512-9P7I8Zv8hvAO81+D5KVmwveH4nmxhBNFEEeb77YYPV72bkyqzKTR6I8OGEs7TNZ6gPHufF+lIyBVEqO6SMFpJA==}
     engines: {node: '>=18.12'}
 
   '@protobufjs/aspromise@1.1.2':
@@ -7229,6 +7395,11 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  esbuild@0.27.0:
+    resolution: {integrity: sha512-jd0f4NHbD6cALCyGElNpGAOtWxSq46l9X/sWB0Nzd5er4Kz2YTm+Vl0qKFT9KUJvD8+fiO8AvoHhFvEatfVixA==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
     engines: {node: '>=6'}
@@ -9673,8 +9844,8 @@ packages:
     resolution: {integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==}
     engines: {node: '>= 0.4.0'}
 
-  ng-packagr@21.0.0-rc.0:
-    resolution: {integrity: sha512-dCvyhGTRFRSY08rJMNmyBRt1wHGFx+J9YjWcbN2LXfJgeKYf2pgjhHnbHjrrN623nsgokcahRAfQ0ohJExUMAw==}
+  ng-packagr@21.0.0-rc.1:
+    resolution: {integrity: sha512-e3R45a5fuQ/bxdegHO+P+10+YjamgZvInx+cKD0exHPTLwqTN9JNWkyfL/pZf4wyyDzTvmcmADNvqPOml9GJ0w==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     hasBin: true
     peerDependencies:
@@ -12624,6 +12795,11 @@ packages:
     engines: {node: ^18.17.0 || >=20.5.0}
     hasBin: true
 
+  which@6.0.0:
+    resolution: {integrity: sha512-f+gEpIKMR9faW/JgAgPK1D7mekkFoqbmiwvNzuhsHetni20QSgzg9Vhn0g2JSJkkfehQnqdUAx7/e15qS1lPxg==}
+    engines: {node: ^20.17.0 || >=22.9.0}
+    hasBin: true
+
   why-is-node-running@2.3.0:
     resolution: {integrity: sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w==}
     engines: {node: '>=8'}
@@ -13082,13 +13258,13 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular-devkit/build-angular@21.0.0-rc.1(86198432c639ec215851b1e02ea0a2fc)':
+  '@angular-devkit/build-angular@21.0.0-rc.1(9a9e18d0e47298696abdb5fc0d32b3dc)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-rc.1(chokidar@4.0.3)
       '@angular-devkit/build-webpack': 0.2100.0-rc.1(chokidar@4.0.3)(webpack-dev-server@5.2.2(bufferutil@4.0.9)(utf-8-validate@6.0.5)(webpack@5.102.1(esbuild@0.25.11)))(webpack@5.102.1(esbuild@0.25.11))
       '@angular-devkit/core': 21.0.0-rc.1(chokidar@4.0.3)
-      '@angular/build': 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+      '@angular/build': 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
       '@angular/compiler-cli': link:packages/compiler-cli
       '@babel/core': 7.28.4
       '@babel/generator': 7.28.3
@@ -13151,7 +13327,7 @@ snapshots:
       jest: 30.2.0(@types/node@20.19.24)(ts-node@10.9.2(@types/node@20.19.24)(typescript@5.9.3))
       jest-environment-jsdom: 30.2.0(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
-      ng-packagr: 21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       protractor: 7.0.0
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
@@ -13220,7 +13396,7 @@ snapshots:
       '@angular/core': link:packages/core
       tslib: 2.8.1
 
-  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
+  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.0)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-rc.1(chokidar@4.0.3)
@@ -13262,7 +13438,7 @@ snapshots:
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.2
       lmdb: 3.4.3
-      ng-packagr: 21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.6
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
@@ -13278,7 +13454,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
+  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@20.19.24)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-rc.1(chokidar@4.0.3)
@@ -13320,7 +13496,7 @@ snapshots:
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.2
       lmdb: 3.4.3
-      ng-packagr: 21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.6
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
@@ -13336,7 +13512,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.0)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
+  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.10.0)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-rc.1(chokidar@4.0.3)
@@ -13378,7 +13554,7 @@ snapshots:
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.2
       lmdb: 3.4.3
-      ng-packagr: 21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.6
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
@@ -13394,7 +13570,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
+  '@angular/build@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(@angular/compiler@packages+compiler)(@angular/core@packages+core)(@angular/localize@packages+localize)(@angular/platform-browser@packages+platform-browser)(@angular/platform-server@packages+platform-server)(@angular/service-worker@packages+service-worker)(@angular/ssr@21.0.0-rc.1(@angular/common@packages+common)(@angular/core@packages+core)(@angular/platform-server@packages+platform-server)(@angular/router@packages+router))(@types/node@24.9.1)(chokidar@4.0.3)(jiti@2.6.1)(karma@6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5))(less@4.4.2)(ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.6)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(terser@5.44.1)(tslib@2.8.1)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2100.0-rc.1(chokidar@4.0.3)
@@ -13436,7 +13612,7 @@ snapshots:
       karma: 6.4.4(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       less: 4.4.2
       lmdb: 3.4.3
-      ng-packagr: 21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
+      ng-packagr: 21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.6
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
     transitivePeerDependencies:
@@ -13518,15 +13694,15 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/common@21.0.0-rc.1(@angular/core@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1))(rxjs@7.8.2)':
+  '@angular/common@21.0.0-rc.2(@angular/core@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
-      '@angular/core': 21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)
+      '@angular/core': 21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(rxjs@7.8.2)
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/compiler-cli@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)(typescript@5.9.3)':
+  '@angular/compiler-cli@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(typescript@5.9.3)':
     dependencies:
-      '@angular/compiler': 21.0.0-rc.1
+      '@angular/compiler': 21.0.0-rc.2
       '@babel/core': 7.28.4
       '@jridgewell/sourcemap-codec': 1.5.5
       chokidar: 4.0.3
@@ -13540,7 +13716,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@angular/compiler@21.0.0-rc.1':
+  '@angular/compiler@21.0.0-rc.2':
     dependencies:
       tslib: 2.8.1
 
@@ -13550,13 +13726,21 @@ snapshots:
       tslib: 2.8.1
       zone.js: 0.14.10
 
-  '@angular/core@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)':
+  '@angular/core@21.0.0-rc.1(@angular/compiler@packages+compiler)':
     dependencies:
       rxjs: 7.8.2
       tslib: 2.8.1
       zone.js: 0.15.1
     optionalDependencies:
-      '@angular/compiler': 21.0.0-rc.1
+      '@angular/compiler': link:packages/compiler
+
+  '@angular/core@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(rxjs@7.8.2)':
+    dependencies:
+      rxjs: 7.8.2
+      tslib: 2.8.1
+      zone.js: 0.15.1
+    optionalDependencies:
+      '@angular/compiler': 21.0.0-rc.2
 
   '@angular/domino@https://codeload.github.com/angular/domino/tar.gz/93e720f143d0296dd2726ffbcf4fc12283363a7b': {}
 
@@ -13570,7 +13754,7 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/308cdfc2c5fb51ccb998ed7afca314da3ba49f14(@modelcontextprotocol/sdk@1.21.1)':
+  '@angular/ng-dev@https://codeload.github.com/angular/dev-infra-private-ng-dev-builds/tar.gz/58db89e9679349076ef973b2f2e64d0c808edffa(@modelcontextprotocol/sdk@1.21.1)':
     dependencies:
       '@actions/core': 1.11.1
       '@google-cloud/spanner': 8.0.0(supports-color@10.2.2)
@@ -13587,7 +13771,7 @@ snapshots:
       '@octokit/request-error': 7.0.2
       '@octokit/rest': 22.0.1
       '@octokit/types': 16.0.0
-      '@pnpm/dependency-path': 1001.1.3
+      '@pnpm/dependency-path': 1001.1.4
       '@types/cli-progress': 3.11.6
       '@types/ejs': 3.1.5
       '@types/events': 3.0.3
@@ -13624,7 +13808,7 @@ snapshots:
       typed-graphqlify: 3.1.6
       typescript: 5.9.3
       utf-8-validate: 6.0.5
-      which: 5.0.0
+      which: 6.0.0
       yaml: 2.8.1
       yargs: 18.0.0
     transitivePeerDependencies:
@@ -14839,79 +15023,157 @@ snapshots:
   '@esbuild/aix-ppc64@0.25.11':
     optional: true
 
+  '@esbuild/aix-ppc64@0.27.0':
+    optional: true
+
   '@esbuild/android-arm64@0.25.11':
+    optional: true
+
+  '@esbuild/android-arm64@0.27.0':
     optional: true
 
   '@esbuild/android-arm@0.25.11':
     optional: true
 
+  '@esbuild/android-arm@0.27.0':
+    optional: true
+
   '@esbuild/android-x64@0.25.11':
+    optional: true
+
+  '@esbuild/android-x64@0.27.0':
     optional: true
 
   '@esbuild/darwin-arm64@0.25.11':
     optional: true
 
+  '@esbuild/darwin-arm64@0.27.0':
+    optional: true
+
   '@esbuild/darwin-x64@0.25.11':
+    optional: true
+
+  '@esbuild/darwin-x64@0.27.0':
     optional: true
 
   '@esbuild/freebsd-arm64@0.25.11':
     optional: true
 
+  '@esbuild/freebsd-arm64@0.27.0':
+    optional: true
+
   '@esbuild/freebsd-x64@0.25.11':
+    optional: true
+
+  '@esbuild/freebsd-x64@0.27.0':
     optional: true
 
   '@esbuild/linux-arm64@0.25.11':
     optional: true
 
+  '@esbuild/linux-arm64@0.27.0':
+    optional: true
+
   '@esbuild/linux-arm@0.25.11':
+    optional: true
+
+  '@esbuild/linux-arm@0.27.0':
     optional: true
 
   '@esbuild/linux-ia32@0.25.11':
     optional: true
 
+  '@esbuild/linux-ia32@0.27.0':
+    optional: true
+
   '@esbuild/linux-loong64@0.25.11':
+    optional: true
+
+  '@esbuild/linux-loong64@0.27.0':
     optional: true
 
   '@esbuild/linux-mips64el@0.25.11':
     optional: true
 
+  '@esbuild/linux-mips64el@0.27.0':
+    optional: true
+
   '@esbuild/linux-ppc64@0.25.11':
+    optional: true
+
+  '@esbuild/linux-ppc64@0.27.0':
     optional: true
 
   '@esbuild/linux-riscv64@0.25.11':
     optional: true
 
+  '@esbuild/linux-riscv64@0.27.0':
+    optional: true
+
   '@esbuild/linux-s390x@0.25.11':
+    optional: true
+
+  '@esbuild/linux-s390x@0.27.0':
     optional: true
 
   '@esbuild/linux-x64@0.25.11':
     optional: true
 
+  '@esbuild/linux-x64@0.27.0':
+    optional: true
+
   '@esbuild/netbsd-arm64@0.25.11':
+    optional: true
+
+  '@esbuild/netbsd-arm64@0.27.0':
     optional: true
 
   '@esbuild/netbsd-x64@0.25.11':
     optional: true
 
+  '@esbuild/netbsd-x64@0.27.0':
+    optional: true
+
   '@esbuild/openbsd-arm64@0.25.11':
+    optional: true
+
+  '@esbuild/openbsd-arm64@0.27.0':
     optional: true
 
   '@esbuild/openbsd-x64@0.25.11':
     optional: true
 
+  '@esbuild/openbsd-x64@0.27.0':
+    optional: true
+
   '@esbuild/openharmony-arm64@0.25.11':
+    optional: true
+
+  '@esbuild/openharmony-arm64@0.27.0':
     optional: true
 
   '@esbuild/sunos-x64@0.25.11':
     optional: true
 
+  '@esbuild/sunos-x64@0.27.0':
+    optional: true
+
   '@esbuild/win32-arm64@0.25.11':
+    optional: true
+
+  '@esbuild/win32-arm64@0.27.0':
     optional: true
 
   '@esbuild/win32-ia32@0.25.11':
     optional: true
 
+  '@esbuild/win32-ia32@0.27.0':
+    optional: true
+
   '@esbuild/win32-x64@0.25.11':
+    optional: true
+
+  '@esbuild/win32-x64@0.27.0':
     optional: true
 
   '@externs/nodejs@1.5.0': {}
@@ -16769,10 +17031,10 @@ snapshots:
 
   '@pnpm/crypto.polyfill@1000.1.0': {}
 
-  '@pnpm/dependency-path@1001.1.3':
+  '@pnpm/dependency-path@1001.1.4':
     dependencies:
       '@pnpm/crypto.hash': 1000.2.1
-      '@pnpm/types': 1000.9.0
+      '@pnpm/types': 1001.0.0
       semver: 7.7.3
 
   '@pnpm/graceful-fs@1000.0.1':
@@ -16789,7 +17051,7 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@pnpm/types@1000.9.0': {}
+  '@pnpm/types@1001.0.0': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -20314,6 +20576,35 @@ snapshots:
       '@esbuild/win32-ia32': 0.25.11
       '@esbuild/win32-x64': 0.25.11
 
+  esbuild@0.27.0:
+    optionalDependencies:
+      '@esbuild/aix-ppc64': 0.27.0
+      '@esbuild/android-arm': 0.27.0
+      '@esbuild/android-arm64': 0.27.0
+      '@esbuild/android-x64': 0.27.0
+      '@esbuild/darwin-arm64': 0.27.0
+      '@esbuild/darwin-x64': 0.27.0
+      '@esbuild/freebsd-arm64': 0.27.0
+      '@esbuild/freebsd-x64': 0.27.0
+      '@esbuild/linux-arm': 0.27.0
+      '@esbuild/linux-arm64': 0.27.0
+      '@esbuild/linux-ia32': 0.27.0
+      '@esbuild/linux-loong64': 0.27.0
+      '@esbuild/linux-mips64el': 0.27.0
+      '@esbuild/linux-ppc64': 0.27.0
+      '@esbuild/linux-riscv64': 0.27.0
+      '@esbuild/linux-s390x': 0.27.0
+      '@esbuild/linux-x64': 0.27.0
+      '@esbuild/netbsd-arm64': 0.27.0
+      '@esbuild/netbsd-x64': 0.27.0
+      '@esbuild/openbsd-arm64': 0.27.0
+      '@esbuild/openbsd-x64': 0.27.0
+      '@esbuild/openharmony-arm64': 0.27.0
+      '@esbuild/sunos-x64': 0.27.0
+      '@esbuild/win32-arm64': 0.27.0
+      '@esbuild/win32-ia32': 0.27.0
+      '@esbuild/win32-x64': 0.27.0
+
   escalade@3.2.0: {}
 
   escape-goat@2.1.1: {}
@@ -23541,10 +23832,10 @@ snapshots:
 
   netmask@2.0.2: {}
 
-  ng-packagr@21.0.0-rc.0(@angular/compiler-cli@21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3):
+  ng-packagr@21.0.0-rc.1(@angular/compiler-cli@21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(typescript@5.9.3))(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
-      '@angular/compiler-cli': 21.0.0-rc.1(@angular/compiler@21.0.0-rc.1)(typescript@5.9.3)
+      '@angular/compiler-cli': 21.0.0-rc.2(@angular/compiler@21.0.0-rc.2)(typescript@5.9.3)
       '@rollup/plugin-json': 6.1.0(rollup@4.52.5)
       '@rollup/wasm-node': 4.53.1
       ajv: 8.17.1
@@ -23553,7 +23844,7 @@ snapshots:
       chokidar: 4.0.3
       commander: 14.0.2
       dependency-graph: 1.0.0
-      esbuild: 0.25.11
+      esbuild: 0.27.0
       find-cache-directory: 6.0.0
       injection-js: 2.6.1
       jsonc-parser: 3.3.1
@@ -23571,7 +23862,7 @@ snapshots:
       rollup: 4.52.5
       tailwindcss: 3.4.18(tsx@4.20.6)(yaml@2.8.1)
 
-  ng-packagr@21.0.0-rc.0(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3):
+  ng-packagr@21.0.0-rc.1(@angular/compiler-cli@packages+compiler-cli)(tailwindcss@3.4.18(tsx@4.20.6)(yaml@2.8.1))(tslib@2.8.1)(typescript@5.9.3):
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular/compiler-cli': link:packages/compiler-cli
@@ -23583,7 +23874,7 @@ snapshots:
       chokidar: 4.0.3
       commander: 14.0.2
       dependency-graph: 1.0.0
-      esbuild: 0.25.11
+      esbuild: 0.27.0
       find-cache-directory: 6.0.0
       injection-js: 2.6.1
       jsonc-parser: 3.3.1
@@ -26225,7 +26516,7 @@ snapshots:
 
   tsutils@3.21.0(typescript@5.9.3):
     dependencies:
-      tslib: 1.9.0
+      tslib: 1.14.1
       typescript: 5.9.3
 
   tsx@4.20.6:
@@ -27161,6 +27452,10 @@ snapshots:
       isexe: 2.0.0
 
   which@5.0.0:
+    dependencies:
+      isexe: 3.1.1
+
+  which@6.0.0:
     dependencies:
       isexe: 3.1.1
 
