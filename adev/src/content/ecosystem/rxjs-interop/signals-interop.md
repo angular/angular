@@ -6,7 +6,7 @@ The `@angular/core/rxjs-interop` package offers APIs that help you integrate RxJ
 
 Use the `toSignal` function to create a signal which tracks the value of an Observable. It behaves similarly to the `async` pipe in templates, but is more flexible and can be used anywhere in an application.
 
-```ts
+```angular-ts
 import { Component } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { interval } from 'rxjs';
