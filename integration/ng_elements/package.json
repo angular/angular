@@ -23,7 +23,7 @@
     "concurrently": "9.2.1",
     "lite-server": "2.6.1",
     "protractor": "^7.0.0",
-    "rollup": "4.53.1"
+    "rollup": "4.53.2"
   },
   "scripts": {
     "build": "pnpm ngc && pnpm rollup -c rollup.config.mjs",
