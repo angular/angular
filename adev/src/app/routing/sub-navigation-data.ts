@@ -437,6 +437,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 contentPath: 'guide/forms/signals/overview',
                 status: 'new',
               },
+              {
+                label: 'Form models',
+                path: 'guide/forms/signals/models',
+                contentPath: 'guide/forms/signals/models',
+                status: 'new',
+              },
             ],
           },
           {
