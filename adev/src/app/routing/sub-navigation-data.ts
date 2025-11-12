@@ -541,21 +541,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/overview',
           },
           {
-            label: 'Code coverage',
-            path: 'guide/testing/code-coverage',
-            contentPath: 'guide/testing/code-coverage',
-          },
-          {
-            label: 'Testing with Karma and Jasmine',
-            path: 'guide/testing/karma',
-            contentPath: 'guide/testing/karma',
-          },
-          {
-            label: 'Testing services',
-            path: 'guide/testing/services',
-            contentPath: 'guide/testing/services',
-          },
-          {
             label: 'Basics of testing components',
             path: 'guide/testing/components-basics',
             contentPath: 'guide/testing/components-basics',
@@ -564,6 +549,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Component testing scenarios',
             path: 'guide/testing/components-scenarios',
             contentPath: 'guide/testing/components-scenarios',
+          },
+          {
+            label: 'Testing services',
+            path: 'guide/testing/services',
+            contentPath: 'guide/testing/services',
           },
           {
             label: 'Testing attribute directives',
@@ -587,14 +577,14 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/debugging',
           },
           {
+            label: 'Code coverage',
+            path: 'guide/testing/code-coverage',
+            contentPath: 'guide/testing/code-coverage',
+          },
+          {
             label: 'Testing utility APIs',
             path: 'guide/testing/utility-apis',
             contentPath: 'guide/testing/utility-apis',
-          },
-          {
-            label: 'Migrating from Karma to Vitest',
-            path: 'guide/testing/unit-tests',
-            contentPath: 'guide/testing/migrating-to-vitest',
           },
           {
             label: 'Component harnesses overview',
@@ -615,6 +605,16 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Adding harness support for additional testing environments',
             path: 'guide/testing/component-harnesses-testing-environments',
             contentPath: 'guide/testing/component-harnesses-testing-environments',
+          },
+          {
+            label: 'Migrating from Karma to Vitest',
+            path: 'guide/testing/migrating-to-vitest',
+            contentPath: 'guide/testing/migrating-to-vitest',
+          },
+          {
+            label: 'Testing with Karma and Jasmine',
+            path: 'guide/testing/karma',
+            contentPath: 'guide/testing/karma',
           },
         ],
       },
