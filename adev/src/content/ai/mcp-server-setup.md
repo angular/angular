@@ -69,19 +69,20 @@ Create a file named `.gemini/settings.json` in your project's root and add the f
 
 ### JetBrains IDEs
 
-In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrains AI Assistant plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server and select `As JSON`. Paste the following configuration, which does not use a top-level property for the server list.
+In JetBrains IDEs (like IntelliJ IDEA or WebStorm), after installing the JetBrains AI Assistant plugin, go to `Settings | Tools | AI Assistant | Model Context Protocol (MCP)`. Add a new server (`+`) and select `As JSON`. Then paste the following configuration:
 
 ```json
 {
-  "name": "Angular CLI",
-  "command": "npx",
-  "args": [
-    "-y",
-    "@angular/cli",
-    "mcp"
-  ]
+  "mcpServers": {
+    "angular-cli": {
+      "command": "npx",
+      "args": ["-y", "@angular/cli", "mcp"]
+    }
+  }
 }
 ```
+
+For the most up-to-date instructions on configuring MCP servers, please refer to the JetBrains documentation: [Connect to an MCP server](https://www.jetbrains.com/help/ai-assistant/mcp.html#connect-to-an-mcp-server).
 
 ### VS Code
 
