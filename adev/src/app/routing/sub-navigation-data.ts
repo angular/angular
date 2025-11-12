@@ -573,9 +573,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/utility-apis',
           },
           {
-            label: 'Experimental unit testing integration',
+            label: 'Migrating from Karma to Vitest',
             path: 'guide/testing/unit-tests',
-            contentPath: 'guide/testing/experimental-unit-test',
+            contentPath: 'guide/testing/migrating-to-vitest',
           },
           {
             label: 'Component harnesses overview',
