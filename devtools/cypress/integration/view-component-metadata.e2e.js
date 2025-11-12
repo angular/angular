@@ -8,7 +8,7 @@
 
 const prepareHeaderExpansionPanelForAssertions = (selector) => {
   cy.get('.tree-wrapper').find(selector).first().click({force: true});
-  cy.get('.element-header .component-name').click();
+  cy.get('.node-header .component-name').click();
 };
 
 describe('Viewing component metadata', () => {

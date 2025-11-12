@@ -76,7 +76,11 @@ export function getInjectorResolutionPath(injector: Injector): Injector[] {
 }
 
 export function getInjectorFromElementNode(element: Node): Injector | null {
-  return ngDebugClient().getInjector?.(element) ?? null;
+  try {
+    return ngDebugClient().getInjector?.(element) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function getDirectivesFromElement(element: HTMLElement): {
