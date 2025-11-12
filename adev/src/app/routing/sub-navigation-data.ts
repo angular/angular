@@ -420,11 +420,24 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Forms',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
             path: 'guide/forms',
             contentPath: 'guide/forms/overview',
+          },
+          {
+            label: 'Signal forms',
+            status: 'new',
+            children: [
+              {
+                label: 'Overview',
+                path: 'guide/forms/signals/overview',
+                contentPath: 'guide/forms/signals/overview',
+                status: 'new',
+              },
+            ],
           },
           {
             label: 'Reactive forms',
