@@ -31,6 +31,7 @@
   transition: background 0.3s ease, border-color 0.3s ease;
   padding-inline-end: 0.65rem;
   font-family: var(--inter-tight-font);
+  height: 3rem;
 
   mat-tab-group {
     max-width: calc(100% - 140px);
