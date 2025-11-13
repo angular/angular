@@ -101,10 +101,10 @@ import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
-import {TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 import {sfExtensionData} from '../../shims';
 import {freshCompilationTicket, NgCompiler, NgCompilerHost} from '../../core';
+import {TcbGenericContextBehavior} from '../src/ops/context';
 
 export function typescriptLibDts(): TestFile {
   return {
