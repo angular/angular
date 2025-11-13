@@ -20,6 +20,16 @@
           "jsdocTags": []
         },
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the combobox element.",
+          "jsdocTags": []
+        },
+        {
           "name": "popup",
           "type": "any",
           "memberType": "property",
@@ -251,7 +261,7 @@
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
         "startLine": 64,
-        "endLine": 177
+        "endLine": 180
       }
     },
     {
@@ -259,6 +269,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the input element.",
+          "jsdocTags": []
+        },
         {
           "name": "combobox",
           "type": "any",
@@ -301,8 +321,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 197,
-        "endLine": 240
+        "startLine": 200,
+        "endLine": 246
       }
     },
     {
@@ -322,8 +342,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 272,
-        "endLine": 277
+        "startLine": 278,
+        "endLine": 283
       }
     },
     {
@@ -373,8 +393,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 289,
-        "endLine": 304
+        "startLine": 295,
+        "endLine": 310
       }
     },
     {
@@ -384,12 +404,12 @@
       "members": [
         {
           "name": "element",
-          "type": "any",
+          "type": "HTMLElement",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "The dialog element.",
+          "description": "A reference to the dialog element.",
           "jsdocTags": []
         },
         {
@@ -453,8 +473,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 321,
-        "endLine": 368
+        "startLine": 327,
+        "endLine": 377
       }
     }
   ],
@@ -568,6 +588,10 @@
       "@angular/aria/combobox"
     ],
     [
+      "Combobox.element",
+      "@angular/aria/combobox"
+    ],
+    [
       "Combobox.popup",
       "@angular/aria/combobox"
     ],
@@ -617,6 +641,10 @@
     ],
     [
       "ComboboxInput",
+      "@angular/aria/combobox"
+    ],
+    [
+      "ComboboxInput.element",
       "@angular/aria/combobox"
     ],
     [
