@@ -15,9 +15,6 @@
 #  - We trust that people do the right thing and won't approve changes they don't feel confident reviewing
 #  - We enforce that only approved PRs are merged ensuring that unreviewed code isn't accidentally merged
 #  - We distribute approval rights as much as possible to help us scale better
-#  - Groups have one or two global approvers groups as fallbacks:
-#    - @angular/fw-global-approvers: for approving minor changes, large-scale refactorings, and emergency situations.
-#    - @angular/fw-global-approvers-for-docs-only-changes: for approving minor documentation-only changes that don't require engineering review
 #  - A small number of file groups have very limited number of reviewers because incorrect changes to the files they guard would have serious consequences (e.g. security, public api)
 #
 #  Configuration nuances:
@@ -36,23 +33,6 @@
 ####################################################################################
 # See reviewer list under `required-minimum-review` group.  Team member names and
 # usernames are managed there.
-
-####################################################################################
-#  Approval Groups
-####################################################################################
-# =========================================================
-# @angular/framework-global-approvers
-# =========================================================
-#  Used for approving minor changes, large-scale refactorings, and in emergency situations.
-#
-# alxhub
-# jelbourn
-# josephperrott
-#
-# =========================================================
-# @angular/framework-global-approvers-for-docs-only-changes
-# =========================================================
-#  Used for approving minor documentation-only changes that don't require engineering review.
 
 version: 3
 
@@ -97,14 +77,6 @@ overrides:
   - if: len(groups.active.exclude("required-minimum-review").exclude("global-*")) == 0 and len(groups.approved.include("global-*")) == 0
     status: failure
     explanation: 'At least one group must match this PR. Please update an existing review group, or create a new group.'
-  # If any global dev-infra approval is given the status should be passing.
-  - if: len(groups.approved.include("global-dev-infra-approvers")) == 1
-    status: success
-    explanation: 'Passing as globally approved by dev-infra'
-  # If any global docs approval is given the status should be passing.
-  - if: len(groups.approved.include("global-docs-approvers")) == 1
-    status: success
-    explanation: 'Passing as globally approved by docs'
   # If any global approval is given the status should be passing.
   - if: len(groups.approved.include("global-approvers")) == 1
     status: success
@@ -535,44 +507,10 @@ groups:
   global-approvers:
     type: optional
     reviewers:
-      teams:
-        - framework-global-approvers
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  # Global Approvers For Docs
-  #
-  # All reviews performed for global docs approvals require
-  # using the `Reviewed-for:` specifier to set the approval
-  # specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-docs-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - framework-global-approvers-for-docs-only-changes
-    reviews:
-      request: 0
-      required: 1
-      reviewed_for: required
-
-  # =========================================================
-  # Global Approvers For Dev-Infra changes
-  #
-  # All reviews performed for global dev-infra approvals
-  # require using the `Reviewed-for:` specifier to set the
-  # approval specificity as documented at:
-  # https://docs.pullapprove.com/reviewed-for/
-  # =========================================================
-  global-dev-infra-approvers:
-    type: optional
-    reviewers:
-      teams:
-        - dev-infra-framework
+      users:
+        - alxhub
+        - jelbourn
+        - josephperrott
     reviews:
       request: 0
       required: 1
