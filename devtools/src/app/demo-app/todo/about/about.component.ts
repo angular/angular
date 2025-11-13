@@ -10,7 +10,6 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-about',
-  standalone: true,
   template: `
     <h1>About Component</h1>
     <p>This is the default about component (no guard).</p>
@@ -20,7 +19,6 @@ export class AboutComponent {}
 
 @Component({
   selector: 'app-protected-about',
-  standalone: true,
   template: `
     <h1>Protected About Component</h1>
     <p>This component is rendered when the canMatch guard allows access.</p>
