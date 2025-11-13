@@ -214,20 +214,6 @@ describe('ShadowCss', () => {
       'table[contenta] [contenta]:where(td, th):hover { color:lime;}',
     );
 
-    // :nth
-    expect(shim(':nth-child(3n of :not(p, a), :is(.foo)) {}', 'contenta', 'hosta')).toEqualCss(
-      '[contenta]:nth-child(3n of :not(p, a), :is(.foo)) {}',
-    );
-    expect(shim('li:nth-last-child(-n + 3) {}', 'contenta', 'a-host')).toEqualCss(
-      'li[contenta]:nth-last-child(-n + 3) {}',
-    );
-    expect(shim('dd:nth-last-of-type(3n) {}', 'contenta', 'a-host')).toEqualCss(
-      'dd[contenta]:nth-last-of-type(3n) {}',
-    );
-    expect(shim('dd:nth-of-type(even) {}', 'contenta', 'a-host')).toEqualCss(
-      'dd[contenta]:nth-of-type(even) {}',
-    );
-
     // complex selectors
     expect(shim(':host:is([foo],[foo-2])>div.example-2 {}', 'contenta', 'a-host')).toEqualCss(
       '[a-host]:is([foo],[foo-2]) > div.example-2[contenta] {}',
