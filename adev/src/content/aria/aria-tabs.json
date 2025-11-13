@@ -10,6 +10,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "register",
           "signatures": [
             {
@@ -125,8 +135,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 75,
-        "endLine": 115
+        "startLine": 74,
+        "endLine": 120
       }
     },
     {
@@ -134,6 +144,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "textDirection",
           "type": "any",
@@ -504,8 +524,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 133,
-        "endLine": 256
+        "startLine": 138,
+        "endLine": 264
       }
     },
     {
@@ -513,6 +533,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "any",
@@ -525,16 +555,6 @@
           "jsdocTags": [],
           "inputAlias": "id",
           "isRequiredInput": false
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
-          "jsdocTags": []
         },
         {
           "name": "tablist",
@@ -723,8 +743,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 272,
-        "endLine": 341
+        "startLine": 280,
+        "endLine": 350
       }
     },
     {
@@ -732,6 +752,16 @@
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "any",
@@ -854,8 +884,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 360,
-        "endLine": 414
+        "startLine": 369,
+        "endLine": 429
       }
     },
     {
@@ -875,8 +905,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/tabs/tabs.ts",
-        "startLine": 433,
-        "endLine": 438
+        "startLine": 448,
+        "endLine": 453
       }
     }
   ],
@@ -919,10 +949,6 @@
     ],
     [
       "signal",
-      "@angular/core"
-    ],
-    [
-      "Signal",
       "@angular/core"
     ],
     [
@@ -982,6 +1008,10 @@
       "@angular/aria/tabs"
     ],
     [
+      "Tabs.element",
+      "@angular/aria/tabs"
+    ],
+    [
       "Tabs.register",
       "@angular/aria/tabs"
     ],
@@ -991,6 +1021,10 @@
     ],
     [
       "TabList",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabList.element",
       "@angular/aria/tabs"
     ],
     [
@@ -1054,11 +1088,11 @@
       "@angular/aria/tabs"
     ],
     [
-      "Tab.id",
+      "Tab.element",
       "@angular/aria/tabs"
     ],
     [
-      "Tab.element",
+      "Tab.id",
       "@angular/aria/tabs"
     ],
     [
@@ -1099,6 +1133,10 @@
     ],
     [
       "TabPanel",
+      "@angular/aria/tabs"
+    ],
+    [
+      "TabPanel.element",
       "@angular/aria/tabs"
     ],
     [

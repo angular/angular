@@ -10,6 +10,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "textDirection",
           "type": "any",
           "memberType": "property",
@@ -233,8 +243,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 65,
-        "endLine": 162
+        "startLine": 64,
+        "endLine": 164
       }
     },
     {
@@ -242,6 +252,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "any",
@@ -263,16 +283,6 @@
             "readonly"
           ],
           "description": "The parent Toolbar UIPattern.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the widget element to be focused on navigation.",
           "jsdocTags": []
         },
         {
@@ -432,8 +442,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 179,
-        "endLine": 243
+        "startLine": 181,
+        "endLine": 245
       }
     },
     {
@@ -441,6 +451,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "toolbar",
           "type": "any",
@@ -509,8 +529,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 251,
-        "endLine": 276
+        "startLine": 253,
+        "endLine": 284
       }
     }
   ],
@@ -545,10 +565,6 @@
     ],
     [
       "signal",
-      "@angular/core"
-    ],
-    [
-      "Signal",
       "@angular/core"
     ],
     [
@@ -604,6 +620,10 @@
       "@angular/aria/toolbar"
     ],
     [
+      "Toolbar.element",
+      "@angular/aria/toolbar"
+    ],
+    [
       "Toolbar.textDirection",
       "@angular/aria/toolbar"
     ],
@@ -644,15 +664,15 @@
       "@angular/aria/toolbar"
     ],
     [
+      "ToolbarWidget.element",
+      "@angular/aria/toolbar"
+    ],
+    [
       "ToolbarWidget.id",
       "@angular/aria/toolbar"
     ],
     [
       "ToolbarWidget.toolbar",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidget.element",
       "@angular/aria/toolbar"
     ],
     [
@@ -689,6 +709,10 @@
     ],
     [
       "ToolbarWidgetGroup",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "ToolbarWidgetGroup.element",
       "@angular/aria/toolbar"
     ],
     [

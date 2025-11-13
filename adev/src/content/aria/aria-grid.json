@@ -10,6 +10,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "textDirection",
           "type": "any",
           "memberType": "property",
@@ -17,16 +27,6 @@
             "readonly"
           ],
           "description": "Text direction.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
           "jsdocTags": []
         },
         {
@@ -173,7 +173,7 @@
       "source": {
         "filePath": "src/aria/grid/grid.ts",
         "startLine": 47,
-        "endLine": 163
+        "endLine": 164
       }
     },
     {
@@ -182,6 +182,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "grid",
           "type": "any",
           "memberType": "property",
@@ -189,16 +199,6 @@
             "readonly"
           ],
           "description": "The parent grid UI pattern.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
           "jsdocTags": []
         },
         {
@@ -232,8 +232,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 176,
-        "endLine": 214
+        "startLine": 177,
+        "endLine": 215
       }
     },
     {
@@ -241,6 +241,26 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Whether the cell is currently active (focused).",
+          "jsdocTags": []
+        },
         {
           "name": "textDirection",
           "type": "any",
@@ -263,16 +283,6 @@
           "jsdocTags": [],
           "inputAlias": "id",
           "isRequiredInput": false
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
-          "jsdocTags": []
         },
         {
           "name": "role",
@@ -437,8 +447,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 229,
-        "endLine": 340
+        "startLine": 230,
+        "endLine": 345
       }
     },
     {
@@ -448,12 +458,22 @@
       "members": [
         {
           "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly"
           ],
-          "description": "The host native element.",
+          "description": "Whether the widget is currently active (focused).",
           "jsdocTags": []
         },
         {
@@ -637,8 +657,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 358,
-        "endLine": 449
+        "startLine": 363,
+        "endLine": 458
       }
     }
   ],
@@ -716,11 +736,11 @@
       "@angular/aria/grid"
     ],
     [
-      "Grid.textDirection",
+      "Grid.element",
       "@angular/aria/grid"
     ],
     [
-      "Grid.element",
+      "Grid.textDirection",
       "@angular/aria/grid"
     ],
     [
@@ -764,11 +784,11 @@
       "@angular/aria/grid"
     ],
     [
-      "GridRow.grid",
+      "GridRow.element",
       "@angular/aria/grid"
     ],
     [
-      "GridRow.element",
+      "GridRow.grid",
       "@angular/aria/grid"
     ],
     [
@@ -780,15 +800,19 @@
       "@angular/aria/grid"
     ],
     [
+      "GridCell.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.active",
+      "@angular/aria/grid"
+    ],
+    [
       "GridCell.textDirection",
       "@angular/aria/grid"
     ],
     [
       "GridCell.id",
-      "@angular/aria/grid"
-    ],
-    [
-      "GridCell.element",
       "@angular/aria/grid"
     ],
     [
@@ -841,6 +865,10 @@
     ],
     [
       "GridCellWidget.element",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.active",
       "@angular/aria/grid"
     ],
     [

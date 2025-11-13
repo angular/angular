@@ -20,6 +20,16 @@
           "jsdocTags": []
         },
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "textDirection",
           "type": "any",
           "memberType": "property",
@@ -256,7 +266,7 @@
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
         "startLine": 47,
-        "endLine": 206
+        "endLine": 209
       }
     },
     {
@@ -264,6 +274,24 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
+          "name": "active",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [],
+          "description": "Whether the option is currently active (focused).",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "any",
@@ -295,16 +323,6 @@
             "protected"
           ],
           "description": "The parent Listbox UIPattern.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "protected"
-          ],
-          "description": "A reference to the option element to be focused on navigation.",
           "jsdocTags": []
         },
         {
@@ -375,8 +393,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 223,
-        "endLine": 277
+        "startLine": 226,
+        "endLine": 283
       }
     }
   ],
@@ -466,6 +484,10 @@
       "@angular/aria/listbox"
     ],
     [
+      "Listbox.element",
+      "@angular/aria/listbox"
+    ],
+    [
       "Listbox.textDirection",
       "@angular/aria/listbox"
     ],
@@ -530,6 +552,14 @@
       "@angular/aria/listbox"
     ],
     [
+      "Option.element",
+      "@angular/aria/listbox"
+    ],
+    [
+      "Option.active",
+      "@angular/aria/listbox"
+    ],
+    [
       "Option.id",
       "@angular/aria/listbox"
     ],
@@ -539,10 +569,6 @@
     ],
     [
       "Option.listbox",
-      "@angular/aria/listbox"
-    ],
-    [
-      "Option.element",
       "@angular/aria/listbox"
     ],
     [
