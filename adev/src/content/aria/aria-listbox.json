@@ -14,7 +14,7 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "readonly"
           ],
           "description": "A unique identifier for the listbox.",
           "jsdocTags": []
@@ -68,7 +68,7 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "Whether to allow disabled items in the list to receive focus.",
+          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
           "jsdocTags": []
         },
         {
@@ -76,7 +76,7 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "The focus strategy used by the list.",
+          "description": "The focus strategy used by the list.\n- `roving`: Focus is moved to the active item using `tabindex`.\n- `activedescendant`: Focus remains on the listbox container, and `aria-activedescendant` is used to indicate the active item.",
           "jsdocTags": []
         },
         {
@@ -84,7 +84,7 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "The selection strategy used by the list.",
+          "description": "The selection strategy used by the list.\n- `follow`: The focused item is automatically selected.\n- `explicit`: Items are selected explicitly by the user (e.g., via click or spacebar).",
           "jsdocTags": []
         },
         {
@@ -116,7 +116,7 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [],
-          "description": "The values of the current selected items.",
+          "description": "The values of the currently selected items.",
           "jsdocTags": []
         },
         {
@@ -240,19 +240,23 @@
           "name": "V"
         }
       ],
-      "description": "A listbox container.\n\nListboxes are used to display a list of items for a user to select from. The Listbox is meant\nto be used in conjunction with Option as follows:\n\n```html\n<ul ngListbox>\n  <li [value]=\"1\" ngOption>Item 1</li>\n  <li [value]=\"2\" ngOption>Item 2</li>\n  <li [value]=\"3\" ngOption>Item 3</li>\n</ul>\n```",
+      "description": "Represents a container used to display a list of items for a user to select from.\n\nThe `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\nselectable list. It supports single and multiple selection modes, as well as various focus and\norientation strategies.\n\n```html\n<ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">",
       "jsdocTags": [
+        {
+          "name": "for",
+          "comment": "(item of items; track item.id) {\n<li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n{{item.name}}\n</li>\n}\n</ul>\n```"
+        },
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A listbox container.\n *\n * Listboxes are used to display a list of items for a user to select from. The Listbox is meant\n * to be used in conjunction with Option as follows:\n *\n * ```html\n * <ul ngListbox>\n *   <li [value]=\"1\" ngOption>Item 1</li>\n *   <li [value]=\"2\" ngOption>Item 2</li>\n *   <li [value]=\"3\" ngOption>Item 3</li>\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents a container used to display a list of items for a user to select from.\n *\n * The `ngListbox` is meant to be used in conjunction with `ngOption` directives to create a\n * selectable list. It supports single and multiple selection modes, as well as various focus and\n * orientation strategies.\n *\n * ```html\n * <ul ngListbox [(value)]=\"selectedItems\" [multi]=\"true\" orientation=\"vertical\">\n *   @for (item of items; track item.id) {\n *     <li ngOption [value]=\"item.id\" [label]=\"item.name\" [disabled]=\"item.disabled\">\n *       {{item.name}}\n *     </li>\n *   }\n * </ul>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 44,
-        "endLine": 197
+        "startLine": 47,
+        "endLine": 206
       }
     },
     {
@@ -265,10 +269,13 @@
           "type": "any",
           "memberType": "property",
           "memberTags": [
-            "protected"
+            "readonly",
+            "input"
           ],
           "description": "A unique identifier for the option.",
-          "jsdocTags": []
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
           "name": "searchTerm",
@@ -352,14 +359,14 @@
           "name": "V"
         }
       ],
-      "description": "A selectable option in a Listbox.",
+      "description": "A selectable option in an `ngListbox`.\n\nThis directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n`ngListbox`. The `value` input is used to identify the option, and the `label` input provides\nthe accessible name for the option.\n\n```html\n<li ngOption value=\"item-id\" label=\"Item Name\">\n  Item Name\n</li>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A selectable option in a Listbox.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A selectable option in an `ngListbox`.\n *\n * This directive should be applied to an element (e.g., `<li>`, `<div>`) within an\n * `ngListbox`. The `value` input is used to identify the option, and the `label` input provides\n * the accessible name for the option.\n *\n * ```html\n * <li ngOption value=\"item-id\" label=\"Item Name\">\n *   Item Name\n * </li>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngOption]",
@@ -368,8 +375,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 204,
-        "endLine": 263
+        "startLine": 223,
+        "endLine": 277
       }
     }
   ],

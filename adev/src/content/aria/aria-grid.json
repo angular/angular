@@ -63,7 +63,7 @@
             "readonly",
             "input"
           ],
-          "description": "Whether to allow disabled items to receive focus.",
+          "description": "Whether to allow disabled items to receive focus. When `true`, disabled items are\nfocusable but not interactive. When `false`, disabled items are skipped during navigation.",
           "jsdocTags": [],
           "inputAlias": "softDisabled",
           "isRequiredInput": false
@@ -76,7 +76,7 @@
             "readonly",
             "input"
           ],
-          "description": "The focus strategy used by the grid.",
+          "description": "The focus strategy used by the grid.\n- `roving`: Focus is moved to the active cell using `tabindex`.\n- `activedescendant`: Focus remains on the grid container, and `aria-activedescendant` is used to indicate the active cell.",
           "jsdocTags": [],
           "inputAlias": "focusMode",
           "isRequiredInput": false
@@ -89,7 +89,7 @@
             "readonly",
             "input"
           ],
-          "description": "The wrapping behavior for keyboard navigation along the row axis.",
+          "description": "The wrapping behavior for keyboard navigation along the row axis.\n- `continuous`: Navigation wraps from the last row to the first, and vice-versa.\n- `loop`: Navigation wraps within the current row.\n- `nowrap`: Navigation stops at the first/last item in the row.",
           "jsdocTags": [],
           "inputAlias": "rowWrap",
           "isRequiredInput": false
@@ -102,7 +102,7 @@
             "readonly",
             "input"
           ],
-          "description": "The wrapping behavior for keyboard navigation along the column axis.",
+          "description": "The wrapping behavior for keyboard navigation along the column axis.\n- `continuous`: Navigation wraps from the last column to the first, and vice-versa.\n- `loop`: Navigation wraps within the current column.\n- `nowrap`: Navigation stops at the first/last item in the column.",
           "jsdocTags": [],
           "inputAlias": "colWrap",
           "isRequiredInput": false
@@ -128,7 +128,7 @@
             "readonly",
             "input"
           ],
-          "description": "The selection strategy used by the grid.",
+          "description": "The selection strategy used by the grid.\n- `follow`: The focused cell is automatically selected.\n- `explicit`: Cells are selected explicitly by the user (e.g., via click or spacebar).",
           "jsdocTags": [],
           "inputAlias": "selectionMode",
           "isRequiredInput": false
@@ -148,14 +148,22 @@
         }
       ],
       "generics": [],
-      "description": "A directive that provides grid-based navigation and selection behavior.",
+      "description": "The container for a grid. It provides keyboard navigation and focus management for the grid's\nrows and cells. It manages the overall behavior of the grid, including focus\nwrapping, selection, and disabled states.\n\n```html\n<table ngGrid [multi]=\"true\" [enableSelection]=\"true\">",
       "jsdocTags": [
+        {
+          "name": "for",
+          "comment": "(row of gridData; track row) {\n<tr ngGridRow>"
+        },
+        {
+          "name": "for",
+          "comment": "(cell of row; track cell) {\n <td ngGridCell [disabled]=\"cell.disabled\">\n   {{cell.value}}\n </td>\n}\n</tr>\n}\n</table>\n```"
+        },
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A directive that provides grid-based navigation and selection behavior.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * The container for a grid. It provides keyboard navigation and focus management for the grid's\n * rows and cells. It manages the overall behavior of the grid, including focus\n * wrapping, selection, and disabled states.\n *\n * ```html\n * <table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n *   @for (row of gridData; track row) {\n *     <tr ngGridRow>\n *       @for (cell of row; track cell) {\n *         <td ngGridCell [disabled]=\"cell.disabled\">\n *           {{cell.value}}\n *         </td>\n *       }\n *     </tr>\n *   }\n * </table>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGrid]",
@@ -164,8 +172,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 31,
-        "endLine": 124
+        "startLine": 47,
+        "endLine": 163
       }
     },
     {
@@ -194,19 +202,6 @@
           "jsdocTags": []
         },
         {
-          "name": "role",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly",
-            "input"
-          ],
-          "description": "The ARIA role for the row.",
-          "jsdocTags": [],
-          "inputAlias": "role",
-          "isRequiredInput": false
-        },
-        {
           "name": "rowIndex",
           "type": "any",
           "memberType": "property",
@@ -221,14 +216,14 @@
         }
       ],
       "generics": [],
-      "description": "A directive that represents a row in a grid.",
+      "description": "Represents a row within a grid. It is a container for `ngGridCell` directives.\n\n```html\n<tr ngGridRow>\n  <!-- ... cells ... -->\n</tr>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A directive that represents a row in a grid.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents a row within a grid. It is a container for `ngGridCell` directives.\n *\n * ```html\n * <tr ngGridRow>\n *   <!-- ... cells ... -->\n * </tr>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridRow]",
@@ -237,8 +232,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 131,
-        "endLine": 171
+        "startLine": 176,
+        "endLine": 214
       }
     },
     {
@@ -246,6 +241,29 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "textDirection",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "Text direction.",
+          "jsdocTags": []
+        },
+        {
+          "name": "id",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "A unique identifier for the cell.",
+          "jsdocTags": [],
+          "inputAlias": "id",
+          "isRequiredInput": false
+        },
         {
           "name": "element",
           "type": "any",
@@ -361,17 +379,56 @@
           "jsdocTags": [],
           "inputAlias": "selectable",
           "isRequiredInput": false
+        },
+        {
+          "name": "orientation",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Orientation of the widgets in the cell.",
+          "jsdocTags": [],
+          "inputAlias": "orientation",
+          "isRequiredInput": false
+        },
+        {
+          "name": "wrap",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether widgets navigation wraps.",
+          "jsdocTags": [],
+          "inputAlias": "wrap",
+          "isRequiredInput": false
+        },
+        {
+          "name": "tabindex",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex override.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
         }
       ],
       "generics": [],
-      "description": "A directive that represents a cell in a grid.",
+      "description": "Represents a cell within a grid row. It is the primary focusable element\nwithin the grid. It can be disabled and can have its selection state managed\nthrough the `selected` input.\n\n```html\n<td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n  Cell Content\n</td>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A directive that represents a cell in a grid.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents a cell within a grid row. It is the primary focusable element\n * within the grid. It can be disabled and can have its selection state managed\n * through the `selected` input.\n *\n * ```html\n * <td ngGridCell [disabled]=\"isDisabled\" [(selected)]=\"isSelected\">\n *   Cell Content\n * </td>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCell]",
@@ -380,8 +437,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 178,
-        "endLine": 251
+        "startLine": 229,
+        "endLine": 340
       }
     },
     {
@@ -400,32 +457,114 @@
           "jsdocTags": []
         },
         {
-          "name": "activate",
+          "name": "id",
           "type": "any",
           "memberType": "property",
           "memberTags": [
             "readonly",
-            "input",
-            "output"
+            "input"
           ],
-          "description": "Whether the widget is activated and the grid navigation should be paused.",
+          "description": "A unique identifier for the widget.",
           "jsdocTags": [],
-          "inputAlias": "activate",
-          "isRequiredInput": false,
-          "outputAlias": "activateChange"
+          "inputAlias": "id",
+          "isRequiredInput": false
         },
         {
-          "name": "focus",
+          "name": "widgetType",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The type of widget, which determines how it is activated.",
+          "jsdocTags": [],
+          "inputAlias": "widgetType",
+          "isRequiredInput": false
+        },
+        {
+          "name": "disabled",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "Whether the widget is disabled.",
+          "jsdocTags": [],
+          "inputAlias": "disabled",
+          "isRequiredInput": false
+        },
+        {
+          "name": "focusTarget",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The target that will receive focus instead of the widget.",
+          "jsdocTags": [],
+          "inputAlias": "focusTarget",
+          "isRequiredInput": false
+        },
+        {
+          "name": "onActivate",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "output"
+          ],
+          "description": "Emits when the widget is activated.",
+          "jsdocTags": [],
+          "outputAlias": "onActivate"
+        },
+        {
+          "name": "onDeactivate",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "output"
+          ],
+          "description": "Emits when the widget is deactivated.",
+          "jsdocTags": [],
+          "outputAlias": "onDeactivate"
+        },
+        {
+          "name": "tabindex",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input"
+          ],
+          "description": "The tabindex override.",
+          "jsdocTags": [],
+          "inputAlias": "tabindex",
+          "isRequiredInput": false
+        },
+        {
+          "name": "isActivated",
+          "type": "Signal<boolean>",
+          "memberType": "getter",
+          "memberTags": [],
+          "description": "Whether the widget is activated.",
+          "jsdocTags": []
+        },
+        {
+          "name": "activate",
           "signatures": [
             {
-              "name": "focus",
+              "name": "activate",
               "entryType": "function",
-              "description": "Focuses the widget.",
+              "description": "Activates the widget.",
               "generics": [],
               "isNewType": false,
               "jsdocTags": [],
               "params": [],
-              "rawComment": "/** Focuses the widget. */",
+              "rawComment": "/** Activates the widget. */",
               "returnType": "void"
             }
           ],
@@ -434,29 +573,62 @@
             "isNewType": false,
             "returnType": "void",
             "generics": [],
-            "name": "focus",
-            "description": "Focuses the widget.",
+            "name": "activate",
+            "description": "Activates the widget.",
             "entryType": "function",
             "jsdocTags": [],
-            "rawComment": "/** Focuses the widget. */"
+            "rawComment": "/** Activates the widget. */"
           },
           "entryType": "function",
-          "description": "Focuses the widget.",
+          "description": "Activates the widget.",
           "jsdocTags": [],
-          "rawComment": "/** Focuses the widget. */",
+          "rawComment": "/** Activates the widget. */",
+          "memberType": "method",
+          "memberTags": []
+        },
+        {
+          "name": "deactivate",
+          "signatures": [
+            {
+              "name": "deactivate",
+              "entryType": "function",
+              "description": "Deactivates the widget.",
+              "generics": [],
+              "isNewType": false,
+              "jsdocTags": [],
+              "params": [],
+              "rawComment": "/** Deactivates the widget. */",
+              "returnType": "void"
+            }
+          ],
+          "implementation": {
+            "params": [],
+            "isNewType": false,
+            "returnType": "void",
+            "generics": [],
+            "name": "deactivate",
+            "description": "Deactivates the widget.",
+            "entryType": "function",
+            "jsdocTags": [],
+            "rawComment": "/** Deactivates the widget. */"
+          },
+          "entryType": "function",
+          "description": "Deactivates the widget.",
+          "jsdocTags": [],
+          "rawComment": "/** Deactivates the widget. */",
           "memberType": "method",
           "memberTags": []
         }
       ],
       "generics": [],
-      "description": "A directive that represents a widget inside a grid cell.",
+      "description": "Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\ninteract with the widget.\n\nWhen the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\nnavigation is temporarily suspended to allow the widget to handle keyboard\nevents.\n\n```html\n<td ngGridCell>\n  <button ngGridCellWidget>Click Me</button>\n</td>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A directive that represents a widget inside a grid cell.\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Represents an interactive element inside a `GridCell`. It allows for pausing grid navigation to\n * interact with the widget.\n *\n * When the user interacts with the widget (e.g., by typing in an input or opening a menu), grid\n * navigation is temporarily suspended to allow the widget to handle keyboard\n * events.\n *\n * ```html\n * <td ngGridCell>\n *   <button ngGridCellWidget>Click Me</button>\n * </td>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngGridCellWidget]",
@@ -465,8 +637,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 258,
-        "endLine": 290
+        "startLine": 358,
+        "endLine": 449
       }
     }
   ],
@@ -488,10 +660,6 @@
       "@angular/core"
     ],
     [
-      "contentChild",
-      "@angular/core"
-    ],
-    [
       "contentChildren",
       "@angular/core"
     ],
@@ -509,6 +677,10 @@
     ],
     [
       "input",
+      "@angular/core"
+    ],
+    [
+      "output",
       "@angular/core"
     ],
     [
@@ -600,15 +772,19 @@
       "@angular/aria/grid"
     ],
     [
-      "GridRow.role",
-      "@angular/aria/grid"
-    ],
-    [
       "GridRow.rowIndex",
       "@angular/aria/grid"
     ],
     [
       "GridCell",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.textDirection",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.id",
       "@angular/aria/grid"
     ],
     [
@@ -648,6 +824,18 @@
       "@angular/aria/grid"
     ],
     [
+      "GridCell.orientation",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.wrap",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCell.tabindex",
+      "@angular/aria/grid"
+    ],
+    [
       "GridCellWidget",
       "@angular/aria/grid"
     ],
@@ -656,11 +844,43 @@
       "@angular/aria/grid"
     ],
     [
+      "GridCellWidget.id",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.widgetType",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.disabled",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.focusTarget",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.onActivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.onDeactivate",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.tabindex",
+      "@angular/aria/grid"
+    ],
+    [
+      "GridCellWidget.isActivated",
+      "@angular/aria/grid"
+    ],
+    [
       "GridCellWidget.activate",
       "@angular/aria/grid"
     ],
     [
-      "GridCellWidget.focus",
+      "GridCellWidget.deactivate",
       "@angular/aria/grid"
     ]
   ]
