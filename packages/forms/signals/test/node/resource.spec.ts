@@ -417,4 +417,14 @@ describe('resources', () => {
     req3.flush(true);
     await appRef.whenStable();
   });
+
+  it('should not allow accessing resource metadata on a field that does not define its params', () => {
+    const RES = createMetadataKey({
+      wrap: (params: Signal<string | undefined>) => resource({params, loader: async () => 'hi'}),
+    });
+
+    const f = form(signal(''), {injector: TestBed.inject(Injector)});
+
+    expect(f().metadata(RES)).toBe(undefined);
+  });
 });

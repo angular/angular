@@ -21,23 +21,24 @@ export class FieldMetadataState {
 
   /** Gets the value of an `MetadataKey` for the field. */
   get<T>(key: MetadataKey<T, unknown, unknown>): T {
-    // Metadata comes with an initial value, and are considered to exist for every field.
-    // If no logic explicitly contributes values for the metadata, it is just considered to be the
-    // initial value. Therefore if the user asks for metadata for a field, we just create its
-    // computed on the fly.
-    if (!this.metadata.has(key)) {
-      const logic = this.node.logicNode.logic.getMetadata(key);
-      let result = computed(() => logic.compute(this.node.context)) as T;
-      if (key.wrap) {
-        result = untracked(() =>
-          runInInjectionContext(this.node.structure.injector, () =>
-            key.wrap!(result as Signal<unknown>),
-          ),
-        );
+    // We create metadata computeds lazily, the first time they are accessed.
+    // Some metadata inherently exists for all fields, so we always create it,
+    // otherwise we first check if there is any logic on this node associated with the key before creating it.
+    if (key.inherent || this.has(key)) {
+      if (!this.metadata.has(key)) {
+        const logic = this.node.logicNode.logic.getMetadata(key);
+        let result = computed(() => logic.compute(this.node.context)) as T;
+        if (key.wrap) {
+          result = untracked(() =>
+            runInInjectionContext(this.node.structure.injector, () =>
+              key.wrap!(result as Signal<unknown>),
+            ),
+          );
+        }
+        this.metadata.set(key, result);
       }
-      this.metadata.set(key, result);
     }
-    return this.metadata.get(key)! as T;
+    return this.metadata.get(key) as T;
   }
 
   /** Checks whether the current metadata state has the given metadata key. */

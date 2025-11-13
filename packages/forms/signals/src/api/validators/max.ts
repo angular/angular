@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Signal} from '@angular/core';
 import {metadata, validate} from '../logic';
 import {createMetadataKey, MAX} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
@@ -33,7 +34,7 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
   maxValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MAX_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
+  const MAX_MEMO = metadata(path, createMetadataKey<Signal<number | undefined>>(), (ctx) =>
     typeof maxValue === 'number' ? maxValue : maxValue(ctx),
   );
   metadata(path, MAX, ({state}) => state.metadata(MAX_MEMO)!());

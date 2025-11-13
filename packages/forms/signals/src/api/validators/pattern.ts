@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Signal} from '@angular/core';
 import {metadata, validate} from '../logic';
 import {createMetadataKey, PATTERN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
@@ -32,7 +33,7 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = metadata(path, createMetadataKey<RegExp>(), (ctx) =>
+  const PATTERN_MEMO = metadata(path, createMetadataKey<Signal<RegExp | undefined>>(), (ctx) =>
     pattern instanceof RegExp ? pattern : pattern(ctx),
   );
   metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());

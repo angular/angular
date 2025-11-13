@@ -89,14 +89,13 @@ export class MetadataKey<TGet, TSet, TAcc> {
   /** Use {@link reducedMetadataKey}. */
   protected constructor(
     readonly reducer: MetadataReducer<TAcc, TSet>,
-    readonly wrap?: (s: Signal<TAcc>) => TGet,
+    readonly wrap: ((s: Signal<TAcc>) => TGet) | undefined,
+    readonly inherent: boolean,
   ) {}
 }
 
 export type MetadataSetterType<TKey> =
   TKey extends MetadataKey<any, infer TSet, any> ? TSet : never;
-
-export type ComputedMetadataKey<TValue, TSet = TValue> = MetadataKey<Signal<TValue>, TSet, TValue>;
 
 export type ResourceMetadataKey<TResult, TParams> = MetadataKey<
   ResourceRef<TResult>,
@@ -104,25 +103,62 @@ export type ResourceMetadataKey<TResult, TParams> = MetadataKey<
   TParams | undefined
 >;
 
-export function createMetadataKey<TValue>(): ComputedMetadataKey<TValue | undefined>;
-export function createMetadataKey<TValue, TSet>(opts: {
-  reducer: MetadataReducer<TValue, TSet>;
-}): ComputedMetadataKey<TValue, TSet>;
+export type UnwrapSignal<T> = T extends Signal<infer TValue> ? TValue : never;
+
+export function createMetadataKey<TGet extends Signal<any>>(opts?: {
+  inherent?: false;
+}): MetadataKey<
+  Signal<UnwrapSignal<TGet> | undefined> | undefined,
+  UnwrapSignal<TGet>,
+  UnwrapSignal<TGet> | undefined
+>;
+export function createMetadataKey<TGet extends Signal<any>, TSet>(opts: {
+  reducer: MetadataReducer<UnwrapSignal<TGet>, TSet>;
+  inherent?: false;
+}): MetadataKey<TGet | undefined, TSet, UnwrapSignal<TGet>>;
 export function createMetadataKey<TGet, TSet>(opts: {
   wrap: (s: Signal<TSet | undefined>) => TGet;
-}): MetadataKey<TGet, TSet | undefined, TSet | undefined>;
+  inherent?: false;
+}): MetadataKey<TGet | undefined, TSet, TSet | undefined>;
 export function createMetadataKey<TGet, TSet, TAcc>(opts: {
   reducer: MetadataReducer<TAcc, TSet>;
   wrap: (s: Signal<TAcc>) => TGet;
+  inherent?: false;
+}): MetadataKey<TGet | undefined, TSet, TAcc>;
+export function createMetadataKey<TGet extends Signal<any>>(opts: {
+  inherent: true;
+}): MetadataKey<
+  Signal<UnwrapSignal<TGet> | undefined>,
+  UnwrapSignal<TGet>,
+  UnwrapSignal<TGet> | undefined
+>;
+export function createMetadataKey<TGet extends Signal<any>, TSet>(opts: {
+  reducer: MetadataReducer<UnwrapSignal<TGet>, TSet>;
+  inherent: true;
+}): MetadataKey<TGet, TSet, UnwrapSignal<TGet>>;
+export function createMetadataKey<TGet, TSet>(opts: {
+  wrap: (s: Signal<TSet | undefined>) => TGet;
+  inherent: true;
+}): MetadataKey<TGet, TSet, TSet | undefined>;
+export function createMetadataKey<TGet, TSet, TAcc>(opts: {
+  reducer: MetadataReducer<TAcc, TSet>;
+  wrap: (s: Signal<TAcc>) => TGet;
+  inherent: true;
 }): MetadataKey<TGet, TSet, TAcc>;
 export function createMetadataKey<TGet, TSet, TAcc>(opts?: {
   reducer?: MetadataReducer<TAcc, TSet>;
   wrap?: (s: Signal<TAcc>) => TGet;
+  inherent?: boolean;
 }): MetadataKey<TGet, TSet, TAcc> {
   return new (MetadataKey as new (
     reducer: MetadataReducer<TAcc, TSet>,
-    wrap?: (s: Signal<TAcc>) => TGet,
-  ) => MetadataKey<TGet, TSet, TAcc>)(opts?.reducer ?? overrideMetadataReducer<any>(), opts?.wrap);
+    wrap: ((s: Signal<TAcc>) => TGet) | undefined,
+    inherent: boolean,
+  ) => MetadataKey<TGet, TSet, TAcc>)(
+    opts?.reducer ?? overrideMetadataReducer<any>(),
+    opts?.wrap,
+    !!opts?.inherent,
+  );
 }
 
 /**
@@ -131,8 +167,9 @@ export function createMetadataKey<TGet, TSet, TAcc>(opts?: {
  * @category validation
  * @experimental 21.0.0
  */
-export const REQUIRED: ComputedMetadataKey<boolean> = createMetadataKey({
+export const REQUIRED: MetadataKey<Signal<boolean>, boolean, boolean> = createMetadataKey({
   reducer: orMetadataReducer(),
+  inherent: true,
 });
 
 /**
@@ -141,8 +178,13 @@ export const REQUIRED: ComputedMetadataKey<boolean> = createMetadataKey({
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN: ComputedMetadataKey<number | undefined> = createMetadataKey({
+export const MIN: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey({
   reducer: maxMetadataReducer(),
+  inherent: true,
 });
 
 /**
@@ -151,8 +193,13 @@ export const MIN: ComputedMetadataKey<number | undefined> = createMetadataKey({
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX: ComputedMetadataKey<number | undefined> = createMetadataKey({
+export const MAX: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey({
   reducer: minMetadataReducer(),
+  inherent: true,
 });
 
 /**
@@ -161,8 +208,13 @@ export const MAX: ComputedMetadataKey<number | undefined> = createMetadataKey({
  * @category validation
  * @experimental 21.0.0
  */
-export const MIN_LENGTH: ComputedMetadataKey<number | undefined> = createMetadataKey({
+export const MIN_LENGTH: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey({
   reducer: maxMetadataReducer(),
+  inherent: true,
 });
 
 /**
@@ -171,8 +223,13 @@ export const MIN_LENGTH: ComputedMetadataKey<number | undefined> = createMetadat
  * @category validation
  * @experimental 21.0.0
  */
-export const MAX_LENGTH: ComputedMetadataKey<number | undefined> = createMetadataKey({
+export const MAX_LENGTH: MetadataKey<
+  Signal<number | undefined>,
+  number | undefined,
+  number | undefined
+> = createMetadataKey({
   reducer: minMetadataReducer(),
+  inherent: true,
 });
 
 /**
@@ -181,6 +238,11 @@ export const MAX_LENGTH: ComputedMetadataKey<number | undefined> = createMetadat
  * @category validation
  * @experimental 21.0.0
  */
-export const PATTERN: ComputedMetadataKey<RegExp[], RegExp | undefined> = createMetadataKey({
-  reducer: listMetadataReducer(),
+export const PATTERN: MetadataKey<
+  Signal<RegExp[]>,
+  RegExp | undefined,
+  RegExp[]
+> = createMetadataKey({
+  reducer: listMetadataReducer<RegExp>(),
+  inherent: true,
 });

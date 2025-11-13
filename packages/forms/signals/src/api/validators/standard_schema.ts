@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {resource, ɵisPromise} from '@angular/core';
+import {resource, ɵisPromise, type Signal} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
@@ -68,7 +68,7 @@ export function validateStandardSchema<TSchema, TModel extends IgnoreUnknownProp
   type Result = StandardSchemaV1.Result<TSchema> | Promise<StandardSchemaV1.Result<TSchema>>;
   const VALIDATOR_MEMO = metadata(
     path as SchemaPath<TModel>,
-    createMetadataKey<Result>(),
+    createMetadataKey<Signal<Result>>(),
     ({value}) => {
       return schema['~standard'].validate(value());
     },

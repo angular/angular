@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Signal} from '@angular/core';
 import {metadata, validate} from '../logic';
 import {createMetadataKey, MIN_LENGTH} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
@@ -43,7 +44,7 @@ export function minLength<
   minLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
+  const MIN_LENGTH_MEMO = metadata(path, createMetadataKey<Signal<number | undefined>>(), (ctx) =>
     typeof minLength === 'number' ? minLength : minLength(ctx),
   );
   metadata(path, MIN_LENGTH, ({state}) => state.metadata(MIN_LENGTH_MEMO)!());

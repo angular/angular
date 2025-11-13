@@ -159,7 +159,9 @@ export function validateAsync<TValue, TParams, TResult, TPathKind extends PathKi
   assertPathIsCurrent(path);
   const pathNode = FieldPathNode.unwrapFieldPath(path);
 
-  const RESOURCE = createMetadataKey({wrap: opts.factory});
+  const RESOURCE = createMetadataKey<ReturnType<typeof opts.factory>, TParams | undefined>({
+    wrap: opts.factory,
+  });
   metadata(path, RESOURCE, (ctx) => {
     const node = ctx.stateOf(path) as FieldNode;
     const validationState = node.validationState;

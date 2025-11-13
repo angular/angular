@@ -138,6 +138,7 @@ describe('Field Context', () => {
         reduce: (_: readonly string[], n: readonly string[]) => n,
         getInitial: () => [],
       },
+      inherent: true,
     });
     const f = form(
       signal({x: [1]}),

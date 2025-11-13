@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Signal} from '@angular/core';
 import {metadata, validate} from '../logic';
 import {createMetadataKey, REQUIRED} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
@@ -35,7 +36,7 @@ export function required<TValue, TPathKind extends PathKind = PathKind.Root>(
     when?: NoInfer<LogicFn<TValue, boolean, TPathKind>>;
   },
 ): void {
-  const REQUIRED_MEMO = metadata(path, createMetadataKey<boolean>(), (ctx) =>
+  const REQUIRED_MEMO = metadata(path, createMetadataKey<Signal<boolean>>(), (ctx) =>
     config?.when ? config.when(ctx) : true,
   );
   metadata(path, REQUIRED, ({state}) => state.metadata(REQUIRED_MEMO)!()!);

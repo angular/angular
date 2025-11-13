@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import type {Signal} from '@angular/core';
 import {metadata, validate} from '../logic';
 import {createMetadataKey, MIN} from '../metadata';
 import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
@@ -33,7 +34,7 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, createMetadataKey<number>(), (ctx) =>
+  const MIN_MEMO = metadata(path, createMetadataKey<Signal<number | undefined>>(), (ctx) =>
     typeof minValue === 'number' ? minValue : minValue(ctx),
   );
   metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
