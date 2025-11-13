@@ -572,7 +572,6 @@ const apiClientFactory = () => {
   return new ApiClient(http, baseUrl, rateLimitMs);
 };
 
-
 // Provider configuration
 export const apiClientProvider = {
   provide: ApiClient,
