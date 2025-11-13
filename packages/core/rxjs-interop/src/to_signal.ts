@@ -68,6 +68,11 @@ export interface ToSignalOptions<T> {
    * Equality comparisons are executed against the initial value if one is provided.
    */
   equal?: ValueEqualityFn<T>;
+
+  /**
+   * A debug name for the signal. Used in Angular DevTools to identify the signal.
+   */
+  debugName?: string;
 }
 
 // Base case: no options -> `undefined` in the result type.
@@ -147,12 +152,15 @@ export function toSignal<T, U = undefined>(
   let state: WritableSignal<State<T | U>>;
   if (options?.requireSync) {
     // Initially the signal is in a `NoValue` state.
-    state = signal({kind: StateKind.NoValue}, {equal});
+    state = signal(
+      {kind: StateKind.NoValue},
+      {equal, ...(ngDevMode ? createDebugNameObject(options?.debugName, 'state') : undefined)},
+    );
   } else {
     // If an initial value was passed, use it. Otherwise, use `undefined` as the initial value.
     state = signal<State<T | U>>(
       {kind: StateKind.Value, value: options?.initialValue as U},
-      {equal},
+      {equal, ...(ngDevMode ? createDebugNameObject(options?.debugName, 'state') : undefined)},
     );
   }
 
@@ -207,7 +215,10 @@ export function toSignal<T, U = undefined>(
           );
       }
     },
-    {equal: options?.equal},
+    {
+      equal: options?.equal,
+      ...(ngDevMode ? createDebugNameObject(options?.debugName, 'source') : undefined),
+    },
   );
 }
 
@@ -216,6 +227,18 @@ function makeToSignalEqual<T>(
 ): ValueEqualityFn<State<T>> {
   return (a, b) =>
     a.kind === StateKind.Value && b.kind === StateKind.Value && userEquality(a.value, b.value);
+}
+
+/**
+ * Creates a debug name object for an internal toSignal signal.
+ */
+function createDebugNameObject(
+  toSignalDebugName: string | undefined,
+  internalSignalDebugName: string,
+): {debugName?: string} {
+  return {
+    debugName: `toSignal${toSignalDebugName ? '#' + toSignalDebugName : ''}.${internalSignalDebugName}`,
+  };
 }
 
 const enum StateKind {

@@ -26,6 +26,7 @@ import {
   Subscribable,
   Unsubscribable,
 } from 'rxjs';
+import {ReactiveNode, SIGNAL} from '../../primitives/signals';
 
 describe('toSignal()', () => {
   it(
@@ -39,6 +40,28 @@ describe('toSignal()', () => {
       expect(counter()).toBe(1);
       counter$.next(3);
       expect(counter()).toBe(3);
+    }),
+  );
+
+  it(
+    'should set debugName when a debugName is provided',
+    test(() => {
+      const counter$ = new BehaviorSubject(0);
+      const counter = toSignal(counter$, {debugName: 'counterSignal'});
+      const node = counter[SIGNAL] as ReactiveNode;
+
+      expect(node.debugName).toBe('toSignal#counterSignal.source');
+    }),
+  );
+
+  it(
+    'should set debugName when a debugName is provided together with requireSync',
+    test(() => {
+      const counter$ = new BehaviorSubject(0);
+      const counter = toSignal(counter$, {debugName: 'counterSignal', requireSync: true});
+      const node = counter[SIGNAL] as ReactiveNode;
+
+      expect(node.debugName).toBe('toSignal#counterSignal.source');
     }),
   );
 

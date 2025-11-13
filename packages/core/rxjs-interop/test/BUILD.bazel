@@ -7,6 +7,7 @@ ts_project(
     deps = [
         "//:node_modules/rxjs",
         "//packages/core",
+        "//packages/core/primitives/signals",
         "//packages/core/rxjs-interop",
         "//packages/core/testing",
         "//packages/private/testing",
