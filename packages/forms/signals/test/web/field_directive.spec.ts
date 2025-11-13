@@ -1284,55 +1284,79 @@ describe('field directive', () => {
     expect(el.textContent).toBe('test');
   });
 
-  it('should update bound controls on the field when it is bound and unbound', async () => {
-    const f = form(signal(''), {injector: TestBed.inject(Injector)});
-    expect(f().fieldBindings()).toEqual([]);
+  describe('field bindings', () => {
+    it('should update when a bound control is created or destroyed', async () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+      expect(f().fieldBindings()).toEqual([]);
 
-    const fixture = act(() =>
-      TestBed.createComponent(TestStringControl, {
-        bindings: [inputBinding('field', () => f)],
-      }),
-    );
-    expect(f().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
+      const fixture = act(() =>
+        TestBed.createComponent(TestStringControl, {
+          bindings: [inputBinding('field', () => f)],
+        }),
+      );
+      expect(f().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
 
-    act(() => fixture.destroy());
-    expect(f().fieldBindings()).toEqual([]);
-  });
+      act(() => fixture.destroy());
+      expect(f().fieldBindings()).toEqual([]);
+    });
 
-  it('should track multiple bound controls per field', async () => {
-    const f = form(signal(''), {injector: TestBed.inject(Injector)});
-    const fixture1 = act(() =>
-      TestBed.createComponent(TestStringControl, {
-        bindings: [inputBinding('field', () => f)],
-      }),
-    );
-    const fixture2 = act(() =>
-      TestBed.createComponent(TestStringControl, {
-        bindings: [inputBinding('field', () => f)],
-      }),
-    );
+    it(`should contain 'Field' instance for each bound control`, async () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+      const fixture1 = act(() =>
+        TestBed.createComponent(TestStringControl, {
+          bindings: [inputBinding('field', () => f)],
+        }),
+      );
+      expect(f().fieldBindings()).toEqual([fixture1.componentInstance.fieldDirective()]);
 
-    expect(f().fieldBindings()).toEqual([
-      fixture1.componentInstance.fieldDirective(),
-      fixture2.componentInstance.fieldDirective(),
-    ]);
-  });
+      const fixture2 = act(() =>
+        TestBed.createComponent(TestStringControl, {
+          bindings: [inputBinding('field', () => f)],
+        }),
+      );
+      expect(f().fieldBindings()).toEqual([
+        fixture1.componentInstance.fieldDirective(),
+        fixture2.componentInstance.fieldDirective(),
+      ]);
+    });
 
-  it('should update bound controls on both fields when field binding changes', async () => {
-    const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
-    const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
-    const control = signal(f1);
-    const fixture = act(() =>
-      TestBed.createComponent(TestStringControl, {
-        bindings: [inputBinding('field', control)],
-      }),
-    );
-    expect(f1().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
-    expect(f2().fieldBindings()).toEqual([]);
+    it(`should update when a different 'FieldTree' is bound`, async () => {
+      const f1 = form(signal(''), {injector: TestBed.inject(Injector)});
+      const f2 = form(signal(''), {injector: TestBed.inject(Injector)});
+      const control = signal(f1);
+      const fixture = act(() =>
+        TestBed.createComponent(TestStringControl, {
+          bindings: [inputBinding('field', control)],
+        }),
+      );
+      expect(f1().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
+      expect(f2().fieldBindings()).toEqual([]);
 
-    act(() => control.set(f2));
-    expect(f1().fieldBindings()).toEqual([]);
-    expect(f2().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
+      act(() => control.set(f2));
+      expect(f1().fieldBindings()).toEqual([]);
+      expect(f2().fieldBindings()).toEqual([fixture.componentInstance.fieldDirective()]);
+    });
+
+    it(`should not include 'Field' instance for '[field]' inputs on components`, () => {
+      @Component({
+        selector: 'complex-control',
+        template: ``,
+      })
+      class ComplexControl {
+        readonly field = input.required<FieldTree<string>>();
+      }
+
+      @Component({
+        template: `<complex-control [field]="f" />`,
+        imports: [ComplexControl, Field],
+      })
+      class TestCmp {
+        f = form(signal('test'));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance.f().fieldBindings()).toHaveSize(0);
+    });
   });
 
   it('should synchronize disabled reasons', () => {
