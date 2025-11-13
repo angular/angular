@@ -67,7 +67,7 @@
                   [data]="data"
                   actionBtnType="view-source"
                   actionBtnTooltip="View source"
-                  [actionBtnDisabled]="data.component.includes('Lazy')"
+                  [actionBtnDisabled]="!!data?.isLazy"
                   (actionBtnClick)="viewComponentSource(data.component)"
                 ></tr>
               } @else {
