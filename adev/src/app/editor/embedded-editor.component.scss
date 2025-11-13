@@ -85,6 +85,11 @@ $width-breakpoint: 950px;
 .docs-editor-tabs {
   height: 100%;
   display: block;
+
+  .docs-error-icon {
+    margin-inline: 0.375rem 0.125rem;
+    font-size: 18px;
+  }
 }
 
 .adev-refresh-btn {
