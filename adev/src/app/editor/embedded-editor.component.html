@@ -6,9 +6,17 @@
         [type]="TerminalType.INTERACTIVE"
       />
     } @else {
-      <as-split class="docs-editor" [direction]="splitDirection()" restrictMove="true" gutterSize="5">
+      <as-split
+        class="docs-editor"
+        [direction]="splitDirection()"
+        restrictMove="true"
+        gutterSize="5"
+      >
         <as-split-area class="adev-left-side" size="50">
-          <docs-tutorial-code-editor class="adev-tutorial-code-editor" [restrictedMode]="restrictedMode()" />
+          <docs-tutorial-code-editor
+            class="adev-tutorial-code-editor"
+            [restrictedMode]="restrictedMode()"
+          />
         </as-split-area>
 
         <as-split-area size="50">
@@ -47,7 +55,7 @@
                   <ng-template mat-tab-label>
                     Console
                     @if (errorsCount()) {
-                      <docs-icon class="docs-icon_high-contrast">error</docs-icon>
+                      <docs-icon class="docs-icon_high-contrast docs-error-icon">error</docs-icon>
                       <span>
                         {{ errorsCount() }}
                       </span>

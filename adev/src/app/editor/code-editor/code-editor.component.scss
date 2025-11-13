@@ -170,11 +170,17 @@
   }
 }
 
+.adev-add-file {
+  display: flex;
+  align-items: center;
+}
+
 .docs-delete-file,
 .docs-rename-file {
   padding-inline-start: 0.1rem;
   padding-inline-end: 0;
   margin-block-start: 0.2rem;
+  margin-inline-start: 0.2rem;
   docs-icon {
     font-size: 1rem;
   }
