@@ -17,7 +17,8 @@ import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ensureTypeCheckFilePreparationImports} from './tcb_util';
-import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
+import {generateTypeCheckBlock} from './type_check_block';
+import {TcbGenericContextBehavior} from './ops/context';
 
 /**
  * An `Environment` representing the single type-checking file into which most (if not all) Type
