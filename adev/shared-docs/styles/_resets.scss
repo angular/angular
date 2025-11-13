@@ -153,34 +153,38 @@
 
   // Material tab styling
   .mat-mdc-tab-header {
-    @include mat.tabs-overrides((
-      disabled-ripple-color: transparent,
-      pagination-icon-color: var(--secondary-contrast),
-      inactive-label-text-color: var(--secondary-contrast),
-      inactive-ripple-color: transparent,
-      inactive-hover-label-text-color: var(--tertiary-contrast),
-      inactive-focus-label-text-color: var(--secondary-contrast),
-      active-label-text-color: var(--primary-contrast),
-      active-ripple-color: transparent,
-      active-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
-      active-focus-label-text-color: var(--primary-contrast),
-      active-hover-label-text-color: var(--primary-contrast),
-      active-focus-indicator-color: var(--bright-blue),
-      active-hover-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
-      label-text-font: 'Inter, sans-serif',
-      label-text-tracking: -0.00875rem,
-      label-text-size: 0.875rem,
-      label-text-weight: 500,
-    ));
+    @include mat.tabs-overrides(
+      (
+        disabled-ripple-color: transparent,
+        pagination-icon-color: var(--secondary-contrast),
+        inactive-label-text-color: var(--secondary-contrast),
+        inactive-ripple-color: transparent,
+        inactive-hover-label-text-color: var(--tertiary-contrast),
+        inactive-focus-label-text-color: var(--secondary-contrast),
+        active-label-text-color: var(--primary-contrast),
+        active-ripple-color: transparent,
+        active-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
+        active-focus-label-text-color: var(--primary-contrast),
+        active-hover-label-text-color: var(--primary-contrast),
+        active-focus-indicator-color: var(--bright-blue),
+        active-hover-indicator-color: color-mix(in srgb, var(--bright-blue) 40%, white),
+        label-text-font: 'Inter, sans-serif',
+        label-text-tracking: -0.00875rem,
+        label-text-size: 0.875rem,
+        label-text-weight: 500,
+      )
+    );
 
     .mdc-tab__text-label {
       user-select: none;
     }
 
     .mdc-tab--active {
-      @include mat.tabs-overrides((
-        label-text-weight: 500,
-      ));
+      @include mat.tabs-overrides(
+        (
+          label-text-weight: 500,
+        )
+      );
     }
   }
 
@@ -203,14 +207,16 @@
   .docs-code-editor-tabs,
   .docs-editor-tabs {
     .mat-mdc-tab-header {
-      @include mat.tabs-overrides((
-        active-indicator-color: transparent,
-        active-focus-indicator-color: transparent,
-        active-hover-indicator-color: transparent,
-        label-text-font: 'InterTight, sans-serif',
-        label-text-tracking: -0.00875rem,
-        label-text-size: 0.8125rem,
-      ));
+      @include mat.tabs-overrides(
+        (
+          active-indicator-color: transparent,
+          active-focus-indicator-color: transparent,
+          active-hover-indicator-color: transparent,
+          label-text-font: 'InterTight, sans-serif',
+          label-text-tracking: -0.00875rem,
+          label-text-size: 0.8125rem,
+        )
+      );
 
       .mat-mdc-tab-labels {
         gap: 0;
@@ -233,8 +239,7 @@
         }
 
         &:has(.docs-delete-file) {
-          padding-inline-start: 18px !important;
-          padding-inline-end: 0.5px !important;
+          padding-inline: 14px !important;
         }
       }
     }
@@ -282,17 +287,19 @@
     }
 
     .mat-mdc-tab-header {
-      @include mat.tabs-overrides((
-        active-indicator-color: transparent,
-        active-focus-indicator-color: transparent,
-        active-hover-indicator-color: transparent,
-        active-focus-label-text-color: transparent,
-        active-hover-label-text-color: transparent,
-        active-label-text-color: transparent,
-        label-text-font: 'InterTight, sans-serif',
-        label-text-tracking: -0.00875rem,
-        label-text-size: 0.8125rem,
-      ));
+      @include mat.tabs-overrides(
+        (
+          active-indicator-color: transparent,
+          active-focus-indicator-color: transparent,
+          active-hover-indicator-color: transparent,
+          active-focus-label-text-color: transparent,
+          active-hover-label-text-color: transparent,
+          active-label-text-color: transparent,
+          label-text-font: 'InterTight, sans-serif',
+          label-text-tracking: -0.00875rem,
+          label-text-size: 0.8125rem,
+        )
+      );
 
       .mat-mdc-tab-labels {
         gap: 0;
