@@ -1,0 +1,35 @@
+<div
+  ngToolbar
+  [softDisabled]="false"
+  class="toolbar"
+  aria-label="Text Formatting Tools"
+>
+  <button ngToolbarWidget value="undo">Undo</button>
+  <button ngToolbarWidget value="redo" [disabled]="true">Redo</button>
+
+  <div class="separator" role="separator"></div>
+
+  <div
+    ngToolbarWidgetGroup
+    role="radiogroup"
+    class="group"
+    aria-label="Alignment options"
+  >
+    <button ngToolbarWidget value="left">Align Left</button>
+    <button ngToolbarWidget value="center" [disabled]="true">Align Center</button>
+    <button ngToolbarWidget value="right">Align Right</button>
+  </div>
+
+  <div class="separator" role="separator"></div>
+
+  <div
+    ngToolbarWidgetGroup
+    [disabled]="true"
+    role="radiogroup"
+    class="group"
+    aria-label="List formatting"
+  >
+    <button ngToolbarWidget value="bullet">Bullet List</button>
+    <button ngToolbarWidget value="numbered">Numbered List</button>
+  </div>
+</div>
