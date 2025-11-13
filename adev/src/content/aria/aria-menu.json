@@ -10,6 +10,16 @@
       "entryType": "directive",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "textDirection",
           "type": "any",
           "memberType": "property",
@@ -17,16 +27,6 @@
             "readonly"
           ],
           "description": "The directionality (LTR / RTL) context for the application (or a subtree of it).",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "HTMLButtonElement",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "A reference to the menu element.",
           "jsdocTags": []
         },
         {
@@ -191,7 +191,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the menu element.",
+          "description": "A reference to the host element.",
           "jsdocTags": []
         },
         {
@@ -265,7 +265,7 @@
           "jsdocTags": []
         },
         {
-          "name": "isVisible",
+          "name": "visible",
           "type": "any",
           "memberType": "property",
           "memberTags": [
@@ -368,7 +368,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the menubar element.",
+          "description": "A reference to the host element.",
           "jsdocTags": []
         },
         {
@@ -540,7 +540,7 @@
           "memberTags": [
             "readonly"
           ],
-          "description": "A reference to the menu element.",
+          "description": "A reference to the host element.",
           "jsdocTags": []
         },
         {
@@ -621,7 +621,7 @@
           "isRequiredInput": false
         },
         {
-          "name": "isActive",
+          "name": "active",
           "type": "any",
           "memberType": "property",
           "memberTags": [
@@ -882,11 +882,11 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuTrigger.textDirection",
+      "MenuTrigger.element",
       "@angular/aria/menu"
     ],
     [
-      "MenuTrigger.element",
+      "MenuTrigger.textDirection",
       "@angular/aria/menu"
     ],
     [
@@ -954,7 +954,7 @@
       "@angular/aria/menu"
     ],
     [
-      "Menu.isVisible",
+      "Menu.visible",
       "@angular/aria/menu"
     ],
     [
@@ -1050,7 +1050,7 @@
       "@angular/aria/menu"
     ],
     [
-      "MenuItem.isActive",
+      "MenuItem.active",
       "@angular/aria/menu"
     ],
     [
