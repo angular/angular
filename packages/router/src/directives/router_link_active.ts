@@ -101,6 +101,8 @@ import {RouterLink} from './router_link';
  *
  * @ngModule RouterModule
  *
+ * @see [Detect active current route with RouterLinkActive](guide/routing/read-route-state#detect-active-current-route-with-routerlinkactive)
+ *
  * @publicApi
  */
 @Directive({
