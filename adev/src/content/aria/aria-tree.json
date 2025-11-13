@@ -10,6 +10,16 @@
       "entryType": "undecorated_class",
       "members": [
         {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
+        {
           "name": "id",
           "type": "any",
           "memberType": "property",
@@ -17,16 +27,6 @@
             "readonly"
           ],
           "description": "A unique identifier for the tree.",
-          "jsdocTags": []
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
           "jsdocTags": []
         },
         {
@@ -355,7 +355,7 @@
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
         "startLine": 83,
-        "endLine": 237
+        "endLine": 240
       }
     },
     {
@@ -363,6 +363,16 @@
       "isAbstract": false,
       "entryType": "directive",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "id",
           "type": "any",
@@ -375,16 +385,6 @@
           "jsdocTags": [],
           "inputAlias": "id",
           "isRequiredInput": false
-        },
-        {
-          "name": "element",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The host native element.",
-          "jsdocTags": []
         },
         {
           "name": "value",
@@ -701,8 +701,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 254,
-        "endLine": 380
+        "startLine": 257,
+        "endLine": 384
       }
     },
     {
@@ -710,6 +710,16 @@
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
+        {
+          "name": "element",
+          "type": "HTMLElement",
+          "memberType": "property",
+          "memberTags": [
+            "readonly"
+          ],
+          "description": "A reference to the host element.",
+          "jsdocTags": []
+        },
         {
           "name": "children",
           "type": "any",
@@ -914,8 +924,8 @@
       ],
       "source": {
         "filePath": "/src/aria/tree/tree.ts",
-        "startLine": 402,
-        "endLine": 440
+        "startLine": 406,
+        "endLine": 450
       }
     }
   ],
@@ -1021,11 +1031,11 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree.id",
+      "Tree.element",
       "@angular/aria/tree"
     ],
     [
-      "Tree.element",
+      "Tree.id",
       "@angular/aria/tree"
     ],
     [
@@ -1097,11 +1107,11 @@
       "@angular/aria/tree"
     ],
     [
-      "TreeItem.id",
+      "TreeItem.element",
       "@angular/aria/tree"
     ],
     [
-      "TreeItem.element",
+      "TreeItem.id",
       "@angular/aria/tree"
     ],
     [
@@ -1170,6 +1180,10 @@
     ],
     [
       "TreeItemGroup",
+      "@angular/aria/tree"
+    ],
+    [
+      "TreeItemGroup.element",
       "@angular/aria/tree"
     ],
     [
