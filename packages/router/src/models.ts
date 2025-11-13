@@ -175,6 +175,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
+ * @see [Creating custom route matches](guide/routing/routing-with-urlmatcher)
  * @publicApi
  */
 export type UrlMatcher = (
@@ -334,6 +335,7 @@ export type RedirectFunction = (
  * change or query params have changed. This does not include matrix parameters.
  *
  * @see {@link Route#runGuardsAndResolvers}
+ * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
  * @publicApi
  */
 export type RunGuardsAndResolvers =
@@ -575,6 +577,7 @@ export interface Route {
    * implements `Resolve`.
    *
    * @see {@link TitleStrategy}
+   * @see [Page titles](guide/routing/define-routes#page-titles)
    */
   title?: string | Type<Resolve<string>> | ResolveFn<string>;
 
@@ -604,10 +607,15 @@ export interface Route {
    * the router would apply the redirect even when navigating
    * to the redirect destination, creating an endless loop.
    *
+   * @see [Redirecting Routes](guide/routing/redirecting-routes)
+   *
    */
   pathMatch?: 'prefix' | 'full';
   /**
    * A custom URL-matching function. Cannot be used together with `path`.
+   *
+   * @see [Creating custom route matches](guide/routing/routing-with-urlmatcher)
+   *
    */
   matcher?: UrlMatcher;
   /**
@@ -642,11 +650,16 @@ export interface Route {
    * required dependencies.
    *
    * When not present, router does not redirect.
+   *
+   * @see [Conditional redirects](guide/routing/redirecting-routes#conditional-redirects)
    */
   redirectTo?: string | RedirectFunction;
   /**
    * Name of a `RouterOutlet` object where the component can be placed
    * when the path matches.
+   *
+   * @see [Show routes with outlets](guide/routing/show-routes-with-outlets)
+   *
    */
   outlet?: string;
   /**
@@ -656,6 +669,9 @@ export interface Route {
    *
    * When using a function rather than DI tokens, the function can call `inject` to get any required
    * dependencies. This `inject` call must be done in a synchronous context.
+   *
+   * @see [CanActivate](guide/routing/route-guards#canactivate)
+   *
    */
   canActivate?: Array<CanActivateFn | DeprecatedGuard>;
   /**
@@ -665,6 +681,9 @@ export interface Route {
    *
    * When using a function rather than DI tokens, the function can call `inject` to get any required
    * dependencies. This `inject` call must be done in a synchronous context.
+   *
+   * @see [CanMatch](guide/routing/route-guards#canmatch)
+   *
    */
   canMatch?: Array<CanMatchFn | DeprecatedGuard>;
   /**
@@ -674,6 +693,9 @@ export interface Route {
    *
    * When using a function rather than DI tokens, the function can call `inject` to get any required
    * dependencies. This `inject` call must be done in a synchronous context.
+   *
+   * @see [CanActivateChild](guide/routing/route-guards#canactivatechild)
+   *
    */
   canActivateChild?: Array<CanActivateChildFn | DeprecatedGuard>;
   /**
@@ -683,6 +705,9 @@ export interface Route {
    *
    * When using a function rather than DI tokens, the function can call `inject` to get any required
    * dependencies. This `inject` call must be done in a synchronous context.
+   *
+   * @see [CanDeactivate](guide/routing/route-guards#candeactivate)
+   *
    */
   canDeactivate?: Array<CanDeactivateFn<any> | DeprecatedGuard>;
   /**
@@ -702,6 +727,8 @@ export interface Route {
   data?: Data;
   /**
    * A map of DI tokens used to look up data resolvers. See `Resolve`.
+   *
+   * @see [Resolve](guide/routing/data-resolvers#what-are-data-resolvers)
    */
   resolve?: ResolveData;
   /**
@@ -733,6 +760,7 @@ export interface Route {
    * change or query params have changed. This does not include matrix parameters.
    *
    * @see {@link RunGuardsAndResolvers}
+   * @see [Control when guards and resolvers execute](guide/routing/customizing-route-behavior#control-when-guards-and-resolvers-execute)
    */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
 
@@ -743,6 +771,7 @@ export interface Route {
    * `Route` and use it for this `Route` and its `children`. If this
    * route also has a `loadChildren` function which returns an `NgModuleRef`, this injector will be
    * used as the parent of the lazy loaded module.
+   * @see [Route providers](guide/di/defining-dependency-providers#route-providers)
    */
   providers?: Array<Provider | EnvironmentProviders>;
 
@@ -821,6 +850,9 @@ export interface LoadedRouterConfig {
  * class AppModule {}
  * ```
  *
+ * @see [CanActivate](guide/routing/route-guards#canactivate)
+ *
+ *
  * @publicApi
  */
 export interface CanActivate {
@@ -878,6 +910,7 @@ export interface CanActivate {
  *
  * @publicApi
  * @see {@link Route}
+ * @see [CanActivate](guide/routing/route-guards#canactivate)
  */
 export type CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -939,7 +972,7 @@ export type CanActivateFn = (
  * })
  * class AppModule {}
  * ```
- *
+ * @see [CanActivateChild](guide/routing/route-guards#canactivatechild)
  * @publicApi
  */
 export interface CanActivateChild {
@@ -963,6 +996,7 @@ export interface CanActivateChild {
  *
  * @publicApi
  * @see {@link Route}
+ * @see [CanActivateChild](guide/routing/route-guards#canactivatechild)
  */
 export type CanActivateChildFn = (
   childRoute: ActivatedRouteSnapshot,
@@ -1021,7 +1055,7 @@ export type CanActivateChildFn = (
  * })
  * class AppModule {}
  * ```
- *
+ * @see [CanDeactivate](guide/routing/route-guards#candeactivate)
  * @publicApi
  */
 export interface CanDeactivate<T> {
@@ -1047,6 +1081,7 @@ export interface CanDeactivate<T> {
  *
  * @publicApi
  * @see {@link Route}
+ * @see [CanDeactivate](guide/routing/route-guards#candeactivate)
  */
 export type CanDeactivateFn<T> = (
   component: T,
@@ -1114,6 +1149,7 @@ export type CanDeactivateFn<T> = (
  * could not be used for a URL match but the catch-all `**` `Route` did instead.
  *
  * @publicApi
+ * @see [CanMatch](guide/routing/route-guards#canmatch)
  */
 export interface CanMatch {
   canMatch(route: Route, segments: UrlSegment[]): MaybeAsync<GuardResult>;
@@ -1136,6 +1172,7 @@ export interface CanMatch {
  *
  * @publicApi
  * @see {@link Route}
+ * @see [CanMatch](guide/routing/route-guards#canmatch)
  */
 export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<GuardResult>;
 
@@ -1230,6 +1267,7 @@ export type CanMatchFn = (route: Route, segments: UrlSegment[]) => MaybeAsync<Gu
  *
  * @publicApi
  * @see {@link ResolveFn}
+ * @see [Data resolvers](guide/routing/data-resolvers)
  */
 export interface Resolve<T> {
   resolve(
@@ -1339,6 +1377,7 @@ export interface Resolve<T> {
  *
  * @publicApi
  * @see {@link Route}
+ * @see [Data resolvers](guide/routing/data-resolvers)
  */
 export type ResolveFn<T> = (
   route: ActivatedRouteSnapshot,
