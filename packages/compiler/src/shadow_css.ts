@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.dev/license
  */
-import * as chars from './chars';
 
 /**
  * The following set contains all keywords that can be used in the animation css shorthand
@@ -526,40 +525,6 @@ export class ShadowCss {
     });
   }
 
-  /**
-   * Generator function that splits a string on top-level commas (commas that are not inside parentheses).
-   * Yields each part of the string between top-level commas. Terminates if an extra closing paren is found.
-   *
-   * @param text The string to split
-   */
-  private *_splitOnTopLevelCommas(text: string): Generator<string> {
-    const length = text.length;
-    let parens = 0;
-    let prev = 0;
-
-    for (let i = 0; i < length; i++) {
-      const charCode = text.charCodeAt(i);
-
-      if (charCode === chars.$LPAREN) {
-        parens++;
-      } else if (charCode === chars.$RPAREN) {
-        parens--;
-        if (parens < 0) {
-          // Found an extra closing paren. Assume we want the list terminated here
-          yield text.slice(prev, i);
-          return;
-        }
-      } else if (charCode === chars.$COMMA && parens === 0) {
-        // Found a top-level comma, yield the current chunk
-        yield text.slice(prev, i);
-        prev = i + 1;
-      }
-    }
-
-    // Yield the final chunk
-    yield text.slice(prev);
-  }
-
   /*
    * convert a rule like :host-context(.foo) > .bar { }
    *
@@ -576,14 +541,38 @@ export class ShadowCss {
    * .foo<scopeName> .bar { ... }
    */
   private _convertColonHostContext(cssText: string): string {
+    const length = cssText.length;
+    let parens = 0;
+    let prev = 0;
+    let result = '';
+
     // Splits up the selectors on their top-level commas, processes the :host-context in them
     // individually and stitches them back together. This ensures that individual selectors don't
     // affect each other.
-    const results: string[] = [];
-    for (const part of this._splitOnTopLevelCommas(cssText)) {
-      results.push(this._convertColonHostContextInSelectorPart(part));
+    for (let i = 0; i < length; i++) {
+      const char = cssText[i];
+
+      // If we hit a comma and there are no open parentheses, take the current chunk and process it.
+      if (char === ',' && parens === 0) {
+        result += this._convertColonHostContextInSelectorPart(cssText.slice(prev, i)) + ',';
+        prev = i + 1;
+        continue;
+      }
+
+      // We've hit the end. Take everything since the last comma.
+      if (i === length - 1) {
+        result += this._convertColonHostContextInSelectorPart(cssText.slice(prev));
+        break;
+      }
+
+      if (char === '(') {
+        parens++;
+      } else if (char === ')') {
+        parens--;
+      }
     }
-    return results.join(',');
+
+    return result;
   }
 
   private _convertColonHostContextInSelectorPart(cssText: string): string {
@@ -598,28 +587,18 @@ export class ShadowCss {
 
       // There may be more than `:host-context` in this selector so `selectorText` could look like:
       // `:host-context(.one):host-context(.two)`.
-      // Loop until every :host-context in the compound selector has been processed.
-      let startIndex = selectorText.indexOf(_polyfillHostContext);
-      while (startIndex !== -1) {
-        const afterPrefix = selectorText.substring(startIndex + _polyfillHostContext.length);
+      // Execute `_cssColonHostContextRe` over and over until we have extracted all the
+      // `:host-context` selectors from this selector.
+      let match: RegExpExecArray | null;
+      while ((match = _cssColonHostContextRe.exec(selectorText))) {
+        // `match` = [':host-context(<selectors>)<rest>', <selectors>, <rest>]
 
-        if (!afterPrefix || afterPrefix[0] !== '(') {
-          // Edge case of :host-context with no parens (e.g. `:host-context .inner`)
-          selectorText = afterPrefix;
-          startIndex = selectorText.indexOf(_polyfillHostContext);
-          continue;
-        }
-
-        // Extract comma-separated selectors between the parentheses
-        const newContextSelectors: string[] = [];
-        let endIndex = 0; // Index of the closing paren of the :host-context()
-        for (const selector of this._splitOnTopLevelCommas(afterPrefix.substring(1))) {
-          endIndex = endIndex + selector.length + 1;
-          const trimmed = selector.trim();
-          if (trimmed) {
-            newContextSelectors.push(trimmed);
-          }
-        }
+        // The `<selectors>` could actually be a comma separated list: `:host-context(.one, .two)`.
+        const newContextSelectors = (match[1] ?? '')
+          .trim()
+          .split(',')
+          .map((m) => m.trim())
+          .filter((m) => m !== '');
 
         // We must duplicate the current selector group for each of these new selectors.
         // For example if the current groups are:
@@ -648,8 +627,7 @@ export class ShadowCss {
         }
 
         // Update the `selectorText` and see repeat to see if there are more `:host-context`s.
-        selectorText = afterPrefix.substring(endIndex + 1);
-        startIndex = selectorText.indexOf(_polyfillHostContext);
+        selectorText = match[2];
       }
 
       // The context selectors now must be combined with each other to capture all the possible
@@ -1082,6 +1060,7 @@ const _cssColonHostContextReGlobal = new RegExp(
   `${_cssScopedPseudoFunctionPrefix}(${_hostContextPattern})`,
   'gim',
 );
+const _cssColonHostContextRe = new RegExp(_hostContextPattern, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorOutsidePseudoFunction = new RegExp(
   `${_polyfillHostNoCombinator}(?![^(]*\\))`,
