@@ -352,8 +352,16 @@ function listenToNativeControl(lView: LView<{} | null>, tNode: TNode, control: É
   // This means that we need to know when an `<option>` is created, destroyed, or has its `value`
   // changed so that we can re-sync the `<select>` to the field state's value. We implement this
   // using a `MutationObserver` that we create to observe `<option>` changes.
-  if (element instanceof HTMLSelectElement) {
-    const observer = observeSelectMutations(element, getControlDirective(tNode, lView)!);
+  if (
+    tNode.type === TNodeType.Element &&
+    tNode.value === 'select' &&
+    typeof MutationObserver === 'function'
+  ) {
+    const observer = observeSelectMutations(
+      element as HTMLSelectElement,
+      getControlDirective(tNode, lView)!,
+    );
+
     storeCleanupWithContext(tView, lView, observer, observer.disconnect);
   }
 }
