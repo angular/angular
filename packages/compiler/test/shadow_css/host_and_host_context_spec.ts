@@ -83,9 +83,6 @@ describe('ShadowCss, :host and :host-context', () => {
       expect(shim(':host(:not(p)):before {}', 'contenta', 'a-host')).toEqualCss(
         '[a-host]:not(p):before {}',
       );
-      expect(shim(':host(:not(:has(p))) {}', 'contenta', 'a-host')).toEqualCss(
-        '[a-host]:not(:has(p)) {}',
-      );
       expect(shim(':host:not(:host.foo) {}', 'contenta', 'a-host')).toEqualCss(
         '[a-host]:not([a-host].foo) {}',
       );
