@@ -388,6 +388,20 @@ Initially, the form contains one `Alias` field. To add another field, click the 
 
 </docs-workflow>
 
+### Using FormArrayDirective with FormArray
+
+Similar to how `FormControlDirective` syncs a `FormControl` to a form element, `FormArrayDirective` lets you bind a `FormArray` instance directly to a DOM element using the `[formArray]` directive.
+
+This is useful when you want to work with a `FormArray` outside of a parent `FormGroup`, providing consistency across all reactive form control types.
+
+FormGroup would be a better comparison as both FormGroupDirective & FormArrayDirective allow you to have a FormArray as a top-level object for a form.
+
+<docs-code header="standalone-array.component.ts (FormArray)" path="adev/src/content/examples/reactive-forms/src/app/standalone-array/standalone-array.component.ts" visibleRegion="standalone-array"/>
+
+<docs-code header="standalone-array.component.html (template)" path="adev/src/content/examples/reactive-forms/src/app/standalone-array/standalone-array.component.html" />
+
+The `[formArray]` directive binds the `FormArray` instance directly to the container element, while `formControlName` binds each control within the array by its index.
+
 ## Unified control state change events
 
 All form controls expose a single unified stream of **control state change events** through the `events` observable on `AbstractControl` (`FormControl`, `FormGroup`, `FormArray`, and `FormRecord`).
@@ -542,3 +556,4 @@ For complete syntax details, see the API reference documentation for the [Forms 
 | `FormGroupDirective`   | Syncs an existing `FormGroup` instance to a DOM element.                                   |
 | `FormGroupName`        | Syncs a nested `FormGroup` instance to a DOM element.                                      |
 | `FormArrayName`        | Syncs a nested `FormArray` instance to a DOM element.                                      |
+| `FormArrayDirective`   | Syncs a `FormArray` instance to a DOM element.                                             |

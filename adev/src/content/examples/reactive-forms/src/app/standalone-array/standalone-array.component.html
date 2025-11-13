@@ -1,0 +1,9 @@
+<form [formArray]="hobbies">
+  @for (hobby of hobbies.controls; track $index) {
+    <div>
+      <input type="text" [formControlName]="$index" />
+      <button type="button" (click)="removeHobby($index)">Remove</button>
+    </div>
+  }
+  <button type="button" (click)="addHobby()">Add Hobby</button>
+</form>
