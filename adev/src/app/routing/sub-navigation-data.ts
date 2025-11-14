@@ -420,11 +420,30 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
       },
       {
         label: 'Forms',
+        status: 'updated',
         children: [
           {
             label: 'Overview',
             path: 'guide/forms',
             contentPath: 'guide/forms/overview',
+          },
+          {
+            label: 'Signal forms',
+            status: 'new',
+            children: [
+              {
+                label: 'Overview',
+                path: 'guide/forms/signals/overview',
+                contentPath: 'guide/forms/signals/overview',
+                status: 'new',
+              },
+              {
+                label: 'Form models',
+                path: 'guide/forms/signals/models',
+                contentPath: 'guide/forms/signals/models',
+                status: 'new',
+              },
+            ],
           },
           {
             label: 'Reactive forms',
@@ -691,6 +710,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ? [
             {
               label: 'Angular Aria',
+              // TODO: Mark status: 'new' after unwrapped from dev mode
               children: [
                 {
                   label: 'Overview',
@@ -701,6 +721,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   label: 'Accordion',
                   path: 'guide/aria/accordion',
                   contentPath: 'guide/aria/accordion',
+                },
+                {
+                  label: 'Autocomplete',
+                  path: 'guide/aria/autocomplete',
+                  contentPath: 'guide/aria/autocomplete',
                 },
                 {
                   label: 'Combobox',
@@ -723,11 +748,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/menu',
                 },
                 {
-                  label: 'Radio Group',
-                  path: 'guide/aria/radio',
-                  contentPath: 'guide/aria/radio',
-                },
-                {
                   label: 'Tabs',
                   path: 'guide/aria/tabs',
                   contentPath: 'guide/aria/tabs',
@@ -742,10 +762,37 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   path: 'guide/aria/tree',
                   contentPath: 'guide/aria/tree',
                 },
+                {
+                  label: 'Select',
+                  path: 'guide/aria/select',
+                  contentPath: 'guide/aria/select',
+                },
+                {
+                  label: 'Multiselect',
+                  path: 'guide/aria/multiselect',
+                  contentPath: 'guide/aria/multiselect',
+                },
               ],
             },
           ]
-        : []),
+        : [
+            // // TODO: Uncomment & modify for PR Previews
+            // {
+            //   label: 'Angular Aria',
+            //   children: [
+            //     {
+            //       label: 'Autocomplete',
+            //       path: 'guide/aria/autocomplete',
+            //       contentPath: 'guide/aria/autocomplete',
+            //     },
+            //     {
+            //       label: 'Toolbar',
+            //       path: 'guide/aria/toolbar',
+            //       contentPath: 'guide/aria/toolbar',
+            //     },
+            //   ],
+            // },
+          ]),
     ],
   },
   {

@@ -1,0 +1,32 @@
+<div
+  ngToolbar
+  orientation="vertical"
+  class="toolbar"
+  aria-label="Vertical Text Formatting Tools"
+>
+  <div class="group" aria-label="Undo and Redo options">
+    <button ngToolbarWidget value="undo">Undo</button>
+    <button ngToolbarWidget value="redo">Redo</button>
+  </div>
+
+  <div class="separator" role="separator"></div>
+
+  <div class="group" aria-label="Text formatting options">
+    <button ngToolbarWidget value="bold">Bold</button>
+    <button ngToolbarWidget value="italic">Italic</button>
+    <button ngToolbarWidget value="underline">Underline</button>
+  </div>
+
+  <div class="separator" role="separator"></div>
+
+  <div
+    ngToolbarWidgetGroup
+    role="radiogroup"
+    class="group"
+    aria-label="Alignment options"
+  >
+    <button ngToolbarWidget value="align-left">Align Left</button>
+    <button ngToolbarWidget value="align-center">Align Center</button>
+    <button ngToolbarWidget value="align-right">Align Right</button>
+  </div>
+</div>

@@ -22,6 +22,7 @@ copy_to_bin(
         "//adev/src/content/guide/di:guide_files",
         "//adev/src/content/guide/directives:guide_files",
         "//adev/src/content/guide/forms:guide_files",
+        "//adev/src/content/guide/forms/signals:guide_files",
         "//adev/src/content/guide/http:guide_files",
         "//adev/src/content/guide/i18n:guide_files",
         "//adev/src/content/guide/performance:guide_files",
