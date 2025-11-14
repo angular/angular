@@ -36,7 +36,7 @@ and [stylus](https://stylus-lang.com).
 ## Style scoping
 
 Every component has a **view encapsulation** setting that determines how the framework scopes a
-component's styles. There are four view encapsulation modes: `Emulated`, `ShadowDom`, `IsolatedShadowDom`, and `None`.
+component's styles. There are four view encapsulation modes: `Emulated`, `ShadowDom`, `ExperimentalIsolatedShadowDom`, and `None`.
 You can specify the mode in the `@Component` decorator:
 
 <docs-code language="angular-ts" highlight="[3]">
@@ -91,7 +91,7 @@ with [the `<slot>` API](https://developer.mozilla.org/docs/Web/Web_Components/Us
 and how browser developer tools show elements. Always understand the full implications of using
 Shadow DOM in your application before enabling this option.
 
-### ViewEncapsulation.IsolatedShadowDom
+### ViewEncapsulation.ExperimentalIsolatedShadowDom
 
 Behaves as above, except this mode strictly guarantees that _only_ that component's styles apply to elements in the
 component's template. Global styles cannot affect elements in a shadow tree and styles inside the

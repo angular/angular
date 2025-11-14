@@ -178,7 +178,7 @@
             "Emulated",
             "None",
             "ShadowDom",
-            "IsolatedShadowDom"
+            "ExperimentalIsolatedShadowDom"
           ],
           "description": "The view encapsulation strategy to use in the new application."
         }
@@ -369,7 +369,7 @@
             "Emulated",
             "None",
             "ShadowDom",
-            "IsolatedShadowDom"
+            "ExperimentalIsolatedShadowDom"
           ],
           "description": "The view encapsulation strategy to use in the new component."
         }
