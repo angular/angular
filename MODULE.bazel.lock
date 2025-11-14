@@ -160,7 +160,8 @@
     "https://bcr.bazel.build/modules/rules_nodejs/6.5.0/MODULE.bazel": "546d0cf79f36f9f6e080816045f97234b071c205f4542e3351bd4424282a8810",
     "https://bcr.bazel.build/modules/rules_nodejs/6.5.2/MODULE.bazel": "7f9ea68a0ce6d82905ce9f74e76ab8a8b4531ed4c747018c9d76424ad0b3370d",
     "https://bcr.bazel.build/modules/rules_nodejs/6.6.0/MODULE.bazel": "49ef4cccc17a5a13c9beca2d0b3f7dea1d97381df8cb6ba4dea03943f6a81b0a",
-    "https://bcr.bazel.build/modules/rules_nodejs/6.6.0/source.json": "cbd156fa2db33707275de138110b78eb86a4cf510b979df7c4b6a8e7127484de",
+    "https://bcr.bazel.build/modules/rules_nodejs/6.6.1/MODULE.bazel": "e499aabe7cb796b784e9421be909c702eb79f664c20d21cbf120332a2a8dc378",
+    "https://bcr.bazel.build/modules/rules_nodejs/6.6.1/source.json": "c5eb6ed233d9ddadad77342e4aeefb836a4616f875acf2dbb181f98057c8c020",
     "https://bcr.bazel.build/modules/rules_pkg/0.7.0/MODULE.bazel": "df99f03fc7934a4737122518bb87e667e62d780b610910f0447665a7e2be62dc",
     "https://bcr.bazel.build/modules/rules_pkg/1.0.1/MODULE.bazel": "5b1df97dbc29623bccdf2b0dcd0f5cb08e2f2c9050aab1092fd39a41e82686ff",
     "https://bcr.bazel.build/modules/rules_pkg/1.1.0/MODULE.bazel": "9db8031e71b6ef32d1846106e10dd0ee2deac042bd9a2de22b4761b0c3036453",
@@ -1132,8 +1133,8 @@
     },
     "@@rules_nodejs~//nodejs:extensions.bzl%node": {
       "general": {
-        "bzlTransitiveDigest": "71PwVsMlLx+RWdt1SI9nSqRHX7DX/NstWwr7/XBxEMs=",
-        "usagesDigest": "pSRjwp9jIW3CLoqaCiBOrcke2mLkHvzWyTdaPHrlRL8=",
+        "bzlTransitiveDigest": "Oex83HlYG4+sPr0oUbvldjyP3JnYazq0jAVgUXDx7yU=",
+        "usagesDigest": "exE7wk/5Mu8rm7jFaROsun/NZmBJ6gH3MuaGeU6/gN4=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
         "envVariables": {},
