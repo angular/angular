@@ -131,22 +131,22 @@ export function isLetDeclaration(tNode: TNode): boolean {
  */
 export const enum TNodeFlags {
   /** Bit #1 - This bit is set if the node is a host for any directive (including a component) */
-  isDirectiveHost = 0x1,
+  isDirectiveHost = 1 << 0,
 
   /** Bit #2 - This bit is set if the node has been projected */
-  isProjected = 0x2,
+  isProjected = 1 << 1,
 
   /** Bit #3 - This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0x4,
+  hasContentQuery = 1 << 2,
 
   /** Bit #4 - This bit is set if the node has any "class" inputs */
-  hasClassInput = 0x8,
+  hasClassInput = 1 << 3,
 
   /** Bit #5 - This bit is set if the node has any "style" inputs */
-  hasStyleInput = 0x10,
+  hasStyleInput = 1 << 4,
 
   /** Bit #6 - This bit is set if the node has been detached by i18n */
-  isDetached = 0x20,
+  isDetached = 1 << 5,
 
   /**
    * Bit #7 - This bit is set if the node has directives with host bindings.
@@ -154,22 +154,22 @@ export const enum TNodeFlags {
    * This flags allows us to guard host-binding logic and invoke it only on nodes
    * that actually have directives with host bindings.
    */
-  hasHostBindings = 0x40,
+  hasHostBindings = 1 << 6,
 
   /**
    * Bit #8 - This bit is set if the node is a located inside skip hydration block.
    */
-  inSkipHydrationBlock = 0x80,
+  inSkipHydrationBlock = 1 << 7,
 
   /**
    * Bit #9 - This bit is set if the node is a start of a set of control flow blocks.
    */
-  isControlFlowStart = 0x100,
+  isControlFlowStart = 1 << 8,
 
   /**
    * Bit #10 - This bit is set if the node is within a set of control flow blocks.
    */
-  isInControlFlow = 0x200,
+  isInControlFlow = 1 << 9,
 
   /**
    * Bit #11 - This bit is set if the node represents a form control.
@@ -177,42 +177,50 @@ export const enum TNodeFlags {
    * True when the node has an input binding to a `ɵControl` directive (but not also to a custom
    * component).
    */
-  isFormControl = 0x400,
+  isFormControl = 1 << 10,
 
   /**
    * Bit #12 - This bit is set if the node hosts a custom control component.
    *
    * A custom control component's model property is named `value`.
    */
-  isFormValueControl = 0x800,
+  isFormValueControl = 1 << 11,
 
   /**
    * Bit #13 - This bit is set if the node hosts a custom checkbox component.
    *
    * A custom checkbox component's model property is named `checked`.
    */
-  isFormCheckboxControl = 0x1000,
+  isFormCheckboxControl = 1 << 12,
 
   /**
    * Bit #14 - This bit is set if the node hosts an interoperable control implementation.
    *
    * This is used to bind to a `ControlValueAccessor` from `@angular/forms`.
    */
-  isInteropControl = 0x2000,
+  isInteropControl = 1 << 13,
 
   /**
-   * Bit #15 - This bit is set if the node is a native control with a numeric type.
+   * Bit #15 - This bit is set if the node is a native control.
+   *
+   * This is used to determine whether we can bind common control properties to the host element of
+   * a custom control when it doesn't define a corresponding input.
+   */
+  isNativeControl = 1 << 14,
+
+  /**
+   * Bit #16 - This bit is set if the node is a native control with a numeric type.
    *
    * This is used to determine whether the control supports the `min` and `max` properties.
    */
-  isNativeNumericControl = 0x4000,
+  isNativeNumericControl = 1 << 15,
 
   /**
-   * Bit #16 - This bit is set if the node is a native text control.
+   * Bit #17 - This bit is set if the node is a native text control.
    *
    * This is used to determine whether control supports the `minLength` and `maxLength` properties.
    */
-  isNativeTextControl = 0x8000,
+  isNativeTextControl = 1 << 16,
 }
 
 /**

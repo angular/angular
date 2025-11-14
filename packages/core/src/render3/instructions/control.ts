@@ -110,6 +110,10 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
   nextBindingIndex();
 }
 
+/** A bitmask used to check if a TNode represents a native or custom form control. */
+const HAS_CONTROL_MASK =
+  TNodeFlags.isNativeControl | TNodeFlags.isFormValueControl | TNodeFlags.isFormCheckboxControl;
+
 function getControlDirectiveFirstCreatePass<T>(
   tView: TView,
   tNode: TNode,
@@ -143,28 +147,31 @@ function getControlDirectiveFirstCreatePass<T>(
 
   if (isComponentHost(tNode)) {
     const componentDef = tView.data[componentIndex] as ComponentDef<unknown>;
-    // TODO: should we check that any additional field state inputs are signal based?
     if (hasModelInput(componentDef, 'value')) {
       tNode.flags |= TNodeFlags.isFormValueControl;
-      return control;
     } else if (hasModelInput(componentDef, 'checked')) {
       tNode.flags |= TNodeFlags.isFormCheckboxControl;
-      return control;
     }
+    // Continue on to check if the host element is also a native control.
   }
 
-  if (control.ɵinteropControl) {
+  // Only check for an interop control if we haven't already found a custom one.
+  if (!(tNode.flags & HAS_CONTROL_MASK) && control.ɵinteropControl) {
     tNode.flags |= TNodeFlags.isInteropControl;
     return control;
   }
 
   if (isNativeControl(tNode)) {
+    tNode.flags |= TNodeFlags.isNativeControl;
     if (isNumericInput(tNode)) {
       tNode.flags |= TNodeFlags.isNativeNumericControl;
     }
     if (isTextControl(tNode)) {
       tNode.flags |= TNodeFlags.isNativeTextControl;
     }
+  }
+
+  if (tNode.flags & HAS_CONTROL_MASK) {
     return control;
   }
 
@@ -457,6 +464,14 @@ function updateCustomControl(
   for (const key of CONTROL_BINDING_KEYS) {
     const inputName = CONTROL_BINDING_NAMES[key];
     maybeUpdateInput(componentDef, component, bindings, state, key, inputName);
+  }
+
+  // If the host node is a native control, we can bind field state properties to attributes for any
+  // that weren't defined as inputs on the custom control. We can reuse the update path for native
+  // controls since any properties with a corresponding input would have just been checked above,
+  // and thus will appear unchanged.
+  if (tNode.flags & TNodeFlags.isNativeControl) {
+    updateNativeControl(tNode, lView, control);
   }
 }
 
