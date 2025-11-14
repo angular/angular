@@ -23,6 +23,7 @@ import {
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
+  debounce,
   disabled,
   Field,
   form,
@@ -1945,6 +1946,67 @@ describe('field directive', () => {
         .toEqual(Node.DOCUMENT_POSITION_PRECEDING);
     });
   });
+
+  describe('debounce', () => {
+    it('should support native control', async () => {
+      const {promise, resolve} = promiseWithResolvers<void>();
+
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          debounce(p, () => promise);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.querySelector('input');
+
+      act(() => {
+        input.value = 'typing';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(fixture.componentInstance.f().value()).toBe('');
+
+      resolve();
+      await promise;
+      expect(fixture.componentInstance.f().value()).toBe('typing');
+    });
+
+    it('should support custom control', async () => {
+      const {promise, resolve} = promiseWithResolvers<void>();
+
+      @Component({
+        selector: 'my-input',
+        template: '<input #i [value]="value()" (input)="value.set(i.value)" />',
+      })
+      class CustomInput implements FormValueControl<string> {
+        value = model('');
+      }
+
+      @Component({
+        imports: [Field, CustomInput],
+        template: `<my-input [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          debounce(p, () => promise);
+        });
+        readonly customInput = viewChild.required(CustomInput);
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+
+      act(() => fixture.componentInstance.customInput().value.set('typing'));
+      expect(fixture.componentInstance.f().value()).toBe('');
+
+      resolve();
+      await promise;
+      expect(fixture.componentInstance.f().value()).toBe('typing');
+    });
+  });
 });
 
 function setupRadioGroup() {
@@ -1980,4 +2042,26 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
+}
+
+/**
+ * Replace with `Promise.withResolvers()` once it's available.
+ *
+ * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
+ */
+// TODO: share this with submit.spec.ts
+function promiseWithResolvers<T = void>(): {
+  promise: Promise<T>;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+} {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: any) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return {promise, resolve, reject};
 }
