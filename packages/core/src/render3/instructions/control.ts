@@ -111,8 +111,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 }
 
 /** A bitmask used to check if a TNode represents a native or custom form control. */
-const HAS_CONTROL_MASK =
-  TNodeFlags.isNativeControl | TNodeFlags.isFormValueControl | TNodeFlags.isFormCheckboxControl;
+const HAS_CONTROL_MASK = /* @__PURE__ */ (() =>
+  TNodeFlags.isNativeControl | TNodeFlags.isFormValueControl | TNodeFlags.isFormCheckboxControl)();
 
 function getControlDirectiveFirstCreatePass<T>(
   tView: TView,
