@@ -199,6 +199,7 @@ export class FieldNode implements FieldState<unknown> {
   metadata<M>(key: MetadataKey<M> | AggregateMetadataKey<M, any>): Signal<M> | M | undefined {
     return this.metadataState.get(key);
   }
+
   hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean {
     return this.metadataState.has(key);
   }
@@ -223,8 +224,14 @@ export class FieldNode implements FieldState<unknown> {
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
+   *
+   * @param value Optional value to set to the form.
    */
-  reset(): void {
+  reset(value?: unknown): void {
+    if (value) {
+      this.value.set(value);
+    }
+
     this.nodeState.markAsUntouched();
     this.nodeState.markAsPristine();
 

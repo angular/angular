@@ -102,6 +102,28 @@ describe('FieldNode', () => {
     expect(childA()).toBeDefined();
   });
 
+  describe('resetting', () => {
+    it('can be reset with a value', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f.a().markAsDirty();
+      f.a().markAsTouched();
+
+      f().reset({a: 5, b: 8});
+      expect(f.a().value()).toBe(5);
+      expect(f.a().dirty()).toBe(false);
+      expect(f.a().touched()).toBe(false);
+    });
+
+    it('can be reset without a value', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, {injector: TestBed.inject(Injector)});
+
+      f().reset();
+      expect(f.a().value()).toBe(1);
+    });
+  });
+
   describe('dirty', () => {
     it('is not dirty initially', () => {
       const f = form(
