@@ -223,6 +223,23 @@ Tailwind utility classes can be used within code examples.
 <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
 </docs-code-multifile>
 
+## Tabs
+
+<docs-tab-group>
+  <docs-tab label="Code Example">
+    <docs-code-multifile
+      path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts"
+      hideCode="true"
+      preview>
+    <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.html" />
+    <docs-code path="adev/src/content/examples/hello-world/src/app/tailwind-app.component.ts" />
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Some Text">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla luctus metus blandit semper faucibus. Sed blandit diam quis tellus maximus, ac scelerisque ex egestas. Ut euismod lobortis mauris pretium iaculis. Quisque ullamcorper, elit ut lacinia blandit, magna sem finibus urna, vel suscipit tortor dolor id risus.
+  </docs-tab>
+</docs-tab-group>
+
 ## Workflow
 
 Style numbered steps using `<docs-step>`. Numbering is created using CSS (handy!).

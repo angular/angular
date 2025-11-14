@@ -27,6 +27,7 @@ ng_project(
         "//adev/shared-docs/components/breadcrumb",
         "//adev/shared-docs/components/copy-source-code-button",
         "//adev/shared-docs/components/icon",
+        "//adev/shared-docs/components/tab-group",
         "//adev/shared-docs/components/table-of-contents",
         "//adev/shared-docs/interfaces",
         "//adev/shared-docs/providers",
