@@ -32,7 +32,7 @@
         ]
       },
       {
-        "source": "/**/*-[0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z][0-9A-Z].*",
+        "source": "/**/*-[0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_][0-9A-Za-z_].*",
         "headers": [
           {
             "key": "Cache-Control",
@@ -69,7 +69,6 @@
             "key": "Cross-Origin-Opener-Policy",
             "value": "same-origin"
           },
-
           {
             "key": "Cross-Origin-Embedder-Policy",
             "value": "require-corp"
