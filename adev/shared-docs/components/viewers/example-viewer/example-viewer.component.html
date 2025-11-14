@@ -106,7 +106,7 @@
     >
       <button docs-copy-source-code></button>
       @if (snippetCode()?.sanitizedContent; as content) {
-        <div [innerHTML]="content"></div>
+        <div class="docs-example-code-block" [innerHTML]="content"></div>
       }
     </div>
   }

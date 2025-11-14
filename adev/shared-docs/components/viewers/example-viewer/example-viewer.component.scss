@@ -115,4 +115,10 @@
   button[docs-copy-source-code] {
     top: 0.31rem;
   }
+
+  .docs-example-code-block {
+    overflow: auto;
+    // Roughly 20 lines of code.
+    max-height: 35rem;
+  }
 }
