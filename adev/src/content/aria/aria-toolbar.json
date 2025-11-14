@@ -103,7 +103,7 @@
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
         "startLine": 64,
-        "endLine": 165
+        "endLine": 164
       }
     },
     {
@@ -281,8 +281,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 182,
-        "endLine": 249
+        "startLine": 181,
+        "endLine": 248
       }
     },
     {
@@ -348,8 +348,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 257,
-        "endLine": 292
+        "startLine": 256,
+        "endLine": 291
       }
     }
   ],
