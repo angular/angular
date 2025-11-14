@@ -17,7 +17,7 @@
       "prefix": "adev",
       "architect": {
         "build": {
-          "builder": "@angular/build:application",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "externalDependencies": ["path"],
             "define": {
