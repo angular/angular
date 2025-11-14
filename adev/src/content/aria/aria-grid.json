@@ -192,16 +192,6 @@
           "jsdocTags": []
         },
         {
-          "name": "grid",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The parent grid UI pattern.",
-          "jsdocTags": []
-        },
-        {
           "name": "rowIndex",
           "type": "any",
           "memberType": "property",
@@ -233,7 +223,7 @@
       "source": {
         "filePath": "src/aria/grid/grid.ts",
         "startLine": 177,
-        "endLine": 215
+        "endLine": 216
       }
     },
     {
@@ -447,8 +437,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 230,
-        "endLine": 345
+        "startLine": 231,
+        "endLine": 346
       }
     },
     {
@@ -657,8 +647,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 363,
-        "endLine": 458
+        "startLine": 364,
+        "endLine": 459
       }
     }
   ],
@@ -785,10 +775,6 @@
     ],
     [
       "GridRow.element",
-      "@angular/aria/grid"
-    ],
-    [
-      "GridRow.grid",
       "@angular/aria/grid"
     ],
     [
