@@ -1,3 +1,4 @@
+import {Dir} from '@angular/cdk/bidi';
 import {Component} from '@angular/core';
 import {Toolbar, ToolbarWidget, ToolbarWidgetGroup} from '@angular/aria/toolbar';
 
@@ -5,6 +6,6 @@ import {Toolbar, ToolbarWidget, ToolbarWidgetGroup} from '@angular/aria/toolbar'
   selector: 'app-root',
   templateUrl: 'app.html',
   styleUrl: 'app.css',
-  imports: [Toolbar, ToolbarWidget, ToolbarWidgetGroup],
+  imports: [Dir, Toolbar, ToolbarWidget, ToolbarWidgetGroup],
 })
 export class App {}
