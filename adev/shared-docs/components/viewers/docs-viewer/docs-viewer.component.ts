@@ -40,12 +40,15 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
 import {CopySourceCodeButton} from '../../copy-source-code-button/copy-source-code-button.component';
 import {ExampleViewer} from '../example-viewer/example-viewer.component';
+import {TabGroup} from '../../tab-group/tab-group.component';
 
 const TOC_HOST_ELEMENT_NAME = 'docs-table-of-contents';
 export const ASSETS_EXAMPLES_PATH = 'assets/content/examples';
 export const DOCS_VIEWER_SELECTOR = 'docs-viewer, main[docsViewer]';
 export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
+export const DOCS_CODE_TAB_GROUP_SELECTOR = '.docs-tab-group';
+export const DOCS_CODE_TAB_SELECTOR = '.docs-tab';
 // TODO: Update the branch/sha
 export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/';
 
@@ -118,6 +121,9 @@ export class DocViewer {
       // In case when content contains static code snippets, then create buttons
       // responsible for copy source code.
       this.loadCopySourceCodeButtons();
+      // In case when content contains tabs, create tabs component and move
+      // content in a tab into tab panel.
+      this.constructTabs(contentContainer);
     }
 
     // Display Breadcrumb component if the `<docs-breadcrumb>` element exists
@@ -287,7 +293,7 @@ export class DocViewer {
    */
   private renderComponent<T>(
     type: Type<T>,
-    hostElement: HTMLElement,
+    hostElement: Element,
     inputs?: {[key: string]: unknown},
   ): ComponentRef<T> {
     const componentRef = createComponent(type, {
@@ -363,6 +369,20 @@ export class DocViewer {
     for (const anchor of Array.from(element.querySelectorAll(`a[href^="#"]:not(a[download])`))) {
       const url = new URL((anchor as HTMLAnchorElement).href);
       (anchor as HTMLAnchorElement).href = this.location.path() + url.hash;
+    }
+  }
+
+  /** Replace .docs-tab-group and .docs-tab with tabs component. */
+  private constructTabs(element: HTMLElement) {
+    for (const tabGroup of Array.from(element.querySelectorAll(DOCS_CODE_TAB_GROUP_SELECTOR))) {
+      const tabs = Array.from(tabGroup.querySelectorAll(DOCS_CODE_TAB_SELECTOR)).map((t) => ({
+        label: t.getAttribute('label') ?? '',
+        panel: t,
+      }));
+
+      const tabGroupRef = this.viewContainer.createComponent(TabGroup);
+      tabGroupRef.setInput('tabs', tabs);
+      tabGroup.parentElement!.replaceChild(tabGroupRef.location.nativeElement, tabGroup);
     }
   }
 }
