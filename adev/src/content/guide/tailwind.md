@@ -17,9 +17,20 @@ cd my-project
 
 Next, open a terminal in your Angular project's root directory and run the following command to install Tailwind CSS and its peer dependencies:
 
-<docs-code language="shell">
-npm install tailwindcss @tailwindcss/postcss postcss
-</docs-code>
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install tailwindcss @tailwindcss/postcss postcss
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add tailwindcss @tailwindcss/postcss postcss
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add tailwindcss @tailwindcss/postcss postcss
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add tailwindcss @tailwindcss/postcss postcss
+  </docs-code>
+</docs-code-multifile>
 
 ### 3. Configure PostCSS Plugins
 

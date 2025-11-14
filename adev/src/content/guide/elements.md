@@ -18,11 +18,20 @@ Once a custom element is added to the DOM for any page, it looks and behaves lik
 
 To add the `@angular/elements` package to your workspace, run the following command:
 
-```shell
-
-npm install @angular/elements --save
-
-```
+<docs-code-multifile>
+  <docs-code header="npm" language="shell">
+    npm install @angular/elements
+  </docs-code>
+  <docs-code header="yarn" language="shell">
+    yarn add @angular/elements
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add @angular/elements
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add @angular/elements
+  </docs-code>
+</docs-code-multifile>
 
 ### How it works
 
