@@ -130,39 +130,6 @@
           "jsdocTags": []
         },
         {
-          "name": "onFocus",
-          "signatures": [
-            {
-              "name": "onFocus",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "onFocus",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
           "name": "scrollActiveItemIntoView",
           "signatures": [
             {
@@ -313,16 +280,6 @@
             "protected"
           ],
           "description": "The text used by the typeahead search.",
-          "jsdocTags": []
-        },
-        {
-          "name": "listbox",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "protected"
-          ],
-          "description": "The parent Listbox UIPattern.",
           "jsdocTags": []
         },
         {
@@ -536,10 +493,6 @@
       "@angular/aria/listbox"
     ],
     [
-      "Listbox.onFocus",
-      "@angular/aria/listbox"
-    ],
-    [
       "Listbox.scrollActiveItemIntoView",
       "@angular/aria/listbox"
     ],
@@ -565,10 +518,6 @@
     ],
     [
       "Option.searchTerm",
-      "@angular/aria/listbox"
-    ],
-    [
-      "Option.listbox",
       "@angular/aria/listbox"
     ],
     [

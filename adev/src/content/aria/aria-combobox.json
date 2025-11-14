@@ -360,16 +360,6 @@
           ],
           "description": "The combobox that the popup belongs to.",
           "jsdocTags": []
-        },
-        {
-          "name": "controls",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The popup controls exposed to the combobox.",
-          "jsdocTags": []
         }
       ],
       "generics": [
@@ -665,10 +655,6 @@
     ],
     [
       "ComboboxPopup.combobox",
-      "@angular/aria/combobox"
-    ],
-    [
-      "ComboboxPopup.controls",
       "@angular/aria/combobox"
     ],
     [

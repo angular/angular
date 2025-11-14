@@ -30,16 +30,6 @@
           "jsdocTags": []
         },
         {
-          "name": "items",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Sorted UIPatterns of the child widgets",
-          "jsdocTags": []
-        },
-        {
           "name": "orientation",
           "type": "any",
           "memberType": "property",
@@ -89,137 +79,6 @@
           "jsdocTags": [],
           "inputAlias": "wrap",
           "isRequiredInput": false
-        },
-        {
-          "name": "onFocus",
-          "signatures": [
-            {
-              "name": "onFocus",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "onFocus",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "register",
-          "signatures": [
-            {
-              "name": "register",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "widget",
-                  "description": "",
-                  "type": "ToolbarWidget<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "widget",
-                "description": "",
-                "type": "ToolbarWidget<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "register",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "unregister",
-          "signatures": [
-            {
-              "name": "unregister",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "widget",
-                  "description": "",
-                  "type": "ToolbarWidget<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "widget",
-                "description": "",
-                "type": "ToolbarWidget<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "unregister",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
         }
       ],
       "generics": [
@@ -244,7 +103,7 @@
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
         "startLine": 64,
-        "endLine": 164
+        "endLine": 165
       }
     },
     {
@@ -274,16 +133,6 @@
           "jsdocTags": [],
           "inputAlias": "id",
           "isRequiredInput": false
-        },
-        {
-          "name": "toolbar",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The parent Toolbar UIPattern.",
-          "jsdocTags": []
         },
         {
           "name": "disabled",
@@ -339,16 +188,6 @@
             "readonly"
           ],
           "description": "Whether the widget is selected (only relevant in a selection group).",
-          "jsdocTags": []
-        },
-        {
-          "name": "group",
-          "type": "SignalLike<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "",
           "jsdocTags": []
         },
         {
@@ -442,8 +281,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 181,
-        "endLine": 245
+        "startLine": 182,
+        "endLine": 249
       }
     },
     {
@@ -462,16 +301,6 @@
           "jsdocTags": []
         },
         {
-          "name": "toolbar",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The parent Toolbar UIPattern.",
-          "jsdocTags": []
-        },
-        {
           "name": "disabled",
           "type": "any",
           "memberType": "property",
@@ -483,16 +312,6 @@
           "jsdocTags": [],
           "inputAlias": "disabled",
           "isRequiredInput": false
-        },
-        {
-          "name": "items",
-          "type": "() => any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The list of toolbar items within the group.",
-          "jsdocTags": []
         },
         {
           "name": "multi",
@@ -529,8 +348,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 253,
-        "endLine": 284
+        "startLine": 257,
+        "endLine": 292
       }
     }
   ],
@@ -628,10 +447,6 @@
       "@angular/aria/toolbar"
     ],
     [
-      "Toolbar.items",
-      "@angular/aria/toolbar"
-    ],
-    [
       "Toolbar.orientation",
       "@angular/aria/toolbar"
     ],
@@ -648,18 +463,6 @@
       "@angular/aria/toolbar"
     ],
     [
-      "Toolbar.onFocus",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "Toolbar.register",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "Toolbar.unregister",
-      "@angular/aria/toolbar"
-    ],
-    [
       "ToolbarWidget",
       "@angular/aria/toolbar"
     ],
@@ -669,10 +472,6 @@
     ],
     [
       "ToolbarWidget.id",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidget.toolbar",
       "@angular/aria/toolbar"
     ],
     [
@@ -696,10 +495,6 @@
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidget.group",
-      "@angular/aria/toolbar"
-    ],
-    [
       "ToolbarWidget.ngOnInit",
       "@angular/aria/toolbar"
     ],
@@ -716,15 +511,7 @@
       "@angular/aria/toolbar"
     ],
     [
-      "ToolbarWidgetGroup.toolbar",
-      "@angular/aria/toolbar"
-    ],
-    [
       "ToolbarWidgetGroup.disabled",
-      "@angular/aria/toolbar"
-    ],
-    [
-      "ToolbarWidgetGroup.items",
       "@angular/aria/toolbar"
     ],
     [

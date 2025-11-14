@@ -40,16 +40,6 @@
           "jsdocTags": []
         },
         {
-          "name": "accordionTrigger",
-          "type": "WritableSignal<any>",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "The parent accordion trigger pattern that controls this panel. This is set by AccordionGroup.",
-          "jsdocTags": []
-        },
-        {
           "name": "expand",
           "signatures": [
             {
@@ -362,7 +352,7 @@
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
         "startLine": 132,
-        "endLine": 196
+        "endLine": 197
       }
     },
     {
@@ -526,8 +516,8 @@
       ],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 233,
-        "endLine": 328
+        "startLine": 234,
+        "endLine": 329
       }
     },
     {
@@ -547,8 +537,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/accordion/accordion.ts",
-        "startLine": 348,
-        "endLine": 352
+        "startLine": 349,
+        "endLine": 353
       }
     }
   ],
@@ -655,10 +645,6 @@
     ],
     [
       "AccordionPanel.visible",
-      "@angular/aria/accordion"
-    ],
-    [
-      "AccordionPanel.accordionTrigger",
       "@angular/aria/accordion"
     ],
     [
