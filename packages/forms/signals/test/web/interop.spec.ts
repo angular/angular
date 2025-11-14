@@ -8,7 +8,7 @@
 
 import {Component, inject, signal, provideZonelessChangeDetection, viewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {disabled, Field, form} from '@angular/forms/signals';
+import {debounce, disabled, Field, form} from '@angular/forms/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('ControlValueAccessor', () => {
@@ -89,6 +89,34 @@ describe('ControlValueAccessor', () => {
       input.value = 'typing';
       input.dispatchEvent(new Event('input'));
     });
+    expect(fixture.componentInstance.f().value()).toBe('typing');
+  });
+
+  it('should support debounce', async () => {
+    const {promise, resolve} = promiseWithResolvers<void>();
+
+    @Component({
+      imports: [CustomControl, Field],
+      template: `<custom-control [field]="f" />`,
+    })
+    class TestCmp {
+      readonly f = form(signal(''), (p) => {
+        debounce(p, () => promise);
+      });
+      readonly control = viewChild.required(CustomControl);
+    }
+
+    const fixture = act(() => TestBed.createComponent(TestCmp));
+    const input = fixture.nativeElement.querySelector('input');
+
+    act(() => {
+      input.value = 'typing';
+      input.dispatchEvent(new Event('input'));
+    });
+    expect(fixture.componentInstance.f().value()).toBe('');
+
+    resolve();
+    await promise;
     expect(fixture.componentInstance.f().value()).toBe('typing');
   });
 
@@ -285,4 +313,26 @@ function act<T>(fn: () => T): T {
   } finally {
     TestBed.tick();
   }
+}
+
+/**
+ * Replace with `Promise.withResolvers()` once it's available.
+ *
+ * See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers.
+ */
+// TODO: share this with submit.spec.ts
+function promiseWithResolvers<T = void>(): {
+  promise: Promise<T>;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: any) => void;
+} {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: any) => void;
+
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+
+  return {promise, resolve, reject};
 }
