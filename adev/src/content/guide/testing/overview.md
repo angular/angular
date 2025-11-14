@@ -1,10 +1,8 @@
 # Unit testing
 
-Testing your Angular application helps you check that it is working as you expect.
+Testing your Angular application helps you check that it is working as you expect. Unit tests are crucial for catching bugs early, ensuring code quality, and facilitating safe refactoring.
 
-NOTE: This guide focuses on the default testing setup for new Angular CLI projects. If you are migrating an existing project from Karma to Vitest, see the [Migrating from Karma to Vitest guide](guide/testing/migrating-to-vitest).
-
-NOTE: While Vitest is the default test runner, Karma is still fully supported. For information on testing with Karma, see the [Karma testing guide](guide/testing/karma).
+NOTE: This guide focuses on the default testing setup for new Angular CLI projects. If you are migrating an existing project from Karma to Vitest, see the [Migrating from Karma to Vitest guide](guide/testing/migrating-to-vitest). While Vitest is the default test runner, Karma is still fully supported. For information on testing with Karma, see the [Karma testing guide](guide/testing/karma).
 
 ## Set up for testing
 
@@ -45,8 +43,8 @@ You can change the following options in the `test` target of your `angular.json`
 
 - `include`: Glob patterns for files to include for testing. Defaults to `['**/*.spec.ts', '**/*.test.ts']`.
 - `exclude`: Glob patterns for files to exclude from testing.
-- `setupFiles`: A list of paths to global setup files that are executed before your tests.
-- `providersFile`: The path to a file that exports a default array of Angular providers for the test environment. This is useful for setting up global test providers.
+- `setupFiles`: A list of paths to global setup files (e.g., polyfills or global mocks) that are executed before your tests.
+- `providersFile`: The path to a file that exports a default array of Angular providers for the test environment. This is useful for setting up global test providers which are injected into your tests.
 - `coverage`: A boolean to enable or disable code coverage reporting. Defaults to `false`.
 - `browsers`: An array of browser names to run tests in (e.g., `["chromium"]`). Requires a browser provider to be installed.
 
@@ -94,7 +92,7 @@ For advanced use cases, you can provide a custom Vitest configuration file.
 
 IMPORTANT: While using a custom configuration enables advanced options, the Angular team does not provide direct support for the specific contents of the configuration file or for any third-party plugins used within it. The CLI will also override certain properties (`test.projects`, `test.include`) to ensure proper operation.
 
-You can create a Vitest configuration file (e.g., `vitest.config.ts`) and reference it in your `angular.json` using the `runnerConfig` option.
+You can create a Vitest configuration file (e.g., `vitest-base.config.ts`) and reference it in your `angular.json` using the `runnerConfig` option.
 
 ```json
 {
@@ -104,7 +102,7 @@ You can create a Vitest configuration file (e.g., `vitest.config.ts`) and refere
         "test": {
           "builder": "@angular/build:unit-test",
           "options": {
-            "runnerConfig": "vitest.config.ts"
+            "runnerConfig": "vitest-base.config.ts"
           }
         }
       }
@@ -141,14 +139,17 @@ Choose one of the following browser providers based on your needs:
 - **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
 
 <docs-code-multifile>
-  <docs-code header="pnpm" language="shell">
-    pnpm add -D @vitest/browser-playwright playwright
-  </docs-code>
   <docs-code header="npm" language="shell">
     npm install --save-dev @vitest/browser-playwright playwright
   </docs-code>
   <docs-code header="yarn" language="shell">
     yarn add --dev @vitest/browser-playwright playwright
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/browser-playwright playwright
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/browser-playwright playwright
   </docs-code>
 </docs-code-multifile>
 
@@ -167,32 +168,6 @@ Headless mode is enabled automatically if the `CI` environment variable is set. 
 ## Other test frameworks
 
 You can also unit test an Angular application with other testing libraries and test runners. Each library and runner has its own distinctive installation procedures, configuration, and syntax.
-
-## Test file name and location
-
-Inside the `src/app` folder, the Angular CLI generates a test file for the `App` named `app.spec.ts`.
-
-IMPORTANT: The test file extension **must be `.spec.ts` or `.test.ts`** so that tooling can identify it as a file with tests (also known as a _spec_ file).
-
-The `app.ts` and `app.spec.ts` files are siblings in the same folder. The root file names (`app`) are the same for both files.
-
-Adopt these two conventions in your own projects for every kind of test file.
-
-### Place your spec file next to the file it tests
-
-It's a good practice to put unit test spec files in the same folder as the application source code files that they test:
-
-- Such tests are painless to find.
-- You see at a glance if a part of your application lacks tests.
-- Nearby tests can reveal how a part works in context.
-- When you move the source, you remember to move the test.
-- When you rename the source file, you remember to rename the test file.
-
-### Place your spec files in a test folder
-
-Application integration specs can test the interactions of multiple parts spread across folders and modules. They don't belong to any single part, so they don't have a natural home next to any one file.
-
-It's often better to create an appropriate folder for them in the `tests` directory.
 
 ## Testing in continuous integration
 
