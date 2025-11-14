@@ -7,14 +7,17 @@ Code coverage reports show you any parts of your code base that might not be pro
 To generate code coverage reports with Vitest, you must install the `@vitest/coverage-v8` package:
 
 <docs-code-multifile>
-  <docs-code header="pnpm" language="shell">
-    pnpm add -D @vitest/coverage-v8
-  </docs-code>
   <docs-code header="npm" language="shell">
     npm install --save-dev @vitest/coverage-v8
   </docs-code>
   <docs-code header="yarn" language="shell">
     yarn add --dev @vitest/coverage-v8
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/coverage-v8
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/coverage-v8
   </docs-code>
 </docs-code-multifile>
 

@@ -13,14 +13,17 @@ Before using the automated refactoring schematic, you must manually update your 
 Install `vitest` and a DOM emulation library. While browser testing is still possible (see [step 5](#5-configure-browser-mode-optional)), Vitest uses a DOM emulation library by default to simulate a browser environment within Node.js for faster test execution. The CLI automatically detects and uses `happy-dom` if it's installed; otherwise, it falls back to `jsdom`. You must have one of these packages installed.
 
 <docs-code-multifile>
-  <docs-code header="pnpm" language="shell">
-    pnpm add -D vitest jsdom
-  </docs-code>
   <docs-code header="npm" language="shell">
     npm install --save-dev vitest jsdom
   </docs-code>
   <docs-code header="yarn" language="shell">
     yarn add --dev vitest jsdom
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D vitest jsdom
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev vitest jsdom
   </docs-code>
 </docs-code-multifile>
 
@@ -65,14 +68,17 @@ For other settings, consult the official [Vitest documentation](https://vitest.d
 You can now delete `karma.conf.js` and `src/test.ts` from your project and uninstall the Karma-related packages. The following commands are based on the packages installed in a new Angular CLI project; your project may have other Karma-related packages to remove.
 
 <docs-code-multifile>
-  <docs-code header="pnpm" language="shell">
-    pnpm remove karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter
-  </docs-code>
   <docs-code header="npm" language="shell">
     npm uninstall karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter
   </docs-code>
   <docs-code header="yarn" language="shell">
     yarn remove karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm remove karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun remove karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter
   </docs-code>
 </docs-code-multifile>
 
@@ -89,14 +95,17 @@ Choose one of the following browser providers based on your needs:
 - **Preview**: `@vitest/browser-preview` for Webcontainer environments (like StackBlitz).
 
 <docs-code-multifile>
-  <docs-code header="pnpm" language="shell">
-    pnpm add -D @vitest/browser-playwright
-  </docs-code>
   <docs-code header="npm" language="shell">
     npm install --save-dev @vitest/browser-playwright
   </docs-code>
   <docs-code header="yarn" language="shell">
     yarn add --dev @vitest/browser-playwright
+  </docs-code>
+  <docs-code header="pnpm" language="shell">
+    pnpm add -D @vitest/browser-playwright
+  </docs-code>
+  <docs-code header="bun" language="shell">
+    bun add --dev @vitest/browser-playwright
   </docs-code>
 </docs-code-multifile>
 
