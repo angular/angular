@@ -1,6 +1,9 @@
 <docs-decorative-header title="Autocomplete">
-    An accessible input field that filters and suggests options as users type, helping them find and select values from a list.
 </docs-decorative-header>
+
+## Overview
+
+An accessible input field that filters and suggests options as users type, helping them find and select values from a list.
 
 <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.component.ts">
   <docs-code header="app.component.ts" path="adev/src/content/examples/aria/autocomplete/src/basic/app/app.component.ts"/>
