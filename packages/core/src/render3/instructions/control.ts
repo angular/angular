@@ -271,11 +271,7 @@ function listenToCustomControl(
  */
 function listenToInteropControl(control: ɵControl<unknown>): void {
   const interopControl = control.ɵinteropControl!;
-  interopControl.registerOnChange((value: unknown) => {
-    const state = control.state();
-    state.value.set(value);
-    state.markAsDirty();
-  });
+  interopControl.registerOnChange((value: unknown) => control.state().setControlValue(value));
   interopControl.registerOnTouched(() => control.state().markAsTouched());
 }
 
