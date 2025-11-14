@@ -21,14 +21,17 @@ To add Karma and Jasmine to an existing project, follow these steps:
 1.  **Install the necessary packages:**
 
     <docs-code-multifile>
-      <docs-code header="pnpm" language="shell">
-        pnpm add -D karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter jasmine-core @types/jasmine
-      </docs-code>
       <docs-code header="npm" language="shell">
         npm install --save-dev karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter jasmine-core @types/jasmine
       </docs-code>
       <docs-code header="yarn" language="shell">
         yarn add --dev karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter jasmine-core @types/jasmine
+      </docs-code>
+      <docs-code header="pnpm" language="shell">
+        pnpm add -D karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter jasmine-core @types/jasmine
+      </docs-code>
+      <docs-code header="bun" language="shell">
+        bun add --dev karma karma-chrome-launcher karma-coverage karma-jasmine karma-jasmine-html-reporter jasmine-core @types/jasmine
       </docs-code>
     </docs-code-multifile>
 
