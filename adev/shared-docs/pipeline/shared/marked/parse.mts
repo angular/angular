@@ -21,6 +21,7 @@ import {docsDecorativeHeaderExtension} from './extensions/docs-decorative-header
 import {docsCodeBlockExtension} from './extensions/docs-code/docs-code-block.mjs';
 import {docsCodeExtension, DocsCodeToken} from './extensions/docs-code/docs-code.mjs';
 import {docsCodeMultifileExtension} from './extensions/docs-code/docs-code-multifile.mjs';
+import {docsTabGroupExtension, docsTabExtension} from './extensions/docs-tabs.mjs';
 import {hooks} from './hooks.mjs';
 
 let markedInstance: typeof marked;
@@ -38,6 +39,8 @@ const extensions = [
   docsCodeBlockExtension,
   docsCodeExtension,
   docsCodeMultifileExtension,
+  docsTabExtension,
+  docsTabGroupExtension,
 ];
 
 export async function parseMarkdownAsync(
