@@ -718,9 +718,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/overview',
                 },
                 {
-                  label: 'Accordion',
-                  path: 'guide/aria/accordion',
-                  contentPath: 'guide/aria/accordion',
+                  label: 'Autocomplete',
+                  path: 'guide/aria/autocomplete',
+                  contentPath: 'guide/aria/autocomplete',
                 },
                 {
                   label: 'Autocomplete',
@@ -733,19 +733,19 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/combobox',
                 },
                 {
-                  label: 'Grid',
-                  path: 'guide/aria/grid',
-                  contentPath: 'guide/aria/grid',
-                },
-                {
                   label: 'Listbox',
                   path: 'guide/aria/listbox',
                   contentPath: 'guide/aria/listbox',
                 },
                 {
-                  label: 'Menu',
-                  path: 'guide/aria/menu',
-                  contentPath: 'guide/aria/menu',
+                  label: 'Multiselect',
+                  path: 'guide/aria/multiselect',
+                  contentPath: 'guide/aria/multiselect',
+                },
+                {
+                  label: 'Select',
+                  path: 'guide/aria/select',
+                  contentPath: 'guide/aria/select',
                 },
                 {
                   label: 'Tabs',
@@ -756,21 +756,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   label: 'Toolbar',
                   path: 'guide/aria/toolbar',
                   contentPath: 'guide/aria/toolbar',
-                },
-                {
-                  label: 'Tree',
-                  path: 'guide/aria/tree',
-                  contentPath: 'guide/aria/tree',
-                },
-                {
-                  label: 'Select',
-                  path: 'guide/aria/select',
-                  contentPath: 'guide/aria/select',
-                },
-                {
-                  label: 'Multiselect',
-                  path: 'guide/aria/multiselect',
-                  contentPath: 'guide/aria/multiselect',
                 },
               ],
             },
