@@ -6,23 +6,23 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {computed, Signal, WritableSignal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
+import {BasicFieldAdapter, FieldAdapter} from '../../src/field/field_adapter';
+import {FormFieldManager} from '../../src/field/manager';
+import {FieldNode} from '../../src/field/node';
+import {FieldNodeState} from '../../src/field/state';
 import {
   ChildFieldNodeOptions,
   FieldNodeOptions,
   FieldNodeStructure,
 } from '../../src/field/structure';
-import {computed, Signal, WritableSignal} from '@angular/core';
-import {CompatFieldNode} from './compat_field_node';
-import {FieldNode} from '../../src/field/node';
-import {CompatValidationState} from './compat_validation_state';
 import {ValidationState} from '../../src/field/validation';
-import {CompatChildFieldNodeOptions, CompatStructure} from './compat_structure';
-import {CompatNodeState} from './compat_node_state';
-import {FieldNodeState} from '../../src/field/state';
-import {FieldAdapter, BasicFieldAdapter} from '../../src/field/field_adapter';
 import {FieldPathNode} from '../../src/schema/path_node';
-import {FormFieldManager} from '../../src/field/manager';
+import {CompatFieldNode} from './compat_field_node';
+import {CompatNodeState} from './compat_node_state';
+import {CompatChildFieldNodeOptions, CompatStructure} from './compat_structure';
+import {CompatValidationState} from './compat_validation_state';
 
 /**
  * This is a tree-shakable Field adapter that can create a compat node

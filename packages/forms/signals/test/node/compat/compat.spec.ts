@@ -7,6 +7,10 @@
  */
 
 import {ApplicationRef, Injector, signal} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {compatForm} from '../../../compat/src/api/compat_form';
+import {CompatValidationError} from '../../../compat/src/api/compat_validation_error';
 import {
   customError,
   disabled,
@@ -23,10 +27,6 @@ import {
   validate,
   validateTree,
 } from '../../../public_api';
-import {TestBed} from '@angular/core/testing';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {CompatValidationError} from '../../../compat/src/compat_validation_error';
-import {compatForm} from '../../../compat/src/compat_form';
 
 function promiseWithResolvers<T>(): {
   promise: Promise<T>;
