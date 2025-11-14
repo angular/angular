@@ -13,7 +13,6 @@ import {
   applyEach,
   customError,
   disabled,
-  SchemaPath,
   form,
   hidden,
   readonly,
@@ -23,6 +22,7 @@ import {
   Schema,
   schema,
   SchemaOrSchemaFn,
+  SchemaPath,
   SchemaPathTree,
   validate,
   validateTree,
@@ -1228,7 +1228,7 @@ describe('FieldNode', () => {
     });
 
     it('should error on resolving predefined schema path that is not part of the form', () => {
-      let otherP: SchemaPath<any>;
+      let otherP: SchemaPath<string>;
       const s = schema<string>((p) => (otherP = p));
       SchemaImpl.rootCompile(s);
 

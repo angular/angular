@@ -29,10 +29,13 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @category validation
  * @experimental 21.0.0
  */
-export function min<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>,
-  minValue: number | LogicFn<number | string | null, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<number | string | null, TPathKind>,
+export function min<
+  TValue extends number | string | null,
+  TPathKind extends PathKind = PathKind.Root,
+>(
+  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
+  minValue: number | LogicFn<TValue, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
   const MIN_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
