@@ -150,137 +150,6 @@
           "jsdocTags": []
         },
         {
-          "name": "onFocus",
-          "signatures": [
-            {
-              "name": "onFocus",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "onFocus",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "register",
-          "signatures": [
-            {
-              "name": "register",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "child",
-                  "description": "",
-                  "type": "TreeItem<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "child",
-                "description": "",
-                "type": "TreeItem<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "register",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "unregister",
-          "signatures": [
-            {
-              "name": "unregister",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "child",
-                  "description": "",
-                  "type": "TreeItem<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "child",
-                "description": "",
-                "type": "TreeItem<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "unregister",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
           "name": "scrollActiveItemIntoView",
           "signatures": [
             {
@@ -591,88 +460,6 @@
           "rawComment": "",
           "memberType": "method",
           "memberTags": []
-        },
-        {
-          "name": "register",
-          "signatures": [
-            {
-              "name": "register",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "group",
-                  "description": "",
-                  "type": "TreeItemGroup<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "group",
-                "description": "",
-                "type": "TreeItemGroup<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "register",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "unregister",
-          "signatures": [
-            {
-              "name": "unregister",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "unregister",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
         }
       ],
       "generics": [
@@ -718,16 +505,6 @@
             "readonly"
           ],
           "description": "A reference to the host element.",
-          "jsdocTags": []
-        },
-        {
-          "name": "children",
-          "type": "any",
-          "memberType": "property",
-          "memberTags": [
-            "readonly"
-          ],
-          "description": "Child items within this group.",
           "jsdocTags": []
         },
         {
@@ -794,104 +571,6 @@
             "returnType": "void",
             "generics": [],
             "name": "ngOnDestroy",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "register",
-          "signatures": [
-            {
-              "name": "register",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "child",
-                  "description": "",
-                  "type": "TreeItem<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "child",
-                "description": "",
-                "type": "TreeItem<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "register",
-            "description": "",
-            "entryType": "function",
-            "jsdocTags": [],
-            "rawComment": ""
-          },
-          "entryType": "function",
-          "description": "",
-          "jsdocTags": [],
-          "rawComment": "",
-          "memberType": "method",
-          "memberTags": []
-        },
-        {
-          "name": "unregister",
-          "signatures": [
-            {
-              "name": "unregister",
-              "entryType": "function",
-              "description": "",
-              "generics": [],
-              "isNewType": false,
-              "jsdocTags": [],
-              "params": [
-                {
-                  "name": "child",
-                  "description": "",
-                  "type": "TreeItem<V>",
-                  "isOptional": false,
-                  "isRestParam": false
-                }
-              ],
-              "rawComment": "",
-              "returnType": "void"
-            }
-          ],
-          "implementation": {
-            "params": [
-              {
-                "name": "child",
-                "description": "",
-                "type": "TreeItem<V>",
-                "isOptional": false,
-                "isRestParam": false
-              }
-            ],
-            "isNewType": false,
-            "returnType": "void",
-            "generics": [],
-            "name": "unregister",
             "description": "",
             "entryType": "function",
             "jsdocTags": [],
@@ -1087,18 +766,6 @@
       "@angular/aria/tree"
     ],
     [
-      "Tree.onFocus",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.register",
-      "@angular/aria/tree"
-    ],
-    [
-      "Tree.unregister",
-      "@angular/aria/tree"
-    ],
-    [
       "Tree.scrollActiveItemIntoView",
       "@angular/aria/tree"
     ],
@@ -1171,23 +838,11 @@
       "@angular/aria/tree"
     ],
     [
-      "TreeItem.register",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItem.unregister",
-      "@angular/aria/tree"
-    ],
-    [
       "TreeItemGroup",
       "@angular/aria/tree"
     ],
     [
       "TreeItemGroup.element",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItemGroup.children",
       "@angular/aria/tree"
     ],
     [
@@ -1200,14 +855,6 @@
     ],
     [
       "TreeItemGroup.ngOnDestroy",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItemGroup.register",
-      "@angular/aria/tree"
-    ],
-    [
-      "TreeItemGroup.unregister",
       "@angular/aria/tree"
     ]
   ]
