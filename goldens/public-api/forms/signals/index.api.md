@@ -274,7 +274,7 @@ export type MapToErrorsFn<TValue, TResult, TPathKind extends PathKind = PathKind
 export const MAX: AggregateMetadataKey<number | undefined, number | undefined>;
 
 // @public
-export function max<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<number, number | undefined, TPathKind>, config?: BaseValidatorConfig<number, TPathKind>): void;
+export function max<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>, maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>, config?: BaseValidatorConfig<number | string | null, TPathKind>): void;
 
 // @public
 export const MAX_LENGTH: AggregateMetadataKey<number | undefined, number | undefined>;
@@ -335,7 +335,7 @@ export class MetadataKey<TValue> {
 export const MIN: AggregateMetadataKey<number | undefined, number | undefined>;
 
 // @public
-export function min<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<number, number | undefined, TPathKind>, config?: BaseValidatorConfig<number, TPathKind>): void;
+export function min<TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>, minValue: number | LogicFn<number | string | null, number | undefined, TPathKind>, config?: BaseValidatorConfig<number | string | null, TPathKind>): void;
 
 // @public
 export const MIN_LENGTH: AggregateMetadataKey<number | undefined, number | undefined>;

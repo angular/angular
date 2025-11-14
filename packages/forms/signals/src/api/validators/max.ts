@@ -9,7 +9,7 @@
 import {computed} from '@angular/core';
 import {aggregateMetadata, metadata, validate} from '../logic';
 import {MAX} from '../metadata';
-import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../types';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -30,9 +30,9 @@ import {BaseValidatorConfig, getOption, isEmpty} from './util';
  * @experimental 21.0.0
  */
 export function max<TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<number, SchemaPathRules.Supported, TPathKind>,
-  maxValue: number | LogicFn<number, number | undefined, TPathKind>,
-  config?: BaseValidatorConfig<number, TPathKind>,
+  path: SchemaPath<number | string | null, SchemaPathRules.Supported, TPathKind>,
+  maxValue: number | LogicFn<number | string | null, number | undefined, TPathKind>,
+  config?: BaseValidatorConfig<number | string | null, TPathKind>,
 ) {
   const MAX_MEMO = metadata(path, (ctx) =>
     computed(() => (typeof maxValue === 'number' ? maxValue : maxValue(ctx))),
@@ -46,7 +46,9 @@ export function max<TPathKind extends PathKind = PathKind.Root>(
     if (max === undefined || Number.isNaN(max)) {
       return undefined;
     }
-    if (ctx.value() > max) {
+    const value = ctx.value();
+    const numValue = !value && value !== 0 ? NaN : Number(value); // Treat `''` and `null` as `NaN`
+    if (numValue > max) {
       if (config?.error) {
         return getOption(config.error, ctx);
       } else {

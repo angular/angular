@@ -59,7 +59,7 @@ describe('min validator', () => {
         (p) => {
           min(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-min', message: value().toString()});
+              return customError({kind: 'special-min', message: value()?.toString()});
             },
           });
         },
@@ -84,7 +84,7 @@ describe('min validator', () => {
             error: ({value}) => {
               return {
                 kind: 'special-min',
-                message: value().toString(),
+                message: value()?.toString(),
               };
             },
           });
@@ -130,7 +130,7 @@ describe('min validator', () => {
             error: ({value, valueOf}) => {
               return valueOf(p.name) === 'disabled'
                 ? []
-                : customError({kind: 'special-min', message: value().toString()});
+                : customError({kind: 'special-min', message: value()?.toString()});
             },
           });
         },
@@ -307,5 +307,31 @@ describe('min validator', () => {
       f.name().value.set('other cat');
       expect(f.age().errors()).toEqual([]);
     });
+  });
+
+  it('should validate properly formatted strings', () => {
+    const f = form(
+      signal<number | string | null>('4'),
+      (p) => {
+        min(p, 10);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+    expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
+  });
+
+  it('should not validate improperly formatted strings or null', () => {
+    const f = form(
+      signal<number | string | null>('4f'),
+      (p) => {
+        min(p, 10);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+    expect(f().errors()).toEqual([]);
+    f().value.set(null);
+    expect(f().errors()).toEqual([]);
+    f().value.set(4);
+    expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'min'})]);
   });
 });
