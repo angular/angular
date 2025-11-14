@@ -18,7 +18,7 @@ export class CustomCard {/* ... */}
 ```angular-ts
 @Component({
   selector: 'custom-card',
-  template: '<div class="card-shadow"> <ng-content></ng-content> </div>',
+  template: '<div class="card-shadow"> <ng-content/> </div>',
 })
 export class CustomCard {/* ... */}
 ```
