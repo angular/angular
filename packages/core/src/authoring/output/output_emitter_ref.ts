@@ -29,7 +29,6 @@ import {OutputRef, OutputRefSubscription} from './output_ref';
  * @publicAPI
  */
 export class OutputEmitterRef<T> implements OutputRef<T> {
-  private destroyed = false;
   private listeners: Array<(value: T) => void> | null = null;
   private errorHandler = inject(ErrorHandler, {optional: true});
 
@@ -39,13 +38,12 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
   constructor() {
     // Clean-up all listeners and mark as destroyed upon destroy.
     this.destroyRef.onDestroy(() => {
-      this.destroyed = true;
       this.listeners = null;
     });
   }
 
   subscribe(callback: (value: T) => void): OutputRefSubscription {
-    if (this.destroyed) {
+    if (this.destroyRef.destroyed) {
       throw new RuntimeError(
         RuntimeErrorCode.OUTPUT_REF_DESTROYED,
         ngDevMode &&
@@ -68,7 +66,7 @@ export class OutputEmitterRef<T> implements OutputRef<T> {
 
   /** Emits a new value to the output. */
   emit(value: T): void {
-    if (this.destroyed) {
+    if (this.destroyRef.destroyed) {
       console.warn(
         formatRuntimeError(
           RuntimeErrorCode.OUTPUT_REF_DESTROYED,

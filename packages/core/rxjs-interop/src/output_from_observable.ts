@@ -27,18 +27,12 @@ import {takeUntilDestroyed} from './take_until_destroyed';
  * @internal
  */
 class OutputFromObservableRef<T> implements OutputRef<T> {
-  private destroyed = false;
-
   destroyRef = inject(DestroyRef);
 
-  constructor(private source: Observable<T>) {
-    this.destroyRef.onDestroy(() => {
-      this.destroyed = true;
-    });
-  }
+  constructor(private source: Observable<T>) {}
 
   subscribe(callbackFn: (value: T) => void): OutputRefSubscription {
-    if (this.destroyed) {
+    if (this.destroyRef.destroyed) {
       throw new ɵRuntimeError(
         ɵRuntimeErrorCode.OUTPUT_REF_DESTROYED,
         ngDevMode &&
