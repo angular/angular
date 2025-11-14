@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldNodeState} from '../../src/field/state';
 import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
+import {FieldNodeState} from '../../src/field/state';
 import {CompatFieldNode, getControlEventsSignal, getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
 

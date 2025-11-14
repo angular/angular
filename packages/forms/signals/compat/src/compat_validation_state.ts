@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, signal, Signal} from '@angular/core';
+import {computed, Signal} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
+import {ValidationError} from '../../src/api/validation_errors';
+import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
+import type {CompatValidationError} from './api/compat_validation_error';
 import {getControlStatusSignal} from './compat_field_node';
 import {CompatFieldNodeOptions} from './compat_structure';
-import {calculateValidationSelfStatus, ValidationState} from '../../src/field/validation';
-import {CompatValidationError, extractNestedReactiveErrors} from './compat_validation_error';
-import {ValidationError} from '../../src/api/validation_errors';
+import {extractNestedReactiveErrors} from './compat_validation_error';
 
 // Readonly signal containing an empty array, used for optimization.
 const EMPTY_ARRAY_SIGNAL = computed(() => []);

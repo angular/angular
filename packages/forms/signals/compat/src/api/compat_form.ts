@@ -6,12 +6,18 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldTree, PathKind, SchemaOrSchemaFn} from '../../src/api/types';
-import {form, FormOptions} from '../../public_api';
-import {CompatFieldAdapter} from './compat_field_adapter';
-import {normalizeFormArgs} from '../../src/util/normalize_form_args';
 import {WritableSignal} from '@angular/core';
+import {form, FormOptions} from '../../../public_api';
+import {FieldTree, PathKind, SchemaOrSchemaFn} from '../../../src/api/types';
+import {normalizeFormArgs} from '../../../src/util/normalize_form_args';
+import {CompatFieldAdapter} from '../compat_field_adapter';
 
+/**
+ * Options that may be specified when creating a compat form.
+ *
+ * @category interop
+ * @experimental 21.0.0
+ */
 export type CompatFormOptions = Omit<FormOptions, 'adapter'>;
 
 /**
