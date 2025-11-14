@@ -59,7 +59,7 @@ describe('max validator', () => {
         (p) => {
           max(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-max', message: value().toString()});
+              return customError({kind: 'special-max', message: value()?.toString()});
             },
           });
         },
@@ -104,7 +104,7 @@ describe('max validator', () => {
             error: ({value, valueOf}) => {
               return valueOf(p.name) === 'disabled'
                 ? []
-                : customError({kind: 'special-max', message: value().toString()});
+                : customError({kind: 'special-max', message: value()?.toString()});
             },
           });
         },
@@ -155,7 +155,7 @@ describe('max validator', () => {
         (p) => {
           max(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-max', message: value().toString()});
+              return customError({kind: 'special-max', message: value()?.toString()});
             },
           });
         },
@@ -298,5 +298,31 @@ describe('max validator', () => {
 
       expect(f.age().errors()).toEqual([]);
     });
+  });
+
+  it('should validate properly formatted strings', () => {
+    const f = form(
+      signal<number | string | null>('4'),
+      (p) => {
+        max(p, -10);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+    expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
+  });
+
+  it('should not validate improperly formatted strings or null', () => {
+    const f = form(
+      signal<number | string | null>('4f'),
+      (p) => {
+        max(p, -10);
+      },
+      {injector: TestBed.inject(Injector)},
+    );
+    expect(f().errors()).toEqual([]);
+    f().value.set(null);
+    expect(f().errors()).toEqual([]);
+    f().value.set(4);
+    expect(f().errors()).toEqual([jasmine.objectContaining({kind: 'max'})]);
   });
 });
