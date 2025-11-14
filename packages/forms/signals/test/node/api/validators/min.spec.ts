@@ -59,7 +59,7 @@ describe('min validator', () => {
         (p) => {
           min(p.age, 5, {
             error: ({value}) => {
-              return customError({kind: 'special-min', message: value()?.toString()});
+              return customError({kind: 'special-min', message: value().toString()});
             },
           });
         },
@@ -84,7 +84,7 @@ describe('min validator', () => {
             error: ({value}) => {
               return {
                 kind: 'special-min',
-                message: value()?.toString(),
+                message: value().toString(),
               };
             },
           });
@@ -130,7 +130,7 @@ describe('min validator', () => {
             error: ({value, valueOf}) => {
               return valueOf(p.name) === 'disabled'
                 ? []
-                : customError({kind: 'special-min', message: value()?.toString()});
+                : customError({kind: 'special-min', message: value().toString()});
             },
           });
         },
