@@ -57,6 +57,9 @@
   .docs-example-viewer-icons {
     display: flex;
     gap: 0.75rem;
+    width: 100%;
+    justify-content: flex-end;
+    padding-inline-start: 1rem;
 
     a,
     button {
@@ -79,6 +82,23 @@
         color: var(--tertiary-contrast);
       }
     }
+
+    .docs-example-code-toggle {
+      display: flex;
+      align-items: center;
+      width: auto;
+
+      &__show {
+        margin-right: auto;
+      }
+
+      .docs-example-show-code {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+    }
+
   }
 }
 
