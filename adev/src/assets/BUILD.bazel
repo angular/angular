@@ -24,6 +24,7 @@ copy_to_directory(
         "//adev/src/content/guide/di",
         "//adev/src/content/guide/directives",
         "//adev/src/content/guide/forms",
+        "//adev/src/content/guide/forms/signals",
         "//adev/src/content/guide/http",
         "//adev/src/content/guide/i18n",
         "//adev/src/content/guide/ngmodules",

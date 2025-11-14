@@ -1,0 +1,60 @@
+.toolbar {
+  gap: 16px;
+  padding: 8px;
+  display: flex;
+  border-radius: 4px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+.toolbar[aria-orientation="vertical"] {
+  flex-direction: column;
+}
+
+.group {
+  gap: 4px;
+  display: flex;
+}
+
+.toolbar[aria-orientation="vertical"] .group {
+  flex-direction: column;
+}
+
+.separator {
+  width: 1px;
+  background-color: rgba(0, 0, 0, 0.12);
+}
+
+.toolbar[aria-orientation="vertical"] .separator {
+  height: 1px;
+  width: auto;
+}
+
+[ngToolbarWidget] {
+  cursor: pointer;
+  padding: 6px 12px;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+[ngToolbarWidget]:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[ngToolbarWidget]:focus {
+  border-color: #4a9eff;
+  outline: 2px solid rgba(74, 158, 255, 0.3);
+}
+
+[ngToolbarWidget][aria-pressed="true"],
+[ngToolbarWidget][aria-checked="true"] {
+  color: #1565c0;
+  background-color: rgba(33, 150, 243, 0.15);
+}
+
+[ngToolbarWidget][aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.45;
+}
