@@ -522,7 +522,7 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
     this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
 
     // SharedStylesHost is used to add styles to the shadow root by ShadowDom.
-    // This is optional as it is not used by IsolatedShadowDom.
+    // This is optional as it is not used by ExperimentalIsolatedShadowDom.
     if (this.sharedStylesHost) {
       this.sharedStylesHost.addHost(this.shadowRoot);
     }
