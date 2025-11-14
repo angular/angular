@@ -36,6 +36,7 @@ ng_package(
     deps = [
         "//packages/forms",
         "//packages/forms/signals",
+        "//packages/forms/signals/compat",
     ],
 )
 

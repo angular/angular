@@ -7,8 +7,7 @@
  */
 
 import {AbstractControl, FormArray, FormGroup, ValidationErrors} from '@angular/forms';
-import {ValidationError} from '../../src/api/validation_errors';
-import {FieldTree} from '../../src/api/types';
+import {CompatValidationError} from './api/compat_validation_error';
 
 /**
  * Converts reactive form validation error to signal forms CompatValidationError.
@@ -43,22 +42,4 @@ export function extractNestedReactiveErrors(control: AbstractControl): CompatVal
   }
 
   return errors;
-}
-
-/**
- * An error used for compat errors.
- */
-export class CompatValidationError<T = unknown> implements ValidationError {
-  readonly kind: string = 'compat';
-  readonly control: AbstractControl;
-  readonly field!: FieldTree<unknown>;
-  context: T;
-
-  constructor({context, kind, control}: {context: T; kind: string; control: AbstractControl}) {
-    this.context = context;
-    this.kind = kind;
-    this.control = control;
-  }
-
-  message?: string | undefined;
 }

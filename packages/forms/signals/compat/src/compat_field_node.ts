@@ -7,13 +7,13 @@
  */
 
 import {computed, linkedSignal, runInInjectionContext, Signal, untracked} from '@angular/core';
+import {toSignal} from '@angular/core/rxjs-interop';
 import {AbstractControl} from '@angular/forms';
+import {Observable, ReplaySubject} from 'rxjs';
+import {map, takeUntil} from 'rxjs/operators';
 import {FieldNode} from '../../src/field/node';
 import {getInjectorFromOptions} from '../../src/field/util';
-import {toSignal} from '@angular/core/rxjs-interop';
-import {map, takeUntil} from 'rxjs/operators';
 import type {CompatFieldNodeOptions} from './compat_structure';
-import {Observable, ReplaySubject} from 'rxjs';
 
 /**
  * Field node with additional  control property.
