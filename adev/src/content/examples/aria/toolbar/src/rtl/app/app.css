@@ -1,47 +1,53 @@
-.toolbar {
-  gap: 16px;
-  padding: 8px;
+:host {
   display: flex;
-  border-radius: 4px;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  justify-content: center;
+}
+
+[ngToolbar] {
+  gap: 1.5rem;
+  display: flex;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--septenary-contrast);
 }
 
 .group {
-  gap: 4px;
+  gap: 0.5rem;
   display: flex;
 }
 
 .separator {
   width: 1px;
-  background-color: rgba(0, 0, 0, 0.12);
+  align-self: center;
+  height: calc(100% - 1rem);
+  background-color: var(--quinary-contrast);
 }
 
 [ngToolbarWidget] {
+  border: none;
   cursor: pointer;
-  padding: 6px 12px;
-  background-color: transparent;
-  border: 1px solid transparent;
+  padding: 0.5rem;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1.25rem;
+  background-color: transparent;
+  color: var(--primary-contrast);
 }
 
 [ngToolbarWidget]:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+}
+
+[ngToolbarWidget]:active {
+  background-color: color-mix(in srgb, var(--primary-contrast) 15%, transparent);
 }
 
 [ngToolbarWidget]:focus {
-  border-color: #4a9eff;
-  outline: 2px solid rgba(74, 158, 255, 0.3);
+  outline-offset: -1px;
+  outline: 1px solid color-mix(in srgb, var(--hot-pink) 60%, transparent);
 }
 
 [ngToolbarWidget][aria-pressed="true"],
 [ngToolbarWidget][aria-checked="true"] {
-  color: #1565c0;
-  background-color: rgba(33, 150, 243, 0.15);
-}
-
-[ngToolbarWidget][aria-disabled="true"] {
-  cursor: default;
-  opacity: 0.45;
+  color: color-mix(in srgb, var(--hot-pink) 80%, var(--primary-contrast));
+  background-color: color-mix(in srgb, var(--hot-pink) 10%, transparent);
 }

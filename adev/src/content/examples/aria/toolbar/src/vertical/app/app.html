@@ -1,32 +1,65 @@
-<div
-  ngToolbar
-  orientation="vertical"
-  class="toolbar"
-  aria-label="Vertical Text Formatting Tools"
->
-  <div class="group" aria-label="Undo and Redo options">
-    <button ngToolbarWidget value="undo">Undo</button>
-    <button ngToolbarWidget value="redo">Redo</button>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div ngToolbar orientation="vertical" aria-label="Text Formatting Tools">
+  <div class="group">
+    <button
+      ngToolbarWidget
+      value="undo"
+      type="button"
+      aria-label="undo"
+      class="material-symbols-outlined"
+    >
+      undo
+    </button>
+
+    <button
+      ngToolbarWidget
+      value="redo"
+      type="button"
+      aria-label="redo"
+      class="material-symbols-outlined"
+    >
+      redo
+    </button>
   </div>
 
   <div class="separator" role="separator"></div>
 
-  <div class="group" aria-label="Text formatting options">
-    <button ngToolbarWidget value="bold">Bold</button>
-    <button ngToolbarWidget value="italic">Italic</button>
-    <button ngToolbarWidget value="underline">Underline</button>
-  </div>
+  <div class="group">
+    <button
+      ngToolbarWidget
+      value="bold"
+      type="button"
+      aria-label="bold"
+      #bold="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="bold.selected()"
+    >
+      format_bold
+    </button>
 
-  <div class="separator" role="separator"></div>
+    <button
+      ngToolbarWidget
+      value="italic"
+      type="button"
+      aria-label="italic"
+      #italic="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="italic.selected()"
+    >
+      format_italic
+    </button>
 
-  <div
-    ngToolbarWidgetGroup
-    role="radiogroup"
-    class="group"
-    aria-label="Alignment options"
-  >
-    <button ngToolbarWidget value="align-left">Align Left</button>
-    <button ngToolbarWidget value="align-center">Align Center</button>
-    <button ngToolbarWidget value="align-right">Align Right</button>
+    <button
+      ngToolbarWidget
+      value="underlined"
+      type="button"
+      aria-label="underlined"
+      #underlined="ngToolbarWidget"
+      class="material-symbols-outlined"
+      [aria-pressed]="underlined.selected()"
+    >
+      format_underlined
+    </button>
   </div>
 </div>
