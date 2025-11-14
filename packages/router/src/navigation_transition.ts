@@ -384,16 +384,11 @@ export class NavigationTransitions {
   /** @internal */
   rootComponentType: Type<any> | null = null;
 
-  private destroyed = false;
-
   constructor() {
     const onLoadStart = (r: Route) => this.events.next(new RouteConfigLoadStart(r));
     const onLoadEnd = (r: Route) => this.events.next(new RouteConfigLoadEnd(r));
     this.configLoader.onLoadEndListener = onLoadEnd;
     this.configLoader.onLoadStartListener = onLoadStart;
-    this.destroyRef.onDestroy(() => {
-      this.destroyed = true;
-    });
   }
 
   complete() {
@@ -850,7 +845,7 @@ export class NavigationTransitions {
             // If the application is already destroyed, the catch block should not
             // execute anything in practice because other resources have already
             // been released and destroyed.
-            if (this.destroyed) {
+            if (this.destroyRef.destroyed) {
               overallTransitionState.resolve(false);
               return EMPTY;
             }
