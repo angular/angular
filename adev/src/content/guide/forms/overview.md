@@ -73,7 +73,7 @@ The `[formControl]` directive links the explicitly created `FormControl` instanc
 The following component implements an input field for a single control, using reactive forms.
 In this example, the form model is the `FormControl` instance.
 
-<docs-code path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.ts"/>
+<docs-code language="angular-ts" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.ts"/>
 
 IMPORTANT: In reactive forms, the form model is the source of truth; it provides the value and status of the form element at any given point in time, through the `[formControl]` directive on the `<input>` element.
 
@@ -84,7 +84,7 @@ The directive `NgModel` creates and manages a `FormControl` instance for a given
 
 The following component implements the same input field for a single control, using template-driven forms.
 
-<docs-code path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
+<docs-code language="angular-ts" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.ts"/>
 
 IMPORTANT: In a template-driven form the source of truth is the template. The `NgModel` directive automatically manages the `FormControl` instance for you.
 
