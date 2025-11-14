@@ -110,6 +110,14 @@ This `FormArray` will have the inner controls type `FormControl<string|null>`.
 
 If you want to have multiple different element types inside the array, you must use `UntypedFormArray`, because TypeScript cannot infer which element type will occur at which position.
 
+A `FormArray` also provides a `clear()` method to remove all controls it contains:
+
+```ts
+const aliases = new FormArray([new FormControl('ngDev'), new FormControl('ngAwesome')]);
+aliases.clear();
+console.log(aliases.length); // 0
+```
+
 ## `FormGroup` and `FormRecord`
 
 Angular provides the `FormGroup` type for forms with an enumerated set of keys, and a type called `FormRecord`, for open-ended or dynamic groups.
