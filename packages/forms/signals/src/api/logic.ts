@@ -9,15 +9,15 @@
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {AggregateMetadataKey, createMetadataKey, MetadataKey} from './metadata';
+import {MetadataKey, type MetadataSetterType} from './metadata';
 import type {
   FieldContext,
-  SchemaPath,
   FieldValidator,
   LogicFn,
   PathKind,
-  TreeValidator,
+  SchemaPath,
   SchemaPathRules,
+  TreeValidator,
 } from './types';
 import {ensureCustomValidationResult} from './validators/util';
 
@@ -157,85 +157,33 @@ export function validateTree<TValue, TPathKind extends PathKind = PathKind.Root>
 }
 
 /**
- * Adds a value to an {@link AggregateMetadataKey} of a field.
+ * Sets a value for the {@link MetadataKey} for this field.
  *
- * @param path The target path to set the aggregate metadata on.
- * @param key The aggregate metadata key
- * @param logic A function that receives the `FieldContext` and returns a value to add to the aggregate metadata.
+ * This value is combined via a reduce operation defined by the particular key,
+ * since multiple rules in the schema might set values for it.
+ *
+ * @param path The target path to set the metadata for.
+ * @param key The metadata key
+ * @param logic A function that receives the `FieldContext` and returns a value for the metadata.
  * @template TValue The type of value stored in the field the logic is bound to.
- * @template TMetadataItem The type of value the metadata aggregates over.
+ * @template TKey The type of metadata key.
  * @template TPathKind The kind of path the logic is bound to (a root path, child path, or item of an array)
  *
  * @category logic
  * @experimental 21.0.0
  */
-export function aggregateMetadata<
+export function metadata<
   TValue,
-  TMetadataItem,
+  TKey extends MetadataKey<any, any, any>,
   TPathKind extends PathKind = PathKind.Root,
 >(
   path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: AggregateMetadataKey<any, TMetadataItem>,
-  logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>,
-): void {
+  key: TKey,
+  logic: NoInfer<LogicFn<TValue, MetadataSetterType<TKey>, TPathKind>>,
+): TKey {
   assertPathIsCurrent(path);
 
   const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addAggregateMetadataRule(key, logic);
-}
-
-/**
- * Creates a new {@link MetadataKey} and defines the value of the new metadata key for the given field.
- *
- * @param path The path to define the metadata for.
- * @param factory A factory function that creates the value for the metadata.
- *   This function is **not** reactive. It is run once when the field is created.
- * @returns The newly created metadata key
- *
- * @category logic
- * @experimental 21.0.0
- */
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): MetadataKey<TData>;
-
-/**
- * Defines the value of a {@link MetadataKey} for a given field.
- *
- * @param path The path to define the metadata for.
- * @param key  The metadata key to define.
- * @param factory A factory function that creates the value for the metadata.
- *   This function is **not** reactive. It is run once when the field is created.
- * @returns The given metadata key
- *
- * @category logic
- * @experimental 21.0.0
- */
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  key: MetadataKey<TData>,
-  factory: (ctx: FieldContext<TValue, TPathKind>) => TData,
-): MetadataKey<TData>;
-
-export function metadata<TValue, TData, TPathKind extends PathKind = PathKind.Root>(
-  path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>,
-  ...rest:
-    | [(ctx: FieldContext<TValue, TPathKind>) => TData]
-    | [MetadataKey<TData>, (ctx: FieldContext<TValue, TPathKind>) => TData]
-): MetadataKey<TData> {
-  assertPathIsCurrent(path);
-
-  let key: MetadataKey<TData>;
-  let factory: (ctx: FieldContext<TValue, TPathKind>) => TData;
-  if (rest.length === 2) {
-    [key, factory] = rest;
-  } else {
-    [factory] = rest;
-  }
-  key ??= createMetadataKey();
-
-  const pathNode = FieldPathNode.unwrapFieldPath(path);
-  pathNode.builder.addMetadataFactory(key, factory as (ctx: FieldContext<unknown>) => unknown);
+  pathNode.builder.addMetadataRule(key, logic);
   return key;
 }

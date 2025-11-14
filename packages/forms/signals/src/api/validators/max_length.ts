@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MAX_LENGTH} from '../metadata';
-import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../types';
+import type {Signal} from '@angular/core';
+import {metadata, validate} from '../logic';
+import {createMetadataKey, MAX_LENGTH} from '../metadata';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {maxLengthError} from '../validation_errors';
 import {
   BaseValidatorConfig,
@@ -44,10 +44,10 @@ export function maxLength<
   maxLength: number | LogicFn<TValue, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<TValue, TPathKind>,
 ) {
-  const MAX_LENGTH_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof maxLength === 'number' ? maxLength : maxLength(ctx))),
+  const MAX_LENGTH_MEMO = metadata(path, createMetadataKey<Signal<number | undefined>>(), (ctx) =>
+    typeof maxLength === 'number' ? maxLength : maxLength(ctx),
   );
-  aggregateMetadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
+  metadata(path, MAX_LENGTH, ({state}) => state.metadata(MAX_LENGTH_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

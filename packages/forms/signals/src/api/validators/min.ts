@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MIN} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
+import type {Signal} from '@angular/core';
+import {metadata, validate} from '../logic';
+import {createMetadataKey, MIN} from '../metadata';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {minError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -34,10 +34,10 @@ export function min<TPathKind extends PathKind = PathKind.Root>(
   minValue: number | LogicFn<number, number | undefined, TPathKind>,
   config?: BaseValidatorConfig<number, TPathKind>,
 ) {
-  const MIN_MEMO = metadata(path, (ctx) =>
-    computed(() => (typeof minValue === 'number' ? minValue : minValue(ctx))),
+  const MIN_MEMO = metadata(path, createMetadataKey<Signal<number | undefined>>(), (ctx) =>
+    typeof minValue === 'number' ? minValue : minValue(ctx),
   );
-  aggregateMetadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
+  metadata(path, MIN, ({state}) => state.metadata(MIN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {PATTERN} from '../metadata';
-import {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
+import type {Signal} from '@angular/core';
+import {metadata, validate} from '../logic';
+import {createMetadataKey, PATTERN} from '../metadata';
+import {LogicFn, PathKind, SchemaPath, SchemaPathRules} from '../types';
 import {patternError} from '../validation_errors';
 import {BaseValidatorConfig, getOption, isEmpty} from './util';
 
@@ -33,10 +33,10 @@ export function pattern<TPathKind extends PathKind = PathKind.Root>(
   pattern: RegExp | LogicFn<string | undefined, RegExp | undefined, TPathKind>,
   config?: BaseValidatorConfig<string, TPathKind>,
 ) {
-  const PATTERN_MEMO = metadata(path, (ctx) =>
-    computed(() => (pattern instanceof RegExp ? pattern : pattern(ctx))),
+  const PATTERN_MEMO = metadata(path, createMetadataKey<Signal<RegExp | undefined>>(), (ctx) =>
+    pattern instanceof RegExp ? pattern : pattern(ctx),
   );
-  aggregateMetadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
+  metadata(path, PATTERN, ({state}) => state.metadata(PATTERN_MEMO)!());
   validate(path, (ctx) => {
     if (isEmpty(ctx.value())) {
       return undefined;
