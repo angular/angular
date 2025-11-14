@@ -53,6 +53,9 @@ detectAngularMessageBus.on('detectAngular', (detectionResult) => {
     return;
   }
 
+  // Inform the background page so it can toggle the popup and icon.
+  void chrome.runtime.sendMessage(detectionResult);
+
   const script = document.createElement('script');
   script.src = chrome.runtime.getURL('app/backend_bundle.js');
   document.documentElement.appendChild(script);
