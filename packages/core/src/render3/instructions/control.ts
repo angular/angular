@@ -716,7 +716,7 @@ function setNativeControlValue(element: NativeControlElement, value: unknown) {
     case 'datetime-local':
       // This input type can receive a `number` or a `string`.
       if (typeof value === 'number') {
-        element.valueAsNumber = value;
+        setNativeNumberControlValue(element, value);
         return;
       }
       break;
@@ -729,13 +729,24 @@ function setNativeControlValue(element: NativeControlElement, value: unknown) {
         element.valueAsDate = value;
         return;
       } else if (typeof value === 'number') {
-        element.valueAsNumber = value;
+        setNativeNumberControlValue(element, value);
         return;
       }
   }
 
   // Default to setting the value as a string.
   element.value = value as string;
+}
+
+/** Writes a value to a native <input type="number">. */
+function setNativeNumberControlValue(element: HTMLInputElement, value: number) {
+  // Writing `NaN` causes a warning in the console, so we instead write `''`.
+  // This allows the user to safely use `NaN` as a number value that means "clear the input".
+  if (isNaN(value)) {
+    element.value = '';
+  } else {
+    element.valueAsNumber = value;
+  }
 }
 
 /** A property-renaming safe reference to a property named 'disabled'. */
