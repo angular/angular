@@ -38,7 +38,7 @@ HELPFUL: To add or remove a _single_ class, use [class binding](guide/templates/
 
 To use `NgClass`, add it to the component's `imports` list.
 
-<docs-code header="src/app/app.component.ts (NgClass import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-ng-class"/>
+<docs-code header="app.component.ts (NgClass import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-ng-class"/>
 
 ### Using `NgClass` with an expression
 
@@ -46,7 +46,7 @@ On the element you'd like to style, add `[ngClass]` and set it equal to an expre
 In this case, `isSpecial` is a boolean set to `true` in `app.component.ts`.
 Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<div>`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="special-div"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="special-div"/>
 
 ### Using `NgClass` with a method
 
@@ -57,11 +57,11 @@ Because `isSpecial` is true, `ngClass` applies the class of `special` to the `<d
    If a key is `true`, `ngClass` adds the class.
    If a key is `false`, `ngClass` removes the class.
 
-   <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setClasses"/>
+   <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setClasses"/>
 
 1. In the template, add the `ngClass` property binding to `currentClasses` to set the element's classes:
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgClass-1"/>
 
 For this use case, Angular applies the classes on initialization and in case of changes caused by reassigning the `currentClasses` object.
 The full example calls `setCurrentClasses()` initially with `ngOnInit()` when the user clicks on the `Refresh currentClasses` button.
@@ -75,7 +75,7 @@ HELPFUL: To add or remove a _single_ style, use [style bindings](guide/templates
 
 To use `NgStyle`, add it to the component's `imports` list.
 
-<docs-code header="src/app/app.component.ts (NgStyle import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-ng-style"/>
+<docs-code header="app.component.ts (NgStyle import)" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="import-ng-style"/>
 
 Use `NgStyle` to set multiple inline styles simultaneously, based on the state of the component.
 
@@ -83,11 +83,11 @@ Use `NgStyle` to set multiple inline styles simultaneously, based on the state o
 
    In the following example, `setCurrentStyles()` sets the property `currentStyles` with an object that defines three styles, based on the state of three other component properties.
 
-   <docs-code header="src/app/app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setStyles"/>
+   <docs-code header="app.component.ts" path="adev/src/content/examples/built-in-directives/src/app/app.component.ts" visibleRegion="setStyles"/>
 
 1. To set the element's styles, add an `ngStyle` property binding to `currentStyles`.
 
-<docs-code header="src/app/app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgStyle-2"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/built-in-directives/src/app/app.component.html" visibleRegion="NgStyle-2"/>
 
 For this use case, Angular applies the styles upon initialization and in case of changes.
 To do this, the full example calls `setCurrentStyles()` initially with `ngOnInit()` and when the dependent properties change through a button click.
@@ -101,7 +101,7 @@ Use `<ng-container>` when there's no single element to host the directive.
 
 Here's a conditional paragraph using `<ng-container>`.
 
-<docs-code header="src/app/app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="ngif-ngcontainer"/>
+<docs-code header="app.component.html (ngif-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="ngif-ngcontainer"/>
 
 <img alt="ngcontainer paragraph with proper style" src="assets/images/guide/structural-directives/good-paragraph.png">
 
@@ -111,7 +111,7 @@ Here's a conditional paragraph using `<ng-container>`.
 
 1. To conditionally exclude an `<option>`, wrap the `<option>` in an `<ng-container>`.
 
-   <docs-code header="src/app/app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
+   <docs-code header="app.component.html (select-ngcontainer)" path="adev/src/content/examples/structural-directives/src/app/app.component.html" visibleRegion="select-ngcontainer"/>
 
    <img alt="ngcontainer options work properly" src="assets/images/guide/structural-directives/select-ngcontainer-anim.gif">
 
