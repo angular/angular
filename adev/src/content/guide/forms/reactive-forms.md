@@ -56,7 +56,7 @@ Using the template binding syntax, the form control is now registered to the `na
 <docs-step title="Display the component">
 The `FormControl` assigned to the `name` property is displayed when the `<app-name-editor>` component is added to a template.
 
-<docs-code header="src/app/app.component.html (name editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" visibleRegion="app-name-editor"/>
+<docs-code header="app.component.html (name editor)" path="adev/src/content/examples/reactive-forms/src/app/app.component.1.html" visibleRegion="app-name-editor"/>
 </docs-step>
 </docs-workflow>
 
