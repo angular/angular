@@ -80,7 +80,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 
 4. The form is displayed in the application layout defined by the root component's template.
 
-   <docs-code header="src/app/app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
+   <docs-code header="app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
 
    The initial template defines the layout for a form with two form groups and a submit button.
    The form groups correspond to two properties of the Actor data model, name and studio.
