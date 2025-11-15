@@ -26,7 +26,10 @@
 
 **Each phase has its own detailed plan file with individual file checklists:**
 
-### Critical Priority Phases (1-8) - Start Here!
+### 🌟 PHASE 0 - Repository Documentation (DO THIS FIRST!)
+- 📄 **[Phase 0: Repository README & Docs](phase-00-repository-docs.md) - 2 files** ⭐ **START HERE FIRST!**
+
+### Critical Priority Phases (1-8) - Documentation Introduction & Tutorials
 - 📄 [Phase 1: Introduction - Core Concepts](phase-01-introduction-core.md) - 5 files
 - 📄 [Phase 2: Introduction - Advanced Essentials](phase-02-introduction-advanced.md) - 4 files
 - 📄 [Phase 3: Tutorials - Learn Angular 1-5](phase-03-tutorials-learn-angular-1.md) - 10 files

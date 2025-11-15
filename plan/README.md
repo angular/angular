@@ -4,9 +4,9 @@ This folder contains the complete translation plan for translating all Angular d
 
 ## 📚 Overview
 
-- **Total Files to Translate**: 337 markdown files
+- **Total Files to Translate**: 339 markdown files (337 docs + 2 READMEs)
 - **Total Estimated Words**: ~275,000 words
-- **Translation Phases**: 30 phases
+- **Translation Phases**: 31 phases (Phase 0-30)
 - **Translation Agent**: [.claude/agents/translate-to-pt-br.md](../.claude/agents/translate-to-pt-br.md)
 
 ## 🎯 Getting Started
@@ -18,9 +18,13 @@ Before starting any translation, familiarize yourself with the translation guide
 - **Important**: Learn which technical terms to keep in English vs translate to Portuguese
 
 ### Step 2: Choose a Phase to Work On
-Start with **Phase 1** (recommended) or choose any phase based on priority:
+Start with **Phase 0** (most important!) or choose any phase based on priority:
 
-#### 🔴 **Critical Priority** (Phases 1-8) - Start Here!
+#### 🌟 **PHASE 0** (Repository Docs) - DO THIS FIRST! ⭐
+The most visible files - what people see when they visit the repo:
+0. **[Phase 0: Repository README & Docs](phase-00-repository-docs.md) - 2 files** ⭐ **START HERE FIRST!**
+
+#### 🔴 **Critical Priority** (Phases 1-8) - Documentation Introduction & Tutorials
 Best for beginners and essential for users getting started with Angular:
 1. [Phase 1: Introduction - Core Concepts](phase-01-introduction-core.md) - 5 files
 2. [Phase 2: Introduction - Advanced Essentials](phase-02-introduction-advanced.md) - 4 files
@@ -155,7 +159,11 @@ git push origin claude/create-translation-plan-01XgFntJfGVpnv8kDnf3eggF
 
 ## 🎉 Ready to Start?
 
-Begin with **[Phase 1: Introduction - Core Concepts](phase-01-introduction-core.md)**
+**IMPORTANT**: Begin with **[Phase 0: Repository README & Docs](phase-00-repository-docs.md)** ⭐
+
+This translates the main README.md that everyone sees first when visiting the repository!
+
+After Phase 0, continue to **[Phase 1: Introduction - Core Concepts](phase-01-introduction-core.md)**
 
 Good luck with your translation! 🇧🇷
 
