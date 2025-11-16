@@ -1,1 +1,10 @@
-<h1>PLACEHOLDER</h1>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div ngListbox>
+  @for (option of options; track option) {
+  <div ngOption [value]="option">
+    <span class="option-text">{{ option }}</span>
+    <span class="checkmark-icon material-symbols-outlined">check</span>
+  </div>
+  }
+</div>
