@@ -1,9 +1,8 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-<div ngCombobox readonly>
+<div ngCombobox class="material-select" readonly>
   <div #origin class="select">
     <span class="combobox-label">
-      <span class="selected-label-icon material-symbols-outlined">{{ displayIcon() }}</span>
       <span class="selected-label-text">{{ displayValue() }}</span>
     </span>
     <input aria-label="Label dropdown" placeholder="Select a label" ngComboboxInput />
@@ -18,8 +17,7 @@
       <div class="example-popup-container">
         <div ngListbox multi>
           @for (label of labels; track label.value) {
-          <div ngOption [value]="label.value" [label]="label.value">
-            <span class="example-option-icon material-symbols-outlined">{{label.icon}}</span>
+          <div ngOption [value]="label.value" [label]="label.value" [disabled]="label.disabled()">
             <span class="example-option-text">{{label.value}}</span>
             <span class="example-option-check material-symbols-outlined">check</span>
           </div>
