@@ -194,4 +194,19 @@ describe('standard schema integration', () => {
 
     expect(f().errors().length).toBe(1);
   });
+
+  it('should set the error message from the schema issue', () => {
+    const model = signal({age: -5});
+    const f = form(
+      model,
+      (p) => {
+        validateStandardSchema(p.age, z.number().min(0, {message: 'Age must be non-negative'}));
+      },
+      {
+        injector: TestBed.inject(Injector),
+      },
+    );
+
+    expect(f.age().errors()[0].message).toBe('Age must be non-negative');
+  });
 });
