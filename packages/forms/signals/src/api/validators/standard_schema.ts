@@ -121,5 +121,5 @@ function standardIssueToFormTreeError(
     const pathKey = typeof pathPart === 'object' ? pathPart.key : pathPart;
     target = target[pathKey] as FieldTree<Record<PropertyKey, unknown>>;
   }
-  return addDefaultField(standardSchemaError(issue), target);
+  return addDefaultField(standardSchemaError(issue, {message: issue.message}), target);
 }
