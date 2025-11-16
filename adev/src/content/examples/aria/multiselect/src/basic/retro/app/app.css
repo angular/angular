@@ -1,21 +1,50 @@
 :host {
   display: flex;
   justify-content: center;
-  font-family: var(--inter-font);
+  font-size: 0.8rem;
+
+  font-family: 'Press Start 2P';
+  --retro-button-color: color-mix(in srgb, var(--hot-pink) 80%, var(--gray-1000));
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
 }
 
 .select {
   display: flex;
   position: relative;
   align-items: center;
-  color: color-mix(in srgb, var(--hot-pink) 90%, var(--primary-contrast));
-  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
-  border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--hot-pink) 80%, transparent);
+  color: var(--page-background);
+  background-color: var(--hot-pink);
+  box-shadow: var(--retro-clickable-shadow);
 }
 
-.select:hover {
-  background-color: color-mix(in srgb, var(--hot-pink) 15%, transparent);
+.select:hover,
+.select:focus-within {
+  transform: translate(1px, 1px);
+}
+
+.select:active {
+  transform: translate(4px, 4px);
+  box-shadow: var(--retro-pressed-shadow);
+  background-color: color-mix(in srgb, var(--retro-button-color) 60%, var(--gray-50));
 }
 
 .select:has([ngComboboxInput][aria-disabled='true']) {
@@ -30,13 +59,14 @@
 [ngComboboxInput] {
   opacity: 0;
   cursor: pointer;
-  padding: 0 3.5rem;
+  padding: 0 5rem;
   height: 2.5rem;
   border: none;
 }
 
-[ngCombobox]:focus-within .select {
-  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+.select:has([ngComboboxInput][aria-expanded='false']):focus-within {
+  outline-offset: 8px;
+  outline: 4px dashed var(--hot-pink);
 }
 
 .combobox-label {
@@ -62,10 +92,9 @@
 .example-popup-container {
   width: 100%;
   padding: 0.5rem;
-  margin-top: 8px;
-  border-radius: 0.5rem;
+  margin-top: 20px;
+  box-shadow: var(--retro-flat-shadow);
   background-color: var(--septenary-contrast);
-  font-size: 0.9rem;
 
   max-height: 11rem;
   opacity: 1;
@@ -102,10 +131,9 @@
   display: flex;
   cursor: pointer;
   align-items: center;
-  margin: 1px;
   padding: 0 1rem;
+  font-size: 0.6rem;
   min-height: 2.25rem;
-  border-radius: 0.5rem;
 }
 
 [ngOption]:hover {
@@ -114,7 +142,7 @@
 
 [ngOption][data-active='true'] {
   outline-offset: -2px;
-  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+  outline: 2px dashed var(--hot-pink);
 }
 
 [ngOption][aria-selected='true'] {

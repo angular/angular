@@ -2,20 +2,26 @@
   display: flex;
   justify-content: center;
   font-family: var(--inter-font);
+  --primary: var(--hot-pink);
+  --on-primary: var(--page-background);
+}
+
+.docs-light-mode {
+  --on-primary: #fff;
 }
 
 .select {
   display: flex;
   position: relative;
   align-items: center;
-  color: color-mix(in srgb, var(--hot-pink) 90%, var(--primary-contrast));
-  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
-  border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--hot-pink) 80%, transparent);
+  border-radius: 3rem;
+  color: var(--on-primary);
+  background-color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 80%, transparent);
 }
 
 .select:hover {
-  background-color: color-mix(in srgb, var(--hot-pink) 15%, transparent);
+  background-color: color-mix(in srgb, var(--primary) 90%, transparent);
 }
 
 .select:has([ngComboboxInput][aria-disabled='true']) {
@@ -23,25 +29,22 @@
   cursor: default;
 }
 
-.selected-label-icon {
-  font-size: 1.25rem;
-}
-
 [ngComboboxInput] {
   opacity: 0;
-  cursor: pointer;
-  padding: 0 3.5rem;
-  height: 2.5rem;
   border: none;
+  cursor: pointer;
+  height: 3rem;
+  padding: 0 2.5rem;
 }
 
 [ngCombobox]:focus-within .select {
-  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .combobox-label {
   gap: 1rem;
-  left: 1rem;
+  left: 1.5rem;
   display: flex;
   position: absolute;
   align-items: center;
@@ -63,11 +66,11 @@
   width: 100%;
   padding: 0.5rem;
   margin-top: 8px;
-  border-radius: 0.5rem;
+  border-radius: 2rem;
   background-color: var(--septenary-contrast);
   font-size: 0.9rem;
 
-  max-height: 11rem;
+  max-height: 13rem;
   opacity: 1;
   visibility: visible;
   transition:
@@ -78,6 +81,7 @@
 
 [ngListbox] {
   gap: 2px;
+  padding: 2px;
   height: 100%;
   display: flex;
   overflow: auto;
@@ -102,36 +106,30 @@
   display: flex;
   cursor: pointer;
   align-items: center;
-  margin: 1px;
   padding: 0 1rem;
-  min-height: 2.25rem;
-  border-radius: 0.5rem;
+  min-height: 3rem;
+  border-radius: 3rem;
 }
 
-[ngOption]:hover {
+[ngOption]:hover,
+[ngOption][data-active='true'] {
   background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
 }
 
 [ngOption][data-active='true'] {
   outline-offset: -2px;
-  outline: 2px solid color-mix(in srgb, var(--hot-pink) 50%, transparent);
+  outline: 2px solid var(--primary);
 }
 
 [ngOption][aria-selected='true'] {
-  color: var(--hot-pink);
-  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
-}
-
-.example-option-icon {
-  font-size: 1.25rem;
-  padding-right: 1rem;
+  color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
 [ngOption]:not([aria-selected='true']) .example-option-check {
   display: none;
 }
 
-.example-option-icon,
 .example-option-check {
   font-size: 0.9rem;
 }
