@@ -4,11 +4,9 @@ The [Angular CLI][CliMain] automatically includes locale data if you run the [`n
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="shell">
-
+```shell
 ng build --localize
-
-</docs-code>
+```
 
 HELPFUL: The initial installation of Angular already contains locale data for English in the United States \(`en-US`\).
 The [Angular CLI][CliMain] automatically includes the locale data and sets the `LOCALE_ID` value when you use the `--localize` option with [`ng build`][CliBuild] command.

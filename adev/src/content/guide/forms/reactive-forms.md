@@ -114,9 +114,9 @@ The following example shows how to manage multiple form control instances in a s
 
 Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl` classes from the `@angular/forms` package.
 
-<docs-code language="shell">
+```shell
 ng generate component ProfileEditor
-</docs-code>
+```
 
 <docs-code header="profile-editor.component.ts (imports)" path="adev/src/content/examples/reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" visibleRegion="imports"/>
 

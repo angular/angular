@@ -8,11 +8,9 @@ This section walks you through creating a highlight directive that sets the back
 
 1. To create a directive, use the CLI command [`ng generate directive`](tools/cli/schematics).
 
-   <docs-code language="shell">
-
+   ```shell
    ng generate directive highlight
-
-   </docs-code>
+   ```
 
    The CLI creates `src/app/highlight.directive.ts`, a corresponding test file `src/app/highlight.directive.spec.ts`.
 

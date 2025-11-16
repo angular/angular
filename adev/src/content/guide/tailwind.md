@@ -8,10 +8,10 @@
 
 First, create a new Angular project if you don't have one set up already.
 
-<docs-code language="shell">
+```shell
 ng new my-project
 cd my-project
-</docs-code>
+```
 
 ### 2. Install Tailwind CSS
 

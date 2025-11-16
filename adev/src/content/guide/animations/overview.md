@@ -82,11 +82,9 @@ HELPFUL: Let's create a new `open-close` component to animate with simple transi
 
 Run the following command in terminal to generate the component:
 
-<docs-code language="shell">
-
+```shell
 ng g component open-close
-
-</docs-code>
+```
 
 This will create the component at `src/app/open-close.component.ts`.
 

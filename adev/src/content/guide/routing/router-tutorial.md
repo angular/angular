@@ -28,9 +28,9 @@ This application will have two components: _crisis-list_ and _heroes-list_.
 
 1. Create a new Angular project, _angular-router-sample_.
 
-   <docs-code language="shell">
+   ```shell
    ng new angular-router-sample
-   </docs-code>
+   ```
 
    When prompted with `Would you like to add Angular routing?`, select `N`.
 
@@ -41,9 +41,9 @@ This application will have two components: _crisis-list_ and _heroes-list_.
 1. From your terminal, navigate to the `angular-router-sample` directory.
 1. Create a component, _crisis-list_.
 
-<docs-code language="shell">
+```shell
 ng generate component crisis-list
-</docs-code>
+```
 
 1. In your code editor, locate the file, `crisis-list.component.html` and replace the placeholder content with the following HTML.
 
@@ -51,9 +51,9 @@ ng generate component crisis-list
 
 1. Create a second component, _heroes-list_.
 
-<docs-code language="shell">
+```shell
 ng generate component heroes-list
-</docs-code>
+```
 
 1. In your code editor, locate the file, `heroes-list.component.html` and replace the placeholder content with the following HTML.
 
@@ -65,9 +65,9 @@ ng generate component heroes-list
 
 1. Verify that your new application runs as expected by running the `ng serve` command.
 
-<docs-code language="shell">
+```shell
 ng serve
-</docs-code>
+```
 
 1. Open a browser to `http://localhost:4200`.
 
@@ -238,9 +238,9 @@ In this section, you'll create a 404 page and update your route configuration to
 
 1. From the terminal, create a new component, `PageNotFound`.
 
-<docs-code language="shell">
+```shell
 ng generate component page-not-found
-</docs-code>
+```
 
 1. From your code editor, open the `page-not-found.component.html` file and replace its contents with the following HTML.
 
