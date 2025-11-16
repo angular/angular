@@ -11,6 +11,7 @@ import {untracked as untrackedPrimitive} from '../../../primitives/signals';
 /**
  * Execute an arbitrary function in a non-reactive (non-tracking) context. The executed function
  * can, optionally, return a value.
+ * @see [Reading without tracking dependencies](guide/signals#reading-without-tracking-dependencies)
  */
 export function untracked<T>(nonReactiveReadsFn: () => T): T {
   return untrackedPrimitive(nonReactiveReadsFn);

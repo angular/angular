@@ -231,6 +231,7 @@ function getProviderTokenMeasureName<T>(token: any) {
  * @experimental
  *
  * @returns a function that can be invoked to stop sending profiling data.
+ * @see [Profiling with the Chrome DevTools](best-practices/profiling-with-chrome-devtools#recording-a-profile)
  */
 export function enableProfiling() {
   performanceMarkFeature('Chrome DevTools profiling');

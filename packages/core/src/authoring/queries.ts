@@ -107,6 +107,8 @@ export interface ViewChildFunction {
  *
  * @publicApi 19.0
  * @initializerApiFunction
+ * @see [Referencing component children with queries](guide/components/queries)
+ * @see [Required queries](guide/components/queries#required-queries)
  */
 export const viewChild: ViewChildFunction = (() => {
   // Note: This may be considered a side-effect, but nothing will depend on
@@ -147,6 +149,8 @@ export function viewChildren<LocatorT, ReadT>(
  *
  * @initializerApiFunction
  * @publicApi 19.0
+ * @see [Referencing component children with queries](guide/components/queries)
+ * @see [Required queries](guide/components/queries#required-queries)
  */
 export function viewChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,
@@ -310,6 +314,8 @@ export function contentChildren<LocatorT, ReadT>(
  *
  * @initializerApiFunction
  * @publicApi 19.0
+ * @see [Referencing component children with queries](guide/components/queries)
+ * @see [Content queries](guide/components/queries#content-queries)
  */
 export function contentChildren<LocatorT, ReadT>(
   locator: ProviderToken<LocatorT> | string,

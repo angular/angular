@@ -40,6 +40,9 @@ export function inputRequiredFunction<ReadT, WriteT = ReadT>(
  * The function exposes an API for also declaring required inputs via the
  * `input.required` function.
  *
+ * @see [Accepting data with input properties](guide/components/inputs)
+ * @see [Required inputs](guide/components/inputs#required-inputs)
+ * @see [Input transforms](guide/components/inputs#input-transforms)
  * @publicAPI
  * @docsPrivate Ignored because `input` is the canonical API entry.
  */
@@ -85,6 +88,7 @@ export interface InputFunction {
    */
   required: {
     /** Declares a required input of type `T`. */
+
     <T>(opts?: InputOptionsWithoutTransform<T>): InputSignal<T>;
     /**
      * Declares a required input of type `T` with a transform function.
