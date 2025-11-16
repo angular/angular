@@ -26,6 +26,8 @@ import {Injector as PrimitivesInjector} from '@angular/core/primitives/di';
  * from the given `Injector`. Note that `inject` is only usable synchronously, and cannot be used in
  * any asynchronous callbacks or after any `await` points.
  *
+ * @see [Run within an injection context](guide/di/dependency-injection-context#run-within-an-injection-context)
+ *
  * @param injector the injector which will satisfy calls to [`inject`](api/core/inject) while `fn`
  *     is executing
  * @param fn the closure to be run in the context of `injector`

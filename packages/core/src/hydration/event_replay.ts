@@ -72,6 +72,9 @@ function shouldEnableEventReplay(injector: Injector) {
 /**
  * Returns a set of providers required to setup support for event replay.
  * Requires hydration to be enabled separately.
+ *
+ * @see [Capturing and replaying event](guide/hydration#capturing-and-replaying-events)
+ *
  */
 export function withEventReplay(): Provider[] {
   const providers: Provider[] = [

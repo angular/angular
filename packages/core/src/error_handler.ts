@@ -164,6 +164,8 @@ const globalErrorListeners = new InjectionToken<void>(
  *
  * The listeners added are for the window's 'unhandledrejection' and 'error' events.
  *
+ * @see [Global error listeners](best-practices/error-handling#global-error-listeners)
+ *
  * @publicApi
  */
 export function provideBrowserGlobalErrorListeners(): EnvironmentProviders {

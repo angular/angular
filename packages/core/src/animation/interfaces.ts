@@ -21,6 +21,8 @@ export const ANIMATIONS_DISABLED = new InjectionToken<boolean>(
  * The event type for when `animate.enter` and `animate.leave` are used with function
  * callbacks.
  *
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
+ *
  * @publicApi 20.2
  */
 export type AnimationCallbackEvent = {target: Element; animationComplete: Function};
@@ -33,6 +35,7 @@ export type AnimationCallbackEvent = {target: Element; animationComplete: Functi
  * for when stylesheets are pruned.
  *
  * @publicApi 20.2
+ * @see [Animating your applications with animate.enter and animate.leave](guide/animations)
  */
 export const MAX_ANIMATION_TIMEOUT = new InjectionToken<number>(
   typeof ngDevMode !== 'undefined' && ngDevMode ? 'MaxAnimationTimeout' : '',

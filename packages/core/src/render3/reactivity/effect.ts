@@ -98,12 +98,16 @@ export interface CreateEffectOptions {
  * before the next effect run. The cleanup function makes it possible to "cancel" any work that the
  * previous effect run might have started.
  *
+ * @see [Effect cleanup functions](guide/signals#effect-cleanup-functions)
+ *
  * @publicApi 20.0
  */
 export type EffectCleanupFn = () => void;
 
 /**
  * A callback passed to the effect function that makes it possible to register cleanup logic.
+ *
+ * @see [Effect cleanup functions](guide/signals#effect-cleanup-functions)
  *
  * @publicApi 20.0
  */
@@ -124,6 +128,8 @@ export type EffectCleanupRegisterFn = (cleanupFn: EffectCleanupFn) => void;
  * and have no connection to the component tree or change detection.
  *
  * `effect()` must be run in injection context, unless the `injector` option is manually specified.
+ *
+ * @see [Effects](guide/signals#effects)
  *
  * @publicApi 20.0
  */

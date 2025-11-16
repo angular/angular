@@ -339,6 +339,7 @@ export class ChangeDetectionSchedulerImpl implements ChangeDetectionScheduler {
  * @publicApi 20.2
  *
  * @see {@link /api/platform-browser/bootstrapApplication bootstrapApplication}
+ * @see [Angular without ZoneJS (Zoneless)](guide/zoneless)
  */
 export function provideZonelessChangeDetection(): EnvironmentProviders {
   performanceMarkFeature('NgZoneless');
