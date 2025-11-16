@@ -38,6 +38,8 @@ import {DestroyRef} from '../linker/destroy_ref';
  * `resource` will cancel in-progress loads via the `AbortSignal` when destroyed or when a new
  * request object becomes available, which could prematurely abort mutations.
  *
+ * @see [Async reactivity with resources](guide/signals/resource)
+ *
  * @experimental 19.0
  */
 export function resource<T, R>(
@@ -53,6 +55,7 @@ export function resource<T, R>(
  * request object becomes available, which could prematurely abort mutations.
  *
  * @experimental 19.0
+ * @see [Async reactivity with resources](guide/signals/resource)
  */
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined>;
 export function resource<T, R>(options: ResourceOptions<T, R>): ResourceRef<T | undefined> {

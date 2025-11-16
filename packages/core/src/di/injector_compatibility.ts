@@ -286,6 +286,8 @@ export function inject(token: HostAttributeToken, options: {optional: false}): s
  * }
  * ```
  *
+ * @see [Injecting dependencies with inject()](guide/di#injecting-dependencies-with-inject)
+ *
  * @publicApi
  */
 export function inject<T>(token: ProviderToken<T> | HostAttributeToken, options?: InjectOptions) {

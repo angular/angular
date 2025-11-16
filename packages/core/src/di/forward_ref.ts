@@ -63,7 +63,7 @@ const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeP
  *    hideParent = input.required<boolean>();
  * }
  * ```
- *
+ * @see [Resolve circular dependencies with a forward reference](guide/di/di-in-action#resolve-circular-dependencies-with-a-forward-reference)
  * @publicApi
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {

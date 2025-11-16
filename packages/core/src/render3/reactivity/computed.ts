@@ -27,6 +27,7 @@ export interface CreateComputedOptions<T> {
 
 /**
  * Create a computed `Signal` which derives a reactive value from an expression.
+ * @see [Computed signals](guide/signals#computed-signals)
  */
 export function computed<T>(computation: () => T, options?: CreateComputedOptions<T>): Signal<T> {
   const getter = createComputed(computation, options?.equal);

@@ -38,6 +38,8 @@ import {ProviderToken} from './provider_token';
  *
  * {@example core/di/ts/injector_spec.ts region='injectInjector'}
  *
+ * @see [Types of injector hierarchies](guide/di/hierarchical-dependency-injection#types-of-injector-hierarchies)
+ *
  * @publicApi
  */
 export abstract class Injector {
