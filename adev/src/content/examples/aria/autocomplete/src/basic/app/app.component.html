@@ -1,3 +1,5 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+
 <div ngCombobox #combobox="ngCombobox" filterMode="auto-select" class="combobox-container">
   <label for="state-input">Select a state:</label>
   <div class="input-container">
@@ -24,8 +26,13 @@
 </div>
 
 <div class="info">
-  <p><strong>Auto-select mode:</strong> The input updates automatically as you type to match the first option.</p>
+  <p>
+    <strong>Auto-select mode:</strong> The input updates automatically as you type to match the
+    first option.
+  </p>
   @if (searchString()) {
-    <p>Current value: <strong>{{ searchString() }}</strong></p>
+    <p>
+      Current value: <strong>{{ searchString() }}</strong>
+    </p>
   }
 </div>
