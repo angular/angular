@@ -151,6 +151,7 @@ Handle navigation errors gracefully and provide user feedback:
 ```angular-ts
 import { Component, inject, signal } from '@angular/core';
 import { Router, NavigationStart, NavigationError, NavigationCancel, NavigationCancellationCode } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-error-handler',
@@ -176,7 +177,7 @@ export class ErrorHandlerComponent {
         this.errorMessage.set('Failed to load page. Please try again.');
       } else if (event instanceof NavigationCancel) {
         console.warn('Navigation cancelled:', event.reason);
-        if (event.reason === NavigationCancellationCode.GuardRejected) {
+        if (event.code === NavigationCancellationCode.GuardRejected) {
           this.errorMessage.set('Access denied. Please check your permissions.');
         }
       }
