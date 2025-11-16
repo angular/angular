@@ -9,9 +9,9 @@ Angular Aria is a collection of headless, accessible directives that implement c
 
 ## Installation
 
-<docs-code language="shell">
+```shell
   ng add @angular/aria
-</docs-code>
+```
 
 ## Showcase / Demonstration
 

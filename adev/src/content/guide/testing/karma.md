@@ -116,9 +116,7 @@ The Angular CLI takes care of Jasmine and Karma configuration for you. It constr
 If you want to customize Karma, you can create a `karma.conf.js` by running the following command:
 
 ```shell
-
 ng generate config karma
-
 ```
 
 HELPFUL: Read more about Karma configuration in the [Karma configuration guide](http://karma-runner.github.io/6.4/config/configuration-file.html).

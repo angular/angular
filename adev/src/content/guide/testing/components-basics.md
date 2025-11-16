@@ -34,11 +34,9 @@ The CLI creates an initial test file for you by default when you ask it to gener
 
 For example, the following CLI command generates a `BannerComponent` in the `app/banner` folder \(with inline template and styles\):
 
-<docs-code language="shell">
-
+```shell
 ng generate component banner --inline-template --inline-style --module app
-
-</docs-code>
+```
 
 It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
 
