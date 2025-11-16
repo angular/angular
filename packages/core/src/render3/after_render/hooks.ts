@@ -129,6 +129,8 @@ export interface AfterRenderOptions {
  * }
  * ```
  *
+ * @see [afterEveryRender and afterNextRender](guide/components/lifecycle#aftereveryrender-and-afternextrender)
+ *
  * @publicApi 20.0
  */
 export function afterEveryRender<E = never, W = never, M = never>(
@@ -309,6 +311,7 @@ export function afterEveryRender(
  * ```
  *
  * @publicApi 20.0
+ * @see [afterEveryRender and afterNextRender](guide/components/lifecycle#aftereveryrender-and-afternextrender)
  */
 export function afterNextRender<E = never, W = never, M = never>(
   spec: {

@@ -117,6 +117,7 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
  *   bindings: [inputBinding('disabled', isDisabled)]
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function inputBinding(publicName: string, value: () => unknown): Binding {
   // Note: ideally we would use a class here, but it seems like they
@@ -149,6 +150,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
  *   ],
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function outputBinding<T>(eventName: string, listener: (event: T) => unknown): Binding {
   // Note: ideally we would use a class here, but it seems like they
@@ -186,6 +188,7 @@ export function outputBinding<T>(eventName: string, listener: (event: T) => unkn
  *   ],
  * });
  * ```
+ * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function twoWayBinding(publicName: string, value: WritableSignal<unknown>): Binding {
   const input = inputBinding(publicName, value) as BindingInternal;

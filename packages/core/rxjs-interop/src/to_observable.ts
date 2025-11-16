@@ -40,6 +40,9 @@ export interface ToObservableOptions {
  *
  * `toObservable` must be called in an injection context unless an injector is provided via options.
  *
+ * @see [RxJS interop with Angular signals](ecosystem/rxjs-interop)
+ * @see [Create an RxJS Observable from a signal with toObservable](ecosystem/rxjs-interop#create-an-rxjs-observable-from-a-signal-with-toobservable)
+ *
  * @publicApi 20.0
  */
 export function toObservable<T>(source: Signal<T>, options?: ToObservableOptions): Observable<T> {

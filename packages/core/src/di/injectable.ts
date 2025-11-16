@@ -45,7 +45,8 @@ export interface InjectableDecorator {
    * provided and injected as a dependency.
    *
    * @see [Introduction to Services and DI](guide/di)
-   * @see [Dependency Injection Guide](guide/di/dependency-injection)
+   * @see [Creating and using services](guide/di/creating-and-using-services)
+   * @see [Defining dependency providers](guide/di/defining-dependency-providers)
    *
    * @usageNotes
    *
@@ -71,6 +72,7 @@ export interface InjectableDecorator {
 
 /**
  * Type of the Injectable metadata.
+ *
  *
  * @publicApi
  */

@@ -16,6 +16,8 @@ import {Observable} from 'rxjs';
  *
  * You can subscribe to the output via `Observable.subscribe` then.
  *
+ * @see [RxJS interop with component and directive outputs](ecosystem/rxjs-interop/output-interop)
+ *
  * @publicApi 19.0
  */
 export function outputToObservable<T>(ref: OutputRef<T>): Observable<T> {

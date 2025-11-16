@@ -15,6 +15,8 @@ import {INPUT_SIGNAL_NODE, InputSignalNode, REQUIRED_UNSET_VALUE} from './input_
 
 /**
  * @publicAPI
+ * @see [Input aliases](guide/components/inputs#input-aliases)
+ * @see [Input transforms](guide/components/inputs#input-transforms)
  *
  * Options for signal inputs.
  */

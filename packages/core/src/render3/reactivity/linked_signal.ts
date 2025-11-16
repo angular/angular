@@ -37,6 +37,7 @@ export function linkedSignal<D>(
  * Note: The computation is reactive, meaning the linked signal will automatically update whenever any of the signals used within the computation change.
  *
  * @publicApi 20.0
+ * @see [Dependent state with linkedSignal](guide/signals/linked-signal)
  */
 export function linkedSignal<S, D>(options: {
   source: () => S;
