@@ -50,9 +50,6 @@ import {
  * * `ngComponentOutletNgModule`: Optional NgModule class reference to allow loading another
  * module dynamically, then loading a component from that module.
  *
- * * `ngComponentOutletNgModuleFactory`: Deprecated config option that allows providing optional
- * NgModule factory to allow loading another module dynamically, then loading a component from that
- * module. Use `ngComponentOutletNgModule` instead.
  *
  * ### Syntax
  *
@@ -133,10 +130,7 @@ export class NgComponentOutlet<T = any> implements OnChanges, DoCheck, OnDestroy
     // Note: square brackets property accessor is safe for Closure compiler optimizations (the
     // `changes` argument of the `ngOnChanges` lifecycle hook retains the names of the fields that
     // were changed).
-    return (
-      changes['ngComponentOutletNgModule'] !== undefined ||
-      changes['ngComponentOutletNgModuleFactory'] !== undefined
-    );
+    return changes['ngComponentOutletNgModule'] !== undefined;
   }
 
   private _needToReCreateComponentInstance(changes: SimpleChanges): boolean {
