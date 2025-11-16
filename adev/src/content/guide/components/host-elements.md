@@ -163,3 +163,25 @@ export class MyComponent {
   color = signal('lightgreen');
 }
 ```
+
+## Injecting host element attributes
+
+Components and directives can read static attributes from their host element by using `HostAttributeToken` together with the [`inject`](api/core/inject) function.
+
+```ts
+import { Component, HostAttributeToken, inject } from '@angular/core';
+
+@Component({
+  selector: 'app-button',
+  ...,
+})
+export class Button {
+  variation = inject(new HostAttributeToken('variation'));
+}
+```
+
+```angular-html
+<app-button variation="primary">Click me</app-button>
+```
+
+HELPFUL: `HostAttributeToken` throws an error if the attribute is missing, unless the injection is marked as optional.
