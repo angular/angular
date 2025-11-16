@@ -13,10 +13,10 @@ import {
   PlatformLocation,
   ɵgetDOM as getDOM,
 } from '@angular/common';
-import {inject, Inject, Injectable, Optional, ɵWritable as Writable} from '@angular/core';
+import {inject, Injectable, ɵWritable as Writable} from '@angular/core';
 import {Subject} from 'rxjs';
 
-import {INITIAL_CONFIG, PlatformConfig} from './tokens';
+import {INITIAL_CONFIG} from './tokens';
 
 const RESOLVE_PROTOCOL = 'resolve:';
 
