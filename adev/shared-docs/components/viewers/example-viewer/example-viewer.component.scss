@@ -96,37 +96,3 @@
     top: 0.31rem;
   }
 }
-
-// stylelint-disable-next-line
-::ng-deep {
-  .docs-example-viewer-preview {
-    // stylelint-disable-next-line
-    all: initial;
-    display: block;
-    padding: 1rem;
-    border-block-start: 1px solid var(--senary-contrast);
-
-    *,
-    code::before,
-    code,
-    pre,
-    a,
-    i,
-    p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    ol,
-    ul,
-    li,
-    hr,
-    input,
-    select,
-    table {
-      all: revert;
-    }
-  }
-}
