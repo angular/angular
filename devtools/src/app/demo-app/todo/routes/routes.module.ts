@@ -15,6 +15,7 @@ import {
   ActivatedRouteSnapshot,
   Resolve,
   ResolveFn,
+  UrlSegment,
 } from '@angular/router';
 
 import {
@@ -42,6 +43,17 @@ export const activateGuard: CanActivateFn = (
   return true;
 };
 
+export const customMatcher = (url: UrlSegment[]) => {
+  if (url.length === 1 && url[0].path === 'custom-matcher') {
+    return {consumed: url};
+  }
+  return null;
+};
+
+export function customRerunLogic() {
+  return true;
+}
+
 @NgModule({
   imports: [
     CommonModule,
@@ -67,6 +79,21 @@ export const activateGuard: CanActivateFn = (
         path: 'route-standalone',
         providers: [Service1, Service2, Service3, Service4],
         loadComponent: () => import('./routes.component').then((x) => x.RoutesStandaloneComponent),
+      },
+      {
+        matcher: customMatcher,
+        component: RoutesHomeComponent,
+      },
+      {
+        path: 'route-run-guards-and-resolvers',
+        component: RoutesHomeComponent,
+        canActivate: [activateGuard],
+        runGuardsAndResolvers: 'always',
+      },
+      {
+        path: 'route-run-guards-and-resolvers-function',
+        component: RoutesHomeComponent,
+        runGuardsAndResolvers: customRerunLogic,
       },
       {
         path: 'route-data',
