@@ -4,10 +4,12 @@
       <span>{{ exampleMetadata()?.title }}</span>
     }
 
-    @if (view() === CodeExampleViewMode.MULTI_FILE && showCode()) {
+    @if (view() === CodeExampleViewMode.MULTI_FILE) {
       <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
-        @for (tab of tabs(); track tab) {
-          <mat-tab [label]="tab.name" />
+        @if (showCode()) {
+          @for (tab of tabs(); track tab) {
+            <mat-tab [label]="tab.name" />
+          }
         }
       </mat-tab-group>
     }
