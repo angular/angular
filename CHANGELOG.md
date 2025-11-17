@@ -1,3 +1,28 @@
+<a name="21.0.0-rc.3"></a>
+
+# 21.0.0-rc.3 (2025-11-17)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                           |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------- |
+| [ecea909bcc](https://github.com/angular/angular/commit/ecea909bccc3d6a3c33e77e1feb4ad0926e72f9e) | fix  | don't choke on unbalanced parens in declaration block |
+
+### core
+
+| Commit                                                                                           | Type | Description               |
+| ------------------------------------------------------------------------------------------------ | ---- | ------------------------- |
+| [67fbd5ff1e](https://github.com/angular/angular/commit/67fbd5ff1eef80d98e5e9c633a15bb1ae27134bb) | fix  | SSR error in signal forms |
+
+### forms
+
+| Commit                                                                                           | Type | Description                            |
+| ------------------------------------------------------------------------------------------------ | ---- | -------------------------------------- |
+| [d89e522a1f](https://github.com/angular/angular/commit/d89e522a1f07c4b2ac7fd2b926ae44658f9394d4) | fix  | debounce updates from interop controls |
+| [91d8d55a80](https://github.com/angular/angular/commit/91d8d55a80a1d1894827ef06e38e56de6e661575) | fix  | Set error message of a schema error.   |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.0.0-rc.2"></a>
 
 # 21.0.0-rc.2 (2025-11-12)
