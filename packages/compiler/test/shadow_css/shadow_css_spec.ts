@@ -339,6 +339,13 @@ describe('ShadowCss', () => {
     expect(css).toEqualCss('div[contenta] {background-image:url("a.jpg"); color:red;}');
   });
 
+  it('should handle when quoted content contains a closing parenthesis', () => {
+    // Regression test for https://github.com/angular/angular/issues/65137
+    expect(shim('p { background-image: url(")") } p { color: red }', 'contenta')).toEqualCss(
+      'p[contenta] { background-image: url(")") } p[contenta] { color: red }',
+    );
+  });
+
   it('should shim rules with an escaped quote inside quoted content', () => {
     const styleStr = 'div::after { content: "\\"" }';
     const css = shim(styleStr, 'contenta');

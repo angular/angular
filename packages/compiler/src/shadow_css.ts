@@ -512,7 +512,7 @@ export class ShadowCss {
     return cssText.replace(_cssColonHostRe, (_, hostSelectors: string, otherSelectors: string) => {
       if (hostSelectors) {
         const convertedSelectors: string[] = [];
-        for (const hostSelector of this._splitOnTopLevelCommas(hostSelectors)) {
+        for (const hostSelector of this._splitOnTopLevelCommas(hostSelectors, true)) {
           const trimmedHostSelector = hostSelector.trim();
           if (!trimmedHostSelector) break;
           const convertedSelector =
@@ -533,8 +533,9 @@ export class ShadowCss {
    * Yields each part of the string between top-level commas. Terminates if an extra closing paren is found.
    *
    * @param text The string to split
+   * @param returnOnClosingParen Whether to return when exiting the current level of parentheses nesting
    */
-  private *_splitOnTopLevelCommas(text: string): Generator<string> {
+  private *_splitOnTopLevelCommas(text: string, returnOnClosingParen: boolean): Generator<string> {
     const length = text.length;
     let parens = 0;
     let prev = 0;
@@ -546,8 +547,8 @@ export class ShadowCss {
         parens++;
       } else if (charCode === chars.$RPAREN) {
         parens--;
-        if (parens < 0) {
-          // Found an extra closing paren. Assume we want the list terminated here
+        if (parens < 0 && returnOnClosingParen) {
+          // Found an extra closing paren.
           yield text.slice(prev, i);
           return;
         }
@@ -582,7 +583,7 @@ export class ShadowCss {
     // individually and stitches them back together. This ensures that individual selectors don't
     // affect each other.
     const results: string[] = [];
-    for (const part of this._splitOnTopLevelCommas(cssText)) {
+    for (const part of this._splitOnTopLevelCommas(cssText, false)) {
       results.push(this._convertColonHostContextInSelectorPart(part));
     }
     return results.join(',');
@@ -615,7 +616,7 @@ export class ShadowCss {
         // Extract comma-separated selectors between the parentheses
         const newContextSelectors: string[] = [];
         let endIndex = 0; // Index of the closing paren of the :host-context()
-        for (const selector of this._splitOnTopLevelCommas(afterPrefix.substring(1))) {
+        for (const selector of this._splitOnTopLevelCommas(afterPrefix.substring(1), true)) {
           endIndex = endIndex + selector.length + 1;
           const trimmed = selector.trim();
           if (trimmed) {
