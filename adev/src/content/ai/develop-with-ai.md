@@ -31,6 +31,7 @@ Several editors, such as <a href="https://studio.firebase.google.com?utm_source=
 
 ## Angular CLI MCP Server setup
 
+
 The Angular CLI includes an experimental [Model Context Protocol (MCP) server](https://modelcontextprotocol.io/) that allows AI assistants in your development environment to interact with the Angular CLI.
 
 [**Learn how to set up the Angular CLI MCP Server**](/ai/mcp)
