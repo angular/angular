@@ -1,0 +1,57 @@
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+[ngGrid] {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 400px;
+  background-image: var(--pink-to-purple-horizontal-gradient);
+  background-clip: text;
+  color: transparent;
+}
+
+[ngGridRow] {
+  display: flex;
+  gap: 0.5rem;
+  border: 1px solid var(--senary-contrast);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+[ngGridRow]:focus-within,
+[ngGridRow]:hover {
+  outline-offset: -1px;
+  outline: 1px solid color-mix(in srgb, var(--vivid-pink) 80%, transparent);
+}
+
+[ngGridRow]:has(button[ngGridCellWidget]:focus),
+[ngGridRow]:has(button[ngGridCellWidget]:hover) {
+  outline: none;
+}
+
+[ngGridCell] {
+  display: flex;
+  outline: none;
+}
+
+button[ngGridCellWidget] {
+  border: unset;
+  padding: unset;
+  color: unset;
+  background: unset;
+  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+button[ngGridCellWidget]:focus,
+button[ngGridCellWidget]:hover {
+  outline: 1px solid color-mix(in srgb, var(--vivid-pink) 80%, transparent);
+}
