@@ -13,6 +13,8 @@ import {InjectionToken} from './di';
  * In a browser and SSR this is the DOM Document.
  * When using SSR, that document is created by [Domino](https://github.com/angular/domino).
  *
+ * @see [Accessing Document via DI](guide/ssr#accessing-document-via-di)
+ *
  * @publicApi
  */
 export const DOCUMENT = new InjectionToken<Document>(
