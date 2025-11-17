@@ -32,7 +32,8 @@
               "src/favicon.ico",
               "src/robots.txt",
               "src/llms.txt",
-              "src/assets"
+              "src/assets",
+              "src/assets/images/v21-event"
             ],
             "styles": ["@angular/docs/styles/global-styles.scss", "./src/local-styles.scss"],
             "scripts": [],
