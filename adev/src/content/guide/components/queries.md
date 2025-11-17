@@ -16,7 +16,6 @@ There are two categories of query: **view queries** and **content queries.**
 View queries retrieve results from the elements in the component's _view_ — the elements defined in the component's own template. You can query for a single result with the `viewChild` function.
 
 ```typescript {highlight: [14, 15]}
-
 @Component({
   selector: 'custom-card-header',
   /*...*/
@@ -89,7 +88,7 @@ export class CustomExpando {
 }
 
 @Component({
-/_ ... _/
+/* ... */
 // CustomToggle is used inside CustomExpando as content.
 template: `
     <custom-expando>
