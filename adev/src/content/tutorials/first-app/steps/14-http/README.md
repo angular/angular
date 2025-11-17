@@ -20,7 +20,7 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
 1. Install `json-server` from npm by using the following command.
 
    ```bash
-       npm install -g json-server
+   npm install -g json-server
    ```
 
 1. In the root directory of your project, create a file called `db.json`. This is where you will store the data for the `json-server`.
@@ -138,9 +138,9 @@ JSON Server is an open source tool used to create mock REST APIs. You'll use it 
 
 1. Time to test your configuration. From the command line, at the root of your project run the following commands.
 
-   ```bash
-       json-server --watch db.json
-   ```
+```bash
+json-server --watch db.json
+```
 
 1. In your web browser, navigate to the `http://localhost:3000/locations` and confirm that the response includes the data stored in `db.json`.
 
