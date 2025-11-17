@@ -5,8 +5,8 @@
       role="tab"
       class="docs-tab"
       [class.docs-tab-active]="tab.tabId === selectedTab()"
-      [attr.aria-selected]="tab.tabId === selectedTab()"
-      [attr.aria-control]="tab.tabPanelId"
+      [aria-selected]="tab.tabId === selectedTab()"
+      [aria-controls]="tab.tabPanelId"
       (click)="selectedTab.set(tab.tabId)"
     >
       {{tab.label}}
