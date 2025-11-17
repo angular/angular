@@ -2742,4 +2742,12 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'In templates parentheses are now always respected. This can lead to runtime breakages when nullish coalescing were nested in parathesis. eg `(foo?.bar).baz` will throw if `foo` is nullish as it would in native JavaScript.',
   },
+  {
+    possibleIn: 2000,
+    necessaryAsOf: 2000,
+    level: ApplicationComplexity.Advanced,
+    step: '20.0.0_router_generate_error_redirectTo_and_canMatch_incompatible_together',
+    action:
+      'Route configurations are now validated more rigorously. Routes that combine `redirectTo` and `canMatch` protections will generate an error, as these properties are incompatible together by default.',
+  },
 ];
