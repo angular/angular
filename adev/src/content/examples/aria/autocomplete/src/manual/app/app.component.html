@@ -1,31 +1,33 @@
-<div ngCombobox #combobox="ngCombobox" filterMode="manual" class="combobox-container">
-  <label for="state-input">Select a state:</label>
-  <div class="input-container">
+<div ngCombobox focusMode="manual">
+  <div #origin class="autocomplete">
+    <span class="search-icon material-symbols-outlined">search</span>
     <input
-      id="state-input"
+      aria-label="Label dropdown"
+      placeholder="Select a country"
+      [(ngModel)]="query"
       ngComboboxInput
-      placeholder="Search states..."
-      [(value)]="searchString"
-      class="combobox-input"
     />
   </div>
 
-  <div popover="manual" #popover class="popover">
-    <ng-template ngComboboxPopupContainer>
-      <div ngListbox class="listbox">
-        @for (option of options(); track option) {
-          <div class="option" ngOption [value]="option" [label]="option">
-            <span>{{ option }}</span>
-          </div>
+  <ng-template ngComboboxPopupContainer>
+    <ng-template
+      [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+      [cdkConnectedOverlayOpen]="true"
+    >
+      <div class="popup">
+        @if (countries().length === 0) {
+          <div class="no-results">No results found</div>
         }
+
+        <div ngListbox>
+          @for (country of countries(); track country) {
+            <div ngOption [value]="country" [label]="country">
+              <span class="option-label">{{country}}</span>
+              <span class="check-icon material-symbols-outlined">check</span>
+            </div>
+          }
+        </div>
       </div>
     </ng-template>
-  </div>
-</div>
-
-<div class="info">
-  <p><strong>Manual mode:</strong> The input only updates when you explicitly select an option with Enter or click.</p>
-  @if (searchString()) {
-    <p>Current value: <strong>{{ searchString() }}</strong></p>
-  }
+  </ng-template>
 </div>
