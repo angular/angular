@@ -66,11 +66,9 @@ If you are having issues running this command in Windows or Unix, check out the 
 
 In your terminal, run the CLI command `ng new` with the desired project name. In the following examples, we'll be using the example project name of `my-first-angular-app`.
 
-<docs-code language="shell">
-
+```shell
 ng new <project-name>
-
-</docs-code>
+```
 
 You will be presented with some configuration options for your project. Use the arrow and enter keys to navigate and select which options you desire.
 
@@ -89,19 +87,15 @@ At this point, you're now ready to run your project locally!
 
 In your terminal, switch to your new Angular project.
 
-<docs-code language="shell">
-
+```shell
 cd my-first-angular-app
-
-</docs-code>
+```
 
 All of your dependencies should be installed at this point (which you can verify by checking for the existence of a `node_modules` folder in your project), so you can start your project by running the command:
 
-<docs-code language="shell">
-
+```shell
 npm start
-
-</docs-code>
+```
 
 If everything is successful, you should see a similar confirmation message in your terminal:
 

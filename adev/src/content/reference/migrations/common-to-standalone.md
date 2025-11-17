@@ -4,11 +4,9 @@ This migration helps projects remove imports of the `CommonModule` inside compon
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:common-to-standalone
-
-</docs-code>
+```
 
 ## Options
 

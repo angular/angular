@@ -23,9 +23,9 @@ In this lesson, you will enable routing in your application to navigate to the d
 <docs-step title="Create a default details component ">
 1. From the terminal, enter the following command to create the `Details`:
 
-    <docs-code language="shell">
+    ```shell
     ng generate component details
-    </docs-code>
+    ```
 
     This component will represent the details page that provides more information on a given housing location.
 
@@ -34,22 +34,22 @@ In this lesson, you will enable routing in your application to navigate to the d
 <docs-step title="Add routing to the application">
 1.  In the `src/app` directory, create a file called `routes.ts`. This file is where we will define the routes in the application.
 
-1. In `main.ts`, make the following updates to enable routing in the application:
+2. In `main.ts`, make the following updates to enable routing in the application:
    1. Import the routes file and the `provideRouter` function:
 
    <docs-code header="Import routing details in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[7,8]"/>
-   1. Update the call to `bootstrapApplication` to include the routing configuration:
+   2. Update the call to `bootstrapApplication` to include the routing configuration:
 
    <docs-code header="Add router configuration in src/main.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/main.ts" visibleLines="[10,17]"/>
 
-1. In `src/app/app.ts`, update the component to use routing:
+3. In `src/app/app.ts`, update the component to use routing:
    1. Add file level imports for the router directives `RouterOutlet` and `RouterLink`:
 
    <docs-code language="angular-ts" header="Import router directives in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[3]"/>
-   1. Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
+   2. Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
 
    <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
-   1. In the `template` property, replace the `<app-home></app-home>` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
+   3. In the `template` property, replace the `<app-home></app-home>` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
 
    <docs-code language="angular-ts" header="Add router-outlet in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[7,18]"/>
 
