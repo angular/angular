@@ -411,7 +411,7 @@
     },
     "@@aspect_rules_js~//npm:extensions.bzl%pnpm": {
       "general": {
-        "bzlTransitiveDigest": "ZfvqwqI78+Qya3TZeBMFWtEQnzIDz8j9njbobQLxswI=",
+        "bzlTransitiveDigest": "MDL1U5KxASXhKcoXRgOqr7qxCgpKkNaQ2HSyFvw6u1U=",
         "usagesDigest": "SvTbfMEGgHmw4DD1RiMMz4GjA6jMpDnhS4sMusDgZ6E=",
         "recordedFileInputs": {},
         "recordedDirentsInputs": {},
@@ -1278,7 +1278,7 @@
     },
     "@@rules_python~//python/extensions:pip.bzl%pip": {
       "general": {
-        "bzlTransitiveDigest": "UP3OtPScohkFlJevXYy5MF6NWqjUwRxO7SflJmjbM+o=",
+        "bzlTransitiveDigest": "VKf3JZIRvp7gyc5Q9pSqri7bmB3079s5o6Yg7IaUHZI=",
         "usagesDigest": "MKs5B778/fEkKhBaxuBt3oCCW+wPRuh2AxtITF8AMSU=",
         "recordedFileInputs": {
           "@@rules_python~//tools/publish/requirements_linux.txt": "8175b4c8df50ae2f22d1706961884beeb54e7da27bd2447018314a175981997d",
