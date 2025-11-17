@@ -18,7 +18,7 @@ export class FieldSubmitState {
    * Whether this field was directly submitted (as opposed to indirectly by a parent field being submitted)
    * and is still in the process of submitting.
    */
-  readonly selfSubmitting = signal<boolean>(false);
+  readonly selfSubmitting = signal(false);
 
   /** Server errors that are associated with this field. */
   readonly serverErrors: WritableSignal<readonly ValidationError.WithField[]>;

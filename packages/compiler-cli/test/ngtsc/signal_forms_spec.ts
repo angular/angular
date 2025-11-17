@@ -440,7 +440,7 @@ runInEachFileSystem(() => {
 
           @Component({selector: 'user-control', template: ''})
           export class UserControl {
-            readonly checked = model<boolean>(false);
+            readonly checked = model(false);
             required = input<number>(0);
           }
 

@@ -402,7 +402,7 @@ describe('signal inputs', () => {
 
         protected readonly template = viewChild.required<TemplateRef<any>>('template');
 
-        protected state = signal<boolean>(false);
+        protected state = signal(false);
 
         protected toggle() {
           this.state() ? this.destroy() : this.create();

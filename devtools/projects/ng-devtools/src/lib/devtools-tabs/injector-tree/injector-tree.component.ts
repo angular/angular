@@ -83,14 +83,14 @@ export class InjectorTreeComponent {
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
 
   protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
-  protected readonly injectorProvidersEnabled = signal<boolean>(false);
+  protected readonly injectorProvidersEnabled = signal(false);
   protected readonly injectorProvidersVisible = computed(
     () => this.injectorProvidersEnabled() && this.selectedNode() && this.providers().length > 0,
   );
 
   protected readonly providers = input.required<SerializedProviderRecord[]>();
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
-  protected readonly hidden = input<boolean>(false);
+  protected readonly hidden = input(false);
 
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();

@@ -67,7 +67,7 @@ export class DirectiveForestComponent {
   private readonly elementRef = inject(ElementRef);
 
   readonly forest = input<DevToolsNode[]>([]);
-  readonly showCommentNodes = input<boolean>(false);
+  readonly showCommentNodes = input(false);
   readonly currentSelectedElement = input.required<IndexedNode>();
 
   readonly selectNode = output<IndexedNode | null>();

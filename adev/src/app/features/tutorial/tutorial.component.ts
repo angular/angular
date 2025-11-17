@@ -90,12 +90,12 @@ export default class Tutorial {
   readonly stepName = signal<string | null>(null);
   readonly tutorialName = signal<string | null>(null);
   readonly tutorialNavigationItems = signal<NavigationItem[]>([]);
-  readonly showNavigationDropdown = signal<boolean>(false);
+  readonly showNavigationDropdown = signal(false);
 
-  readonly shouldRenderContent = signal<boolean>(false);
-  readonly shouldRenderEmbeddedEditor = signal<boolean>(false);
-  readonly shouldRenderRevealAnswer = signal<boolean>(false);
-  readonly restrictedMode = signal<boolean>(false);
+  readonly shouldRenderContent = signal(false);
+  readonly shouldRenderEmbeddedEditor = signal(false);
+  readonly shouldRenderRevealAnswer = signal(false);
+  readonly restrictedMode = signal(false);
 
   nextStepPath: string | undefined;
   previousStepPath: string | undefined;
@@ -103,7 +103,7 @@ export default class Tutorial {
   embeddedEditorComponent?: Type<unknown>;
 
   canRevealAnswer: Signal<boolean> = signal(false);
-  readonly answerRevealed = signal<boolean>(false);
+  readonly answerRevealed = signal(false);
 
   constructor() {
     this.route.data

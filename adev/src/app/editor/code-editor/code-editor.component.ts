@@ -99,11 +99,11 @@ export class CodeEditor {
 
   readonly TerminalType = TerminalType;
 
-  protected readonly displayErrorsBox = signal<boolean>(false);
+  protected readonly displayErrorsBox = signal(false);
   protected readonly errors = signal<DiagnosticWithLocation[]>([]);
   protected readonly files = this.codeMirrorEditor.openFiles;
-  protected readonly isCreatingFile = signal<boolean>(false);
-  protected readonly isRenamingFile = signal<boolean>(false);
+  protected readonly isCreatingFile = signal(false);
+  protected readonly isRenamingFile = signal(false);
 
   constructor() {
     afterRenderEffect(() => {

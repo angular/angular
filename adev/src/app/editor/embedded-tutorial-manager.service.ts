@@ -34,12 +34,12 @@ export class EmbeddedTutorialManager {
   readonly answerFiles = signal<NonNullable<TutorialMetadata['answerFiles']>>({});
 
   readonly dependencies = signal<TutorialMetadata['dependencies'] | undefined>(undefined);
-  private _shouldReInstallDependencies = signal<boolean>(false);
+  private _shouldReInstallDependencies = signal(false);
   readonly shouldReInstallDependencies = this._shouldReInstallDependencies.asReadonly();
 
   private metadata = signal<TutorialMetadata | undefined>(undefined);
 
-  private _shouldChangeTutorial$ = new BehaviorSubject<boolean>(false);
+  private _shouldChangeTutorial$ = new BehaviorSubject(false);
   readonly tutorialChanged$ = this._shouldChangeTutorial$.asObservable();
 
   private readonly _filesToDeleteFromPreviousProject = signal(new Set<string>());

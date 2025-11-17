@@ -56,7 +56,7 @@ export class Animation {
   private completed: boolean = false;
   private plugins: AnimationPlugin[] = [];
   private _duration: number = 0;
-  private readonly _isPlaying = signal<boolean>(false);
+  private readonly _isPlaying = signal(false);
   private readonly _progress = signal<number>(0);
 
   /** Returns whether the animation is playing or not */

@@ -53,7 +53,7 @@ export const LARGE_EDITOR_HEIGHT_BREAKPOINT = 550;
 })
 export class EmbeddedEditor {
   // Prevents from adding, removing or renaming files
-  readonly restrictedMode = input<boolean>(false);
+  readonly restrictedMode = input(false);
 
   readonly editorContainer = viewChild<ElementRef<HTMLDivElement>>('editorContainer');
   readonly matTabGroup = viewChild(MatTabGroup);

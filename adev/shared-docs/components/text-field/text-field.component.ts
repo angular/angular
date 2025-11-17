@@ -42,9 +42,9 @@ export class TextField implements ControlValueAccessor {
 
   readonly name = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
-  readonly disabled = model<boolean>(false);
-  readonly hideIcon = input<boolean>(false);
-  readonly autofocus = input<boolean>(false);
+  readonly disabled = model(false);
+  readonly hideIcon = input(false);
+  readonly autofocus = input(false);
   readonly resetLabel = input<string | null>(null);
 
   // Implemented as part of ControlValueAccessor.

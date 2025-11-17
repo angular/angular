@@ -20,7 +20,7 @@ export class PendingTasksInternal implements OnDestroy {
   private pendingTasks = new Set<number>();
   private destroyed = false;
 
-  private pendingTask = new BehaviorSubject<boolean>(false);
+  private pendingTask = new BehaviorSubject(false);
 
   get hasPendingTasks(): boolean {
     // Accessing the value of a closed `BehaviorSubject` throws an error.

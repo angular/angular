@@ -54,7 +54,7 @@ export abstract class BackendService {
   protected get dbReady(): Observable<boolean> {
     if (!this.dbReadySubject) {
       // first time the service is called.
-      this.dbReadySubject = new BehaviorSubject<boolean>(false);
+      this.dbReadySubject = new BehaviorSubject(false);
       this.resetDb();
     }
     return this.dbReadySubject.asObservable().pipe(first((r: boolean) => r));

@@ -54,7 +54,7 @@ export class FakeEmbeddedTutorialManager {
     ),
   );
 
-  private _shouldChangeTutorial$ = new BehaviorSubject<boolean>(false);
+  private _shouldChangeTutorial$ = new BehaviorSubject(false);
   tutorialChanged$ = this._shouldChangeTutorial$.asObservable();
 
   fetchAndSetTutorialFiles(tutorial: string): Promise<void> {

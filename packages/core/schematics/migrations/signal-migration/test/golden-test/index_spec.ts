@@ -32,7 +32,7 @@ describe('bla', () => {
         imports: [NgIf],
       })
       class Ng2Component {
-        show = input<boolean>(false);
+        show = input(false);
       }
     });
   });

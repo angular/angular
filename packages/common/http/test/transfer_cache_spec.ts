@@ -105,7 +105,7 @@ describe('TransferCache', () => {
     beforeEach(
       withBody('<test-app-http></test-app-http>', () => {
         TestBed.resetTestingModule();
-        isStable = new BehaviorSubject<boolean>(false);
+        isStable = new BehaviorSubject(false);
 
         @Injectable()
         class ApplicationRefPatched extends ApplicationRef {
@@ -348,12 +348,12 @@ describe('TransferCache', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
           TestBed.resetTestingModule();
-          isStable = new BehaviorSubject<boolean>(false);
+          isStable = new BehaviorSubject(false);
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
             override get isStable() {
-              return new BehaviorSubject<boolean>(false);
+              return new BehaviorSubject(false);
             }
           }
 
@@ -385,12 +385,12 @@ describe('TransferCache', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
           TestBed.resetTestingModule();
-          isStable = new BehaviorSubject<boolean>(false);
+          isStable = new BehaviorSubject(false);
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
             override get isStable() {
-              return new BehaviorSubject<boolean>(false);
+              return new BehaviorSubject(false);
             }
           }
 
@@ -485,12 +485,12 @@ describe('TransferCache', () => {
       beforeEach(
         withBody('<test-app-http></test-app-http>', () => {
           TestBed.resetTestingModule();
-          isStable = new BehaviorSubject<boolean>(false);
+          isStable = new BehaviorSubject(false);
 
           @Injectable()
           class ApplicationRefPatched extends ApplicationRef {
             override get isStable() {
-              return new BehaviorSubject<boolean>(false);
+              return new BehaviorSubject(false);
             }
           }
 
@@ -535,12 +535,12 @@ describe('TransferCache', () => {
         beforeEach(
           withBody('<test-app-http></test-app-http>', () => {
             TestBed.resetTestingModule();
-            isStable = new BehaviorSubject<boolean>(false);
+            isStable = new BehaviorSubject(false);
 
             @Injectable()
             class ApplicationRefPatched extends ApplicationRef {
               override get isStable() {
-                return new BehaviorSubject<boolean>(false);
+                return new BehaviorSubject(false);
               }
             }
 
@@ -587,12 +587,12 @@ describe('TransferCache', () => {
         beforeEach(
           withBody('<test-app-http></test-app-http>', () => {
             TestBed.resetTestingModule();
-            isStable = new BehaviorSubject<boolean>(false);
+            isStable = new BehaviorSubject(false);
 
             @Injectable()
             class ApplicationRefPatched extends ApplicationRef {
               override get isStable() {
-                return new BehaviorSubject<boolean>(false);
+                return new BehaviorSubject(false);
               }
             }
 

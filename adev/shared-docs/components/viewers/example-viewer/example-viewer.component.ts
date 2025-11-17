@@ -80,8 +80,8 @@ export class ExampleViewer {
   CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
-  readonly expandable = signal<boolean>(false);
-  readonly expanded = signal<boolean>(false);
+  readonly expandable = signal(false);
+  readonly expanded = signal(false);
   readonly snippetCode = signal<Snippet | undefined>(undefined);
   readonly showCode = signal<boolean>(true);
   readonly tabs = computed(() =>
