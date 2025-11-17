@@ -276,13 +276,11 @@ To use linked libraries, you need to configure your application's `angular.json`
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "configurations": {
-            "development": {
-              "prebundle": {
-                "exclude": [
-                  "my-lib"
-                ]
-              }
+          "options": {
+            "prebundle": {
+              "exclude": [
+                "my-lib"
+              ]
             }
           }
         }
