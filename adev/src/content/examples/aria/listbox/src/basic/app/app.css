@@ -1,24 +1,26 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-family: var(--inter-font);
+}
+
+.listbox-container {
+  width: 200px;
+  height: 11rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--septenary-contrast);
+  font-size: 0.9rem;
+}
+
 [ngListbox] {
   gap: 2px;
   height: 100%;
   display: flex;
   overflow: auto;
   flex-direction: column;
-  background: var(--octonary-contrast);
-}
-
-[ngCombobox]:has([ngComboboxInput][aria-expanded='false']) .example-popup-container {
-  max-height: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    max-height 150ms ease-in,
-    visibility 0s 150ms,
-    opacity 150ms ease-in;
-}
-
-[ngCombobox]:has([ngComboboxInput][aria-expanded='true']) [ngListbox] {
-  display: flex;
 }
 
 [ngOption] {
@@ -45,16 +47,10 @@
   background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
 }
 
-.example-option-icon {
-  font-size: 1.25rem;
-  padding-right: 1rem;
-}
-
 [ngOption]:not([aria-selected='true']) .example-option-check {
   display: none;
 }
 
-.example-option-icon,
 .example-option-check {
   font-size: 0.9rem;
 }
