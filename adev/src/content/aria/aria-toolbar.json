@@ -79,6 +79,21 @@
           "jsdocTags": [],
           "inputAlias": "wrap",
           "isRequiredInput": false
+        },
+        {
+          "name": "values",
+          "type": "any",
+          "memberType": "property",
+          "memberTags": [
+            "readonly",
+            "input",
+            "output"
+          ],
+          "description": "The values of the selected widgets within the toolbar.",
+          "jsdocTags": [],
+          "inputAlias": "values",
+          "isRequiredInput": false,
+          "outputAlias": "valuesChange"
         }
       ],
       "generics": [
@@ -102,8 +117,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 64,
-        "endLine": 164
+        "startLine": 65,
+        "endLine": 169
       }
     },
     {
@@ -281,8 +296,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 181,
-        "endLine": 248
+        "startLine": 186,
+        "endLine": 253
       }
     },
     {
@@ -348,8 +363,8 @@
       ],
       "source": {
         "filePath": "/src/aria/toolbar/toolbar.ts",
-        "startLine": 256,
-        "endLine": 291
+        "startLine": 261,
+        "endLine": 296
       }
     }
   ],
@@ -396,6 +411,10 @@
     ],
     [
       "contentChildren",
+      "@angular/core"
+    ],
+    [
+      "model",
       "@angular/core"
     ],
     [
@@ -460,6 +479,10 @@
     ],
     [
       "Toolbar.wrap",
+      "@angular/aria/toolbar"
+    ],
+    [
+      "Toolbar.values",
       "@angular/aria/toolbar"
     ],
     [
