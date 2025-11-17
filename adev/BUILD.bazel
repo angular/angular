@@ -15,6 +15,7 @@ exports_files([
 
 APPLICATION_FILES = [
     "//adev/src/assets/images",
+    "//adev/src/assets/images/v21-event:v21-event-images",
     "//adev/src/assets/others",
     "//adev/src/assets/previews",
     "//adev/src/assets:tutorials",

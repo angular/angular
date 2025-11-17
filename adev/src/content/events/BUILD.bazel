@@ -7,8 +7,9 @@ generate_guides(
     ]),
     api_manifest = "//adev/src/assets:docs_api_manifest",
     data = [
-        "//adev/src/assets/images:angular-v21-hero.jpg",
+        "//adev/src/assets/images/v21-event:v21-event-images",
         "//adev/src/assets/others:angular-v21-release.ics",
+        "//adev/src/content/examples",
     ],
     visibility = ["//adev:__subpackages__"],
 )
