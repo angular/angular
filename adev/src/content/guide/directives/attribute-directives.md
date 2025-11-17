@@ -43,15 +43,15 @@ Angular creates an instance of the `HighlightDirective` class and injects a refe
 
 This section shows you how to detect when a user mouses into or out of the element and to respond by setting or clearing the highlight color.
 
-1. Import `HostListener` from '@angular/core'.
+1. Configure host event bindings using the `host` property in the `@Directive()` decorator.
 
-<docs-code header="highlight.directive.ts (imports)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.2.ts" visibleRegion="imports"/>
+<docs-code header="src/app/highlight.directive.ts (decorator)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.2.ts" visibleRegion="decorator"/>
 
-1. Add two event handlers that respond when the mouse enters or leaves, each with the `@HostListener()` decorator.
+1. Add two event handler methods, and map host element events to them via the `host` property.
 
 <docs-code header="highlight.directive.ts (mouse-methods)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.2.ts" visibleRegion="mouse-methods"/>
 
-Subscribe to events of the DOM element that hosts an attribute directive, the `<p>` in this case, with the `@HostListener()` decorator.
+Subscribe to events of the DOM element that hosts an attribute directive (the `<p>` in this case) by configuring event listeners on the directive's [`host` property](guide/components/host-elements#binding-to-the-host-element).
 
 HELPFUL: The handlers delegate to a helper method, `highlight()`, that sets the color on the host DOM element, `el`.
 
@@ -71,17 +71,17 @@ This section walks you through setting the highlight color while applying the `H
 
 <docs-code header="highlight.directive.ts (imports)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.3.ts" visibleRegion="imports"/>
 
-1. Add an `appHighlight` `input` property.
+2. Add an `appHighlight` `input` property.
 
    <docs-code header="highlight.directive.ts" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.3.ts" visibleRegion="input"/>
 
    The `input()` function adds metadata to the class that makes the directive's `appHighlight` property available for binding.
 
-1. In `app.component.ts`, add a `color` property to the `AppComponent`.
+3. In `app.component.ts`, add a `color` property to the `AppComponent`.
 
 <docs-code header="app.component.ts (class)" path="adev/src/content/examples/attribute-directives/src/app/app.component.1.ts" visibleRegion="class"/>
 
-1. To simultaneously apply the directive and the color, use property binding with the `appHighlight` directive selector, setting it equal to `color`.
+4. To simultaneously apply the directive and the color, use property binding with the `appHighlight` directive selector, setting it equal to `color`.
 
    <docs-code header="app.component.html (color)" path="adev/src/content/examples/attribute-directives/src/app/app.component.html" visibleRegion="color"/>
 
@@ -113,7 +113,7 @@ This section guides you through adding radio buttons to bind your color choice t
 
 This section guides you through configuring your application so the developer can set the default color.
 
-1. Add a second `Input()` property to `HighlightDirective` called `defaultColor`.
+1. Add a second `input()` property to `HighlightDirective` called `defaultColor`.
 
 <docs-code header="highlight.directive.ts (defaultColor)" path="adev/src/content/examples/attribute-directives/src/app/highlight.directive.ts" visibleRegion="defaultColor"/>
 
