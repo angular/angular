@@ -98,7 +98,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "^20.14.8",
     "@types/selenium-webdriver": "3.0.7",
-    "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.35.3",
+    "@types/selenium-webdriver4": "npm:@types/selenium-webdriver@4.35.4",
     "@types/semver": "^7.3.4",
     "@types/systemjs": "6.15.3",
     "@types/yargs": "^17.0.3",
