@@ -61,8 +61,8 @@ export class FilterComponent {
   readonly nextMatched = output<void>();
   readonly prevMatched = output<void>();
 
-  readonly matchesCount = input<number>(0);
-  readonly currentMatch = input<number>(0);
+  readonly matchesCount = input(0);
+  readonly currentMatch = input(0);
 
   readonly filterFnGenerator = input<FilterFnGenerator>(genericSearchGenerator);
 

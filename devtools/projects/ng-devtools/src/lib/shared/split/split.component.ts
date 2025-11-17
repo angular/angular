@@ -116,28 +116,30 @@ import {
   },
 })
 export class SplitComponent implements OnDestroy {
-  directionInput = input<Direction>('horizontal', {alias: 'direction'});
+  readonly directionInput = input<Direction>('horizontal', {alias: 'direction'});
   // This allows the direction to be writable from the outside
-  direction = linkedSignal(this.directionInput);
+  readonly direction = linkedSignal(this.directionInput);
 
-  unit = input<Unit>('percent');
+  readonly unit = input<Unit>('percent');
 
-  showGutterIcon = input(false, {transform: booleanAttribute});
-  gutterSize = input(11, {transform: (v: unknown) => getInputPositiveNumber(v, 11)});
-  gutterStep = input(1, {transform: (v: unknown) => getInputPositiveNumber(v, 1)});
-  restrictMove = input(false, {transform: booleanAttribute});
-  useTransition = input(false, {transform: booleanAttribute});
-  disabled = input(false, {transform: booleanAttribute});
-  dir = input<'ltr' | 'rtl'>('ltr');
+  readonly showGutterIcon = input(false, {transform: booleanAttribute});
+  readonly gutterSize = input(11, {transform: (v: unknown) => getInputPositiveNumber(v, 11)});
+  readonly gutterStep = input(1, {transform: (v: unknown) => getInputPositiveNumber(v, 1)});
+  readonly restrictMove = input(false, {transform: booleanAttribute});
+  readonly useTransition = input(false, {transform: booleanAttribute});
+  readonly disabled = input(false, {transform: booleanAttribute});
+  readonly dir = input<'ltr' | 'rtl'>('ltr');
 
-  gutterDblClickDuration = input(0, {transform: (v: unknown) => getInputPositiveNumber(v, 0)});
+  readonly gutterDblClickDuration = input(0, {
+    transform: (v: unknown) => getInputPositiveNumber(v, 0),
+  });
 
   ////
 
-  dragStart = output<IOutputData>();
-  dragEnd = output<IOutputData>();
-  gutterClick = output<IOutputData>();
-  gutterDblClick = output<IOutputData>();
+  readonly dragStart = output<IOutputData>();
+  readonly dragEnd = output<IOutputData>();
+  readonly gutterClick = output<IOutputData>();
+  readonly gutterDblClick = output<IOutputData>();
 
   private transitionEndSubscriber: Subscriber<IOutputAreaSizes> | null = null;
   transitionEnd = outputFromObservable<IOutputAreaSizes>(

@@ -20,7 +20,6 @@ import {
   DestroyRef,
   effect,
   ElementRef,
-  HostListener,
   inject,
   input,
   output,

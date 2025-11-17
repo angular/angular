@@ -19,7 +19,7 @@
           [currentSelectedElement]="currentSelectedElement()!"
           [showCommentNodes]="showCommentNodes()"
         />
-        @if (isHydrationEnabled) {
+        @if (isHydrationEnabled()) {
           <div class="hydration">
             <input
               id="show-hydration-overlays"

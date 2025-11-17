@@ -70,15 +70,15 @@ type Tab = 'Components' | 'Profiler' | 'Router Tree' | 'Injector Tree' | 'Transf
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DevToolsTabsComponent {
-  readonly frameManager = inject(FrameManager);
-  readonly themeService = inject(ThemeService);
+  public readonly frameManager = inject(FrameManager);
+  protected readonly themeService = inject(ThemeService);
   private readonly tabUpdate = inject(TabUpdate);
-  private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
-  private readonly settings = inject(Settings);
+  protected readonly messageBus = inject<MessageBus<Events>>(MessageBus);
+  protected readonly settings = inject(Settings);
   protected readonly applicationEnvironment = inject(ApplicationEnvironment);
   protected readonly supportedApis = inject(SUPPORTED_APIS);
 
-  readonly isHydrationEnabled = input(false);
+  protected readonly isHydrationEnabled = input(false);
   readonly frameSelected = output<Frame>();
 
   readonly inspectorRunning = signal(false);
@@ -90,11 +90,11 @@ export class DevToolsTabsComponent {
   protected readonly transferStateEnabled = this.settings.transferStateEnabled;
   protected readonly activeTab = this.settings.activeTab;
 
-  readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
-  readonly providers = signal<SerializedProviderRecord[]>([]);
+  protected readonly componentExplorerView = signal<ComponentExplorerView | null>(null);
+  protected readonly providers = signal<SerializedProviderRecord[]>([]);
   readonly routes = signal<Route[]>([]);
 
-  readonly tabs = computed<Tab[]>(() => {
+  protected readonly tabs = computed<Tab[]>(() => {
     const supportedApis = this.supportedApis();
     const tabs: Tab[] = ['Components'];
 
@@ -114,12 +114,12 @@ export class DevToolsTabsComponent {
     return tabs;
   });
 
-  profilingNotificationsSupported = Boolean(
+  protected readonly profilingNotificationsSupported = Boolean(
     (window.chrome?.devtools as any)?.performance?.onProfilingStarted,
   );
-  TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
+  protected readonly TOP_LEVEL_FRAME_ID = TOP_LEVEL_FRAME_ID;
 
-  readonly angularVersion = input<string | undefined>();
+  protected readonly angularVersion = input<string | undefined>();
   readonly majorAngularVersion = computed(() => {
     const version = this.angularVersion();
     if (!version) {
@@ -128,7 +128,7 @@ export class DevToolsTabsComponent {
     return parseInt(version.toString().split('.')[0], 10);
   });
 
-  readonly extensionVersion = signal('dev-build');
+  protected readonly extensionVersion = signal('dev-build');
 
   constructor() {
     this.messageBus.on('updateRouterTree', (routes: any[]) => {

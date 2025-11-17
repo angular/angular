@@ -69,8 +69,8 @@ export class RouterTreeComponent {
     return this.selectedRoute()?.data;
   });
 
-  routes = input.required<Route[]>();
-  routerDebugApiSupport = input<boolean>(false);
+  readonly routes = input.required<Route[]>();
+  readonly routerDebugApiSupport = input(false);
 
   private readonly showFullPath = signal(false);
   protected readonly d3RootNode = linkedSignal<RouterTreeNode | null>(() => {

@@ -28,11 +28,11 @@ export class RouteDetailsRowComponent {
   readonly label = input.required<string>();
   readonly data = input.required<RouterTreeNode>();
   readonly dataKey = input.required<string>();
-  readonly renderValueAsJson = input<boolean>(false);
+  readonly renderValueAsJson = input(false);
   readonly type = input<RowType>('text');
   readonly actionBtnType = input<ActionBtnType>('none');
   readonly actionBtnTooltip = input<string>('');
-  readonly actionBtnDisabled = input<boolean>(false);
+  readonly actionBtnDisabled = input(false);
 
   readonly actionBtnClick = output<string>();
 
