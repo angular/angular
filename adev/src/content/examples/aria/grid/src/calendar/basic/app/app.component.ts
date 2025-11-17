@@ -28,8 +28,8 @@ interface CalendarCell<D = any> {
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.html',
-  styleUrl: 'app.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   providers: [provideNativeDateAdapter()],
   imports: [Grid, GridRow, GridCell, GridCellWidget],
 })
