@@ -6,11 +6,9 @@ When a test imports `SpyLocation` from `@angular/common/testing` and uses `urlCh
 
 Run the schematic with:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:router-testing-module-migration
-
-</docs-code>
+```
 
 ## Options
 

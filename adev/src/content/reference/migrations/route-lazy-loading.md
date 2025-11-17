@@ -4,21 +4,17 @@ This schematic helps developers to convert eagerly loaded component routes to la
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:route-lazy-loading
-
-</docs-code>
+```
 
 ### `path` config option
 
 By default, migration will go over the entire application. If you want to apply this migration to a subset of the files, you can pass the path argument as shown below:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:route-lazy-loading --path src/app/sub-component
-
-</docs-code>
+```
 
 The value of the path parameter is a relative path within the project.
 

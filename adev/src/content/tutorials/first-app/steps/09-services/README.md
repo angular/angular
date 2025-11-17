@@ -35,9 +35,9 @@ In the **Terminal** pane of your IDE:
 1. In your project directory, navigate to the `first-app` directory.
 1. In the `first-app` directory, run this command to create the new service.
 
-<docs-code language="shell">
+```shell
 ng generate service housing --skip-tests
-</docs-code>
+```
 
 1. Run `ng serve` to build the app and serve it to `http://localhost:4200`.
 1. Confirm that the app builds without error.

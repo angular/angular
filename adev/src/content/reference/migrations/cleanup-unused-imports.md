@@ -6,11 +6,9 @@ Running this schematic will clean up all unused imports within the project.
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:cleanup-unused-imports
-
-</docs-code>
+```
 
 #### Before
 

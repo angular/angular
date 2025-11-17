@@ -6,11 +6,9 @@ A project is the set of files that comprise an application or a shareable librar
 
 The Angular CLI `ng new` command creates a workspace.
 
-<docs-code language="shell">
-
+```shell
 ng new my-project
-
-</docs-code>
+```
 
 When you run this command, the CLI installs the necessary Angular npm packages and other dependencies in a new workspace, with a root-level application named _my-project_.
 
@@ -105,21 +103,17 @@ A multi-project workspace also supports library development.
 If you intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
 The following command creates a workspace with all of the workspace-wide configuration files, but no root-level application.
 
-<docs-code language="shell">
-
+```shell
 ng new my-workspace --no-create-application
-
-</docs-code>
+```
 
 You can then generate applications and libraries with names that are unique within the workspace.
 
-<docs-code language="shell">
-
+```shell
 cd my-workspace
 ng generate application my-app
 ng generate library my-lib
-
-</docs-code>
+```
 
 ### Multiple project file structure
 

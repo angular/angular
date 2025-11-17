@@ -157,9 +157,9 @@ Here's a code example fully styled:
 
 We also have styling for the terminal, just set the language as `shell`:
 
-<docs-code language="shell">
-  npm install @angular/material --save
-</docs-code>
+```shell
+npm install @angular/material --save
+```
 
 #### `<docs-code>` Attributes
 
@@ -261,9 +261,10 @@ Steps must start on a new line, and can contain `docs-code`s and other nested el
 
 To install the Angular CLI, open a terminal window and run the following command:
 
-  <docs-code language="shell">
-    npm install -g @angular/cli
-  </docs-code>
+```shell
+npm install -g @angular/cli
+```
+
 </docs-step>
 
 <docs-step title="Create a workspace and initial application">
@@ -272,9 +273,10 @@ To install the Angular CLI, open a terminal window and run the following command
 To create a new workspace and initial starter app:
 
 - Run the CLI command `ng new` and provide the name `my-app`, as shown here:
-  <docs-code language="shell">
+
+  ```shell
   ng new my-app
-  </docs-code>
+  ```
 
 - The ng new command prompts you for information about features to include in the initial app. Accept the defaults by pressing the Enter or Return key.
 
@@ -288,10 +290,11 @@ To create a new workspace and initial starter app:
 
 1. Navigate to the workspace folder, such as `my-app`.
 2. Run the following command:
-   <docs-code language="shell">
+
+   ```shell
    cd my-app
    ng serve --open
-   </docs-code>
+   ```
 
 The `ng serve` command launches the server, watches your files, and rebuilds the app as you make changes to those files.
 

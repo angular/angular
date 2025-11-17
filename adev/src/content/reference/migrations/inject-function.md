@@ -6,11 +6,9 @@ This schematic converts constructor-based injection in your classes to use the `
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:inject
-
-</docs-code>
+```
 
 #### Before
 

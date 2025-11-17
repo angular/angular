@@ -9,20 +9,16 @@ HELPFUL: The Angular CLI does not support running itself in a web worker.
 
 To add a web worker to an existing project, use the Angular CLI `ng generate` command.
 
-<docs-code language="shell">
-
+```shell
 ng generate web-worker <location>
-
-</docs-code>
+```
 
 You can add a web worker anywhere in your application.
 For example, to add a web worker to the root component, `src/app/app.component.ts`, run the following command.
 
-<docs-code language="shell">
-
+```shell
 ng generate web-worker app
-
-</docs-code>
+```
 
 The command performs the following actions.
 
