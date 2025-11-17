@@ -228,7 +228,7 @@ function getProviderTokenMeasureName<T>(token: any) {
  *
  * Note: integration is enabled in the development mode only, this operation is noop in the production mode.
  *
- * @experimental
+ * @publicApi v21.0
  *
  * @returns a function that can be invoked to stop sending profiling data.
  * @see [Profiling with the Chrome DevTools](best-practices/profiling-with-chrome-devtools#recording-a-profile)
