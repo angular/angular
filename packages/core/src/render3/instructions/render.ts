@@ -43,11 +43,9 @@ export function renderComponent(hostLView: LView, componentHostIdx: number) {
 
   profiler(ProfilerEvent.ComponentStart);
 
-  try {
-    renderView(componentTView, componentView, componentView[CONTEXT]);
-  } finally {
-    profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
-  }
+  renderView(componentTView, componentView, componentView[CONTEXT]);
+
+  profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
 }
 
 /**
