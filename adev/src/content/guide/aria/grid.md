@@ -51,10 +51,15 @@ Grids work well for data or interactive elements organized in rows and columns w
 
 Use a grid for interactive tables where users need to navigate between cells using arrow keys. This example shows a basic data table with keyboard navigation.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/grid-table/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/grid/src/grid-table/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/grid/src/grid-table/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Apply the `ngGrid` directive to the table element, `ngGridRow` to each row, and `ngGridCell` to each cell.
 
@@ -62,10 +67,15 @@ Apply the `ngGrid` directive to the table element, `ngGridRow` to each row, and 
 
 Calendars are a common use case for grids. This example shows a month view where users navigate dates using arrow keys.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/grid-calendar/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/grid/src/grid-calendar/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/grid/src/grid-calendar/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Users can activate a date by pressing Enter or Space when focused on a cell.
 
@@ -73,10 +83,15 @@ Users can activate a date by pressing Enter or Space when focused on a cell.
 
 Use a layout grid to group interactive elements and reduce tab stops. This example shows a grid of pill buttons.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/grid-pill-list/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/grid/src/grid-pill-list/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/grid/src/grid-pill-list/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Instead of tabbing through each button, users navigate with arrow keys and only one button receives tab focus.
 

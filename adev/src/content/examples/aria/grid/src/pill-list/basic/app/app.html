@@ -1,0 +1,19 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+<div ngGrid colWrap="continuous">
+  @for (tag of tags(); track $index) {
+    <div ngGridRow>
+      <span ngGridCell>#{{tag}}</span>
+      <span ngGridCell>
+        <button
+          ngGridCellWidget
+          aria-label="remove tag"
+          class="material-symbols-outlined"
+          (click)="removeTag($index)"
+        >
+          close
+        </button>
+      </span>
+    </div>
+  }
+</div>
