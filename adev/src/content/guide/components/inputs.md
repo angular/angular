@@ -7,15 +7,15 @@ TIP: If you're familiar with other web frameworks, input properties are similar 
 When you use a component, you commonly want to pass some data to it. A component specifies the data that it accepts by declaring
 **inputs**:
 
-```ts {highlight:[5]}
+<docs-code language="ts" highlight="[5]">
 import {Component, input} from '@angular/core';
 
 @Component({/_..._/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero.
-  value = input(0);
+// Declare an input named 'value' with a default value of zero.
+value = input(0);
 }
-```
+</docs-code>
 
 This lets you bind to the property in a template:
 
@@ -57,18 +57,18 @@ When extending a component class, **inputs are inherited by the child class.**
 
 The `input` function returns an `InputSignal`. You can read the value by calling the signal:
 
-```ts {highlight:[5]}
-import {Component, input, computed} from '@angular/core';
+<docs-code language="ts" highlight="[5]">
+import {Component, input} from '@angular/core';
 
 @Component({/_..._/})
 export class CustomSlider {
-  // Declare an input named 'value' with a default value of zero.
-  value = input(0);
+// Declare an input named 'value' with a default value of zero.
+value = input(0);
 
-  // Create a computed expression that reads the value input
-  label = computed(() => `The slider's value is ${this.value()}`);
+// Create a computed expression that reads the value input
+label = computed(() => `The slider's value is ${this.value()}`);
 }
-```
+</docs-code>
 
 Signals created by the `input` function are read-only.
 
@@ -76,13 +76,13 @@ Signals created by the `input` function are read-only.
 
 You can declare that an input is `required` by calling `input.required` instead of `input`:
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({/*...*/})
 export class CustomSlider {
   // Declare a required input named value. Returns an `InputSignal<number>`.
   value = input.required<number>();
 }
-```
+</docs-code>
 
 Angular enforces that required inputs _must_ be set when the component is used in a template. If you try to use a component without specifying all of its required inputs, Angular reports an error at build-time.
 
@@ -96,7 +96,7 @@ The `input` function accepts a config object as a second parameter that lets you
 
 You can specify a `transform` function to change the value of an input when it's set by Angular.
 
-```ts {highlight:[6]}
+<docs-code language="ts" highlight="[6]">
 @Component({
   selector: 'custom-slider',
   /*...*/
@@ -106,9 +106,9 @@ export class CustomSlider {
 }
 
 function trimString(value: string | undefined): string {
-  return value?.trim() ?? '';
+return value?.trim() ?? '';
 }
-```
+</docs-code>
 
 ```angular-html
 <custom-slider [label]="systemVolume" />
@@ -126,16 +126,16 @@ The most common use-case for input transforms is to accept a wider range of valu
 
 When you specify an input transform, the type of the transform function's parameter determines the types of values that can be set to the input in a template.
 
-```ts
+<docs-code language="ts">
 @Component({/*...*/})
 export class CustomSlider {
   widthPx = input('', {transform: appendPx});
 }
 
 function appendPx(value: number): string {
-  return `${value}px`;
+return `${value}px`;
 }
-```
+</docs-code>
 
 In the example above, the `widthPx` input accepts a `number` while the `InputSignal` property returns a `string`.
 
@@ -143,15 +143,15 @@ In the example above, the `widthPx` input accepts a `number` while the `InputSig
 
 Angular includes two built-in transform functions for the two most common scenarios: coercing values to boolean and numbers.
 
-```ts
+<docs-code language="ts">
 import {Component, input, booleanAttribute, numberAttribute} from '@angular/core';
 
 @Component({/_..._/})
 export class CustomSlider {
-  disabled = input(false, {transform: booleanAttribute});
-  value = input(0, {transform: numberAttribute});
+disabled = input(false, {transform: booleanAttribute});
+value = input(0, {transform: numberAttribute});
 }
-```
+</docs-code>
 
 `booleanAttribute` imitates the behavior of standard HTML [boolean attributes](https://developer.mozilla.org/docs/Glossary/Boolean/HTML), where the
 _presence_ of the attribute indicates a "true" value. However, Angular's `booleanAttribute` treats the literal string `"false"` as the boolean `false`.
@@ -162,12 +162,12 @@ _presence_ of the attribute indicates a "true" value. However, Angular's `boolea
 
 You can specify the `alias` option to change the name of an input in templates.
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({/*...*/})
 export class CustomSlider {
   value = input(0, {alias: 'sliderValue'});
 }
-```
+</docs-code>
 
 ```angular-html
 <custom-slider [sliderValue]="50" />
@@ -185,7 +185,7 @@ When creating a component, you can define a model input similarly to how you cre
 
 Both types of input allow someone to bind a value into the property. However, **model inputs allow the component author to write values into the property**. If the property is bound with a two-way binding, the new value propagates to that binding.
 
-```ts
+```angular-ts
 @Component({ /* ... */})
 export class CustomSlider {
   // Define a model input named "value".
@@ -220,7 +220,7 @@ See [Two-way binding](guide/templates/two-way-binding) for more details on two-w
 
 You can bind a plain JavaScript property to a model input.
 
-```ts
+```angular-ts
 @Component({
   /* ... */
   // `value` is a model input.
@@ -273,12 +273,12 @@ TIP: While the Angular team recommends using the signal-based `input` function f
 
 You can alternatively declare component inputs by adding the `@Input` decorator to a property:
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({...})
 export class CustomSlider {
   @Input() value = 0;
 }
-```
+</docs-code>
 
 Binding to an input is the same in both signal-based and decorator-based inputs:
 
@@ -294,12 +294,12 @@ The `@Input` decorator accepts a config object that lets you change the way that
 
 You can specify the `required` option to enforce that a given input must always have a value.
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({...})
 export class CustomSlider {
   @Input({required: true}) value = 0;
 }
-```
+</docs-code>
 
 If you try to use a component without specifying all of its required inputs, Angular reports an error at build-time.
 
@@ -307,7 +307,7 @@ If you try to use a component without specifying all of its required inputs, Ang
 
 You can specify a `transform` function to change the value of an input when it's set by Angular. This transform function works identically to transform functions for signal-based inputs described above.
 
-```ts {highlight:[6]}
+<docs-code language="ts" highlight="[6]">
 @Component({
   selector: 'custom-slider',
   ...
@@ -316,21 +316,19 @@ export class CustomSlider {
   @Input({transform: trimString}) label = '';
 }
 
-function trimString(value: string | undefined) {
-  return value?.trim() ?? '';
-}
-```
+function trimString(value: string | undefined) { return value?.trim() ?? ''; }
+</docs-code>
 
 #### Input aliases
 
 You can specify the `alias` option to change the name of an input in templates.
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="[3]">
 @Component({...})
 export class CustomSlider {
   @Input({alias: 'sliderValue'}) value = 0;
 }
-```
+</docs-code>
 
 ```angular-html
 <custom-slider [sliderValue]="50" />
@@ -378,22 +376,22 @@ Avoid complex or costly getters and setters. Angular may invoke an input's sette
 
 In addition to the `@Input` decorator, you can also specify a component's inputs with the `inputs` property in the `@Component` decorator. This can be useful when a component inherits a property from a base class:
 
-```ts {highlight:[4]}
+<docs-code language="ts" highlight="[4]">
 // `CustomSlider` inherits the `disabled` property from `BaseSlider`.
 @Component({
   ...,
   inputs: ['disabled'],
 })
 export class CustomSlider extends BaseSlider { }
-```
+</docs-code>
 
 You can additionally specify an input alias in the `inputs` list by putting the alias after a colon in the string:
 
-```ts {highlight:[4]}
+<docs-code language="ts" highlight="[4]">
 // `CustomSlider` inherits the `disabled` property from `BaseSlider`.
 @Component({
   ...,
   inputs: ['disabled: sliderDisabled'],
 })
 export class CustomSlider extends BaseSlider { }
-```
+</docs-code>
