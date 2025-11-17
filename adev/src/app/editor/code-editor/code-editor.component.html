@@ -11,15 +11,14 @@
         <mat-tab #tab>
           <ng-template mat-tab-label>
             @if (tab.isActive && isRenamingFile()) {
-              <form
-                (submit)="renameFile($event, file.filename)"
-                (docsClickOutside)="closeRenameFile()"
-              >
+              <form (submit)="renameFile($event, file.filename)">
                 <input
                   name="rename-file"
                   class="adev-rename-file-input"
+                  [value]="file.filename.replace('src/', '')"
                   #renameFileInput
                   (keydown)="$event.stopPropagation()"
+                  (blur)="isRenamingFile.set(false)"
                 />
               </form>
             } @else if (restrictedMode()) {
@@ -64,6 +63,7 @@
                 class="adev-new-file-input"
                 #createFileInput
                 (keydown)="$event.stopPropagation()"
+                (blur)="createFile()"
               />
             </form>
           </ng-template>
