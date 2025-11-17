@@ -718,9 +718,9 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/overview',
                 },
                 {
-                  label: 'Autocomplete',
-                  path: 'guide/aria/autocomplete',
-                  contentPath: 'guide/aria/autocomplete',
+                  label: 'Accordion',
+                  path: 'guide/aria/accordion',
+                  contentPath: 'guide/aria/accordion',
                 },
                 {
                   label: 'Autocomplete',
@@ -733,9 +733,19 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/combobox',
                 },
                 {
+                  label: 'Grid',
+                  path: 'guide/aria/grid',
+                  contentPath: 'guide/aria/grid',
+                },
+                {
                   label: 'Listbox',
                   path: 'guide/aria/listbox',
                   contentPath: 'guide/aria/listbox',
+                },
+                {
+                  label: 'Menu',
+                  path: 'guide/aria/menu',
+                  contentPath: 'guide/aria/menu',
                 },
                 {
                   label: 'Multiselect',
@@ -756,6 +766,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   label: 'Toolbar',
                   path: 'guide/aria/toolbar',
                   contentPath: 'guide/aria/toolbar',
+                },
+                {
+                  label: 'Tree',
+                  path: 'guide/aria/tree',
+                  contentPath: 'guide/aria/tree',
                 },
               ],
             },
