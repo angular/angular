@@ -48,7 +48,7 @@ the `host` property in the `@Component` decorator:
     'role': 'slider',
     '[attr.aria-valuenow]': 'value',
     '[class.active]': 'isActive()',
-    '[style.background] : `hasError() ? 'red' : 'green'`,
+    '[style.background]' : `hasError() ? 'red' : 'green'`,
     '[tabIndex]': 'disabled ? -1 : 0',
     '(keydown)': 'updateValue($event)',
   },
