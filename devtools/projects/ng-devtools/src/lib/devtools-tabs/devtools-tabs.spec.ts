@@ -6,27 +6,26 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Component, signal} from '@angular/core';
+import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatTooltip} from '@angular/material/tooltip';
-import {Events, MessageBus} from '../../../../protocol';
 import {Subject} from 'rxjs';
+import {Events, MessageBus} from '../../../../protocol';
 
 import {ApplicationEnvironment} from '../application-environment';
 import {ThemeService} from '../application-services/theme_service';
 
-import {DevToolsTabsComponent} from './devtools-tabs.component';
-import {TabUpdate} from './tab-update/index';
-import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
 import {FrameManager} from '../application-services/frame_manager';
 import {SETTINGS_MOCK} from '../application-services/test-utils/settings_mock';
 import {ThemeUi} from '../application-services/theme_types';
+import {DevToolsTabsComponent} from './devtools-tabs.component';
+import {DirectiveExplorerComponent} from './directive-explorer/directive-explorer.component';
+import {TabUpdate} from './tab-update/index';
 
 @Component({
   selector: 'ng-directive-explorer',
   template: '',
-  imports: [MatTooltip, MatMenuModule],
+  imports: [MatMenuModule],
 })
 export class MockDirectiveExplorerComponent {}
 
@@ -40,7 +39,7 @@ describe('DevtoolsTabsComponent', () => {
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
 
     await TestBed.configureTestingModule({
-      imports: [MatTooltip, MatMenuModule, DevToolsTabsComponent],
+      imports: [MatMenuModule, DevToolsTabsComponent],
       providers: [
         TabUpdate,
         SETTINGS_MOCK,

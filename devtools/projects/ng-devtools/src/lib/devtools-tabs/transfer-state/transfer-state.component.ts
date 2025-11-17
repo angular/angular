@@ -69,10 +69,9 @@ export const COPY_FEEDBACK_TIMEOUT = 2000;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TransferStateComponent {
-  private messageBus = inject(MessageBus) as MessageBus<Events>;
-  private clipboard = inject(Clipboard);
-
-  private snackBar = inject(MatSnackBar);
+  private readonly messageBus = inject(MessageBus) as MessageBus<Events>;
+  private readonly clipboard = inject(Clipboard);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly transferStateData = signal<Record<string, TransferStateValue> | null>(null);
   readonly error = signal<string | null>(null);

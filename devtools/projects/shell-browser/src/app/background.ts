@@ -9,7 +9,7 @@
 /// <reference types="chrome"/>
 
 import {AngularDetection} from '../../../protocol';
-import {TabManager, Tabs} from './tab_manager';
+import {TabManager} from './tab_manager';
 
 function getPopUpName(ng: AngularDetection): string {
   if (!ng.isAngular) {

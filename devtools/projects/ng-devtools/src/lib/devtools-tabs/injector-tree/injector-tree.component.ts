@@ -83,14 +83,14 @@ export class InjectorTreeComponent {
   private readonly messageBus = inject<MessageBus<Events>>(MessageBus);
 
   protected readonly selectedNode = signal<InjectorTreeD3Node | null>(null);
-  protected readonly injectorProvidersEnabled = signal<boolean>(false);
+  protected readonly injectorProvidersEnabled = signal(false);
   protected readonly injectorProvidersVisible = computed(
     () => this.injectorProvidersEnabled() && this.selectedNode() && this.providers().length > 0,
   );
 
   protected readonly providers = input.required<SerializedProviderRecord[]>();
   protected readonly componentExplorerView = input.required<ComponentExplorerView | null>();
-  protected readonly hidden = input<boolean>(false);
+  protected readonly hidden = input(false);
 
   protected readonly diDebugAPIsAvailable = computed<boolean>(() => {
     const view = this.componentExplorerView();
@@ -112,8 +112,8 @@ export class InjectorTreeComponent {
     breakpointDirection: 'horizontal',
   };
 
-  protected readonly envHierarchySize = signal<number>(0);
-  protected readonly elHierarchySize = signal<number>(0);
+  protected readonly envHierarchySize = signal(0);
+  protected readonly elHierarchySize = signal(0);
 
   environmentTreeConfig: Partial<TreeVisualizerConfig<InjectorTreeNode>> = {
     d3NodeModifier: d3InjectorTreeNodeModifier,

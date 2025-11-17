@@ -55,7 +55,7 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
   protected readonly nodeMouseout = output<TreeD3Node<T>>();
   protected readonly nodeMouseover = output<TreeD3Node<T>>();
 
-  panning = signal<boolean>(false);
+  readonly panning = signal(false);
 
   private initialRender: boolean = true;
   private visualizer?: TreeVisualizer<T>;

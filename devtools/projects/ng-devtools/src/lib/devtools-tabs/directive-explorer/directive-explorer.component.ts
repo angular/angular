@@ -11,7 +11,6 @@ import {
   afterRenderEffect,
   ElementRef,
   inject,
-  Input,
   input,
   output,
   signal,
@@ -107,7 +106,7 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
 })
 export class DirectiveExplorerComponent {
   readonly showCommentNodes = input(false);
-  @Input() isHydrationEnabled = false;
+  readonly isHydrationEnabled = input(false);
   readonly toggleInspector = output<void>();
 
   readonly directiveForest = viewChild.required(DirectiveForestComponent);
