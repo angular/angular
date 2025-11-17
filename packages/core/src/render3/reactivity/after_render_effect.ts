@@ -177,6 +177,9 @@ export class AfterRenderEffectSequence extends AfterRenderSequence {
     AfterRenderPhaseEffectNode | undefined,
   ] = [undefined, undefined, undefined, undefined];
 
+  /** Function to be called when the effect is destroyed. */
+  onDestroyFns: (() => void)[] | null = null;
+
   constructor(
     impl: AfterRenderImpl,
     effectHooks: Array<AfterRenderPhaseEffectHook | undefined>,
@@ -234,6 +237,12 @@ export class AfterRenderEffectSequence extends AfterRenderSequence {
   }
 
   override destroy(): void {
+    if (this.onDestroyFns !== null) {
+      for (const fn of this.onDestroyFns) {
+        fn();
+      }
+    }
+
     super.destroy();
 
     // Run the cleanup functions for each node.
