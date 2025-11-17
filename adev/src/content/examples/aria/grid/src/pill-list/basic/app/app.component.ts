@@ -3,8 +3,8 @@ import {Grid, GridRow, GridCell, GridCellWidget} from '@angular/aria/grid';
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.html',
-  styleUrl: 'app.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   imports: [Grid, GridRow, GridCell, GridCellWidget],
 })
 export class App {

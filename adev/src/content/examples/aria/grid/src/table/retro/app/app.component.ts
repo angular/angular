@@ -10,19 +10,19 @@ import {
 import {FormsModule} from '@angular/forms';
 import {Grid, GridRow, GridCell, GridCellWidget} from '@angular/aria/grid';
 
-type Priority = 'High' | 'Medium' | 'Low';
+type Rank = 'S' | 'A' | 'B' | 'C';
 
 interface Task {
-  taskId: number;
-  summary: string;
-  priority: Priority;
-  assignee: string;
+  reward: number;
+  target: string;
+  rank: Rank;
+  hunter: string;
 }
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.html',
-  styleUrl: 'app.css',
+  templateUrl: 'app.component.html',
+  styleUrl: 'app.component.css',
   imports: [Grid, GridRow, GridCell, GridCellWidget, FormsModule],
 })
 export class App {
@@ -35,38 +35,38 @@ export class App {
   readonly data = signal<(Task & {selected: WritableSignal<boolean>})[]>([
     {
       selected: signal(false),
-      taskId: 101,
-      summary: 'Create Grid Aria Pattern',
-      priority: 'High',
-      assignee: 'Cyber Cat',
+      reward: 50,
+      target: '10 Goblins',
+      rank: 'C',
+      hunter: 'KB Smasher',
     },
     {
       selected: signal(false),
-      taskId: 102,
-      summary: 'Build a Pill List example',
-      priority: 'Medium',
-      assignee: 'Caffeinated Owl',
+      reward: 999,
+      target: '1 Dragon',
+      rank: 'S',
+      hunter: 'Donkey',
     },
     {
       selected: signal(false),
-      taskId: 103,
-      summary: 'Build a Calendar example',
-      priority: 'Medium',
-      assignee: 'Copybara',
+      reward: 150,
+      target: '2 Trolls',
+      rank: 'B',
+      hunter: 'Meme Spammer',
     },
     {
       selected: signal(false),
-      taskId: 104,
-      summary: 'Build a Data Table example',
-      priority: 'Low',
-      assignee: 'Rubber Duck',
+      reward: 500,
+      target: '1 Demon',
+      rank: 'A',
+      hunter: 'Dante',
     },
     {
       selected: signal(false),
-      taskId: 105,
-      summary: 'Explore Grid possibilities',
-      priority: 'High',
-      assignee: 'YOU',
+      reward: 10,
+      target: '5 Slimes',
+      rank: 'C',
+      hunter: '[Help Wanted]',
     },
   ]);
 
@@ -84,7 +84,7 @@ export class App {
     task: Task,
     inputEl: HTMLInputElement,
   ): void {
-    this.tempInput = task.assignee;
+    this.tempInput = task.hunter;
     inputEl.focus();
 
     if (!(event instanceof KeyboardEvent)) return;
@@ -107,7 +107,7 @@ export class App {
       return;
     }
     if (event.key === 'Enter') {
-      task.assignee = this.tempInput;
+      task.hunter = this.tempInput;
     }
   }
 
@@ -119,9 +119,9 @@ export class App {
   sortTaskById(): void {
     this.sortAscending = !this.sortAscending;
     if (this.sortAscending) {
-      this.data.update((tasks) => tasks.sort((a, b) => a.taskId - b.taskId));
+      this.data.update((tasks) => tasks.sort((a, b) => a.reward - b.reward));
     } else {
-      this.data.update((tasks) => tasks.sort((a, b) => b.taskId - a.taskId));
+      this.data.update((tasks) => tasks.sort((a, b) => b.reward - a.reward));
     }
   }
 }

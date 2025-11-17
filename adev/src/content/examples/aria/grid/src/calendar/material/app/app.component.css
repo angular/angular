@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
 :host {
   display: flex;
   justify-content: center;
@@ -12,12 +14,25 @@
   padding: 0.5rem;
 }
 
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-end: 0.5rem;
+}
+
+.calendar-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
 button {
   border: unset;
   padding: unset;
   color: unset;
   background: unset;
   outline: none;
+  border-radius: 50%;
 }
 
 button:hover,
@@ -27,7 +42,7 @@ button:focus {
 
 button:focus {
   outline-offset: -1px;
-  outline: 1px solid color-mix(in srgb, var(--hot-pink) 60%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--bright-blue) 60%, transparent);
 }
 
 .visually-hidden {
@@ -39,14 +54,7 @@ button:focus {
   white-space: nowrap;
 }
 
-.calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .month-control {
-  border-radius: 1rem;
   width: 45px;
   height: 45px;
   cursor: pointer;
@@ -64,7 +72,7 @@ button:focus {
 }
 
 [ngGridCell][aria-selected='true'] > button[ngGridCellWidget] {
-  background-color: var(--electric-violet);
+  background-color: var(--indigo-blue);
   color: var(--octonary-contrast);
 }
 
@@ -73,14 +81,11 @@ button:focus {
 }
 
 thead {
-  background-image: var(--pink-to-purple-horizontal-gradient);
-  background-clip: text;
-  color: transparent;
+  color: var(--secondary-contrast);
 }
 
 button[ngGridCellWidget] {
   width: 45px;
   height: 45px;
-  border-radius: 50%;
   cursor: pointer;
 }

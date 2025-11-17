@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
 :host {
   display: flex;
   justify-content: center;
@@ -17,10 +19,10 @@
 
 [ngGridRow] {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
-  border: 1px solid var(--senary-contrast);
-  border-radius: 0.25rem;
-  padding: 0.5rem 0.75rem;
+  border: 1px dotted var(--senary-contrast);
+  padding: 0 0.25rem 0 0.75rem;
 }
 
 [ngGridRow]:focus-within,
@@ -44,9 +46,10 @@ button[ngGridCellWidget] {
   padding: unset;
   color: unset;
   background: unset;
-  font-size: 1.25rem;
-  width: 1.25rem;
-  height: 1.25rem;
+  font-size: 1.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0.25rem;
   border-radius: 50%;
   cursor: pointer;
 }
