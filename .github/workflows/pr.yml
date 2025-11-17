@@ -52,11 +52,6 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/setup@c855fffb4b01bc06e743eb3bdfd54c866af09ad8
       - name: Setup Bazel RBE
         uses: angular/dev-infra/github-actions/bazel/configure-remote@c855fffb4b01bc06e743eb3bdfd54c866af09ad8
-      - name: Cache downloaded Cypress binary
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: '~/.cache/Cypress'
-          key: cypress-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install node modules
         run: pnpm install --frozen-lockfile
       - name: Run unit tests
@@ -139,11 +134,6 @@ jobs:
         uses: angular/dev-infra/github-actions/bazel/configure-remote@c855fffb4b01bc06e743eb3bdfd54c866af09ad8
       - name: Install node modules
         run: pnpm install --frozen-lockfile
-      - name: Cache downloaded vscode binary
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: '~/.cache/vscode-test'
-          key: vscode-cache-${{ runner.os }}-${{ hashFiles('vscode-ng-language-service/integration/e2e/index.ts') }} # The version is specified in this file.
       - name: Run tests
         run: pnpm bazel test //vscode-ng-language-service/...
 
