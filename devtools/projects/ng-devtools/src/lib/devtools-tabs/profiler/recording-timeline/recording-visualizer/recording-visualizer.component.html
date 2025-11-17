@@ -24,7 +24,7 @@
         <p class="total-time">
           Total time spent: <span>{{ entry.value | number }} ms</span>
         </p>
-        @if (entry.value > 0) {
+        @if (selectedDirectives().length) {
           <ng-execution-details [data]="selectedDirectives()" />
         }
         @if (parentHierarchy().length > 0) {
