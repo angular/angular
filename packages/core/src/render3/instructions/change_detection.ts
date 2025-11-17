@@ -426,11 +426,9 @@ function detectChangesInComponent(
   profiler(ProfilerEvent.ComponentStart);
 
   const componentView = getComponentLViewByIndex(componentHostIdx, hostLView);
-  try {
-    detectChangesInViewIfAttached(componentView, mode);
-  } finally {
-    profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
-  }
+  detectChangesInViewIfAttached(componentView, mode);
+
+  profiler(ProfilerEvent.ComponentEnd, componentView[CONTEXT] as any as {});
 }
 
 /**
@@ -553,11 +551,8 @@ function processHostBindingOpCodes(tView: TView, lView: LView): void {
         setBindingRootForHostBindings(bindingRootIndx, directiveIdx);
         const context = lView[directiveIdx];
         profiler(ProfilerEvent.HostBindingsUpdateStart, context);
-        try {
-          hostBindingFn(RenderFlags.Update, context);
-        } finally {
-          profiler(ProfilerEvent.HostBindingsUpdateEnd, context);
-        }
+        hostBindingFn(RenderFlags.Update, context);
+        profiler(ProfilerEvent.HostBindingsUpdateEnd, context);
       }
     }
   } finally {
