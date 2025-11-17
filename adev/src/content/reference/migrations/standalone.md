@@ -8,11 +8,9 @@ This schematic helps to transform components, directive and pipes in existing pr
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:standalone
-
-</docs-code>
+```
 
 ## Before updating
 

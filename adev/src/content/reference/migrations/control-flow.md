@@ -6,8 +6,6 @@ This schematic migrates all existing code in your application to use new Control
 
 Run the schematic using the following command:
 
-<docs-code language="shell">
-
+```shell
 ng generate @angular/core:control-flow
-
-</docs-code>
+```
