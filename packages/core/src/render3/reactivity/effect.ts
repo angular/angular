@@ -23,7 +23,6 @@ import {assertNotInReactiveContext} from './asserts';
 import {assertInInjectionContext} from '../../di/contextual';
 import {DestroyRef, NodeInjectorDestroyRef} from '../../linker/destroy_ref';
 import {ViewContext} from '../view_context';
-import {noop} from '../../util/noop';
 import {
   ChangeDetectionScheduler,
   NotificationSource,
@@ -171,7 +170,7 @@ export function effect(
 
   if (destroyRef !== null) {
     // If we need to register for cleanup, do that here.
-    node.onDestroyFn = destroyRef.onDestroy(() => node.destroy());
+    node.onDestroyFns = [destroyRef.onDestroy(() => node.destroy())];
   }
 
   const effectRef = new EffectRefImpl(node);
@@ -194,7 +193,7 @@ export interface EffectNode extends BaseEffectNode, SchedulableEffect {
   injector: Injector;
   notifier: ChangeDetectionScheduler;
 
-  onDestroyFn: () => void;
+  onDestroyFns: (() => void)[] | null;
 }
 
 export interface ViewEffectNode extends EffectNode {
@@ -210,7 +209,7 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'noti
     ...BASE_EFFECT_NODE,
     cleanupFns: undefined,
     zone: null,
-    onDestroyFn: noop,
+    onDestroyFns: null,
     run(this: EffectNode): void {
       if (ngDevMode && isInNotificationPhase()) {
         throw new Error(`Schedulers cannot synchronously execute watches while scheduling.`);
@@ -253,7 +252,13 @@ export const ROOT_EFFECT_NODE: Omit<RootEffectNode, 'fn' | 'scheduler' | 'notifi
     },
     destroy(this: RootEffectNode) {
       consumerDestroy(this);
-      this.onDestroyFn();
+
+      if (this.onDestroyFns !== null) {
+        for (const fn of this.onDestroyFns) {
+          fn();
+        }
+      }
+
       this.cleanup();
       this.scheduler.remove(this);
     },
@@ -269,7 +274,13 @@ export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector' |
     },
     destroy(this: ViewEffectNode): void {
       consumerDestroy(this);
-      this.onDestroyFn();
+
+      if (this.onDestroyFns !== null) {
+        for (const fn of this.onDestroyFns) {
+          fn();
+        }
+      }
+
       this.cleanup();
       this.view[EFFECTS]?.delete(this);
     },

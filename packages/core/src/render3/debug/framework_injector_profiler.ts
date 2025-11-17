@@ -17,6 +17,7 @@ import {TNode} from '../interfaces/node';
 import {LView} from '../interfaces/view';
 import {AfterRenderPhaseEffectNode} from '../reactivity/after_render_effect';
 import {EffectRefImpl} from '../reactivity/effect';
+import {SIGNAL} from '../../../primitives/signals';
 
 import {
   InjectedService,
@@ -134,12 +135,23 @@ function handleEffectCreatedEvent(
   }
 
   const {resolverToEffects} = frameworkDIDebugData;
+  const cleanupContainer = effect instanceof EffectRefImpl ? effect[SIGNAL] : effect.sequence;
+  let trackedEffects = resolverToEffects.get(diResolver);
 
-  if (!resolverToEffects.has(diResolver)) {
-    resolverToEffects.set(diResolver, []);
+  if (!trackedEffects) {
+    trackedEffects = [];
+    resolverToEffects.set(diResolver, trackedEffects);
   }
 
-  resolverToEffects.get(diResolver)!.push(effect);
+  trackedEffects.push(effect);
+  cleanupContainer.onDestroyFns ??= [];
+  cleanupContainer.onDestroyFns.push(() => {
+    const index = trackedEffects!.indexOf(effect);
+
+    if (index > -1) {
+      trackedEffects!.splice(index, 1);
+    }
+  });
 }
 
 /**
