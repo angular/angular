@@ -748,6 +748,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                   contentPath: 'guide/aria/menu',
                 },
                 {
+                  label: 'Menubar',
+                  path: 'guide/aria/menubar',
+                  contentPath: 'guide/aria/menubar',
+                },
+                {
                   label: 'Multiselect',
                   path: 'guide/aria/multiselect',
                   contentPath: 'guide/aria/multiselect',
