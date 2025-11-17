@@ -4,12 +4,12 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Angular components can define custom events by assigning a property to the `output` function:
 
-```ts {highlight:[3]}
+<docs-code language="ts" highlight="3">
 @Component({/*...*/})
 export class ExpandablePanel {
   panelClosed = output<void>();
 }
-```
+</docs-code>
 
 ```angular-html
 <expandable-panel (panelClosed)="savePanelState()" />
