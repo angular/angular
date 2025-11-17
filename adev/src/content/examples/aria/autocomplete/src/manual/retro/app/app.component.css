@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: #fff;
+  --retro-shadow-light: color-mix(in srgb, var(--retro-button-color) 90%, #fff);
+  --retro-shadow-dark: color-mix(in srgb, var(--retro-button-color) 90%, #000);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+.retro-autocomplete {
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.material-symbols-outlined {
+  font-size: 1.25rem;
+  pointer-events: none;
+}
+
+.search-icon {
+  left: 0.75rem;
+  position: absolute;
+  color: #000;
+  z-index: 1;
+}
+
+[ngComboboxInput] {
+  width: 15rem;
+  font-size: 0.6rem;
+  border-radius: 0;
+  font-family: 'Press Start 2P';
+  word-spacing: -5px;
+  padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+  color: #000;
+  border: none;
+  box-shadow: var(--retro-flat-shadow);
+  background-color: var(--retro-button-color);
+}
+
+[ngComboboxInput]::placeholder {
+  color: #000;
+  opacity: 0.7;
+}
+
+[ngComboboxInput]:focus {
+  outline: none;
+  transform: translate(1px, 1px);
+  box-shadow: var(--retro-pressed-shadow);
+}
+
+[ngCombobox]:has([aria-expanded='false']) .popup {
+  display: none;
+}
+
+.popup {
+  width: 100%;
+  margin-top: 20px;
+  padding: 0.5rem;
+  max-height: 11rem;
+  border-radius: 0;
+  background-color: var(--septenary-contrast);
+  box-shadow: var(--retro-flat-shadow);
+}
+
+.no-results {
+  padding: 1rem;
+}
+
+[ngListbox] {
+  gap: 2px;
+  height: 100%;
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+}
+
+[ngOption] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin: 1px;
+  padding: 0 1rem;
+  min-height: 2.25rem;
+  border-radius: 0;
+}
+
+[ngOption]:hover {
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
+[ngOption][data-active='true'] {
+  outline-offset: -2px;
+  outline: 2px dashed var(--hot-pink);
+}
+
+[ngOption][aria-selected='true'] {
+  color: var(--hot-pink);
+  background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
+}
+
+[ngOption]:not([aria-selected='true']) .check-icon {
+  display: none;
+}
+
+.option-label {
+  flex: 1;
+}
+
+.check-icon {
+  font-size: 0.9rem;
+}
