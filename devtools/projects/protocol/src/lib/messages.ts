@@ -330,7 +330,18 @@ export interface Route {
   isActive: boolean;
   isAux: boolean;
   isLazy: boolean;
+  matcher?: string;
+  runGuardsAndResolvers?:
+    | 'pathParamsChange'
+    | 'pathParamsOrQueryParamsChange'
+    | 'paramsChange'
+    | 'paramsOrQueryParamsChange'
+    | 'always'
+    | (string & {});
 }
+
+type OnlyLiterals<T> = T extends string ? (string extends T ? never : T) : never;
+export type RunGuardsAndResolvers = OnlyLiterals<Route['runGuardsAndResolvers']>;
 
 export interface AngularDetection {
   // This is necessary because the runtime

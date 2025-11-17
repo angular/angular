@@ -350,6 +350,65 @@ describe('parseRoutes', () => {
     expect(parsedRoutes.children![0].canDeactivateGuards).toEqual(['CanDeactivateGuard']);
   });
 
+  it('should handle matcher function', () => {
+    function customMatcher() {
+      return null;
+    }
+
+    const nestedRouter = {
+      config: [
+        {
+          matcher: customMatcher,
+          component: {name: 'MatcherComponent'},
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+    expect(parsedRoutes.children![0].matcher).toEqual('customMatcher()');
+    expect(parsedRoutes.children![0].path).toEqual('[Matcher]');
+  });
+
+  it('should handle runGuardsAndResolvers with string values', () => {
+    const nestedRouter = {
+      config: [
+        {
+          path: 'always',
+          component: {name: 'Component'},
+          runGuardsAndResolvers: 'always',
+        },
+        {
+          path: 'params',
+          component: {name: 'Component2'},
+          runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+    expect(parsedRoutes.children![0].runGuardsAndResolvers).toEqual('always');
+    expect(parsedRoutes.children![1].runGuardsAndResolvers).toEqual('paramsOrQueryParamsChange');
+  });
+
+  it('should handle runGuardsAndResolvers with function', () => {
+    function customRerunLogic() {
+      return true;
+    }
+
+    const nestedRouter = {
+      config: [
+        {
+          path: 'custom',
+          component: {name: 'Component'},
+          runGuardsAndResolvers: customRerunLogic,
+        },
+      ],
+    };
+
+    const parsedRoutes = parseRoutes(nestedRouter as any);
+    expect(parsedRoutes.children![0].runGuardsAndResolvers).toEqual('customRerunLogic()');
+  });
+
   it('should handle resolvers with named functions', () => {
     function userResolver() {
       return {id: 1, name: 'User'};

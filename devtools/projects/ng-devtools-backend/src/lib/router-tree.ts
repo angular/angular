@@ -15,7 +15,9 @@ export type RoutePropertyType =
   | 'component'
   | 'redirectTo'
   | 'title'
-  | 'resolvers';
+  | 'resolvers'
+  | 'matcher'
+  | 'runGuardsAndResolvers';
 
 export type RouteGuard = 'canActivate' | 'canActivateChild' | 'canDeactivate' | 'canMatch';
 
@@ -149,6 +151,17 @@ function assignChildrenToParent(
       routeConfig.redirectTo = getPropertyName(child, 'redirectTo');
     }
 
+    if (child.matcher) {
+      routeConfig.matcher = getPropertyName(child, 'matcher');
+      // For custom matchers, override the path to indicate it's a matcher
+      // Since the path be undefined when using a matcher, because the matcher defines the path matching
+      routeConfig.path = '[Matcher]';
+    }
+
+    if (child.runGuardsAndResolvers) {
+      routeConfig.runGuardsAndResolvers = getPropertyName(child, 'runGuardsAndResolvers');
+    }
+
     if (childDescendents) {
       routeConfig.children = assignChildrenToParent(
         routeConfig.path,
@@ -211,7 +224,10 @@ function getClassOrFunctionName(fn: Function, defaultName?: string) {
   return isClass ? fn.name : `${fn.name}()`;
 }
 
-function getPropertyName(child: AngularRoute, property: 'title' | 'redirectTo') {
+function getPropertyName(
+  child: AngularRoute,
+  property: 'title' | 'redirectTo' | 'matcher' | 'runGuardsAndResolvers',
+) {
   if (child[property] instanceof Function) {
     return getClassOrFunctionName(child[property], property);
   }
@@ -242,14 +258,6 @@ export function getElementRefByName(
   name: string,
 ): any | null {
   for (const element of routes) {
-    if (type === 'title' && element.title instanceof Function) {
-      const functionName = getClassOrFunctionName(element.title);
-      //TODO: improve this, not every titleFn has a name property
-      if (functionName === name) {
-        return element.title;
-      }
-    }
-
     if (type === 'resolvers' && element.resolve) {
       for (const key in element.resolve) {
         if (element.resolve.hasOwnProperty(key)) {
@@ -262,11 +270,20 @@ export function getElementRefByName(
       }
     }
 
-    if (type === 'redirectTo' && element.redirectTo instanceof Function) {
-      const functionName = getClassOrFunctionName(element.redirectTo);
-      //TODO: improve this, not every redirectToFn has a name property
-      if (functionName === name) {
-        return element.redirectTo;
+    const functionProperties: Exclude<RoutePropertyType, 'resolvers'>[] = [
+      'title',
+      'redirectTo',
+      'matcher',
+      'runGuardsAndResolvers',
+    ];
+
+    for (const property of functionProperties) {
+      if (type === property && element[property] instanceof Function) {
+        const functionName = getClassOrFunctionName(element[property]);
+        // TODO: improve this, not every function has a name property
+        if (functionName === name) {
+          return element[property];
+        }
       }
     }
 

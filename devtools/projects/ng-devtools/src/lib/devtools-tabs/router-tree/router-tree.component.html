@@ -49,15 +49,27 @@
           <!-- TODO: Convert to a description list (<dl>) -->
           <div class="scrollable-wrapper">
             <table class="ng-table">
-              <tr
-                ng-route-details-row
-                label="Path"
-                dataKey="path"
-                [data]="data"
-                actionBtnType="navigate"
-                [actionBtnTooltip]="'Navigate to ' + data.path"
-                (actionBtnClick)="navigateRoute(route)"
-              ></tr>
+              @if (!data.matcher) {
+                <tr
+                  ng-route-details-row
+                  label="Path"
+                  dataKey="path"
+                  [data]="data"
+                  actionBtnType="navigate"
+                  [actionBtnTooltip]="'Navigate to ' + data.path"
+                  (actionBtnClick)="navigateRoute(route)"
+                ></tr>
+              } @else {
+                <tr
+                  ng-route-details-row
+                  label="Matcher"
+                  dataKey="matcher"
+                  [data]="data"
+                  actionBtnType="view-source"
+                  actionBtnTooltip="View source"
+                  (actionBtnClick)="viewFunctionSource(data.matcher, 'matcher')"
+                ></tr>
+              }
 
               @if (!data.redirectTo) {
                 <tr
@@ -176,6 +188,19 @@
                   (actionBtnClick)="viewFunctionSource(data.title, 'title')"
                 ></tr>
               }
+
+              @if (data.runGuardsAndResolvers) {
+                <tr
+                  ng-route-details-row
+                  label="RunGuardsAndResolvers"
+                  dataKey="runGuardsAndResolvers"
+                  [data]="data"
+                  actionBtnTooltip="View source"
+                  [actionBtnType]="hasStaticOptionRunGuardsAndResolvers() ? 'none' : 'view-source'"
+                  (actionBtnClick)="viewFunctionSource(data.runGuardsAndResolvers, 'runGuardsAndResolvers')"
+                ></tr>
+              }
+
               <tr
                 ng-route-details-row
                 label="Active"
