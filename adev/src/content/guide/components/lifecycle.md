@@ -108,6 +108,8 @@ mapping each component input name to a `SimpleChange` object. Each `SimpleChange
 input's previous value, its current value, and a flag for whether this is the first time the input
 has changed.
 
+You can optionally pass the current class or this as the first generic argument for stronger type checking.
+
 ```ts
 @Component({
   /* ... */
@@ -115,12 +117,11 @@ has changed.
 export class UserProfile {
   name = input('');
 
-  ngOnChanges(changes: SimpleChanges) {
-    for (const inputName in changes) {
-      const inputValues = changes[inputName];
-      console.log(`Previous ${inputName} == ${inputValues.previousValue}`);
-      console.log(`Current ${inputName} == ${inputValues.currentValue}`);
-      console.log(`Is first ${inputName} change == ${inputValues.firstChange}`);
+  ngOnChanges(changes: SimpleChanges<UserProfile>) {
+    if (changes.name) {
+      console.log(`Previous: ${changes.name.previousValue}`);
+      console.log(`Current: ${changes.name.currentValue}`);
+      console.log(`Is first ${changes.name.firstChange}`);
     }
   }
 }

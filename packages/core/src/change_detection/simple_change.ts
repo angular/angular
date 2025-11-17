@@ -39,6 +39,8 @@ export class SimpleChange<T = any> {
  *
  * @see {@link OnChanges}
  *
+ * @see [Inspecting changes](guide/components/lifecycle#inspecting-changes)
+ *
  * @publicApi
  */
 export type SimpleChanges<T = unknown> = T extends object
