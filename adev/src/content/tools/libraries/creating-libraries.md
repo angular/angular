@@ -213,8 +213,6 @@ The Angular CLI uses the `tsconfig` paths to tell the build system where to find
 
 For more information, see [Path mapping overview](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping).
 
-If you find that changes to your library are not reflected in your application, your application is probably using an old build of the library.
-
 You can rebuild your library whenever you make changes to it, but this extra step takes time.
 _Incremental builds_ functionality improves the library-development experience.
 Every time a file is changed a partial build is performed that emits the amended files.
@@ -240,17 +238,18 @@ This means that the TypeScript source can result in different JavaScript code in
 For this reason, an application that depends on a library should only use TypeScript path mappings that point to the _built library_.
 TypeScript path mappings should _not_ point to the library source `.ts` files.
 
-## Linking libraries for local development
+### Linking libraries for local development
 
 This section explains how to use your package manager's local linking feature
-(such as [`npm link`](https://pnpm.io/cli/link) or [`pnpm link`](https://pnpm.io/cli/link) to test a standalone Angular library with an external application during
+(such as [`npm link`](https://pnpm.io/cli/link) or [`pnpm link`](https://pnpm.io/cli/link)) to test a standalone Angular library with an external application during
 local development, without relying on the monorepo workspace structure or publishing to the NPM registry.
 
 NOTE: If your library and application are in the same Angular workspace (a monorepo setup), the standard monorepo workflow automatically handles the linking and is generally more efficient. This local linking approach is best when:
+
 - You are developing a standalone library and need to test changes with an external, consuming application.
 - You are testing library changes in a consuming application outside the monorepo workspace.
 
-### Configuring the consuming application
+#### Configuring the consuming application
 
 To use linked libraries, you need to configure your application's `angular.json` file with the following settings:
 
