@@ -150,7 +150,7 @@ Join the conversation and help the community.
 [node.js]: https://nodejs.org/
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
-[X (formerly Twitter)]: https://www.twitter.com/angular
+[X (formerly Twitter)]: https://www.x.com/angular
 [bluesky]: https://bsky.app/profile/angular.dev
 [discord]: https://discord.gg/angular
 [stackoverflow]: https://stackoverflow.com/questions/tagged/angular
