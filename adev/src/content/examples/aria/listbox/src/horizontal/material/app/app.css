@@ -10,9 +10,11 @@
 }
 
 [ngOption] {
+  display: flex;
   cursor: pointer;
-  border-radius: 1rem;
-  padding: 0.3rem 1rem;
+  align-items: center;
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.5rem;
   color: var(--hot-pink);
   border: 1px solid var(--hot-pink);
   background-color: color-mix(in srgb, var(--hot-pink) 5%, transparent);
@@ -30,4 +32,18 @@
 [ngOption][aria-selected='true'] {
   color: var(--page-background);
   background-color: var(--hot-pink);
+}
+
+.check-icon {
+  width: 0;
+  font-size: 1.25rem;
+  overflow: hidden;
+  transition:
+    width 0.2s ease-in-out,
+    padding-right 0.2s ease-in-out;
+}
+
+[ngOption][aria-selected='true'] .check-icon {
+  width: 1.5rem;
+  padding-right: 0.2rem;
 }

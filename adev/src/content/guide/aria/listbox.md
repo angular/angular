@@ -5,11 +5,31 @@
 
 A directive that displays a list of options for users to select from, supporting keyboard navigation, single or multiple selection, and screen reader support.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html"/>
-  <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/basic/app/app.css"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/basic/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/basic/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 ## Usage
 
@@ -53,10 +73,31 @@ The `values` model signal provides two-way binding to the selected items. With `
 
 Lists sometimes work better horizontally, such as toolbar-like interfaces or tab-style selections. The `orientation` attribute changes both the layout and keyboard navigation direction.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts" />
-  <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.html" />
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/horizontal/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/horizontal/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/listbox/src/horizontal/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 With `orientation="horizontal"`, left and right arrow keys navigate between options instead of up and down. The listbox automatically handles right-to-left (RTL) languages by reversing navigation direction.
 
