@@ -27,6 +27,7 @@ export class App {
         {name: 'styles.css', value: 'public/styles.css'},
       ],
       expanded: true,
+      disabled: true,
     },
     {
       name: 'src',
@@ -67,6 +68,7 @@ export class App {
         {name: 'test.ts', value: 'src/test.ts'},
       ],
       expanded: false,
+      disabled: true,
     },
     {name: 'angular.json', value: 'angular.json'},
     {name: 'package.json', value: 'package.json'},

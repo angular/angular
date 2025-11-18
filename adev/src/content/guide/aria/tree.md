@@ -115,10 +115,22 @@ Set `[multi]="true"` on the tree. Users select items individually with Space or 
 
 When selection follows focus, the focused item is automatically selected. This simplifies interaction for navigation scenarios.
 
-<!-- <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-single-select-follow-focus/app/app.html"/>
-</docs-code-multifile> -->
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 Set `[selectionMode]="'follow'"` on the tree. Selection automatically updates as users navigate with arrow keys.
 
@@ -126,10 +138,22 @@ Set `[selectionMode]="'follow'"` on the tree. Selection automatically updates as
 
 Disable specific tree nodes to prevent interaction. Control whether disabled items can receive focus.
 
-<!-- <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/tree/src/tree-disabled-focusable/app/app.html"/>
-</docs-code-multifile> -->
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 When `[softDisabled]="true"` on the tree, disabled items can receive focus but cannot be activated or selected. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
 

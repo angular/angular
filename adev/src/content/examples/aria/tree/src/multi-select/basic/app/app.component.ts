@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {Tree, TreeItem, TreeItemGroup} from '@angular/aria/tree';
 
@@ -26,7 +26,7 @@ export class App {
         {name: 'favicon.ico', value: 'public/favicon.ico'},
         {name: 'styles.css', value: 'public/styles.css'},
       ],
-      expanded: false,
+      expanded: true,
     },
     {
       name: 'src',
@@ -72,4 +72,6 @@ export class App {
     {name: 'package.json', value: 'package.json'},
     {name: 'README.md', value: 'README.md'},
   ];
+
+  readonly selected = signal(['angular.json', 'public/styles.css']);
 }
