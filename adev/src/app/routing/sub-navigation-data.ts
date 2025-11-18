@@ -683,8 +683,13 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         status: 'updated',
         children: [
           {
-            label: 'Enter and Leave animations',
+            label: 'Overview',
             path: 'guide/animations',
+            contentPath: 'guide/animations/overview',
+          },
+          {
+            label: 'Enter and Leave animations',
+            path: 'guide/animations/enter-and-leave',
             contentPath: 'guide/animations/enter-and-leave',
             status: 'new',
           },
