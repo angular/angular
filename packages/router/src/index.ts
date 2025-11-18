@@ -96,10 +96,13 @@ export {
   withNavigationErrorHandler,
   withPreloading,
   withRouterConfig,
+  withExperimentalAutoCleanupInjectors,
 } from './provide_router';
+
 export {
   BaseRouteReuseStrategy,
   DetachedRouteHandle,
+  destroyDetachedRouteHandle,
   RouteReuseStrategy,
 } from './route_reuse_strategy';
 export {Router} from './router';

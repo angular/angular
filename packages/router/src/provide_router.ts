@@ -43,7 +43,10 @@ import {Router} from './router';
 import {InMemoryScrollingOptions, ROUTER_CONFIGURATION, RouterConfigOptions} from './router_config';
 import {ROUTES} from './router_config_loader';
 import {PreloadingStrategy, RouterPreloader} from './router_preloader';
+import {routeInjectorCleanup, ROUTE_INJECTOR_CLEANUP} from './route_injector_cleanup';
+
 import {ROUTER_SCROLLER, RouterScroller} from './router_scroller';
+
 import {ActivatedRoute} from './router_state';
 import {afterNextNavigation} from './utils/navigations';
 import {
@@ -747,6 +750,38 @@ export function withNavigationErrorHandler(
 }
 
 /**
+ * A type alias for providers returned by `withExperimentalAutoCleanupInjectors` for use with `provideRouter`.
+ *
+ * @see {@link withExperimentalAutoCleanupInjectors}
+ * @see {@link provideRouter}
+ *
+ * @publicApi
+ */
+export type ExperimentalAutoCleanupInjectorsFeature =
+  RouterFeature<RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature>;
+
+/**
+ * Enables automatic destruction of unused route injectors.
+ *
+ * @description
+ *
+ * When enabled, the router will automatically destroy `EnvironmentInjector`s associated with `Route`s
+ * that are no longer active or stored by the `RouteReuseStrategy`.
+ *
+ * This feature is opt-in and requires `RouteReuseStrategy.shouldDestroyInjector` to return `true`
+ * for the routes that should be destroyed. If the `RouteReuseStrategy` uses stored handles, it
+ * should also implement `retrieveStoredHandle` to ensure we don't destroy injectors for handles that will be reattached.
+ *
+ * @publicApi
+ * @experimental 21.1
+ */
+export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature {
+  return routerFeature(RouterFeatureKind.ExperimentalAutoCleanupInjectorsFeature, [
+    {provide: ROUTE_INJECTOR_CLEANUP, useValue: routeInjectorCleanup},
+  ]);
+}
+
+/**
  * A type alias for providers returned by `withComponentInputBinding` for use with `provideRouter`.
  *
  * @see {@link withComponentInputBinding}
@@ -875,6 +910,7 @@ export type RouterFeatures =
   | NavigationErrorHandlerFeature
   | ComponentInputBindingFeature
   | ViewTransitionsFeature
+  | ExperimentalAutoCleanupInjectorsFeature
   | RouterHashLocationFeature;
 
 /**
@@ -891,4 +927,5 @@ export const enum RouterFeatureKind {
   NavigationErrorHandlerFeature,
   ComponentInputBindingFeature,
   ViewTransitionsFeature,
+  ExperimentalAutoCleanupInjectorsFeature,
 }

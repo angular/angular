@@ -106,6 +106,7 @@ export class ActivationStart {
 export abstract class BaseRouteReuseStrategy implements RouteReuseStrategy {
     retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null;
     shouldAttach(route: ActivatedRouteSnapshot): boolean;
+    shouldDestroyInjector(route: Route): boolean;
     shouldDetach(route: ActivatedRouteSnapshot): boolean;
     shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean;
     store(route: ActivatedRouteSnapshot, detachedTree: DetachedRouteHandle): void;
@@ -246,6 +247,9 @@ export type DeprecatedGuard = ProviderToken<any> | string;
 
 // @public @deprecated
 export type DeprecatedResolve = DeprecatedGuard | any;
+
+// @public
+export function destroyDetachedRouteHandle(handle: DetachedRouteHandle): void;
 
 // @public
 export type DetachedRouteHandle = {};
@@ -793,7 +797,7 @@ export interface RouterFeature<FeatureKind extends RouterFeatureKind> {
 }
 
 // @public
-export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | RouterHashLocationFeature;
+export type RouterFeatures = PreloadingFeature | DebugTracingFeature | InitialNavigationFeature | InMemoryScrollingFeature | RouterConfigurationFeature | NavigationErrorHandlerFeature | ComponentInputBindingFeature | ViewTransitionsFeature | ExperimentalAutoCleanupInjectorsFeature | RouterHashLocationFeature;
 
 // @public
 export type RouterHashLocationFeature = RouterFeature<RouterFeatureKind.RouterHashLocationFeature>;
@@ -1132,6 +1136,9 @@ export function withDisabledInitialNavigation(): DisabledInitialNavigationFeatur
 
 // @public
 export function withEnabledBlockingInitialNavigation(): EnabledBlockingInitialNavigationFeature;
+
+// @public
+export function withExperimentalAutoCleanupInjectors(): ExperimentalAutoCleanupInjectorsFeature;
 
 // @public
 export function withHashLocation(): RouterHashLocationFeature;
