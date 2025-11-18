@@ -1,6 +1,11 @@
 <docs-decorative-header title="Menu">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="Menu ARIA pattern"/>
+  <docs-pill href="api/aria/menu" title="Menu API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A menu offers a list of actions or options to users, typically appearing in response to a button click or right-click. Menus support keyboard navigation with arrow keys, submenus, checkboxes, radio buttons, and disabled items.
@@ -10,11 +15,6 @@ A menu offers a list of actions or options to users, typically appearing in resp
   <docs-code header="app.html" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.html"/>
   <docs-code header="app.css" path="adev/src/content/examples/aria/menu/src/menu-trigger/app/app.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/menu" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -102,10 +102,6 @@ Disable specific menu items using the `disabled` input. Control focus behavior w
 
 When `[softDisabled]="true"`, disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Menu
@@ -188,62 +184,3 @@ A button or element that opens a menu.
 | `open`   | none       | Opens the menu               |
 | `close`  | none       | Closes the menu              |
 | `toggle` | none       | Toggles the menu open/closed |
-
-## Styling
-
-Angular automatically applies attributes to menu elements that you can use in your CSS selectors.
-
-The menu container receives the `ng-menu` attribute:
-
-```css
-[ng-menu] {
-  background: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  padding: 0.5rem 0;
-  min-width: 200px;
-}
-```
-
-Menu items receive the `ng-menu-item` attribute and a `data-active` attribute when focused:
-
-```css
-[ng-menu-item] {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-[ng-menu-item][data-active] {
-  background: var(--hover-background);
-}
-
-[ng-menu-item][aria-disabled="true"] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-```
-
-Style menu items with submenus using the `aria-haspopup` attribute:
-
-```css
-[ng-menu-item][aria-haspopup="menu"]::after {
-  content: '▶';
-  margin-left: auto;
-}
-```
-
-Menubars receive the `ng-menu-bar` attribute:
-
-```css
-[ng-menu-bar] {
-  display: flex;
-  gap: 0.5rem;
-  background: var(--toolbar-background);
-  padding: 0.5rem;
-}
-```
-
-TIP: Use `[data-active]` to style focused menu items and `[aria-expanded="true"]` to style open menu triggers.

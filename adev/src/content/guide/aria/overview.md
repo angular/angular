@@ -10,10 +10,10 @@ Angular Aria is a collection of headless, accessible directives that implement c
 ## Installation
 
 ```shell
-  ng add @angular/aria
+npm install @angular/aria
 ```
 
-## Showcase / Demonstration
+## Showcase
 
 For example, let's take a toolbar menu. While it may appear to be a "simple" row of buttons tied with specific logic, keyboard navigation and screen readers add a lot of unexpected complexity to those unfamiliar with accessibility.
 
