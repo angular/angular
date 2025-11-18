@@ -1,0 +1,42 @@
+<ul ngTree #tree="ngTree" [nav]="true" class="basic-tree">
+  <ng-template
+    [ngTemplateOutlet]="treeNodes"
+    [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"
+  />
+</ul>
+
+<ng-template #treeNodes let-nodes="nodes" let-parent="parent">
+  @for (node of nodes; track node.value) {
+    <a
+      ngTreeItem
+      [parent]="parent"
+      [value]="node.value"
+      [label]="node.name"
+      [disabled]="node.disabled"
+      [selectable]="!node.children"
+      [(expanded)]="node.expanded"
+      #treeItem="ngTreeItem"
+      href="#{{ node.name }}"
+      (click)="$event.preventDefault()"
+    >
+      <span aria-hidden="true" class="material-symbols-outlined">{{node.icon}}</span>
+      {{ node.name }}
+      <span
+        aria-hidden="true"
+        class="material-symbols-outlined expand-icon"
+        >{{node.children ? 'keyboard_arrow_up' : ''}}</span
+      >
+    </a>
+
+    @if (node.children) {
+      <ul role="group">
+        <ng-template ngTreeItemGroup [ownedBy]="treeItem" #group="ngTreeItemGroup">
+          <ng-template
+            [ngTemplateOutlet]="treeNodes"
+            [ngTemplateOutletContext]="{nodes: node.children, parent: group}"
+          />
+        </ng-template>
+      </ul>
+    }
+  }
+</ng-template>
