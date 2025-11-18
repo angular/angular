@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, signal, viewChild} from '@angular/core';
+import {Component, viewChild} from '@angular/core';
 import {MenuBar, Menu, MenuContent, MenuItem} from '@angular/aria/menu';
 import {OverlayModule} from '@angular/cdk/overlay';
 
@@ -9,7 +9,7 @@ import {OverlayModule} from '@angular/cdk/overlay';
   imports: [MenuBar, Menu, MenuContent, MenuItem, OverlayModule],
   standalone: true,
 })
-export class App implements AfterViewInit {
+export class App {
   fileMenu = viewChild<Menu<string>>('fileMenu');
   shareMenu = viewChild<Menu<string>>('shareMenu');
   editMenu = viewChild<Menu<string>>('editMenu');
@@ -22,12 +22,4 @@ export class App implements AfterViewInit {
   sizeMenu = viewChild<Menu<string>>('sizeMenu');
   paragraphMenu = viewChild<Menu<string>>('paragraphMenu');
   alignMenu = viewChild<Menu<string>>('alignMenu');
-
-  rendered = signal(false);
-
-  ngAfterViewInit() {
-    setTimeout(() => {
-      debugger;
-    }, 500);
-  }
 }

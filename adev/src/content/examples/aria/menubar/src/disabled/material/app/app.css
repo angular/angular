@@ -7,29 +7,24 @@
   --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
 }
 
-[ngMenuTrigger] {
+[ngMenuBar] {
   display: flex;
-  cursor: pointer;
-  align-items: center;
-  padding: 0.6rem 2rem;
-  border-radius: 0.5rem;
-  color: var(--primary-contrast);
-  border: 1px solid var(--border-color);
-  background-color: var(--page-background);
-}
-
-[ngMenuTrigger] .icon {
-  font-size: 1.5rem;
-  opacity: 0.875;
-}
-
-[ngMenu] {
-  margin: 0;
-  width: 15rem;
+  gap: 0.25rem;
   padding: 0.25rem;
   border-radius: 0.5rem;
   border: 1px solid var(--border-color);
   background-color: var(--page-background);
+}
+
+[ngMenu] {
+  gap: 3px;
+  width: 15rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem;
+  border-radius: 1rem;
+  background-color: var(--page-background);
+  box-shadow: 0 1px 2px 1px color-mix(in srgb, var(--primary-contrast) 25%, transparent);
 }
 
 [ngMenu][data-visible='false'] {
@@ -42,18 +37,17 @@
   cursor: pointer;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.75rem;
   font-size: 0.875rem;
-  border-radius: 0.25rem;
+  border-radius: 0.75rem;
 }
 
-[ngMenuTrigger]:hover,
 [ngMenuItem][data-active='true'] {
-  background: color-mix(in srgb, var(--border-color) 10%, transparent);
+  color: color-mix(in srgb, var(--vivid-pink) 70%, var(--primary-contrast));
+  background: color-mix(in srgb, var(--vivid-pink) 5%, transparent);
 }
 
-[ngMenuItem]:focus,
-[ngMenuTrigger]:focus {
+[ngMenuItem]:focus {
   outline: 2px solid var(--vivid-pink);
 }
 
@@ -73,7 +67,7 @@
 }
 
 [ngMenu] .separator {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--gray-500);
   margin: 0.25rem 0;
   opacity: 0.25;
 }
