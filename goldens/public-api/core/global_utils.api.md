@@ -4,8 +4,6 @@
 
 ```ts
 
-import { ɵFramework } from '@angular/core';
-
 // @public
 export function applyChanges(component: {}): void;
 
