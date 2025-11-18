@@ -1,58 +1,77 @@
 :host {
   display: flex;
   justify-content: center;
+  font-family: var(--inter-font);
+  --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
 }
 
-[ngToolbar] {
-  gap: 1.5rem;
+[ngMenuTrigger] {
   display: flex;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background-color: var(--septenary-contrast);
-}
-
-.group {
-  gap: 0.5rem;
-  display: flex;
-}
-
-.separator {
-  width: 1px;
-  align-self: center;
-  height: calc(100% - 1rem);
-  background-color: var(--quinary-contrast);
-}
-
-[ngToolbarWidget] {
-  border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-size: 1.25rem;
-  background-color: transparent;
+  align-items: center;
+  padding: 0.6rem 2rem;
+  border-radius: 0.5rem;
   color: var(--primary-contrast);
+  border: 1px solid var(--border-color);
+  background-color: var(--page-background);
 }
 
-[ngToolbarWidget]:hover {
-  background-color: color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+[ngMenuTrigger] .icon {
+  font-size: 1.5rem;
+  opacity: 0.875;
 }
 
-[ngToolbarWidget]:active {
-  background-color: color-mix(in srgb, var(--primary-contrast) 15%, transparent);
+[ngMenu] {
+  margin: 0;
+  width: 15rem;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--page-background);
 }
 
-[ngToolbarWidget]:focus {
-  outline-offset: -1px;
-  outline: 1px solid color-mix(in srgb, var(--hot-pink) 60%, transparent);
+[ngMenu][data-visible='false'] {
+  display: none;
 }
 
-[ngToolbarWidget][aria-pressed="true"],
-[ngToolbarWidget][aria-checked="true"] {
-  color: color-mix(in srgb, var(--hot-pink) 80%, var(--primary-contrast));
-  background-color: color-mix(in srgb, var(--hot-pink) 10%, transparent);
+[ngMenuItem] {
+  outline: none;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
 }
 
-[ngToolbarWidget][aria-disabled="true"] {
-  cursor: default;
-  opacity: 0.45;
+[ngMenuTrigger]:hover,
+[ngMenuItem][data-active='true'] {
+  background: color-mix(in srgb, var(--border-color) 10%, transparent);
+}
+
+[ngMenuItem]:focus,
+[ngMenuTrigger]:focus {
+  outline: 2px solid var(--vivid-pink);
+}
+
+[ngMenuItem] .icon {
+  opacity: 0.875;
+  font-size: 1.25rem;
+}
+
+[ngMenuItem] .label {
+  flex: 1;
+  opacity: 0.875;
+  font-size: 0.875rem;
+}
+
+[ngMenuItem]:not([aria-expanded='true']) .arrow {
+  opacity: 0.5;
+}
+
+[ngMenu] .separator {
+  border-top: 1px solid var(--border-color);
+  margin: 0.25rem 0;
+  opacity: 0.25;
 }
