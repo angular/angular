@@ -4413,16 +4413,16 @@ var require_dist_node8 = __commonJS({
     var import_graphql2 = require_dist_node6();
     var import_auth_token2 = require_dist_node7();
     var VERSION9 = "5.2.2";
-    var noop2 = () => {
+    var noop3 = () => {
     };
     var consoleWarn2 = console.warn.bind(console);
     var consoleError2 = console.error.bind(console);
     function createLogger2(logger = {}) {
       if (typeof logger.debug !== "function") {
-        logger.debug = noop2;
+        logger.debug = noop3;
       }
       if (typeof logger.info !== "function") {
-        logger.info = noop2;
+        logger.info = noop3;
       }
       if (typeof logger.warn !== "function") {
         logger.warn = consoleWarn2;
@@ -10345,8 +10345,8 @@ var require_lockfile = __commonJS({
             let build = (() => {
               var _ref5 = (0, (_asyncToGenerator2 || _load_asyncToGenerator()).default)(function* (data) {
                 const src = data.src, dest = data.dest, type = data.type;
-                const onFresh = data.onFresh || noop2;
-                const onDone = data.onDone || noop2;
+                const onFresh = data.onFresh || noop3;
+                const onDone = data.onDone || noop3;
                 if (files.has(dest.toLowerCase())) {
                   reporter.verbose(`The case-insensitive file ${dest} shouldn't be copied twice in one bulk copy`);
                 } else {
@@ -10596,8 +10596,8 @@ var require_lockfile = __commonJS({
             let build = (() => {
               var _ref13 = (0, (_asyncToGenerator2 || _load_asyncToGenerator()).default)(function* (data) {
                 const src = data.src, dest = data.dest;
-                const onFresh = data.onFresh || noop2;
-                const onDone = data.onDone || noop2;
+                const onFresh = data.onFresh || noop3;
+                const onDone = data.onDone || noop3;
                 if (files.has(dest.toLowerCase())) {
                   onDone();
                   return;
@@ -10766,7 +10766,7 @@ var require_lockfile = __commonJS({
                 _ref10 = _i7.value;
               }
               const item = _ref10;
-              const onDone = item.onDone || noop2;
+              const onDone = item.onDone || noop3;
               item.onDone = function() {
                 events.onProgress(item.dest);
                 onDone();
@@ -10826,8 +10826,8 @@ var require_lockfile = __commonJS({
         let copyBulk = exports2.copyBulk = (() => {
           var _ref17 = (0, (_asyncToGenerator2 || _load_asyncToGenerator()).default)(function* (queue, reporter, _events) {
             const events = {
-              onStart: _events && _events.onStart || noop2,
-              onProgress: _events && _events.onProgress || noop2,
+              onStart: _events && _events.onStart || noop3,
+              onProgress: _events && _events.onProgress || noop3,
               possibleExtraneous: _events ? _events.possibleExtraneous : /* @__PURE__ */ new Set(),
               ignoreBasenames: _events && _events.ignoreBasenames || [],
               artifactFiles: _events && _events.artifactFiles || []
@@ -10868,8 +10868,8 @@ var require_lockfile = __commonJS({
         let hardlinkBulk = exports2.hardlinkBulk = (() => {
           var _ref19 = (0, (_asyncToGenerator2 || _load_asyncToGenerator()).default)(function* (queue, reporter, _events) {
             const events = {
-              onStart: _events && _events.onStart || noop2,
-              onProgress: _events && _events.onProgress || noop2,
+              onStart: _events && _events.onStart || noop3,
+              onProgress: _events && _events.onProgress || noop3,
               possibleExtraneous: _events ? _events.possibleExtraneous : /* @__PURE__ */ new Set(),
               artifactFiles: _events && _events.artifactFiles || [],
               ignoreBasenames: []
@@ -11264,7 +11264,7 @@ var require_lockfile = __commonJS({
         const fsSymlink = (0, (_promise2 || _load_promise2()).promisify)((_fs || _load_fs()).default.symlink);
         const invariant = __webpack_require__(7);
         const stripBOM = __webpack_require__(122);
-        const noop2 = () => {
+        const noop3 = () => {
         };
         function copy(src, dest, reporter) {
           return copyBulk([{ src, dest }], reporter);
@@ -32661,7 +32661,7 @@ var RequestError = class extends Error {
    */
   response;
   constructor(message, statusCode, options) {
-    super(message);
+    super(message, { cause: options.cause });
     this.name = "HttpError";
     this.status = Number.parseInt(statusCode);
     if (Number.isNaN(this.status)) {
@@ -32685,7 +32685,7 @@ var RequestError = class extends Error {
 };
 
 // 
-var VERSION2 = "10.0.6";
+var VERSION2 = "10.0.7";
 var defaults_default = {
   headers: {
     "user-agent": `octokit-request.js/${VERSION2} ${getUserAgent()}`
@@ -32702,6 +32702,7 @@ function isPlainObject2(value) {
   const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
+var noop = () => "";
 async function fetchWrapper(requestOptions) {
   const fetch2 = requestOptions.request?.fetch || globalThis.fetch;
   if (!fetch2) {
@@ -32803,7 +32804,7 @@ async function fetchWrapper(requestOptions) {
 async function getResponseData(response) {
   const contentType = response.headers.get("content-type");
   if (!contentType) {
-    return response.text().catch(() => "");
+    return response.text().catch(noop);
   }
   const mimetype = (0, import_fast_content_type_parse.safeParse)(contentType);
   if (isJSONResponse(mimetype)) {
@@ -32815,9 +32816,12 @@ async function getResponseData(response) {
       return text;
     }
   } else if (mimetype.type.startsWith("text/") || mimetype.parameters.charset?.toLowerCase() === "utf-8") {
-    return response.text().catch(() => "");
+    return response.text().catch(noop);
   } else {
-    return response.arrayBuffer().catch(() => new ArrayBuffer(0));
+    return response.arrayBuffer().catch(
+      /* v8 ignore next -- @preserve */
+      () => new ArrayBuffer(0)
+    );
   }
 }
 function isJSONResponse(mimetype) {
@@ -33018,16 +33022,16 @@ var createTokenAuth = function createTokenAuth2(token) {
 var VERSION4 = "7.0.6";
 
 // 
-var noop = () => {
+var noop2 = () => {
 };
 var consoleWarn = console.warn.bind(console);
 var consoleError = console.error.bind(console);
 function createLogger(logger = {}) {
   if (typeof logger.debug !== "function") {
-    logger.debug = noop;
+    logger.debug = noop2;
   }
   if (typeof logger.info !== "function") {
-    logger.info = noop;
+    logger.info = noop2;
   }
   if (typeof logger.warn !== "function") {
     logger.warn = consoleWarn;
@@ -36186,4 +36190,11 @@ yargs-parser/build/lib/index.js:
    * Copyright (c) 2016, Contributors
    * SPDX-License-Identifier: ISC
    *)
+
+@octokit/request-error/dist-src/index.js:
+  (* v8 ignore else -- @preserve -- Bug with vitest coverage where it sees an else branch that doesn't exist *)
+
+@octokit/request/dist-bundle/index.js:
+  (* v8 ignore next -- @preserve *)
+  (* v8 ignore else -- @preserve *)
 */
