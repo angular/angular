@@ -127,17 +127,6 @@ Options often need visual indicators like icons or badges to help users identify
 
 Each option displays an icon alongside the label. The selected value updates to show the chosen option's icon and text, providing clear visual feedback.
 
-### Select with object values
-
-Forms often work with complex data structures where the displayed label differs from the stored value. Separating the option's value from its display label accommodates this pattern.
-
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/select/src/objects/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/select/src/objects/app/app.ts" />
-  <docs-code header="app.html" path="adev/src/content/examples/aria/select/src/objects/app/app.html" />
-</docs-code-multifile>
-
-The `value` property on each option holds the object or identifier, while the `label` property provides the display text. This separation keeps form data clean while showing user-friendly text.
-
 ### Disabled select
 
 Selects can be disabled to prevent user interaction when certain form conditions aren't met. The disabled state provides visual feedback and prevents keyboard interaction.
@@ -169,10 +158,6 @@ Selects can be disabled to prevent user interaction when certain form conditions
 </docs-tab-group>
 
 When disabled, the select shows a disabled visual state and blocks all user interaction. Screen readers announce the disabled state to assistive technology users.
-
-## Showcase
-
-TBD
 
 ## APIs
 
@@ -206,49 +191,3 @@ See the [Listbox API documentation](guide/aria/listbox#apis) for complete detail
 ### Positioning
 
 The select pattern integrates with [CDK Overlay](api/cdk/overlay/CdkConnectedOverlay) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
-
-## Styling
-
-The directives used in the select pattern don't include default styles. This allows full customization to match your design system. Apply styles through standard CSS classes or style bindings.
-
-### Styling the select trigger
-
-```css
-.select-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  background: white;
-}
-
-.select-trigger:focus-within {
-  outline: 2px solid blue;
-  border-color: blue;
-}
-
-.select-arrow {
-  color: #666;
-  transition: transform 0.2s;
-}
-```
-
-### Styling the dropdown
-
-```css
-.select-popup {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background: white;
-  max-height: 300px;
-  overflow-y: auto;
-}
-```
-
-### Styling options
-
-Options use the listbox styling. See the [Listbox styling guide](guide/aria/listbox#styling) for detailed customization patterns including hover states, selection indicators, and disabled styles.

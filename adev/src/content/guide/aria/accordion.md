@@ -1,6 +1,11 @@
 <docs-decorative-header title="Accordion">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/" title="Accordion ARIA pattern"/>
+  <docs-pill href="api/aria/accordion" title="Accordion API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 An accordion organizes related content into expandable and collapsible sections, reducing page scrolling and helping users focus on relevant information. Each section has a trigger button and a content panel. Clicking a trigger toggles the visibility of its associated panel.
@@ -10,11 +15,6 @@ An accordion organizes related content into expandable and collapsible sections,
   <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.html"/>
   <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/accordion/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/accordion" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -161,10 +161,6 @@ Use the `ngAccordionContent` directive on an `ng-template` to defer rendering co
 
 By default, content remains in the DOM after the panel collapses. Set `[preserveContent]="false"` to remove the content from the DOM when the panel closes.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### AccordionGroup
@@ -253,51 +249,3 @@ This directive has no inputs, outputs, or methods. Apply it to an `ng-template` 
   </ng-template>
 </div>
 ```
-
-## Styling
-
-Angular automatically applies attributes to accordion elements that you can use in your CSS selectors.
-
-The accordion group receives the `ng-accordion-group` attribute:
-
-```css
-[ng-accordion-group] {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-```
-
-Triggers receive the `ng-accordion-trigger` attribute and a `data-active` attribute when focused:
-
-```css
-[ng-accordion-trigger] {
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  padding: 1rem;
-  width: 100%;
-  text-align: left;
-  font-weight: 500;
-}
-
-[ng-accordion-trigger][data-active] {
-  background: var(--focus-background);
-  outline: 2px solid var(--focus-color);
-}
-
-[ng-accordion-trigger][aria-expanded="true"] {
-  font-weight: 600;
-}
-```
-
-Panels receive the `ng-accordion-panel` attribute and an `inert` attribute when collapsed:
-
-```css
-[ng-accordion-panel]:not([inert]) {
-  padding: 1rem;
-  border-top: 1px solid var(--border-color);
-}
-```
-
-TIP: Use the `:not([inert])` selector to style expanded panels, as Angular automatically adds the `inert` attribute to collapsed panels to hide them from assistive technologies.

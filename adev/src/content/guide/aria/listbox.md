@@ -112,10 +112,6 @@ Listbox supports two selection modes that control when items become selected. Ch
 
 The `'follow'` mode automatically selects the focused item, providing faster interaction when selection changes frequently. The `'explicit'` mode requires Space or Enter to confirm selection, preventing accidental changes while navigating. Dropdown patterns typically use `'follow'` mode for single selection.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Listbox Directive
@@ -186,65 +182,7 @@ Listbox is used by these documented dropdown patterns:
 
 For complete dropdown patterns with trigger, popup, and overlay positioning, see those pattern guides instead of using listbox alone.
 
-## Styling
-
-The listbox directives don't include default styles. This allows full customization to match your design system. Apply styles through standard CSS classes or style bindings.
-
-### Styling the listbox
-
-The `ngListbox` directive automatically adds the `ngListbox` attribute to its host element, allowing you to target it with attribute selectors. The `ngOption` directive similarly adds the `ngOption` attribute to each option element.
-
-```css
-[ngListbox] {
-  display: block;
-  padding: 4px 0;
-  margin: 0;
-  list-style: none;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-[ngListbox][orientation="horizontal"] {
-  display: flex;
-  max-height: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-}
-```
-
-### Styling options
-
-```css
-[ngOption] {
-  padding: 8px 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-[ngOption]:hover {
-  background: #f5f5f5;
-}
-
-[ngOption][aria-selected="true"] {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-[ngOption][aria-disabled="true"] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-```
-
-### Styling focus
-
-```css
-[ngOption][data-active="true"] {
-  outline: 2px solid blue;
-  outline-offset: -2px;
-}
-```
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Listbox ARIA pattern"/>
+  <docs-pill href="api/aria/listbox" title="Listbox API Reference"/>
+</docs-pill-row>

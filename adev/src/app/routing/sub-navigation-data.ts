@@ -619,6 +619,90 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         ],
       },
       {
+        label: 'Angular Aria',
+        status: 'new',
+        children: [
+          {
+            label: 'Overview',
+            path: 'guide/aria/overview',
+            contentPath: 'guide/aria/overview',
+            status: 'new',
+          },
+          {
+            label: 'Accordion',
+            path: 'guide/aria/accordion',
+            contentPath: 'guide/aria/accordion',
+            status: 'new',
+          },
+          {
+            label: 'Autocomplete',
+            path: 'guide/aria/autocomplete',
+            contentPath: 'guide/aria/autocomplete',
+            status: 'new',
+          },
+          {
+            label: 'Combobox',
+            path: 'guide/aria/combobox',
+            contentPath: 'guide/aria/combobox',
+            status: 'new',
+          },
+          {
+            label: 'Grid',
+            path: 'guide/aria/grid',
+            contentPath: 'guide/aria/grid',
+            status: 'new',
+          },
+          {
+            label: 'Listbox',
+            path: 'guide/aria/listbox',
+            contentPath: 'guide/aria/listbox',
+            status: 'new',
+          },
+          {
+            label: 'Menu',
+            path: 'guide/aria/menu',
+            contentPath: 'guide/aria/menu',
+            status: 'new',
+          },
+          {
+            label: 'Menubar',
+            path: 'guide/aria/menubar',
+            contentPath: 'guide/aria/menubar',
+            status: 'new',
+          },
+          {
+            label: 'Multiselect',
+            path: 'guide/aria/multiselect',
+            contentPath: 'guide/aria/multiselect',
+            status: 'new',
+          },
+          {
+            label: 'Select',
+            path: 'guide/aria/select',
+            contentPath: 'guide/aria/select',
+            status: 'new',
+          },
+          {
+            label: 'Tabs',
+            path: 'guide/aria/tabs',
+            contentPath: 'guide/aria/tabs',
+            status: 'new',
+          },
+          {
+            label: 'Toolbar',
+            path: 'guide/aria/toolbar',
+            contentPath: 'guide/aria/toolbar',
+            status: 'new',
+          },
+          {
+            label: 'Tree',
+            path: 'guide/aria/tree',
+            contentPath: 'guide/aria/tree',
+            status: 'new',
+          },
+        ],
+      },
+      {
         label: 'Internationalization',
         children: [
           {
@@ -705,99 +789,6 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
         path: 'guide/drag-drop',
         contentPath: 'guide/drag-drop',
       },
-      // TODO: unwrap to release Angular Aria docs.
-      ...(isDevMode()
-        ? [
-            {
-              label: 'Angular Aria',
-              // TODO: Mark status: 'new' after unwrapped from dev mode
-              children: [
-                {
-                  label: 'Overview',
-                  path: 'guide/aria/overview',
-                  contentPath: 'guide/aria/overview',
-                },
-                {
-                  label: 'Accordion',
-                  path: 'guide/aria/accordion',
-                  contentPath: 'guide/aria/accordion',
-                },
-                {
-                  label: 'Autocomplete',
-                  path: 'guide/aria/autocomplete',
-                  contentPath: 'guide/aria/autocomplete',
-                },
-                {
-                  label: 'Combobox',
-                  path: 'guide/aria/combobox',
-                  contentPath: 'guide/aria/combobox',
-                },
-                {
-                  label: 'Grid',
-                  path: 'guide/aria/grid',
-                  contentPath: 'guide/aria/grid',
-                },
-                {
-                  label: 'Listbox',
-                  path: 'guide/aria/listbox',
-                  contentPath: 'guide/aria/listbox',
-                },
-                {
-                  label: 'Menu',
-                  path: 'guide/aria/menu',
-                  contentPath: 'guide/aria/menu',
-                },
-                {
-                  label: 'Menubar',
-                  path: 'guide/aria/menubar',
-                  contentPath: 'guide/aria/menubar',
-                },
-                {
-                  label: 'Multiselect',
-                  path: 'guide/aria/multiselect',
-                  contentPath: 'guide/aria/multiselect',
-                },
-                {
-                  label: 'Select',
-                  path: 'guide/aria/select',
-                  contentPath: 'guide/aria/select',
-                },
-                {
-                  label: 'Tabs',
-                  path: 'guide/aria/tabs',
-                  contentPath: 'guide/aria/tabs',
-                },
-                {
-                  label: 'Toolbar',
-                  path: 'guide/aria/toolbar',
-                  contentPath: 'guide/aria/toolbar',
-                },
-                {
-                  label: 'Tree',
-                  path: 'guide/aria/tree',
-                  contentPath: 'guide/aria/tree',
-                },
-              ],
-            },
-          ]
-        : [
-            // // TODO: Uncomment & modify for PR Previews
-            // {
-            //   label: 'Angular Aria',
-            //   children: [
-            //     {
-            //       label: 'Autocomplete',
-            //       path: 'guide/aria/autocomplete',
-            //       contentPath: 'guide/aria/autocomplete',
-            //     },
-            //     {
-            //       label: 'Toolbar',
-            //       path: 'guide/aria/toolbar',
-            //       contentPath: 'guide/aria/toolbar',
-            //     },
-            //   ],
-            // },
-          ]),
     ],
   },
   {

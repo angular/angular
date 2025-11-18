@@ -1,6 +1,11 @@
 <docs-decorative-header title="Tree">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="Tree ARIA pattern"/>
+  <docs-pill href="api/aria/tree" title="Tree API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A tree displays hierarchical data where items can expand to reveal children or collapse to hide them. Users navigate with arrow keys, expand and collapse nodes, and optionally select items for navigation or data selection scenarios.
@@ -10,11 +15,6 @@ A tree displays hierarchical data where items can expand to reveal children or c
   <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.html"/>
   <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/tree" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -157,10 +157,6 @@ Disable specific tree nodes to prevent interaction. Control whether disabled ite
 
 When `[softDisabled]="true"` on the tree, disabled items can receive focus but cannot be activated or selected. When `[softDisabled]="false"`, disabled items are skipped during keyboard navigation.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Tree
@@ -232,63 +228,3 @@ This directive has no inputs, outputs, or methods. It serves as a container to o
   </ul>
 </li>
 ```
-
-## Styling
-
-Angular automatically applies attributes to tree elements that you can use in your CSS selectors.
-
-The tree receives the `ng-tree` attribute:
-
-```css
-[ng-tree] {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-```
-
-Tree items receive the `ng-tree-item` attribute with `data-active` when focused and `aria-selected` when selected:
-
-```css
-[ng-tree-item] {
-  padding: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-[ng-tree-item][data-active] {
-  outline: 2px solid var(--focus-color);
-}
-
-[ng-tree-item][aria-selected="true"] {
-  background: var(--selected-background);
-  font-weight: 600;
-}
-```
-
-Tree groups receive the `ng-tree-group` attribute for indenting child items:
-
-```css
-[ng-tree-group] {
-  padding-left: 1.5rem;
-  list-style: none;
-}
-```
-
-Style expandable items using the `aria-expanded` attribute:
-
-```css
-/* Expand/collapse indicator */
-[ng-tree-item][aria-expanded]::before {
-  content: '▶';
-  transition: transform 0.2s;
-}
-
-[ng-tree-item][aria-expanded="true"]::before {
-  transform: rotate(90deg);
-}
-```
-
-TIP: Use `[aria-expanded]` to determine if an item is expandable and style its expand/collapse indicator accordingly.

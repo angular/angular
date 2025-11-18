@@ -59,7 +59,6 @@ The multiselect pattern combines [Combobox](guide/aria/combobox) and [Listbox](g
 - **Selection Count Display** - Shows compact "Item + 2 more" pattern for multiple selections
 - **Signal-Based Reactivity** - Reactive state management using Angular signals
 - **Smart Positioning** - CDK Overlay handles viewport edges and scrolling
-- **Bidirectional Text Support** - Automatically handles right-to-left (RTL) languages
 - **Persistent Selection** - Selected options remain visible with checkmarks after selection
 
 ## Examples
@@ -128,17 +127,6 @@ Options often need visual indicators like icons or colors to help users identify
 
 Each option displays an icon alongside its label. The display value updates to show the first selection's icon and text, followed by a count of additional selections. Selected options show a checkmark for clear visual feedback.
 
-### Multiselect with chips
-
-When users benefit from seeing all selected items at a glance, chips provide a visual representation of each selection with the ability to remove individual items.
-
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/chips/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/chips/app/app.ts" />
-  <docs-code header="app.html" path="adev/src/content/examples/aria/multiselect/src/chips/app/app.html" />
-</docs-code-multifile>
-
-Chips appear in the trigger area showing all selected items. Each chip includes a remove button that deselects the item when clicked. This pattern works best when the number of selections remains manageable (typically fewer than 5 items).
-
 ### Controlled selection
 
 Forms sometimes need to limit the number of selections or validate user choices. Programmatic control over selection enables these constraints while maintaining accessibility.
@@ -170,22 +158,6 @@ Forms sometimes need to limit the number of selections or validate user choices.
 </docs-tab-group>
 
 This example limits selections to three items. When the limit is reached, unselected options become disabled, preventing additional selections. A message informs users about the constraint.
-
-### Right-to-left (RTL) support
-
-Multiselect automatically supports right-to-left languages. Wrap the multiselect in a container with `dir="rtl"` to reverse the layout. Arrow key navigation adjusts automatically.
-
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/multiselect/src/rtl/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/multiselect/src/rtl/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/multiselect/src/rtl/app/app.html" highlight="[1]"/>
-  <docs-code header="app.css" path="adev/src/content/examples/aria/multiselect/src/rtl/app/app.css"/>
-</docs-code-multifile>
-
-The direction attribute automatically reverses the visual layout and keyboard navigation direction while maintaining logical selection order.
-
-## Showcase
-
-TBD
 
 ## APIs
 
@@ -227,77 +199,3 @@ See the [Listbox API documentation](guide/aria/listbox#apis) for complete detail
 ### Positioning
 
 The multiselect pattern integrates with [CDK Overlay](api/cdk/overlay/CdkConnectedOverlay) for smart positioning. Use `cdkConnectedOverlay` to handle viewport edges and scrolling automatically.
-
-## Styling
-
-The directives used in the multiselect pattern don't include default styles. This allows full customization to match your design system. Apply styles through standard CSS classes or style bindings.
-
-### Styling the multiselect trigger
-
-```css
-.multiselect-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  min-height: 40px;
-  gap: 8px;
-}
-
-.multiselect-trigger:focus-within {
-  outline: 2px solid blue;
-  border-color: blue;
-}
-
-.selection-count {
-  color: #666;
-  font-size: 0.875rem;
-}
-```
-
-### Styling chips
-
-```css
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 8px;
-  background: #e0e0e0;
-  border-radius: 16px;
-  gap: 4px;
-  margin: 2px;
-  font-size: 0.875rem;
-}
-
-.chip-remove {
-  cursor: pointer;
-  font-size: 16px;
-  color: #666;
-}
-
-.chip-remove:hover {
-  color: #333;
-}
-```
-
-### Styling selected options
-
-```css
-[ngOption][aria-selected="true"] {
-  background: #e3f2fd;
-}
-
-.option-check {
-  visibility: hidden;
-  color: #1976d2;
-}
-
-[ngOption][aria-selected="true"] .option-check {
-  visibility: visible;
-}
-```
-
-See the [Listbox styling guide](guide/aria/listbox#styling) for detailed customization patterns including hover states and disabled styles.

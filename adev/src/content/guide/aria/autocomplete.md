@@ -149,10 +149,6 @@ Highlight mode allows the user to navigate options with arrow keys without chang
   </docs-tab>
 </docs-tab-group>
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Combobox Directive
@@ -191,38 +187,4 @@ Must be used with `<ng-template>` inside a popover element.
 
 ### Related components
 
-Autocomplete uses [Listbox](https://angular.dev/api/aria/listbox/Listbox) and [Option](https://angular.dev/api/aria/listbox/Option) directives to render the suggestion list. See the [Listbox documentation](https://angular.dev/guide/aria/listbox) for additional customization options.
-
-## Styling
-
-The autocomplete components don't include default styles. This allows full customization to match your design system. Apply styles through standard CSS classes or style bindings.
-
-### Styling the input
-
-```css
-input[ngComboboxInput] {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-input[ngComboboxInput]:focus {
-  outline: 2px solid blue;
-  border-color: blue;
-}
-```
-
-### Styling the popup
-
-```css
-[popover] {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 0;
-}
-```
-
-### Styling options
-
-Options use the listbox styling. See the [Listbox styling guide](https://angular.dev/guide/aria/listbox#styling) for detailed customization patterns.
+Autocomplete uses [Listbox](/api/aria/listbox/Listbox) and [Option](/api/aria/listbox/Option) directives to render the suggestion list. See the [Listbox documentation](/guide/aria/listbox) for additional customization options.

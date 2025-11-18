@@ -217,10 +217,6 @@ Toolbars automatically support right-to-left languages. Wrap the toolbar in a co
   </docs-tab>
 </docs-tab-group>
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Toolbar Directive
@@ -269,3 +265,8 @@ The `ngToolbarWidgetGroup` directive groups related widgets together.
 ### Related components
 
 Toolbar can contain various widget types including buttons, trees, and comboboxes. See individual component documentation for specific widget implementations.
+
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
+  <docs-pill href="api/aria/toolbar" title="Toolbar API Reference"/>
+</docs-pill-row>
