@@ -1,0 +1,61 @@
+<div ngAccordionGroup class="basic-accordion">
+  <h3>
+    <span ngAccordionTrigger panelId="q1" #trigger1="ngAccordionTrigger" [expanded]="true">
+      Which attribute tells assistive tech whether the panel is open or closed?
+      <span
+        aria-hidden="true"
+        class="expand-icon"
+        [class.expand-icon__expanded]="trigger1.expanded()"
+      ></span>
+    </span>
+  </h3>
+  <div ngAccordionPanel panelId="q1">
+    <ng-template ngAccordionContent>
+      <p>
+        Use <code>aria-expanded</code> on the button element. Set it to "true" when the content
+        panel is visible and "false" when the content is hidden. This is a crucial state indicator
+        for screen reader users.
+      </p>
+    </ng-template>
+  </div>
+
+  <h3>
+    <span ngAccordionTrigger panelId="q2" #trigger2="ngAccordionTrigger">
+      How do you link the button to the content it controls?
+      <span
+        aria-hidden="true"
+        class="expand-icon"
+        [class.expand-icon__expanded]="trigger2.expanded()"
+      ></span>
+    </span>
+  </h3>
+  <div ngAccordionPanel panelId="q2">
+    <ng-template ngAccordionContent>
+      <p>
+        Use the <code>aria-controls</code> attribute on the button, and set its value to match the
+        id of the related content panel. This establishes a programmatic relationship, allowing
+        assistive technologies to jump directly to the relevant content.
+      </p>
+    </ng-template>
+  </div>
+
+  <h3>
+    <span ngAccordionTrigger panelId="q3" #trigger3="ngAccordionTrigger" [expanded]="true">
+      What role should the heading element containing the accordion button have?
+      <span
+        aria-hidden="true"
+        class="expand-icon"
+        [class.expand-icon__expanded]="trigger3.expanded()"
+      ></span>
+    </span>
+  </h3>
+  <div ngAccordionPanel panelId="q3">
+    <ng-template ngAccordionContent>
+      <p>
+        The element containing the button should typically have <code>role="heading"</code> with an
+        appropriate <code>aria-level</code> to define the structure. This ensures the accordion
+        section is recognized as a section header, making the page structure navigable for users.
+      </p>
+    </ng-template>
+  </div>
+</div>
