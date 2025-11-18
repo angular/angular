@@ -353,7 +353,7 @@ The URL query is ignored when matching.
 
 If the field is omitted, it defaults to:
 
-<docs-code language="typescript">
+```ts
 
 [
 '/**', // Include all URLs.
@@ -362,7 +362,7 @@ If the field is omitted, it defaults to:
 '!/**/*__*/**', // Exclude URLs containing `__` in any other segment.
 ]
 
-</docs-code>
+```
 
 ### `navigationRequestStrategy`
 
