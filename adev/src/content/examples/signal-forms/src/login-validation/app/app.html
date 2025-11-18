@@ -5,7 +5,7 @@
       <input type="email" [field]="loginForm.email" />
     </label>
 
-    @if (loginForm.email().touched() && loginForm.email().invalid()) {
+    @if (loginForm.email().invalid()) {
       <ul class="error-list">
         @for (error of loginForm.email().errors(); track $index) {
           <li>{{ error.message }}</li>
@@ -20,7 +20,7 @@
       <input type="password" [field]="loginForm.password" />
     </label>
 
-    @if (loginForm.password().touched() && loginForm.password().invalid()) {
+    @if (loginForm.password().invalid()) {
       <div class="error">
         @for (error of loginForm.password().errors(); track $index) {
           <p>{{ error.message }}</p>

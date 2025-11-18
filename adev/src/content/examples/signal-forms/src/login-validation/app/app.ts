@@ -1,5 +1,5 @@
-import {Component, signal} from '@angular/core';
-import {form, Field, required, email, submit} from '@angular/forms/signals';
+import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
+import {form, Field, required, email, debounce} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -11,6 +11,7 @@ interface LoginData {
   templateUrl: 'app.html',
   styleUrl: 'app.css',
   imports: [Field],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   loginModel = signal<LoginData>({
@@ -18,19 +19,20 @@ export class App {
     password: '',
   });
 
-  loginForm = form(this.loginModel, (p) => {
-    required(p.email, {message: 'Email is required'});
-    email(p.email, {message: 'Enter a valid email address'});
-    required(p.password, {message: 'Password is required'});
+  loginForm = form(this.loginModel, (schemaPath) => {
+    debounce(schemaPath.email, 500);
+    required(schemaPath.email, {message: 'Email is required'});
+    email(schemaPath.email, {message: 'Enter a valid email address'});
+
+    debounce(schemaPath.password, 500);
+    required(schemaPath.password, {message: 'Password is required'});
   });
 
   onSubmit(event: Event) {
     event.preventDefault();
-    submit(this.loginForm, async () => {
-      // Perform login logic here
-      const credentials = this.loginModel();
-      console.log('Logging in with:', credentials);
-      // e.g., await this.authService.login(credentials);
-    });
+    // Perform login logic here
+    const credentials = this.loginModel();
+    console.log('Logging in with:', credentials);
+    // e.g., await this.authService.login(credentials);
   }
 }
