@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
 :host {
   font-family: var(--inter-font);
   display: flex;
@@ -7,25 +9,29 @@
 [ngTabs] {
   overflow: hidden;
   width: 600px;
+  height: 200px;
   border-radius: 0.5rem;
   border: 1px solid color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+  display: flex;
 }
 
 [ngTabList] {
   padding: 0;
   display: flex;
+  flex-direction: column;
   list-style: none;
   position: relative;
-  border-bottom: 1px solid color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--primary-contrast) 10%, transparent);
 }
 
 [ngTab] {
   flex: 1;
   outline: none;
-  padding: 0.75rem 0;
+  width: 80px;
   cursor: pointer;
-  text-align: center;
   color: color-mix(in srgb, var(--primary-contrast) 60%, transparent);
+  display: grid;
+  place-items: center;
 }
 
 [ngTab][aria-selected='false']:focus {
@@ -42,33 +48,32 @@
   color: var(--page-background);
   background-color: var(--bright-blue);
   border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 }
 
 .sliding-window {
-  width: 300%;
+  height: 300%;
   display: flex;
+  flex-direction: column;
   transition: all 0.2s ease-in-out;
+  flex: 1;
 }
 
 [ngTabList]:has([ngTab]:nth-child(1)[aria-selected='true']) ~ .sliding-window {
-  transform: translateX(0%);
+  transform: translateY(0%);
 }
 [ngTabList]:has([ngTab]:nth-child(2)[aria-selected='true']) ~ .sliding-window {
-  transform: translateX(-33.333%);
+  transform: translateY(-33.333%);
 }
 [ngTabList]:has([ngTab]:nth-child(3)[aria-selected='true']) ~ .sliding-window {
-  transform: translateX(-66.666%);
+  transform: translateY(-66.666%);
 }
 
 [ngTabPanel] {
   display: grid;
   place-items: center;
   padding: 1rem;
-  min-height: 100px;
   flex: 1;
-  border-bottom-right-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
 }
 
 [ngTabPanel]:focus {

@@ -8,7 +8,7 @@
   overflow: hidden;
   width: 600px;
   border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+  background-color: color-mix(in srgb, var(--bright-blue) 5%, transparent);
 }
 
 [ngTabList] {
@@ -16,33 +16,54 @@
   display: flex;
   list-style: none;
   position: relative;
-  border-bottom: 1px solid color-mix(in srgb, var(--primary-contrast) 10%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--primary-contrast) 20%, transparent);
 }
 
 [ngTab] {
   flex: 1;
   outline: none;
-  padding: 0.75rem 0;
+  padding: 1rem 0;
   cursor: pointer;
   text-align: center;
   color: color-mix(in srgb, var(--primary-contrast) 60%, transparent);
 }
 
-[ngTab][aria-selected='false']:focus {
+[ngTab]:focus {
   outline-offset: -8px;
   border-radius: 0.7rem;
   outline: 2px solid var(--bright-blue);
 }
 
 [ngTab]:hover {
-  background-color: color-mix(in srgb, var(--bright-blue) 5%, transparent);
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
 }
 
 [ngTab][aria-selected='true'] {
-  color: var(--page-background);
+  color: var(--bright-blue);
+}
+
+.bottom-border {
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: calc(100% / 3);
   background-color: var(--bright-blue);
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  transform: translateX(0%);
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+[ngTab]:nth-child(1)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(0%);
+}
+[ngTab]:nth-child(2)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(100%);
+}
+[ngTab]:nth-child(3)[aria-selected='true'] ~ .bottom-border {
+  transform: translateX(200%);
 }
 
 .sliding-window {
@@ -67,8 +88,6 @@
   padding: 1rem;
   min-height: 100px;
   flex: 1;
-  border-bottom-right-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
 }
 
 [ngTabPanel]:focus {
