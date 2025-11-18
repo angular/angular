@@ -177,7 +177,7 @@ export class CodeEditor {
 
     const renameFileInputValue = renameFileInput.nativeElement.value;
 
-    if (this.valideteFileName(renameFileInputValue)) {
+    if (this.validateFileName(renameFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + renameFileInputValue;
 
@@ -200,7 +200,7 @@ export class CodeEditor {
 
     const newFileInputValue = fileInput.nativeElement.value;
 
-    if (this.valideteFileName(newFileInputValue)) {
+    if (this.validateFileName(newFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + newFileInputValue;
 
@@ -215,7 +215,7 @@ export class CodeEditor {
     this.isCreatingFile.set(false);
   }
 
-  private valideteFileName(fileName: string): boolean {
+  private validateFileName(fileName: string): boolean {
     if (!fileName) {
       return false;
     }
