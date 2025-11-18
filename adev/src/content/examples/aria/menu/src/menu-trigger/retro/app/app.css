@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
+
+:host {
+  display: flex;
+  justify-content: center;
+  font-size: 0.8rem;
+  --border-color: color-mix(in srgb, var(--full-contrast) 20%, var(--page-background));
+
+  font-family: 'Press Start 2P';
+
+  --retro-button-color: var(--vivid-pink);
+  --retro-shadow-light: color-mix(in srgb, #fff 20%, transparent);
+  --retro-shadow-dark: color-mix(in srgb, #000 20%, transparent);
+  --retro-elevated-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700);
+  --retro-flat-shadow:
+    4px 0px 0px 0px var(--gray-700), 0px 4px 0px 0px var(--gray-700),
+    -4px 0px 0px 0px var(--gray-700), 0px -4px 0px 0px var(--gray-700);
+  --retro-clickable-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-light),
+    inset -4px -4px 0px 0px var(--retro-shadow-dark), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 8px 8px 0px 0px var(--gray-700);
+  --retro-pressed-shadow:
+    inset 4px 4px 0px 0px var(--retro-shadow-dark),
+    inset -4px -4px 0px 0px var(--retro-shadow-light), 4px 0px 0px 0px var(--gray-700),
+    0px 4px 0px 0px var(--gray-700), -4px 0px 0px 0px var(--gray-700),
+    0px -4px 0px 0px var(--gray-700), 0px 0px 0px 0px var(--gray-700);
+}
+
+[ngMenuTrigger] {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  padding: 0.6rem 2rem;
+  font-family: 'Press Start 2P';
+  color: #000;
+  background-color: var(--vivid-pink);
+  box-shadow: var(--retro-clickable-shadow);
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
+}
+
+[ngMenuTrigger]:hover {
+  transform: translate(1px, 1px);
+}
+
+[ngMenuTrigger]:active {
+  background-color: color-mix(in srgb, var(--vivid-pink) 80%, #fff);
+  box-shadow: var(--retro-pressed-shadow);
+  transform: translate(4px, 4px);
+}
+
+[ngMenuTrigger] .icon {
+  font-size: 1.5rem;
+  opacity: 0.875;
+}
+
+[ngMenu] {
+  margin-top: 8px;
+  width: 15rem;
+  padding: 0.25rem;
+  background-color: var(--page-background);
+  box-shadow: var(--retro-flat-shadow);
+}
+
+[ngMenu][data-visible='false'] {
+  display: none;
+}
+
+[ngMenuItem] {
+  outline: none;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+[ngMenuItem][data-active='true'] {
+  background: color-mix(in srgb, var(--border-color) 10%, transparent);
+}
+
+[ngMenuTrigger]:focus {
+  outline: 4px dashed var(--vivid-pink);
+  outline-offset: 8px;
+}
+
+[ngMenuItem]:focus {
+  outline: 4px dashed var(--vivid-pink);
+  outline-offset: -4px;
+}
+
+[ngMenuItem] .icon {
+  opacity: 0.875;
+  font-size: 1.25rem;
+}
+
+[ngMenuItem] .label {
+  flex: 1;
+  opacity: 0.875;
+  font-size: 0.875rem;
+}
+
+[ngMenuItem]:not([aria-expanded='true']) .arrow {
+  opacity: 0.5;
+}
+
+[ngMenu] .separator {
+  border-top: 4px solid #000;
+  margin: 0.25rem 0;
+  opacity: 0.25;
+}
