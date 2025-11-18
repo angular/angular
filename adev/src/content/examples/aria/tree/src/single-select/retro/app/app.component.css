@@ -4,6 +4,7 @@
 :host {
   display: flex;
   justify-content: center;
+  user-select: none;
 
   --win95-gray: #c0c0c0;
   --win95-dark-gray: #808080;
