@@ -195,6 +195,29 @@ Equality functions can be provided to both writable and computed signals.
 
 HELPFUL: By default, signals use referential equality ([`Object.is()`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/is) comparison).
 
+### Type checking signals
+
+You can use `isSignal` to check if a value is a `Signal`:
+
+```ts
+const count = signal(0);
+const doubled = computed(() => count() * 2);
+
+isSignal(count); // true
+isSignal(doubled); // true
+isSignal(42); // false
+```
+
+To specifically check if a signal is writable, use `isWritableSignal`:
+
+```ts
+const count = signal(0);
+const doubled = computed(() => count() * 2);
+
+isWritableSignal(count); // true
+isWritableSignal(doubled); // false
+```
+
 ### Reading without tracking dependencies
 
 Rarely, you may want to execute code which may read signals within a reactive function such as `computed` or `effect` _without_ creating a dependency.
