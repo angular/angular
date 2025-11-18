@@ -1,6 +1,6 @@
+// TODO: Import input from @angular/core
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 
-// TODO: Import input from @angular/core
 
 @Component({
   selector: 'product-card',
