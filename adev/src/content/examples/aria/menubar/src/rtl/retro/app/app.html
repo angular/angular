@@ -1,4 +1,4 @@
-<div ngMenuBar dir="rtl">
+<div ngMenuBar class="retro-menubar" dir="rtl">
   <div
     ngMenuItem
     #fileEl
@@ -46,7 +46,7 @@
         <ng-template
           [cdkConnectedOverlayOpen]="!!fileItem.expanded()"
           [cdkConnectedOverlay]="{origin: shareEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #shareMenu="ngMenu">
@@ -223,13 +223,13 @@
         <div ngMenuItem #imageEl value="Image" [submenu]="imageMenu()">
           <span class="icon material-symbols-outlined">image</span>
           <span class="label">Image</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
           [cdkConnectedOverlayOpen]="!!insertItem.expanded()"
           [cdkConnectedOverlay]="{origin: imageEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #imageMenu="ngMenu">
@@ -260,13 +260,13 @@
         <div ngMenuItem #chartEl value="Chart" [submenu]="chartMenu()">
           <span class="icon material-symbols-outlined">insert_chart</span>
           <span class="label">Chart</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
           [cdkConnectedOverlayOpen]="!!insertItem.expanded()"
           [cdkConnectedOverlay]="{origin: chartEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #chartMenu="ngMenu">
@@ -324,13 +324,13 @@
         <div ngMenuItem #textEl #textItem="ngMenuItem" value="Text" [submenu]="textMenu()">
           <span class="icon material-symbols-outlined">format_bold</span>
           <span class="label">Text</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
           [cdkConnectedOverlayOpen]="!!formatItem.expanded()"
           [cdkConnectedOverlay]="{origin: textEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #textMenu="ngMenu">
@@ -363,13 +363,13 @@
 
               <div ngMenuItem #sizeEl value="Size" [submenu]="sizeMenu()">
                 <span class="label">Size</span>
-                <span class="icon arrow material-symbols-outlined">arrow_right</span>
+                <span class="icon arrow material-symbols-outlined">arrow_left</span>
               </div>
 
               <ng-template
                 [cdkConnectedOverlayOpen]="!!textItem.expanded()"
                 [cdkConnectedOverlay]="{origin: sizeEl, usePopover: 'inline'}"
-                [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+                [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
                 cdkAttachPopoverAsChild
               >
                 <div ngMenu #sizeMenu="ngMenu">
@@ -393,13 +393,13 @@
         <div ngMenuItem #paragraphEl value="Paragraph styles" [submenu]="paragraphMenu()">
           <span class="icon material-symbols-outlined">format_align_justify</span>
           <span class="label">Paragraph styles</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
           [cdkConnectedOverlayOpen]="!!formatItem.expanded()"
           [cdkConnectedOverlay]="{origin: paragraphEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #paragraphMenu="ngMenu">
@@ -414,13 +414,13 @@
         <div ngMenuItem #alignEl [submenu]="alignMenu()" value="Align & indent">
           <span class="icon material-symbols-outlined">format_indent_increase</span>
           <span class="label">Align & indent</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
           [cdkConnectedOverlayOpen]="!!formatItem.expanded()"
           [cdkConnectedOverlay]="{origin: alignEl, usePopover: 'inline'}"
-          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -6}]"
+          [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: -12}]"
           cdkAttachPopoverAsChild
         >
           <div ngMenu #alignMenu="ngMenu">
