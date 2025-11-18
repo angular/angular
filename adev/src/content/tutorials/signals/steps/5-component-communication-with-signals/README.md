@@ -13,7 +13,7 @@ Add signal `input()` functions to receive data in the `product-card` component.
 
 ```ts
 // Add imports for signal inputs
-import {Component, input} from '@angular/core';
+import {Component, input, ChangeDetectionStrategy} from '@angular/core';
 
 // Add these signal inputs
 name = input.required<string>();
