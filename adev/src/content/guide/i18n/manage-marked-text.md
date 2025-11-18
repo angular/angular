@@ -24,7 +24,7 @@ Additional metadata may include the library, component, or area of the applicati
 To specify a custom ID in the `i18n` attribute or [`$localize`][ApiLocalizeInitLocalize] tagged message string, use the `@@` prefix.
 The following example defines the `introductionHeader` custom ID in a heading element.
 
-<docs-code header="app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-solo-id"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-solo-id"/>
 
 The following example defines the `introductionHeader` custom ID for a variable.
 
@@ -50,7 +50,7 @@ Use a custom ID in combination with a description and a meaning to further help 
 
 The following example includes a description, followed by the custom ID.
 
-<docs-code header="app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-id"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-id"/>
 
 The following example defines the `introductionHeader` custom ID and description for a variable.
 
@@ -64,7 +64,7 @@ variableText2 = $localize`:An introduction header for this sample@@introductionH
 
 The following example adds a meaning.
 
-<docs-code header="app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-meaning-and-id"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-attribute-meaning-and-id"/>
 
 The following example defines the `introductionHeader` custom ID for a variable.
 
@@ -83,7 +83,7 @@ If you use the same ID for two different text elements, the extraction tool extr
 
 For example, in the following code snippet the same `myId` custom ID is defined for two different text elements.
 
-<docs-code header="app/app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-duplicate-custom-id"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/i18n/doc-files/app.component.html" visibleRegion="i18n-duplicate-custom-id"/>
 
 The following displays the translation in French.
 

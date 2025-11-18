@@ -42,7 +42,7 @@ ng generate component banner --inline-template --inline-style --module app
 
 It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
 
-<docs-code header="app/banner/banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
+<docs-code header="banner-external.component.spec.ts (initial)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v1"/>
 
 HELPFUL: Because `compileComponents` is asynchronous, it uses the [`waitForAsync`](api/core/testing/waitForAsync) utility function imported from `@angular/core/testing`.
 
@@ -57,7 +57,7 @@ The rest of the file is boilerplate setup code anticipating more advanced tests 
 You'll learn about these advanced test features in the following sections.
 For now, you can radically reduce this test file to a more manageable size:
 
-<docs-code header="app/banner/banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
+<docs-code header="banner-initial.component.spec.ts (minimal)" path="adev/src/content/examples/testing/src/app/banner/banner-initial.component.spec.ts" visibleRegion="v2"/>
 
 In this example, the metadata object passed to `TestBed.configureTestingModule` simply declares `BannerComponent`, the component to test.
 
