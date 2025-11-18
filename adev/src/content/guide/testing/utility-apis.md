@@ -139,7 +139,7 @@ The `DebugElement.query(predicate)` and `DebugElement.queryAll(predicate)` metho
 The predicate is any method that takes a `DebugElement` and returns a _truthy_ value.
 The following example finds all `DebugElements` with a reference to a template local variable named "content":
 
-<docs-code header="app/demo/demo.testbed.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="custom-predicate"/>
+<docs-code header="demo.testbed.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="custom-predicate"/>
 
 The Angular `By` class has three static methods for common predicates:
 
@@ -149,4 +149,4 @@ The Angular `By` class has three static methods for common predicates:
 | `By.css(selector)`        | Return elements with matching CSS selectors                                |
 | `By.directive(directive)` | Return elements that Angular matched to an instance of the directive class |
 
-<docs-code header="app/hero/hero-list.component.spec.ts" path="adev/src/content/examples/testing/src/app/hero/hero-list.component.spec.ts" visibleRegion="by"/>
+<docs-code header="hero-list.component.spec.ts" path="adev/src/content/examples/testing/src/app/hero/hero-list.component.spec.ts" visibleRegion="by"/>
