@@ -5,7 +5,7 @@ To check that your services are working as you intend, you can write tests speci
 Services are often the smoothest files to unit test.
 Here are some synchronous and asynchronous unit tests of the `ValueService` written without assistance from Angular testing utilities.
 
-<docs-code header="app/demo/demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="ValueService"/>
+<docs-code header="demo.spec.ts" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="ValueService"/>
 
 ## Testing services with the `TestBed`
 
@@ -27,7 +27,7 @@ The `TestBed.configureTestingModule()` method takes a metadata object that can h
 
 To test a service, you set the `providers` metadata property with an array of the services that you'll test or mock.
 
-<docs-code header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach)" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-before-each"/>
+<docs-code header="demo.testbed.spec.ts (provide ValueService in beforeEach)" path="adev/src/content/examples/testing/src/app/demo/demo.testbed.spec.ts" visibleRegion="value-service-before-each"/>
 
 Then inject it inside a test by calling `TestBed.inject()` with the service class as the argument.
 
@@ -60,7 +60,7 @@ Here's how you might rewrite one of the `MasterService` tests in that style.
 
 Begin by putting re-usable, preparatory code in a _setup_ function instead of `beforeEach()`.
 
-<docs-code header="app/demo/demo.spec.ts (setup)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup"/>
+<docs-code header="demo.spec.ts (setup)" path="adev/src/content/examples/testing/src/app/demo/demo.spec.ts" visibleRegion="no-before-each-setup"/>
 
 The `setup()` function returns an object literal with the variables, such as `masterService`, that a test might reference.
 You don't define _semi-global_ variables \(for example, `let masterService: MasterService`\) in the body of the `describe()`.
@@ -83,7 +83,7 @@ Data services that make HTTP calls to remote servers typically inject and delega
 
 You can test a data service with an injected `HttpClient` spy as you would test any service with a dependency.
 
-<docs-code header="app/model/hero.service.spec.ts (tests with spies)" path="adev/src/content/examples/testing/src/app/model/hero.service.spec.ts" visibleRegion="test-with-spies"/>
+<docs-code header="hero.service.spec.ts (tests with spies)" path="adev/src/content/examples/testing/src/app/model/hero.service.spec.ts" visibleRegion="test-with-spies"/>
 
 IMPORTANT: The `HeroService` methods return `Observables`.
 You must _subscribe_ to an observable to \(a\) cause it to execute and \(b\) assert that the method succeeds or fails.
