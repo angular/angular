@@ -1,3 +1,8 @@
+## 21.0.0 (2025-11-17)
+
+- fix(language-service): address potential memory leak during project creation (89095946cf)[https://github.com/angular/angular/commit/89095946cff051c5613b8f54ec722d08cd47c709]
+- fix(language-server): fix directory renaming on Windows (3f7111a9c3)[https://github.com/angular/angular/commit/3f7111a9c38c6fd00af705a3045f2909f47b505b]
+
 # 20.3.3
 
 | Commit                                                                                           | Type | Description                                                                                                                  |
