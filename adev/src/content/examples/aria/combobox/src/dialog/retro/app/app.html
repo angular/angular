@@ -1,4 +1,4 @@
-<div ngCombobox #combobox="ngCombobox" [readonly]="true">
+<div ngCombobox #combobox="ngCombobox" [readonly]="true" class="retro-combobox">
   <div class="combobox-input-container">
     <input ngComboboxInput placeholder="Select a country..." [value]="value()" />
     <span class="material-symbols-outlined icon arrow-icon">arrow_drop_down</span>
@@ -18,15 +18,11 @@
         </div>
 
         <ng-template ngComboboxPopupContainer>
-          @if (options().length === 0) {
-          <div class="no-results">No results found</div>
-          }
-
           <div ngListbox [(values)]="selectedCountries">
             @for (option of options(); track option) {
             <div ngOption [value]="option" [label]="option">
-              <span class="option-label">{{option}}</span>
-              <span class="material-symbols-outlined icon check-icon">check</span>
+              <span>{{option}}</span>
+              <span class="material-symbols-outlined icon selected-icon">check</span>
             </div>
             }
           </div>
