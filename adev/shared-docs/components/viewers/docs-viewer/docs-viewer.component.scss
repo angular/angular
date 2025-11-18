@@ -62,6 +62,7 @@
         // This can be useful on mobile if the heading contains a long code block
         overflow: hidden;
         text-overflow: ellipsis;
+        vertical-align: middle;
       }
     }
   }
