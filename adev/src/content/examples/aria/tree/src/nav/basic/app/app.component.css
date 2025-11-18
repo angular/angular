@@ -3,6 +3,7 @@
 :host {
   display: flex;
   justify-content: center;
+  user-select: none;
   font-family: var(--inter-font);
 }
 

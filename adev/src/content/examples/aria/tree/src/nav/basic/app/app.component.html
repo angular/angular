@@ -1,4 +1,4 @@
-<ul ngTree #tree="ngTree" [nav]="true" class="basic-tree">
+<ul ngTree #tree="ngTree" [nav]="true" [(values)]="selected" class="basic-tree">
   <ng-template
     [ngTemplateOutlet]="treeNodes"
     [ngTemplateOutletContext]="{nodes: nodes, parent: tree}"

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {NgTemplateOutlet} from '@angular/common';
 import {Tree, TreeItem, TreeItemGroup} from '@angular/aria/tree';
 
@@ -57,4 +57,6 @@ export class App {
       ],
     },
   ];
+
+  readonly selected = signal(['inbox']);
 }
