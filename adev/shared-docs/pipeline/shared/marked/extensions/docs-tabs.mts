@@ -44,7 +44,7 @@ export const docsTabGroupExtension = {
   },
   renderer(this: RendererThis, token: DocsTabGroupToken) {
     const el = JSDOM.fragment(`
-    <div class="docs-tab-group">
+    <div class="docs-tab-group" style="display: none;">
       ${this.parser.parse(token.tabTokens)}
     </div>
     `).firstElementChild!;
