@@ -29,17 +29,17 @@ ng add @angular/cdk
 
 To use drag and drop, import what you need from the directives in your component.
 
-<docs-code language="typescript">
+```ts
 import {Component} from '@angular/core';
 import {CdkDrag} from '@angular/cdk/drag-drop';
 
 @Component({
-selector: 'my-custom-component',
-templateUrl: 'my-custom-component.html',
-imports: [CdkDrag],
+  selector: 'my-custom-component',
+  templateUrl: 'my-custom-component.html',
+  imports: [CdkDrag],
 })
 export class DragDropExample {}
-</docs-code>
+```
 
 ## Create draggable elements
 
