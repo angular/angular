@@ -1,6 +1,11 @@
 <docs-decorative-header title="Combobox">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="Combobox ARIA pattern"/>
+  <docs-pill href="api/aria/combobox" title="Combobox API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A directive that coordinates a text input with a popup, providing the primitive directive for autocomplete, select, and multiselect patterns.
@@ -159,10 +164,6 @@ Popups sometimes need modal behavior with a backdrop and focus trap. The combobo
 
 The `ngComboboxDialog` directive creates a modal popup using the native dialog element. This provides backdrop behavior and focus trapping. Use dialog popups when the selection interface requires modal interaction or when the popup content is complex enough to warrant full-screen focus.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Combobox Directive
@@ -252,47 +253,3 @@ Combobox typically combines with:
 
 - **[Listbox](guide/aria/listbox)** - Most common popup content
 - **[Tree](guide/aria/tree)** - Hierarchical popup content (see Tree guide for examples)
-
-## Styling
-
-The combobox directives don't include default styles. This allows full customization to match your design system. Apply styles through standard CSS classes or style bindings.
-
-### Styling the combobox container
-
-The `ngCombobox` directive automatically adds the `ngCombobox` attribute to its host element, allowing you to target it with attribute selectors. The `ngComboboxInput` directive similarly adds the `ngComboboxInput` attribute to the input element.
-
-```css
-[ngCombobox] {
-  position: relative;
-  display: inline-block;
-}
-```
-
-### Styling expanded state
-
-```css
-[ngCombobox][data-expanded="true"] .combobox-icon {
-  transform: rotate(180deg);
-}
-```
-
-### Styling the input
-
-```css
-[ngComboboxInput] {
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-[ngComboboxInput]:focus {
-  outline: 2px solid blue;
-  border-color: blue;
-}
-```
-
-For complete styling patterns with popups and options, see:
-
-- [Autocomplete styling](guide/aria/autocomplete#styling) - Input with suggestions
-- [Select styling](guide/aria/select#styling) - Dropdown trigger and popup
-- [Listbox styling](guide/aria/listbox#styling) - Option styling

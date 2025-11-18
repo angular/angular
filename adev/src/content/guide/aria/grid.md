@@ -1,6 +1,11 @@
 <docs-decorative-header title="Grid">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="Grid ARIA pattern"/>
+  <docs-pill href="api/aria/grid" title="Grid API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A grid enables users to navigate two-dimensional data or interactive elements using directional arrow keys, Home, End, and Page Up/Down. Grids work for data tables, calendars, spreadsheets, and layout patterns that group related interactive elements.
@@ -10,11 +15,6 @@ A grid enables users to navigate two-dimensional data or interactive elements us
   <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.html"/>
   <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.css"/>
 </docs-code-multifile>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/grid" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -157,10 +157,6 @@ Enable selection with `[enableSelection]="true"` and configure how focus and sel
 - `roving`: Focus moves to cells using `tabindex` (better for simple grids)
 - `activedescendant`: Focus stays on grid container, `aria-activedescendant` indicates active cell (better for virtual scrolling)
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Grid
@@ -216,54 +212,3 @@ Represents an individual cell within a grid row.
 | Property | Type              | Description                          |
 | -------- | ----------------- | ------------------------------------ |
 | `active` | `Signal<boolean>` | Whether the cell currently has focus |
-
-## Styling
-
-Angular automatically applies attributes to grid elements that you can use in your CSS selectors.
-
-The grid receives the `ng-grid` attribute:
-
-```css
-[ng-grid] {
-  border-collapse: collapse;
-  width: 100%;
-}
-```
-
-Rows receive the `ng-grid-row` attribute:
-
-```css
-[ng-grid-row] {
-  border-bottom: 1px solid #ddd;
-}
-```
-
-Cells receive the `ng-grid-cell` attribute and a `data-active` attribute when focused:
-
-```css
-[ng-grid-cell] {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-}
-
-[ng-grid-cell][data-active] {
-  outline: 2px solid var(--focus-color);
-  outline-offset: -2px;
-}
-
-[ng-grid-cell][aria-selected="true"] {
-  background: var(--selected-background);
-}
-```
-
-Style column and row headers based on their role:
-
-```css
-[ng-grid-cell][role="columnheader"],
-[ng-grid-cell][role="rowheader"] {
-  font-weight: 600;
-  background: var(--header-background);
-}
-```
-
-TIP: Use the `[data-active]` selector to style focused cells, as Angular automatically adds this attribute when a cell has focus.

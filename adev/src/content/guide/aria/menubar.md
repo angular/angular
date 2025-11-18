@@ -1,6 +1,11 @@
 <docs-decorative-header title="Menubar">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="Menubar ARIA pattern"/>
+  <docs-pill href="api/aria/menu" title="Menu API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 The manubar is a horizontal navigation bar that provides persistent access to application menus. Menubars organize commands into logical categories like File, Edit, and View, helping users discover and execute application features through keyboard or mouse interaction.
@@ -159,10 +164,6 @@ Menubars automatically adapt to right-to-left (RTL) languages. Arrow key navigat
 
 The `dir="rtl"` attribute enables RTL mode. Left arrow moves right, Right arrow moves left, maintaining natural navigation for RTL language users.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 The menubar pattern uses directives from Angular's Aria library. See the [Menu guide](guide/aria/menu) for complete API documentation.
@@ -195,47 +196,3 @@ Individual items within the menubar. Same API as Menu - see [MenuItem](guide/ari
 ### MenuTrigger
 
 Not typically used in menubars - MenuItem handles trigger behavior directly when it has an associated submenu. See [MenuTrigger](guide/aria/menu#menutrigger) for standalone menu trigger patterns.
-
-## Styling
-
-Angular automatically applies attributes to menubar elements that you can use in your CSS selectors.
-
-The menubar receives the `ng-menu-bar` attribute:
-
-```css
-[ng-menu-bar] {
-  display: flex;
-  gap: 0.5rem;
-  background: var(--toolbar-background);
-  padding: 0.5rem;
-}
-```
-
-Menu items in the menubar receive the `ng-menu-item` attribute and `data-active` when focused:
-
-```css
-[ng-menu-bar] [ng-menu-item] {
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-[ng-menu-bar] [ng-menu-item][data-active] {
-  background: var(--hover-background);
-}
-
-[ng-menu-bar] [ng-menu-item][aria-expanded="true"] {
-  background: var(--active-background);
-}
-```
-
-Submenus use the same styling as standalone menus. See the [Menu styling guide](guide/aria/menu#styling) for submenu customization patterns.
-
-TIP: Use `[data-active]` to style focused menubar items and `[aria-expanded="true"]` to style items with open submenus.
-
-## References
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/menubar/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/menu" title="API Reference"/>
-</docs-pill-row>

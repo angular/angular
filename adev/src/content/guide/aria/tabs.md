@@ -1,6 +1,11 @@
 <docs-decorative-header title="Tabs">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="Tabs ARIA pattern"/>
+  <docs-pill href="api/aria/tabs" title="Tabs API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 Tabs display layered content sections where only one panel is visible at a time. Users switch between panels by clicking tab buttons or using arrow keys to navigate the tab list.
@@ -30,11 +35,6 @@ Tabs display layered content sections where only one panel is visible at a time.
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
-
-<docs-pill-row>
-  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="ARIA pattern"/>
-  <docs-pill href="api/aria/tabs" title="API Reference"/>
-</docs-pill-row>
 
 ## Usage
 
@@ -224,10 +224,6 @@ Disable specific tabs to prevent user interaction. Control whether disabled tabs
 
 When `[softDisabled]="true"` on the tab list, disabled tabs can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled tabs are skipped during keyboard navigation.
 
-## Showcase
-
-TBD
-
 ## APIs
 
 ### Tabs
@@ -298,59 +294,3 @@ This directive has no inputs, outputs, or methods. Apply it to an `ng-template` 
   </ng-template>
 </div>
 ```
-
-## Styling
-
-Angular automatically applies attributes to tab elements that you can use in your CSS selectors.
-
-The tab list receives the `ng-tab-list` attribute:
-
-```css
-[ng-tab-list] {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 2px solid #ddd;
-}
-
-[ng-tab-list][aria-orientation="vertical"] {
-  flex-direction: column;
-  border-bottom: none;
-  border-right: 2px solid #ddd;
-}
-```
-
-Tabs receive the `ng-tab` attribute with `data-active` when focused and `aria-selected` when selected:
-
-```css
-[ng-tab] {
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  border: 1px solid transparent;
-  background: transparent;
-}
-
-[ng-tab][data-active] {
-  outline: 2px solid var(--focus-color);
-}
-
-[ng-tab][aria-selected="true"] {
-  border-color: var(--primary-color);
-  border-bottom-color: white;
-  background: white;
-  font-weight: 600;
-}
-```
-
-Tab panels receive the `ng-tab-panel` attribute:
-
-```css
-[ng-tab-panel] {
-  padding: 1.5rem;
-}
-
-[ng-tab-panel][hidden] {
-  display: none;
-}
-```
-
-TIP: Use `[data-active]` to style the focused tab and `[aria-selected="true"]` to style the selected tab. These are often the same tab but can differ in manual activation mode.
