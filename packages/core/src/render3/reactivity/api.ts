@@ -17,6 +17,8 @@ import type {WritableSignal} from './signal';
  *
  * Ordinary values can be turned into `Signal`s with the `signal` function.
  *
+ * @see [What are signals?](guide/signals#what-are-signals)
+ *
  * @publicApi 17.0
  */
 export type Signal<T> = (() => T) & {
@@ -25,6 +27,8 @@ export type Signal<T> = (() => T) & {
 
 /**
  * Checks if the given `value` is a reactive `Signal`.
+ *
+ * @see [Type checking signals](guide/signals#type-checking-signals)
  *
  * @publicApi 17.0
  */
@@ -35,12 +39,16 @@ export function isSignal(value: unknown): value is Signal<unknown> {
 /**
  * A comparison function which can determine if two values are equal.
  *
+ * @see [Signal equality functions](guide/signals#signal-equality-functions)
+ *
  * @publicApi 17.0
  */
 export type ValueEqualityFn<T> = (a: T, b: T) => boolean;
 
 /**
  * Checks if the given `value` is a writeable signal.
+ *
+ * @see [Type checking signals](guide/signals#type-checking-signals)
  *
  * @publicApi 21.1
  */
