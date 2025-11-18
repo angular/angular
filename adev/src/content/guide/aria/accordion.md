@@ -5,10 +5,10 @@
 
 An accordion organizes related content into expandable and collapsible sections, reducing page scrolling and helping users focus on relevant information. Each section has a trigger button and a content panel. Clicking a trigger toggles the visibility of its associated panel.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.html"/>
-  <docs-code header="app.css" path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.css"/>
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.ts">
+  <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.ts"/>
+  <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.html"/>
+  <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.css"/>
 </docs-code-multifile>
 
 <docs-pill-row>
@@ -50,10 +50,29 @@ Accordions work well for organizing content into logical groups where users typi
 
 Set `[multiExpandable]="false"` to allow only one panel to be open at a time. Opening a new panel automatically closes any previously open panel.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/accordion/src/single-expansion/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/basic/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/material/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/material/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/single-expansion/material/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/material/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/single-expansion/retro/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/single-expansion/retro/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/single-expansion/retro/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/single-expansion/retro/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 This mode works well for FAQs or situations where you want users to focus on one answer at a time.
 
@@ -61,10 +80,29 @@ This mode works well for FAQs or situations where you want users to focus on one
 
 Set `[multiExpandable]="true"` to allow multiple panels to be open simultaneously. Users can expand as many panels as needed without closing others.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/multi-expansion/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/accordion/src/multi-expansion/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/accordion/src/multi-expansion/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/multi-expansion/basic/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/basic/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/multi-expansion/basic/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/basic/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/multi-expansion/material/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/material/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/multi-expansion/material/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/material/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/multi-expansion/retro/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/retro/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/multi-expansion/retro/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/multi-expansion/retro/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 This mode is useful for form sections or when users need to compare content across multiple panels.
 
@@ -74,10 +112,29 @@ NOTE: The `multiExpandable` input defaults to `true`. Set it to `false` explicit
 
 Disable specific triggers using the `disabled` input. Control how disabled items behave during keyboard navigation using the `softDisabled` input on the accordion group.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/disabled-focusable/app/app.ts">
-  <docs-code header="app.ts" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/app/app.ts"/>
-  <docs-code header="app.html" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/app/app.html"/>
-</docs-code-multifile>
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/disabled-focusable/basic/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/basic/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/basic/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/basic/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/disabled-focusable/material/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/material/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/material/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/material/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/accordion/src/disabled-focusable/retro/app/app.component.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/retro/app/app.component.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/retro/app/app.component.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/accordion/src/disabled-focusable/retro/app/app.component.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 When `[softDisabled]="true"` (the default), disabled items can receive focus but cannot be activated. When `[softDisabled]="false"`, disabled items are skipped entirely during keyboard navigation.
 
