@@ -443,6 +443,12 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 contentPath: 'guide/forms/signals/models',
                 status: 'new',
               },
+              {
+                label: 'Comparison with other form systems',
+                path: 'guide/forms/signals/comparison',
+                contentPath: 'guide/forms/signals/comparison',
+                status: 'new',
+              },
             ],
           },
           {
