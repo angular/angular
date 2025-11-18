@@ -1,4 +1,6 @@
-<button ngMenuTrigger #origin #trigger="ngMenuTrigger" [menu]="formatMenu()">Open Menu</button>
+<button class="retro-trigger" ngMenuTrigger #trigger="ngMenuTrigger" #origin [menu]="formatMenu()">
+  Open Menu
+</button>
 
 <ng-template
   [cdkConnectedOverlayOpen]="trigger.expanded()"
@@ -13,7 +15,7 @@
         <span class="label">Mark as read</span>
       </div>
 
-      <div ngMenuItem value="Snooze" [disabled]="true">
+      <div ngMenuItem value="Snooze">
         <span class="icon material-symbols-outlined">snooze</span>
         <span class="label">Snooze</span>
       </div>
@@ -26,7 +28,6 @@
         value="Categorize"
         #categorizeItem
         [submenu]="categorizeMenu()"
-        [disabled]="true"
       >
         <span class="icon material-symbols-outlined">category</span>
         <span class="label">Categorize</span>
