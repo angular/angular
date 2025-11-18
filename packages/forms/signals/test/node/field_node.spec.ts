@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {computed, Injector, signal} from '@angular/core';
+import {computed, effect, Injector, signal} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {
   apply,
@@ -387,6 +387,26 @@ describe('FieldNode', () => {
 
       f().reset();
       expect(f().touched()).toBe(false);
+    });
+
+    it('reset should not track model changes', () => {
+      const f = form(signal(''), {injector: TestBed.inject(Injector)});
+      const spy = jasmine.createSpy();
+      effect(
+        () => {
+          spy();
+          f().reset();
+        },
+        {injector: TestBed.inject(Injector)},
+      );
+
+      TestBed.tick();
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      f().value.set('hi');
+
+      TestBed.tick();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should not be marked as touched when is readonly', () => {
