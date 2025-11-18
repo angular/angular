@@ -28,13 +28,19 @@
   color: color-mix(in srgb, var(--primary-contrast) 60%, transparent);
 }
 
+[ngTab][aria-disabled='true'] {
+  cursor: default;
+  color: color-mix(in srgb, var(--primary-contrast) 30%, transparent);
+  background-color: color-mix(in srgb, var(--primary-contrast) 5%, transparent);
+}
+
 [ngTab][aria-selected='false']:focus {
   outline-offset: -8px;
   border-radius: 0.7rem;
   outline: 2px solid var(--bright-blue);
 }
 
-[ngTab]:hover {
+[ngTab][aria-disabled='false'][aria-selected='false']:hover {
   background-color: color-mix(in srgb, var(--bright-blue) 5%, transparent);
 }
 
