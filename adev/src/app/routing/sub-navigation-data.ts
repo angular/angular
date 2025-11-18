@@ -453,6 +453,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 contentPath: 'guide/forms/signals/validation',
               },
               {
+                label: 'Custom controls',
+                path: 'guide/forms/signals/custom-controls',
+                contentPath: 'guide/forms/signals/custom-controls',
+              },
+              {
                 label: 'Comparison with other form systems',
                 path: 'guide/forms/signals/comparison',
                 contentPath: 'guide/forms/signals/comparison',
