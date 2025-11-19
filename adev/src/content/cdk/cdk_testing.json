@@ -221,6 +221,7 @@
           "comment": ""
         }
       ],
+      "members": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 18,
@@ -235,6 +236,7 @@
       "rawComment": "/** Data that can be attached to a custom event dispatched from a `TestElement`. */",
       "description": "Data that can be attached to a custom event dispatched from a `TestElement`.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "/src/cdk/testing/test-element.ts",
         "startLine": 20,
@@ -253,6 +255,7 @@
       "rawComment": "/** An async function that takes an item and returns a boolean promise */",
       "description": "An async function that takes an item and returns a boolean promise",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 21,
@@ -567,6 +570,7 @@
       "rawComment": "/** An async function that takes an item and an option value and returns a boolean promise. */",
       "description": "An async function that takes an item and an option value and returns a boolean promise.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 24,
@@ -586,6 +590,7 @@
       "rawComment": "/**\n * A query for a `ComponentHarness`, which is expressed as either a `ComponentHarnessConstructor` or\n * a `HarnessPredicate`.\n */",
       "description": "A query for a `ComponentHarness`, which is expressed as either a `ComponentHarnessConstructor` or\na `HarnessPredicate`.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 30,
@@ -610,6 +615,7 @@
           "comment": "### Example\n\nThe type:\n```ts\nLocatorFnResult<[\n  ComponentHarnessConstructor<MyHarness>,\n  HarnessPredicate<MyOtherHarness>,\n  string\n]>\n```\n\nis equivalent to:\n\n```ts\nMyHarness | MyOtherHarness | TestElement\n```"
         }
       ],
+      "members": [],
       "source": {
         "filePath": "src/cdk/testing/component-harness.ts",
         "startLine": 64,

@@ -179,6 +179,7 @@
       "rawComment": "/** Possible values that can be used to configure the drag start delay. */",
       "description": "Possible values that can be used to configure the drag start delay.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/drag-drop/directives/config.ts",
         "startLine": 13,
@@ -193,6 +194,7 @@
       "rawComment": "/** Possible axis along which dragging can be locked. */",
       "description": "Possible axis along which dragging can be locked.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/drag-drop/directives/config.ts",
         "startLine": 16,
@@ -225,6 +227,7 @@
       "rawComment": "/** Possible orientations for a drop list. */",
       "description": "Possible orientations for a drop list.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "src/cdk/drag-drop/directives/config.ts",
         "startLine": 19,
@@ -4564,6 +4567,7 @@
       "rawComment": "/** Function that can be used to constrain the position of a dragged element. */",
       "description": "Function that can be used to constrain the position of a dragged element.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
         "startLine": 61,
@@ -4774,6 +4778,7 @@
       "rawComment": "/**\n * Possible places into which the preview of a drag item can be inserted.\n * - `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that\n * you don't have to worry about `overflow: hidden` or `z-index`, but the item won't retain\n * its inherited styles.\n * - `parent` - Preview will be inserted into the parent of the drag item. The advantage is that\n * inherited styles will be preserved, but it may be clipped by `overflow: hidden` or not be\n * visible due to `z-index`. Furthermore, the preview is going to have an effect over selectors\n * like `:nth-child` and some flexbox configurations.\n * - `ElementRef<HTMLElement> | HTMLElement` - Preview will be inserted into a specific element.\n * Same advantages and disadvantages as `parent`.\n */",
       "description": "Possible places into which the preview of a drag item can be inserted.\n- `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that\nyou don't have to worry about `overflow: hidden` or `z-index`, but the item won't retain\nits inherited styles.\n- `parent` - Preview will be inserted into the parent of the drag item. The advantage is that\ninherited styles will be preserved, but it may be clipped by `overflow: hidden` or not be\nvisible due to `z-index`. Furthermore, the preview is going to have an effect over selectors\nlike `:nth-child` and some flexbox configurations.\n- `ElementRef<HTMLElement> | HTMLElement` - Preview will be inserted into a specific element.\nSame advantages and disadvantages as `parent`.",
       "jsdocTags": [],
+      "members": [],
       "source": {
         "filePath": "/src/cdk/drag-drop/drag-ref.ts",
         "startLine": 125,
