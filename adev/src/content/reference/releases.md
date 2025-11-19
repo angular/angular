@@ -72,11 +72,15 @@ HELPFUL: Approximate dates are offered as general guidance and are subject to ch
 
 ### Release schedule
 
+Release schedule for upcoming versions is TBA.
+
+<!--
 | Version | Date               |
 | :------ | :----------------- |
-| v20.1   | Week of 2025-07-07 |
-| v20.2   | Week of 2025-08-18 |
-| v21.0   | Week of 2025-11-17 |
+| v21.1   | Week of TBD |
+| v21.2   | Week of TBD |
+| v22.0   | Week of TBD |
+-->
 
 ### Support window
 
@@ -93,11 +97,11 @@ The following table provides the status for Angular versions under support.
 
 | Version | Status | Released   | Active ends | LTS ends   |
 | :------ | :----- | :--------- | :---------- | :--------- |
-| ^20.0.0 | Active | 2025-05-28 | 2025-11-21  | 2026-11-21 |
+| ^21.0.0 | Active | 2025-11-19 | 2026-05-20  | 2026-11-18 |
+| ^20.0.0 | LTS    | 2025-05-28 | 2025-11-21  | 2026-11-21 |
 | ^19.0.0 | LTS    | 2024-11-19 | 2025-05-28  | 2026-05-19 |
-| ^18.0.0 | LTS    | 2024-05-22 | 2024-11-19  | 2025-11-21 |
 
-Angular versions v2 to v17 are no longer supported.
+Angular versions v2 to v18 are no longer supported.
 
 ### LTS fixes
 
