@@ -1,4 +1,4 @@
-<div ngMenu>
+<div ngMenu (mouseover)="hasInteracted.set(true)" (focusin)="hasInteracted.set(true)">
   <ng-template ngMenuContent>
     <span id="security-label" class="heading">SECURITY</span>
 
@@ -20,7 +20,7 @@
       </div>
 
       <ng-template
-        [cdkConnectedOverlayOpen]="true"
+        [cdkConnectedOverlayOpen]="hasInteracted()"
         [cdkConnectedOverlay]="{origin: resetItem, usePopover: 'inline'}"
         [cdkConnectedOverlayPositions]="[{originX: 'end', originY: 'top', overlayY: 'top', overlayX: 'start', offsetX: 6}]"
         cdkAttachPopoverAsChild
