@@ -183,6 +183,28 @@ export class CodeMirrorEditor {
     this._editorView.setState(editorState);
   }
 
+  scrollToLine(line: number, character: number = 0): void {
+    if (!this._editorView) return;
+
+    const state = this._editorView.state;
+    const doc = state.doc;
+
+    if (line < 0 || line >= doc.lines) {
+      console.warn(`Line ${line} is out of bounds (0-${doc.lines - 1})`);
+      return;
+    }
+
+    const lineObj = doc.line(line + 1);
+    const pos = lineObj.from + Math.min(character, lineObj.length);
+
+    this._editorView.dispatch({
+      selection: {anchor: pos, head: pos},
+      scrollIntoView: true,
+    });
+
+    this._editorView.focus();
+  }
+
   private initTypescriptVfsWorker(): void {
     if (this.tsVfsWorker || !this.tsVfsWorkerFactory) {
       return;
