@@ -3,7 +3,7 @@
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/treeview/" title="Tree ARIA pattern"/>
-  <docs-pill href="api/aria/tree" title="Tree API Reference"/>
+  <docs-pill href="/api/aria/tree/Tree" title="Tree API Reference"/>
 </docs-pill-row>
 
 ## Overview

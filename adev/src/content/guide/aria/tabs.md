@@ -3,7 +3,7 @@
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" title="Tabs ARIA pattern"/>
-  <docs-pill href="api/aria/tabs" title="Tabs API Reference"/>
+  <docs-pill href="/api/aria/tabs/Tabs" title="Tabs API Reference"/>
 </docs-pill-row>
 
 ## Overview

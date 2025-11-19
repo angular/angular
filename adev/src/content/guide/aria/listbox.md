@@ -184,5 +184,5 @@ For complete dropdown patterns with trigger, popup, and overlay positioning, see
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Listbox ARIA pattern"/>
-  <docs-pill href="api/aria/listbox" title="Listbox API Reference"/>
+  <docs-pill href="/api/aria/listbox/Listbox" title="Listbox API Reference"/>
 </docs-pill-row>
