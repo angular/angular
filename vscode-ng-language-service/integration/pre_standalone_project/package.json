@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@angular/common": "18.2.10",
-    "@angular/core": "18.2.10"
+    "@angular/core": "18.2.10",
+    "zone.js": "0.15.0"
   }
 }
