@@ -100,6 +100,12 @@ export function customRerunLogic() {
         component: RoutesHomeComponent,
         data: {
           message: 'Hello from route!!',
+          nested: {
+            foo: 'bar',
+            baz: {
+              qux: 42,
+            },
+          },
         },
       },
       {

@@ -17,10 +17,10 @@ import {
   Properties,
 } from '../../../../../../protocol';
 
-import {FlatNode, Property} from './element-property-resolver';
 import {getTreeFlattener} from './flatten';
 import {PropertyDataSource} from './property-data-source';
 import {getExpandedDirectiveProperties} from './property-expanded-directive-properties';
+import {FlatNode, Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;

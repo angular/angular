@@ -322,7 +322,7 @@ export interface Route {
   providers?: string[];
   title?: string;
   children?: Array<Route>;
-  data?: any;
+  data?: {[key: string | symbol]: any};
   resolvers?: any;
   path: string;
   component: string;
