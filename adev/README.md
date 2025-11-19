@@ -17,7 +17,7 @@ git clone https://github.com/angular/angular.git
 cd angular
 
 # Install dependencies
-pnpm
+pnpm install
 
 # Build and run local dev server
 # NOTE: Initial build will take some time
