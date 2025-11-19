@@ -1,4 +1,4 @@
-<div ngMenuBar dir="rtl">
+<div ngMenuBar dir="rtl" (focusin)="onFocusIn()">
   <div
     ngMenuItem
     #fileEl
@@ -11,7 +11,7 @@
   </div>
 
   <ng-template
-    [cdkConnectedOverlayOpen]="true"
+    [cdkConnectedOverlayOpen]="rendered()"
     [cdkConnectedOverlay]="{origin: fileEl, usePopover: 'inline'}"
     [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
     cdkAttachPopoverAsChild
@@ -101,7 +101,7 @@
   </div>
 
   <ng-template
-    [cdkConnectedOverlayOpen]="true"
+    [cdkConnectedOverlayOpen]="rendered()"
     [cdkConnectedOverlay]="{origin: editEl, usePopover: 'inline'}"
     [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
     cdkAttachPopoverAsChild
@@ -163,7 +163,7 @@
   </div>
 
   <ng-template
-    [cdkConnectedOverlayOpen]="true"
+    [cdkConnectedOverlayOpen]="rendered()"
     [cdkConnectedOverlay]="{origin: viewEl, usePopover: 'inline'}"
     [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
     cdkAttachPopoverAsChild
@@ -213,7 +213,7 @@
   </div>
 
   <ng-template
-    [cdkConnectedOverlayOpen]="true"
+    [cdkConnectedOverlayOpen]="rendered()"
     [cdkConnectedOverlay]="{origin: insertEl, usePopover: 'inline'}"
     [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
     cdkAttachPopoverAsChild
@@ -223,7 +223,7 @@
         <div ngMenuItem #imageEl value="Image" [submenu]="imageMenu()">
           <span class="icon material-symbols-outlined">image</span>
           <span class="label">Image</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
@@ -260,7 +260,7 @@
         <div ngMenuItem #chartEl value="Chart" [submenu]="chartMenu()">
           <span class="icon material-symbols-outlined">insert_chart</span>
           <span class="label">Chart</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
@@ -314,7 +314,7 @@
   </div>
 
   <ng-template
-    [cdkConnectedOverlayOpen]="true"
+    [cdkConnectedOverlayOpen]="rendered()"
     [cdkConnectedOverlay]="{origin: formatEl, usePopover: 'inline'}"
     [cdkConnectedOverlayPositions]="[{originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4}]"
     cdkAttachPopoverAsChild
@@ -324,7 +324,7 @@
         <div ngMenuItem #textEl #textItem="ngMenuItem" value="Text" [submenu]="textMenu()">
           <span class="icon material-symbols-outlined">format_bold</span>
           <span class="label">Text</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
@@ -363,7 +363,7 @@
 
               <div ngMenuItem #sizeEl value="Size" [submenu]="sizeMenu()">
                 <span class="label">Size</span>
-                <span class="icon arrow material-symbols-outlined">arrow_right</span>
+                <span class="icon arrow material-symbols-outlined">arrow_left</span>
               </div>
 
               <ng-template
@@ -393,7 +393,7 @@
         <div ngMenuItem #paragraphEl value="Paragraph styles" [submenu]="paragraphMenu()">
           <span class="icon material-symbols-outlined">format_align_justify</span>
           <span class="label">Paragraph styles</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
@@ -414,7 +414,7 @@
         <div ngMenuItem #alignEl [submenu]="alignMenu()" value="Align & indent">
           <span class="icon material-symbols-outlined">format_indent_increase</span>
           <span class="label">Align & indent</span>
-          <span class="icon arrow material-symbols-outlined">arrow_right</span>
+          <span class="icon arrow material-symbols-outlined">arrow_left</span>
         </div>
 
         <ng-template
