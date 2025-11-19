@@ -150,6 +150,25 @@ export class CodeEditor {
     this.displayErrorsBox.set(false);
   }
 
+  protected openFileAtLocation(error: DiagnosticWithLocation): void {
+    // Scroll the editor to the error location
+    // The error is always in the current file since diagnostics are file-specific
+    const lineNumber = error.lineNumber;
+    const characterPosition = error.characterPosition;
+
+    // Calculate the position in the document
+    // CodeMirror uses 0-based line numbers, but our error uses 1-based
+    const line = Math.max(0, lineNumber - 1);
+
+    // Request the editor to scroll to this line
+    // We'll need to add a method to CodeMirrorEditor service to handle this
+    this.codeMirrorEditor.scrollToLine(line, characterPosition);
+  }
+
+  protected closeRenameFile(): void {
+    this.isRenamingFile.set(false);
+  }
+
   protected canRenameFile = (filename: string) => this.canDeleteFile(filename);
 
   protected canDeleteFile(filename: string) {
