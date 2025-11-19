@@ -274,7 +274,17 @@ export class NodeRuntimeSandbox {
     try {
       await webContainer.fs.rename(oldPath, newPath);
     } catch (err: any) {
-      throw err;
+      if (err.message.startsWith('ENOENT')) {
+        const directory = newPath.split('/').slice(0, -1).join('/');
+
+        await webContainer.fs.mkdir(directory, {
+          recursive: true,
+        });
+
+        await webContainer.fs.rename(oldPath, newPath);
+      } else {
+        throw err;
+      }
     }
   }
 
