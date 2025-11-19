@@ -17,11 +17,31 @@ npm install @angular/aria
 
 For example, let's take a toolbar menu. While it may appear to be a "simple" row of buttons tied with specific logic, keyboard navigation and screen readers add a lot of unexpected complexity to those unfamiliar with accessibility.
 
-```
-<!------------------------------------->
-<!-- INSERT EMBEDDED DEMO OF TOOLBAR -->
-<!------------------------------------->
-```
+<docs-tab-group>
+  <docs-tab label="Basic">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/toolbar/src/basic/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/toolbar/src/basic/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/toolbar/src/basic/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/toolbar/src/basic/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Material">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/toolbar/src/basic/material/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/toolbar/src/basic/material/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/toolbar/src/basic/material/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/toolbar/src/basic/material/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+
+  <docs-tab label="Retro">
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/toolbar/src/basic/retro/app/app.ts">
+      <docs-code header="app.ts" path="adev/src/content/examples/aria/toolbar/src/basic/retro/app/app.ts"/>
+      <docs-code header="app.html" path="adev/src/content/examples/aria/toolbar/src/basic/retro/app/app.html"/>
+      <docs-code header="app.css" path="adev/src/content/examples/aria/toolbar/src/basic/retro/app/app.css"/>
+    </docs-code-multifile>
+  </docs-tab>
+</docs-tab-group>
 
 In this one scenario, developers need to consider:
 
@@ -42,6 +62,7 @@ Angular Aria includes directives for common interactive patterns:
 | [Grid](guide/aria/grid)                 | Two-dimensional data display with cell-by-cell keyboard navigation     |
 | [Listbox](guide/aria/listbox)           | Single or multi-select option lists with keyboard navigation           |
 | [Menu](guide/aria/menu)                 | Dropdown menus with nested submenus and keyboard shortcuts             |
+| [Menubar](guide/aria/menubar)           | Horizontal navigation bar for persistent application menus.            |
 | [Multiselect](guide/aria/multiselect)   | Multiple-selection dropdown pattern with compact display               |
 | [Select](guide/aria/select)             | Single-selection dropdown pattern with keyboard navigation             |
 | [Tabs](guide/aria/tabs)                 | Tabbed interfaces with automatic or manual activation modes            |
@@ -63,7 +84,7 @@ Angular Aria works well when you need accessible interactive components that are
 Angular Aria might not fit every scenario:
 
 - **Pre-styled components** - If you need components that look complete without custom styling, use Angular Material instead
-- **Simple forms** - Native HTML form controls like <button> and <input type="radio"> provide built-in accessibility for straightforward use cases
+- **Simple forms** - Native HTML form controls like `<button>` and `<input type="radio">` provide built-in accessibility for straightforward use cases
 - **Rapid prototyping** - When validating concepts quickly, pre-styled component libraries reduce initial development time
 
 ## Next steps
