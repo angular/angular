@@ -1,4 +1,4 @@
-import {Component, viewChild} from '@angular/core';
+import {Component, signal, viewChild} from '@angular/core';
 import {MenuBar, Menu, MenuContent, MenuItem} from '@angular/aria/menu';
 import {OverlayModule} from '@angular/cdk/overlay';
 
@@ -22,4 +22,10 @@ export class App {
   sizeMenu = viewChild<Menu<string>>('sizeMenu');
   paragraphMenu = viewChild<Menu<string>>('paragraphMenu');
   alignMenu = viewChild<Menu<string>>('alignMenu');
+
+  rendered = signal(false);
+
+  onFocusIn() {
+    this.rendered.set(true);
+  }
 }
