@@ -22,7 +22,7 @@ import {TreeVisualizerComponent} from '../../shared/tree-visualizer/tree-visuali
 import {MatIconModule} from '@angular/material/icon';
 import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {ApplicationOperations} from '../../application-operations/index';
-import {RouteDetailsRowComponent} from './route-details-row.component';
+import {RouteDetailsRowComponent} from './router-details-row/route-details-row.component';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Events, MessageBus, Route, RunGuardsAndResolvers} from '../../../../../protocol';
 import {SvgD3Node, TreeVisualizerConfig} from '../../shared/tree-visualizer/tree-visualizer';

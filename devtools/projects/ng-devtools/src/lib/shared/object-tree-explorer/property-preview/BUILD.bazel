@@ -21,7 +21,7 @@ ng_project(
     ],
     deps = [
         "//:node_modules/@angular/core",
-        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-resolver",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
         "//devtools/projects/protocol",
     ],
 )

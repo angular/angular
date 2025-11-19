@@ -11,7 +11,7 @@ import {Descriptor, PropType} from '../../../../../../protocol';
 import {Observable} from 'rxjs';
 
 import {arrayifyProps} from './arrayify-props';
-import {FlatNode, Property} from './element-property-resolver';
+import {FlatNode, Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 export const getTreeFlattener = () =>
   new MatTreeFlattener(

@@ -19,6 +19,7 @@ ng_project(
         "//:node_modules/rxjs",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/diffing",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
         "//devtools/projects/protocol",
     ],
 )
@@ -37,6 +38,7 @@ ts_test_library(
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/material",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/directive-forest/index-forest",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
         "//devtools/projects/protocol",
     ],
 )

@@ -10,10 +10,10 @@ import {ChangeDetectionStrategy, Component, computed, input, output} from '@angu
 import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../protocol';
 
 import {IndexedNode} from '../directive-forest/index-forest';
-import {FlatNode} from '../property-resolver/element-property-resolver';
 import {PropertyTabHeaderComponent} from './property-tab-header/property-tab-header.component';
 import {DeferViewComponent} from './defer-view/defer-view.component';
 import {PropertyViewComponent} from './property-view/property-view.component';
+import {FlatNode} from '../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-property-tab',

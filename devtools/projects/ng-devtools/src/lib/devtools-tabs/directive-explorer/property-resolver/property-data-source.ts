@@ -23,7 +23,7 @@ import {map} from 'rxjs/operators';
 import {diff} from '../../diffing';
 
 import {arrayifyProps} from './arrayify-props';
-import {FlatNode, Property} from './element-property-resolver';
+import {FlatNode, Property} from '../../../shared/object-tree-explorer/object-tree-types';
 
 const trackBy: TrackByFunction<FlatNode> = (_: number, item: FlatNode) =>
   `#${item.prop.name}#${item.prop.descriptor.preview}#${item.level}`;
