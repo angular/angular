@@ -50,7 +50,6 @@ export * from './i18n/index';
 export * from './injectable_compiler_2';
 export {publishFacade} from './jit_compiler_facade';
 export * from './ml_parser/ast';
-export {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/defaults';
 export * from './ml_parser/html_parser';
 export * from './ml_parser/html_tags';
 export {LexerRange} from './ml_parser/lexer';
