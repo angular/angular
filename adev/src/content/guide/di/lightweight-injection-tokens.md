@@ -32,7 +32,9 @@ This component contains a body and can contain an optional header:
 
 In a likely implementation, the `<lib-card>` component uses `@ContentChild()` or `@ContentChildren()` to get `<lib-header>` and `<lib-body>`, as in the following:
 
-<docs-code language="typescript" highlight="[12]">
+```ts {highlight: [14]}
+import {Component, ContentChild} from '@angular/core';
+
 @Component({
   selector: 'lib-header',
   …,
@@ -40,22 +42,21 @@ In a likely implementation, the `<lib-card>` component uses `@ContentChild()` or
 class LibHeaderComponent {}
 
 @Component({
-selector: 'lib-card',
-…,
+  selector: 'lib-card',
+  …,
 })
 class LibCardComponent {
-@ContentChild(LibHeaderComponent) header: LibHeaderComponent|null = null;
+  @ContentChild(LibHeaderComponent) header: LibHeaderComponent | null = null;
 }
-
-</docs-code>
+```
 
 Because `<lib-header>` is optional, the element can appear in the template in its minimal form, `<lib-card></lib-card>`.
 In this case, `<lib-header>` is not used and you would expect it to be tree-shaken, but that is not what happens.
 This is because `LibCardComponent` actually contains two references to the `LibHeaderComponent`:
 
-<docs-code language="typescript">
+```ts
 @ContentChild(LibHeaderComponent) header: LibHeaderComponent;
-</docs-code>
+```
 
 - One of these reference is in the _type position_-- that is, it specifies `LibHeaderComponent` as a type: `header: LibHeaderComponent;`.
 - The other reference is in the _value position_-- that is, LibHeaderComponent is the value of the `@ContentChild()` parameter decorator: `@ContentChild(LibHeaderComponent)`.
@@ -79,13 +80,13 @@ There are two cases when that can happen:
 
 In the following example, both uses of the `OtherComponent` token cause retention of `OtherComponent`, preventing it from being tree-shaken when it is not used:
 
-<docs-code language="typescript" highlight="[[2],[4]]">
+```ts {highlight: [[2],[4]]}
 class MyComponent {
   constructor(@Optional() other: OtherComponent) {}
 
-@ContentChild(OtherComponent) other: OtherComponent|null;
+  @ContentChild(OtherComponent) other: OtherComponent | null;
 }
-</docs-code>
+```
 
 Although tokens used only as type specifiers are removed when converted to JavaScript, all tokens used for dependency injection are needed at runtime.
 These effectively change `constructor(@Optional() other: OtherComponent)` to `constructor(@Optional() @Inject(OtherComponent) other)`.
@@ -100,26 +101,24 @@ The abstract class is retained, not tree-shaken, but it is small and has no mate
 
 The following example shows how this works for the `LibHeaderComponent`:
 
-<docs-code language="typescript" language="[[1],[6],[17]]">
+```ts {highlight: [[1],[5], [15]]}
 abstract class LibHeaderToken {}
 
 @Component({
-selector: 'lib-header',
-providers: [
-{provide: LibHeaderToken, useExisting: LibHeaderComponent}
-]
-…,
+  selector: 'lib-header',
+  providers: [{provide: LibHeaderToken, useExisting: LibHeaderComponent}],
+  …,
 })
 class LibHeaderComponent extends LibHeaderToken {}
 
 @Component({
-selector: 'lib-card',
-…,
+  selector: 'lib-card',
+  …,
 })
 class LibCardComponent {
-@ContentChild(LibHeaderToken) header: LibHeaderToken|null = null;
+  @ContentChild(LibHeaderToken) header: LibHeaderToken | null = null;
 }
-</docs-code>
+```
 
 In this example, the `LibCardComponent` implementation no longer refers to `LibHeaderComponent` in either the type position or the value position.
 This lets full tree-shaking of `LibHeaderComponent` take place.
@@ -132,9 +131,9 @@ You can safely use that token as the provider in the component definition, allow
 To summarize, the lightweight injection token pattern consists of the following:
 
 1. A lightweight injection token that is represented as an abstract class.
-1. A component definition that implements the abstract class.
-1. Injection of the lightweight pattern, using `@ContentChild()` or `@ContentChildren()`.
-1. A provider in the implementation of the lightweight injection token which associates the lightweight injection token with the implementation.
+2. A component definition that implements the abstract class.
+3. Injection of the lightweight pattern, using `@ContentChild()` or `@ContentChildren()`.
+4. A provider in the implementation of the lightweight injection token which associates the lightweight injection token with the implementation.
 
 ### Use the lightweight injection token for API definition
 
@@ -146,38 +145,34 @@ This lets the parent communicate with the child, if it is present, in a type-saf
 For example, the `LibCardComponent` now queries `LibHeaderToken` rather than `LibHeaderComponent`.
 The following example shows how the pattern lets `LibCardComponent` communicate with the `LibHeaderComponent` without actually referring to `LibHeaderComponent`:
 
-<docs-code language="typescript" highlight="[[3],[13,16],[27]]">
+```ts {highlight: [[2],[9],[11],[19]]}
 abstract class LibHeaderToken {
   abstract doSomething(): void;
 }
 
 @Component({
-selector: 'lib-header',
-providers: [
-{provide: LibHeaderToken, useExisting: LibHeaderComponent}
-]
-…,
+  selector: 'lib-header',
+  providers: [{provide: LibHeaderToken, useExisting: LibHeaderComponent}],
 })
 class LibHeaderComponent extends LibHeaderToken {
-doSomething(): void {
-// Concrete implementation of `doSomething`
-}
+  doSomething(): void {
+    // Concrete implementation of `doSomething`
+  }
 }
 
 @Component({
-selector: 'lib-card',
-…,
+  selector: 'lib-card',
 })
-class LibCardComponent implement AfterContentInit {
-@ContentChild(LibHeaderToken) header: LibHeaderToken|null = null;
+class LibCardComponent implements AfterContentInit {
+  @ContentChild(LibHeaderToken) header: LibHeaderToken | null = null;
 
-ngAfterContentInit(): void {
-if (this.header !== null) {
-this.header?.doSomething();
+  ngAfterContentInit(): void {
+    if (this.header !== null) {
+      this.header?.doSomething();
+    }
+  }
 }
-}
-}
-</docs-code>
+```
 
 In this example, the parent queries the token to get the child component, and stores the resulting component reference if it is present.
 Before calling a method in the child, the parent component checks to see if the child component is present.
