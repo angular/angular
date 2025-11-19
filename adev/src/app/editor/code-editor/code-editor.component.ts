@@ -120,9 +120,65 @@ export class CodeEditor {
 
         this.listenToTabChange();
         this.setSelectedTabOnTutorialChange();
+        this.listenToFileOpenRequests();
       });
 
       cleanupFn(() => this.codeMirrorEditor.disable());
+    });
+  }
+
+  private listenToFileOpenRequests() {
+    // Handler for opening files at specific locations
+    const openFile = (file: string, line: number, character: number) => {
+      // Normalize the file path - Vite uses /app/... but editor uses src/app/...
+      let normalizedPath = file;
+      if (file.startsWith('/')) {
+        // Remove leading slash and prepend 'src'
+        normalizedPath = 'src' + file;
+      }
+
+      // Find the file in the files list
+      const targetFile = this.files().find((f) => f.filename === normalizedPath);
+      if (targetFile) {
+        // Switch to the file's tab
+        const fileIndex = this.files().indexOf(targetFile);
+        this.matTabGroup().selectedIndex = fileIndex;
+
+        // Explicitly change the current file in the editor
+        this.codeMirrorEditor.changeCurrentFile(targetFile.filename);
+
+        // Wait for the tab to switch and file to load, then scroll to the line
+        setTimeout(() => {
+          this.codeMirrorEditor.scrollToLine(line - 1, character); // Convert to 0-based
+        }, 200);
+      } else {
+        // console.warn('File not found in editor:', normalizedPath);
+      }
+    };
+
+    // Listen for CustomEvent (backward compatibility)
+    const handleCustomEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{file: string; line: number; character: number}>;
+      const {file, line, character} = customEvent.detail;
+      openFile(file, line, character);
+    };
+
+    // Listen for postMessage from preview iframe (Vite error overlay)
+    const handlePostMessage = (event: MessageEvent) => {
+      // Check if this is an openFileAtLocation message
+      if (event.data?.type === 'openFileAtLocation') {
+        const {file, line, character} = event.data;
+        openFile(file, line, character);
+      }
+    };
+
+    window.addEventListener('openFileAtLocation', handleCustomEvent);
+    window.addEventListener('message', handlePostMessage);
+
+    // Cleanup listeners on destroy
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('openFileAtLocation', handleCustomEvent);
+      window.removeEventListener('message', handlePostMessage);
     });
   }
 
