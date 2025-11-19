@@ -172,55 +172,47 @@ export const enum TNodeFlags {
   isInControlFlow = 1 << 9,
 
   /**
-   * Bit #11 - This bit is set if the node represents a form control.
-   *
-   * True when the node has an input binding to a `ɵControl` directive (but not also to a custom
-   * component).
-   */
-  isFormControl = 1 << 10,
-
-  /**
-   * Bit #12 - This bit is set if the node hosts a custom control component.
+   * Bit #11 - This bit is set if the node hosts a custom control component.
    *
    * A custom control component's model property is named `value`.
    */
-  isFormValueControl = 1 << 11,
+  isFormValueControl = 1 << 10,
 
   /**
-   * Bit #13 - This bit is set if the node hosts a custom checkbox component.
+   * Bit #12 - This bit is set if the node hosts a custom checkbox component.
    *
    * A custom checkbox component's model property is named `checked`.
    */
-  isFormCheckboxControl = 1 << 12,
+  isFormCheckboxControl = 1 << 11,
 
   /**
-   * Bit #14 - This bit is set if the node hosts an interoperable control implementation.
+   * Bit #13 - This bit is set if the node hosts an interoperable control implementation.
    *
    * This is used to bind to a `ControlValueAccessor` from `@angular/forms`.
    */
-  isInteropControl = 1 << 13,
+  isInteropControl = 1 << 12,
 
   /**
-   * Bit #15 - This bit is set if the node is a native control.
+   * Bit #14 - This bit is set if the node is a native control.
    *
    * This is used to determine whether we can bind common control properties to the host element of
    * a custom control when it doesn't define a corresponding input.
    */
-  isNativeControl = 1 << 14,
+  isNativeControl = 1 << 13,
 
   /**
-   * Bit #16 - This bit is set if the node is a native control with a numeric type.
+   * Bit #15 - This bit is set if the node is a native control with a numeric type.
    *
    * This is used to determine whether the control supports the `min` and `max` properties.
    */
-  isNativeNumericControl = 1 << 15,
+  isNativeNumericControl = 1 << 14,
 
   /**
-   * Bit #17 - This bit is set if the node is a native text control.
+   * Bit #16 - This bit is set if the node is a native text control.
    *
    * This is used to determine whether control supports the `minLength` and `maxLength` properties.
    */
-  isNativeTextControl = 1 << 16,
+  isNativeTextControl = 1 << 15,
 }
 
 /**
@@ -380,6 +372,12 @@ export interface TNode {
    * `directiveStart + componentOffset`.
    */
   componentOffset: number;
+
+  /**
+   * Index at which the signal forms field directive is stored.
+   * Value is set to -1 if there are no field directives.
+   */
+  fieldIndex: number;
 
   /**
    * Stores the last directive which had a styling instruction.
