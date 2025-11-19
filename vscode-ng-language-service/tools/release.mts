@@ -281,8 +281,18 @@ async function waitForPRToBeMergedAndTag(
   newVersion: string,
   branchToReleaseFrom: string,
 ): Promise<void> {
-  console.log('');
-  console.log('Waiting for release PR to be merged...');
+  console.log(
+    chalk.yellow(`
+=======================
+ ⚠️  ACTION REQUIRED ⚠️
+=======================
+
+Before merging the PR, you should install the extension at: ${extensionPath} and test it.
+
+Once you press Enter, the process will tag and publish automatically.
+`),
+  );
+
   await input({
     message: 'Press Enter once the release PR has been merged.',
   });
@@ -341,8 +351,7 @@ async function publishExtension(): Promise<void> {
   console.log(`VSIX path: ${extensionPath}`);
   console.log(`Please get a PAT token from: http://go/secret-tunnel/1575675884599726`);
 
-  console.log('');
-  await execAndStream('pnpm', ['--filter="ng-template"', 'vsce', 'login', 'Angular']);
+  // NOTE: `vsce publish` will prompt for login if the user is not already authenticated.
 
   console.log('');
   console.log(chalk.blue('Publishing extension'));
