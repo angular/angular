@@ -1364,10 +1364,13 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 18.2.10
-        version: 18.2.10(@angular/core@18.2.10)
+        version: 18.2.10(@angular/core@18.2.10(zone.js@0.15.0))
       '@angular/core':
         specifier: 18.2.10
-        version: 18.2.10
+        version: 18.2.10(zone.js@0.15.0)
+      zone.js:
+        specifier: 0.15.0
+        version: 0.15.0
 
   vscode-ng-language-service/integration/project:
     dependencies:
@@ -1735,6 +1738,8 @@ packages:
   '@angular/core@18.2.10':
     resolution: {integrity: sha512-EfxVz0pLaxnOppOYkdhnaUkk8HZT+uxaAGpJD3ppAa7YAWTE9xIGoNJmtS33cZNNOnvriMkdv7yn6pDtV4ct+Q==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
+    peerDependencies:
+      zone.js: ~0.14.10
 
   '@angular/core@21.0.0-rc.3':
     resolution: {integrity: sha512-dM8EKKwI8hPAXCtWVBB3BvuTPq7if1iMFZaW331PpLk8XzrEq7yMTVX/u6fCShPGrbp7aFAOAEFaxTd39aSvtw==}
@@ -13319,8 +13324,8 @@ packages:
   zod@4.1.12:
     resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
-  zone.js@0.14.10:
-    resolution: {integrity: sha512-YGAhaO7J5ywOXW6InXNlLmfU194F8lVgu7bRntUF3TiG8Y3nBK0x1UJJuHUP/e8IyihkjCYqhCScpSwnlaSRkQ==}
+  zone.js@0.15.0:
+    resolution: {integrity: sha512-9oxn0IIjbCZkJ67L+LkhYWRyAy7axphb3VgE2MBDlOqnmHMPWGYMxJxBYFueFq/JGY2GMwS0rU+UCLunEmy5UA==}
 
   zone.js@0.15.1:
     resolution: {integrity: sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==}
@@ -13982,9 +13987,9 @@ snapshots:
       - chokidar
       - supports-color
 
-  '@angular/common@18.2.10(@angular/core@18.2.10)':
+  '@angular/common@18.2.10(@angular/core@18.2.10(zone.js@0.15.0))':
     dependencies:
-      '@angular/core': 18.2.10
+      '@angular/core': 18.2.10(zone.js@0.15.0)
       rxjs: 7.8.2
       tslib: 2.8.1
 
@@ -14014,11 +14019,11 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@angular/core@18.2.10':
+  '@angular/core@18.2.10(zone.js@0.15.0)':
     dependencies:
       rxjs: 7.8.2
       tslib: 2.8.1
-      zone.js: 0.14.10
+      zone.js: 0.15.0
 
   '@angular/core@21.0.0-rc.3(@angular/compiler@21.0.0-rc.3)':
     dependencies:
@@ -28336,7 +28341,7 @@ snapshots:
 
   zod@4.1.12: {}
 
-  zone.js@0.14.10: {}
+  zone.js@0.15.0: {}
 
   zone.js@0.15.1: {}
 
