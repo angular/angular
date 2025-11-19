@@ -19,5 +19,5 @@ export const caretaker = {
       query: `is:open no:milestone -draft:true`,
     },
   ],
-  caretakerGroup: 'angular-caretaker',
+  hasEmeaCaretaker: true,
 };
