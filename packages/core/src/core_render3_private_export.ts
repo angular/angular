@@ -62,7 +62,6 @@ export {
   ɵDeferBlockDependencyInterceptor,
   ɵDEFER_BLOCK_DEPENDENCY_INTERCEPTOR,
   ɵDEFER_BLOCK_CONFIG,
-  Framework as ɵFramework,
   BaseDirectiveDebugMetadata as ɵBaseDirectiveDebugMetadata,
   AngularDirectiveDebugMetadata as ɵAngularDirectiveDebugMetadata,
   AngularComponentDebugMetadata as ɵAngularComponentDebugMetadata,
@@ -274,7 +273,8 @@ export {isNgModule as ɵisNgModule} from './render3/jit/util';
 export {
   Profiler as ɵProfiler,
   ProfilerEvent as ɵProfilerEvent,
-} from '../primitives/profiler/src/profiler_types';
+  Framework as ɵFramework,
+} from '../primitives/devtools';
 export {
   FrameworkAgnosticGlobalUtils as ɵFrameworkAgnosticGlobalUtils,
   GlobalDevModeUtils as ɵGlobalDevModeUtils,

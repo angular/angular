@@ -201,6 +201,7 @@
       "PRESERVE_HOST_CONTENT_DEFAULT",
       "PendingTasks",
       "PendingTasksInternal",
+      "ProfilerEvent",
       "QUERIES",
       "R3Injector",
       "REACTIVE_LVIEW_CONSUMER_NODE",

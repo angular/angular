@@ -24,7 +24,7 @@ ts_project(
         "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
-        "//packages/core/primitives/profiler",
+        "//packages/core/primitives/devtools",
         "//packages/core/primitives/signals",
         "//packages/core/src/di/interface",
         "//packages/core/src/util",

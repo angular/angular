@@ -67,7 +67,7 @@ import {
 
 import {isDestroyed} from '../interfaces/type_checks';
 import {profiler} from '../profiler';
-import {ProfilerEvent} from '../../../primitives/profiler/src/profiler_types';
+import {ProfilerEvent} from '../../../primitives/devtools';
 import {executeViewQueryFn, refreshContentQueries} from '../queries/query_execution';
 import {runEffectsInView} from '../reactivity/view_effect_runner';
 import {executeTemplate} from './shared';

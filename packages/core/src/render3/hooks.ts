@@ -35,7 +35,7 @@ import {
   TView,
 } from './interfaces/view';
 import {profiler} from './profiler';
-import {ProfilerEvent} from '../../primitives/profiler/src/profiler_types';
+import {ProfilerEvent} from '../../primitives/devtools';
 import {isInCheckNoChangesMode} from './state';
 
 /**
