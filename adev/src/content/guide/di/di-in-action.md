@@ -11,20 +11,21 @@ As a result, you might need to access a component's DOM element.
 
 Angular exposes the underlying element of a `@Component` or `@Directive` via injection using the `ElementRef` injection token:
 
-<docs-code language="typescript" highlight="[7]">
-import { Directive, ElementRef } from '@angular/core';
+```ts {highlight:[7]}
+import {Directive, ElementRef, inject} from '@angular/core';
 
 @Directive({
-selector: '[appHighlight]'
+  selector: '[appHighlight]',
 })
 export class HighlightDirective {
-private element = inject(ElementRef)
+  private element = inject(ElementRef);
 
-update() {
-this.element.nativeElement.style.color = 'red';
+  update() {
+    this.element.nativeElement.style.color = 'red';
+  }
 }
-}
-</docs-code>
+
+```
 
 ## Resolve circular dependencies with a forward reference
 
@@ -42,11 +43,11 @@ For example, in its `providers` array.
 The `providers` array is a property of the `@Component()` decorator function, which must appear before the class definition.
 You can break such circular references by using `forwardRef`.
 
-<docs-code header="app.component.ts" language="typescript" highlight="[4]">
+```typescript {header: 'app.component.ts', highlight: [4]}
 providers: [
   {
     provide: PARENT_MENU_ITEM,
     useExisting: forwardRef(() => MenuItem),
   },
 ],
-</docs-code>
+```
