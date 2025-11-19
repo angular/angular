@@ -380,6 +380,12 @@ export interface TNode {
   fieldIndex: number;
 
   /**
+   * Index at which the custom control directive is stored.
+   * Value is set to -1 if there is no custom control directive.
+   */
+  customControlIndex: number;
+
+  /**
    * Stores the last directive which had a styling instruction.
    *
    * Initial value of this is `-1` which means that no `hostBindings` styling instruction has
