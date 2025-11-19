@@ -32,7 +32,7 @@ import {CodeMirrorEditor} from './code-mirror-editor.service';
 import {DiagnosticWithLocation, DiagnosticsState} from './services/diagnostics-state.service';
 import {DownloadManager} from '../download-manager.service';
 import {StackBlitzOpener} from '../stackblitz-opener.service';
-import {ClickOutside, IconComponent} from '@angular/docs';
+import {IconComponent} from '@angular/docs';
 import {CdkMenu, CdkMenuItem, CdkMenuTrigger} from '@angular/cdk/menu';
 import {FirebaseStudioLauncher} from '../firebase-studio-launcher.service';
 import {MatTooltip} from '@angular/material/tooltip';
@@ -51,15 +51,7 @@ const ANGULAR_DEV = 'https://angular.dev';
   templateUrl: './code-editor.component.html',
   styleUrls: ['./code-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatTabsModule,
-    MatTooltip,
-    IconComponent,
-    ClickOutside,
-    CdkMenu,
-    CdkMenuItem,
-    CdkMenuTrigger,
-  ],
+  imports: [MatTabsModule, MatTooltip, IconComponent, CdkMenu, CdkMenuItem, CdkMenuTrigger],
 })
 export class CodeEditor {
   readonly restrictedMode = input(false);
@@ -155,10 +147,6 @@ export class CodeEditor {
     this.displayErrorsBox.set(false);
   }
 
-  protected closeRenameFile(): void {
-    this.isRenamingFile.set(false);
-  }
-
   protected canRenameFile = (filename: string) => this.canDeleteFile(filename);
 
   protected canDeleteFile(filename: string) {
@@ -189,12 +177,7 @@ export class CodeEditor {
 
     const renameFileInputValue = renameFileInput.nativeElement.value;
 
-    if (renameFileInputValue) {
-      if (renameFileInputValue.includes('..')) {
-        alert('File name can not contain ".."');
-        return;
-      }
-
+    if (this.validateFileName(renameFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + renameFileInputValue;
 
@@ -209,20 +192,15 @@ export class CodeEditor {
     this.isRenamingFile.set(false);
   }
 
-  protected async createFile(event: SubmitEvent) {
+  protected async createFile(event?: SubmitEvent) {
     const fileInput = this.createFileInputRef();
     if (!fileInput) return;
 
-    event.preventDefault();
+    event?.preventDefault();
 
     const newFileInputValue = fileInput.nativeElement.value;
 
-    if (newFileInputValue) {
-      if (newFileInputValue.includes('..')) {
-        alert('File name can not contain ".."');
-        return;
-      }
-
+    if (this.validateFileName(newFileInputValue)) {
       // src is hidden from users, here we manually add it to the new filename
       const newFile = 'src/' + newFileInputValue;
 
@@ -235,6 +213,21 @@ export class CodeEditor {
     }
 
     this.isCreatingFile.set(false);
+  }
+
+  private validateFileName(fileName: string): boolean {
+    if (!fileName) {
+      return false;
+    }
+    if (fileName.split('/').pop()?.indexOf('.') === 0) {
+      alert('File must contain a name.');
+      return false;
+    }
+    if (fileName.includes('..')) {
+      alert('File name can not contain ".."');
+      return false;
+    }
+    return true;
   }
 
   private listenToDiagnosticsChange(): void {
