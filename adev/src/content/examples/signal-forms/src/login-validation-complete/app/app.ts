@@ -1,5 +1,5 @@
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
-import {form, Field, required, email} from '@angular/forms/signals';
+import {form, Field, required, email, submit} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
@@ -28,9 +28,11 @@ export class App {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    // Perform login logic here
-    const credentials = this.loginModel();
-    console.log('Logging in with:', credentials);
-    // e.g., await this.authService.login(credentials);
+    submit(this.loginForm, async () => {
+      const credentials = this.loginModel();
+      // In a real app, this would be async:
+      // await this.authService.login(credentials);
+      console.log('Logging in with:', credentials);
+    });
   }
 }
