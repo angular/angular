@@ -8,12 +8,10 @@
 
 import {createI18nMessageFactory} from '../../src/i18n/i18n_parser';
 import {Node} from '../../src/ml_parser/ast';
-import {DEFAULT_CONTAINER_BLOCKS} from '../../src/ml_parser/defaults';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 
 describe('Message', () => {
   const messageFactory = createI18nMessageFactory(
-    DEFAULT_CONTAINER_BLOCKS,
     /* retainEmptyTokens */ false,
     /* preserveExpressionWhitespace */ true,
   );
