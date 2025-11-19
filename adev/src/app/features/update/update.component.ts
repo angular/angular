@@ -71,6 +71,7 @@ export default class UpdateComponent {
   protected afterRecommendations: Step[] = [];
 
   protected readonly versions = [
+    {name: '21.0', number: 2100},
     {name: '20.0', number: 2000},
     {name: '19.0', number: 1900},
     {name: '18.0', number: 1800},
@@ -108,8 +109,8 @@ export default class UpdateComponent {
     {name: '2.1', number: 201},
     {name: '2.0', number: 200},
   ];
-  protected from = this.versions.find((version) => version.name === '19.0')!;
-  protected to = this.versions.find((version) => version.name === '20.0')!;
+  protected from = this.versions.find((version) => version.name === '20.0')!;
+  protected to = this.versions.find((version) => version.name === '21.0')!;
   protected futureVersion = 2100;
 
   protected readonly steps: Step[] = RECOMMENDATIONS;
