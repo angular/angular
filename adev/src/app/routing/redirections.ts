@@ -168,4 +168,8 @@ export const REDIRECT_ROUTES: Route[] = [
     path: 'guide/aria',
     redirectTo: '/guide/aria/overview',
   },
+  {
+    path: 'signal-forms',
+    redirectTo: '/playground?templateId=4-signal-forms',
+  },
 ];
