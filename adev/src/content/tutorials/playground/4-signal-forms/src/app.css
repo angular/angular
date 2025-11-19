@@ -1,0 +1,37 @@
+.container {
+    border: 1px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: 1px solid #0056b3;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease;
+    display: block;
+    margin-top: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+input, textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 60%;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}

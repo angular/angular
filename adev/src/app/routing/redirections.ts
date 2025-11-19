@@ -164,4 +164,8 @@ export const REDIRECT_ROUTES: Route[] = [
     path: 'guide/animations/reusable-animations',
     redirectTo: '/guide/legacy-animations/reusable-animations',
   },
+  {
+    path: 'signal-forms',
+    redirectTo: '/playground?templateId=4-signal-forms',
+  },
 ];
