@@ -1,4 +1,4 @@
-// TODO: Import signal from @angular/core
+// TODO: Add signal to the import from @angular/core below
 import {Component, ChangeDetectionStrategy} from '@angular/core';
 // TODO: Import form from @angular/forms/signals
 
