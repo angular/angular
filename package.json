@@ -169,7 +169,7 @@
     "@bazel/bazelisk": "^1.7.5",
     "@bazel/buildifier": "^8.0.0",
     "@bazel/ibazel": "0.27.0",
-    "@inquirer/prompts": "^7.0.0",
+    "@inquirer/prompts": "^8.0.0",
     "@nginfra/angular-linking": "^1.0.10",
     "@octokit/graphql": "^9.0.0",
     "@types/adm-zip": "^0.5.0",
