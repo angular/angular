@@ -103,11 +103,11 @@ var require_command = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.issue = exports.issueCommand = void 0;
-    var os3 = __importStar(__require("os"));
+    var os2 = __importStar(__require("os"));
     var utils_1 = require_utils();
     function issueCommand(command2, properties, message) {
       const cmd = new Command(command2, properties, message);
-      process.stdout.write(cmd.toString() + os3.EOL);
+      process.stdout.write(cmd.toString() + os2.EOL);
     }
     exports.issueCommand = issueCommand;
     function issue(name, message = "") {
@@ -196,7 +196,7 @@ var require_file_command = __commonJS({
     exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
     var crypto = __importStar(__require("crypto"));
     var fs = __importStar(__require("fs"));
-    var os3 = __importStar(__require("os"));
+    var os2 = __importStar(__require("os"));
     var utils_1 = require_utils();
     function issueFileCommand(command2, message) {
       const filePath = process.env[`GITHUB_${command2}`];
@@ -206,7 +206,7 @@ var require_file_command = __commonJS({
       if (!fs.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os3.EOL}`, {
+      fs.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os2.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -220,7 +220,7 @@ var require_file_command = __commonJS({
       if (convertedValue.includes(delimiter)) {
         throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
       }
-      return `${key}<<${delimiter}${os3.EOL}${convertedValue}${os3.EOL}${delimiter}`;
+      return `${key}<<${delimiter}${os2.EOL}${convertedValue}${os2.EOL}${delimiter}`;
     }
     exports.prepareKeyValueMessage = prepareKeyValueMessage;
   }
@@ -2211,7 +2211,7 @@ var require_toolrunner = __commonJS({
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.argStringToArray = exports.ToolRunner = void 0;
-    var os3 = __importStar(__require("os"));
+    var os2 = __importStar(__require("os"));
     var events = __importStar(__require("events"));
     var child = __importStar(__require("child_process"));
     var path = __importStar(__require("path"));
@@ -2266,12 +2266,12 @@ var require_toolrunner = __commonJS({
       _processLineBuffer(data, strBuffer, onLine) {
         try {
           let s = strBuffer + data.toString();
-          let n = s.indexOf(os3.EOL);
+          let n = s.indexOf(os2.EOL);
           while (n > -1) {
             const line = s.substring(0, n);
             onLine(line);
-            s = s.substring(n + os3.EOL.length);
-            n = s.indexOf(os3.EOL);
+            s = s.substring(n + os2.EOL.length);
+            n = s.indexOf(os2.EOL);
           }
           return s;
         } catch (err) {
@@ -2440,7 +2440,7 @@ var require_toolrunner = __commonJS({
             }
             const optionsNonNull = this._cloneExecOptions(this.options);
             if (!optionsNonNull.silent && optionsNonNull.outStream) {
-              optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os3.EOL);
+              optionsNonNull.outStream.write(this._getCommandString(optionsNonNull) + os2.EOL);
             }
             const state = new ExecState(optionsNonNull, this.toolPath);
             state.on("debug", (message) => {
@@ -2943,7 +2943,7 @@ var require_core = __commonJS({
     var command_1 = require_command();
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
-    var os3 = __importStar(__require("os"));
+    var os2 = __importStar(__require("os"));
     var path = __importStar(__require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
@@ -3011,7 +3011,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       if (filePath) {
         return (0, file_command_1.issueFileCommand)("OUTPUT", (0, file_command_1.prepareKeyValueMessage)(name, value));
       }
-      process.stdout.write(os3.EOL);
+      process.stdout.write(os2.EOL);
       (0, command_1.issueCommand)("set-output", { name }, (0, utils_1.toCommandValue)(value));
     }
     exports.setOutput = setOutput;
@@ -3045,7 +3045,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports.notice = notice;
     function info(message) {
-      process.stdout.write(message + os3.EOL);
+      process.stdout.write(message + os2.EOL);
     }
     exports.info = info;
     function startGroup(name) {
@@ -3484,10 +3484,10 @@ var require_dist_node2 = __commonJS({
         return false;
       if (Object.prototype.toString.call(value) !== "[object Object]")
         return false;
-      const proto2 = Object.getPrototypeOf(value);
-      if (proto2 === null)
+      const proto = Object.getPrototypeOf(value);
+      if (proto === null)
         return true;
-      const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
       return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
     }
     function mergeDeep3(defaults, options) {
@@ -3996,10 +3996,10 @@ var require_dist_node5 = __commonJS({
         return false;
       if (Object.prototype.toString.call(value) !== "[object Object]")
         return false;
-      const proto2 = Object.getPrototypeOf(value);
-      if (proto2 === null)
+      const proto = Object.getPrototypeOf(value);
+      if (proto === null)
         return true;
-      const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+      const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
       return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
     }
     var import_request_error2 = require_dist_node4();
@@ -7200,15 +7200,15 @@ var require_github = __commonJS({
 var require_tmp = __commonJS({
   ""(exports, module) {
     var fs = __require("fs");
-    var os3 = __require("os");
+    var os2 = __require("os");
     var path = __require("path");
     var crypto = __require("crypto");
-    var _c2 = { fs: fs.constants, os: os3.constants };
+    var _c2 = { fs: fs.constants, os: os2.constants };
     var RANDOM_CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     var TEMPLATE_PATTERN = /XXXXXX/;
     var DEFAULT_TRIES = 3;
     var CREATE_FLAGS = (_c2.O_CREAT || _c2.fs.O_CREAT) | (_c2.O_EXCL || _c2.fs.O_EXCL) | (_c2.O_RDWR || _c2.fs.O_RDWR);
-    var IS_WIN32 = os3.platform() === "win32";
+    var IS_WIN32 = os2.platform() === "win32";
     var EBADF = _c2.EBADF || _c2.os.errno.EBADF;
     var ENOENT = _c2.ENOENT || _c2.os.errno.ENOENT;
     var DIR_MODE = 448;
@@ -7553,10 +7553,10 @@ var require_tmp = __commonJS({
       _gracefulCleanup = true;
     }
     function _getTmpDir(options, cb) {
-      return fs.realpath(options && options.tmpdir || os3.tmpdir(), cb);
+      return fs.realpath(options && options.tmpdir || os2.tmpdir(), cb);
     }
     function _getTmpDirSync(options) {
-      return fs.realpathSync(options && options.tmpdir || os3.tmpdir());
+      return fs.realpathSync(options && options.tmpdir || os2.tmpdir());
     }
     process.addListener(EXIT, _garbageCollector);
     Object.defineProperty(module.exports, "tmpdir", {
@@ -10308,9 +10308,9 @@ var require_lockfile = __commonJS({
         }
         exports2.MessageError = MessageError;
         class ProcessSpawnError extends MessageError {
-          constructor(msg, code, process4) {
+          constructor(msg, code, process3) {
             super(msg, code);
-            this.process = process4;
+            this.process = process3;
           }
         }
         exports2.ProcessSpawnError = ProcessSpawnError;
@@ -11300,7 +11300,7 @@ var require_lockfile = __commonJS({
           value: true
         });
         exports2.getPathKey = getPathKey;
-        const os3 = __webpack_require__(36);
+        const os2 = __webpack_require__(36);
         const path = __webpack_require__(0);
         const userHome = __webpack_require__(45).default;
         var _require = __webpack_require__(171);
@@ -11324,9 +11324,9 @@ var require_lockfile = __commonJS({
         function getPreferredCacheDirectories() {
           const preferredCacheDirectories = [getCacheDir()];
           if (process.getuid) {
-            preferredCacheDirectories.push(path.join(os3.tmpdir(), `.yarn-cache-${process.getuid()}`));
+            preferredCacheDirectories.push(path.join(os2.tmpdir(), `.yarn-cache-${process.getuid()}`));
           }
-          preferredCacheDirectories.push(path.join(os3.tmpdir(), `.yarn-cache`));
+          preferredCacheDirectories.push(path.join(os2.tmpdir(), `.yarn-cache`));
           return preferredCacheDirectories;
         }
         const PREFERRED_MODULE_CACHE_DIRECTORIES = exports2.PREFERRED_MODULE_CACHE_DIRECTORIES = getPreferredCacheDirectories();
@@ -11359,11 +11359,11 @@ var require_lockfile = __commonJS({
         const SINGLE_INSTANCE_PORT = exports2.SINGLE_INSTANCE_PORT = 31997;
         const SINGLE_INSTANCE_FILENAME = exports2.SINGLE_INSTANCE_FILENAME = ".yarn-single-instance";
         const ENV_PATH_KEY = exports2.ENV_PATH_KEY = getPathKey(process.platform, process.env);
-        function getPathKey(platform, env4) {
+        function getPathKey(platform, env3) {
           let pathKey = "PATH";
           if (platform === "win32") {
             pathKey = "Path";
-            for (const key in env4) {
+            for (const key in env3) {
               if (key.toLowerCase() === "path") {
                 pathKey = key;
               }
@@ -14404,8 +14404,8 @@ var require_lockfile = __commonJS({
         module2.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {
           $iterCreate(Constructor, NAME, next);
           var getMethod = function(kind) {
-            if (!BUGGY && kind in proto2)
-              return proto2[kind];
+            if (!BUGGY && kind in proto)
+              return proto[kind];
             switch (kind) {
               case KEYS:
                 return function keys() {
@@ -14423,11 +14423,11 @@ var require_lockfile = __commonJS({
           var TAG = NAME + " Iterator";
           var DEF_VALUES = DEFAULT == VALUES;
           var VALUES_BUG = false;
-          var proto2 = Base.prototype;
-          var $native = proto2[ITERATOR] || proto2[FF_ITERATOR] || DEFAULT && proto2[DEFAULT];
+          var proto = Base.prototype;
+          var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
           var $default = $native || getMethod(DEFAULT);
           var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod("entries") : void 0;
-          var $anyNative = NAME == "Array" ? proto2.entries || $native : $native;
+          var $anyNative = NAME == "Array" ? proto.entries || $native : $native;
           var methods, key, IteratorPrototype;
           if ($anyNative) {
             IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));
@@ -14443,8 +14443,8 @@ var require_lockfile = __commonJS({
               return $native.call(this);
             };
           }
-          if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto2[ITERATOR])) {
-            hide(proto2, ITERATOR, $default);
+          if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {
+            hide(proto, ITERATOR, $default);
           }
           Iterators[NAME] = $default;
           Iterators[TAG] = returnThis;
@@ -14456,8 +14456,8 @@ var require_lockfile = __commonJS({
             };
             if (FORCED)
               for (key in methods) {
-                if (!(key in proto2))
-                  redefine(proto2, key, methods[key]);
+                if (!(key in proto))
+                  redefine(proto, key, methods[key]);
               }
             else
               $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
@@ -14539,7 +14539,7 @@ var require_lockfile = __commonJS({
         var html = __webpack_require__(102);
         var cel = __webpack_require__(68);
         var global = __webpack_require__(11);
-        var process4 = global.process;
+        var process3 = global.process;
         var setTask = global.setImmediate;
         var clearTask = global.clearImmediate;
         var MessageChannel = global.MessageChannel;
@@ -14574,9 +14574,9 @@ var require_lockfile = __commonJS({
           clearTask = function clearImmediate(id) {
             delete queue[id];
           };
-          if (__webpack_require__(47)(process4) == "process") {
+          if (__webpack_require__(47)(process3) == "process") {
             defer = function(id) {
-              process4.nextTick(ctx(run, id, 1));
+              process3.nextTick(ctx(run, id, 1));
             };
           } else if (Dispatch && Dispatch.now) {
             defer = function(id) {
@@ -15999,14 +15999,14 @@ ${indent}`);
         var global = __webpack_require__(11);
         var macrotask = __webpack_require__(109).set;
         var Observer = global.MutationObserver || global.WebKitMutationObserver;
-        var process4 = global.process;
+        var process3 = global.process;
         var Promise2 = global.Promise;
-        var isNode = __webpack_require__(47)(process4) == "process";
+        var isNode = __webpack_require__(47)(process3) == "process";
         module2.exports = function() {
           var head, last, notify;
           var flush = function() {
             var parent, fn;
-            if (isNode && (parent = process4.domain))
+            if (isNode && (parent = process3.domain))
               parent.exit();
             while (head) {
               fn = head.fn;
@@ -16027,7 +16027,7 @@ ${indent}`);
           };
           if (isNode) {
             notify = function() {
-              process4.nextTick(flush);
+              process3.nextTick(flush);
             };
           } else if (Observer && !(global.navigator && global.navigator.standalone)) {
             var toggle = true;
@@ -16314,11 +16314,11 @@ ${indent}`);
         var promiseResolve = __webpack_require__(105);
         var PROMISE = "Promise";
         var TypeError2 = global.TypeError;
-        var process4 = global.process;
-        var versions = process4 && process4.versions;
+        var process3 = global.process;
+        var versions = process3 && process3.versions;
         var v8 = versions && versions.v8 || "";
         var $Promise = global[PROMISE];
-        var isNode = classof(process4) == "process";
+        var isNode = classof(process3) == "process";
         var empty = function() {
         };
         var Internal, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;
@@ -16400,7 +16400,7 @@ ${indent}`);
             if (unhandled) {
               result = perform(function() {
                 if (isNode) {
-                  process4.emit("unhandledRejection", value, promise);
+                  process3.emit("unhandledRejection", value, promise);
                 } else if (handler2 = global.onunhandledrejection) {
                   handler2({ promise, reason: value });
                 } else if ((console2 = global.console) && console2.error) {
@@ -16421,7 +16421,7 @@ ${indent}`);
           task.call(global, function() {
             var handler2;
             if (isNode) {
-              process4.emit("rejectionHandled", promise);
+              process3.emit("rejectionHandled", promise);
             } else if (handler2 = global.onrejectionhandled) {
               handler2({ promise, reason: promise._v });
             }
@@ -16493,7 +16493,7 @@ ${indent}`);
               var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
               reaction.ok = typeof onFulfilled == "function" ? onFulfilled : true;
               reaction.fail = typeof onRejected == "function" && onRejected;
-              reaction.domain = isNode ? process4.domain : void 0;
+              reaction.domain = isNode ? process3.domain : void 0;
               this._c.push(reaction);
               if (this._a)
                 this._a.push(reaction);
@@ -16654,9 +16654,9 @@ ${indent}`);
         for (var i = 0; i < DOMIterables.length; i++) {
           var NAME = DOMIterables[i];
           var Collection2 = global[NAME];
-          var proto2 = Collection2 && Collection2.prototype;
-          if (proto2 && !proto2[TO_STRING_TAG])
-            hide(proto2, TO_STRING_TAG, NAME);
+          var proto = Collection2 && Collection2.prototype;
+          if (proto && !proto[TO_STRING_TAG])
+            hide(proto, TO_STRING_TAG, NAME);
           Iterators[NAME] = Iterators.Array;
         }
       },
@@ -16831,7 +16831,7 @@ ${indent}`);
       /* 213 */
       /***/
       function(module2, exports2, __webpack_require__) {
-        var tty3 = __webpack_require__(79);
+        var tty2 = __webpack_require__(79);
         var util = __webpack_require__(2);
         exports2 = module2.exports = __webpack_require__(112);
         exports2.init = init;
@@ -16842,8 +16842,8 @@ ${indent}`);
         exports2.useColors = useColors;
         exports2.colors = [6, 2, 3, 4, 5, 1];
         try {
-          var supportsColor3 = __webpack_require__(239);
-          if (supportsColor3 && supportsColor3.level >= 2) {
+          var supportsColor2 = __webpack_require__(239);
+          if (supportsColor2 && supportsColor2.level >= 2) {
             exports2.colors = [
               20,
               21,
@@ -16944,7 +16944,7 @@ ${indent}`);
           return obj;
         }, {});
         function useColors() {
-          return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty3.isatty(process.stderr.fd);
+          return "colors" in exports2.inspectOpts ? Boolean(exports2.inspectOpts.colors) : tty2.isatty(process.stderr.fd);
         }
         exports2.formatters.o = function(v) {
           this.inspectOpts.colors = this.useColors;
@@ -18051,7 +18051,7 @@ ${indent}`);
       /***/
       function(module2, exports2, __webpack_require__) {
         "use strict";
-        var hasFlag3 = __webpack_require__(221);
+        var hasFlag2 = __webpack_require__(221);
         var support = function(level) {
           if (level === 0) {
             return false;
@@ -18064,16 +18064,16 @@ ${indent}`);
           };
         };
         var supportLevel = function() {
-          if (hasFlag3("no-color") || hasFlag3("no-colors") || hasFlag3("color=false")) {
+          if (hasFlag2("no-color") || hasFlag2("no-colors") || hasFlag2("color=false")) {
             return 0;
           }
-          if (hasFlag3("color=16m") || hasFlag3("color=full") || hasFlag3("color=truecolor")) {
+          if (hasFlag2("color=16m") || hasFlag2("color=full") || hasFlag2("color=truecolor")) {
             return 3;
           }
-          if (hasFlag3("color=256")) {
+          if (hasFlag2("color=256")) {
             return 2;
           }
-          if (hasFlag3("color") || hasFlag3("colors") || hasFlag3("color=true") || hasFlag3("color=always")) {
+          if (hasFlag2("color") || hasFlag2("colors") || hasFlag2("color=true") || hasFlag2("color=always")) {
             return 1;
           }
           if (process.stdout && !process.stdout.isTTY) {
@@ -25487,190 +25487,7 @@ function firebase(cmd, cwd) {
 import { join as join3 } from "path";
 
 // 
-var ANSI_BACKGROUND_OFFSET = 10;
-var wrapAnsi16 = (offset = 0) => (code) => `\x1B[${code + offset}m`;
-var wrapAnsi256 = (offset = 0) => (code) => `\x1B[${38 + offset};5;${code}m`;
-var wrapAnsi16m = (offset = 0) => (red2, green2, blue2) => `\x1B[${38 + offset};2;${red2};${green2};${blue2}m`;
-var styles = {
-  modifier: {
-    reset: [0, 0],
-    // 21 isn't widely supported and 22 does the same thing
-    bold: [1, 22],
-    dim: [2, 22],
-    italic: [3, 23],
-    underline: [4, 24],
-    overline: [53, 55],
-    inverse: [7, 27],
-    hidden: [8, 28],
-    strikethrough: [9, 29]
-  },
-  color: {
-    black: [30, 39],
-    red: [31, 39],
-    green: [32, 39],
-    yellow: [33, 39],
-    blue: [34, 39],
-    magenta: [35, 39],
-    cyan: [36, 39],
-    white: [37, 39],
-    // Bright color
-    blackBright: [90, 39],
-    gray: [90, 39],
-    // Alias of `blackBright`
-    grey: [90, 39],
-    // Alias of `blackBright`
-    redBright: [91, 39],
-    greenBright: [92, 39],
-    yellowBright: [93, 39],
-    blueBright: [94, 39],
-    magentaBright: [95, 39],
-    cyanBright: [96, 39],
-    whiteBright: [97, 39]
-  },
-  bgColor: {
-    bgBlack: [40, 49],
-    bgRed: [41, 49],
-    bgGreen: [42, 49],
-    bgYellow: [43, 49],
-    bgBlue: [44, 49],
-    bgMagenta: [45, 49],
-    bgCyan: [46, 49],
-    bgWhite: [47, 49],
-    // Bright color
-    bgBlackBright: [100, 49],
-    bgGray: [100, 49],
-    // Alias of `bgBlackBright`
-    bgGrey: [100, 49],
-    // Alias of `bgBlackBright`
-    bgRedBright: [101, 49],
-    bgGreenBright: [102, 49],
-    bgYellowBright: [103, 49],
-    bgBlueBright: [104, 49],
-    bgMagentaBright: [105, 49],
-    bgCyanBright: [106, 49],
-    bgWhiteBright: [107, 49]
-  }
-};
-var modifierNames = Object.keys(styles.modifier);
-var foregroundColorNames = Object.keys(styles.color);
-var backgroundColorNames = Object.keys(styles.bgColor);
-var colorNames = [...foregroundColorNames, ...backgroundColorNames];
-function assembleStyles() {
-  const codes = /* @__PURE__ */ new Map();
-  for (const [groupName, group] of Object.entries(styles)) {
-    for (const [styleName, style] of Object.entries(group)) {
-      styles[styleName] = {
-        open: `\x1B[${style[0]}m`,
-        close: `\x1B[${style[1]}m`
-      };
-      group[styleName] = styles[styleName];
-      codes.set(style[0], style[1]);
-    }
-    Object.defineProperty(styles, groupName, {
-      value: group,
-      enumerable: false
-    });
-  }
-  Object.defineProperty(styles, "codes", {
-    value: codes,
-    enumerable: false
-  });
-  styles.color.close = "\x1B[39m";
-  styles.bgColor.close = "\x1B[49m";
-  styles.color.ansi = wrapAnsi16();
-  styles.color.ansi256 = wrapAnsi256();
-  styles.color.ansi16m = wrapAnsi16m();
-  styles.bgColor.ansi = wrapAnsi16(ANSI_BACKGROUND_OFFSET);
-  styles.bgColor.ansi256 = wrapAnsi256(ANSI_BACKGROUND_OFFSET);
-  styles.bgColor.ansi16m = wrapAnsi16m(ANSI_BACKGROUND_OFFSET);
-  Object.defineProperties(styles, {
-    rgbToAnsi256: {
-      value(red2, green2, blue2) {
-        if (red2 === green2 && green2 === blue2) {
-          if (red2 < 8) {
-            return 16;
-          }
-          if (red2 > 248) {
-            return 231;
-          }
-          return Math.round((red2 - 8) / 247 * 24) + 232;
-        }
-        return 16 + 36 * Math.round(red2 / 255 * 5) + 6 * Math.round(green2 / 255 * 5) + Math.round(blue2 / 255 * 5);
-      },
-      enumerable: false
-    },
-    hexToRgb: {
-      value(hex) {
-        const matches = /[a-f\d]{6}|[a-f\d]{3}/i.exec(hex.toString(16));
-        if (!matches) {
-          return [0, 0, 0];
-        }
-        let [colorString] = matches;
-        if (colorString.length === 3) {
-          colorString = [...colorString].map((character) => character + character).join("");
-        }
-        const integer = Number.parseInt(colorString, 16);
-        return [
-          /* eslint-disable no-bitwise */
-          integer >> 16 & 255,
-          integer >> 8 & 255,
-          integer & 255
-          /* eslint-enable no-bitwise */
-        ];
-      },
-      enumerable: false
-    },
-    hexToAnsi256: {
-      value: (hex) => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
-      enumerable: false
-    },
-    ansi256ToAnsi: {
-      value(code) {
-        if (code < 8) {
-          return 30 + code;
-        }
-        if (code < 16) {
-          return 90 + (code - 8);
-        }
-        let red2;
-        let green2;
-        let blue2;
-        if (code >= 232) {
-          red2 = ((code - 232) * 10 + 8) / 255;
-          green2 = red2;
-          blue2 = red2;
-        } else {
-          code -= 16;
-          const remainder = code % 36;
-          red2 = Math.floor(code / 36) / 5;
-          green2 = Math.floor(remainder / 6) / 5;
-          blue2 = remainder % 6 / 5;
-        }
-        const value = Math.max(red2, green2, blue2) * 2;
-        if (value === 0) {
-          return 30;
-        }
-        let result = 30 + (Math.round(blue2) << 2 | Math.round(green2) << 1 | Math.round(red2));
-        if (value === 2) {
-          result += 60;
-        }
-        return result;
-      },
-      enumerable: false
-    },
-    rgbToAnsi: {
-      value: (red2, green2, blue2) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red2, green2, blue2)),
-      enumerable: false
-    },
-    hexToAnsi: {
-      value: (hex) => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
-      enumerable: false
-    }
-  });
-  return styles;
-}
-var ansiStyles = assembleStyles();
-var ansi_styles_default = ansiStyles;
+import { styleText } from "util";
 
 // 
 import process2 from "node:process";
@@ -25690,15 +25507,23 @@ if (hasFlag("no-color") || hasFlag("no-colors") || hasFlag("color=false") || has
   flagForceColor = 1;
 }
 function envForceColor() {
-  if ("FORCE_COLOR" in env) {
-    if (env.FORCE_COLOR === "true") {
-      return 1;
-    }
-    if (env.FORCE_COLOR === "false") {
-      return 0;
-    }
-    return env.FORCE_COLOR.length === 0 ? 1 : Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
+  if (!("FORCE_COLOR" in env)) {
+    return;
   }
+  if (env.FORCE_COLOR === "true") {
+    return 1;
+  }
+  if (env.FORCE_COLOR === "false") {
+    return 0;
+  }
+  if (env.FORCE_COLOR.length === 0) {
+    return 1;
+  }
+  const level = Math.min(Number.parseInt(env.FORCE_COLOR, 10), 3);
+  if (![0, 1, 2, 3].includes(level)) {
+    return;
+  }
+  return level;
 }
 function translateLevel(level) {
   if (level === 0) {
@@ -25805,323 +25630,6 @@ var supportsColor = {
 var supports_color_default = supportsColor;
 
 // 
-function stringReplaceAll(string, substring, replacer) {
-  let index = string.indexOf(substring);
-  if (index === -1) {
-    return string;
-  }
-  const substringLength = substring.length;
-  let endIndex = 0;
-  let returnValue = "";
-  do {
-    returnValue += string.slice(endIndex, index) + substring + replacer;
-    endIndex = index + substringLength;
-    index = string.indexOf(substring, endIndex);
-  } while (index !== -1);
-  returnValue += string.slice(endIndex);
-  return returnValue;
-}
-function stringEncaseCRLFWithFirstIndex(string, prefix, postfix, index) {
-  let endIndex = 0;
-  let returnValue = "";
-  do {
-    const gotCR = string[index - 1] === "\r";
-    returnValue += string.slice(endIndex, gotCR ? index - 1 : index) + prefix + (gotCR ? "\r\n" : "\n") + postfix;
-    endIndex = index + 1;
-    index = string.indexOf("\n", endIndex);
-  } while (index !== -1);
-  returnValue += string.slice(endIndex);
-  return returnValue;
-}
-
-// 
-var { stdout: stdoutColor, stderr: stderrColor } = supports_color_default;
-var GENERATOR = Symbol("GENERATOR");
-var STYLER = Symbol("STYLER");
-var IS_EMPTY = Symbol("IS_EMPTY");
-var levelMapping = [
-  "ansi",
-  "ansi",
-  "ansi256",
-  "ansi16m"
-];
-var styles2 = /* @__PURE__ */ Object.create(null);
-var applyOptions = (object, options = {}) => {
-  if (options.level && !(Number.isInteger(options.level) && options.level >= 0 && options.level <= 3)) {
-    throw new Error("The `level` option should be an integer from 0 to 3");
-  }
-  const colorLevel = stdoutColor ? stdoutColor.level : 0;
-  object.level = options.level === void 0 ? colorLevel : options.level;
-};
-var chalkFactory = (options) => {
-  const chalk2 = (...strings) => strings.join(" ");
-  applyOptions(chalk2, options);
-  Object.setPrototypeOf(chalk2, createChalk.prototype);
-  return chalk2;
-};
-function createChalk(options) {
-  return chalkFactory(options);
-}
-Object.setPrototypeOf(createChalk.prototype, Function.prototype);
-for (const [styleName, style] of Object.entries(ansi_styles_default)) {
-  styles2[styleName] = {
-    get() {
-      const builder = createBuilder(this, createStyler(style.open, style.close, this[STYLER]), this[IS_EMPTY]);
-      Object.defineProperty(this, styleName, { value: builder });
-      return builder;
-    }
-  };
-}
-styles2.visible = {
-  get() {
-    const builder = createBuilder(this, this[STYLER], true);
-    Object.defineProperty(this, "visible", { value: builder });
-    return builder;
-  }
-};
-var getModelAnsi = (model, level, type, ...arguments_) => {
-  if (model === "rgb") {
-    if (level === "ansi16m") {
-      return ansi_styles_default[type].ansi16m(...arguments_);
-    }
-    if (level === "ansi256") {
-      return ansi_styles_default[type].ansi256(ansi_styles_default.rgbToAnsi256(...arguments_));
-    }
-    return ansi_styles_default[type].ansi(ansi_styles_default.rgbToAnsi(...arguments_));
-  }
-  if (model === "hex") {
-    return getModelAnsi("rgb", level, type, ...ansi_styles_default.hexToRgb(...arguments_));
-  }
-  return ansi_styles_default[type][model](...arguments_);
-};
-var usedModels = ["rgb", "hex", "ansi256"];
-for (const model of usedModels) {
-  styles2[model] = {
-    get() {
-      const { level } = this;
-      return function(...arguments_) {
-        const styler = createStyler(getModelAnsi(model, levelMapping[level], "color", ...arguments_), ansi_styles_default.color.close, this[STYLER]);
-        return createBuilder(this, styler, this[IS_EMPTY]);
-      };
-    }
-  };
-  const bgModel = "bg" + model[0].toUpperCase() + model.slice(1);
-  styles2[bgModel] = {
-    get() {
-      const { level } = this;
-      return function(...arguments_) {
-        const styler = createStyler(getModelAnsi(model, levelMapping[level], "bgColor", ...arguments_), ansi_styles_default.bgColor.close, this[STYLER]);
-        return createBuilder(this, styler, this[IS_EMPTY]);
-      };
-    }
-  };
-}
-var proto = Object.defineProperties(() => {
-}, {
-  ...styles2,
-  level: {
-    enumerable: true,
-    get() {
-      return this[GENERATOR].level;
-    },
-    set(level) {
-      this[GENERATOR].level = level;
-    }
-  }
-});
-var createStyler = (open, close, parent) => {
-  let openAll;
-  let closeAll;
-  if (parent === void 0) {
-    openAll = open;
-    closeAll = close;
-  } else {
-    openAll = parent.openAll + open;
-    closeAll = close + parent.closeAll;
-  }
-  return {
-    open,
-    close,
-    openAll,
-    closeAll,
-    parent
-  };
-};
-var createBuilder = (self2, _styler, _isEmpty) => {
-  const builder = (...arguments_) => applyStyle(builder, arguments_.length === 1 ? "" + arguments_[0] : arguments_.join(" "));
-  Object.setPrototypeOf(builder, proto);
-  builder[GENERATOR] = self2;
-  builder[STYLER] = _styler;
-  builder[IS_EMPTY] = _isEmpty;
-  return builder;
-};
-var applyStyle = (self2, string) => {
-  if (self2.level <= 0 || !string) {
-    return self2[IS_EMPTY] ? "" : string;
-  }
-  let styler = self2[STYLER];
-  if (styler === void 0) {
-    return string;
-  }
-  const { openAll, closeAll } = styler;
-  if (string.includes("\x1B")) {
-    while (styler !== void 0) {
-      string = stringReplaceAll(string, styler.close, styler.open);
-      styler = styler.parent;
-    }
-  }
-  const lfIndex = string.indexOf("\n");
-  if (lfIndex !== -1) {
-    string = stringEncaseCRLFWithFirstIndex(string, closeAll, openAll, lfIndex);
-  }
-  return openAll + string + closeAll;
-};
-Object.defineProperties(createChalk.prototype, styles2);
-var chalk = createChalk();
-var chalkStderr = createChalk({ level: stderrColor ? stderrColor.level : 0 });
-var source_default = chalk;
-
-// 
-import process3 from "node:process";
-import os2 from "node:os";
-import tty2 from "node:tty";
-function hasFlag2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process3.argv) {
-  const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
-  const position = argv.indexOf(prefix + flag);
-  const terminatorPosition = argv.indexOf("--");
-  return position !== -1 && (terminatorPosition === -1 || position < terminatorPosition);
-}
-var { env: env2 } = process3;
-var flagForceColor2;
-if (hasFlag2("no-color") || hasFlag2("no-colors") || hasFlag2("color=false") || hasFlag2("color=never")) {
-  flagForceColor2 = 0;
-} else if (hasFlag2("color") || hasFlag2("colors") || hasFlag2("color=true") || hasFlag2("color=always")) {
-  flagForceColor2 = 1;
-}
-function envForceColor2() {
-  if (!("FORCE_COLOR" in env2)) {
-    return;
-  }
-  if (env2.FORCE_COLOR === "true") {
-    return 1;
-  }
-  if (env2.FORCE_COLOR === "false") {
-    return 0;
-  }
-  if (env2.FORCE_COLOR.length === 0) {
-    return 1;
-  }
-  const level = Math.min(Number.parseInt(env2.FORCE_COLOR, 10), 3);
-  if (![0, 1, 2, 3].includes(level)) {
-    return;
-  }
-  return level;
-}
-function translateLevel2(level) {
-  if (level === 0) {
-    return false;
-  }
-  return {
-    level,
-    hasBasic: true,
-    has256: level >= 2,
-    has16m: level >= 3
-  };
-}
-function _supportsColor2(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
-  const noFlagForceColor = envForceColor2();
-  if (noFlagForceColor !== void 0) {
-    flagForceColor2 = noFlagForceColor;
-  }
-  const forceColor = sniffFlags ? flagForceColor2 : noFlagForceColor;
-  if (forceColor === 0) {
-    return 0;
-  }
-  if (sniffFlags) {
-    if (hasFlag2("color=16m") || hasFlag2("color=full") || hasFlag2("color=truecolor")) {
-      return 3;
-    }
-    if (hasFlag2("color=256")) {
-      return 2;
-    }
-  }
-  if ("TF_BUILD" in env2 && "AGENT_NAME" in env2) {
-    return 1;
-  }
-  if (haveStream && !streamIsTTY && forceColor === void 0) {
-    return 0;
-  }
-  const min = forceColor || 0;
-  if (env2.TERM === "dumb") {
-    return min;
-  }
-  if (process3.platform === "win32") {
-    const osRelease = os2.release().split(".");
-    if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
-      return Number(osRelease[2]) >= 14931 ? 3 : 2;
-    }
-    return 1;
-  }
-  if ("CI" in env2) {
-    if (["GITHUB_ACTIONS", "GITEA_ACTIONS", "CIRCLECI"].some((key) => key in env2)) {
-      return 3;
-    }
-    if (["TRAVIS", "APPVEYOR", "GITLAB_CI", "BUILDKITE", "DRONE"].some((sign) => sign in env2) || env2.CI_NAME === "codeship") {
-      return 1;
-    }
-    return min;
-  }
-  if ("TEAMCITY_VERSION" in env2) {
-    return /^(9\.(0*[1-9]\d*)\.|\d{2,}\.)/.test(env2.TEAMCITY_VERSION) ? 1 : 0;
-  }
-  if (env2.COLORTERM === "truecolor") {
-    return 3;
-  }
-  if (env2.TERM === "xterm-kitty") {
-    return 3;
-  }
-  if (env2.TERM === "xterm-ghostty") {
-    return 3;
-  }
-  if (env2.TERM === "wezterm") {
-    return 3;
-  }
-  if ("TERM_PROGRAM" in env2) {
-    const version = Number.parseInt((env2.TERM_PROGRAM_VERSION || "").split(".")[0], 10);
-    switch (env2.TERM_PROGRAM) {
-      case "iTerm.app": {
-        return version >= 3 ? 3 : 2;
-      }
-      case "Apple_Terminal": {
-        return 2;
-      }
-    }
-  }
-  if (/-256(color)?$/i.test(env2.TERM)) {
-    return 2;
-  }
-  if (/^screen|^xterm|^vt100|^vt220|^rxvt|color|ansi|cygwin|linux/i.test(env2.TERM)) {
-    return 1;
-  }
-  if ("COLORTERM" in env2) {
-    return 1;
-  }
-  return min;
-}
-function createSupportsColor2(stream, options = {}) {
-  const level = _supportsColor2(stream, {
-    streamIsTTY: stream && stream.isTTY,
-    ...options
-  });
-  return translateLevel2(level);
-}
-var supportsColor2 = {
-  stdout: createSupportsColor2({ isTTY: tty2.isatty(1) }),
-  stderr: createSupportsColor2({ isTTY: tty2.isatty(2) })
-};
-var supports_color_default2 = supportsColor2;
-
-// 
 import { spawn as _spawn, spawnSync as _spawnSync, exec as _exec } from "child_process";
 import assert from "assert";
 var ChildProcess = class {
@@ -26135,9 +25643,9 @@ var ChildProcess = class {
   }
   static spawnSync(command2, args, options = {}) {
     const commandText = `${command2} ${args.join(" ")}`;
-    const env4 = getEnvironmentForNonInteractiveCommand(options.env);
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
     Log.debug(`Executing command: ${commandText}`);
-    const { status: exitCode, signal, stdout, stderr } = _spawnSync(command2, args, { ...options, env: env4, encoding: "utf8", shell: true, stdio: "pipe" });
+    const { status: exitCode, signal, stdout, stderr } = _spawnSync(command2, args, { ...options, env: env3, encoding: "utf8", shell: true, stdio: "pipe" });
     const status = statusFromExitCodeAndSignal(exitCode, signal);
     if (status === 0 || options.suppressErrorOnFailingExitCode) {
       return { status, stdout, stderr };
@@ -26146,19 +25654,19 @@ var ChildProcess = class {
   }
   static spawn(command2, args, options = {}) {
     const commandText = `${command2} ${args.join(" ")}`;
-    const env4 = getEnvironmentForNonInteractiveCommand(options.env);
-    return processAsyncCmd(commandText, options, _spawn(command2, args, { ...options, env: env4, shell: true, stdio: "pipe" }));
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
+    return processAsyncCmd(commandText, options, _spawn(command2, args, { ...options, env: env3, shell: true, stdio: "pipe" }));
   }
   static exec(command2, options = {}) {
-    const env4 = getEnvironmentForNonInteractiveCommand(options.env);
-    return processAsyncCmd(command2, options, _exec(command2, { ...options, env: env4 }));
+    const env3 = getEnvironmentForNonInteractiveCommand(options.env);
+    return processAsyncCmd(command2, options, _exec(command2, { ...options, env: env3 }));
   }
 };
 function statusFromExitCodeAndSignal(exitCode, signal) {
   return exitCode ?? signal ?? -1;
 }
 function getEnvironmentForNonInteractiveCommand(userProvidedEnv) {
-  const forceColorValue = supports_color_default2.stdout !== false ? supports_color_default2.stdout.level.toString() : void 0;
+  const forceColorValue = supports_color_default.stdout !== false ? supports_color_default.stdout.level.toString() : void 0;
   return { FORCE_COLOR: forceColorValue, ...userProvidedEnv ?? process.env };
 }
 function processAsyncCmd(command2, options, childProcess) {
@@ -26569,11 +26077,11 @@ function stringWidth(string, options = {}) {
 }
 
 // 
-var ANSI_BACKGROUND_OFFSET2 = 10;
-var wrapAnsi162 = (offset = 0) => (code) => `\x1B[${code + offset}m`;
-var wrapAnsi2562 = (offset = 0) => (code) => `\x1B[${38 + offset};5;${code}m`;
-var wrapAnsi16m2 = (offset = 0) => (red2, green2, blue2) => `\x1B[${38 + offset};2;${red2};${green2};${blue2}m`;
-var styles3 = {
+var ANSI_BACKGROUND_OFFSET = 10;
+var wrapAnsi16 = (offset = 0) => (code) => `\x1B[${code + offset}m`;
+var wrapAnsi256 = (offset = 0) => (code) => `\x1B[${38 + offset};5;${code}m`;
+var wrapAnsi16m = (offset = 0) => (red2, green2, blue2) => `\x1B[${38 + offset};2;${red2};${green2};${blue2}m`;
+var styles = {
   modifier: {
     reset: [0, 0],
     // 21 isn't widely supported and 22 does the same thing
@@ -26633,39 +26141,39 @@ var styles3 = {
     bgWhiteBright: [107, 49]
   }
 };
-var modifierNames2 = Object.keys(styles3.modifier);
-var foregroundColorNames2 = Object.keys(styles3.color);
-var backgroundColorNames2 = Object.keys(styles3.bgColor);
-var colorNames2 = [...foregroundColorNames2, ...backgroundColorNames2];
-function assembleStyles2() {
+var modifierNames = Object.keys(styles.modifier);
+var foregroundColorNames = Object.keys(styles.color);
+var backgroundColorNames = Object.keys(styles.bgColor);
+var colorNames = [...foregroundColorNames, ...backgroundColorNames];
+function assembleStyles() {
   const codes = /* @__PURE__ */ new Map();
-  for (const [groupName, group] of Object.entries(styles3)) {
+  for (const [groupName, group] of Object.entries(styles)) {
     for (const [styleName, style] of Object.entries(group)) {
-      styles3[styleName] = {
+      styles[styleName] = {
         open: `\x1B[${style[0]}m`,
         close: `\x1B[${style[1]}m`
       };
-      group[styleName] = styles3[styleName];
+      group[styleName] = styles[styleName];
       codes.set(style[0], style[1]);
     }
-    Object.defineProperty(styles3, groupName, {
+    Object.defineProperty(styles, groupName, {
       value: group,
       enumerable: false
     });
   }
-  Object.defineProperty(styles3, "codes", {
+  Object.defineProperty(styles, "codes", {
     value: codes,
     enumerable: false
   });
-  styles3.color.close = "\x1B[39m";
-  styles3.bgColor.close = "\x1B[49m";
-  styles3.color.ansi = wrapAnsi162();
-  styles3.color.ansi256 = wrapAnsi2562();
-  styles3.color.ansi16m = wrapAnsi16m2();
-  styles3.bgColor.ansi = wrapAnsi162(ANSI_BACKGROUND_OFFSET2);
-  styles3.bgColor.ansi256 = wrapAnsi2562(ANSI_BACKGROUND_OFFSET2);
-  styles3.bgColor.ansi16m = wrapAnsi16m2(ANSI_BACKGROUND_OFFSET2);
-  Object.defineProperties(styles3, {
+  styles.color.close = "\x1B[39m";
+  styles.bgColor.close = "\x1B[49m";
+  styles.color.ansi = wrapAnsi16();
+  styles.color.ansi256 = wrapAnsi256();
+  styles.color.ansi16m = wrapAnsi16m();
+  styles.bgColor.ansi = wrapAnsi16(ANSI_BACKGROUND_OFFSET);
+  styles.bgColor.ansi256 = wrapAnsi256(ANSI_BACKGROUND_OFFSET);
+  styles.bgColor.ansi16m = wrapAnsi16m(ANSI_BACKGROUND_OFFSET);
+  Object.defineProperties(styles, {
     rgbToAnsi256: {
       value(red2, green2, blue2) {
         if (red2 === green2 && green2 === blue2) {
@@ -26703,7 +26211,7 @@ function assembleStyles2() {
       enumerable: false
     },
     hexToAnsi256: {
-      value: (hex) => styles3.rgbToAnsi256(...styles3.hexToRgb(hex)),
+      value: (hex) => styles.rgbToAnsi256(...styles.hexToRgb(hex)),
       enumerable: false
     },
     ansi256ToAnsi: {
@@ -26741,18 +26249,18 @@ function assembleStyles2() {
       enumerable: false
     },
     rgbToAnsi: {
-      value: (red2, green2, blue2) => styles3.ansi256ToAnsi(styles3.rgbToAnsi256(red2, green2, blue2)),
+      value: (red2, green2, blue2) => styles.ansi256ToAnsi(styles.rgbToAnsi256(red2, green2, blue2)),
       enumerable: false
     },
     hexToAnsi: {
-      value: (hex) => styles3.ansi256ToAnsi(styles3.hexToAnsi256(hex)),
+      value: (hex) => styles.ansi256ToAnsi(styles.hexToAnsi256(hex)),
       enumerable: false
     }
   });
-  return styles3;
+  return styles;
 }
-var ansiStyles2 = assembleStyles2();
-var ansi_styles_default2 = ansiStyles2;
+var ansiStyles = assembleStyles();
+var ansi_styles_default = ansiStyles;
 
 // 
 var ESCAPES = /* @__PURE__ */ new Set([
@@ -26885,7 +26393,7 @@ var exec = (string, columns, options = {}) => {
         escapeUrl = groups.uri.length === 0 ? void 0 : groups.uri;
       }
     }
-    const code = ansi_styles_default2.codes.get(Number(escapeCode));
+    const code = ansi_styles_default.codes.get(Number(escapeCode));
     if (pre[index + 1] === "\n") {
       if (escapeUrl) {
         returnValue += wrapAnsiHyperlink("");
@@ -27573,8 +27081,8 @@ var YargsParser = class {
       if (typeof envPrefix === "undefined")
         return;
       const prefix = typeof envPrefix === "string" ? envPrefix : "";
-      const env4 = mixin2.env();
-      Object.keys(env4).forEach(function(envVar) {
+      const env3 = mixin2.env();
+      Object.keys(env3).forEach(function(envVar) {
         if (prefix === "" || envVar.lastIndexOf(prefix, 0) === 0) {
           const keys = envVar.split("__").map(function(key, i) {
             if (i === 0) {
@@ -27583,7 +27091,7 @@ var YargsParser = class {
             return camelCase(key);
           });
           if ((configOnly && flags.configs[keys.join(".")] || !configOnly) && !hasKey(argv2, keys)) {
-            setArg(keys.join("."), env4[envVar]);
+            setArg(keys.join("."), env3[envVar]);
           }
         }
       });
@@ -27894,12 +27402,12 @@ if (nodeVersion) {
     throw Error(`yargs parser supports a minimum Node.js version of ${minNodeVersion}. Read our version support policy: https://github.com/yargs/yargs-parser#supported-nodejs-versions`);
   }
 }
-var env3 = process ? process.env : {};
+var env2 = process ? process.env : {};
 var require2 = createRequire ? createRequire(import.meta.url) : void 0;
 var parser = new YargsParser({
   cwd: process.cwd,
   env: () => {
-    return env3;
+    return env2;
   },
   format,
   normalize,
@@ -29309,7 +28817,7 @@ function usage(yargs, shim3) {
     const emit = typeof level === "function" ? level : logger[level];
     emit(version);
   };
-  self2.reset = function reset2(localLookup) {
+  self2.reset = function reset(localLookup) {
     failMessage = null;
     failureOutput = false;
     usages = [];
@@ -29924,7 +29432,7 @@ ${customMsgs.join("\n")}` : "";
     if (recommended)
       usage2.fail(__("Did you mean %s?", recommended));
   };
-  self2.reset = function reset2(localLookup) {
+  self2.reset = function reset(localLookup) {
     implied = objFilter(implied, (k) => !localLookup[k]);
     conflicting = objFilter(conflicting, (k) => !localLookup[k]);
     return self2;
@@ -31515,20 +31023,19 @@ var LogLevel;
   LogLevel2[LogLevel2["DEBUG"] = 5] = "DEBUG";
 })(LogLevel || (LogLevel = {}));
 var DEFAULT_LOG_LEVEL = LogLevel.INFO;
-var red = source_default.red;
-var reset = source_default.reset;
-var green = source_default.green;
-var yellow = source_default.yellow;
-var bold = source_default.bold;
-var blue = source_default.blue;
-var underline = source_default.underline;
+var red = styleText.bind(null, "red");
+var green = styleText.bind(null, "green");
+var yellow = styleText.bind(null, "yellow");
+var bold = styleText.bind(null, "bold");
+var blue = styleText.bind(null, "blue");
+var underline = styleText.bind(null, "underline");
 var Log = class {
 };
 Log.info = buildLogLevelFunction(() => console.info, LogLevel.INFO, null);
-Log.error = buildLogLevelFunction(() => console.error, LogLevel.ERROR, source_default.red);
+Log.error = buildLogLevelFunction(() => console.error, LogLevel.ERROR, red);
 Log.debug = buildLogLevelFunction(() => console.debug, LogLevel.DEBUG, null);
 Log.log = buildLogLevelFunction(() => console.log, LogLevel.LOG, null);
-Log.warn = buildLogLevelFunction(() => console.warn, LogLevel.WARN, source_default.yellow);
+Log.warn = buildLogLevelFunction(() => console.warn, LogLevel.WARN, yellow);
 function buildLogLevelFunction(loadCommand, level, defaultColor) {
   return (...values) => {
     runConsoleCommand(loadCommand, level, ...values.map((v) => typeof v === "string" && defaultColor ? defaultColor(v) : v));
@@ -32352,10 +31859,10 @@ function isPlainObject(value) {
     return false;
   if (Object.prototype.toString.call(value) !== "[object Object]")
     return false;
-  const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null)
+  const proto = Object.getPrototypeOf(value);
+  if (proto === null)
     return true;
-  const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
 function mergeDeep2(defaults, options) {
@@ -32696,10 +32203,10 @@ function isPlainObject2(value) {
     return false;
   if (Object.prototype.toString.call(value) !== "[object Object]")
     return false;
-  const proto2 = Object.getPrototypeOf(value);
-  if (proto2 === null)
+  const proto = Object.getPrototypeOf(value);
+  if (proto === null)
     return true;
-  const Ctor = Object.prototype.hasOwnProperty.call(proto2, "constructor") && proto2.constructor;
+  const Ctor = Object.prototype.hasOwnProperty.call(proto, "constructor") && proto.constructor;
   return typeof Ctor === "function" && Ctor instanceof Ctor && Function.prototype.call(Ctor) === Function.prototype.call(value);
 }
 var noop = () => "";

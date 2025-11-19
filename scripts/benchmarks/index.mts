@@ -147,7 +147,7 @@ async function runCompare(bazelTargetRaw: string | undefined, compareRef: string
   const bazelTarget = await resolveTarget(bazelTargetRaw);
   const testlogPath = await getTestlogPath(bazelTarget);
 
-  Log.log(green('Test log path:', testlogPath));
+  Log.log(green(`Test log path: ${testlogPath}`));
 
   // Run benchmark with the current working stage.
   await runBenchmarkTarget(bazelTarget);
