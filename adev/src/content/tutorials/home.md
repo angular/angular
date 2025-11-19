@@ -18,4 +18,7 @@ Welcome to the Angular tutorials! These tutorials will guide you through the cor
   <docs-card title="Deferrable views" link="Start coding" href="tutorials/deferrable-views" imgSrc="adev/src/assets/images/ang_illustrations-04.svg">
     via the Playground
   </docs-card>
+  <docs-card title="Learn signals forms" link="Start coding" href="tutorials/signal-forms" imgSrc="adev/src/assets/images/learn-angular-local.svg">
+    via the Playground
+  </docs-card>
 </docs-card-container>
