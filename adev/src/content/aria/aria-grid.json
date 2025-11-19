@@ -173,7 +173,7 @@
       "source": {
         "filePath": "src/aria/grid/grid.ts",
         "startLine": 47,
-        "endLine": 164
+        "endLine": 163
       }
     },
     {
@@ -222,8 +222,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 177,
-        "endLine": 216
+        "startLine": 176,
+        "endLine": 214
       }
     },
     {
@@ -437,8 +437,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 231,
-        "endLine": 346
+        "startLine": 229,
+        "endLine": 343
       }
     },
     {
@@ -647,8 +647,8 @@
       ],
       "source": {
         "filePath": "src/aria/grid/grid.ts",
-        "startLine": 364,
-        "endLine": 459
+        "startLine": 361,
+        "endLine": 455
       }
     }
   ],
