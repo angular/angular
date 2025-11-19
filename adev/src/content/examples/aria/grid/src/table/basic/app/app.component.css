@@ -26,6 +26,7 @@ input[type='checkbox'] {
 }
 
 [ngGrid] {
+  display: table;
   background-color: var(--septenary-contrast);
   border-spacing: 0;
 }

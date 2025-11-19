@@ -51,6 +51,7 @@ input[type='checkbox'] {
 
 [ngGrid] {
   border-spacing: 0 0.5rem;
+  display: table;
 }
 
 [ngGrid] th,
