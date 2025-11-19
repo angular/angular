@@ -10,10 +10,10 @@
 
 A tree displays hierarchical data where items can expand to reveal children or collapse to hide them. Users navigate with arrow keys, expand and collapse nodes, and optionally select items for navigation or data selection scenarios.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.ts">
-  <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.ts"/>
-  <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.html"/>
-  <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.css"/>
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts">
+  <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts"/>
+  <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.html"/>
+  <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.css"/>
 </docs-code-multifile>
 
 ## Usage
@@ -55,10 +55,10 @@ Use a tree for navigation where clicking items triggers actions rather than sele
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/nav/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -71,17 +71,17 @@ Enable single selection for scenarios where users choose one item from the tree.
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -94,17 +94,17 @@ Allow users to select multiple items from the tree.
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/multi-select/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -117,17 +117,17 @@ When selection follows focus, the focused item is automatically selected. This s
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/single-select-follow-focus/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -140,17 +140,17 @@ Disable specific tree nodes to prevent interaction. Control whether disabled ite
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/tree/src/disabled-focusable/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
