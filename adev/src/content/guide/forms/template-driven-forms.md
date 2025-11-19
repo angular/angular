@@ -59,7 +59,7 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 
 1. The provided sample application creates the `Actor` class which defines the data model reflected in the form.
 
-<docs-code header="actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
+   <docs-code header="actor.ts" language="typescript" path="adev/src/content/examples/forms/src/app/actor.ts"/>
 
 1. The form layout and details are defined in the `ActorFormComponent` class.
 
@@ -67,18 +67,18 @@ In the course of this tutorial, you bind a sample form to data and handle user i
 
    The component's `selector` value of "app-actor-form" means you can drop this form in a parent template using the `<app-actor-form>` tag.
 
-2. The following code creates a new actor instance, so that the initial form can show an example actor.
+1. The following code creates a new actor instance, so that the initial form can show an example actor.
 
    <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="Marilyn"/>
 
    This demo uses dummy data for `model` and `skills`.
    In a real app, you would inject a data service to get and save real data, or expose these properties as inputs and outputs.
 
-3. The component enables the Forms feature by importing the `FormsModule` module.
+1. The component enables the Forms feature by importing the `FormsModule` module.
 
    <docs-code language="typescript" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" language="typescript" visibleRegion="imports"/>
 
-4. The form is displayed in the application layout defined by the root component's template.
+1. The form is displayed in the application layout defined by the root component's template.
 
    <docs-code header="app.component.html" language="html" path="adev/src/content/examples/forms/src/app/app.component.html"/>
 
@@ -91,15 +91,15 @@ In the course of this tutorial, you bind a sample form to data and handle user i
    The **Submit** button has some classes on it for styling.
    At this point, the form layout is all plain HTML5, with no bindings or directives.
 
-5. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
+1. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css): `container`, `form-group`, `form-control`, and `btn`.
    To use these styles, the application's style sheet imports the library.
 
-<docs-code header="src/styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
+   <docs-code header="styles.css" path="adev/src/content/examples/forms/src/styles.1.css"/>
 
 1. The form requires that an actor's skill is chosen from a predefined list of `skills` maintained internally in `ActorFormComponent`.
    The Angular `@for` loop iterates over the data values to populate the `<select>` element.
 
-<docs-code header="actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
+   <docs-code header="actor-form.component.html (skills)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="skills"/>
 
 If you run the application right now, you see the list of skills in the selection control.
 The input elements are not yet bound to data values or events, so they are still blank and have no behavior.
@@ -230,11 +230,11 @@ To change the appearance in this way, take the following steps.
 1. Add these class definitions to a new `forms.css` file.
 1. Add the new file to the project as a sibling to `index.html`:
 
-<docs-code header="src/assets/forms.css" language="css" path="adev/src/content/examples/forms/src/assets/forms.css"/>
+   <docs-code header="forms.css" language="css" path="adev/src/content/examples/forms/src/assets/forms.css"/>
 
 1. In the `index.html` file, update the `<head>` tag to include the new style sheet.
 
-<docs-code header="src/index.html (styles)" path="adev/src/content/examples/forms/src/index.html" visibleRegion="styles"/>
+   <docs-code header="index.html (styles)" path="adev/src/content/examples/forms/src/index.html" visibleRegion="styles"/>
 
 ### Show and hide validation error messages
 
@@ -291,11 +291,11 @@ To let form users add a new actor, you will add a **New Actor** button that resp
 1. In the template, place a "New Actor" `<button>` element at the bottom of the form.
 1. In the component file, add the actor-creation method to the actor data model.
 
-<docs-code header="actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
+   <docs-code header="actor-form.component.ts (New Actor method)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.ts" visibleRegion="new-actor"/>
 
 1. Bind the button's click event to an actor-creation method, `newActor()`.
 
-<docs-code header="actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
+   <docs-code header="actor-form.component.html (New Actor button)" path="adev/src/content/examples/forms/src/app/actor-form/actor-form.component.html" visibleRegion="new-actor-button-no-reset"/>
 
 1. Run the application again and click the **New Actor** button.
 
