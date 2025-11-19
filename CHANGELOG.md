@@ -2,6 +2,8 @@
 
 # 21.0.0 (2025-11-19)
 
+[Blog post "Announcing Angular v21"](http://goo.gle/angular-v21-blog).
+
 ## Breaking Changes
 
 ### common
