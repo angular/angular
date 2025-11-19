@@ -1,4 +1,4 @@
-import {Component, viewChild} from '@angular/core';
+import {Component, signal, viewChild} from '@angular/core';
 import {Menu, MenuContent, MenuItem} from '@angular/aria/menu';
 import {OverlayModule} from '@angular/cdk/overlay';
 
@@ -9,5 +9,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
   imports: [Menu, MenuContent, MenuItem, OverlayModule],
 })
 export class App {
+  hasInteracted = signal(false);
   updateMenu = viewChild<Menu<string>>('updateMenu');
 }
