@@ -222,12 +222,15 @@ Prefer `class` and `style` bindings over using the [`NgClass`](/api/common/NgCla
 ```html
 <!-- PREFER -->
 <div [class.admin]="isAdmin" [class.dense]="density === 'high'">
+<div [style.color]="textColor" [style.background-color]="backgroundColor">
 <!-- OR -->
 <div [class]="{admin: isAdmin, dense: density === 'high'}">
+<div [style]="{'color': textColor, 'background-color': backgroundColor}">
 
 
 <!-- AVOID -->
 <div [ngClass]="{admin: isAdmin, dense: density === 'high'}">
+<div [ngStyle]="{'color': textColor, 'background-color': backgroundColor}">
 ```
 
 Both `class` and `style` bindings use a more straightforward syntax that aligns closely with
