@@ -10,10 +10,10 @@
 
 A grid enables users to navigate two-dimensional data or interactive elements using directional arrow keys, Home, End, and Page Up/Down. Grids work for data tables, calendars, spreadsheets, and layout patterns that group related interactive elements.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.component.ts">
-  <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.component.ts"/>
-  <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.component.html"/>
-  <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/overview/basic/app/app.component.css"/>
+<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts">
+  <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts"/>
+  <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.html"/>
+  <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.css"/>
 </docs-code-multifile>
 
 ## Usage
@@ -53,17 +53,17 @@ Use a grid for interactive tables where users need to navigate between cells usi
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/table/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/table/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -76,24 +76,24 @@ Calendars are a common use case for grids. This example shows a month view where
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Material">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/material/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/calendar/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
@@ -106,24 +106,24 @@ Use a layout grid to group interactive elements and reduce tab stops. This examp
 
 <docs-tab-group>
   <docs-tab label="Basic">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/basic/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Material">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/material/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
   <docs-tab label="Retro">
-    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.component.ts">
-      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.component.ts"/>
-      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.component.html"/>
-      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.component.css"/>
+    <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.ts">
+      <docs-code header="TS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.ts"/>
+      <docs-code header="HTML" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.html"/>
+      <docs-code header="CSS" path="adev/src/content/examples/aria/grid/src/pill-list/retro/app/app.css"/>
     </docs-code-multifile>
   </docs-tab>
 </docs-tab-group>
