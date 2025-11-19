@@ -1,3 +1,17 @@
+## <small>0.16.0 (2025-11-19)</small>
+
+- fix(zone.js): Support jasmine v6 ([48abe00](https://github.com/angular/angular/commit/48abe00))
+- fix(zone.js): waitForAsync should pass args to the test function (#61755) ([3c216c1](https://github.com/angular/angular/commit/3c216c1)), closes [#61755](https://github.com/angular/angular/issues/61755) [#61717](https://github.com/angular/angular/issues/61717) [#61755](https://github.com/angular/angular/issues/61755)
+- refactor(zone.js): Add internal implementation for auto ticking fakeAsync (#62135) ([0a827f9](https://github.com/angular/angular/commit/0a827f9)), closes [#62135](https://github.com/angular/angular/issues/62135) [#62135](https://github.com/angular/angular/issues/62135)
+- refactor(zone.js): Improve missing proxy zone error for jest imported (#64497) ([ced2fa5](https://github.com/angular/angular/commit/ced2fa5)), closes [#64497](https://github.com/angular/angular/issues/64497) [#47603](https://github.com/angular/angular/issues/47603) [#64497](https://github.com/angular/angular/issues/64497)
+- refactor(zone.js): remove legacy browser support (#63511) ([2e46596](https://github.com/angular/angular/commit/2e46596)), closes [#63511](https://github.com/angular/angular/issues/63511) [#63511](https://github.com/angular/angular/issues/63511)
+- refactor(zone.js): remove unused jasmine globalerror monkey patching. (#63077) ([9aef481](https://github.com/angular/angular/commit/9aef481)), closes [#63077](https://github.com/angular/angular/issues/63077) [#63072](https://github.com/angular/angular/issues/63072) [#63077](https://github.com/angular/angular/issues/63077)
+- test(zone.js): refactor tests to remove usage of shelljs (#64042) ([422a3b9](https://github.com/angular/angular/commit/422a3b9)), closes [#64042](https://github.com/angular/angular/issues/64042) [#64042](https://github.com/angular/angular/issues/64042)
+
+### BREAKING CHANGE
+
+- IE/Non-Chromium Edge are not supported anymore.
+
 ## [0.15.1](https://github.com/angular/angular/compare/zone.js-0.15.0...zone.js-0.15.1) (2025-05-22)
 
 ### Bug Fixes
