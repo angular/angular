@@ -7,7 +7,7 @@
 
     @if (loginForm.email().touched() && loginForm.email().invalid()) {
       <ul class="error-list">
-        @for (error of loginForm.email().errors(); track $index) {
+        @for (error of loginForm.email().errors(); track error) {
           <li>{{ error.message }}</li>
         }
       </ul>
@@ -21,13 +21,13 @@
     </label>
 
     @if (loginForm.password().touched() && loginForm.password().invalid()) {
-      <div class="error">
-        @for (error of loginForm.password().errors(); track $index) {
-          <p>{{ error.message }}</p>
+      <ul class="error-list">
+        @for (error of loginForm.password().errors(); track error) {
+          <li>{{ error.message }}</li>
         }
-      </div>
+      </ul>
     }
   </div>
 
-  <button type="submit">Log In</button>
+  <button type="submit" [disabled]="loginForm().invalid()">Log In</button>
 </form>

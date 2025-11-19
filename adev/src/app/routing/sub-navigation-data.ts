@@ -448,6 +448,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
                 contentPath: 'guide/forms/signals/field-state-management',
               },
               {
+                label: 'Validation',
+                path: 'guide/forms/signals/validation',
+                contentPath: 'guide/forms/signals/validation',
+              },
+              {
                 label: 'Comparison with other form systems',
                 path: 'guide/forms/signals/comparison',
                 contentPath: 'guide/forms/signals/comparison',
