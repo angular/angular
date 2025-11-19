@@ -1,5 +1,7 @@
 # Testing services
 
+NOTE: While this guide is being updated for Vitest, some code examples currently use Karma/Jasmine syntax and APIs. We are actively working to provide Vitest equivalents where applicable.
+
 To check that your services are working as you intend, you can write tests specifically for them.
 
 Services are often the smoothest files to unit test.
