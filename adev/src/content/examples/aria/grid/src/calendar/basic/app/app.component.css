@@ -59,6 +59,7 @@ button:focus {
 }
 
 [ngGrid] {
+  display: table;
   border-spacing: 0;
 }
 
