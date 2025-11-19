@@ -11,7 +11,6 @@ import {computeDecimalDigest, computeDigest, decimalDigest} from '../../../i18n/
 import * as i18n from '../../../i18n/i18n_ast';
 import {createI18nMessageFactory, VisitNodeFn} from '../../../i18n/i18n_parser';
 import * as html from '../../../ml_parser/ast';
-import {DEFAULT_CONTAINER_BLOCKS} from '../../../ml_parser/defaults';
 import {ParseTreeResult} from '../../../ml_parser/parser';
 import * as o from '../../../output/output_ast';
 import {isTrustedTypesSink} from '../../../schema/trusted_types_sinks';
@@ -63,7 +62,6 @@ export class I18nMetaVisitor implements html.Visitor {
   constructor(
     private keepI18nAttrs = false,
     private enableI18nLegacyMessageIdFormat = false,
-    private containerBlocks: Set<string> = DEFAULT_CONTAINER_BLOCKS,
     private readonly preserveSignificantWhitespace: boolean = true,
 
     // When dropping significant whitespace we need to retain empty tokens or
@@ -82,7 +80,6 @@ export class I18nMetaVisitor implements html.Visitor {
   ): i18n.Message {
     const {meaning, description, customId} = this._parseMetadata(meta);
     const createI18nMessage = createI18nMessageFactory(
-      this.containerBlocks,
       this.retainEmptyTokens,
       /* preserveExpressionWhitespace */ this.preserveSignificantWhitespace,
     );

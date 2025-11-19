@@ -31,5 +31,3 @@ export const DEFAULT_INTERPOLATION_CONFIG: InterpolationConfig = new Interpolati
   '{{',
   '}}',
 );
-
-export const DEFAULT_CONTAINER_BLOCKS = new Set(['switch']);
