@@ -3,7 +3,6 @@
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="Combobox ARIA pattern"/>
-  <docs-pill href="api/aria/combobox" title="Combobox API Reference"/>
 </docs-pill-row>
 
 ## Overview
