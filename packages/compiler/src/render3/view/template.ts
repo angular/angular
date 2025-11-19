@@ -189,7 +189,6 @@ export function parseTemplate(
   const i18nMetaVisitor = new I18nMetaVisitor(
     /* keepI18nAttrs */ !preserveWhitespaces,
     enableI18nLegacyMessageIdFormat,
-    /* containerBlocks */ undefined,
     options.preserveSignificantWhitespace,
     retainEmptyTokens,
   );
@@ -246,7 +245,6 @@ export function parseTemplate(
         new I18nMetaVisitor(
           /* keepI18nAttrs */ false,
           /* enableI18nLegacyMessageIdFormat */ undefined,
-          /* containerBlocks */ undefined,
           /* preserveSignificantWhitespace */ true,
           retainEmptyTokens,
         ),

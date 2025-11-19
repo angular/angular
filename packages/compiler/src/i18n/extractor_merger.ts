@@ -7,7 +7,6 @@
  */
 
 import * as html from '../ml_parser/ast';
-import {DEFAULT_CONTAINER_BLOCKS} from '../ml_parser/defaults';
 import {ParseTreeResult} from '../ml_parser/parser';
 import {TokenType} from '../ml_parser/tokens';
 import {ParseError} from '../parse_util';
@@ -285,7 +284,6 @@ class _Visitor implements html.Visitor {
     this._messages = [];
     this._inImplicitNode = false;
     this._createI18nMessage = createI18nMessageFactory(
-      DEFAULT_CONTAINER_BLOCKS,
       // When dropping significant whitespace we need to retain whitespace tokens or
       // else we won't be able to reuse source spans because empty tokens would be
       // removed and cause a mismatch.
