@@ -6,7 +6,7 @@ package(default_visibility = [
 ])
 
 ts_project(
-    name = "profiler",
+    name = "devtools",
     srcs = glob(
         [
             "**/*.ts",
