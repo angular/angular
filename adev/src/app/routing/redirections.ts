@@ -138,6 +138,10 @@ export const REDIRECT_ROUTES: Route[] = [
         path: 'pipes',
         redirectTo: '/guide/templates/pipes',
       },
+      {
+        path: 'aria',
+        redirectTo: '/guide/aria/overview',
+      },
     ],
   },
   {
