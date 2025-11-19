@@ -3,7 +3,7 @@
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/grid/" title="Grid ARIA pattern"/>
-  <docs-pill href="api/aria/grid" title="Grid API Reference"/>
+  <docs-pill href="/api?query=accordion#angular_aria_accordion" title="Grid API Reference"/>
 </docs-pill-row>
 
 ## Overview
