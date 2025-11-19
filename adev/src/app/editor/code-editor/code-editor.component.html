@@ -128,7 +128,16 @@
     </button>
     <ul>
       @for (error of errors(); track error) {
-        <li>(line: {{ error.lineNumber }}:{{ error.characterPosition }}) {{ error.message }}</li>
+        <li>
+          <a
+            class="adev-error-location-link"
+            href="#"
+            (click)="$event.preventDefault(); openFileAtLocation(error)"
+          >
+            (line: {{ error.lineNumber }}:{{ error.characterPosition }})
+          </a>
+          {{ error.message }}
+        </li>
       }
     </ul>
   </div>
