@@ -111,6 +111,8 @@ export class FakeWebContainer extends WebContainer {
   override teardown() {}
 
   override fs: FakeFileSystemAPI = new FakeFileSystemAPI();
+
+  override async setPreviewScript(script: string): Promise<void> {}
 }
 
 class FakeFileSystemAPI implements FileSystemAPI {
