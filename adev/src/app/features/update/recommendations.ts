@@ -2750,4 +2750,165 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'Route configurations are now validated more rigorously. Routes that combine `redirectTo` and `canMatch` protections will generate an error, as these properties are incompatible together by default.',
   },
+  {
+    action:
+      "In the application's project directory, run `ng update @angular/core@20 @angular/cli@21` to update your application to Angular v21.",
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 2100,
+    possibleIn: 2100,
+    step: '21.0.0_ng_update',
+  },
+
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Basic,
+    material: true,
+    step: 'update @angular/material',
+    action: 'Run `ng update @angular/material@21`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-update-signal-input-access-in-custom-elements',
+    action:
+      'When using signal inputs with Angular custom elements, update property access to be direct (`elementRef.newInput`) instead of a function call (`elementRef.newInput()`) to align with the behavior of decorator-based inputs.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-zone-scheduler-behavior-change',
+    action:
+      "If using `provideZoneChangeDetection` without the ZoneJS polyfill, note that the internal scheduler is now always enabled. Review your app's timing as this may alter behavior that previously relied on the disabled scheduler.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Basic,
+    step: '21.0.0-provide-zone-change-detection-required',
+    action:
+      "Zone-based applications should add `provideZoneChangeDetection()` to your application's root providers. For standalone apps, add it to the `bootstrapApplication` call. For NgModule-based apps, add it to your root `AppModule`'s `providers` array. An automated migration should handle this.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-remove-interpolation-option',
+    action:
+      "Remove the 'interpolation' property from your @Component decorators. Angular now only supports the default '{{' and '}}' interpolation markers.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-remove-moduleid-property',
+    action:
+      "Remove the 'moduleId' property from your @Component decorators. This property was used for resolving relative URLs for templates and styles, a functionality now handled by modern build tools.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-ng-component-outlet-content-type-change',
+    action:
+      'The `ngComponentOutletContent` input has been strictly typed from `any[][]` to `Node[][]`. Update the value you pass to this input to match the new `Node[][] | undefined` type.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Basic,
+    step: '21.0.0-stricter-host-binding-type-checking',
+    action:
+      "Host binding type checking is now enabled by default and may surface new build errors. Resolve any new type errors or set `typeCheckHostBindings: false` in your `tsconfig.json`'s `angularCompilerOptions`.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Basic,
+    step: '21.0.0-typescript-5.9-required',
+    action:
+      "Update your project's TypeScript version to 5.9 or later. The `ng update` command will typically handle this automatically.",
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-remove-application-config-from-platform-browser',
+    action:
+      'The `ApplicationConfig` export from `@angular/platform-browser` has been removed. Update your imports to use `ApplicationConfig` from `@angular/core` instead.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-remove-ignore-changes-outside-zone-option',
+    action:
+      'The `ignoreChangesOutsideZone` option for configuring ZoneJS is no longer available. Remove this option from your ZoneJS configuration in your polyfills file.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-testbed-rethrows-errors-with-provideZoneChangeDetection',
+    action:
+      'Update tests using `provideZoneChangeDetection` as TestBed now rethrows errors. Fix the underlying issues in your tests or, as a last resort, configure TestBed with `rethrowApplicationErrors: false` to disable this behavior.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-router-navigation-timing-changed',
+    action:
+      'Update tests that rely on router navigation timing. Navigations may now take additional microtasks to complete. Ensure navigations are fully completed before making assertions, for example by using `fakeAsync` with `flush` or waiting for promises/observables to resolve.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-test-bed-provides-fake-platform-location',
+    action:
+      'Tests using `TestBed` might be affected by the new fake `PlatformLocation`. If your tests fail, provide the old `MockPlatformLocation` from `@angular/common/testing` via `{provide: PlatformLocation, useClass: MockPlatformLocation}` in your `TestBed` configuration.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-remove-upgrade-adapter',
+    action:
+      'The `UpgradeAdapter` has been removed. Update your hybrid Angular/AngularJS application to use the static APIs from the `@angular/upgrade/static` package instead.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-form-array-directive-conflict',
+    action:
+      'The new standalone `formArray` directive might conflict with existing custom directives or inputs. Rename any custom directives named `FormArray` or inputs named `formArray` on elements that also use reactive forms to resolve the conflict.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-ngmodulefactory-removed',
+    action:
+      'The deprecated `NgModuleFactory` has been removed. Update any code that uses `NgModuleFactory` to use `NgModule` directly, which is common in dynamic component loading scenarios.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0-emit-declaration-only-not-supported',
+    action:
+      'The `emitDeclarationOnly` TypeScript compiler option is not supported. Please disable it in your `tsconfig.json` file to allow the Angular compiler to function correctly.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0-lastsuccessfulnavigation-is-a-signal',
+    action:
+      'The `lastSuccessfulNavigation` property on the Router has been converted to a signal. To get its value, you now need to invoke it as a function: `router.lastSuccessfulNavigation()`.',
+  },
 ];
