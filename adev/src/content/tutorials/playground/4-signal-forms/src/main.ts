@@ -1,7 +1,6 @@
 import {bootstrapApplication} from '@angular/platform-browser';
 import {Component, signal, ChangeDetectionStrategy} from '@angular/core';
-// @ts-ignore There's a known issue with type support in the playground editor for signal forms
-import {form, Field, required, email, submit} from '@angular/forms/signals';
+import {form, Field, required, email, debounce, submit} from '@angular/forms/signals';
 
 interface LoginData {
   email: string;
