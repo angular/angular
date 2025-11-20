@@ -30,35 +30,25 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
     token.code = codeToHtml(highlighter, token.code, {language, highlight});
   }
 
-  const dom = new JSDOM(token.code);
-  const document = dom.window.document;
-  const lines = document.body.querySelectorAll('.line');
+  if (token.linenums) {
+    const dom = new JSDOM(token.code);
+    const document = dom.window.document;
+    const lines = document.body.querySelectorAll('.line');
 
-  const linesCount = lines.length;
-  if (linesCount === 0) {
-    return;
-  }
-
-  let lineIndex = 0;
-  let resultFileLineIndex = 1;
-
-  do {
-    const currentline = lines[lineIndex];
-
-    if (!!token.linenums) {
-      const lineNumberEl = JSDOM.fragment(
-        `<span role="presentation" class="${lineNumberClassName}"></span>`,
-      ).firstElementChild!;
-      lineNumberEl.textContent = `${resultFileLineIndex}`;
-
-      currentline.parentElement!.insertBefore(lineNumberEl, currentline);
-      resultFileLineIndex++;
+    const linesCount = lines.length;
+    if (linesCount === 0) {
+      return;
     }
 
-    lineIndex++;
-  } while (lineIndex < linesCount);
+    lines.forEach((lineEl, idx) => {
+      const lineNumberEl = JSDOM.fragment(
+        `<span role="presentation" class="${lineNumberClassName}">${idx + 1}</span>`,
+      ).firstElementChild!;
+      lineEl.parentElement!.insertBefore(lineNumberEl, lineEl);
+    });
 
-  token.code = document.body.innerHTML;
+    token.code = document.body.innerHTML;
+  }
 }
 
 function guessLanguageFromPath(path: string | undefined): string {
