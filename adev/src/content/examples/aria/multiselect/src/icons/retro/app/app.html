@@ -1,11 +1,11 @@
 <div ngCombobox class="retro-select" readonly>
   <div #origin class="select">
     <span class="combobox-label">
-      <span class="selected-label-icon material-symbols-outlined">{{ displayIcon() }}</span>
+      <span class="selected-label-icon material-symbols-outlined" translate="no">{{ displayIcon() }}</span>
       <span class="selected-label-text">{{ displayValue() }}</span>
     </span>
     <input aria-label="Label dropdown" placeholder="Select a label" ngComboboxInput />
-    <span class="example-arrow material-symbols-outlined">arrow_drop_down</span>
+    <span class="example-arrow material-symbols-outlined" translate="no">arrow_drop_down</span>
   </div>
 
   <ng-template ngComboboxPopupContainer>
@@ -17,9 +17,9 @@
         <div ngListbox multi>
           @for (label of labels; track label.value) {
           <div ngOption [value]="label.value" [label]="label.value">
-            <span class="example-option-icon material-symbols-outlined">{{label.icon}}</span>
+            <span class="example-option-icon material-symbols-outlined" translate="no">{{label.icon}}</span>
             <span class="example-option-text">{{label.value}}</span>
-            <span class="example-option-check material-symbols-outlined">check</span>
+            <span class="example-option-check material-symbols-outlined" translate="no">check</span>
           </div>
           }
         </div>
