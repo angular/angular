@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {Step, RECOMMENDATIONS} from './recommendations';
+import {Step, RECOMMENDATIONS, ApplicationComplexity} from './recommendations';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -292,6 +292,16 @@ export default class UpdateComponent {
 
       this.duringRecommendations.push(upgradeStep);
     }
+  }
+
+  protected getComplexityLevelName(level: ApplicationComplexity): string {
+    const names: Record<ApplicationComplexity, string> = {
+      [ApplicationComplexity.Basic]: 'Basic',
+      [ApplicationComplexity.Medium]: 'Medium',
+      [ApplicationComplexity.Advanced]: 'Advanced',
+    };
+
+    return names[level] ?? 'Unknown';
   }
 
   private replaceVariables(action: string): string {
