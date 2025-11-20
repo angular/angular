@@ -66,18 +66,18 @@ Angular Aria includes directives with comprehensive documentation, working examp
 
 ### Navigation and call to actions
 
-| Component                     | Description                                                 |
-| ----------------------------- | ----------------------------------------------------------- |
-| [Menu](guide/aria/menu)       | Dropdown menus with nested submenus and keyboard shortcuts  |
-| [Menubar](guide/aria/menubar) | Horizontal navigation bar for persistent application menus  |
-| [Tabs](guide/aria/tabs)       | Tabbed interfaces with automatic or manual activation modes |
-| [Toolbar](guide/aria/toolbar) | Grouped sets of controls with logical keyboard navigation   |
+| Component                     | Description                                                |
+| ----------------------------- | ---------------------------------------------------------- |
+| [Menu](guide/aria/menu)       | Dropdown menus with nested submenus and keyboard shortcuts |
+| [Menubar](guide/aria/menubar) | Horizontal navigation bar for persistent application menus |
+| [Toolbar](guide/aria/toolbar) | Grouped sets of controls with logical keyboard navigation  |
 
 ### Content organization
 
 | Component                         | Description                                                            |
 | --------------------------------- | ---------------------------------------------------------------------- |
 | [Accordion](guide/aria/accordion) | Collapsible content panels that can expand individually or exclusively |
+| [Tabs](guide/aria/tabs)           | Tabbed interfaces with automatic or manual activation modes            |
 | [Tree](guide/aria/tree)           | Hierarchical lists with expand/collapse functionality                  |
 | [Grid](guide/aria/grid)           | Two-dimensional data display with cell-by-cell keyboard navigation     |
 
