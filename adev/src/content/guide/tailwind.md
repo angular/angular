@@ -2,7 +2,27 @@
 
 [Tailwind CSS](https://tailwindcss.com/) is a utility-first CSS framework that can be used to build modern websites without ever leaving your HTML. This guide will walk you through setting up Tailwind CSS in your Angular project.
 
-## Setting up Tailwind CSS
+## Automated Setup with `ng add`
+
+Angular CLI provides a streamlined way to integrate Tailwind CSS into your project using the `ng add` command. This command automatically installs the necessary packages, configures Tailwind CSS, and updates your project's build settings.
+
+First, navigate to your Angular project's root directory in a terminal and run the following command:
+
+```shell
+ng add tailwindcss
+```
+
+This command performs the following actions:
+
+- Installs `tailwindcss` and its peer dependencies.
+- Configures the project to use Tailwind CSS.
+- Adds the Tailwind CSS `@import` statement to your styles.
+
+After running `ng add tailwindcss`, you can immediately start using Tailwind's utility classes in your component templates.
+
+## Manual Setup (Alternative Method)
+
+If you prefer to set up Tailwind CSS manually, follow these steps:
 
 ### 1. Create an Angular project
 
@@ -61,7 +81,7 @@ If you're using SCSS, add `@use` to `./src/styles.scss`.
 
 ### 5. Start using Tailwind in your project
 
-You can now start using Tailwind's utility classes in your component templates to style your application.
+You can now start using Tailwind's utility classes in your component templates to style your application. Run your build process with `ng serve` and you should see the styled heading.
 
 For example, you can add the following to your `app.html` file:
 
@@ -70,10 +90,6 @@ For example, you can add the following to your `app.html` file:
   Hello world!
 </h1>
 </docs-code>
-
-### 6. Start using Tailwind in your project
-
-Run your build process with `ng serve` and you should see the styled heading.
 
 ## Additional Resources
 
