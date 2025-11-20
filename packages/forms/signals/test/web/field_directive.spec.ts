@@ -2366,16 +2366,20 @@ describe('field directive', () => {
 
   describe('config', () => {
     it('should apply classes based on config', () => {
-      @Component({
-        imports: [Field],
-        template: `<input [field]="f">`,
+      TestBed.configureTestingModule({
         providers: [
+          provideZonelessChangeDetection(),
           provideSignalFormsConfig({
             classes: {
               'my-invalid-class': (state) => state.invalid(),
             },
           }),
         ],
+      });
+
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
       })
       class TestCmp {
         readonly f = form(signal(''), (p) => {
@@ -2392,14 +2396,18 @@ describe('field directive', () => {
     });
 
     it('should apply NG_STATUS_CLASSES', () => {
-      @Component({
-        imports: [Field],
-        template: `<input [field]="f">`,
+      TestBed.configureTestingModule({
         providers: [
+          provideZonelessChangeDetection(),
           provideSignalFormsConfig({
             classes: NG_STATUS_CLASSES,
           }),
         ],
+      });
+
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
       })
       class TestCmp {
         readonly f = form(signal(''), (p) => {
@@ -2438,6 +2446,54 @@ describe('field directive', () => {
       });
       expect(input.classList.contains('ng-dirty')).toBe(true);
       expect(input.classList.contains('ng-pristine')).toBe(false);
+    });
+
+    it('should not apply classes on a custom and native control, but not a component with a `field` input', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideZonelessChangeDetection(),
+          provideSignalFormsConfig({
+            classes: {'always': () => true},
+          }),
+        ],
+      });
+
+      @Component({
+        selector: 'custom-control',
+        template: '',
+      })
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model.required<string>();
+      }
+
+      @Component({
+        selector: 'custom-subform',
+        template: '',
+      })
+      class CustomSubform {
+        readonly field = input.required<FieldTree<string>>();
+      }
+
+      @Component({
+        imports: [Field, CustomControl, CustomSubform],
+        template: `
+          <input [field]="f" />
+          <custom-control [field]="f" />
+          <custom-subform [field]="f" />
+        `,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const nativeCtrl = fixture.nativeElement.querySelector('input') as HTMLElement;
+      const customCtrl = fixture.nativeElement.querySelector('custom-control') as HTMLElement;
+      const customSubform = fixture.nativeElement.querySelector('custom-subform') as HTMLElement;
+
+      expect(nativeCtrl.classList.contains('always')).toBe(true);
+      expect(customCtrl.classList.contains('always')).toBe(true);
+      expect(customSubform.classList.contains('always')).toBe(false);
     });
   });
 });
