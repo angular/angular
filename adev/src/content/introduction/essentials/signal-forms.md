@@ -1,8 +1,8 @@
-<docs-decorative-header title="Forms with signals" imgSrc="adev/src/assets/images/signals.svg"> <!-- markdownlint-disable-line -->
-Signal Forms is built on Angular signals to provide a reactive, type-safe way to manage form state.
-</docs-decorative-header>
+<docs-decorative-header title="Forms with signals" imgSrc="adev/src/assets/images/signals.svg"> </docs-decorative-header>
 
-Signal Forms manage form state using Angular signals to provide automatic synchronization between your data model and the UI.
+IMPORTANT: Signal Forms are [experimental](/reference/releases#experimental). The API may change in future releases. Avoid using experimental APIs in production applications without understanding the risks.
+
+Signal Forms manage form state using Angular signals to provide automatic synchronization between your data model and the UI with Angular Signals.
 
 This guide walks you through the core concepts to create forms with Signal Forms. Here's how it works:
 
@@ -210,7 +210,7 @@ NOTE: Multiple select (`<select multiple>`) is not supported by the `[field]` di
 
 ## Validation and state
 
-Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`. This function receives a **schema path** parameter that allows you to reference the fields in your form model:
+Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`:
 
 ```ts
 const loginForm = form(loginModel, (schemaPath) => {
@@ -220,7 +220,7 @@ const loginForm = form(loginModel, (schemaPath) => {
 });
 ```
 
-NOTE: The schema path parameter provides paths to your fields for applying validation rules. To access field values and state, use the field tree (such as `loginForm.email()`).
+The schema function receives a **schema path** parameter that provides paths to your fields for configuring validation rules.
 
 Common validators include:
 
@@ -257,7 +257,15 @@ Every `field()` provides these state signals:
 | `touched()`  | Returns `true` if the user has focused and blurred the field               |
 | `dirty()`    | Returns `true` if the user has changed the value                           |
 | `disabled()` | Returns `true` if the field is disabled                                    |
+| `readonly()` | Returns `true` if the field is readonly                                    |
 | `pending()`  | Returns `true` if async validation is in progress                          |
 | `errors()`   | Returns an array of validation errors with `kind` and `message` properties |
 
-TIP: Use the `debounce()` validation rule to delay error display until the user stops typing or leaves the field. This prevents showing errors while the user is still entering their input.
+## Next steps
+
+To learn more about Signal Forms and how it works, check out the in-depth guides:
+
+- [Overview](guide/forms/signals/overview) - Introduction to Signal Forms and when to use them
+- [Form models](guide/forms/signals/models) - Creating and managing form data with signals
+- [Field state management](guide/forms/signals/field-state-management) - Working with validation state, interaction tracking, and field visibility
+- [Validation](guide/forms/signals/validation) - Built-in validators, custom validation rules, and async validation
