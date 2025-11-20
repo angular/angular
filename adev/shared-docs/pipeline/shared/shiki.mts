@@ -48,7 +48,7 @@ export function codeToHtml(
     },
     cssVariablePrefix: '--shiki-',
     defaultColor: false,
-    transformers: [highlightTransformer(config.highlight)],
+    transformers: [removeWhitespaceTransformer(), highlightTransformer(config.highlight)],
   });
 
   return html;
@@ -61,6 +61,17 @@ function highlightTransformer(highlight?: Set<number>): ShikiTransformer {
       if (highlight?.has(lineNumber)) {
         this.addClassToHast(node, 'highlighted');
       }
+    },
+  };
+}
+
+/** A custom transformer which removes all of the whitespace between lines of code in the generated output. */
+function removeWhitespaceTransformer(highlight?: Set<number>): ShikiTransformer {
+  return {
+    code(code) {
+      code.children = code.children.filter(
+        (line) => line.type !== 'text' || line.value.trim().length !== 0,
+      );
     },
   };
 }
