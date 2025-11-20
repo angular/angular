@@ -25,9 +25,12 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   if (token.language !== 'none' && token.language !== 'file') {
     // Decode the code content to replace HTML entities to characters
     const language = token.language ?? guessLanguageFromPath(token.path);
+    /** The set of all lines which should be highlighted. */
+    const highlight = token.highlight
+      ? new Set(expandRangeStringValues(token.highlight))
+      : undefined;
 
-    const codeAsHtml = codeToHtml(highlighter, token.code, language);
-    token.code = codeAsHtml;
+    token.code = codeToHtml(highlighter, token.code, {language, highlight});
   }
 
   const dom = new JSDOM(token.code);
@@ -45,21 +48,15 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   let lineIndex = 0;
   let resultFileLineIndex = 1;
 
-  const highlightedLineRanges = token.highlight ? expandRangeStringValues(token.highlight) : [];
-
   do {
     const isRemovedLine = token.diffMetadata?.linesRemoved.includes(lineIndex);
     const isAddedLine = token.diffMetadata?.linesAdded.includes(lineIndex);
-    const isHighlighted = highlightedLineRanges.includes(lineIndex);
     const addClasses = (el: Element) => {
       if (isRemovedLine) {
         el.classList.add(lineRemovedClassName);
       }
       if (isAddedLine) {
         el.classList.add(lineAddedClassName);
-      }
-      if (isHighlighted) {
-        el.classList.add(lineHighlightedClassName);
       }
     };
 

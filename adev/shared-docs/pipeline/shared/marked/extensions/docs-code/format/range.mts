@@ -7,7 +7,7 @@
  */
 
 /**
- * Expand a provided set of range values into a singel array of all values in the range.
+ * Expand a provided set of range values into a single array of all values in the range.
  *
  * For example,  [[1,3], [12-13]] is expanded to [1,2,3,12,13].
  */
@@ -18,7 +18,7 @@ export function expandRangeStringValues(rangeString: string | undefined): number
   const getAllValuesFromRange = (range: any[]) => {
     const [start, end] = range;
     for (let i = start; i <= end; i++) {
-      result.push(i - 1);
+      result.push(i);
     }
   };
 
@@ -40,7 +40,7 @@ export function expandRangeStringValues(rangeString: string | undefined): number
         if (Array.isArray(range) && range.length === 2) {
           getAllValuesFromRange(range);
         } else if (!Number.isNaN(range)) {
-          result.push(Number(range - 1));
+          result.push(Number(range));
         } else {
           throw new Error('Input has wrong format!\n' /* range */);
         }

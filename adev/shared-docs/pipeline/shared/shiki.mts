@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {HighlighterGeneric} from 'shiki';
+import {HighlighterGeneric, ShikiTransformer} from 'shiki';
 
 const LIGHT_THEME = 'github-light';
 const DARK_THEME = 'github-dark';
@@ -35,17 +35,32 @@ export async function initHighlighter(): Promise<HighlighterGeneric<any, any>> {
 export function codeToHtml(
   highlighter: HighlighterGeneric<any, any>,
   code: string,
-  language: string | undefined,
+  config: {
+    language?: string;
+    highlight?: Set<number>;
+  },
 ): string {
   const html = highlighter.codeToHtml(code, {
-    lang: language ?? 'text',
+    lang: config.language ?? 'text',
     themes: {
       light: LIGHT_THEME,
       dark: DARK_THEME,
     },
     cssVariablePrefix: '--shiki-',
     defaultColor: false,
+    transformers: [highlightTransformer(config.highlight)],
   });
 
   return html;
+}
+
+/** A custom transformer which will mark all of the provided line numbers in a set as highlighted. */
+function highlightTransformer(highlight?: Set<number>): ShikiTransformer {
+  return {
+    line(node, lineNumber) {
+      if (highlight?.has(lineNumber)) {
+        this.addClassToHast(node, 'highlighted');
+      }
+    },
+  };
 }

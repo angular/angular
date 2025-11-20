@@ -13,7 +13,7 @@ import {getHighlighterInstance} from '../shiki/shiki.mjs';
 
 /** Component to render a header of the CLI page. */
 export function HighlightTypeScript(props: {code: string}) {
-  const result = codeToHtml(getHighlighterInstance(), props.code, 'typescript');
+  const result = codeToHtml(getHighlighterInstance(), props.code, {language: 'typescript'});
   const withScrollTrack = result.replace(/^(<pre class="shiki)/, '$1 docs-mini-scroll-track');
 
   return <RawHtml value={withScrollTrack} className="docs-code" />;

@@ -41,11 +41,9 @@ export function ClassReference(
           <div className={SECTION_CONTAINER + ' docs-reference-api-section'}>
             <SectionHeading name="Pipe usage" />
             <RawHtml
-              value={codeToHtml(
-                getHighlighterInstance(),
-                (entry as PipeEntry).usage,
-                'angular-html',
-              )}
+              value={codeToHtml(getHighlighterInstance(), (entry as PipeEntry).usage, {
+                language: 'angular-html',
+              })}
             />
           </div>
         </>
