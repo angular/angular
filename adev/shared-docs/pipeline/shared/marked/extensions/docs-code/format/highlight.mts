@@ -34,9 +34,6 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   const document = dom.window.document;
   const lines = document.body.querySelectorAll('.line');
 
-  // removing whitespaces text nodes so we don't have spaces between codelines
-  removeWhitespaceNodes(document.body.querySelector('.shiki > code'));
-
   const linesCount = lines.length;
   if (linesCount === 0) {
     return;
@@ -62,24 +59,6 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   } while (lineIndex < linesCount);
 
   token.code = document.body.innerHTML;
-}
-
-/**
- *
- * Removed whitespaces between 1st level children
- */
-function removeWhitespaceNodes(parent: Element | null) {
-  if (!parent) {
-    return;
-  }
-
-  const childNodes = parent.childNodes;
-  for (let i = childNodes.length - 1; i >= 0; i--) {
-    const node = childNodes[i];
-    if (node.nodeType === 3 && !/\S/.test(node.nodeValue!)) {
-      parent.removeChild(node);
-    }
-  }
 }
 
 function guessLanguageFromPath(path: string | undefined): string {
