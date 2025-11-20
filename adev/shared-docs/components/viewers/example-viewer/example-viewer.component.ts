@@ -31,11 +31,6 @@ import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers/index';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {MatTooltipModule} from '@angular/material/tooltip';
 
-export enum CodeExampleViewMode {
-  SNIPPET = 'snippet',
-  MULTI_FILE = 'multi',
-}
-
 export const CODE_LINE_NUMBER_CLASS_NAME = 'shiki-ln-number';
 export const CODE_LINE_CLASS_NAME = 'line';
 export const GAP_CODE_LINE_CLASS_NAME = 'gap';
@@ -77,7 +72,6 @@ export class ExampleViewer {
     return new Set(fileExtensions).size !== fileExtensions.length;
   });
 
-  CodeExampleViewMode = CodeExampleViewMode;
   exampleComponent?: Type<unknown>;
 
   readonly expandable = signal<boolean>(false);
@@ -90,11 +84,6 @@ export class ExampleViewer {
         file.title ?? (this.shouldDisplayFullName() ? file.name : this.getFileExtension(file.name)),
       code: file.sanitizedContent,
     })),
-  );
-  readonly view = computed(() =>
-    this.exampleMetadata()?.files.length === 1
-      ? CodeExampleViewMode.SNIPPET
-      : CodeExampleViewMode.MULTI_FILE,
   );
 
   async renderExample(): Promise<void> {
