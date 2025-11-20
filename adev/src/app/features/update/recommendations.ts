@@ -2750,4 +2750,83 @@ export const RECOMMENDATIONS: Step[] = [
     action:
       'Route configurations are now validated more rigorously. Routes that combine `redirectTo` and `canMatch` protections will generate an error, as these properties are incompatible together by default.',
   },
+  {
+    action:
+      "In the application's project directory, run `ng update @angular/core@21 @angular/cli@21` to update your application to Angular v21.",
+    level: ApplicationComplexity.Basic,
+    necessaryAsOf: 2100,
+    possibleIn: 2100,
+    step: '21.0.0_ng_update',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Basic,
+    material: true,
+    step: '21.0.0_update_angular_material',
+    action: 'Run `ng update @angular/material@21`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0_testbed_platform_location',
+    action:
+      'Tests now use a fake `PlatformLocation` implementation by default. If tests that rely on `PlatformLocation` are broken, you can revert to the previous behavior by providing `MockPlatformLocation` from `@angular/common/testing` in your `TestBed` providers: `{provide: PlatformLocation, useClass: MockPlatformLocation}`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0_ngcomponentoutlet_type',
+    action:
+      'The type of `ngComponentOutletContent` has been changed from `any[][] | undefined` to `Node[][] | undefined`. You may need to update your code if you were relying on the less strict `any` type.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0_ngmodulefactory_removal',
+    action: '`NgModuleFactory` has been removed. Use `NgModule` directly instead.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0_host_binding_type_checking',
+    action:
+      'The compiler now performs stricter type checking on host bindings. Previously hidden type issues may now be reported as build errors. Resolve these type issues, or as a temporary workaround, set `"typeCheckHostBindings": false` in the `angularCompilerOptions` of your `tsconfig.json`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0_emitdeclarationonly_unsupported',
+    action:
+      'The Angular compiler no longer supports the TypeScript compiler option `emitDeclarationOnly`. Remove this option from your `tsconfig.json` files.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Medium,
+    step: '21.0.0_ssr_bootstrap_context',
+    action:
+      'The server-side bootstrapping process has changed. Your `main.server.ts` file needs to be updated to pass a `BootstrapContext` to the `bootstrapApplication` call. A schematic is available to perform this update automatically when you run `ng update`.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0_platform_server_no-op',
+    action:
+      'When running in a server environment, `getPlatform()` now returns `null` and `destroyPlatform()` is a no-op. Remove any reliance on these functions in your server-side code.',
+  },
+  {
+    possibleIn: 2100,
+    necessaryAsOf: 2100,
+    level: ApplicationComplexity.Advanced,
+    step: '21.0.0_zoneless_scheduler_consistency',
+    action:
+      'Applications using `provideZoneChangeDetection` without ZoneJS polyfills will now use the same internal scheduler as all other Angular applications. This ensures consistent behavior but may affect the timing of tasks in specific edge cases.',
+  },
 ];
