@@ -32,7 +32,9 @@ import {
   maxLength,
   min,
   minLength,
+  NG_STATUS_CLASSES,
   pattern,
+  provideSignalFormsConfig,
   readonly,
   required,
   type DisabledReason,
@@ -2359,6 +2361,83 @@ describe('field directive', () => {
       resolve();
       await promise;
       expect(fixture.componentInstance.f().value()).toBe('typing');
+    });
+  });
+
+  describe('config', () => {
+    it('should apply classes based on config', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+        providers: [
+          provideSignalFormsConfig({
+            classes: {
+              'my-invalid-class': (state) => state.invalid(),
+            },
+          }),
+        ],
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+      expect(input.classList.contains('my-invalid-class')).toBe(true);
+
+      act(() => fixture.componentInstance.f().value.set('valid'));
+      expect(input.classList.contains('my-invalid-class')).toBe(false);
+    });
+
+    it('should apply NG_STATUS_CLASSES', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+        providers: [
+          provideSignalFormsConfig({
+            classes: NG_STATUS_CLASSES,
+          }),
+        ],
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+      // Initial state: invalid, pristine, untouched
+      expect(input.classList.contains('ng-invalid')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(true);
+      expect(input.classList.contains('ng-valid')).toBe(false);
+      expect(input.classList.contains('ng-dirty')).toBe(false);
+      expect(input.classList.contains('ng-touched')).toBe(false);
+      expect(input.classList.contains('ng-pending')).toBe(false);
+
+      // Make it valid
+      act(() => fixture.componentInstance.f().value.set('valid'));
+      expect(input.classList.contains('ng-valid')).toBe(true);
+      expect(input.classList.contains('ng-invalid')).toBe(false);
+
+      // Touch it (simulating interaction)
+      act(() => {
+        input.dispatchEvent(new Event('blur'));
+      });
+      expect(input.classList.contains('ng-touched')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(false);
+
+      // Make it dirty (simulating input)
+      act(() => {
+        input.value = 'new value';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(input.classList.contains('ng-dirty')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(false);
     });
   });
 });
