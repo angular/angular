@@ -200,8 +200,8 @@ function runCanActivateChild(
       const guardsMapped = d.guards.map(
         (canActivateChild: CanActivateChildFn | ProviderToken<unknown>) => {
           const closestInjector = getClosestRouteInjector(d.node) ?? injector;
-          const guard = getTokenOrFunctionIdentity<{canActivateChild: CanActivateChildFn}>(
-            canActivateChild,
+          const guard = getTokenOrFunctionIdentity(
+            canActivateChild as ProviderToken<CanActivateChildFn>,
             closestInjector,
           );
           const guardVal = isCanActivateChild(guard)
