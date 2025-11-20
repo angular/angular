@@ -11,7 +11,7 @@ import {By} from '@angular/platform-browser';
 import {provideRouter} from '@angular/router';
 import {ExampleViewerContentLoader} from '../../../interfaces';
 import {EXAMPLE_VIEWER_CONTENT_LOADER} from '../../../providers';
-import {CodeExampleViewMode, ExampleViewer} from '../example-viewer/example-viewer.component';
+import {ExampleViewer} from '../example-viewer/example-viewer.component';
 import {DocViewer} from './docs-viewer.component';
 import {IconComponent} from '../../icon/icon.component';
 import {Breadcrumb} from '../../breadcrumb/breadcrumb.component';
@@ -98,7 +98,7 @@ describe('DocViewer', () => {
     expect(fixture.nativeElement.innerHTML).toBe('hello world');
   });
 
-  it('should instantiate example viewer in snippet view mode', async () => {
+  it('should instantiate example viewer with only a single file', async () => {
     const fixture = TestBed.createComponent(DocViewer);
     fixture.componentRef.setInput('docContent', exampleDocContentWithExampleViewerPlaceholders);
     fixture.detectChanges();
@@ -107,7 +107,6 @@ describe('DocViewer', () => {
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
 
     expect(exampleViewer).not.toBeNull();
-    expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.SNIPPET);
 
     const copySourceCodeButton = fixture.debugElement.query(By.directive(CopySourceCodeButton));
     expect(copySourceCodeButton).not.toBeNull();
@@ -132,7 +131,6 @@ describe('DocViewer', () => {
     const exampleViewer = fixture.debugElement.query(By.directive(ExampleViewer));
 
     expect(exampleViewer).not.toBeNull();
-    expect(exampleViewer.componentInstance.view()).toBe(CodeExampleViewMode.MULTI_FILE);
     expect(exampleViewer.componentInstance.tabs().length).toBe(2);
   });
 
