@@ -71,29 +71,75 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
 }
 
 /**
+ * Check if a span element represents a comment based on Shiki's styling.
+ * Comments in Shiki are typically styled with a gray color (#6A737D).
+ */
+function isCommentSpan(span: Element): boolean {
+  const style = span.getAttribute('style') ?? '';
+
+  // Check for Shiki comment color (#6A737D) which is used for both light and dark themes
+  if (style.includes('#6A737D') || style.includes('#6a737d')) {
+    return true;
+  }
+
+  // Additional check for other common comment indicators
+  const className = span.getAttribute('class') ?? '';
+  return className.includes('comment');
+}
+
+/**
  * Process a DOM element to find spans (created by Shiki) and converts them to API links if they match entries.
  */
 export function processForApiLinks(fragment: Element, apiEntries: ApiEntries): void {
+  const doc = fragment.ownerDocument;
+  if (!doc) return;
+
   const spans = fragment.querySelectorAll('span:not(:has(span))');
 
   spans.forEach((span) => {
-    const symbolMatch = span.textContent?.match(/^(.*?)(\w+)(.*)$/);
-    if (!symbolMatch) return;
+    // Skip comment spans - we don't want to create links in comments
+    if (isCommentSpan(span)) {
+      return;
+    }
 
-    // Yes, index 0 is not interesting for us here
-    const [, before, symbol, after] = symbolMatch;
+    const text = span.textContent ?? '';
+    const regex = /[\w$]+/g;
+    let match;
+    const documentFragment = doc.createDocumentFragment();
+    let lastIndex = 0;
+    let hasLinks = false;
 
-    const apiLink = getSymbolUrl(symbol, apiEntries);
-    if (apiLink) {
-      // Create a new link element
-      const linkElement = fragment.ownerDocument!.createElement('a');
-      linkElement.href = apiLink;
-      linkElement.textContent = symbol;
+    // Find all word sequences in the span text
+    while ((match = regex.exec(text)) !== null) {
+      const symbol = match[0];
+      const apiLink = getSymbolUrl(symbol, apiEntries);
 
-      // Clear the span's content and insert the link as a child
-      span.textContent = before;
-      span.appendChild(linkElement);
-      span.append(fragment.ownerDocument!.createTextNode(after));
+      if (apiLink) {
+        // Add text before this symbol (includes any non-linkable symbols)
+        if (match.index > lastIndex) {
+          documentFragment.appendChild(doc.createTextNode(text.substring(lastIndex, match.index)));
+        }
+
+        // Create a link for this symbol
+        const linkElement = doc.createElement('a');
+        linkElement.href = apiLink;
+        linkElement.textContent = symbol;
+        documentFragment.appendChild(linkElement);
+        hasLinks = true;
+        lastIndex = regex.lastIndex;
+      }
+    }
+
+    // Only modify the span if we found at least one link
+    if (hasLinks) {
+      // Add any remaining text after the last link
+      if (lastIndex < text.length) {
+        documentFragment.appendChild(doc.createTextNode(text.substring(lastIndex)));
+      }
+
+      // Replace span contents with the fragment (single DOM operation)
+      span.textContent = '';
+      span.appendChild(documentFragment);
     }
   });
 }
