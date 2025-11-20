@@ -788,6 +788,16 @@
           "type": "boolean",
           "default": true,
           "description": "Create a library that utilizes the standalone API, eliminating the need for NgModules. This can simplify the structure of your library and its usage in applications."
+        },
+        {
+          "name": "test-runner",
+          "type": "string",
+          "default": "vitest",
+          "enum": [
+            "karma",
+            "vitest"
+          ],
+          "description": "The unit testing runner to use."
         }
       ],
       "aliases": [
