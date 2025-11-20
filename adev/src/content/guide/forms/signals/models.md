@@ -14,7 +14,7 @@ Form models solve this by centralizing form data in a single writable signal. Wh
 
 A form model is a writable signal created with Angular's `signal()` function. The signal holds an object that represents your form's data structure.
 
-```ts
+```angular-ts
 import { Component, signal } from '@angular/core'
 import { form, Field } from '@angular/forms/signals'
 
@@ -150,7 +150,7 @@ Each field in the field tree is a function. Calling a field returns a `FieldStat
 
 Access field state when working with individual fields in templates or reactive computations:
 
-```ts
+```angular-ts
 @Component({
   template: `
     <p>Current email: {{ loginForm.email().value() }}</p>
@@ -292,7 +292,7 @@ This synchronization happens automatically. You don't write subscriptions or eve
 
 ### Example: Both directions
 
-```ts
+```angular-ts
 @Component({
   template: `
     <input type="text" [field]="userForm.name" />
@@ -386,7 +386,7 @@ userForm.settings.theme // FieldTree<string>
 
 In templates, you bind nested fields the same way as top-level fields:
 
-```ts
+```angular-ts
 @Component({
   template: `
     <input [field]="userForm.profile.firstName" />
