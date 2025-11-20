@@ -29,7 +29,7 @@ const loginModel = signal<LoginData>({
 Then, you pass your form model into the `form()` function to create a **field tree** - an object structure that mirrors your model's shape, allowing you to access fields with dot notation:
 
 ```ts
-const loginForm = form(loginModel);
+const loginForm = form(this.loginModel);
 
 // Access fields directly by property name
 loginForm.email
