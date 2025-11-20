@@ -10,7 +10,7 @@ const APP_COMPONENT_URI = vscode.Uri.file(APP_COMPONENT);
 describe('Angular LS', () => {
   beforeAll(async () => {
     await activate(APP_COMPONENT_URI);
-  }, 20_000);
+  });
 
   it(`returns definition for variable in template`, async () => {
     // vscode Position is zero-based
