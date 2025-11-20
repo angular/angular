@@ -624,6 +624,10 @@ The `valid()` signal returns `false` while validation is pending, even if there 
 
 This guide covered creating and applying validation rules. Related guides explore other aspects of Signal Forms:
 
-- [Form Models guide](guide/forms/signals/models) - Creating and updating form models
-  <!-- TODO: Uncomment when Field State Management guide is published -->
-  <!-- - [Field State Management guide](guide/forms/signals/field-state-management) - Using validation state in templates and displaying errors -->
+<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
+<docs-pill-row>
+  <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
+  <docs-pill href="guide/forms/signals/models" title="Form models" />
+  <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
+  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+</docs-pill-row>
