@@ -69,6 +69,7 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             label: 'Forms with signals',
             path: 'essentials/signal-forms',
             contentPath: 'introduction/essentials/signal-forms',
+            status: 'new',
           },
           {
             label: 'Modular design with dependency injection',
