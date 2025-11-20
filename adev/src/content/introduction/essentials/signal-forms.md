@@ -8,7 +8,7 @@ This guide walks you through the core concepts to create forms with Signal Forms
 
 ## Creating your first form
 
-### 1. Create a form model
+### 1. Create a form model with `signal()`
 
 Every form starts by creating a signal that holds your form's data model:
 
@@ -24,19 +24,19 @@ const loginModel = signal<LoginData>({
 });
 ```
 
-### 2. Pass the form model to `form()`
+### 2. Pass the form model to `form()` to create a `FieldTree`
 
 Then, you pass your form model into the `form()` function to create a **field tree** - an object structure that mirrors your model's shape, allowing you to access fields with dot notation:
 
 ```ts
-form(loginModel);
+const loginForm = form(loginModel);
 
 // Access fields directly by property name
 loginForm.email
 loginForm.password
 ```
 
-### 3. Bind inputs with `[field]` directive
+### 3. Bind HTML inputs with `[field]` directive
 
 Next, you bind your HTML inputs to the form using the `[field]` directive, which creates two-way binding between them:
 
@@ -45,19 +45,11 @@ Next, you bind your HTML inputs to the form using the `[field]` directive, which
 <input type="password" [field]="loginForm.password" />
 ```
 
-As a result, user changes (such as typing in the field) automatically updates the form, and any programmatic changes update the displayed value as well:
-
-```ts
-// Update the value programmatically
-loginForm.email().value.set('alice@wonderland.com');
-
-// The model signal is also updated
-console.log(loginModel().email); // 'alice@wonderland.com'
-```
+As a result, user changes (such as typing in the field) automatically updates the form.
 
 NOTE: The `[field]` directive also syncs field state for attributes like `required`, `disabled`, and `readonly` when appropriate.
 
-### 4. Read form field values with `value()`
+### 4. Read field values with `value()`
 
 You can access field state by calling the field as a function. This returns a `FieldState` object containing reactive signals for the field's value, validation status, and interaction state:
 
@@ -75,6 +67,22 @@ To read the field's current value, access the `value()` signal:
 ```ts
 // Get the current value
 const currentEmail = loginForm.email().value();
+```
+
+### 5. Update field values with `set()`
+
+You can programmatically update a field's value using the `value.set()` method. This updates both the field and the underlying model signal:
+
+```ts
+// Update the value programmatically
+loginForm.email().value.set('alice@wonderland.com');
+```
+
+As a result, both the field value and the model signal are updated automatically:
+
+```ts
+// The model signal is also updated
+console.log(loginModel().email); // 'alice@wonderland.com'
 ```
 
 Here's a complete example:
@@ -202,16 +210,17 @@ NOTE: Multiple select (`<select multiple>`) is not supported by the `[field]` di
 
 ## Validation and state
 
-Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`. This function receives a **FieldPath** parameter that allows you to reference the fields in your form model:
+Signal Forms provides built-in validators that you can apply to your form fields. To add validation, pass a schema function as the second argument to `form()`. This function receives a **schema path** parameter that allows you to reference the fields in your form model:
 
 ```ts
-const loginForm = form(loginModel, (fieldPath) => {
-  required(fieldPath.email);
-  email(fieldPath.email);
+const loginForm = form(loginModel, (schemaPath) => {
+  debounce(schemaPath.email, 500);
+  required(schemaPath.email);
+  email(schemaPath.email);
 });
 ```
 
-NOTE: FieldPath only mirrors the shape of your data and does not allow you to access value or any other state.
+NOTE: The schema path parameter provides paths to your fields for applying validation rules. To access field values and state, use the field tree (such as `loginForm.email()`).
 
 Common validators include:
 
@@ -224,8 +233,8 @@ Common validators include:
 You can also customize error messages by passing an options object as the second argument to the validator:
 
 ```ts
-required(p.email, { message: 'Email is required' });
-email(p.email, { message: 'Please enter a valid email address' });
+required(schemaPath.email, { message: 'Email is required' });
+email(schemaPath.email, { message: 'Please enter a valid email address' });
 ```
 
 Each form field exposes its validation state through signals. For example, you can check `field().valid()` to see if validation passes, `field().touched()` to see if the user has interacted with it, and `field().errors()` to get the list of validation errors.
@@ -251,4 +260,4 @@ Every `field()` provides these state signals:
 | `pending()`  | Returns `true` if async validation is in progress                          |
 | `errors()`   | Returns an array of validation errors with `kind` and `message` properties |
 
-TIP: Show errors only after `field().touched()` is true to avoid displaying validation messages before the user has interacted with a field.
+TIP: Use the `debounce()` validation rule to delay error display until the user stops typing or leaves the field. This prevents showing errors while the user is still entering their input.
