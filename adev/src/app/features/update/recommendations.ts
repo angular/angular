@@ -2752,7 +2752,7 @@ export const RECOMMENDATIONS: Step[] = [
   },
   {
     action:
-      "In the application's project directory, run `ng update @angular/core@20 @angular/cli@21` to update your application to Angular v21.",
+      "In the application's project directory, run `ng update @angular/core@21 @angular/cli@21` to update your application to Angular v21.",
     level: ApplicationComplexity.Basic,
     necessaryAsOf: 2100,
     possibleIn: 2100,
