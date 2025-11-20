@@ -43,23 +43,8 @@ describe('markdown to html', () => {
     expect(codeBlock?.textContent?.trim()).not.toContain('docregion');
   });
 
-  it('properly shows the diff of two provided file paths', () => {
-    const codeBlock = markdownDocument.querySelectorAll('code')[3];
-    expect(codeBlock).toBeTruthy();
-
-    const codeLines = codeBlock.querySelectorAll('.line');
-    expect(codeLines[8].textContent).toContain('oldFuncName');
-    expect(codeLines[8].classList.contains('remove')).toBeTrue();
-
-    expect(codeLines[9].textContent).toContain('newName');
-    expect(codeLines[9].classList.contains('add')).toBeTrue();
-
-    expect(codeLines[10].classList.contains('add')).toBeFalse();
-    expect(codeLines[10].classList.contains('remove')).toBeFalse();
-  });
-
   it('should load header and html code', () => {
-    const codeBlock = markdownDocument.querySelectorAll('code')[4];
+    const codeBlock = markdownDocument.querySelectorAll('code')[3];
     expect(codeBlock).toBeTruthy();
   });
 });

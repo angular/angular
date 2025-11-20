@@ -349,24 +349,6 @@ $code-font-size: 0.875rem;
           background-color: inherit;
         }
       }
-
-      &.remove {
-        background-color: color-mix(in srgb, var(--orange-red) 11%, var(--page-background));
-        color: color-mix(in srgb, var(--hot-red) 80%, var(--full-contrast));
-
-        span {
-          background-color: inherit;
-        }
-      }
-
-      &.add {
-        background-color: color-mix(in srgb, var(--super-green) 14%, var(--page-background));
-        color: color-mix(in srgb, var(--super-green), var(--full-contrast) 50%);
-
-        span {
-          background-color: inherit;
-        }
-      }
     }
 
     .hidden {

@@ -27,7 +27,6 @@ const classRule = /class="([^"]*)"/;
 const headerRule = /header="([^"]*)"/;
 const linenumsRule = /linenums/;
 const highlightRule = /highlight="([^"]*)"/;
-const diffRule = /diff="([^"]*)"/;
 const languageRule = /language="([^"]*)"/;
 const visibleLinesRule = /visibleLines="([^"]*)"/;
 const visibleRegionRule = /visibleRegion="([^"]*)"/;
@@ -49,7 +48,6 @@ export const docsCodeExtension = {
       const header = headerRule.exec(attr);
       const linenums = linenumsRule.exec(attr);
       const highlight = highlightRule.exec(attr);
-      const diff = diffRule.exec(attr);
       const language = languageRule.exec(attr);
       const visibleLines = visibleLinesRule.exec(attr);
       const visibleRegion = visibleRegionRule.exec(attr);
@@ -73,7 +71,6 @@ export const docsCodeExtension = {
         header: header?.[1],
         linenums: !!linenums,
         highlight: highlight?.[1],
-        diff: diff?.[1],
         language: language?.[1],
         visibleLines: visibleLines?.[1],
         visibleRegion: visibleRegion?.[1],
