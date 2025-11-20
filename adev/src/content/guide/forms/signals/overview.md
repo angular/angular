@@ -45,15 +45,16 @@ The `Field` directive must be imported into any component that binds form fields
 })
 ```
 
-<!-- TODO: UNCOMMENT SECTION BELOW WHEN AVAILABLE -->
-<!-- ## Next steps
+## Next steps
 
 To learn more about how Signal Forms work, check out the following guides:
 
+<!-- TODO: UNCOMMENT SECTION BELOW WHEN AVAILABLE -->
 <docs-pill-row>
   <docs-pill href="essentials/signal-forms" title="Signal forms essentials" />
   <docs-pill href="guide/forms/signals/models" title="Form models" />
   <docs-pill href="guide/forms/signals/field-state-management" title="Field state management" />
   <docs-pill href="guide/forms/signals/validation" title="Validation" />
   <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
-</docs-pill-row> -->
+  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+</docs-pill-row>
