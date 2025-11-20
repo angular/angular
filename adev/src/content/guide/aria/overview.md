@@ -52,24 +52,34 @@ In this one scenario, developers need to consider:
 
 ## What's included?
 
-Angular Aria includes directives for common interactive patterns:
+Angular Aria includes directives with comprehensive documentation, working examples and API references for common interactive patterns:
 
-| Component                               | Description                                                            |
-| --------------------------------------- | ---------------------------------------------------------------------- |
-| [Accordion](guide/aria/accordion)       | Collapsible content panels that can expand individually or exclusively |
-| [Autocomplete](guide/aria/autocomplete) | Text input with filtered suggestions that appear as users type         |
-| [Combobox](guide/aria/combobox)         | Primitive directive that coordinates a text input with a popup         |
-| [Grid](guide/aria/grid)                 | Two-dimensional data display with cell-by-cell keyboard navigation     |
-| [Listbox](guide/aria/listbox)           | Single or multi-select option lists with keyboard navigation           |
-| [Menu](guide/aria/menu)                 | Dropdown menus with nested submenus and keyboard shortcuts             |
-| [Menubar](guide/aria/menubar)           | Horizontal navigation bar for persistent application menus.            |
-| [Multiselect](guide/aria/multiselect)   | Multiple-selection dropdown pattern with compact display               |
-| [Select](guide/aria/select)             | Single-selection dropdown pattern with keyboard navigation             |
-| [Tabs](guide/aria/tabs)                 | Tabbed interfaces with automatic or manual activation modes            |
-| [Toolbar](guide/aria/toolbar)           | Grouped sets of controls with logical keyboard navigation              |
-| [Tree](guide/aria/tree)                 | Hierarchical lists with expand/collapse functionality                  |
+### Search and selection
 
-Each component includes comprehensive documentation, working examples, and API references.
+| Component                               | Description                                                    |
+| --------------------------------------- | -------------------------------------------------------------- |
+| [Autocomplete](guide/aria/autocomplete) | Text input with filtered suggestions that appear as users type |
+| [Listbox](guide/aria/listbox)           | Single or multi-select option lists with keyboard navigation   |
+| [Select](guide/aria/select)             | Single-selection dropdown pattern with keyboard navigation     |
+| [Multiselect](guide/aria/multiselect)   | Multiple-selection dropdown pattern with compact display       |
+| [Combobox](guide/aria/combobox)         | Primitive directive that coordinates a text input with a popup |
+
+### Navigation and call to actions
+
+| Component                     | Description                                                 |
+| ----------------------------- | ----------------------------------------------------------- |
+| [Menu](guide/aria/menu)       | Dropdown menus with nested submenus and keyboard shortcuts  |
+| [Menubar](guide/aria/menubar) | Horizontal navigation bar for persistent application menus  |
+| [Tabs](guide/aria/tabs)       | Tabbed interfaces with automatic or manual activation modes |
+| [Toolbar](guide/aria/toolbar) | Grouped sets of controls with logical keyboard navigation   |
+
+### Content organization
+
+| Component                         | Description                                                            |
+| --------------------------------- | ---------------------------------------------------------------------- |
+| [Accordion](guide/aria/accordion) | Collapsible content panels that can expand individually or exclusively |
+| [Tree](guide/aria/tree)           | Hierarchical lists with expand/collapse functionality                  |
+| [Grid](guide/aria/grid)           | Two-dimensional data display with cell-by-cell keyboard navigation     |
 
 ## When to use Angular Aria
 
@@ -89,24 +99,4 @@ Angular Aria might not fit every scenario:
 
 ## Next steps
 
-Explore the component guides to find the pattern that fits your needs:
-
-**Search and selection**
-
-- Autocomplete - Search and filter options as users type
-- Listbox - Select one or multiple items from a list
-- Select - Choose one option from a list of options
-- Multiselect - Choose one option from a list of options
-
-**Navigation and call to actions**
-
-- Menu - Action menus with optional nested submenus
-- Tabs - Switch between related content panels
-- Toolbar - Group related controls and actions
-
-**Content organization**
-
-- Accordion - Show and hide sections of content
-- Tree - Display hierarchical data structures
-  Data display
-- Grid - Navigate and interact with tabular data
+Check out a component from the side nav or [list above](#whats-included), or start with [Toolbar](guide/aria/toolbar) to see a complete example of how Angular Aria directives work!
