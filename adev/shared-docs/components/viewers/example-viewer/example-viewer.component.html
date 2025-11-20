@@ -1,15 +1,9 @@
 <div class="docs-example-viewer" role="group">
   <header class="docs-example-viewer-actions">
-    @if (view() === CodeExampleViewMode.SNIPPET) {
-      <span>{{ exampleMetadata()?.title }}</span>
-    }
-
-    @if (view() === CodeExampleViewMode.MULTI_FILE) {
+    @if (showCode()) {
       <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
-        @if (showCode()) {
-          @for (tab of tabs(); track tab) {
-            <mat-tab [label]="tab.name" />
-          }
+        @for (tab of tabs(); track tab) {
+          <mat-tab [label]="tab.name" />
         }
       </mat-tab-group>
     }
@@ -102,8 +96,6 @@
   @if (showCode()) {
     <div
       class="docs-example-viewer-code-wrapper"
-      [class.docs-example-viewer-snippet]="view() === CodeExampleViewMode.SNIPPET"
-      [class.docs-example-viewer-multi-file]="view() === CodeExampleViewMode.MULTI_FILE"
       [class.shell]="snippetCode()?.shell"
     >
       <button docs-copy-source-code></button>
