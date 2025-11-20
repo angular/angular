@@ -92,7 +92,7 @@ export async function addRenderableCodeToc<T extends DocEntry & HasModuleName>(
   let codeWithSyntaxHighlighting = codeToHtml(
     getHighlighterInstance(),
     formattedCode ?? metadata?.contents,
-    'typescript',
+    {language: 'typescript'},
   );
 
   if (isDecoratorEntry(entry)) {
