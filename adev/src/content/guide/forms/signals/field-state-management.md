@@ -74,7 +74,7 @@ These signals enable you to build responsive form user experiences that react to
 
 Validation state signals tell you whether a field is valid and what errors it contains.
 
-NOTE: This guide focuses on **using** validation state in your templates and logic (such as reading `valid()`, `invalid()`, `errors()` to display feedback). For information on **defining** validation rules and creating custom validators, see the Validation guide (coming soon).
+NOTE: This guide focuses on **using** validation state in your templates and logic (such as reading `valid()`, `invalid()`, `errors()` to display feedback). For information on **defining** validation rules and creating custom validators, see the [Validation guide](guide/forms/signals/validation).
 
 ### Checking validity
 
@@ -689,7 +689,12 @@ Checking both `touched()` and validation state ensures styles only appear after 
 
 ## Next steps
 
-Here are other related guides on Signal Forms:
+This guide covered validation and availability status handling, interaction tracking and field state propagation. Related guides explore other aspects of Signal Forms:
 
-- [Form Models guide](guide/forms/signals/models) - Creating models and updating values
-- Validation guide - Defining validation rules and custom validators (coming soon)
+<!-- TODO: UNCOMMENT WHEN THE GUIDES ARE AVAILABLE -->
+<docs-pill-row>
+  <docs-pill href="guide/forms/signals/models" title="Form models" />
+  <docs-pill href="guide/forms/signals/validation" title="Validation" />
+  <docs-pill href="guide/forms/signals/custom-controls" title="Custom controls" />
+  <!-- <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" /> -->
+</docs-pill-row>
