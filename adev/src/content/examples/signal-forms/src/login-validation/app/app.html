@@ -21,7 +21,7 @@
     </label>
 
     @if (loginForm.password().touched() && loginForm.password().invalid()) {
-      <div class="error">
+      <div class="error-list">
         @for (error of loginForm.password().errors(); track error) {
           <p>{{ error.message }}</p>
         }
