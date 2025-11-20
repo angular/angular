@@ -49,8 +49,7 @@ export const DOCS_CODE_SELECTOR = '.docs-code';
 export const DOCS_CODE_MUTLIFILE_SELECTOR = '.docs-code-multifile';
 export const DOCS_CODE_TAB_GROUP_SELECTOR = '.docs-tab-group';
 export const DOCS_CODE_TAB_SELECTOR = '.docs-tab';
-// TODO: Update the branch/sha
-export const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/main/';
+const GITHUB_CONTENT_URL = 'https://github.com/angular/angular/blob/{{BUILD_SCM_ABBREV_HASH}}';
 
 @Component({
   selector: DOCS_VIEWER_SELECTOR,
