@@ -15,7 +15,7 @@ export default {
     apiKey: 'dfca7ed184db27927a512e5c6668b968',
     // The indexName value must match the branch it's on.
     // So it needs to be updated on release of the new major on the patch branch.
-    indexName: 'angular_next_dev',
+    indexName: 'angular_v21',
   },
   googleAnalyticsId: 'G-XB6NEVW32B',
 };
