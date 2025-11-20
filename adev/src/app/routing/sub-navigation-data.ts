@@ -601,6 +601,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             contentPath: 'guide/testing/utility-apis',
           },
           {
+            label: 'Zone.js Testing Utilities',
+            path: 'guide/testing/zone-js-testing-utilities',
+            contentPath: 'guide/testing/zone-js-testing-utilities',
+          },
+          {
             label: 'Component harnesses overview',
             path: 'guide/testing/component-harnesses-overview',
             contentPath: 'guide/testing/component-harnesses-overview',
