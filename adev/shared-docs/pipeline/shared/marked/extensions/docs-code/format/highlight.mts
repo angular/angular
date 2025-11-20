@@ -13,9 +13,6 @@ import {HighlighterGeneric} from 'shiki';
 import {codeToHtml} from '../../../../shiki.mjs';
 
 const lineNumberClassName: string = 'shiki-ln-number';
-const lineAddedClassName: string = 'add';
-const lineRemovedClassName: string = 'remove';
-const lineHighlightedClassName: string = 'highlighted';
 
 /**
  * Updates the provided token's code value to include syntax highlighting.
@@ -49,26 +46,13 @@ export function highlightCode(highlighter: HighlighterGeneric<any, any>, token: 
   let resultFileLineIndex = 1;
 
   do {
-    const isRemovedLine = token.diffMetadata?.linesRemoved.includes(lineIndex);
-    const isAddedLine = token.diffMetadata?.linesAdded.includes(lineIndex);
-    const addClasses = (el: Element) => {
-      if (isRemovedLine) {
-        el.classList.add(lineRemovedClassName);
-      }
-      if (isAddedLine) {
-        el.classList.add(lineAddedClassName);
-      }
-    };
-
     const currentline = lines[lineIndex];
-    addClasses(currentline);
 
     if (!!token.linenums) {
       const lineNumberEl = JSDOM.fragment(
         `<span role="presentation" class="${lineNumberClassName}"></span>`,
       ).firstElementChild!;
-      addClasses(lineNumberEl);
-      lineNumberEl.textContent = isRemovedLine ? '-' : isAddedLine ? '+' : `${resultFileLineIndex}`;
+      lineNumberEl.textContent = `${resultFileLineIndex}`;
 
       currentline.parentElement!.insertBefore(lineNumberEl, currentline);
       resultFileLineIndex++;

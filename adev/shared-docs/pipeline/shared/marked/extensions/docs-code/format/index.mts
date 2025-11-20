@@ -7,7 +7,6 @@
  */
 
 import {Tokens} from 'marked';
-import {DiffMetadata, calculateDiff} from './diff.mjs';
 import {highlightCode} from './highlight.mjs';
 import {extractRegions} from './region.mjs';
 import {JSDOM} from 'jsdom';
@@ -28,8 +27,6 @@ export interface CodeToken extends Tokens.Generic {
   header?: string;
   /* Whether styling should include line numbers */
   linenums?: boolean;
-  /* The example path to determine diff (lines added/removed) */
-  diff?: string;
   /* The lines viewable in collapsed view */
   visibleLines?: string;
   /* The name of the viewable region in the collapsed view */
@@ -41,9 +38,6 @@ export interface CodeToken extends Tokens.Generic {
   /* The lines to display highlighting on */
   highlight?: string;
 
-  /** The generated diff metadata if created in the code formatting process. */
-  diffMetadata?: DiffMetadata;
-
   // additional classes for the element
   classes?: string[];
 }
@@ -54,7 +48,6 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
   }
 
   extractRegions(token);
-  calculateDiff(token);
   highlightCode(context.highlighter, token);
 
   const containerEl = JSDOM.fragment(`
@@ -106,9 +99,6 @@ function buildHeaderElement(token: CodeToken) {
 function applyContainerAttributesAndClasses(el: Element, token: CodeToken) {
   // Attributes
   // String value attributes
-  if (token.diff) {
-    el.setAttribute('path', token.diff);
-  }
   if (token.path) {
     el.setAttribute('path', token.path);
   }

@@ -185,11 +185,6 @@ You can create multifile examples by wrapping the examples inside a `<docs-code-
   path="adev/src/content/examples/hello-world/src/app/app.component.ts"
   preview>
 <docs-code
-    path="adev/src/content/examples/hello-world/src/app/app.component.ts"
-    diff="adev/src/content/examples/hello-world/src/app/app.component-old.ts"
-    linenums
-    visibleLines="[3, 11]"/>
-<docs-code
     path="adev/src/content/examples/hello-world/src/app/app.component.html"
     highlight="[1]"
     linenums/>
