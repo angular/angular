@@ -131,6 +131,42 @@ h4 {
     margin-top: 0.5rem;
   }
 
+  .adev-recommendation-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .adev-complexity-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    --badge-color: var(--primary-text, black);
+
+    color: var(--badge-color);
+    background: color-mix(in srgb, var(--badge-color) 10%, var(--page-background));
+
+    .docs-dark-mode & {
+      background: color-mix(in srgb, var(--badge-color) 17%, var(--page-background));
+    }
+
+    @include mq.for-tablet-landscape-down {
+      display: none;
+    }
+  }
+
+  .adev-complexity-1 { --badge-color: var(--super-green); }
+  .adev-complexity-2 { --badge-color: var(--bright-blue); }
+  .adev-complexity-3 { --badge-color: var(--symbolic-orange); }
+
   // Code blocks are generable from the markdown, we need to opt-out of the scoping
   ::ng-deep code {
     cursor: pointer;
