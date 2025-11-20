@@ -23,6 +23,8 @@ export const rendererContext: RendererContext = {
     bootstrapApplication: 'angular/platform-browser',
     ApplicationRef: 'angular/core',
     Router: 'angular/router',
+    signal: 'core',
+    computed: 'core',
   },
 };
 

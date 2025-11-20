@@ -72,28 +72,68 @@ export function formatCode(token: CodeToken, context: RendererContext): string {
 
 /**
  * Process a DOM element to find spans (created by Shiki) and converts them to API links if they match entries.
+ * This function now handles multiple symbols in the same span, ensuring all API-eligible symbols are linked.
  */
 export function processForApiLinks(fragment: Element, apiEntries: ApiEntries): void {
   const spans = fragment.querySelectorAll('span:not(:has(span))');
 
   spans.forEach((span) => {
-    const symbolMatch = span.textContent?.match(/^(.*?)(\w+)(.*)$/);
-    if (!symbolMatch) return;
+    const textContent = span.textContent;
+    if (!textContent) return;
 
-    // Yes, index 0 is not interesting for us here
-    const [, before, symbol, after] = symbolMatch;
+    // Match all valid JavaScript/TypeScript identifiers in the text
+    // This regex matches identifiers that start with a letter, underscore, or dollar sign
+    // and are followed by letters, digits, underscores, or dollar signs
+    const identifierRegex = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
+    const matches: Array<{symbol: string; index: number; length: number}> = [];
+    let match;
 
-    const apiLink = getSymbolUrl(symbol, apiEntries);
-    if (apiLink) {
-      // Create a new link element
-      const linkElement = fragment.ownerDocument!.createElement('a');
-      linkElement.href = apiLink;
-      linkElement.textContent = symbol;
+    // Collect all identifier matches
+    while ((match = identifierRegex.exec(textContent)) !== null) {
+      matches.push({
+        symbol: match[1],
+        index: match.index,
+        length: match[1].length,
+      });
+    }
 
-      // Clear the span's content and insert the link as a child
-      span.textContent = before;
-      span.appendChild(linkElement);
-      span.append(fragment.ownerDocument!.createTextNode(after));
+    // If no matches found, return early
+    if (matches.length === 0) return;
+
+    // Check which symbols have API entries and need to be linked
+    const symbolsToLink = matches.filter((m) => getSymbolUrl(m.symbol, apiEntries) !== undefined);
+
+    // If no symbols need linking, return early
+    if (symbolsToLink.length === 0) return;
+
+    // Clear the span and rebuild it with links
+    span.textContent = '';
+
+    let lastIndex = 0;
+    for (const match of symbolsToLink) {
+      // Add text before the symbol
+      if (match.index > lastIndex) {
+        span.append(fragment.ownerDocument!.createTextNode(textContent.substring(lastIndex, match.index)));
+      }
+
+      // Add the linked symbol
+      const apiLink = getSymbolUrl(match.symbol, apiEntries);
+      if (apiLink) {
+        const linkElement = fragment.ownerDocument!.createElement('a');
+        linkElement.href = apiLink;
+        linkElement.textContent = match.symbol;
+        span.appendChild(linkElement);
+      } else {
+        // Fallback: add as text if somehow the link is not available
+        span.append(fragment.ownerDocument!.createTextNode(match.symbol));
+      }
+
+      lastIndex = match.index + match.length;
+    }
+
+    // Add remaining text after the last symbol
+    if (lastIndex < textContent.length) {
+      span.append(fragment.ownerDocument!.createTextNode(textContent.substring(lastIndex)));
     }
   });
 }

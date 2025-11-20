@@ -35,4 +35,18 @@ describe('markdown to html', () => {
       ' <a href="/api/angular/router/Router#lastSuccessfulNavigation"><code>Router.lastSuccessfulNavigation()</code></a>',
     );
   });
+
+  it('should render multiple symbols in import statement with links', () => {
+    // Both signal and computed should be linked when they appear together in an import
+    expect(parsedMarkdown).toContain('<a href="/api/core/signal">');
+    expect(parsedMarkdown).toContain('<a href="/api/core/computed">');
+    // Verify they appear in the same import line
+    const importLineMatch = parsedMarkdown.match(/import\s*\{[^}]*\}.*from/);
+    expect(importLineMatch).toBeTruthy();
+    if (importLineMatch) {
+      const importLine = importLineMatch[0];
+      expect(importLine).toContain('signal');
+      expect(importLine).toContain('computed');
+    }
+  });
 });
