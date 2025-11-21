@@ -9,7 +9,6 @@
 import {TokenizerThis, Tokens, RendererThis} from 'marked';
 import {loadWorkspaceRelativeFile} from '../helpers.mjs';
 import {getPageTitle} from '../transformations/heading.mjs';
-import {AdevDocsRenderer} from '../renderer.mjs';
 
 interface DocsDecorativeHeaderToken extends Tokens.Generic {
   type: 'docs-decorative-header';

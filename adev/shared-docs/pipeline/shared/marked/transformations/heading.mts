@@ -12,19 +12,11 @@ import {AdevDocsRenderer} from '../renderer.mjs';
 
 export function headingRender(this: AdevDocsRenderer, {depth, tokens}: Tokens.Heading): string {
   const text = this?.parser.parseInline(tokens);
-  return formatHeading({text, depth}, this.context.markdownFilePath);
-}
-
-export function formatHeading(
-  {text, depth}: {text: string; depth: number},
-  markdownFilePath?: string,
-): string {
   if (depth === 1) {
     return `
     <header class="docs-header">
       <docs-breadcrumb></docs-breadcrumb>
-
-      ${getPageTitle(text, markdownFilePath)}
+      ${getPageTitle(text, this.context.markdownFilePath)}
     </header>
     `;
   }
