@@ -579,7 +579,7 @@ export function generateImport(
   }
   return ts.factory.createImportDeclaration(
     undefined,
-    ts.factory.createImportClause(false, importClauseName, importBindings),
+    ts.factory.createImportClause(undefined, importClauseName, importBindings),
     moduleSpec,
     undefined,
   );
