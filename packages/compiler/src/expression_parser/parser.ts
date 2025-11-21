@@ -957,7 +957,7 @@ class _ParseAST {
     // '<', '>', '<=', '>=', 'in'
     const start = this.inputIndex;
     let result = this.parseAdditive();
-    while (this.next.type == TokenType.Operator || this.next.isKeywordIn) {
+    while (this.next.type == TokenType.Operator || this.next.isKeywordIn()) {
       const operator = this.next.strValue;
       switch (operator) {
         case '<':
@@ -1127,7 +1127,7 @@ class _ParseAST {
     } else if (this.next.isKeywordFalse()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), false);
-    } else if (this.next.isKeywordIn()) {
+    } else if (this.next.isKeywordIn() && this.index > 0) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), 'in');
     } else if (this.next.isKeywordThis()) {
