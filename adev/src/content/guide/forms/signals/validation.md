@@ -299,7 +299,7 @@ When validation rules fail, they produce error objects that describe what went w
 
 <!-- TODO: Uncomment when field state management guide is published
 
-NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signal-forms/field-state-management). -->
+NOTE: This section covers the errors that validation rules produce. For displaying and using validation errors in your UI, see the [Field State Management guide](guide/forms/signals/field-state-management). -->
 
 ### Error structure
 
@@ -374,7 +374,7 @@ signupForm = form(this.signupModel, (schemaPath) => {
 
 If the email field is empty, only the `required()` error appears. If the user types "a@b", both `email()` and `minLength()` errors appear. All validation rules run - validation doesn't stop after the first failure.
 
-TIP: Use the `touched() && invalid()` pattern in your templates to prevent errors from appearing before users have interacted with a field. For comprehensive guidance on displaying validation errors, see the [Field State Management guide](guide/forms/signal-forms/field-state-management#conditional-error-display).
+TIP: Use the `touched() && invalid()` pattern in your templates to prevent errors from appearing before users have interacted with a field. For comprehensive guidance on displaying validation errors, see the [Field State Management guide](guide/forms/signals/field-state-management#conditional-error-display).
 
 ## Custom validation rules
 
@@ -626,4 +626,4 @@ This guide covered creating and applying validation rules. Related guides explor
 
 - [Form Models guide](guide/forms/signal-forms/models) - Creating and updating form models
   <!-- TODO: Uncomment when Field State Management guide is published -->
-  <!-- - [Field State Management guide](guide/forms/signal-forms/field-state-management) - Using validation state in templates and displaying errors -->
+  <!-- - [Field State Management guide](guide/forms/signals/field-state-management) - Using validation state in templates and displaying errors -->

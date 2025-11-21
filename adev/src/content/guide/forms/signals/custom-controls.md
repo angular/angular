@@ -241,7 +241,7 @@ export class MyForm {
 }
 ```
 
-TIP: For complete coverage of creating and managing form models, see the [Form Models guide](guide/forms/signal-forms/models).
+TIP: For complete coverage of creating and managing form models, see the [Form Models guide](guide/forms/signals/models).
 
 When you bind `[field]="userForm.username"`, the Field directive:
 
@@ -424,5 +424,5 @@ This guide covered building custom controls that integrate with Signal Forms. Re
 
 - [Form Models guide](guide/forms/signal-forms/models) - Creating and updating form models
   <!-- TODO: Uncomment when guides are available -->
-  <!-- - [Field State Management guide](guide/forms/signal-forms/field-state-management) - Using form state signals -->
-  <!-- - [Validation guide](guide/forms/signal-forms/validation) - Adding validation to your forms -->
+  <!-- - [Field State Management guide](guide/forms/signals/field-state-management) - Using form state signals -->
+  <!-- - [Validation guide](guide/forms/signals/validation) - Adding validation to your forms -->
