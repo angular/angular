@@ -24,8 +24,6 @@ export function extractRegions(token: CodeToken) {
     if (!region) {
       throw new Error(`Cannot find ${token.visibleRegion} in ${token.path}!`);
     }
-    token.visibleLines = `[${region.ranges.map(
-      (range) => `[${range.from}, ${range.to ?? parsedRegions.totalLinesCount + 1}]`,
-    )}]`;
+    token.code = region.lines.join('\n');
   }
 }
