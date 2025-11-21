@@ -47,7 +47,7 @@ In this example, the template checks `registrationForm.email().invalid()` to det
 
 ### Field state signals
 
-The most commonly used signal is `value()`, a [writable signal](guide/forms/signal-forms/models#updating-models) that provides access to the field's current value:
+The most commonly used signal is `value()`, a [writable signal](guide/forms/signals/models#updating-models) that provides access to the field's current value:
 
 ```ts
 const emailValue = registrationForm.email().value()
@@ -691,5 +691,5 @@ Checking both `touched()` and validation state ensures styles only appear after 
 
 Here are other related guides on Signal Forms:
 
-- [Form Models guide](guide/forms/signal-forms/models) - Creating models and updating values
+- [Form Models guide](guide/forms/signals/models) - Creating models and updating values
 - Validation guide - Defining validation rules and custom validators (coming soon)

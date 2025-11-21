@@ -18,12 +18,12 @@ Ready to learn more? Here are recommended next steps:
 
 ### Explore the documentation
 
-- **[Signal Forms Overview](guide/forms/signal-forms)** - Introduction to Signal Forms and when to use them
-- **[Form Models Guide](guide/forms/signal-forms/models)** - Deep dive into form models and data management
+- **[Signal Forms Overview](guide/forms/signals/overview)** - Introduction to Signal Forms and when to use them
+- **[Form Models Guide](guide/forms/signals/models)** - Deep dive into form models and data management
   <!-- TODO: Uncomment when the guides are available -->
-  <!-- - **[Validation Guide](guide/forms/signal-forms/validation)** - Comprehensive validation reference
-- **[Field State Management Guide](guide/forms/signal-forms/field-state-management)** - Advanced state patterns
-- **[Custom Controls Guide](guide/forms/signal-forms/custom-controls)** - Building reusable form components -->
+  <!-- - **[Validation Guide](guide/forms/signals/validation)** - Comprehensive validation reference
+- **[Field State Management Guide](guide/forms/signals/field-state-management)** - Advanced state patterns
+- **[Custom Controls Guide](guide/forms/signals/custom-controls)** - Building reusable form components -->
 
 ## Keep learning
 

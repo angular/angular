@@ -172,7 +172,7 @@ Field state provides reactive signals for each field's value, making it suitable
 TIP: Field state includes many more signals beyond `value()`, such as validation state (e.g., valid, invalid, errors), interaction tracking (e.g., touched, dirty), and visibility (e.g., hidden, disabled).
 
 <!-- TODO: UNCOMMENT BELOW WHEN GUIDE IS AVAILABLE -->
-<!-- See the [Field State Management guide](guide/forms/signal-forms/field-state-management) for complete coverage. -->
+<!-- See the [Field State Management guide](guide/forms/signals/field-state-management) for complete coverage. -->
 
 ## Updating form models programmatically
 
@@ -419,7 +419,7 @@ orderForm.items[0].quantity // FieldTree<number>
 
 Array items containing objects automatically receive tracking identities, which helps maintain field state even when items change position in the array. This ensures validation state and user interactions persist correctly when arrays are reordered.
 
-<!-- TBD: For dynamic arrays and complex array operations, see the [Working with arrays guide](guide/forms/signal-forms/arrays). -->
+<!-- TBD: For dynamic arrays and complex array operations, see the [Working with arrays guide](guide/forms/signals/arrays). -->
 
 ## Model design best practices
 
@@ -530,7 +530,7 @@ For forms that always start with existing data, you might wait to render the for
 <!-- ## Next steps
 
 <docs-pill-row>
-  <docs-pill href="guide/forms/signal-forms/field-state-management" title="Field State Management" />
-  <docs-pill href="guide/forms/signal-forms/validation" title="Validation" />
-  <docs-pill href="guide/forms/signal-forms/arrays" title="Working with Arrays" />
+  <docs-pill href="guide/forms/signals/field-state-management" title="Field State Management" />
+  <docs-pill href="guide/forms/signals/validation" title="Validation" />
+  <docs-pill href="guide/forms/signals/arrays" title="Working with Arrays" />
 </docs-pill-row> -->
