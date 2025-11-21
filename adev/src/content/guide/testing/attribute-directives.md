@@ -16,7 +16,7 @@ It's used throughout the application, perhaps most simply in the `AboutComponent
 
 Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the techniques explored in the ["Nested component tests"](guide/testing/components-scenarios#nested-component-tests) section of [Component testing scenarios](guide/testing/components-scenarios).
 
-<docs-code header="about.component.spec.ts" path="adev/src/content/examples/testing/src/app/about/about.component.spec.ts" visibleRegion="tests"/>
+<docs-code header="about.component.spec.ts" path="adev/src/content/examples/testing/src/app/about/about.component.spec.ts" region="tests"/>
 
 However, testing a single use case is unlikely to explore the full range of a directive's capabilities.
 Finding and testing all components that use the directive is tedious, brittle, and almost as unlikely to afford full coverage.
@@ -26,7 +26,7 @@ Isolated unit tests don't touch the DOM and, therefore, do not inspire confidenc
 
 A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
 
-<docs-code header="highlight.directive.spec.ts (TestComponent)" path="adev/src/content/examples/testing/src/app/shared/highlight.directive.spec.ts" visibleRegion="test-component"/>
+<docs-code header="highlight.directive.spec.ts (TestComponent)" path="adev/src/content/examples/testing/src/app/shared/highlight.directive.spec.ts" region="test-component"/>
 
 <img alt="HighlightDirective spec in action" src="assets/images/guide/testing/highlight-directive-spec.png">
 
@@ -35,7 +35,7 @@ The initial value is the word "cyan" which should be the background color of the
 
 Here are some tests of this component:
 
-<docs-code header="highlight.directive.spec.ts (selected tests)" path="adev/src/content/examples/testing/src/app/shared/highlight.directive.spec.ts" visibleRegion="selected-tests"/>
+<docs-code header="highlight.directive.spec.ts (selected tests)" path="adev/src/content/examples/testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests"/>
 
 A few techniques are noteworthy:
 

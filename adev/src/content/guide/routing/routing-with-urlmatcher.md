@@ -62,7 +62,7 @@ This handle is identified by a preceding `@` symbol.
 
 1. Define the custom route matcher by adding the following code to the application routes.
 
-   <docs-code header="app.routes.ts" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.routes.ts" visibleRegion="matcher"/>
+   <docs-code header="app.routes.ts" path="adev/src/content/examples/routing-with-urlmatcher/src/app/app.routes.ts" region="matcher"/>
 
 This custom matcher is a function that performs the following tasks:
 

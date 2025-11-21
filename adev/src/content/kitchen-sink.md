@@ -163,19 +163,19 @@ npm install @angular/material --save
 
 #### `<docs-code>` Attributes
 
-| Attributes      | Type                 | Details                                              |
-| :-------------- | :------------------- | :--------------------------------------------------- |
-| code            | `string`             | Anything between tags is treated as code             |
-| `path`          | `string`             | Path to code example (root: `content/examples/`)     |
-| `header`        | `string`             | Title of the example (default: `file-name`)          |
-| `language`      | `string`             | code language                                        |
-| `linenums`      | `boolean`            | (False) displays line numbers                        |
-| `highlight`     | `string of number[]` | lines highlighted                                    |
-| `diff`          | `string`             | path to changed code                                 |
-| `visibleLines`  | `string of number[]` | range of lines for collapse mode                     |
-| `visibleRegion` | `string`             | **DEPRECATED** FOR `visibleLines`                    |
-| `preview`       | `boolean`            | (False) display preview                              |
-| `hideCode`      | `boolean`            | (False) Whether to collapse code example by default. |
+| Attributes     | Type                 | Details                                              |
+| :------------- | :------------------- | :--------------------------------------------------- |
+| code           | `string`             | Anything between tags is treated as code             |
+| `path`         | `string`             | Path to code example (root: `content/examples/`)     |
+| `header`       | `string`             | Title of the example (default: `file-name`)          |
+| `language`     | `string`             | code language                                        |
+| `linenums`     | `boolean`            | (False) displays line numbers                        |
+| `highlight`    | `string of number[]` | lines highlighted                                    |
+| `diff`         | `string`             | path to changed code                                 |
+| `visibleLines` | `string of number[]` | range of lines for collapse mode                     |
+| `region`       | `string`             | only show the provided region.                       |
+| `preview`      | `boolean`            | (False) display preview                              |
+| `hideCode`     | `boolean`            | (False) Whether to collapse code example by default. |
 
 ### Multifile examples
 

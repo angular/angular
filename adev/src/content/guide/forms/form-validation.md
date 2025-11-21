@@ -13,7 +13,7 @@ Every time the value of a form control changes, Angular runs validation and gene
 You can then inspect the control's state by exporting `ngModel` to a local template variable.
 The following example exports `NgModel` into a variable called `name`:
 
-<docs-code header="actor-form-template.component.html (name)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="name-with-error-msg"/>
+<docs-code header="actor-form-template.component.html (name)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="name-with-error-msg"/>
 
 Notice the following features illustrated by the example.
 
@@ -62,7 +62,7 @@ For a full list of built-in validators, see the [Validators](api/forms/Validator
 To update the actor form to be a reactive form, use some of the same
 built-in validators —this time, in function form, as in the following example.
 
-<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" visibleRegion="form-group"/>
+<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" region="form-group"/>
 
 In this example, the `name` control sets up two built-in validators —`Validators.required` and `Validators.minLength(4)`— and one custom validator, `forbiddenNameValidator`.
 
@@ -74,7 +74,7 @@ In a reactive form, you can always access any form control through the `get` met
 
 If you look at the template for the `name` input again, it is fairly similar to the template-driven example.
 
-<docs-code header="actor-form-reactive.component.html (name with error msg)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" visibleRegion="name-with-error-msg"/>
+<docs-code header="actor-form-reactive.component.html (name with error msg)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" region="name-with-error-msg"/>
 
 This form differs from the template-driven version in that it no longer exports any directives. Instead, it uses the `name` getter defined in the component class.
 
@@ -87,7 +87,7 @@ The built-in validators don't always match the exact use case of your applicatio
 Consider the `forbiddenNameValidator` function from the previous example.
 Here's what the definition of that function looks like.
 
-<docs-code header="forbidden-name.directive.ts (forbiddenNameValidator)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="custom-validator"/>
+<docs-code header="forbidden-name.directive.ts (forbiddenNameValidator)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="custom-validator"/>
 
 The function is a factory that takes a regular expression to detect a _specific_ forbidden name and returns a validator function.
 
@@ -105,7 +105,7 @@ In the case of an observable, the observable must complete, at which point the f
 
 In reactive forms, add a custom validator by passing the function directly to the `FormControl`.
 
-<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" visibleRegion="custom-validator"/>
+<docs-code header="actor-form-reactive.component.ts (validator functions)" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.1.ts" region="custom-validator"/>
 
 ### Adding custom validators to template-driven forms
 
@@ -115,17 +115,17 @@ For example, the corresponding `ForbiddenValidatorDirective` serves as a wrapper
 Angular recognizes the directive's role in the validation process because the directive registers itself with the `NG_VALIDATORS` provider, as shown in the following example.
 `NG_VALIDATORS` is a predefined provider with an extensible collection of validators.
 
-<docs-code header="forbidden-name.directive.ts (providers)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="directive-providers"/>
+<docs-code header="forbidden-name.directive.ts (providers)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="directive-providers"/>
 
 The directive class then implements the `Validator` interface, so that it can easily integrate with Angular forms.
 Here is the rest of the directive to help you get an idea of how it all comes together.
 
-<docs-code header="forbidden-name.directive.ts (directive)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" visibleRegion="directive"/>
+<docs-code header="forbidden-name.directive.ts (directive)" path="adev/src/content/examples/form-validation/src/app/shared/forbidden-name.directive.ts" region="directive"/>
 
 Once the `ForbiddenValidatorDirective` is ready, you can add its selector, `appForbiddenName`, to any input element to activate it.
 For example:
 
-<docs-code header="actor-form-template.component.html (forbidden-name-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="name-input"/>
+<docs-code header="actor-form-template.component.html (forbidden-name-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="name-input"/>
 
 HELPFUL: Notice that the custom validation directive is instantiated with `useExisting` rather than `useClass`.
 The registered validator must be _this instance_ of the `ForbiddenValidatorDirective` —the instance in the form with its `forbiddenName` property bound to "bob".
@@ -197,7 +197,7 @@ const actorForm = new FormGroup(
 
 The validator code is as follows.
 
-<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" visibleRegion="cross-validation-validator"/>
+<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" region="cross-validation-validator"/>
 
 The `unambiguousRoleValidator` validator implements the `ValidatorFn` interface.
 It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
@@ -209,7 +209,7 @@ If they do match, the actor's role is ambiguous and the validator must mark the 
 
 To provide better user experience, the template shows an appropriate error message when the form is invalid.
 
-<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" visibleRegion="cross-validation-error-message"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.html" region="cross-validation-error-message"/>
 
 This `@if` displays the error if the `FormGroup` has the cross validation error returned by the `unambiguousRoleValidator` validator, but only if the user finished [interacting with the form](#control-status-css-classes).
 
@@ -218,16 +218,16 @@ This `@if` displays the error if the `FormGroup` has the cross validation error 
 For a template-driven form, you must create a directive to wrap the validator function.
 You provide that directive as the validator using the [`NG_VALIDATORS` token](/api/forms/NG_VALIDATORS), as shown in the following example.
 
-<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" visibleRegion="cross-validation-directive"/>
+<docs-code header="unambiguous-role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/unambiguous-role.directive.ts" region="cross-validation-directive"/>
 
 You must add the new directive to the HTML template.
 Because the validator must be registered at the highest level in the form, the following template puts the directive on the `form` tag.
 
-<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="cross-validation-register-validator"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="cross-validation-register-validator"/>
 
 To provide better user experience, an appropriate error message appears when the form is invalid.
 
-<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="cross-validation-error-message"/>
+<docs-code header="actor-form-template.component.html" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="cross-validation-error-message"/>
 
 This is the same in both template-driven and reactive forms.
 
@@ -265,7 +265,7 @@ To validate the potential role entry, the validator must initiate an asynchronou
 
 The following code creates the validator class, `UniqueRoleValidator`, which implements the `AsyncValidator` interface.
 
-<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator"/>
+<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" region="async-validator"/>
 
 The `actorsService` property is initialized with an instance of the `ActorsService` token, which defines the following interface.
 
@@ -296,7 +296,7 @@ The `pending` flag is set to `false`, and the form validity is updated.
 
 To use an async validator in reactive forms, begin by injecting the validator into a property of the component class.
 
-<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" visibleRegion="async-validator-inject"/>
+<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" region="async-validator-inject"/>
 
 Then, pass the validator function directly to the `FormControl` to apply it.
 
@@ -304,7 +304,7 @@ In the following example, the `validate` function of `UnambiguousRoleValidator` 
 The value of `asyncValidators` can be either a single async validator function, or an array of functions.
 To learn more about `FormControl` options, see the [AbstractControlOptions](api/forms/AbstractControlOptions) API reference.
 
-<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" visibleRegion="async-validator-usage"/>
+<docs-code header="actor-form-reactive.component.2.ts" path="adev/src/content/examples/form-validation/src/app/reactive/actor-form-reactive.component.2.ts" region="async-validator-usage"/>
 
 ### Adding async validators to template-driven forms
 
@@ -312,11 +312,11 @@ To use an async validator in template-driven forms, create a new directive and r
 
 In the example below, the directive injects the `UniqueRoleValidator` class that contains the actual validation logic and invokes it in the `validate` function, triggered by Angular when validation should happen.
 
-<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" visibleRegion="async-validator-directive"/>
+<docs-code header="role.directive.ts" path="adev/src/content/examples/form-validation/src/app/shared/role.directive.ts" region="async-validator-directive"/>
 
 Then, as with synchronous validators, add the directive's selector to an input to activate it.
 
-<docs-code header="actor-form-template.component.html (unique-unambiguous-role-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" visibleRegion="role-input"/>
+<docs-code header="actor-form-template.component.html (unique-unambiguous-role-input)" path="adev/src/content/examples/form-validation/src/app/template/actor-form-template.component.html" region="role-input"/>
 
 ### Optimizing performance of async validators
 
