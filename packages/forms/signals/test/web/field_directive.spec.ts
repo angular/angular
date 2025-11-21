@@ -21,7 +21,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {NG_STATUS_CLASSES} from '../../compat/src/api/di';
+import {NG_STATUS_CLASSES} from '../../compat/public_api';
 import {
   debounce,
   disabled,

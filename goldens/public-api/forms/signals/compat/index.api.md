@@ -52,6 +52,9 @@ export class CompatValidationError<T = unknown> implements ValidationError {
     readonly message?: string;
 }
 
+// @public
+export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
+
 // (No @packageDocumentation comment for this package)
 
 ```
