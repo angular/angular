@@ -40,23 +40,19 @@ Each diagnostic can be configured as either:
 
 Check severity can be configured as an [Angular compiler option](reference/configs/angular-compiler-options):
 
-<docs-code language="json">
+```json
+
 {
   "angularCompilerOptions": {
     "extendedDiagnostics": {
-      // The categories to use for specific diagnostics.
       "checks": {
-        // Maps check name to its category.
         "invalidBananaInBox": "suppress"
       },
-
-      // The category to use for any diagnostics not listed in `checks` above.
       "defaultCategory": "error"
     }
-
+  }
 }
-}
-</docs-code>
+```
 
 The `checks` field maps the name of individual diagnostics to their associated category.
 See [Diagnostics](#diagnostics) for a complete list of extended diagnostics and the name to use for configuring them.

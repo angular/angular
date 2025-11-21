@@ -104,22 +104,21 @@ a `source` and a `destination`, each of which are a string.
 
 You can provide the following schema for type validation of these values.
 
-<docs-code header="src/schema.json" language="json">
+```json {header: "schema.json"}
 
 {
-"$schema": "http://json-schema.org/schema",
-"type": "object",
-"properties": {
-"source": {
-"type": "string"
-},
-"destination": {
-"type": "string"
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string"
+    },
+    "destination": {
+      "type": "string"
+    }
+  }
 }
-}
-}
-
-</docs-code>
+```
 
 HELPFUL: This is a minimal example, but the use of a schema for validation can be very powerful.
 For more information, see the [JSON schemas website](http://json-schema.org).
@@ -128,36 +127,33 @@ To link our builder implementation with its schema and name, you need to create 
 
 Create a file named `builders.json` that looks like this:
 
-<docs-code header="builders.json" language="json">
+```json {header: "builders.json"}
 
 {
-"builders": {
-"copy": {
-"implementation": "./dist/my-builder.js",
-"schema": "./src/schema.json",
-"description": "Copies a file."
+  "builders": {
+    "copy": {
+      "implementation": "./dist/my-builder.js",
+      "schema": "./src/schema.json",
+      "description": "Copies a file."
+    }
+  }
 }
-}
-}
-
-</docs-code>
+```
 
 In the `package.json` file, add a `builders` key that tells the Architect tool where to find our builder definition file.
 
-<docs-code header="package.json" language="json">
-
+```json {header: "package.json"}
 {
-"name": "@example/copy-file",
-"version": "1.0.0",
-"description": "Builder for copying files",
-"builders": "builders.json",
-"dependencies": {
-"@angular-devkit/architect": "~0.1200.0",
-"@angular-devkit/core": "^12.0.0"
+  "name": "@example/copy-file",
+  "version": "1.0.0",
+  "description": "Builder for copying files",
+  "builders": "builders.json",
+  "dependencies": {
+    "@angular-devkit/architect": "~0.1200.0",
+    "@angular-devkit/core": "^12.0.0"
+  }
 }
-}
-
-</docs-code>
+```
 
 The official name of our builder is now `@example/copy-file:copy`.
 The first part of this is the package name and the second part is the builder name as specified in the `builders.json` file.
@@ -177,41 +173,37 @@ Architect in the Angular CLI uses the target definition to resolve input options
 The `angular.json` file has a section for each project, and the "architect" section of each project configures targets for builders used by CLI commands such as 'build', 'test', and 'serve'.
 By default, for example, the `ng build` command runs the builder `@angular-devkit/build-angular:browser` to perform the build task, and passes in default option values as specified for the `build` target in `angular.json`.
 
-<docs-code header="angular.json" language="json">
-
-…
-
-"myApp": {
-…
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:browser",
-"options": {
-"outputPath": "dist/myApp",
-"index": "src/index.html",
-…
-},
-"configurations": {
-"production": {
-"fileReplacements": [
+```json {header: "angular.json"}
 {
-"replace": "src/environments/environment.ts",
-"with": "src/environments/environment.prod.ts"
+  "myApp": {
+    "...": "...",
+    "architect": {
+      "build": {
+        "builder": "@angular-devkit/build-angular:browser",
+        "options": {
+          "outputPath": "dist/myApp",
+          "index": "src/index.html",
+          "...": "..."
+        },
+        "configurations": {
+          "production": {
+            "fileReplacements": [
+              {
+                "replace": "src/environments/environment.ts",
+                "with": "src/environments/environment.prod.ts"
+              }
+            ],
+            "optimization": true,
+            "outputHashing": "all",
+            "...": "..."
+          }
+        }
+      },
+      "...": "..."
+    }
+  }
 }
-],
-"optimization": true,
-"outputHashing": "all",
-…
-}
-}
-},
-…
-}
-}
-
-…
-
-</docs-code>
+```
 
 The command passes the builder the set of default options specified in the "options" section.
 If you pass the `--configuration=production` flag, it uses the override values specified in the `production` configuration.
@@ -271,36 +263,33 @@ npm install @example/copy-file
 
 If you create a new project with `ng new builder-test`, the generated `angular.json` file looks something like this, with only default builder configurations.
 
-<docs-code header="angular.json" language="json">
-
+```json {header: "angular.json"}
 {
-"projects": {
-"builder-test": {
-"architect": {
-"build": {
-"builder": "@angular-devkit/build-angular:browser",
-"options": {
-// more options...
-"outputPath": "dist/builder-test",
-"index": "src/index.html",
-"main": "src/main.ts",
-"polyfills": "src/polyfills.ts",
-"tsConfig": "src/tsconfig.app.json"
-},
-"configurations": {
-"production": {
-// more options...
-"optimization": true,
-"aot": true,
-"buildOptimizer": true
+  "projects": {
+    "builder-test": {
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/builder-test",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "aot": true,
+              "buildOptimizer": true
+            }
+          }
+        }
+      }
+    }
+  }
 }
-}
-}
-}
-}
-}
-}
-</docs-code>
+```
 
 ### Adding a target
 
