@@ -158,6 +158,6 @@ TypeScript understands your component properties but has no knowledge of form st
 
 To learn more about each approach:
 
-- **Signal Forms**: See the [Overview guide](guide/forms/signal-forms/overview) to get started, or dive into [Form Models](guide/forms/signal-forms/models), [Validation](guide/forms/signal-forms/validation), and [Field State Management](guide/forms/signal-forms/field-state-management)
+- **Signal Forms**: See the [Overview guide](guide/forms/signals/overview) to get started, or dive into [Form Models](guide/forms/signals/models), [Validation](guide/forms/signals/validation), and [Field State Management](guide/forms/signals/field-state-management)
 - **Reactive Forms**: See the [Reactive Forms guide](guide/forms/reactive-forms) in Angular documentation
 - **Template-driven Forms**: See the [Template-driven Forms guide](guide/forms/template-driven-forms) in Angular documentation
