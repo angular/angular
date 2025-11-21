@@ -61,7 +61,7 @@ export class ElementRef<T = any> {
    *   </p>
    * </div>
    */
-  public nativeElement: T;
+  public readonly nativeElement: T;
 
   constructor(nativeElement: T) {
     this.nativeElement = nativeElement;
