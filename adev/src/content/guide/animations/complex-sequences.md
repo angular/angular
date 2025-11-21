@@ -54,7 +54,7 @@ The following example demonstrates how to use the `query()` and `stagger()` func
 - Use `stagger()` to delay each animation by 30 milliseconds
 - Animate each element on screen for 0.5 seconds using a custom-defined easing curve, simultaneously fading it in and un-transforming it
 
-<docs-code header="hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" visibleRegion="page-animations"/>
+<docs-code header="hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" region="page-animations"/>
 
 ## Parallel animation using group() function
 
@@ -67,7 +67,7 @@ HELPFUL: The [`group()`](api/animations/group) function is used to group animati
 
 The following example uses [`group()`](api/animations/group)s on both `:enter` and `:leave` for two different timing configurations, thus applying two independent animations to the same element in parallel.
 
-<docs-code header="hero-list-groups.component.ts (excerpt)" path="adev/src/content/examples/animations/src/app/hero-list-groups.component.ts" visibleRegion="animationdef"/>
+<docs-code header="hero-list-groups.component.ts (excerpt)" path="adev/src/content/examples/animations/src/app/hero-list-groups.component.ts" region="animationdef"/>
 
 ## Sequential vs. parallel animations
 
@@ -91,11 +91,11 @@ The heroes list gradually re-enters the page as you delete each letter in the fi
 
 The HTML template contains a trigger called `filterAnimation`.
 
-<docs-code header="hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" visibleRegion="filter-animations" language="angular-html"/>
+<docs-code header="hero-list-page.component.html" path="adev/src/content/examples/animations/src/app/hero-list-page.component.html" region="filter-animations" language="angular-html"/>
 
 The `filterAnimation` in the component's decorator contains three transitions.
 
-<docs-code header="hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" visibleRegion="filter-animations"/>
+<docs-code header="hero-list-page.component.ts" path="adev/src/content/examples/animations/src/app/hero-list-page.component.ts" region="filter-animations"/>
 
 The code in this example performs the following tasks:
 
