@@ -7,7 +7,6 @@ import {OverlayModule} from '@angular/cdk/overlay';
   templateUrl: 'app.html',
   styleUrl: 'app.css',
   imports: [MenuBar, Menu, MenuContent, MenuItem, OverlayModule],
-  standalone: true,
 })
 export class App {
   fileMenu = viewChild<Menu<string>>('fileMenu');
