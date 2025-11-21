@@ -263,7 +263,7 @@ groups:
         - devversion
         - josephperrott
         - ~pkozlowski-opensource
-        - mgechev
+        - ~mgechev
         - MarkTechson
         - mmalerba
         - ~hawkgs
