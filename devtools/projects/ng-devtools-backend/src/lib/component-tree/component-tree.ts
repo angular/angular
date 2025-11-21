@@ -676,6 +676,9 @@ export const queryDirectiveForest = (
     }
     forest = node.children;
   }
+  if (node?.defer) {
+    return null;
+  }
   return node;
 };
 
