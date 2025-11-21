@@ -467,8 +467,9 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unk
     const element = getNativeByTNode(tNode, lView) as HTMLElement;
 
     for (const [className, enabled] of control.classes) {
-      if (controlClassBindingUpdated(bindings.classes, className, enabled())) {
-        if (enabled()) {
+      const isEnabled = enabled();
+      if (controlClassBindingUpdated(bindings.classes, className, isEnabled)) {
+        if (isEnabled) {
           renderer.addClass(element, className);
         } else {
           renderer.removeClass(element, className);
@@ -869,7 +870,7 @@ type ControlBindingKeys = Exclude<
 type ControlBindings = {
   [K in ControlBindingKeys]?: unknown;
 } & {
-  classes: {[cls: string]: boolean};
+  classes: {[className: string]: boolean};
 };
 
 /**

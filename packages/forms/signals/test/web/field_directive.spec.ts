@@ -15,13 +15,13 @@ import {
   input,
   inputBinding,
   model,
-  provideZonelessChangeDetection,
   signal,
   viewChild,
   viewChildren,
   ViewContainerRef,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {NG_STATUS_CLASSES} from '../../compat/src/api/di';
 import {
   debounce,
   disabled,
@@ -32,7 +32,6 @@ import {
   maxLength,
   min,
   minLength,
-  NG_STATUS_CLASSES,
   pattern,
   provideSignalFormsConfig,
   readonly,
@@ -56,12 +55,6 @@ class TestStringControl {
 }
 
 describe('field directive', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   describe('field input', () => {
     it('should bind new field to control when changed', () => {
       @Component({
@@ -2368,7 +2361,6 @@ describe('field directive', () => {
     it('should apply classes based on config', () => {
       TestBed.configureTestingModule({
         providers: [
-          provideZonelessChangeDetection(),
           provideSignalFormsConfig({
             classes: {
               'my-invalid-class': (state) => state.invalid(),
@@ -2398,7 +2390,6 @@ describe('field directive', () => {
     it('should apply NG_STATUS_CLASSES', () => {
       TestBed.configureTestingModule({
         providers: [
-          provideZonelessChangeDetection(),
           provideSignalFormsConfig({
             classes: NG_STATUS_CLASSES,
           }),
@@ -2432,26 +2423,20 @@ describe('field directive', () => {
       expect(input.classList.contains('ng-valid')).toBe(true);
       expect(input.classList.contains('ng-invalid')).toBe(false);
 
-      // Touch it (simulating interaction)
-      act(() => {
-        input.dispatchEvent(new Event('blur'));
-      });
-      expect(input.classList.contains('ng-touched')).toBe(true);
-      expect(input.classList.contains('ng-untouched')).toBe(false);
-
-      // Make it dirty (simulating input)
-      act(() => {
-        input.value = 'new value';
-        input.dispatchEvent(new Event('input'));
-      });
+      // Make it dirty
+      act(() => input.dispatchEvent(new Event('input')));
       expect(input.classList.contains('ng-dirty')).toBe(true);
       expect(input.classList.contains('ng-pristine')).toBe(false);
+
+      // Touch it
+      act(() => input.dispatchEvent(new Event('blur')));
+      expect(input.classList.contains('ng-touched')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(false);
     });
 
-    it('should not apply classes on a custom and native control, but not a component with a `field` input', () => {
+    it('should apply classes on a custom and native control, but not a component with a `field` input', () => {
       TestBed.configureTestingModule({
         providers: [
-          provideZonelessChangeDetection(),
           provideSignalFormsConfig({
             classes: {'always': () => true},
           }),

@@ -380,9 +380,6 @@ export class MinValidationError extends _NgValidationError {
 }
 
 // @public
-export const NG_STATUS_CLASSES: SignalFormsConfig['classes'];
-
-// @public
 export const NgValidationError: abstract new () => NgValidationError;
 
 // @public (undocumented)

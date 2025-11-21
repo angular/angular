@@ -62,8 +62,8 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 })
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
-  private options = inject(SIGNAL_FORMS_CONFIG, {optional: true});
-  readonly classes = Object.entries(this.options?.classes ?? {}).map(
+  private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
+  readonly classes = Object.entries(this.config?.classes ?? {}).map(
     ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
   );
   readonly field = input.required<FieldTree<T>>();
