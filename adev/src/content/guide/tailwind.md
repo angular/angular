@@ -37,13 +37,14 @@ Next, open a terminal in your Angular project's root directory and run the follo
 Next, add a `.postcssrc.json` file in the file root of the project.
 Add the `@tailwindcss/postcss` plugin into your PostCSS configuration.
 
-<docs-code language="json" header=".postcssrc.json">
+```json {header: '.postcssrc.json'}
+
 {
   "plugins": {
     "@tailwindcss/postcss": {}
   }
 }
-</docs-code>
+```
 
 ### 4. Import Tailwind CSS
 

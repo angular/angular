@@ -79,21 +79,20 @@ Define variable or enumerated data types for the schema using TypeScript interfa
 The schema defines the types and default values of variables used in the schematic.
 For example, the hypothetical "Hello World" schematic might have the following schema.
 
-<docs-code header="src/hello-world/schema.json" language="json">
-
+```json {header: "schema.json"}
 {
-"properties": {
-"name": {
-"type": "string",
-"minLength": 1,
-"default": "world"
-},
-"useColor": {
-"type": "boolean"
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "default": "world"
+    },
+    "useColor": {
+      "type": "boolean"
+    }
+  }
 }
-}
-}
-</docs-code>
+```
 
 See examples of schema files for the Angular CLI command schematics in [`@schematics/angular`](https://github.com/angular/angular-cli/blob/main/packages/schematics/angular/application/schema.json).
 
@@ -110,23 +109,22 @@ To define such a prompt, add an `x-prompt` property to the schema for the `name`
 Similarly, you can add a prompt to let the user decide whether the schematic uses color when executing its hello action.
 The schema with both prompts would be as follows.
 
-<docs-code header="src/hello-world/schema.json" language="json">
-
+```json {header: "schema.json"}
 {
-"properties": {
-"name": {
-"type": "string",
-"minLength": 1,
-"default": "world",
-"x-prompt": "What is your name?"
-},
-"useColor": {
-"type": "boolean",
-"x-prompt": "Would you like the response in color?"
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "default": "world",
+      "x-prompt": "What is your name?"
+    },
+    "useColor": {
+      "type": "boolean",
+      "x-prompt": "Would you like the response in color?"
+    }
+  }
 }
-}
-}
-</docs-code>
+```
 
 #### Prompt short-form syntax
 
@@ -158,23 +156,24 @@ In the short form, the type is inferred from the property's type and constraints
 
 In the following example, the property takes an enumerated value, so the schematic automatically chooses the list type, and creates a menu from the possible values.
 
-<docs-code header="schema.json" language="json">
+```json {header: "schema.json"}
 
-"style": {
-"description": "The file extension or preprocessor to use for style files.",
-"type": "string",
-"default": "css",
-"enum": [
-"css",
-"scss",
-"sass",
-"less",
-"styl"
-],
-"x-prompt": "Which stylesheet format would you like to use?"
+{
+  "style": {
+    "description": "The file extension or preprocessor to use for style files.",
+    "type": "string",
+    "default": "css",
+    "enum": [
+      "css",
+      "scss",
+      "sass",
+      "less",
+      "styl"
+    ],
+    "x-prompt": "Which stylesheet format would you like to use?"
+  }
 }
-
-</docs-code>
+```
 
 The prompt runtime automatically validates the provided response against the constraints provided in the JSON schema.
 If the value is not acceptable, the user is prompted for a new value.
@@ -195,31 +194,32 @@ The following example of the long form is from the JSON schema for the schematic
 It defines the prompt that lets users choose which style preprocessor they want to use for the application being created.
 By using the long form, the schematic can provide more explicit formatting of the menu choices.
 
-<docs-code header="package/schematics/angular/application/schema.json" language="json">
+```json {header: "schema.json"}
 
-"style": {
-"description": "The file extension or preprocessor to use for style files.",
-"type": "string",
-"default": "css",
-"enum": [
-"css",
-"scss",
-"sass",
-"less"
-],
-"x-prompt": {
-"message": "Which stylesheet format would you like to use?",
-"type": "list",
-"items": [
-{ "value": "css", "label": "CSS" },
-{ "value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]" },
-{ "value": "sass", "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
-{ "value": "less", "label": "Less [ https://lesscss.org/ ]" }
-]
-},
-},
-
-</docs-code>
+{
+  "style": {
+    "description": "The file extension or preprocessor to use for style files.",
+    "type": "string",
+    "default": "css",
+    "enum": [
+      "css",
+      "scss",
+      "sass",
+      "less"
+    ],
+    "x-prompt": {
+      "message": "Which stylesheet format would you like to use?",
+      "type": "list",
+      "items": [
+        { "value": "css", "label": "CSS" },
+        { "value": "scss", "label": "SCSS [ https://sass-lang.com/documentation/syntax#scss ]" },
+        { "value": "sass", "label": "Sass [ https://sass-lang.com/documentation/syntax#the-indented-syntax ]" },
+        { "value": "less", "label": "Less [ https://lesscss.org/ ]" }
+      ]
+    }
+  }
+}
+```
 
 #### x-prompt schema
 
@@ -227,39 +227,52 @@ The JSON schema that defines a schematic's options supports extensions to allow 
 No additional logic or changes are required to the code of a schematic to support the prompts.
 The following JSON schema is a complete description of the long-form syntax for the `x-prompt` field.
 
-<docs-code header="x-prompt schema" language="json">
+```json {header: "x-prompt schema"}
 
 {
-"oneOf": [
-{ "type": "string" },
-{
-"type": "object",
-"properties": {
-"type": { "type": "string" },
-"message": { "type": "string" },
-"items": {
-"type": "array",
-"items": {
-"oneOf": [
-{ "type": "string" },
-{
-"type": "object",
-"properties": {
-"label": { "type": "string" },
-"value": { }
-},
-"required": [ "value" ]
+  "oneOf": [
+    {
+      "type": "string"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {}
+                },
+                "required": [
+                  "value"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "message"
+      ]
+    }
+  ]
 }
-]
-}
-}
-},
-"required": [ "message" ]
-}
-]
-}
-
-</docs-code>
+```
 
 ## Schematics CLI
 
