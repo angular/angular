@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {RendererThis, Token, TokenizerThis, Tokens} from 'marked';
+import {RendererThis, Token, TokenizerAndRendererExtension, TokenizerThis, Tokens} from 'marked';
 
 /** Enum of all available alert severities. */
 export enum AlertSeverityLevel {
@@ -24,54 +24,41 @@ export enum AlertSeverityLevel {
 /** Token for docs-alerts */
 interface DocsAlertToken extends Tokens.Generic {
   type: 'docs-alert';
-  body: string;
-  severityLevel: string;
-  tokens: Token[];
-}
-
-interface DocsAlert {
-  alert: RegExpExecArray | null;
   severityLevel: string;
 }
 
-export const docsAlertExtension = {
+/** Alert severity level keys. */
+const alertSeverityLevels = Object.keys(AlertSeverityLevel).map((lvl) => `${lvl}`);
+const tokenMatcher = new RegExp(
+  `^\s*(${alertSeverityLevels.join('|')}): (.*?)(?:\n{2,}|\s*$)`,
+  's',
+);
+
+export const docsAlertExtension: TokenizerAndRendererExtension = {
   name: 'docs-alert',
-  level: 'block' as const,
+  level: 'inline',
   tokenizer(this: TokenizerThis, src: string): DocsAlertToken | undefined {
-    let match: DocsAlert | undefined;
-    for (const key of Object.keys(AlertSeverityLevel)) {
-      // Capture group 1: all alert text content after the severity level
-      const rule = new RegExp('^s*' + key + ': (.*?)(?:\n{2,}|\s*$)', 's');
-      const possibleMatch = rule.exec(src);
-
-      if (possibleMatch?.[1]) {
-        match = {
-          severityLevel: key,
-          alert: possibleMatch,
-        };
-      }
+    const execMatch = tokenMatcher.exec(src);
+    if (execMatch === null) {
+      return undefined;
     }
 
-    if (match?.alert) {
-      const token: DocsAlertToken = {
-        type: 'docs-alert',
-        raw: match.alert[0],
-        body: match.alert[1].trim(),
-        severityLevel: match.severityLevel.toLowerCase(),
-        tokens: [],
-      };
-
-      token.body = `**${AlertSeverityLevel[match.severityLevel as keyof typeof AlertSeverityLevel]}:** ${token.body}`;
-      this.lexer.blockTokens(token.body, token.tokens);
-      return token;
-    }
-    return undefined;
+    const severityLevelKey = execMatch[1] as keyof typeof AlertSeverityLevel;
+    const severityLevelValue = AlertSeverityLevel[severityLevelKey];
+    return {
+      type: 'docs-alert',
+      raw: execMatch[0],
+      severityLevel: severityLevelKey,
+      tokens: this.lexer.inlineTokens(`**${severityLevelValue}:** ${execMatch[2].trim()}`, []),
+    };
   },
-  renderer(this: RendererThis, token: DocsAlertToken) {
-    return `
-    <div class="docs-alert docs-alert-${token.severityLevel.toLowerCase()}">
-    ${this.parser.parse(token.tokens)}
-    </div>
-    `;
+  renderer(this: RendererThis, token: Tokens.Generic) {
+    if (token.tokens) {
+      return `
+      <div class="docs-alert docs-alert-${token.severityLevel.toLowerCase()}">
+        <p>${this.parser.parseInline(token.tokens)}</p>
+      </div>
+      `;
+    }
   },
 };
