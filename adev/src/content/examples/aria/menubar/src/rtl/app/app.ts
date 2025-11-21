@@ -8,7 +8,6 @@ import {Dir} from '@angular/cdk/bidi';
   templateUrl: 'app.html',
   styleUrl: 'app.css',
   imports: [Dir, MenuBar, Menu, MenuContent, MenuItem, OverlayModule],
-  standalone: true,
 })
 export class App {
   fileMenu = viewChild<Menu<string>>('fileMenu');

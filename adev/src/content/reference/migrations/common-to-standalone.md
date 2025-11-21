@@ -24,7 +24,6 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-example',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div *ngIf="show">
@@ -46,7 +45,6 @@ import { AsyncPipe, JsonPipe, NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-example',
-  standalone: true,
   imports: [AsyncPipe, JsonPipe, NgIf],
   template: `
     <div *ngIf="show">
