@@ -55,6 +55,7 @@ import {
   CustomFieldType,
   getCustomFieldDirectiveType,
   isFieldDirective,
+  isNativeField,
   TcbNativeFieldDirectiveTypeOp,
 } from './signal_forms';
 import {Reference} from '../../../imports';
@@ -772,13 +773,8 @@ export class Scope {
     const dirIndex = this.opQueue.push(directiveOp) - 1;
     dirMap.set(dir, dirIndex);
 
-    if (
-      isFieldDirective(dir) &&
-      node instanceof TmplAstElement &&
-      (node.name === 'input' || node.name === 'select' || node.name === 'textarea') &&
-      !allDirectiveMatches.some(getCustomFieldDirectiveType)
-    ) {
-      this.opQueue.push(new TcbNativeFieldDirectiveTypeOp(this.tcb, this, node));
+    if (isNativeField(dir, node, allDirectiveMatches)) {
+      this.opQueue.push(new TcbNativeFieldDirectiveTypeOp(this.tcb, this, node as TmplAstElement));
     }
 
     this.opQueue.push(new TcbDirectiveInputsOp(this.tcb, this, node, dir, customFieldType));
