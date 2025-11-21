@@ -21,3 +21,4 @@ export * from './src/api/structure';
 export * from './src/api/types';
 export * from './src/api/validation_errors';
 export * from './src/api/validators';
+export * from './src/api/field_status_classes';

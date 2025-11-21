@@ -22,6 +22,7 @@ import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
+import {FIELD_STATUS_CLASSES} from './field_status_classes';
 
 /**
  * Lightweight DI token provided by the {@link Field} directive.
@@ -58,6 +59,9 @@ export const FIELD = new InjectionToken<Field<unknown>>(
     {provide: FIELD, useExisting: Field},
     {provide: NgControl, useFactory: () => inject(Field).getOrCreateNgControl()},
   ],
+  host: {
+    '[class]': 'statusClasses()',
+  },
 })
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
@@ -67,6 +71,7 @@ export class Field<T> implements ɵControl<T> {
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
+  private customClasses = inject(FIELD_STATUS_CLASSES, {optional: true});
 
   /** A lazily instantiated fake `NgControl`. */
   private interopNgControl: InteropNgControl | undefined;
@@ -80,6 +85,41 @@ export class Field<T> implements ɵControl<T> {
   protected getOrCreateNgControl(): InteropNgControl {
     return (this.interopNgControl ??= new InteropNgControl(this.state));
   }
+
+  /**
+   * Computed signal that returns space-separated CSS classes based on field status.
+   * Only applies custom classes if FIELD_STATUS_CLASSES token is provided.
+   */
+  readonly statusClasses = computed(() => {
+    const state = this.state();
+    const classes: string[] = [];
+
+    if (this.customClasses) {
+      if (state.valid() && this.customClasses.valid) {
+        classes.push(this.customClasses.valid);
+      }
+      if (state.invalid() && this.customClasses.invalid) {
+        classes.push(this.customClasses.invalid);
+      }
+      if (!state.dirty() && this.customClasses.pristine) {
+        classes.push(this.customClasses.pristine);
+      }
+      if (state.dirty() && this.customClasses.dirty) {
+        classes.push(this.customClasses.dirty);
+      }
+      if (state.touched() && this.customClasses.touched) {
+        classes.push(this.customClasses.touched);
+      }
+      if (!state.touched() && this.customClasses.untouched) {
+        classes.push(this.customClasses.untouched);
+      }
+      if (state.pending() && this.customClasses.pending) {
+        classes.push(this.customClasses.pending);
+      }
+    }
+
+    return classes.join(' ');
+  });
 
   // TODO: https://github.com/orgs/angular/projects/60/views/1?pane=issue&itemId=131861631
   ɵregister() {
