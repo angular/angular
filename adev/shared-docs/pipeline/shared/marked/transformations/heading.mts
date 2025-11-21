@@ -7,7 +7,6 @@
  */
 
 import {Tokens} from 'marked';
-import {getHeaderId} from '../state.mjs';
 import {AdevDocsRenderer} from '../renderer.mjs';
 
 export function headingRender(this: AdevDocsRenderer, {depth, tokens}: Tokens.Heading): string {
@@ -31,7 +30,7 @@ export function headingRender(this: AdevDocsRenderer, {depth, tokens}: Tokens.He
   // ex:  ## MyHeading {# myId}
   const customIdRegex = /{#\s*([\w-]+)\s*}/g;
   const customId = customIdRegex.exec(anchorLessText)?.[1];
-  const link = customId ?? getHeaderId(anchorLessText);
+  const link = customId ?? this.getHeaderId(anchorLessText);
   const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
 
   return `

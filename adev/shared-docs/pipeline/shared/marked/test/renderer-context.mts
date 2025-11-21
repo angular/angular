@@ -24,6 +24,7 @@ export const rendererContext: RendererContext = {
     ApplicationRef: 'angular/core',
     Router: 'angular/router',
   },
+  headerIds: new Map<string, number>(),
 };
 
 export async function setHighlighter() {
