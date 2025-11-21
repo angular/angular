@@ -23,10 +23,13 @@ import {docsCodeBlockExtension} from './extensions/docs-code/docs-code-block.mjs
 import {docsCodeExtension, DocsCodeToken} from './extensions/docs-code/docs-code.mjs';
 import {docsCodeMultifileExtension} from './extensions/docs-code/docs-code-multifile.mjs';
 import {docsTabGroupExtension, docsTabExtension} from './extensions/docs-tabs.mjs';
+import {docsImageExtension} from './extensions/docs-image.mjs';
+
 import {hooks} from './hooks.mjs';
 
 let markedInstance: typeof marked;
 const extensions = [
+  docsImageExtension,
   docsAlertExtension,
   docsCalloutExtension,
   docsPillExtension,
