@@ -85,11 +85,11 @@ You can now start using Tailwind's utility classes in your component templates t
 
 For example, you can add the following to your `app.html` file:
 
-<docs-code language="html">
+```html
 <h1 class="text-3xl font-bold underline">
   Hello world!
 </h1>
-</docs-code>
+```
 
 ## Additional Resources
 
