@@ -831,6 +831,7 @@
       "isPublicRouterEvent",
       "isReadableStreamLike",
       "isRedirect",
+      "isRedirectingEvent",
       "isRedirectingNavigationCancelingError",
       "isRefreshingViews",
       "isRootView",
