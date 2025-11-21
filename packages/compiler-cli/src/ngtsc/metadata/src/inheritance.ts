@@ -36,6 +36,7 @@ export function flattenInheritedDirectiveMetadata(
   const undeclaredInputFields = new Set<ClassPropertyName>();
   const restrictedInputFields = new Set<ClassPropertyName>();
   const stringLiteralInputFields = new Set<ClassPropertyName>();
+  const publicMethods = new Set<string>();
   let hostDirectives: HostDirectiveMeta[] | null = null;
   let isDynamic = false;
   let inputs = ClassPropertyMapping.empty<InputMapping>();
@@ -72,6 +73,9 @@ export function flattenInheritedDirectiveMetadata(
     for (const field of meta.stringLiteralInputFields) {
       stringLiteralInputFields.add(field);
     }
+    for (const name of meta.publicMethods) {
+      publicMethods.add(name);
+    }
     if (meta.hostDirectives !== null && meta.hostDirectives.length > 0) {
       hostDirectives ??= [];
       hostDirectives.push(...meta.hostDirectives);
@@ -88,6 +92,7 @@ export function flattenInheritedDirectiveMetadata(
     undeclaredInputFields,
     restrictedInputFields,
     stringLiteralInputFields,
+    publicMethods,
     baseClass: isDynamic ? 'dynamic' : null,
     isStructural,
     hostDirectives,

@@ -352,6 +352,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     restrictedInputFields: new Set<string>(),
     stringLiteralInputFields: new Set<string>(),
     undeclaredInputFields: new Set<string>(),
+    publicMethods: new Set<string>(),
     isGeneric: false,
     baseClass: null,
     isPoisoned: false,
