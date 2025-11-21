@@ -8,6 +8,7 @@ Instead of using regular anchor elements `<a>` with an `href` attribute, you add
 
 ```angular-ts
 import {RouterLink} from '@angular/router';
+
 @Component({
   template: `
     <nav>
