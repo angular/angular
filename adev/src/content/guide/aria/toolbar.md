@@ -1,6 +1,11 @@
 <docs-decorative-header title="Toolbar">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/toolbar/" title="Toolbar ARIA pattern"/>
+  <docs-pill href="/api/aria/toolbar/Toolbar" title="Toolbar API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A container for grouping related controls and actions with keyboard navigation, commonly used for text formatting, toolbars, and command panels.

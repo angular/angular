@@ -3,7 +3,7 @@
 
 <docs-pill-row>
   <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/" title="Combobox ARIA pattern"/>
-  <docs-pill href="/api?query=accordion#angular_aria_accordion" title="Combobox API Reference"/>
+  <docs-pill href="/api?query=combobox#angular_aria_combobox" title="Combobox API Reference"/>
 </docs-pill-row>
 
 ## Overview
