@@ -18,6 +18,7 @@ import {
   TmplAstDirective,
   TmplAstElement,
   TmplAstHostElement,
+  TmplAstNode,
   TmplAstTemplate,
 } from '@angular/compiler';
 import ts from 'typescript';
@@ -312,6 +313,43 @@ export function getCustomFieldDirectiveType(
     return 'checkbox';
   }
   return null;
+}
+
+/** Determines if a directive usage is on a native field. */
+export function isNativeField(
+  dir: TypeCheckableDirectiveMeta,
+  node: TmplAstNode,
+  allDirectiveMatches: TypeCheckableDirectiveMeta[],
+): boolean {
+  // Only applies to the `Field` directive.
+  if (!isFieldDirective(dir)) {
+    return false;
+  }
+
+  // Only applies to input, select and textarea elements.
+  if (
+    !(node instanceof TmplAstElement) ||
+    (node.name !== 'input' && node.name !== 'select' && node.name !== 'textarea')
+  ) {
+    return false;
+  }
+
+  // Only applies if there are no custom fields or ControlValueAccessors.
+  return allDirectiveMatches.every((meta) => {
+    return getCustomFieldDirectiveType(meta) === null && !isControlValueAccessorLike(meta);
+  });
+}
+
+/**
+ * Determines if a directive is shaped like a `ControlValueAccessor`. Note that this isn't
+ * 100% reliable, because we don't know if the directive was actually provided at runtime.
+ */
+function isControlValueAccessorLike(meta: TypeCheckableDirectiveMeta): boolean {
+  return (
+    meta.publicMethods.has('writeValue') &&
+    meta.publicMethods.has('registerOnChange') &&
+    meta.publicMethods.has('registerOnTouched')
+  );
 }
 
 /** Checks whether a node has bindings that aren't supported on fields. */
