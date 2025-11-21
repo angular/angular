@@ -816,6 +816,7 @@ function getSpecifiers(sourceFile: ts.SourceFile) {
     !createApplicationSpecifier &&
     !bootstrapAppSpecifier &&
     !platformBrowserSpecifier &&
+    !platformBrowserDynamicSpecifier &&
     !testBedSpecifier &&
     !ngModuleSpecifier &&
     !getTestBedSpecifier
