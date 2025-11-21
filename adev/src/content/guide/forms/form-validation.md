@@ -278,7 +278,7 @@ interface ActorsService {
 In a real world application, the `ActorsService` would be responsible for making an HTTP request to the actor database to check if the role is available.
 From the validator's point of view, the actual implementation of the service is not important, so the example can just code against the `ActorsService` interface.
 
-As the validation begins, the `UnambiguousRoleValidator` delegates to the `ActorsService` `isRoleTaken()` method with the current control value.
+As the validation begins, the `UniqueRoleValidator` delegates to the `ActorsService` `isRoleTaken()` method with the current control value.
 At this point the control is marked as `pending` and remains in this state until the observable chain returned from the `validate()` method completes.
 
 The `isRoleTaken()` method dispatches an HTTP request that checks if the role is available, and returns `Observable<boolean>` as the result.
@@ -300,7 +300,7 @@ To use an async validator in reactive forms, begin by injecting the validator in
 
 Then, pass the validator function directly to the `FormControl` to apply it.
 
-In the following example, the `validate` function of `UnambiguousRoleValidator` is applied to `roleControl` by passing it to the control's `asyncValidators` option and binding it to the instance of `UnambiguousRoleValidator` that was injected into `ActorFormReactiveComponent`.
+In the following example, the `validate` function of `UniqueRoleValidator` is applied to `roleControl` by passing it to the control's `asyncValidators` option and binding it to the instance of `UniqueRoleValidator` that was injected into `ActorFormReactiveComponent`.
 The value of `asyncValidators` can be either a single async validator function, or an array of functions.
 To learn more about `FormControl` options, see the [AbstractControlOptions](api/forms/AbstractControlOptions) API reference.
 
