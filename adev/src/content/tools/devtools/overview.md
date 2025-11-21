@@ -15,18 +15,22 @@ HELPFUL: Chrome's new tab page does not run installed extensions, so the Angular
 
 ## Open your application
 
-When you open the extension, you'll see two additional tabs:
+When you open the extension, you'll see three additional tabs:
 
-| Tabs                                   | Details                                                                                                                |
-| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| [Components](tools/devtools/component) | Lets you explore the components and directives in your application and preview or edit their state.                    |
-| [Profiler](tools/devtools/profiler)    | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| Tabs                                      | Details                                                                                                                |
+| :---------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| [Components](tools/devtools/component)    | Lets you explore the components and directives in your application and preview or edit their state.                    |
+| [Profiler](tools/devtools/profiler)       | Lets you profile your application and understand what the performance bottleneck is during change detection execution. |
+| [Injector Tree](tools/devtools/injectors) | Lets you visualize the Environment and Element Injector hierarchy                                                      |
 
-<!-- TODO: Add new sections like signals, router etc. -->
+Other tabs like `Router Tree` or `Transfer State` are experimental and can be enabled via the devtools settings and are not documented yet.
+
+HELPFUL: For users of Chromium based browsers, you might be interested in the [Performance panel integration](/best-practices/profiling-with-chrome-devtools).
 
 <img src="assets/images/guide/devtools/devtools-tabs.png" alt="A screenshot of the top of Angular DevTools illustrating two tabs in the upper-left corner, one labeled 'Components' and another labeled 'Profiler'.">
 
-In the top-right corner of Angular DevTools you'll find which version of Angular is running on the page as well as the latest commit hash for the extension.
+In the top-right corner of Angular DevTools you'll find the information button which open a popover.
+The information popover contains among others what version of Angular is running on the page as well as the devtools version.
 
 ### Angular application not detected
 
