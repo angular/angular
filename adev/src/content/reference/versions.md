@@ -120,7 +120,8 @@ relative to the current workspace or module specifier \(Example: `zone.js`\).
 
 If you create a TypeScript file, make sure to include it in the `files` property of your `tsconfig` file.
 
-<docs-code language="json">
+```json
+
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
@@ -132,7 +133,7 @@ If you create a TypeScript file, make sure to include it in the `files` property
   ]
   ...
 }
-</docs-code>
+```
 
 ## Polyfills for non-CLI users
 
