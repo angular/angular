@@ -82,7 +82,7 @@ async function main(): Promise<void> {
   const currentVersion = await getCurrentVersion();
   const newVersion = await getNewVersion(currentVersion);
   const releaseBranch = await createReleaseBranch(newVersion);
-  await generateChangelog(currentVersion, newVersion);
+  const changelog = await generateChangelog(currentVersion, newVersion);
   await updatingPackageJsonVersion(newVersion);
 
   await installDependencies();
@@ -92,6 +92,8 @@ async function main(): Promise<void> {
   await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom);
 
   await publishExtension();
+
+  await createGithubRelease(newVersion, changelog);
 
   console.log(chalk.green('VSCode extension release process complete!'));
 }
@@ -208,13 +210,11 @@ async function prepareReleasePullRequest(newVersion: string, releaseBranch: stri
   );
   await exec(`git push origin ${releaseBranch} --force-with-lease`);
   const {stdout: remoteUrl} = await exec('git remote get-url origin');
-  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
-  const originUser = match ? match[1] : 'angular';
-  const originRepo = match ? match[2] : 'angular';
+  const {owner, repo} = getRepoDetails(remoteUrl);
 
   console.log(
     chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/${originUser}/${originRepo}/pull/new/${releaseBranch}`,
+      `Please create a pull request by visiting: https://github.com/${owner}/${repo}/pull/new/${releaseBranch}`,
     ),
   );
 }
@@ -229,9 +229,9 @@ async function prepareReleasePullRequest(newVersion: string, releaseBranch: stri
  * @param fromVersion The version to generate the changelog from.
  * @param toVersion The version to generate the changelog for.
  */
-async function generateChangelog(fromVersion: string, toVersion: string): Promise<void> {
+async function generateChangelog(fromVersion: string, toVersion: string): Promise<string> {
   let {stdout: commits} = await exec(
-    `git log --left-only FETCH_HEAD...${tagPrefix}${fromVersion} -E ` +
+    `git log --left-only FETCH_HEAD...${getTagName(fromVersion)} -E ` +
       '--grep="^(feat|fix|perf)\\((vscode-extension|language-server|language-service)\\):" ' +
       '--format="format:- %s (%h)[https://github.com/angular/angular/commit/%H]"',
   );
@@ -252,6 +252,8 @@ async function generateChangelog(fromVersion: string, toVersion: string): Promis
   });
 
   await exec(`pnpm ng-dev format "${changelogPath}"`);
+
+  return newChangelogEntry;
 }
 
 /**
@@ -301,7 +303,7 @@ Once you press Enter, the process will tag and publish automatically.
   const mergedCommitSha = await getLastReleaseSha(newVersion);
 
   console.log(chalk.green(`Tagging the commit: ${mergedCommitSha}`));
-  const tagName = `${tagPrefix}${newVersion}`;
+  const tagName = getTagName(newVersion);
   await exec(`git tag ${tagName} ${mergedCommitSha}`);
   await exec(`git push ${angularRepoRemote} tag ${tagName}`);
   console.log(chalk.green('Release tag pushed to origin.'));
@@ -337,6 +339,74 @@ async function buildExtension(): Promise<void> {
   ]);
 
   console.log(chalk.green(`VSCode extension packaged at ${extensionPath}`));
+}
+
+/**
+ * Creates a GitHub release and uploads the extension asset.
+ *
+ * @param version The version of the release.
+ * @param changelog The changelog content for the release.
+ */
+async function createGithubRelease(version: string, changelog: string): Promise<void> {
+  const token = process.env['GITHUB_TOKEN'];
+  if (!token) {
+    throw new Error('GITHUB_TOKEN environment variable is not set. Cannot create GitHub release.');
+  }
+
+  console.log(chalk.blue('Creating GitHub release...'));
+
+  const commonHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const {owner, repo} = getRepoDetails(angularRepoRemote);
+  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+    method: 'POST',
+    headers: {
+      ...commonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      tag_name: getTagName(version),
+      name: `VSCode Extension: ${version}`,
+      body: changelog
+        // Remove the version header from the changelog as it is already in the release title.
+        .replace(/## .*? \(\d{4}-\d{2}-\d{2}\)/, '')
+        // Remove the commit links from the changelog as they are not needed in the release body.
+        .replace(/\[https:\/\/github\.com\/angular\/angular\/commit\/[a-f0-9]+\]/g, '')
+        .trim(),
+      make_latest: 'false',
+      prerelease: false,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to create release: ${response.statusText} ${await response.text()}`);
+  }
+
+  const release = (await response.json()) as {upload_url: string};
+  const uploadUrl = release.upload_url.replace(
+    '{?name,label}',
+    `?name=ng-template-${version}.vsix`,
+  );
+  const vsixContent = await readFile(extensionPath);
+  const uploadResponse = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      ...commonHeaders,
+      'Content-Type': 'application/zip',
+      'Content-Length': vsixContent.length.toString(),
+    },
+    body: vsixContent,
+  });
+
+  if (!uploadResponse.ok) {
+    throw new Error(
+      `Failed to upload asset: ${uploadResponse.statusText} ${await uploadResponse.text()}`,
+    );
+  }
+
+  console.log(chalk.green('GitHub release created and asset uploaded.'));
 }
 
 /**
@@ -393,6 +463,31 @@ function execAndStream(command: string, args: string[], options: SpawnOptions = 
     });
     child.on('error', reject);
   });
+}
+
+/**
+ * Gets the owner and repo name from a remote URL.
+ *
+ * @param remoteUrl The remote URL to parse.
+ * @returns An object containing the owner and repo name.
+ */
+function getRepoDetails(remoteUrl: string): {owner: string; repo: string} {
+  const match = remoteUrl.trim().match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
+
+  return {
+    owner: match ? match[1] : 'angular',
+    repo: match ? match[2] : 'angular',
+  };
+}
+
+/**
+ * Gets the tag name for the given version.
+ *
+ * @param version The version to generate the tag name for.
+ * @returns The tag name.
+ */
+function getTagName(version: string): string {
+  return `${tagPrefix}${version}`;
 }
 
 // Start the release process.
