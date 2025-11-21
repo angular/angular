@@ -133,7 +133,7 @@ In the examples above, the alignment buttons are wrapped in `ngToolbarWidgetGrou
 
 The `multi` input controls whether multiple widgets within a group can be selected simultaneously:
 
-<docs-code language="html" highlight="[15]">
+```html {highlight: [15]}
 <!-- Single selection (radio group) -->
 <div
   ngToolbarWidgetGroup
@@ -155,7 +155,7 @@ The `multi` input controls whether multiple widgets within a group can be select
   <button ngToolbarWidget value="italic">Italic</button>
   <button ngToolbarWidget value="underline">Underline</button>
 </div>
-</docs-code>
+```
 
 ### Disabled widgets
 
