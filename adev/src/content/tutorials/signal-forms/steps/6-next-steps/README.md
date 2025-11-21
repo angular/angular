@@ -18,7 +18,7 @@ Ready to learn more? Here are recommended next steps:
 
 ### Explore the documentation
 
-- **[Signal Forms Overview](guide/forms/signal-forms)** - Introduction to Signal Forms and when to use them
+- **[Signal Forms Overview](guide/forms/signals/overview)** - Introduction to Signal Forms and when to use them
 - **[Form Models Guide](guide/forms/signal-forms/models)** - Deep dive into form models and data management
   <!-- TODO: Uncomment when the guides are available -->
   <!-- - **[Validation Guide](guide/forms/signal-forms/validation)** - Comprehensive validation reference
