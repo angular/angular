@@ -20,6 +20,7 @@ export interface RendererContext {
   markdownFilePath?: string;
   apiEntries?: Record<string, string>;
   highlighter: HighlighterGeneric<any, any>;
+  headerIds: Map<string, number>;
 }
 
 /**
@@ -27,8 +28,16 @@ export interface RendererContext {
  * files that can be used in the Angular docs.
  */
 export class AdevDocsRenderer extends Renderer {
-  constructor(public context: RendererContext) {
+  public context: RendererContext;
+  constructor(context: Partial<RendererContext>) {
     super();
+    if (context.highlighter === undefined) {
+      throw Error(
+        'An instance of HighlighterGeneric must be provided to the AdevDocsRenderer at construction',
+      );
+    }
+    context.headerIds = context.headerIds || new Map<string, number>();
+    this.context = context as RendererContext;
   }
 
   defaultRenderer = new Renderer();
@@ -40,4 +49,34 @@ export class AdevDocsRenderer extends Renderer {
   override text = textRender;
   override heading = headingRender;
   override codespan = codespanRender;
+
+  getHeaderId(heading: string) {
+    const numberOfHeaderOccurrencesInTheDocument = this.context.headerIds.get(heading) ?? 0;
+    this.context.headerIds.set(heading, numberOfHeaderOccurrencesInTheDocument + 1);
+
+    // extract the extended markdown heading id
+    // ex:  ## MyHeading {# myId}
+    const match = heading.match(/{#([\w-]+)}/);
+
+    let extractedId: string;
+    if (match) {
+      extractedId = match[1];
+    } else {
+      extractedId = heading
+        .toLowerCase()
+        .replace(/<code>(.*?)<\/code>/g, '$1') // remove <code>
+        .replace(/<strong>(.*?)<\/strong>/g, '$1') // remove <strong>
+        .replace(/<em>(.*?)<\/em>/g, '$1') // remove <em>
+        .replace(/\s|\//g, '-') // remove spaces and slashes
+        .replace(/gt;|lt;/g, '') // remove escaped < and >
+        .replace(/&#\d+;/g, '') // remove HTML entities
+        .replace(/[^\p{L}\d\-]/gu, ''); // only keep letters, digits & dashes
+    }
+
+    const headerId = numberOfHeaderOccurrencesInTheDocument
+      ? `${extractedId}-${numberOfHeaderOccurrencesInTheDocument}`
+      : extractedId;
+
+    return headerId;
+  }
 }
