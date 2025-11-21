@@ -1,6 +1,11 @@
 <docs-decorative-header title="Listbox">
 </docs-decorative-header>
 
+<docs-pill-row>
+  <docs-pill href="https://www.w3.org/WAI/ARIA/apg/patterns/listbox/" title="Listbox pattern"/>
+  <docs-pill href="/api?query=listbox#angular_aria_listbox" title="Listbox API Reference"/>
+</docs-pill-row>
+
 ## Overview
 
 A directive that displays a list of options for users to select from, supporting keyboard navigation, single or multiple selection, and screen reader support.
