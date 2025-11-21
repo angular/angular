@@ -61,7 +61,7 @@ ng generate component heroes-list
 
 1. In your code editor, open the file, `app.component.html` and replace its contents with the following HTML.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="setup"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" region="setup"/>
 
 1. Verify that your new application runs as expected by running the `ng serve` command.
 
@@ -136,11 +136,11 @@ To implement this functionality, you add the `router-outlet` directive to your t
 1. From your code editor, open the `app.component.html` file.
 1. Delete the following lines.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="components"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" region="components"/>
 
 1. Add the `router-outlet` directive.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="router-outlet"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" region="router-outlet"/>
 
 1. Add `RouterOutlet` to the imports of the `AppComponent` in `app.component.ts`
 
@@ -176,7 +176,7 @@ You'll add that functionality in the next section.
 
 1. Open the `app.component.html` file and add the following HTML below the title.
 
-   <docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="nav"/>
+   <docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" region="nav"/>
 
    This HTML uses an Angular directive, `routerLink`.
    This directive connects the routes you defined to your template files.
@@ -198,7 +198,7 @@ Add this functionality using Angular's `routerLinkActive` directive.
 1. From your code editor, open the `app.component.html` file.
 1. Update the anchor tags to include the `routerLinkActive` directive.
 
-<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" visibleRegion="routeractivelink"/>
+<docs-code header="app.component.html" path="adev/src/content/examples/router-tutorial/src/app/app.component.html" region="routeractivelink"/>
 
 1. Add the `RouterLinkActive` directive to the `imports` list of `AppComponent` in `app.component.ts`.
 
