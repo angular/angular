@@ -116,6 +116,9 @@ export interface DirectiveTypeCheckMeta {
    */
   undeclaredInputFields: Set<ClassPropertyName>;
 
+  /** Names of the public methods of the class. */
+  publicMethods: Set<string>;
+
   /**
    * Whether the Directive's class is generic, i.e. `class MyDir<T> {...}`.
    */
