@@ -9,6 +9,7 @@
 import {Rule} from '@angular-devkit/schematics';
 import {SignalInputMigration} from '../../migrations/signal-migration/src';
 import {MigrationStage, runMigrationInDevkit} from '../../utils/tsurge/helpers/angular_devkit';
+import {filterSourceFilesByPath} from '../../utils/tsurge/helpers/filter_by_path';
 
 interface Options {
   path: string;
@@ -41,12 +42,23 @@ export function migrate(options: Options): Rule {
       },
       afterProgramCreation: (info, fs) => {
         const analysisPath = fs.resolve(options.analysisDir);
+        const migrationPath = fs.resolve(options.path);
 
         // Support restricting the analysis to subfolders for larger projects.
         if (analysisPath !== '/') {
-          info.sourceFiles = info.sourceFiles.filter((sf) => sf.fileName.startsWith(analysisPath));
-          info.fullProgramSourceFiles = info.fullProgramSourceFiles.filter((sf) =>
-            sf.fileName.startsWith(analysisPath),
+          info.sourceFiles = filterSourceFilesByPath(info.sourceFiles, options.analysisDir, fs);
+          info.fullProgramSourceFiles = info.fullProgramSourceFiles.filter(
+            (sf) => sf.fileName.startsWith(analysisPath + '/') || sf.fileName === analysisPath,
+          );
+        }
+
+        // Also filter by migration path to avoid analyzing files outside the path
+        if (migrationPath !== analysisPath && migrationPath !== '/') {
+          info.sourceFiles = info.sourceFiles.filter(
+            (sf) => sf.fileName.startsWith(migrationPath + '/') || sf.fileName === migrationPath,
+          );
+          info.fullProgramSourceFiles = info.fullProgramSourceFiles.filter(
+            (sf) => sf.fileName.startsWith(migrationPath + '/') || sf.fileName === migrationPath,
           );
         }
       },
