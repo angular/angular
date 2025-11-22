@@ -960,6 +960,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'tools/devtools/profiler',
             contentPath: 'tools/devtools/profiler',
           },
+          {
+            label: 'Injectors',
+            path: 'tools/devtools/injectors',
+            contentPath: 'tools/devtools/injectors',
+          },
           // TODO: create those guides
           // The signal debugging docs should also be added to the signal section
           // {
