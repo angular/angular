@@ -308,6 +308,7 @@ export interface TestDirective
         | 'restrictedInputFields'
         | 'stringLiteralInputFields'
         | 'undeclaredInputFields'
+        | 'publicMethods'
         | 'inputs'
         | 'outputs'
         | 'hostDirectives'
@@ -334,6 +335,7 @@ export interface TestDirective
   restrictedInputFields?: string[];
   stringLiteralInputFields?: string[];
   undeclaredInputFields?: string[];
+  publicMethods?: string[];
   isGeneric?: boolean;
   code?: string;
   ngContentSelectors?: string[] | null;
@@ -879,6 +881,7 @@ function getDirectiveMetaFromDeclaration(
     restrictedInputFields: new Set<string>(decl.restrictedInputFields || []),
     stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields || []),
     undeclaredInputFields: new Set<string>(decl.undeclaredInputFields || []),
+    publicMethods: new Set<string>(decl.publicMethods || []),
     isGeneric: decl.isGeneric ?? false,
     outputs: ClassPropertyMapping.fromMappedObject(decl.outputs || {}),
     queries: decl.queries || [],
@@ -938,6 +941,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         restrictedInputFields: new Set<string>(decl.restrictedInputFields ?? []),
         stringLiteralInputFields: new Set<string>(decl.stringLiteralInputFields ?? []),
         undeclaredInputFields: new Set<string>(decl.undeclaredInputFields ?? []),
+        publicMethods: new Set<string>(decl.publicMethods ?? []),
         isGeneric: decl.isGeneric ?? false,
         isPoisoned: false,
         isStructural: false,

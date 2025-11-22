@@ -510,5 +510,69 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(0);
     });
+
+    it('should not check field on native control that has a ControlValueAccessor directive', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Directive({selector: '[customCva]'})
+          export class CustomCva implements ControlValueAccessor {
+            writeValue() {}
+            registerOnChange() {}
+            registerOnTouched() {}
+          }
+
+          @Component({
+            template: '<input customCva [field]="f"/>',
+            imports: [Field, CustomCva]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should not check field on native control that has a directive inheriting from a ControlValueAccessor', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, Directive, signal} from '@angular/core';
+          import {ControlValueAccessor} from '@angular/forms';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Directive()
+          export class Grandparent implements ControlValueAccessor {
+            writeValue() {}
+            registerOnChange() {}
+            registerOnTouched() {}
+          }
+
+          @Directive()
+          export class Parent extends Grandparent {}
+
+          @Directive({selector: '[customCva]'})
+          export class CustomCva extends Parent {}
+
+          @Component({
+            template: '<input customCva [field]="f"/>',
+            imports: [Field, CustomCva]
+          })
+          export class Comp {
+            f = form(signal(0));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
   });
 });

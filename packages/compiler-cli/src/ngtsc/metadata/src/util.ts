@@ -12,6 +12,7 @@ import {OwningModule, Reference} from '../../imports';
 import {
   ClassDeclaration,
   ClassMember,
+  ClassMemberAccessLevel,
   ClassMemberKind,
   isNamedClassDeclaration,
   ReflectionHost,
@@ -176,7 +177,24 @@ export function extractDirectiveTypeCheckMeta(
   reflector: ReflectionHost,
 ): DirectiveTypeCheckMeta {
   const members = reflector.getMembersOfClass(node);
-  const staticMembers = members.filter((member) => member.isStatic);
+  const publicMethods = new Set<string>();
+  const staticMembers: ClassMember[] = [];
+
+  for (const member of members) {
+    if (member.isStatic) {
+      staticMembers.push(member);
+    }
+
+    if (
+      member.kind === ClassMemberKind.Method &&
+      !member.isStatic &&
+      (member.accessLevel === ClassMemberAccessLevel.PublicReadonly ||
+        member.accessLevel === ClassMemberAccessLevel.PublicWritable)
+    ) {
+      publicMethods.add(member.name);
+    }
+  }
+
   const ngTemplateGuards = staticMembers
     .map(extractTemplateGuard)
     .filter((guard): guard is TemplateGuardMeta => guard !== null);
@@ -225,6 +243,7 @@ export function extractDirectiveTypeCheckMeta(
     restrictedInputFields,
     stringLiteralInputFields,
     undeclaredInputFields,
+    publicMethods,
     isGeneric: arity !== null && arity > 0,
   };
 }
