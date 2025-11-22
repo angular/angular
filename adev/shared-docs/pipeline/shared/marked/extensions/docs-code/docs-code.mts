@@ -29,7 +29,7 @@ const linenumsRule = /linenums/;
 const highlightRule = /highlight="([^"]*)"/;
 const languageRule = /language="([^"]*)"/;
 const visibleLinesRule = /visibleLines="([^"]*)"/;
-const visibleRegionRule = /visibleRegion="([^"]*)"/;
+const regionRule = /region="([^"]*)"/;
 const previewRule = /preview/;
 const hideCodeRule = /hideCode/;
 
@@ -50,7 +50,7 @@ export const docsCodeExtension = {
       const highlight = highlightRule.exec(attr);
       const language = languageRule.exec(attr);
       const visibleLines = visibleLinesRule.exec(attr);
-      const visibleRegion = visibleRegionRule.exec(attr);
+      const region = regionRule.exec(attr);
       const preview = previewRule.exec(attr) ? true : false;
       const hideCode = hideCodeRule.exec(attr) ? true : false;
       const classes = classRule.exec(attr);
@@ -73,7 +73,7 @@ export const docsCodeExtension = {
         highlight: highlight?.[1],
         language: language?.[1],
         visibleLines: visibleLines?.[1],
-        visibleRegion: visibleRegion?.[1],
+        region: region?.[1],
         preview: preview,
         hideCode,
         classes: classes?.[1]?.split(' '),

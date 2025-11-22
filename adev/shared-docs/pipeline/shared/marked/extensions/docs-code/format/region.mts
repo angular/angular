@@ -19,13 +19,11 @@ export function extractRegions(token: CodeToken) {
   // The code in the token is always replaced with the version of the code with region markers removed.
   token.code = parsedRegions.contents;
 
-  if (token.visibleRegion) {
-    const region = parsedRegions.regionMap[token.visibleRegion];
+  if (token.region) {
+    const region = parsedRegions.regionMap[token.region];
     if (!region) {
-      throw new Error(`Cannot find ${token.visibleRegion} in ${token.path}!`);
+      throw new Error(`Cannot find ${token.region} in ${token.path}!`);
     }
-    token.visibleLines = `[${region.ranges.map(
-      (range) => `[${range.from}, ${range.to ?? parsedRegions.totalLinesCount + 1}]`,
-    )}]`;
+    token.code = region.lines.join('\n').trim();
   }
 }
