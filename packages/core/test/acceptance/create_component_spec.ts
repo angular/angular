@@ -1139,6 +1139,34 @@ describe('createComponent', () => {
       componentRef.changeDetectorRef.detectChanges();
       expect(hostElement.textContent).toBe('Value: 20');
     });
+
+    it(`should support input bindings named 'field'`, () => {
+      // Angular has specialized support for binding to form controls (e.g. `[field]="field"`).
+      // This test ensures that dynamic input bindings can still target arbitrary inputs with the
+      // same name.
+
+      @Component({template: ''})
+      class RootComp {
+        @Input() field = '';
+      }
+
+      const hostElement = document.createElement('div');
+      const environmentInjector = TestBed.inject(EnvironmentInjector);
+      const valueSignal = signal('hello');
+
+      const ref = createComponent(RootComp, {
+        hostElement,
+        environmentInjector,
+        bindings: [inputBinding('field', valueSignal)],
+      });
+
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.field).toBe('hello');
+
+      valueSignal.set('goodbye');
+      ref.changeDetectorRef.detectChanges();
+      expect(ref.instance.field).toBe('goodbye');
+    });
   });
 
   describe('root component outputs', () => {
