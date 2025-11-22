@@ -70,6 +70,32 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
 
 1. To run the development server with this proxy configuration, call `ng serve`.
 
+> **Note:** When using the modern builder (Vite + esbuild), proxy patterns use
+> strict globbing rules.
+>
+> The pattern `"/api/*"` will only match a single path segment:
+>
+> - `/api/user`
+>
+> but **will not match nested routes**, such as:
+>
+> - `/api/user/settings`
+> - `/api/user/settings/admin/profile`
+>
+> To match nested routes, you must use the recursive glob:
+>
+> ```json
+> {
+>   "/api/**": {
+>     "target": "http://localhost:3000",
+>     "secure": false
+>   }
+> }
+> ```
+>
+> Older Webpack-based dev servers automatically expanded `*` to include nested
+> paths. Vite does not, so using `**` is required to avoid silent proxy misses.
+
 Edit the proxy configuration file to add configuration options; following are some examples.
 For a detailed description of all options, refer to the [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy) when using `@angular-devkit/build-angular:browser`, or the [Vite DevServer documentation](https://vite.dev/config/server-options#server-proxy) when using `@angular-devkit/build-angular:browser-esbuild` or `@angular-devkit/build-angular:application`.
 
