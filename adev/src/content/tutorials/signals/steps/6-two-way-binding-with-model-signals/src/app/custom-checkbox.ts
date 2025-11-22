@@ -1,6 +1,5 @@
-import {Component, ChangeDetectionStrategy} from '@angular/core';
-
 // TODO: Import model and input from @angular/core
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'custom-checkbox',

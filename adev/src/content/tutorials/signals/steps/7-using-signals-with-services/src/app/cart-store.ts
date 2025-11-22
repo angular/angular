@@ -1,3 +1,4 @@
+// TODO: Import computed from @angular/core
 import {Injectable, signal} from '@angular/core';
 import {CartItem} from './cart-types';
 
