@@ -129,6 +129,20 @@ describe('FieldNode', () => {
       expect(f().dirty()).toBe(true);
     });
 
+    it('can be marked as pristine', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      f().markAsDirty();
+      expect(f().dirty()).toBe(true);
+      f().markAsPristine();
+      expect(f().dirty()).toBe(false);
+    });
+
     it('can be reset', () => {
       const model = signal({a: 1, b: 2});
       const f = form(model, {injector: TestBed.inject(Injector)});
@@ -336,6 +350,20 @@ describe('FieldNode', () => {
 
       f().markAsTouched();
       expect(f().touched()).toBe(true);
+    });
+
+    it('can be marked as untouched', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      f().markAsTouched();
+      expect(f().touched()).toBe(true);
+      f().markAsUntouched();
+      expect(f().touched()).toBe(false);
     });
 
     it('propagates from the children', () => {

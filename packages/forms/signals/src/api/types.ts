@@ -315,6 +315,26 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   hasMetadata(key: MetadataKey<any> | AggregateMetadataKey<any, any>): boolean;
 
   /**
+   * Marks this specific field as touched.
+   */
+  markAsTouched(): void;
+
+  /**
+   * Marks this specific field as untouched.
+   */
+  markAsUntouched(): void;
+
+  /**
+   * Marks this specific field as dirty.
+   */
+  markAsDirty(): void;
+
+  /**
+   * Marks this specific field as pristine.
+   */
+  markAsPristine(): void;
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
