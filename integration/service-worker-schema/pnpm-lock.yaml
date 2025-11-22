@@ -21,8 +21,8 @@ importers:
         specifier: ^7.0.0
         version: 7.8.2
       zone.js:
-        specifier: 0.15.1
-        version: 0.15.1
+        specifier: 0.16.0
+        version: 0.16.0
 
 packages:
 
@@ -32,8 +32,8 @@ packages:
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
-  zone.js@0.15.1:
-    resolution: {integrity: sha512-XE96n56IQpJM7NAoXswY3XRLcWFW83xe0BiAOeMD7K5k5xecOeul3Qcpx6GqEeeHNkW5DWL5zOyTbEfB4eti8w==}
+  zone.js@0.16.0:
+    resolution: {integrity: sha512-LqLPpIQANebrlxY6jKcYKdgN5DTXyyHAKnnWWjE5pPfEQ4n7j5zn7mOEEpwNZVKGqx3kKKmvplEmoBrvpgROTA==}
 
 snapshots:
 
@@ -43,4 +43,4 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  zone.js@0.15.1: {}
+  zone.js@0.16.0: {}
