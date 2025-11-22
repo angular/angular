@@ -182,7 +182,7 @@ You can also handle resolver errors by subscribing to router events and listenin
 import { Component, inject, signal } from '@angular/core';
 import { Router, NavigationError } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { filter, map } from 'rxjs';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -202,15 +202,17 @@ export class App {
 
   private navigationErrors = toSignal(
     this.router.events.pipe(
-      filter((event): event is NavigationError => event instanceof NavigationError),
       map(event => {
-        this.lastFailedUrl.set(event.url);
-
-        if (event.error) {
-          console.error('Navigation error', event.error)
+        if (event instanceof NavigationError) {
+          this.lastFailedUrl.set(event.url);
+  
+          if (event.error) {
+            console.error('Navigation error', event.error)
+          }
+  
+          return 'Navigation failed. Please try again.';
         }
-
-        return 'Navigation failed. Please try again.';
+        return '';
       })
     ),
     { initialValue: '' }
