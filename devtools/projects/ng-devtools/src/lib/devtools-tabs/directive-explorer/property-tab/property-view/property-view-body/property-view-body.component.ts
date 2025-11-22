@@ -6,41 +6,53 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {
   ChangeDetectionStrategy,
   Component,
   ɵFramework as Framework,
   computed,
+  inject,
   input,
   output,
   signal,
 } from '@angular/core';
-import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
+import {MatIcon} from '@angular/material/icon';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatExpansionModule} from '@angular/material/expansion';
 
+import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../../protocol';
 import {
   DirectivePropertyResolver,
   DirectiveTreeData,
 } from '../../../property-resolver/directive-property-resolver';
-import {FlatNode} from '../../../property-resolver/element-property-resolver';
-import {PropertyViewTreeComponent} from './property-view-tree/property-view-tree.component';
-import {MatExpansionModule} from '@angular/material/expansion';
 import {DependencyViewerComponent} from './dependency-viewer/dependency-viewer.component';
 import {DocsRefButtonComponent} from '../../../../../shared/docs-ref-button/docs-ref-button.component';
+import {ObjectTreeExplorerComponent} from '../../../../../shared/object-tree-explorer/object-tree-explorer.component';
+import {SUPPORTED_APIS} from '../../../../../application-providers/supported_apis';
+
+import {SignalGraphManager} from '../../../signal-graph/signal-graph-manager';
+import {FlatNode} from '../../../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-property-view-body',
   templateUrl: './property-view-body.component.html',
   styleUrls: ['./property-view-body.component.scss'],
   imports: [
+    MatIcon,
+    MatTooltip,
     MatExpansionModule,
-    PropertyViewTreeComponent,
     DocsRefButtonComponent,
     DependencyViewerComponent,
+    ObjectTreeExplorerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PropertyViewBodyComponent {
+  private readonly signalGraph = inject(SignalGraphManager);
+  protected readonly supportedApis = inject(SUPPORTED_APIS);
+
+  protected readonly signalGraphEnabled = () => this.supportedApis().signals;
+
   readonly controller = input.required<DirectivePropertyResolver>();
   readonly directiveInputControls = input.required<DirectiveTreeData>();
   readonly directivePropControls = input.required<DirectiveTreeData>();
@@ -89,7 +101,8 @@ export class PropertyViewBodyComponent {
     this.controller().updateValue(node, newValue);
   }
 
-  logValue(node: FlatNode): void {
+  logValue(e: Event, node: FlatNode): void {
+    e.stopPropagation();
     this.controller().logValue(node);
   }
 
@@ -98,5 +111,12 @@ export class PropertyViewBodyComponent {
       node,
       directivePosition: this.controller().directivePosition,
     });
+  }
+
+  getSignalNode(node: FlatNode): DebugSignalGraphNode | null {
+    if (node.prop.descriptor.containerType?.includes('Signal')) {
+      return this.signalGraph.graph()?.nodes.find((sn) => sn.label === node.prop.name) ?? null;
+    }
+    return null;
   }
 }

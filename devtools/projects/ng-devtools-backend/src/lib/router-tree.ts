@@ -87,7 +87,6 @@ export function parseRoutes(router: Router): Route {
     isAux: false,
     isLazy: false,
     isActive: true, // Root is always active.
-    data: [],
   };
 
   return root;
@@ -136,7 +135,6 @@ function assignChildrenToParent(
       canDeactivateGuards: getGuardNames(child, 'canDeactivate'),
       providers: getProviderName(child),
       path: routePath,
-      data: [],
       resolvers: [],
       isAux,
       isLazy,
@@ -172,6 +170,7 @@ function assignChildrenToParent(
 
     if (child.resolve) {
       for (const el in child.resolve) {
+        // TBD flatten
         if (child.resolve.hasOwnProperty(el)) {
           routeConfig?.resolvers?.push({
             key: el,
@@ -182,14 +181,7 @@ function assignChildrenToParent(
     }
 
     if (child.data) {
-      for (const el in child.data) {
-        if (child.data.hasOwnProperty(el)) {
-          routeConfig?.data?.push({
-            key: el,
-            value: child.data[el],
-          });
-        }
-      }
+      routeConfig.data = child.data;
     }
 
     return routeConfig;

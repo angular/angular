@@ -19,10 +19,11 @@ import SpyObj = jasmine.SpyObj;
 import {By} from '@angular/platform-browser';
 import {FrameManager} from '../../application-services/frame_manager';
 import {Component, CUSTOM_ELEMENTS_SCHEMA, output, input} from '@angular/core';
-import {ElementPropertyResolver, FlatNode} from './property-resolver/element-property-resolver';
+import {ElementPropertyResolver} from './property-resolver/element-property-resolver';
 import {BreadcrumbsComponent} from './directive-forest/breadcrumbs/breadcrumbs.component';
 import {PropertyTabComponent} from './property-tab/property-tab.component';
 import {SignalGraphManager} from './signal-graph/signal-graph-manager';
+import {FlatNode} from '../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-directive-forest',
