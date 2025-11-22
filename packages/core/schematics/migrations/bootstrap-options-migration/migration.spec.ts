@@ -749,6 +749,55 @@ describe('bootstrap options migration', () => {
           .toEqual(expected.replace(/\s+/g, ''));
       });
     });
+
+    it('should not migrate a SSR config that has provideZonelessChangeDetection in the base config', async () => {
+      return runTsurgeMigration(new BootstrapOptionsMigration(), [
+        ...typeFiles,
+        {
+          name: absoluteFrom('/app/app.config.ts'),
+          contents: `
+          import { provideZonelessChangeDetection } from '@angular/core';
+          export const appConfig = {
+            providers: [provideZonelessChangeDetection()],
+          };
+        `,
+        },
+        {
+          name: absoluteFrom('/app/app.config.server.ts'),
+          contents: `
+          import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
+          import { appConfig } from './app.config';
+          const serverConfig: ApplicationConfig = {
+            providers: []
+          };
+          export const appServerConfig = mergeApplicationConfig(appConfig, serverConfig);
+        `,
+        },
+        {
+          name: absoluteFrom('/main.server.ts'),
+          isProgramRootFile: true,
+          contents: `
+          import { bootstrapApplication } from '@angular/platform-browser';
+          import { AppComponent } from './app/app.component';
+          import { appServerConfig } from './app/app.config.server';
+          const bootstrap = () => bootstrapApplication(AppComponent, appServerConfig);
+          export default bootstrap;
+        `,
+        },
+      ]).then(({fs}) => {
+        const actualMainServer = fs.readFile(absoluteFrom('/main.server.ts'));
+        const expectedMainServer = `
+          import { bootstrapApplication } from '@angular/platform-browser';
+          import { AppComponent } from './app/app.component';
+          import { appServerConfig } from './app/app.config.server';
+          const bootstrap = () => bootstrapApplication(AppComponent, appServerConfig);
+          export default bootstrap;
+        `;
+        expect(actualMainServer.replace(/\s+/g, ''))
+          .withContext(diffText(expectedMainServer, actualMainServer))
+          .toEqual(expectedMainServer.replace(/\s+/g, ''));
+      });
+    });
   });
 
   describe('bootstrapModule', () => {
