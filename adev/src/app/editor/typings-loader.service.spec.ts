@@ -48,7 +48,6 @@ describe('TypingsLoader', () => {
   } as unknown as WebContainer;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(TypingsLoader);
   });
 

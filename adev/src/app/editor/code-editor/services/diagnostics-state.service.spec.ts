@@ -14,7 +14,6 @@ describe('DiagnosticsState', () => {
   let service: DiagnosticsState;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(DiagnosticsState);
   });
 

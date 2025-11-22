@@ -15,7 +15,6 @@ describe('TabGroup', () => {
   let fixture: ComponentFixture<TabGroup>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     fixture = TestBed.createComponent(TabGroup);
     fixture.detectChanges();
   });
