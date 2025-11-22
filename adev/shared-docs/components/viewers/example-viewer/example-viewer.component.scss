@@ -28,7 +28,9 @@
   align-items: center;
   gap: 0.5rem;
   border-bottom: 1px solid var(--senary-contrast);
-  transition: background 0.3s ease, border-color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease;
   padding-inline-end: 0.65rem;
   font-family: var(--inter-tight-font);
   height: 3rem;
@@ -88,17 +90,12 @@
       align-items: center;
       width: auto;
 
-      &__show {
-        margin-right: auto;
-      }
-
       .docs-example-show-code {
         display: flex;
         gap: 0.5rem;
         align-items: center;
       }
     }
-
   }
 }
 
