@@ -292,8 +292,8 @@ There are four phases, run in the following order:
 | Phase            | Description                                                                                                                                                                                           |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `earlyRead`      | Use this phase to read any layout-affecting DOM properties and styles that are strictly necessary for subsequent calculation. Avoid this phase if possible, preferring the `write` and `read` phases. |
-| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
 | `write`          | Use this phase to write layout-affecting DOM properties and styles.                                                                                                                                   |
+| `mixedReadWrite` | Default phase. Use for any operations need to both read and write layout-affecting properties and styles. Avoid this phase if possible, preferring the explicit `write` and `read` phases.            |
 | `read`           | Use this phase to read any layout-affecting DOM properties.                                                                                                                                           |
 
 ## Lifecycle interfaces
