@@ -10,7 +10,7 @@ import {compileNgModuleFactory} from '../application/application_ngmodule_factor
 import {BootstrapOptions, optionsReducer} from '../application/application_ref';
 import {validAppIdInitializer} from '../application/application_tokens';
 import {provideZonelessChangeDetectionInternal} from '../change_detection/scheduling/zoneless_scheduling_impl';
-import {EnvironmentProviders, Injectable, Injector, Provider, StaticProvider} from '../di';
+import {EnvironmentProviders, Injectable, Injector, Provider} from '../di';
 import {errorHandlerEnvironmentInitializer} from '../error_handler';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type} from '../interface/type';
@@ -19,11 +19,6 @@ import {NgModuleFactory, NgModuleRef} from '../linker/ng_module_factory';
 import {createNgModuleRefWithProviders} from '../render3/ng_module_ref';
 import {bootstrap, setModuleBootstrapImpl} from './bootstrap';
 import {PLATFORM_DESTROY_LISTENERS} from './platform_destroy_listeners';
-import {
-  getNgZoneOptions,
-  internalProvideZoneChangeDetection,
-} from '../change_detection/scheduling/ng_zone_scheduling';
-import {getNgZone} from '../zone/ng_zone';
 
 /**
  * The Angular platform is the entry point for Angular on a web page.
@@ -53,21 +48,8 @@ export class PlatformRef {
     moduleFactory: NgModuleFactory<M>,
     options?: BootstrapOptions & {applicationProviders?: Array<Provider | EnvironmentProviders>},
   ): Promise<NgModuleRef<M>> {
-    const defaultZoneCdProviders = [];
-    const ZONELESS_BY_DEFAULT = true;
-    if (!ZONELESS_BY_DEFAULT) {
-      const ngZoneFactory = () =>
-        getNgZone(options?.ngZone, {
-          ...getNgZoneOptions({
-            eventCoalescing: options?.ngZoneEventCoalescing,
-            runCoalescing: options?.ngZoneRunCoalescing,
-          }),
-        });
-      defaultZoneCdProviders.push(internalProvideZoneChangeDetection({ngZoneFactory}));
-    }
     const allAppProviders = [
       provideZonelessChangeDetectionInternal(),
-      ...defaultZoneCdProviders,
       ...(options?.applicationProviders ?? []),
       errorHandlerEnvironmentInitializer,
       ...(ngDevMode ? [validAppIdInitializer] : []),
