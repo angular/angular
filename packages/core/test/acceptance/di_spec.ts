@@ -382,7 +382,6 @@ describe('EnvironmentProviders', () => {
   });
 
   it('should be accepted by createEnvironmentInjector', () => {
-    TestBed.configureTestingModule({});
     const inj = createEnvironmentInjector(
       [environmentProviders],
       TestBed.inject(EnvironmentInjector),
@@ -392,7 +391,6 @@ describe('EnvironmentProviders', () => {
 
   it('should be accepted as additional input to makeEnvironmentProviders', () => {
     const wrappedProviders = makeEnvironmentProviders([environmentProviders]);
-    TestBed.configureTestingModule({});
 
     const inj = createEnvironmentInjector([wrappedProviders], TestBed.inject(EnvironmentInjector));
     expect(inj.get(TOKEN)).toEqual('token!');

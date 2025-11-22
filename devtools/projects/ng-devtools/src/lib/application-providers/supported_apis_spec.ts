@@ -13,7 +13,6 @@ describe('SUPPORTED_APIS', () => {
   let supportedApis: SupportedApisSignal;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     supportedApis = TestBed.inject(SUPPORTED_APIS);
   });
 

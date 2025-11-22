@@ -2347,8 +2347,6 @@ describe('@defer', () => {
         isVisible = false;
       }
 
-      TestBed.configureTestingModule({});
-
       clearDirectiveDefs(RootCmp);
 
       const fixture = TestBed.createComponent(RootCmp);
@@ -2813,7 +2811,6 @@ describe('@defer', () => {
          `,
       })
       class MyCmp {}
-      TestBed.configureTestingModule({});
 
       const appRef = TestBed.inject(ApplicationRef);
       const zone = TestBed.inject(NgZone);
@@ -3458,8 +3455,6 @@ describe('@defer', () => {
       class RootCmp {
         isVisible = false;
       }
-
-      TestBed.configureTestingModule({});
 
       clearDirectiveDefs(RootCmp);
 

@@ -14,7 +14,6 @@ describe('DownloadManager', () => {
   let service: DownloadManager;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
     service = TestBed.inject(DownloadManager);
   });
 

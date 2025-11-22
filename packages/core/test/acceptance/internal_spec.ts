@@ -134,7 +134,6 @@ describe('internal utilities', () => {
       })
       class Comp {}
 
-      TestBed.configureTestingModule({});
       const ref = createComponent(Comp, {environmentInjector: TestBed.inject(EnvironmentInjector)});
       ref.changeDetectorRef.detectChanges();
 
