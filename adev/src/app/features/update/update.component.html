@@ -146,7 +146,12 @@
       @for (r  of beforeRecommendations; track $index) {
         <div class="adev-recommendation-item">
           <mat-checkbox />
-          <div [innerHTML]="r.renderedStep"></div>
+          <div class="adev-recommendation-content">
+            <div [innerHTML]="r.renderedStep"></div>
+            <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
+              {{getComplexityLevelName(r.level)}}
+            </span>
+          </div>
         </div>
       }
       @if (beforeRecommendations.length <= 0) {
@@ -165,7 +170,12 @@
       @for (r of duringRecommendations; track $index) {
         <div class="adev-recommendation-item">
           <mat-checkbox />
-          <div [innerHTML]="r.renderedStep"></div>
+          <div class="adev-recommendation-content">
+            <div [innerHTML]="r.renderedStep"></div>
+            <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
+              {{getComplexityLevelName(r.level)}}
+            </span>
+          </div>
         </div>
       }
       @if (duringRecommendations.length <= 0) {
@@ -178,7 +188,12 @@
       @for (r of afterRecommendations; track $index) {
         <div class="adev-recommendation-item">
           <mat-checkbox />
-          <div [innerHTML]="r.renderedStep"></div>
+          <div class="adev-recommendation-content">
+            <div [innerHTML]="r.renderedStep"></div>
+            <span class="adev-complexity-badge" [class]="'adev-complexity-' + r.level">
+              {{getComplexityLevelName(r.level)}}
+            </span>
+          </div>
         </div>
       }
       @if (afterRecommendations.length <= 0) {
