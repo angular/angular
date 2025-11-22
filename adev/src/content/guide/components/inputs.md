@@ -10,7 +10,7 @@ When you use a component, you commonly want to pass some data to it. A component
 ```ts {highlight:[5]}
 import {Component, input} from '@angular/core';
 
-@Component({/_..._/})
+@Component({/*...*/})
 export class CustomSlider {
   // Declare an input named 'value' with a default value of zero.
   value = input(0);
@@ -60,7 +60,7 @@ The `input` function returns an `InputSignal`. You can read the value by calling
 ```ts {highlight:[5]}
 import {Component, input, computed} from '@angular/core';
 
-@Component({/_..._/})
+@Component({/*...*/})
 export class CustomSlider {
   // Declare an input named 'value' with a default value of zero.
   value = input(0);
@@ -146,7 +146,7 @@ Angular includes two built-in transform functions for the two most common scenar
 ```ts
 import {Component, input, booleanAttribute, numberAttribute} from '@angular/core';
 
-@Component({/_..._/})
+@Component({/*...*/})
 export class CustomSlider {
   disabled = input(false, {transform: booleanAttribute});
   value = input(0, {transform: numberAttribute});
@@ -220,7 +220,7 @@ See [Two-way binding](guide/templates/two-way-binding) for more details on two-w
 
 You can bind a plain JavaScript property to a model input.
 
-```ts
+```angular-ts
 @Component({
   /* ... */
   // `value` is a model input.

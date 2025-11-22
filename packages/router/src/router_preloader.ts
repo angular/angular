@@ -20,6 +20,7 @@ import {RouterConfigLoader} from './router_config_loader';
  *
  * Provides a preloading strategy.
  *
+ * @see [Preloading strategy](guide/routing/customizing-route-behavior#preloading-strategy)
  * @publicApi
  */
 export abstract class PreloadingStrategy {
@@ -34,6 +35,20 @@ export abstract class PreloadingStrategy {
  * ```ts
  * RouterModule.forRoot(ROUTES, {preloadingStrategy: PreloadAllModules})
  * ```
+ *
+ * ```ts
+ * export const appConfig: ApplicationConfig = {
+ * providers: [
+ *   provideRouter(
+ *     routes,
+ *     withPreloading(PreloadAllModules)
+ *   )
+ * ]
+ * };
+ * ```
+ *
+ *
+ * @see [Preloading strategy](guide/routing/customizing-route-behavior#preloading-strategy)
  *
  * @publicApi
  */
@@ -50,6 +65,8 @@ export class PreloadAllModules implements PreloadingStrategy {
  * Provides a preloading strategy that does not preload any modules.
  *
  * This strategy is enabled by default.
+ *
+ * @see [Preloading strategy](guide/routing/customizing-route-behavior#preloading-strategy)
  *
  * @publicApi
  */

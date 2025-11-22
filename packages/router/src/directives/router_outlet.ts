@@ -199,6 +199,7 @@ export interface RouterOutletContract {
  *
  * @see {@link RouterLink}
  * @see {@link Route}
+ * @see [Show routes with outlets](guide/routing/show-routes-with-outlets)
  * @ngModule RouterModule
  *
  * @publicApi
