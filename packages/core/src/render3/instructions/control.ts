@@ -30,6 +30,7 @@ import {
 } from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isNameOnlyAttributeMarker} from '../util/attrs_utils';
+import {debugStringifyTypeForError} from '../util/stringify_utils';
 import {getNativeByTNode, storeCleanupWithContext} from '../util/view_utils';
 import {listenToOutput} from '../view/directive_outputs';
 import {listenToDomEvent, wrapListener} from '../view/listeners';
@@ -97,6 +98,16 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
     ngDevMode && storePropertyBindingMetadata(tView.data, tNode, 'field', bindingIndex);
   }
 
+  updateControl(lView, tNode);
+}
+
+/**
+ * Updates a `ɵControl` to manage a native or custom form control.
+ *
+ * @param lView The `LView` that contains the control.
+ * @param tNode The `TNode` of the control.
+ */
+export function updateControl<T>(lView: LView, tNode: TNode): void {
   const control = getControlDirective(tNode, lView);
   if (control) {
     updateControlClasses(lView, tNode, control);
@@ -159,13 +170,29 @@ function initializeControlFirstCreatePass<T>(tView: TView, tNode: TNode, lView: 
     return;
   }
 
-  const tagName = tNode.value;
+  const host = describeElement(tView, tNode);
   throw new RuntimeError(
     RuntimeErrorCode.INVALID_FIELD_DIRECTIVE_HOST,
-    `'<${tagName}>' is an invalid [field] directive host. The host must be a native form control ` +
+    `${host} is an invalid [field] directive host. The host must be a native form control ` +
       `(such as <input>', '<select>', or '<textarea>') or a custom form control with a 'value' or ` +
       `'checked' model.`,
   );
+}
+
+/**
+ * Returns a string description of element that the `TNode` represents.
+ *
+ * @param tView The `TView` of the current view.
+ * @param tNode The `TNode` to describe.
+ * @returns A string description of the element.
+ */
+function describeElement(tView: TView, tNode: TNode): string {
+  if (ngDevMode && isComponentHost(tNode)) {
+    const componentIndex = tNode.directiveStart + tNode.componentOffset;
+    const componentDef = tView.data[componentIndex] as DirectiveDef<unknown>;
+    return `Component ${debugStringifyTypeForError(componentDef.type)}`;
+  }
+  return `<${tNode.value}>`;
 }
 
 /**
