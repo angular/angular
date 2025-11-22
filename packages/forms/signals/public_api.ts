@@ -14,6 +14,7 @@
 export * from './src/api/async';
 export * from './src/api/control';
 export * from './src/api/debounce';
+export * from './src/api/di';
 export * from './src/api/field_directive';
 export * from './src/api/logic';
 export * from './src/api/metadata';

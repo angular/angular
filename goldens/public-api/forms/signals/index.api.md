@@ -18,6 +18,7 @@ import { InputSignal } from '@angular/core';
 import { ModelSignal } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
+import { Provider } from '@angular/core';
 import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
@@ -144,6 +145,8 @@ export const FIELD: InjectionToken<Field<unknown>>;
 export class Field<T> implements ɵControl<T> {
     // (undocumented)
     readonly [ɵCONTROL]: undefined;
+    // (undocumented)
+    readonly classes: (readonly [string, i0.Signal<boolean>])[];
     // (undocumented)
     readonly field: i0.InputSignal<FieldTree<T>>;
     protected getOrCreateNgControl(): InteropNgControl;
@@ -428,6 +431,9 @@ export class PatternValidationError extends _NgValidationError {
 }
 
 // @public
+export function provideSignalFormsConfig(config: SignalFormsConfig): Provider[];
+
+// @public
 export function readonly<TValue, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, logic?: NoInfer<LogicFn<TValue, boolean, TPathKind>>): void;
 
 // @public
@@ -508,6 +514,13 @@ export namespace SchemaPathRules {
 export type SchemaPathTree<TModel, TPathKind extends PathKind = PathKind.Root> = ([TModel] extends [AbstractControl] ? CompatSchemaPath<TModel, TPathKind> : SchemaPath<TModel, SchemaPathRules.Supported, TPathKind>) & (TModel extends AbstractControl ? unknown : TModel extends Array<any> ? unknown : TModel extends Record<string, any> ? {
     [K in keyof TModel]: MaybeSchemaPathTree<TModel[K], PathKind.Child>;
 } : unknown);
+
+// @public
+export interface SignalFormsConfig {
+    classes?: {
+        [className: string]: (state: FieldState<unknown>) => boolean;
+    };
+}
 
 // @public
 export function standardSchemaError(issue: StandardSchemaV1.Issue, options: WithField<ValidationErrorOptions>): StandardSchemaValidationError;

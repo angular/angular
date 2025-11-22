@@ -21,6 +21,9 @@ export interface ɵControl<T> {
   /** The state of the field bound to this control. */
   readonly state: Signal<ɵFieldState<T>>;
 
+  /** Options for the control. */
+  readonly classes: ReadonlyArray<readonly [string, Signal<boolean>]>;
+
   /** A reference to the interoperable control, if one is present. */
   readonly ɵinteropControl: ɵInteropControl | undefined;
 
