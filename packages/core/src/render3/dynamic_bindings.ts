@@ -11,6 +11,7 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
+import {ɵɵcontrolCreate as controlCreate, updateControl} from './instructions/control';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
@@ -60,6 +61,7 @@ export interface DirectiveWithBindings<T> {
 
 // These are constant between all the bindings so we can reuse the objects.
 const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
+const FIELD_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'field', requiredVars: 2};
 const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
@@ -120,6 +122,23 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
  * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function inputBinding(publicName: string, value: () => unknown): Binding {
+  if (publicName === 'field') {
+    const binding: BindingInternal = {
+      [BINDING]: FIELD_BINDING_METADATA,
+      create: () => controlCreate(),
+      update: () => {
+        // Update the [field] input binding.
+        inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value());
+
+        // Update the form control bindings, if this is a 'Field' directive bound to a form control.
+        const lView = getLView();
+        const tNode = getSelectedTNode();
+        updateControl(lView, tNode);
+      },
+    };
+    return binding;
+  }
+
   // Note: ideally we would use a class here, but it seems like they
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
