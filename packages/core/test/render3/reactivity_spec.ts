@@ -266,7 +266,6 @@ describe('reactivity', () => {
     });
 
     it('should create root effects when outside of a component, using injection context', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       TestBed.runInInjectionContext(() => effect(() => log.push(counter())));
@@ -280,7 +279,6 @@ describe('reactivity', () => {
     });
 
     it('should create root effects when outside of a component, using an injector', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       effect(() => log.push(counter()), {injector: TestBed.inject(Injector)});
@@ -294,7 +292,6 @@ describe('reactivity', () => {
     });
 
     it('should cleanup effect when manualCleanup is enabled and an injector is provided', () => {
-      TestBed.configureTestingModule({});
       const counter = signal(0);
       const log: number[] = [];
       // It needs the injector to be able to inject the other deps (and not just the DestroyRef).
