@@ -15,6 +15,8 @@ import {UrlTree} from './url_tree';
  *
  * Provides a way to migrate AngularJS applications to Angular.
  *
+ * @see [URL handling strategy](guide/routing/customizing-route-behavior#built-in-preloading-strategies)
+ *
  * @publicApi
  */
 @Injectable({providedIn: 'root', useFactory: () => inject(DefaultUrlHandlingStrategy)})
