@@ -85,5 +85,9 @@ export const CODE_EDITOR_EXTENSIONS: Extension[] = [
       run: startCompletion,
       mac: 'Mod-.',
     },
+    {
+      key: 'Mod-s',
+      run: () => true, // Prevent default browser save dialog
+    },
   ]),
 ];
