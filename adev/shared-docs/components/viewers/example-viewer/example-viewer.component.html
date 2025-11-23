@@ -1,7 +1,12 @@
 <div class="docs-example-viewer" role="group">
   <header class="docs-example-viewer-actions">
     @if (showCode()) {
-      <mat-tab-group #codeTabs animationDuration="0ms" mat-stretch-tabs="false">
+      <mat-tab-group
+        #codeTabs
+        animationDuration="0ms"
+        mat-stretch-tabs="false"
+        (selectedTabChange)="onTabIndexChange($event.index)"
+      >
         @for (tab of tabs(); track tab) {
           <mat-tab [label]="tab.name" />
         }
@@ -94,10 +99,7 @@
   </header>
 
   @if (showCode()) {
-    <div
-      class="docs-example-viewer-code-wrapper"
-      [class.shell]="snippetCode()?.shell"
-    >
+    <div class="docs-example-viewer-code-wrapper" [class.shell]="snippetCode()?.shell">
       <button docs-copy-source-code></button>
       @if (snippetCode()?.sanitizedContent; as content) {
         <div class="docs-example-code-block" [innerHTML]="content"></div>
