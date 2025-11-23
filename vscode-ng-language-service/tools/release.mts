@@ -53,6 +53,9 @@ const releaseCommitPrefix = 'release: bump VSCode extension version to ';
 /** The path to the packaged VSCode extension file. */
 const extensionPath = join(rootPath, 'dist/bin/vscode-ng-language-service/ng-template.vsix');
 
+/** The marker used to split the changelog between releases. */
+const CHANGELOG_RELEASE_MARKER = '<!-- CHANGELOG SPLIT MARKER -->';
+
 /**
  * Orchestrates the release process of the VSCode extension.
  *
@@ -88,12 +91,19 @@ async function main(): Promise<void> {
   await installDependencies();
   await buildExtension();
 
-  await prepareReleasePullRequest(newVersion, releaseBranch);
+  await prepareReleasePullRequest(releaseBranch, `${releaseCommitPrefix}${newVersion}`, [
+    packageJsonPath,
+    changelogPath,
+  ]);
   await waitForPRToBeMergedAndTag(newVersion, branchToReleaseFrom);
 
   await publishExtension();
 
   await createGithubRelease(newVersion, changelog);
+
+  if (branchToReleaseFrom !== 'main') {
+    await cherryPickChangelog(changelog, newVersion);
+  }
 
   console.log(chalk.green('VSCode extension release process complete!'));
 }
@@ -196,25 +206,25 @@ async function getCurrentVersion(): Promise<string> {
 }
 
 /**
- * Creates the release commit and pushes the release branch to the user's fork.
- * This function stages the `package.json` and `CHANGELOG.md` files, creates a commit with a
- * standardized release message, and pushes the release branch to the `origin` remote. It then
- * provides a URL to create a pull request.
+ * Creates a commit and pushes the branch to the user's fork.
  *
- * @param newVersion The new version number to include in the commit message.
- * @param releaseBranch The name of the release branch to push.
+ * @param branch The name of the branch to push.
+ * @param commitMessage The commit message.
+ * @param files The files to commit.
  */
-async function prepareReleasePullRequest(newVersion: string, releaseBranch: string): Promise<void> {
-  await exec(
-    `git commit -m "${releaseCommitPrefix}${newVersion}" "${packageJsonPath}" "${changelogPath}"`,
-  );
-  await exec(`git push origin ${releaseBranch} --force-with-lease`);
+async function prepareReleasePullRequest(
+  branch: string,
+  commitMessage: string,
+  files: string[],
+): Promise<void> {
+  await exec(`git commit -m "${commitMessage}" "${files.join('" "')}"`);
+  await exec(`git push origin ${branch} --force-with-lease`);
   const {stdout: remoteUrl} = await exec('git remote get-url origin');
   const {owner, repo} = getRepoDetails(remoteUrl);
 
   console.log(
     chalk.yellow(
-      `Please create a pull request by visiting: https://github.com/${owner}/${repo}/pull/new/${releaseBranch}`,
+      `Please create a pull request by visiting: https://github.com/${owner}/${repo}/pull/new/${branch}`,
     ),
   );
 }
@@ -240,10 +250,13 @@ async function generateChangelog(fromVersion: string, toVersion: string): Promis
 
   const now = new Date();
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  const newChangelogEntry = `## ${toVersion} (${date})\n\n${commits}\n\n`;
+  const newChangelogEntry = `## ${toVersion} (${date})\n\n${commits}`;
 
   const changelogContents = await readFile(changelogPath, 'utf-8');
-  await writeFile(changelogPath, newChangelogEntry + changelogContents);
+  await writeFile(
+    changelogPath,
+    [newChangelogEntry, CHANGELOG_RELEASE_MARKER, changelogContents].join('\n\n'),
+  );
 
   console.log(chalk.yellow(`Please review the changes the changelog here: ${changelogPath}`));
 
@@ -253,7 +266,9 @@ async function generateChangelog(fromVersion: string, toVersion: string): Promis
 
   await exec(`pnpm ng-dev format "${changelogPath}"`);
 
-  return newChangelogEntry;
+  // Read the formatted changelog from disk to get the correct content for the release.
+  const formattedChangelog = await readFile(changelogPath, 'utf-8');
+  return formattedChangelog.split(CHANGELOG_RELEASE_MARKER)[0].trim();
 }
 
 /**
@@ -268,7 +283,6 @@ async function updatingPackageJsonVersion(newVersion: string): Promise<void> {
 }
 
 /**
-
  * Waits for the release PR to be merged and then tags the merged commit.
  *
  * This function prompts the user to confirm that the release PR has been merged. Once confirmed,
@@ -431,6 +445,33 @@ async function publishExtension(): Promise<void> {
     'publish',
     `--packagePath="${extensionPath}"`,
   ]);
+}
+
+/**
+ * Cherry-picks the changelog changes to the main branch.
+ *
+ * @param changelog The changelog content to add.
+ * @param newVersion The new version number.
+ */
+async function cherryPickChangelog(changelog: string, newVersion: string): Promise<void> {
+  console.log(chalk.blue('Cherry-picking changelog to main...'));
+
+  await exec(`git fetch ${angularRepoRemote} main`);
+  const cherryPickBranch = `vscode-changelog-cherry-pick${newVersion}`;
+  await exec(`git branch -D ${cherryPickBranch}`).catch(() => {});
+  await exec(`git checkout -b ${cherryPickBranch} FETCH_HEAD`);
+
+  const changelogContents = await readFile(changelogPath, 'utf-8');
+  await writeFile(
+    changelogPath,
+    [changelog, CHANGELOG_RELEASE_MARKER, changelogContents].join('\n\n'),
+  );
+
+  await prepareReleasePullRequest(
+    cherryPickBranch,
+    `docs: release notes for the vscode extension ${newVersion} release`,
+    [changelogPath],
+  );
 }
 
 /**
