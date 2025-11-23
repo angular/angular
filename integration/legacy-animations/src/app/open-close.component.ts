@@ -23,7 +23,7 @@ import {Component} from '@angular/core';
         display: block;
         margin-top: 1rem;
       }
-      
+
       .open-close-container {
         border: 1px solid #dddddd;
         margin-top: 1em;
@@ -33,7 +33,6 @@ import {Component} from '@angular/core';
         font-size: 20px;
       }`,
   ],
-  standalone: true,
 })
 export class OpenCloseComponent {
   isOpen = true;
