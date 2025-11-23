@@ -1480,7 +1480,7 @@ export interface NavigationBehaviorOptions {
   /**
    * When true, navigates without pushing a new state into history.
    *
-   * ```
+   * ```ts
    * // Navigate silently to /view
    * this.router.navigate(['/view'], { skipLocationChange: true });
    * ```
@@ -1490,7 +1490,7 @@ export interface NavigationBehaviorOptions {
   /**
    * When true, navigates while replacing the current state in history.
    *
-   * ```
+   * ```ts
    * // Navigate to /view
    * this.router.navigate(['/view'], { replaceUrl: true });
    * ```
