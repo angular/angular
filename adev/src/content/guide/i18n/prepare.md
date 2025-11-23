@@ -10,9 +10,9 @@ To prepare your project for translation, complete the following actions.
 
 In a component template, the i18n metadata is the value of the `i18n` attribute.
 
-<docs-code language="html">
+```html
 <element i18n="{i18n_metadata}">{string_to_translate}</element>
-</docs-code>
+```
 
 Use the `i18n` attribute to mark a static text message in your component templates for translation.
 Place it on every element tag that contains fixed text you want to translate.
@@ -52,9 +52,9 @@ The following example shows the `<ng-container>` element transformed into a non-
 
 In a component template, the i18n metadata is the value of the `i18n-{attribute_name}` attribute.
 
-<docs-code language="html">
+```html
 <element i18n-{attribute_name}="{i18n_metadata}" {attribute_name}="{attribute_value}" />
-</docs-code>
+```
 
 The attributes of HTML elements include text that should be translated along with the rest of the displayed text in the component template.
 
@@ -63,9 +63,9 @@ Use the following syntax to assign a meaning, description, and custom ID.
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 i18n-{attribute_name}="{meaning}|{description}@@{id}"
-</docs-code>
+```
 
 ### `i18n-title` example
 
@@ -128,9 +128,9 @@ return this.show ? $localize`Show Tabs` : $localize`Hide tabs`;
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 {meaning}|{description}@@{custom_id}
-</docs-code>
+```
 
 The following parameters provide context and additional information to reduce confusion for your translator.
 
@@ -214,11 +214,10 @@ An ICU expression includes a component property, an ICU clause, and the case sta
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 { component_property, icu_clause, case_statements }
-
-</docs-code>
+```
 
 The component property defines the variable.
 An ICU clause defines the type of conditional text.
@@ -240,21 +239,19 @@ Use the `plural` clause to mark expressions that may not be meaningful if transl
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 { component_property, plural, pluralization_categories }
-
-</docs-code>
+```
 
 After the pluralization category, enter the default text \(English\) surrounded by open curly brace \(`{`\) and close curly brace \(`}`\) characters.
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 pluralization_category { }
-
-</docs-code>
+```
 
 The following pluralization categories are available for English and may change based on the locale.
 
@@ -271,11 +268,10 @@ If none of the pluralization categories match, Angular uses `other` to match the
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 other { default_quantity }
-
-</docs-code>
+```
 
 HELPFUL: For more information about pluralization categories, see [Choosing plural category names][UnicodeCldrIndexCldrSpecPluralRulesTocChoosingPluralCategoryNames] in the [CLDR - Unicode Common Locale Data Repository][UnicodeCldrMain].
 
@@ -299,29 +295,26 @@ If you want to display the following phrase in English, where `x` is a number.
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 updated x minutes ago
-
-</docs-code>
+```
 
 And you also want to display the following phrases based on the cardinality of `x`.
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 updated just now
-
-</docs-code>
+```
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 updated one minute ago
-
-</docs-code>
+```
 
 Use HTML markup and [interpolations](guide/templates/binding#render-dynamic-text-with-text-interpolation).
 The following code example shows how to use the `plural` clause to express the previous three situations in a `<span>` element.
@@ -346,11 +339,10 @@ The `select` clause marks choices for alternate text based on your defined strin
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 { component_property, select, selection_categories }
-
-</docs-code>
+```
 
 Translate all of the alternates to display alternate text based on the value of a variable.
 
@@ -358,11 +350,10 @@ After the selection category, enter the text \(English\) surrounded by open curl
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 selection_category { text }
-
-</docs-code>
+```
 
 Different locales have different grammatical constructions that increase the difficulty of translation.
 Use HTML markup.
@@ -370,11 +361,10 @@ If none of the selection categories match, Angular uses `other` to match the sta
 
 <!--todo: replace with docs-code -->
 
-<docs-code language="html">
+```html
 
 other { default_value }
-
-</docs-code>
+```
 
 #### `gender` example
 
@@ -382,29 +372,26 @@ If you want to display the following phrase in English.
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 The author is other
-
-</docs-code>
+```
 
 And you also want to display the following phrases based on the `gender` property of the component.
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 The author is female
-
-</docs-code>
+```
 
 <!--todo: replace output docs-code with screen capture image --->
 
-<docs-code language="html">
+```html
 
 The author is male
-
-</docs-code>
+```
 
 The following code example shows how to bind the `gender` property of the component and use the `select` clause to express the previous three situations in a `<span>` element.
 

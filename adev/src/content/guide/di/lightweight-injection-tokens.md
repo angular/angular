@@ -22,13 +22,12 @@ To prevent the retention of unused components, your library should use the light
 To better explain the condition under which token retention occurs, consider a library that provides a library-card component.
 This component contains a body and can contain an optional header:
 
-<docs-code language="html">
+```angular-html
 
 <lib-card>;
 <lib-header>…</lib-header>;
 </lib-card>;
-
-</docs-code>
+```
 
 In a likely implementation, the `<lib-card>` component uses `@ContentChild()` or `@ContentChildren()` to get `<lib-header>` and `<lib-body>`, as in the following:
 

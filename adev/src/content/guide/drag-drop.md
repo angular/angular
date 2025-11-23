@@ -74,7 +74,7 @@ The `cdkDropList` directive supports transferring draggable elements between con
 
 The `cdkDropListConnectedTo` directive works both with a direct reference to another `cdkDropList` or by referencing the id of another drop container.
 
-<docs-code language="html">
+```html
 <!-- This is valid -->
 <div cdkDropList #listOne="cdkDropList" [cdkDropListConnectedTo]="[listTwo]"></div>
 <div cdkDropList #listTwo="cdkDropList" [cdkDropListConnectedTo]="[listOne]"></div>
@@ -82,7 +82,7 @@ The `cdkDropListConnectedTo` directive works both with a direct reference to ano
 <!-- This is valid as well -->
 <div cdkDropList id="list-one" [cdkDropListConnectedTo]="['list-two']"></div>
 <div cdkDropList id="list-two" [cdkDropListConnectedTo]="['list-one']"></div>
-</docs-code>
+```
 
 <docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.ts">
   <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/connected-sorting/app/app.component.html"/>
@@ -92,14 +92,14 @@ The `cdkDropListConnectedTo` directive works both with a direct reference to ano
 
 Use the `cdkDropListGroup` directive if you have an unknown number of connected drop lists to set up the connection automatically. Any new `cdkDropList` that is added under a group automatically connects to all other lists.
 
-<docs-code language="html">
+```html
 <div cdkDropListGroup>
   <!-- All lists in here will be connected. -->
   @for (list of lists; track list) {
     <div cdkDropList></div>
   }
 </div>
-</docs-code>
+```
 
 <docs-code-multifile preview path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.ts">
   <docs-code header="app.component.html" path="adev/src/content/examples/drag-drop/src/connected-sorting-group/app/app.component.html"/>
@@ -123,7 +123,7 @@ By default, a user can move `cdkDrag` elements from one container into another c
 
 You can associate some arbitrary data with both `cdkDrag` and `cdkDropList` by setting `cdkDragData` or `cdkDropListData`, respectively. You can bind to the events fired from both directives that will include this data, allowing you to easily identify the origin of the drag or drop interaction.
 
-<docs-code language="html">
+```html
 @for (list of lists; track list) {
   <div cdkDropList [cdkDropListData]="list" (cdkDropListDropped)="drop($event)">
     @for (item of list; track item) {
@@ -131,7 +131,7 @@ You can associate some arbitrary data with both `cdkDrag` and `cdkDropList` by s
     }
   </div>
 }
-</docs-code>
+```
 
 ## Dragging customizations
 

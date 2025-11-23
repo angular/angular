@@ -14,9 +14,9 @@ Angular uses the Unicode _locale identifier_ \(Unicode locale ID\) to find the c
 A locale ID specifies the language, country, and an optional code for further variants or subdivisions.
 A locale ID consists of the language identifier, a hyphen \(`-`\) character, and the locale extension.
 
-<docs-code language="html">
+```html
 {language_id}-{locale_extension}
-</docs-code>
+```
 
 HELPFUL: To accurately translate your Angular project, you must decide which languages and locales you are targeting for internationalization.
 
