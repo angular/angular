@@ -10,7 +10,7 @@ import {Component} from '@angular/core';
 
 @Component({
   selector: 'hello-world-app',
-  standalone: true,
+
   template: `
     <div>Hello {{ name }}!</div>
   `,
