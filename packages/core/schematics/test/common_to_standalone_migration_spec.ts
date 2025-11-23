@@ -495,6 +495,66 @@ describe('Common → standalone imports migration', () => {
       expect(content).not.toContain('CommonModule');
       expectImportDeclarationToContain(content, 'NgComponentOutlet');
     });
+
+    it('should migrate NgComponentOutlet with structural directive syntax', async () => {
+      writeFile(
+        '/comp.ts',
+        dedent`
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'app-dynamic-structural',
+          imports: [CommonModule],
+          template: \`<ng-container *ngComponentOutlet="dynamicComponent"></ng-container>\`
+        })
+        export class DynamicStructuralComponent {
+          dynamicComponent: any;
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expectImportsToContain(content, 'NgComponentOutlet');
+      expect(content).not.toContain('CommonModule');
+      expectImportDeclarationToContain(content, 'NgComponentOutlet');
+    });
+
+    it('should migrate both NgTemplateOutlet and NgComponentOutlet with mixed syntax', async () => {
+      writeFile(
+        '/comp.ts',
+        dedent`
+        import {Component} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          selector: 'app-mixed-outlets',
+          imports: [CommonModule],
+          template: \`
+            <ng-container *ngTemplateOutlet="template1"></ng-container>
+            <ng-container [ngTemplateOutlet]="template2"></ng-container>
+            <ng-container *ngComponentOutlet="component1"></ng-container>
+            <ng-container [ngComponentOutlet]="component2"></ng-container>
+          \`
+        })
+        export class MixedOutletsComponent {
+          template1: any;
+          template2: any;
+          component1: any;
+          component2: any;
+        }
+      `,
+      );
+
+      await runMigration();
+      const content = tree.readContent('/comp.ts');
+
+      expectImportsToContain(content, 'NgTemplateOutlet', 'NgComponentOutlet');
+      expect(content).not.toContain('CommonModule');
+      expectImportDeclarationToContain(content, 'NgComponentOutlet', 'NgTemplateOutlet');
+    });
   });
 
   describe('Pipes', () => {
