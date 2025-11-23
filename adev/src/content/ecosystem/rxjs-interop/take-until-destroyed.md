@@ -25,7 +25,7 @@ export class UserProfile {
 }
 ```
 
-The `takeUntilDestroyed` operator accepts a single optional [`DestroyRef`](https://angular.dev/api/core/DestroyRef) argument. The operator uses `DestroyRef` to know when the component or directive has been destroyed. You can omit this argument when calling `takeUntilDestroyed` in an [injection context](https://angular.dev/guide/di/dependency-injection-context), typically the constructor of a component or directive. Always provide a `DestroyRef` if your code may call `takeUntilDestroyed` outside of an injection context.
+The `takeUntilDestroyed` operator accepts a single optional [`DestroyRef`](/api/core/DestroyRef) argument. The operator uses `DestroyRef` to know when the component or directive has been destroyed. You can omit this argument when calling `takeUntilDestroyed` in an [injection context](/guide/di/dependency-injection-context), typically the constructor of a component or directive. Always provide a `DestroyRef` if your code may call `takeUntilDestroyed` outside of an injection context.
 
 ```typescript
 @Component(/* ... */)
