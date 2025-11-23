@@ -157,15 +157,14 @@ export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit 
    */
   @Output() readonly isActiveChange: EventEmitter<boolean> = new EventEmitter();
 
-  private link = inject(RouterLink, {optional: true});
+  private readonly link = inject(RouterLink, {optional: true});
+  private readonly router = inject(Router);
+  private readonly element = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private router: Router,
-    private element: ElementRef,
-    private renderer: Renderer2,
-    private readonly cdr: ChangeDetectorRef,
-  ) {
-    this.routerEventsSubscription = router.events.subscribe((s: Event) => {
+  constructor() {
+    this.routerEventsSubscription = this.router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.update();
       }

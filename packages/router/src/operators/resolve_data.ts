@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {EnvironmentInjector, ProviderToken, runInInjectionContext} from '@angular/core';
+import {ProviderToken, runInInjectionContext} from '@angular/core';
 import {defer, EMPTY, from, MonoTypeOperatorFunction, Observable, of, throwError} from 'rxjs';
 import {catchError, concatMap, first, map, mergeMap, takeLast, tap} from 'rxjs/operators';
 

@@ -240,10 +240,10 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
    */
   readonly routerOutletData = input<unknown>();
 
-  private parentContexts = inject(ChildrenOutletContexts);
-  private location = inject(ViewContainerRef);
-  private changeDetector = inject(ChangeDetectorRef);
-  private inputBinder = inject(INPUT_BINDER, {optional: true});
+  private readonly parentContexts = inject(ChildrenOutletContexts);
+  private readonly location = inject(ViewContainerRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly inputBinder = inject(INPUT_BINDER, {optional: true});
   /** @docs-private */
   readonly supportsBindingToComponentInputs = true;
 
