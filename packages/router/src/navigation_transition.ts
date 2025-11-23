@@ -103,7 +103,7 @@ export interface UrlCreationOptions {
    * For example, consider the following route configuration where the parent route
    * has two children.
    *
-   * ```
+   * ```ts
    * [{
    *   path: 'parent',
    *   component: ParentComponent,
@@ -139,7 +139,7 @@ export interface UrlCreationOptions {
   /**
    * Sets query parameters to the URL.
    *
-   * ```
+   * ```ts
    * // Navigate to /results?page=1
    * router.navigate(['/results'], { queryParams: { page: 1 } });
    * ```
@@ -149,7 +149,7 @@ export interface UrlCreationOptions {
   /**
    * Sets the hash fragment for the URL.
    *
-   * ```
+   * ```ts
    * // Navigate to /results#top
    * router.navigate(['/results'], { fragment: 'top' });
    * ```
@@ -163,13 +163,13 @@ export interface UrlCreationOptions {
    * * `merge` : Merge new with current parameters.
    *
    * The "preserve" option discards any new query params:
-   * ```
+   * ```ts
    * // from /view1?page=1 to/view2?page=1
    * router.navigate(['/view2'], { queryParams: { page: 2 },  queryParamsHandling: "preserve"
    * });
    * ```
    * The "merge" option appends new query params to the params from the current URL:
-   * ```
+   * ```ts
    * // from /view1?page=1 to/view2?page=1&otherKey=2
    * router.navigate(['/view2'], { queryParams: { otherKey: 2 },  queryParamsHandling: "merge"
    * });
@@ -183,7 +183,7 @@ export interface UrlCreationOptions {
   /**
    * When true, preserves the URL fragment for the next navigation
    *
-   * ```
+   * ```ts
    * // Preserve fragment from /results#top to /view#top
    * router.navigate(['/view'], { preserveFragment: true });
    * ```
