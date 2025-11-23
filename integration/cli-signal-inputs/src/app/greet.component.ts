@@ -9,7 +9,7 @@ import {Subject} from 'rxjs';
 
     <button (click)="dispatchOutputEvent()"><button>
   `,
-  standalone: true,
+
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GreetComponent {
