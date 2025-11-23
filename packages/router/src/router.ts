@@ -421,7 +421,7 @@ export class Router {
    *
    * @usageNotes
    *
-   * ```
+   * ```ts
    * // create /team/33/user/11
    * router.createUrlTree(['/team', 33, 'user', 11]);
    *
@@ -451,10 +451,10 @@ export class Router {
    *
    * // navigate to /team/44/user/22
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
-   *
+   * ```
    * Note that a value of `null` or `undefined` for `relativeTo` indicates that the
    * tree should be created relative to the root.
-   * ```
+   *
    */
   createUrlTree(commands: readonly any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
     const {relativeTo, queryParams, fragment, queryParamsHandling, preserveFragment} =
