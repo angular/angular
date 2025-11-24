@@ -113,6 +113,8 @@ export const ANIMATION_MODULE_TYPE = new InjectionToken<'NoopAnimations' | 'Brow
  * Angular will apply when inserting inline styles. If not provided, Angular will look up its value
  * from the `ngCspNonce` attribute of the application root node.
  *
+ * @see [Content security policy](best-practices/security#content-security-policy)
+ *
  * @publicApi
  */
 export const CSP_NONCE = new InjectionToken<string | null>(
@@ -175,6 +177,8 @@ export const IMAGE_CONFIG_DEFAULTS: ImageConfig = {
  *
  * @see {@link NgOptimizedImage}
  * @see {@link ImageConfig}
+ * @see [Responsive images](guide/image-optimization#responsive-images)
+ * @see [Using placeholders](guide/image-optimization#using-placeholders)
  * @publicApi
  */
 export const IMAGE_CONFIG = new InjectionToken<ImageConfig>(
