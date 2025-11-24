@@ -1,3 +1,5 @@
+import {tmpdir} from 'node:os';
+import {mkdtemp} from 'node:fs/promises';
 import {join} from 'node:path';
 import {promisify} from 'node:util';
 import {runTests} from '@vscode/test-electron';
@@ -13,6 +15,12 @@ async function main() {
   const xvfb = new Xvfb();
   const tmpDir = process.env['TEST_TMPDIR']!;
 
+  // Using `process.env['TEST_TMPDIR']` here causes:
+  // Error: listen EROFS: read-only file system /xxxx/.cache/bazel/_bazel_alanagius/
+  // d103ea59ab8213e5ce41a45e3b88196a/sandbox/linux-sandbox/7161/execroot/_main/_tmp/
+  // dcbbcd4a7c783d91b28a37a9f72272bc/user-data/1.10-main.sock
+  const tmpDirUserData = await mkdtemp(join(tmpdir(), 'vscode-e2e-user-data-'));
+
   try {
     await promisify(xvfb.start).call(xvfb);
 
@@ -22,6 +30,9 @@ async function main() {
       version: '1.102.0',
       extensionDevelopmentPath: EXT_DEVELOPMENT_PATH,
       extensionTestsPath: EXT_TESTS_PATH,
+      extensionTestsEnv: {
+        HOME: tmpDir,
+      },
       cachePath: join(tmpDir, '.cache'),
       launchArgs: [
         PROJECT_PATH,
@@ -30,9 +41,10 @@ async function main() {
         '--disable-gpu',
         '--no-sandbox',
         '--disable-dev-shm-usage',
+        '--preserve-symlinks',
         '--disable-software-rasterizer',
         `--extensions-dir=${join(tmpDir, 'extensions')}`,
-        `--user-data-dir=${join(tmpDir, 'user-data')}`,
+        `--user-data-dir=${tmpDirUserData}`,
       ],
     });
 
