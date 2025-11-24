@@ -110,6 +110,7 @@ groups:
         - ~amishne
         - ~leonsenft
         - ~mattrbeck
+        - ~JeanMeche
 
   # =========================================================
   #  Framework: General (most code in our packages)
