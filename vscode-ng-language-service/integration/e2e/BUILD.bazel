@@ -28,18 +28,17 @@ js_test(
     data = [
         ":e2e",
         "//vscode-ng-language-service:development_package",
+        "//vscode-ng-language-service:node_modules/@angular/language-service",
+        "//vscode-ng-language-service:node_modules/typescript",
     ],
     entry_point = ":index.js",
     env = {
-        "DBUS_SESSION_BUS_ADDRESS": "",
+        "DBUS_SESSION_BUS_ADDRESS": "/dev/null",
     },
-    # This test downloads vscode & installs it which is not allowed in the sandbox
-    # due to file system protection. It is tagged local so it runs outside of
-    # the sandbox. It would need some redesign to allow for sandbox execution.
     tags = [
         "e2e",
+        # Cannot use RBE as Xvfb is not available.
         "no-remote-exec",
-        "no-sandbox",
         "requires-network",
     ],
 )
