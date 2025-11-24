@@ -139,6 +139,47 @@ describe('jsdoc transforms', () => {
     });
   });
 
+  it('should convert backticks to code tags in markdown links', () => {
+    const entry = addHtmlAdditionalLinks({
+      jsdocTags: [
+        {
+          name: 'see',
+          comment:
+            '[Host view using `ViewContainerRef.createComponent`](guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent)',
+        },
+        {
+          name: 'see',
+          comment:
+            '[Popup attached to `document.body` with `createComponent` + `hostElement`](guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement)',
+        },
+        {
+          name: 'see',
+          comment: '[Method with `backticks` in title](https://example.com "Title with `code`")',
+        },
+      ],
+      moduleName: 'test',
+    });
+
+    expect(entry.additionalLinks[0]).toEqual({
+      label: 'Host view using <code>ViewContainerRef.createComponent</code>',
+      url: 'guide/components/programmatic-rendering#host-view-using-viewcontainerrefcreatecomponent',
+      title: undefined,
+    });
+
+    expect(entry.additionalLinks[1]).toEqual({
+      label:
+        'Popup attached to <code>document.body</code> with <code>createComponent</code> + <code>hostElement</code>',
+      url: 'guide/components/programmatic-rendering#popup-attached-to-documentbody-with-createcomponent--hostelement',
+      title: undefined,
+    });
+
+    expect(entry.additionalLinks[2]).toEqual({
+      label: 'Method with <code>backticks</code> in title',
+      url: 'https://example.com',
+      title: 'Title with `code`',
+    });
+  });
+
   it('should throw on invalid relatie @link', () => {
     const entryFn = () =>
       addHtmlAdditionalLinks({

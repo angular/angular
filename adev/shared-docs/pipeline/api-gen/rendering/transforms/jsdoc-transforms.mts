@@ -140,7 +140,7 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
 
       if (markdownLinkMatch) {
         return {
-          label: markdownLinkMatch[1],
+          label: convertBackticksToCodeTags(markdownLinkMatch[1]),
           url: markdownLinkMatch[2],
           title: markdownLinkMatch[3],
         };
@@ -163,6 +163,15 @@ function getHtmlAdditionalLinks<T extends HasJsDocTags>(entry: T): LinkEntryRend
     .filter((link): link is LinkEntryRenderable => !!link);
 
   return seeAlsoLinks;
+}
+
+/**
+ * Converts backticks to HTML code tags.
+ * This handles code blocks within link text, e.g., `ViewContainerRef.createComponent`
+ */
+function convertBackticksToCodeTags(text: string): string {
+  // Convert backticks to <code> tags
+  return text.replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 
 /**
