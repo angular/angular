@@ -21,6 +21,8 @@ import type {ViewRef} from './view_ref';
  * Provides access to the component instance and related objects,
  * and provides the means of destroying the instance.
  *
+ * @see [Programmatically rendering components](guide/components/programmatic-rendering)
+ *
  * @publicApi
  */
 export abstract class ComponentRef<C> {
