@@ -16,10 +16,9 @@ async function main() {
   const tmpDir = process.env['TEST_TMPDIR']!;
 
   // Using `process.env['TEST_TMPDIR']` here causes:
-  // Error: listen EROFS: read-only file system /.../.cache/bazel/_bazel_alanagius/
-  // d103ea59ab8213e5ce41a45e3b88196a/sandbox/linux-sandbox/7117/execroot/_main/bazel-out/k8-fastbuild/bin/vscode-ng-language-service/
-  // integration/e2e/test_/test.runfiles/_main/.vscode-test/user-data/1.10-main.sock
-
+  // Error: listen EROFS: read-only file system /xxxx/.cache/bazel/_bazel_alanagius/
+  // d103ea59ab8213e5ce41a45e3b88196a/sandbox/linux-sandbox/7161/execroot/_main/_tmp/
+  // dcbbcd4a7c783d91b28a37a9f72272bc/user-data/1.10-main.sock
   const tmpDirUserData = await mkdtemp(join(tmpdir(), 'vscode-e2e-user-data-'));
 
   try {
@@ -42,6 +41,7 @@ async function main() {
         '--disable-gpu',
         '--no-sandbox',
         '--disable-dev-shm-usage',
+        '--preserve-symlinks',
         '--disable-software-rasterizer',
         `--extensions-dir=${join(tmpDir, 'extensions')}`,
         `--user-data-dir=${tmpDirUserData}`,
