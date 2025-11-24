@@ -4,6 +4,8 @@
   .docs-pill {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
     // Default blue
     --pill-accent: var(--bright-blue);
     background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
