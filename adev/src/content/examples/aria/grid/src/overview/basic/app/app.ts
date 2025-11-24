@@ -57,8 +57,8 @@ function generateValidGrid(rowCount: number, colCount: number): Cell[][] {
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrl: 'app.component.css',
+  templateUrl: 'app.html',
+  styleUrl: 'app.css',
   imports: [Grid, GridRow, GridCell, GridCellWidget],
 })
 export class App {
