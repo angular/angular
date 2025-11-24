@@ -24,6 +24,8 @@ function withFakeAsyncTestModule(fn: (fakeAsyncTestModule: any) => any): any {
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
  *
@@ -40,6 +42,8 @@ export function resetFakeAsyncZoneIfExists(): void {
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Wraps a function to be executed in the `fakeAsync` zone:
  * - Microtasks are manually executed by calling `flushMicrotasks()`.
  * - Timers are synchronous; `tick()` simulates the asynchronous passage of time.
@@ -68,6 +72,8 @@ export function fakeAsync(fn: Function, options?: {flush?: boolean}): (...args: 
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Simulates the asynchronous passage of time for the timers in the `fakeAsync` zone.
  *
  * The microtasks queue is drained at the very start of this function and after any timer callback
@@ -141,6 +147,8 @@ export function tick(
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Flushes any pending microtasks and simulates the asynchronous passage of time for the timers in
  * the `fakeAsync` zone by
  * draining the macrotask queue until it is empty.
@@ -156,6 +164,8 @@ export function flush(maxTurns?: number): number {
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Discard all remaining periodic tasks.
  *
  * @publicApi
@@ -165,6 +175,8 @@ export function discardPeriodicTasks(): void {
 }
 
 /**
+ * IMPORTANT: This API requires Zone.js
+ *
  * Flush any pending microtasks.
  *
  * @publicApi
