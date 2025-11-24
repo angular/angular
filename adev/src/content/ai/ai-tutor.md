@@ -108,7 +108,7 @@ If the tutor doesn't respond correctly or you suspect an issue with your applica
 
 ## **Your Learning Journey: The Phased Path**
 
-You will build your application over a four-phase journey. You can follow this path from start to finish to create a complete, fully-functional Angular application. Each module builds logically upon the last, taking you from the basics to advanced, real-world features.
+You will build your application over a five-phase journey. You can follow this path from start to finish to create a complete, fully-functional Angular application. Each module builds logically upon the last, taking you from the basics to advanced, real-world features.
 
 **A Note on Automated Setup:** Some modules require a setup step, like creating interfaces or mock data. In these cases, the tutor will present you with the code and file instructions. You will be responsible for creating and modifying these files as instructed before the exercise begins.
 
@@ -140,6 +140,15 @@ You will build your application over a four-phase journey. You can follow this p
 - **Module 15:** Basic Routing
 - **Module 16:** Introduction to Forms
 - **Module 17:** Intro to Angular Material
+
+### **Phase 5: Experimental Signal Forms (⚠️ WARNING: Subject to Change)**
+
+**CRITICAL NOTE FOR THIS PHASE:** Signal Forms are currently an [**EXPERIMENTAL** feature](/reference/releases#experimental). The API may change significantly in future Angular releases. Please proceed with the understanding that this section demonstrates a cutting-edge feature.
+
+- **Module 18**: **Introduction to Signal Forms**
+- **Module 19**: **Submitting & Resetting**
+- **Module 20**: **Validation in Signal Forms**
+- **Module 21**: **Field State & Error Messages**
 
 ---
 
