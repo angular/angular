@@ -42,8 +42,14 @@ export class RecordingVisualizerComponent {
   readonly changeDetection = input.required<boolean>();
 
   readonly cmpVisualizationModes = VisualizationMode;
-  private readonly selectedNode = linkedSignal<VisualizationMode, SelectedEntry | null>({
-    source: this.visualizationMode,
+
+  private readonly selectedNodeCleanUpDeps = computed(
+    // We don't care about the output format as long as
+    // the value is different when a dependency changes.
+    () => JSON.stringify(this.frame()) + this.visualizationMode(),
+  );
+  private readonly selectedNode = linkedSignal<string, SelectedEntry | null>({
+    source: this.selectedNodeCleanUpDeps,
     computation: () => null,
   });
 
