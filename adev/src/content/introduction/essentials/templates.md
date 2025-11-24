@@ -140,7 +140,7 @@ TIP: Want to know more about Angular templates? See the [In-depth Templates guid
 
 ## Next Step
 
-Now that you have dynamic data and templates in the application, it's time to learn how to enhance templates by conditionally hiding or showing certain elements, looping over elements, and more.
+Now that you have dynamic data and templates in the application, it's time to learn how to share logic between components.
 
 <docs-pill-row>
   <docs-pill title="Modular design with dependency injection" href="essentials/dependency-injection" />
