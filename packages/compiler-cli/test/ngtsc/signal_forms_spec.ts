@@ -305,12 +305,12 @@ runInEachFileSystem(() => {
           import {Field, form} from '@angular/forms/signals';
 
           @Component({
-            template: '<input [attr.type]="type" [field]="f"/>',
+            template: '<input [field]="f" [attr.maxlength]="maxLength"/>',
             imports: [Field]
           })
           export class Comp {
             f = form(signal(''));
-            type = 'number';
+            maxLength = 10;
           }
         `,
       );
@@ -318,7 +318,7 @@ runInEachFileSystem(() => {
       const diags = env.driveDiagnostics();
       expect(diags.length).toBe(1);
       expect(extractMessage(diags[0])).toBe(
-        `Binding to '[attr.type]' is not allowed on nodes using the '[field]' directive`,
+        `Binding to '[attr.maxlength]' is not allowed on nodes using the '[field]' directive`,
       );
     });
 

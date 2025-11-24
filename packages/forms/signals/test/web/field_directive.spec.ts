@@ -8,6 +8,7 @@
 
 import {
   Component,
+  computed,
   Directive,
   ElementRef,
   inject,
@@ -2091,6 +2092,51 @@ describe('field directive', () => {
         input.dispatchEvent(new Event('input'));
       });
       expect(cmp.f().value()).toBe('#0000ff');
+    });
+
+    it('should sync string field with dynamically typed input', () => {
+      @Component({
+        imports: [Field],
+        template: `<input [type]="type()" [field]="f">`,
+      })
+      class TestCmp {
+        readonly passwordVisible = signal(false);
+        readonly type = computed(() => (this.passwordVisible() ? 'text' : 'password'));
+        f = form(signal(''));
+      }
+
+      const fix = act(() => TestBed.createComponent(TestCmp));
+      const input = fix.nativeElement.firstChild as HTMLInputElement;
+      const cmp = fix.componentInstance as TestCmp;
+
+      // Initial state
+      expect(input.type).toBe('password');
+
+      // Model -> View as password
+      act(() => cmp.f().value.set('123'));
+      expect(input.value).toBe('123');
+
+      // View -> Model as password
+      act(() => {
+        input.value = 'abc';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('abc');
+
+      // Change input type
+      act(() => cmp.passwordVisible.set(true));
+      expect(input.type).toBe('text');
+
+      // Model -> View as text
+      act(() => cmp.f().value.set('123'));
+      expect(input.value).toBe('123');
+
+      // View -> Model as text
+      act(() => {
+        input.value = 'abc';
+        input.dispatchEvent(new Event('input'));
+      });
+      expect(cmp.f().value()).toBe('abc');
     });
   });
 
