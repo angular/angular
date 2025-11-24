@@ -20,6 +20,14 @@ export function setInsideLink(value: boolean) {
 }
 
 export function linkRender(this: Renderer, {href, title, tokens}: Tokens.Link) {
+  if (href.startsWith('https://angular.dev/') || href.startsWith('http://angular.dev/')) {
+    Error.stackTraceLimit = Infinity;
+    throw new Error(
+      `Absolute links to angular.dev are not allowed: "${href}". Please use relative links instead.` +
+        `\n ----------------------------- \n ${(this as any).__raw}`,
+    );
+  }
+
   if (insideLink) {
     return this.parser.parseInline(tokens);
   }
