@@ -42,6 +42,10 @@ export class AdevDocsRenderer extends Renderer {
 
   defaultRenderer = new Renderer();
 
+  isGuideFile(): boolean {
+    return this.context.markdownFilePath?.includes('/content/guide') ?? false;
+  }
+
   override link = linkRender;
   override table = tableRender;
   override list = listRender;

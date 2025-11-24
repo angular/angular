@@ -171,7 +171,7 @@ If you do not add the interface for the script-defined extension, your IDE shows
 [GuideWorkspaceConfig]: reference/configs/workspace-config 'Angular workspace configuration | Angular'
 [Resources]: resources 'Explore Angular Resources | Angular'
 [AngularMaterialMain]: https://material.angular.dev 'Angular Material | Angular'
-[AngularUpdateMain]: https://angular.dev/update-guide 'Angular Update Guide | Angular'
+[AngularUpdateMain]: /update-guide 'Angular Update Guide | Angular'
 [GetbootstrapDocs40GettingStartedIntroduction]: https://getbootstrap.com/docs/4.0/getting-started/introduction 'Introduction | Bootstrap'
 [NpmjsMain]: https://www.npmjs.com 'npm'
 [YarnpkgMain]: https://yarnpkg.com ' Yarn'

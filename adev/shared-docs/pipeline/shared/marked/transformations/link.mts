@@ -8,6 +8,7 @@
 
 import {anchorTarget} from '../helpers.mjs';
 import {Renderer, Tokens} from 'marked';
+import {AdevDocsRenderer} from '../renderer.mjs';
 
 /**
  * Tracks whether the current renderer is inside a link.
@@ -19,7 +20,20 @@ export function setInsideLink(value: boolean) {
   insideLink = value;
 }
 
-export function linkRender(this: Renderer, {href, title, tokens}: Tokens.Link) {
+export function linkRender(this: AdevDocsRenderer, {href, title, tokens}: Tokens.Link) {
+  // We have render-time check that we don't create absolute links (which are rendered as external links)
+  // in our guides
+  if (
+    (href.startsWith('https://angular.dev/') || href.startsWith('http://angular.dev/')) &&
+    this.isGuideFile()
+  ) {
+    Error.stackTraceLimit = Infinity;
+    throw new Error(
+      `Absolute links to angular.dev are not allowed: "${href}". Please use relative links instead.` +
+        `\n ----------------------------- \n ${(this as any).__raw}`,
+    );
+  }
+
   if (insideLink) {
     return this.parser.parseInline(tokens);
   }
