@@ -35,7 +35,7 @@ describe('markdown to html', () => {
   it('should render list items', () => {
     const unorderedList = markdownDocument.querySelector('ul');
     const linkItem = unorderedList!.children[4];
-    expect(linkItem.outerHTML).toContain('href="https://angular.dev"');
+    expect(linkItem.outerHTML).toContain('href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"');
 
     const codeItem = unorderedList!.children[5];
     expect(codeItem.outerHTML).toContain('<code>SomeClass</code>');
