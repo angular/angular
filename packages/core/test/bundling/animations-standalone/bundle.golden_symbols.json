@@ -494,7 +494,6 @@
       "getDOM",
       "getDeclarationTNode",
       "getDirectiveDef",
-      "getDocument",
       "getElementDepthCount",
       "getFactoryDef",
       "getFirstLContainer",
