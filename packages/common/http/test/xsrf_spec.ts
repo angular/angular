@@ -71,6 +71,23 @@ describe('HttpXsrfInterceptor', () => {
     expect(req.request.headers.has('X-XSRF-TOKEN')).toEqual(false);
     req.flush({});
   });
+
+  it('does not apply XSRF protection when request is absolute', () => {
+    interceptor
+      .intercept(new HttpRequest('POST', 'https://example.com/test', {}), backend)
+      .subscribe();
+    const req = backend.expectOne('https://example.com/test');
+    expect(req.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
+    req.flush({});
+  });
+
+  it('does not apply XSRF protection when request is protocol relative', () => {
+    interceptor.intercept(new HttpRequest('POST', '//example.com/test', {}), backend).subscribe();
+    const req = backend.expectOne('//example.com/test');
+    expect(req.request.headers.has('X-XSRF-TOKEN')).toBeFalse();
+    req.flush({});
+  });
+
   it('does not overwrite existing header', () => {
     interceptor
       .intercept(
