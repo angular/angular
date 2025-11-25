@@ -180,13 +180,13 @@ const getPreview = (propData: TerminalType | CompositeType, isGetterOrSetter: bo
   if (propData.containerType === 'ReadonlySignal') {
     const {error, value} = safelyReadSignalValue(propData.prop);
     if (error) {
-      return 'ERROR: Could not read signal value. See console for details.';
+      return `Signal(⚠️ Error)${error.message ? `: ${error.message}` : ''}`;
     }
     return `Readonly Signal(${typeToDescriptorPreview[propData.type](value)})`;
   } else if (propData.containerType === 'WritableSignal') {
     const {error, value} = safelyReadSignalValue(propData.prop);
     if (error) {
-      return 'ERROR: Could not read signal value. See console for details.';
+      return `Signal(⚠️ Error)${error.message ? `: ${error.message}` : ''}`;
     }
     return `Signal(${typeToDescriptorPreview[propData.type](value)})`;
   }
