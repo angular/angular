@@ -318,8 +318,10 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
+   *
+   * @param value Optional value to set to the form. If not passed, the value will not be changed.
    */
-  reset(): void;
+  reset(value?: TValue): void;
 }
 
 /**
