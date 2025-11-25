@@ -19,6 +19,10 @@ export const XSRF_COOKIE_NAME = new InjectionToken<string>('XSRF_COOKIE_NAME');
 export const XSRF_HEADER_NAME = new InjectionToken<string>('XSRF_HEADER_NAME');
 
 /**
+ * Regex to match absolute URLs, including protocol-relative URLs.
+ */
+const ABSOLUTE_URL_REGEX = /^(?:https?:)?\/\//i;
+/**
  * Retrieves the current XSRF token to use with the next outgoing request.
  *
  * @publicApi
@@ -78,8 +82,7 @@ export class HttpXsrfInterceptor implements HttpInterceptor {
     // Non-mutating requests don't require a token, and absolute URLs require special handling
     // anyway as the cookie set
     // on our origin is not the same as the token expected by another origin.
-    if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') ||
-        lcUrl.startsWith('https://')) {
+    if (req.method === 'GET' || req.method === 'HEAD' || ABSOLUTE_URL_REGEX.test(req.url)) {
       return next.handle(req);
     }
     const token = this.tokenService.getToken();
