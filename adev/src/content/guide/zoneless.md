@@ -17,11 +17,6 @@ bootstrapApplication(MyApp, {providers: [
   provideZonelessChangeDetection(),
 ]});
 
-// NgModule bootstrap
-platformBrowser().bootstrapModule(AppModule);
-@NgModule({
-  providers: [provideZonelessChangeDetection()]
-})
 export class AppModule {}
 ```
 
