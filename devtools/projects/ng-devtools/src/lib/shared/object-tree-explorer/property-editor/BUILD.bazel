@@ -22,6 +22,6 @@ ng_project(
     deps = [
         "//:node_modules/@angular/core",
         "//:node_modules/@angular/forms",
-        "//devtools/projects/protocol",
+        "//devtools/projects/ng-devtools/src/lib/shared/object-tree-explorer:types",
     ],
 )

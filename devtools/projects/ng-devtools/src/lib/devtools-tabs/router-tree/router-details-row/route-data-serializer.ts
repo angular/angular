@@ -16,7 +16,7 @@ export function buildRouteDataTree(data: unknown, level = 0): FlatNode[] {
 }
 
 function buildArrayNodes(items: unknown[], level: number): FlatNode[] {
-  return items.map((item, index) => createNode(`[${index}]`, item, level));
+  return items.map((item, index) => createNode(index.toString(), item, level));
 }
 
 function buildObjectNodes(obj: Record<string, unknown>, level: number): FlatNode[] {
@@ -47,12 +47,28 @@ function createNode(name: string, value: unknown, level: number): FlatNode {
 }
 
 function getValuePreview(value: unknown): string {
-  const type = typeof value;
+  switch (typeof value) {
+    case 'string':
+      return value as string;
 
-  if (type === 'string') return value as string;
-  if (type === 'number' || type === 'boolean') return String(value);
-  if (Array.isArray(value)) return `[${value.length}]`;
-  if (type === 'object') return `{...}`;
+    case 'number':
+    case 'boolean':
+    case 'symbol':
+      return String(value);
+
+    case 'bigint':
+      return `${String(value)}n`;
+
+    case 'undefined':
+      return 'undefined';
+
+    case 'object': {
+      if (value === null) return 'null';
+      if (Array.isArray(value)) return `Array(${value.length})`;
+
+      return '{...}';
+    }
+  }
 
   return String(value);
 }

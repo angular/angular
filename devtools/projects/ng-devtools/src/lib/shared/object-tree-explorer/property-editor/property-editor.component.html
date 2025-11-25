@@ -1,6 +1,6 @@
 @switch (currentPropertyState()) {
   @case (readState) {
-    <span class="editable">{{ previewValue() }}</span>
+    <span class="editable">{{ property().descriptor.preview}}</span>
   }
   @case (writeState) {
     <div class="value-input">

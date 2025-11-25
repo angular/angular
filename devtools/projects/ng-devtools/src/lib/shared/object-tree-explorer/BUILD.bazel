@@ -1,4 +1,4 @@
-load("//devtools/tools:defaults.bzl", "ng_project", "sass_binary", "sass_library")
+load("//devtools/tools:defaults.bzl", "ng_project", "ng_web_test_suite", "sass_binary", "sass_library", "ts_test_library")
 
 package(default_visibility = ["//devtools:__subpackages__"])
 
@@ -39,4 +39,24 @@ ng_project(
 sass_library(
     name = "prop-action-btn",
     srcs = ["_prop-action-btn.scss"],
+)
+
+ts_test_library(
+    name = "object-tree-explorer_test",
+    srcs = ["object-tree-explorer.spec.ts"],
+    deps = [
+        ":object-tree-explorer",
+        ":types",
+        "//:node_modules/@angular/core",
+        "//:node_modules/@angular/material",
+        "//:node_modules/@angular/platform-browser",
+        "//devtools/projects/protocol",
+    ],
+)
+
+ng_web_test_suite(
+    name = "test",
+    deps = [
+        ":object-tree-explorer_test",
+    ],
 )
