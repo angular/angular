@@ -7,13 +7,14 @@
  */
 
 import {afterNextRender} from '../render3/after_render/hooks';
-import {InjectionToken, Injector} from '../di';
+import {InjectionToken, EnvironmentInjector, Injector, inject} from '../di';
 import {AnimationLViewData, EnterNodeAnimations} from './interfaces';
 
 export interface AnimationQueue {
   queue: Set<VoidFunction>;
   isScheduled: boolean;
   scheduler: typeof initializeAnimationQueueScheduler | null;
+  injector: EnvironmentInjector;
 }
 
 /**
@@ -27,6 +28,7 @@ export const ANIMATION_QUEUE = new InjectionToken<AnimationQueue>(
         queue: new Set(),
         isScheduled: false,
         scheduler: null,
+        injector: inject(EnvironmentInjector), // should be the root injector
       };
     },
   },
@@ -78,7 +80,7 @@ export function scheduleAnimationQueue(injector: Injector) {
         }
         animationQueue.queue.clear();
       },
-      {injector},
+      {injector: animationQueue.injector},
     );
     animationQueue.isScheduled = true;
   }
