@@ -1890,6 +1890,33 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('typing');
   });
 
+  it('should bind properties of custom directive', () => {
+    @Directive({selector: '[customInput]'})
+    class CustomInput {
+      invalid = input<boolean>();
+    }
+
+    @Component({
+      imports: [Field, CustomInput],
+      template: `
+        <input [field]="f" customInput />
+      `,
+    })
+    class TestCmp {
+      customInput = viewChild.required<CustomInput>(CustomInput);
+      field = viewChild.required(Field);
+      value = signal('foobar');
+      f = form(this.value, (p) => {
+        minLength(p, 10);
+      });
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const customInput = fix.componentInstance.customInput();
+    expect(fix.componentInstance.field().state().invalid()).toBeTrue();
+    expect(customInput.invalid()).toBeTrue();
+  });
+
   describe('should work with different input types', () => {
     it('should sync string field with number type input', () => {
       @Component({
