@@ -14,7 +14,7 @@ The injection context is available in these situations:
 
 Knowing when you are in an injection context will allow you to use the [`inject`](api/core/inject) function to inject instances.
 
-NOTE: For basic examples of using `inject()` in class constructors and field initializers, see the [overview guide](guide/di/overview#where-can-inject-be-used).
+NOTE: For basic examples of using `inject()` in class constructors and field initializers, see the [overview guide](/guide/di#where-can-inject-be-used).
 
 ## Stack frame in context
 
@@ -22,22 +22,21 @@ Some APIs are designed to be run in an injection context. This is the case, for 
 
 Here is an example for `CanActivateFn`
 
-<docs-code language="typescript" highlight="[3]">
+```ts {highlight: [3]}
 const canActivateTeam: CanActivateFn =
-    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
-    };
-</docs-code>
+  (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
+  };
+```
 
 ## Run within an injection context
 
 When you want to run a given function in an injection context without already being in one, you can do so with `runInInjectionContext`.
 This requires access to a given injector, like the `EnvironmentInjector`, for example:
 
-<docs-code header="src/app/heroes/hero.service.ts" language="typescript"
-           highlight="[9]">
+```ts {highlight: [9], header"hero.service.ts"}
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class HeroService {
   private environmentInjector = inject(EnvironmentInjector);
@@ -48,7 +47,7 @@ export class HeroService {
     });
   }
 }
-</docs-code>
+```
 
 Note that `inject` will return an instance only if the injector can resolve the required token.
 
