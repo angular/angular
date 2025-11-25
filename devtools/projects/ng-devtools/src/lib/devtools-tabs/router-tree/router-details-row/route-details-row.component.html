@@ -1,4 +1,4 @@
-<!-- Note: Reconsider the existence of this component. -->
+<!-- TODO: Reconsider the existence of this component. -->
 <th>{{label()}}</th>
 <td>
   @switch (type()) {
@@ -26,16 +26,11 @@
           [omitRootNodesNames]="true"
         >
           <ng-template let-node>
-            <!-- Special case. Can't reuse #actionBtn -->
-            @if (!node.expandable && actionBtnType() === 'view-source') {
-              <button
-                type="button"
-                (click)="actionBtnClick.emit(node.prop.descriptor.preview.replace('()', ''))"
-                matTooltip="View source"
-                class="prop-action-btn"
-              >
-                <mat-icon>code</mat-icon>
-              </button>
+            @if (!node.expandable) {
+              <ng-container
+                [ngTemplateOutlet]="actionBtn"
+                [ngTemplateOutletContext]="{ value: node.prop.descriptor.preview }"
+              />
             }
           </ng-template>
         </ng-object-tree-explorer>

@@ -37,7 +37,7 @@
                   supportedApis().signalPropertiesInspection && signalGraphEnabled() && getSignalNode(node);
                   as signalNode
                 ) {
-                  @let graphBtnTooltip = 'Show \'' + node.prop.name + '\' signal graph';
+                  @let graphBtnTooltip = `Show '${node.prop.name}' signal graph`;
                   <button
                     class="prop-action-btn show-signal"
                     type="button"

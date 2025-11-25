@@ -13,8 +13,12 @@ describe('route-data-serializer', () => {
   describe('buildRouteDataTree', () => {
     it('should serialize a flat object', () => {
       const obj = {
-        foo: 'bar',
-        baz: 314,
+        foo: 'test',
+        bar: 314,
+        baz: null,
+        qux: undefined,
+        quux: Symbol('QUUX'),
+        quuux: BigInt(9007199254740991),
       };
 
       const flatNode = buildRouteDataTree(obj);
@@ -27,7 +31,23 @@ describe('route-data-serializer', () => {
             name: 'foo',
             parent: null,
             descriptor: {
-              preview: 'bar',
+              preview: 'test',
+              value: [],
+              expandable: false,
+              editable: false,
+              containerType: null,
+              type: PropType.Unknown,
+            },
+          },
+        },
+        {
+          expandable: false,
+          level: 0,
+          prop: {
+            name: 'bar',
+            parent: null,
+            descriptor: {
+              preview: '314',
               value: [],
               expandable: false,
               editable: false,
@@ -43,7 +63,55 @@ describe('route-data-serializer', () => {
             name: 'baz',
             parent: null,
             descriptor: {
-              preview: '314',
+              preview: 'null',
+              value: [],
+              expandable: false,
+              editable: false,
+              containerType: null,
+              type: PropType.Unknown,
+            },
+          },
+        },
+        {
+          expandable: false,
+          level: 0,
+          prop: {
+            name: 'qux',
+            parent: null,
+            descriptor: {
+              preview: 'undefined',
+              value: [],
+              expandable: false,
+              editable: false,
+              containerType: null,
+              type: PropType.Unknown,
+            },
+          },
+        },
+        {
+          expandable: false,
+          level: 0,
+          prop: {
+            name: 'quux',
+            parent: null,
+            descriptor: {
+              preview: 'Symbol(QUUX)',
+              value: [],
+              expandable: false,
+              editable: false,
+              containerType: null,
+              type: PropType.Unknown,
+            },
+          },
+        },
+        {
+          expandable: false,
+          level: 0,
+          prop: {
+            name: 'quuux',
+            parent: null,
+            descriptor: {
+              preview: '9007199254740991n',
               value: [],
               expandable: false,
               editable: false,
@@ -119,7 +187,7 @@ describe('route-data-serializer', () => {
                     name: 'quux',
                     parent: null,
                     descriptor: {
-                      preview: '[3]',
+                      preview: 'Array(3)',
                       expandable: true,
                       editable: false,
                       containerType: null,
@@ -129,7 +197,7 @@ describe('route-data-serializer', () => {
                           expandable: false,
                           level: 2,
                           prop: {
-                            name: '[0]',
+                            name: '0',
                             parent: null,
                             descriptor: {
                               preview: '3',
@@ -145,7 +213,7 @@ describe('route-data-serializer', () => {
                           expandable: false,
                           level: 2,
                           prop: {
-                            name: '[1]',
+                            name: '1',
                             parent: null,
                             descriptor: {
                               preview: '1',
@@ -161,7 +229,7 @@ describe('route-data-serializer', () => {
                           expandable: false,
                           level: 2,
                           prop: {
-                            name: '[2]',
+                            name: '2',
                             parent: null,
                             descriptor: {
                               preview: '4',
