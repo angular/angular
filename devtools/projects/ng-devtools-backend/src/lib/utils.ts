@@ -50,7 +50,6 @@ export function safelyReadSignalValue(signal: any): {error?: Error; value?: any}
     const value = signal();
     return {error: undefined, value};
   } catch (error) {
-    console.error('[Angular DevTools]: Error reading signal value:', error);
     return {error: error as Error, value: undefined};
   }
 }
