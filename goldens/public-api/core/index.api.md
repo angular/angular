@@ -84,7 +84,7 @@ export const ANIMATION_MODULE_TYPE: InjectionToken<"NoopAnimations" | "BrowserAn
 // @public
 export type AnimationCallbackEvent = {
     target: Element;
-    animationComplete: Function;
+    animationComplete: VoidFunction;
 };
 
 // @public
