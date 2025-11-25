@@ -62,6 +62,13 @@ export interface RNode {
    * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
    */
   getRootNode(options?: GetRootNodeOptions): Node;
+
+  /**
+   * Whether or not the Node is attached to a `Document` (directly or indirectly).
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/Node/isConnected
+   */
+  readonly isConnected: boolean;
 }
 
 /**
