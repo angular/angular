@@ -16,13 +16,13 @@ import {
   input,
   inputBinding,
   model,
-  provideZonelessChangeDetection,
   signal,
   viewChild,
   viewChildren,
   ViewContainerRef,
 } from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {NG_STATUS_CLASSES} from '../../compat/public_api';
 import {
   debounce,
   disabled,
@@ -34,6 +34,7 @@ import {
   min,
   minLength,
   pattern,
+  provideSignalFormsConfig,
   readonly,
   required,
   type DisabledReason,
@@ -55,12 +56,6 @@ class TestStringControl {
 }
 
 describe('field directive', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-  });
-
   describe('field input', () => {
     it('should bind new field to control when changed', () => {
       @Component({
@@ -2405,6 +2400,131 @@ describe('field directive', () => {
       resolve();
       await promise;
       expect(fixture.componentInstance.f().value()).toBe('typing');
+    });
+  });
+
+  describe('config', () => {
+    it('should apply classes based on config', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignalFormsConfig({
+            classes: {
+              'my-invalid-class': (state) => state.invalid(),
+            },
+          }),
+        ],
+      });
+
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+      expect(input.classList.contains('my-invalid-class')).toBe(true);
+
+      act(() => fixture.componentInstance.f().value.set('valid'));
+      expect(input.classList.contains('my-invalid-class')).toBe(false);
+    });
+
+    it('should apply NG_STATUS_CLASSES', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignalFormsConfig({
+            classes: NG_STATUS_CLASSES,
+          }),
+        ],
+      });
+
+      @Component({
+        imports: [Field],
+        template: `<input [field]="f">`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''), (p) => {
+          required(p);
+        });
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const input = fixture.nativeElement.firstChild as HTMLInputElement;
+
+      // Initial state: invalid, pristine, untouched
+      expect(input.classList.contains('ng-invalid')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(true);
+      expect(input.classList.contains('ng-valid')).toBe(false);
+      expect(input.classList.contains('ng-dirty')).toBe(false);
+      expect(input.classList.contains('ng-touched')).toBe(false);
+      expect(input.classList.contains('ng-pending')).toBe(false);
+
+      // Make it valid
+      act(() => fixture.componentInstance.f().value.set('valid'));
+      expect(input.classList.contains('ng-valid')).toBe(true);
+      expect(input.classList.contains('ng-invalid')).toBe(false);
+
+      // Make it dirty
+      act(() => input.dispatchEvent(new Event('input')));
+      expect(input.classList.contains('ng-dirty')).toBe(true);
+      expect(input.classList.contains('ng-pristine')).toBe(false);
+
+      // Touch it
+      act(() => input.dispatchEvent(new Event('blur')));
+      expect(input.classList.contains('ng-touched')).toBe(true);
+      expect(input.classList.contains('ng-untouched')).toBe(false);
+    });
+
+    it('should apply classes on a custom and native control, but not a component with a `field` input', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignalFormsConfig({
+            classes: {'always': () => true},
+          }),
+        ],
+      });
+
+      @Component({
+        selector: 'custom-control',
+        template: '',
+      })
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model.required<string>();
+      }
+
+      @Component({
+        selector: 'custom-subform',
+        template: '',
+      })
+      class CustomSubform {
+        readonly field = input.required<FieldTree<string>>();
+      }
+
+      @Component({
+        imports: [Field, CustomControl, CustomSubform],
+        template: `
+          <input [field]="f" />
+          <custom-control [field]="f" />
+          <custom-subform [field]="f" />
+        `,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      const nativeCtrl = fixture.nativeElement.querySelector('input') as HTMLElement;
+      const customCtrl = fixture.nativeElement.querySelector('custom-control') as HTMLElement;
+      const customSubform = fixture.nativeElement.querySelector('custom-subform') as HTMLElement;
+
+      expect(nativeCtrl.classList.contains('always')).toBe(true);
+      expect(customCtrl.classList.contains('always')).toBe(true);
+      expect(customSubform.classList.contains('always')).toBe(false);
     });
   });
 });

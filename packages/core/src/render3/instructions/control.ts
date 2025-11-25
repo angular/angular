@@ -95,6 +95,8 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 
   const control = getControlDirective(tNode, lView);
   if (control) {
+    updateControlClasses(lView, tNode, control);
+
     if (tNode.flags & TNodeFlags.isFormValueControl) {
       updateCustomControl(tNode, lView, control, 'value');
     } else if (tNode.flags & TNodeFlags.isFormCheckboxControl) {
@@ -447,6 +449,34 @@ function isRelevantSelectMutation(mutation: MutationRecord) {
   }
   // Everything else is not relevant.
   return false;
+}
+
+/**
+ * Updates the configured classes for the control.
+ *
+ * @param lView The `LView` that contains the control.
+ * @param tNode The `TNode` of the control.
+ * @param control The `ɵControl` directive instance.
+ */
+function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unknown>) {
+  if (control.classes) {
+    const bindings = getControlBindings(lView);
+    bindings.classes ??= {};
+    const state = control.state();
+    const renderer = lView[RENDERER];
+    const element = getNativeByTNode(tNode, lView) as HTMLElement;
+
+    for (const [className, enabled] of control.classes) {
+      const isEnabled = enabled();
+      if (controlClassBindingUpdated(bindings.classes, className, isEnabled)) {
+        if (isEnabled) {
+          renderer.addClass(element, className);
+        } else {
+          renderer.removeClass(element, className);
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -839,6 +869,8 @@ type ControlBindingKeys = Exclude<
  */
 type ControlBindings = {
   [K in ControlBindingKeys]?: unknown;
+} & {
+  classes: {[className: string]: boolean};
 };
 
 /**
@@ -893,7 +925,7 @@ function getControlBindings(lView: LView): ControlBindings {
  */
 function controlBindingUpdated(
   bindings: ControlBindings,
-  key: ControlBindingKeys,
+  key: Exclude<ControlBindingKeys, 'classes'>,
   value: unknown,
 ): boolean {
   const oldValue = bindings[key];
@@ -901,6 +933,27 @@ function controlBindingUpdated(
     return false;
   }
   bindings[key] = value;
+  return true;
+}
+
+/**
+ * Updates a control class binding if changed, then returns whether it was updated.
+ *
+ * @param bindings The control class bindings to check.
+ * @param className The class name to check.
+ * @param value The new value to check against.
+ * @returns `true` if the class binding has changed.
+ */
+function controlClassBindingUpdated(
+  bindings: {[className: string]: boolean},
+  className: string,
+  value: boolean,
+): boolean {
+  const oldValue = bindings[className];
+  if (Object.is(oldValue, value)) {
+    return false;
+  }
+  bindings[className] = value;
   return true;
 }
 
