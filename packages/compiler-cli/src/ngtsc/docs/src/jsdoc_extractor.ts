@@ -11,11 +11,11 @@ import ts from 'typescript';
 import {JsDocTagEntry} from './entities';
 
 /**
- * RegExp to match the `@` character follow by any Angular decorator, used to escape Angular
- * decorators in JsDoc blocks so that they're not parsed as JsDoc tags.
+ * RegExp to match the `@` character follow by any Angular decorator and control flow syntax, used to escape Angular
+ * decorators and control flow syntax in JsDoc blocks so that they're not parsed as JsDoc tags.
  */
-const decoratorExpression =
-  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren))/g;
+const angularAtExpression =
+  /@(?=(Injectable|Component|Directive|Pipe|NgModule|Input|Output|HostBinding|HostListener|Inject|Optional|Self|Host|SkipSelf|ViewChild|ViewChildren|ContentChild|ContentChildren|if|else|for|switch|case|default|empty|defer|placeholder|loading|error|let)\b)/g;
 
 /** Gets the set of JsDoc tags applied to a node. */
 export function extractJsDocTags(node: ts.HasJSDoc): JsDocTagEntry[] {
@@ -79,12 +79,12 @@ function getEscapedNode(node: ts.HasJSDoc): ts.HasJSDoc {
   return file.statements.find((s) => ts.isClassDeclaration(s)) as ts.ClassDeclaration;
 }
 
-/** Escape the `@` character for Angular decorators. */
+/** Escape the `@` character for Angular decorators and template control flow syntax. */
 function escapeAngularDecorators(comment: string): string {
-  return comment.replace(decoratorExpression, '_NG_AT_');
+  return comment.replace(angularAtExpression, '_NG_AT_');
 }
 
-/** Unescapes the `@` character for Angular decorators. */
+/** Unescapes the `@` character for Angular decorators and template control flow syntax. */
 function unescapeAngularDecorators(comment: string): string {
   return comment.replace(/_NG_AT_/g, '@');
 }
