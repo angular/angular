@@ -91,11 +91,15 @@ export abstract class HttpXsrfTokenExtractor {
   abstract getToken(): string | null;
 }
 
+/**
+ * Regex to match absolute URLs, including protocol-relative URLs.
+ */
+const ABSOLUTE_URL_REGEX = /^(?:https?:)?\/\//i;
+
 export function xsrfInterceptorFn(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
 ): Observable<HttpEvent<unknown>> {
-  const lcUrl = req.url.toLowerCase();
   // Skip both non-mutating requests and absolute URLs.
   // Non-mutating requests don't require a token, and absolute URLs require special handling
   // anyway as the cookie set
@@ -104,8 +108,7 @@ export function xsrfInterceptorFn(
     !inject(XSRF_ENABLED) ||
     req.method === 'GET' ||
     req.method === 'HEAD' ||
-    lcUrl.startsWith('http://') ||
-    lcUrl.startsWith('https://')
+    ABSOLUTE_URL_REGEX.test(req.url)
   ) {
     return next(req);
   }
