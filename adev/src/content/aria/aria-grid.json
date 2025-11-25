@@ -6,6 +6,7 @@
   "entries": [
     {
       "name": "Grid",
+      "aliases" : ["ngGrid"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -178,6 +179,7 @@
     },
     {
       "name": "GridRow",
+      "aliases" : ["ngGridRow"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -228,6 +230,7 @@
     },
     {
       "name": "GridCell",
+      "aliases" : ["ngGridCell"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -443,6 +446,7 @@
     },
     {
       "name": "GridCellWidget",
+      "aliases" : ["ngGridCellWidget"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [

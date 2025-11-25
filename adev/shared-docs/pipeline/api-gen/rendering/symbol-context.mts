@@ -21,8 +21,15 @@ export function setCurrentSymbol(symbol: string): void {
   currentSymbol = symbol;
 }
 
-export function getSymbols() {
-  return symbols;
+/** Convert Record<string, string> to ApiEntries format */
+export function getSymbolsAsApiEntries(): Record<string, {moduleName: string}> {
+  const result: Record<string, {moduleName: string}> = {};
+
+  for (const symbol in symbols) {
+    result[symbol] = {moduleName: symbols[symbol]};
+  }
+
+  return result;
 }
 
 export function getCurrentSymbol(): string | undefined {
@@ -34,7 +41,7 @@ export function setSymbols(newSymbols: Record<string, string>): void {
 }
 
 export function getSymbolUrl(symbol: string): string | undefined {
-  return sharedGetSymbolUrl(symbol, symbols);
+  return sharedGetSymbolUrl(symbol, getSymbolsAsApiEntries());
 }
 
 export function unknownSymbolMessage(link: string, symbol: string): string {
