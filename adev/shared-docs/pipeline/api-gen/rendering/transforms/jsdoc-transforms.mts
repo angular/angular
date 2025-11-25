@@ -28,7 +28,7 @@ import {parseMarkdown} from '../../../shared/marked/parse.mjs';
 import {getHighlighterInstance} from '../shiki/shiki.mjs';
 import {
   getCurrentSymbol,
-  getSymbols,
+  getSymbolsAsApiEntries,
   getSymbolUrl,
   unknownSymbolMessage,
 } from '../symbol-context.mjs';
@@ -107,7 +107,7 @@ export function addHtmlUsageNotes<T extends HasJsDocTags>(entry: T): T & HasHtml
 function getHtmlForJsDocText(text: string): string {
   const mdToParse = convertLinks(wrapExampleHtmlElementsWithCode(text));
   const parsed = parseMarkdown(mdToParse, {
-    apiEntries: getSymbols(),
+    apiEntries: getSymbolsAsApiEntries(),
     highlighter: getHighlighterInstance(),
   });
   return addApiLinksToHtml(parsed);

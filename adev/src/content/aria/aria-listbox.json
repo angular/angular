@@ -6,6 +6,7 @@
   "entries": [
     {
       "name": "Listbox",
+      "aliases" : ["ngListbox"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -238,6 +239,7 @@
     },
     {
       "name": "Option",
+      "aliases" : ["ngOption"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [

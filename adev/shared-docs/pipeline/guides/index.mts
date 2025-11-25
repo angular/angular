@@ -15,7 +15,7 @@ import {hasUnknownAnchors} from './helpers.mjs';
 type ApiManifest = ApiManifestPackage[];
 interface ApiManifestPackage {
   moduleName: string;
-  entries: {name: string}[];
+  entries: {name: string; aliases?: string[]}[];
 }
 
 async function main() {
@@ -66,10 +66,12 @@ async function main() {
 
 main();
 
-function mapManifestToEntries(apiManifest: ApiManifest): Record<string, string> {
+function mapManifestToEntries(
+  apiManifest: ApiManifest,
+): Record<string, {moduleName: string; targetSymbol?: string}> {
   const duplicateEntries = new Set<string>();
 
-  const entryToModuleMap: Record<string, string> = {};
+  const entryToModuleMap: Record<string, {moduleName: string; targetSymbol?: string}> = {};
   for (const pkg of apiManifest) {
     for (const entry of pkg.entries) {
       if (duplicateEntries.has(entry.name)) {
@@ -78,7 +80,19 @@ function mapManifestToEntries(apiManifest: ApiManifest): Record<string, string> 
         delete entryToModuleMap[entry.name];
         duplicateEntries.add(entry.name);
       } else {
-        entryToModuleMap[entry.name] = pkg.moduleName.replace(/^@angular\//, '');
+        const normalizedModuleName = pkg.moduleName.replace(/^@angular\//, '');
+
+        entryToModuleMap[entry.name] = {moduleName: normalizedModuleName};
+
+        // If there are aliases, create entries for each alias
+        if (entry.aliases) {
+          for (const alias of entry.aliases) {
+            entryToModuleMap[alias] = {
+              moduleName: normalizedModuleName,
+              targetSymbol: entry.name,
+            };
+          }
+        }
       }
     }
   }
