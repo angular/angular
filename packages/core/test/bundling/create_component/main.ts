@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.dev/license
+ */
+
 import {
   Component,
   Directive,
@@ -32,10 +40,10 @@ class FieldDirective {
   selector: 'app-root',
   template: '',
 })
-class Root implements OnInit {
+class Root {
   readonly viewContainerRef = inject(ViewContainerRef);
 
-  ngOnInit() {
+  constructor() {
     // Create a component with an input binding.
     this.viewContainerRef.createComponent(FieldComponent, {
       bindings: [inputBinding('field', () => 'Input from dynamic component')],
