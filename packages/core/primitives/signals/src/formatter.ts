@@ -46,9 +46,9 @@ const formatter = {
     let value: unknown;
     try {
       value = sig();
-    } catch {
+    } catch (e: any) {
       // In case the signal throws, we don't want to break the formatting.
-      return ['span', 'Signal(⚠️ Error)'];
+      return ['span', `Signal(⚠️ Error)${e.message ? `: ${e.message}` : ''}`];
     }
 
     const kind = 'computation' in (sig[SIGNAL] as any) ? 'Computed' : 'Signal';
