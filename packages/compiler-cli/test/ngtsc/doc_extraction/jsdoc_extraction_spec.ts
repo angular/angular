@@ -350,5 +350,45 @@ runInEachFileSystem(() => {
       expect(entry.jsdocTags.length).toBe(1);
       expect(entry.jsdocTags[0].name).toBe('deprecated');
     });
+
+    it('should escape Angular control flow syntax', () => {
+      env.write(
+        'index.ts',
+        `
+        /**
+         * Renders a list using Angular control flow.
+         *
+         * \`\`\`html
+         * @for (item of items; track item) {
+         *   @if (item.visible) {
+         *     <div>{{item.label}}</div>
+         *   } @else {
+         *     <span>Hidden</span>
+         *   }
+         *   @empty {
+         *     <div>No items</div>
+         *   }
+         * }
+         * \`\`\`
+         *
+         * @deprecated Use something else.
+         */
+        export class Example {}
+      `,
+      );
+
+      const docs: DocEntry[] = env.driveDocsExtraction('index.ts');
+      expect(docs.length).toBe(1);
+
+      const entry = docs[0] as ClassEntry;
+      expect(entry.description).toContain('@for (item of items; track item)');
+      expect(entry.description).toContain('@if (item.visible)');
+      expect(entry.description).toContain('@empty {');
+      expect(entry.jsdocTags.length).toBe(1);
+      expect(entry.jsdocTags[0]).toEqual({
+        name: 'deprecated',
+        comment: 'Use something else.',
+      });
+    });
   });
 });
