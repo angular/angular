@@ -9,7 +9,7 @@
 import {APP_ID} from './application/application_tokens';
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
-import {getDocument} from './render3/interfaces/document';
+import {DOCUMENT} from './document';
 
 /**
  * A type-safe key to use with `TransferState`.
@@ -48,15 +48,6 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
   return key as StateKey<T>;
 }
 
-function initTransferState(): TransferState {
-  const transferState = new TransferState();
-  if (typeof ngServerMode === 'undefined' || !ngServerMode) {
-    transferState.store = retrieveTransferredState(getDocument(), inject(APP_ID));
-  }
-
-  return transferState;
-}
-
 /**
  * A key value store that is transferred from the application on the server side to the application
  * on the client side.
@@ -77,7 +68,14 @@ export class TransferState {
   static ɵprov = /** @pureOrBreakMyCode */ /* @__PURE__ */ ɵɵdefineInjectable({
     token: TransferState,
     providedIn: 'root',
-    factory: initTransferState,
+    factory: () => {
+      const transferState = new TransferState();
+      if (typeof ngServerMode === 'undefined' || !ngServerMode) {
+        transferState.store = retrieveTransferredState(inject(DOCUMENT), inject(APP_ID));
+      }
+
+      return transferState;
+    },
   });
 
   /** @internal */
