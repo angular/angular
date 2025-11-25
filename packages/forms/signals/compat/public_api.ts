@@ -13,3 +13,4 @@
  */
 export * from './src/api/compat_form';
 export * from './src/api/compat_validation_error';
+export * from './src/api/di';

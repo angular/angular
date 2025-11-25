@@ -10,6 +10,7 @@ ng_project(
         "//packages/core/testing",
         "//packages/forms",
         "//packages/forms/signals",
+        "//packages/forms/signals/compat",
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
         "//packages/private/testing",

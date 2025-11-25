@@ -20,6 +20,7 @@ import {
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
+import {SIGNAL_FORMS_CONFIG} from '../field/di';
 import type {FieldNode} from '../field/node';
 import type {FieldTree} from './types';
 
@@ -61,6 +62,10 @@ export const FIELD = new InjectionToken<Field<unknown>>(
 })
 export class Field<T> implements ɵControl<T> {
   private readonly injector = inject(Injector);
+  private config = inject(SIGNAL_FORMS_CONFIG, {optional: true});
+  readonly classes = Object.entries(this.config?.classes ?? {}).map(
+    ([className, computation]) => [className, computed(() => computation(this.state()))] as const,
+  );
   readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
   readonly [ɵCONTROL] = undefined;
