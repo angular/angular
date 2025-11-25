@@ -117,7 +117,8 @@ export class AppComponent {
 Track page views for analytics:
 
 ```ts
-import { Component, inject, signal, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { inject, Injectable, DestroyRef } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
@@ -131,7 +132,7 @@ export class AnalyticsService {
         // Track page views when URL changes
         if (event instanceof NavigationEnd) {
            // Send page view to analytics
-          this.analytics.trackPageView(url);
+          this.analytics.trackPageView(event.url);
         }
       });
   }
