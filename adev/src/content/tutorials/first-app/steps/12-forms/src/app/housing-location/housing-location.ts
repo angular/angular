@@ -1,9 +1,9 @@
 import {Component, input} from '@angular/core';
-import {HousingLocationInfo} from '../housinglocation';
+import {HousingLocation} from '../housinglocation';
 import {RouterLink} from '@angular/router';
 
 @Component({
-  selector: 'app-housing-location',
+  selector: 'app-housing-location-card',
   imports: [RouterLink],
   template: `
     <section class="listing">
@@ -20,6 +20,6 @@ import {RouterLink} from '@angular/router';
   `,
   styleUrls: ['./housing-location.css'],
 })
-export class HousingLocation {
-  housingLocation = input.required<HousingLocationInfo>();
+export class HousingLocationCard {
+  housingLocation = input.required<HousingLocation>();
 }

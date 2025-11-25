@@ -1,10 +1,10 @@
 import {Component, inject} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {HousingService} from '../housing.service';
-import {HousingLocationInfo} from '../housinglocation';
+import {HousingAPI} from '../housing.service';
+import {HousingLocation} from '../housinglocation';
 
 @Component({
-  selector: 'app-details',
+  selector: 'app-housing-location-details',
   template: `
     <article>
       <img
@@ -29,10 +29,10 @@ import {HousingLocationInfo} from '../housinglocation';
   `,
   styleUrls: ['./details.css'],
 })
-export class Details {
+export class HousingLocationDetails {
   route: ActivatedRoute = inject(ActivatedRoute);
-  housingService = inject(HousingService);
-  housingLocation: HousingLocationInfo | undefined;
+  housingService = inject(HousingAPI);
+  housingLocation: HousingLocation | undefined;
 
   constructor() {
     const housingLocationId = Number(this.route.snapshot.params['id']);

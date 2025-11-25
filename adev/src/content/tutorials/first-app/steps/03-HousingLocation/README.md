@@ -1,23 +1,23 @@
-# Create the application’s HousingLocation component
+# Create the application's HousingLocationCard component
 
-This tutorial lesson demonstrates how to add the `HousingLocation` component to your Angular app.
+This tutorial lesson demonstrates how to add the `HousingLocationCard` component to your Angular app.
 
 <docs-video src="https://www.youtube.com/embed/R0nRX8jD2D0?si=U4ONEbPvtptdUHTt&amp;start=440"/>
 
 ## What you'll learn
 
-- Your app has a new component: `HousingLocation` and it displays a message confirming that the component was added to your application.
+- Your app has a new component: `HousingLocationCard` and it displays a message confirming that the component was added to your application.
 
 <docs-workflow>
 
-<docs-step title="Create the `HousingLocation`">
+<docs-step title="Create the `HousingLocationCard`">
 In this step, you create a new component for your app.
 
 In the **Terminal** pane of your IDE:
 
 1. In your project directory, navigate to the `first-app` directory.
 
-1. Run this command to create a new `HousingLocation`
+1. Run this command to create a new `HousingLocationCard`
 
    ```shell
    ng generate component housingLocation
@@ -40,27 +40,27 @@ In the **Terminal** pane of your IDE:
    </docs-step>
 
 <docs-step title="Add the new component to your app's layout">
-In this step, you add the new component, `HousingLocation` to your app's `Home`, so that it displays in your app's layout.
+In this step, you add the new component, `HousingLocationCard` to your app's `Home`, so that it displays in your app's layout.
 
 In the **Edit** pane of your IDE:
 
 1. Open `home.ts` in the editor.
-1. In `home.ts`, import `HousingLocation` by adding this line to the file level imports.
+1. In `home.ts`, import `HousingLocationCard` by adding this line to the file level imports.
 
-<docs-code header="Import HousingLocation in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[2]"/>
+<docs-code header="Import HousingLocationCard in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[2]"/>
 
-1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocation` to the array.
+1. Next update the `imports` property of the `@Component` metadata by adding `HousingLocationCard` to the array.
 
-<docs-code  header="Add HousingLocation to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
+<docs-code  header="Add HousingLocationCard to imports array in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[6]"/>
 
-1. Now the component is ready for use in the template for the `Home`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location>` tag.
+1. Now the component is ready for use in the template for the `Home`. Update the `template` property of the `@Component` metadata to include a reference to the `<app-housing-location-card>` tag.
 
 <docs-code language="angular-ts" header="Add housing location to the component template in src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/04-interfaces/src/app/home/home.ts" visibleLines="[7,17]"/>
 
 </docs-step>
 
 <docs-step title="Add the styles for the component">
-In this step, you will copy over the pre-written styles for the `HousingLocation` to your app so that the app renders properly.
+In this step, you will copy over the pre-written styles for the `HousingLocationCard` to your app so that the app renders properly.
 
 1. Open `src/app/housing-location/housing-location.css`, and paste the styles below into the file:
 
