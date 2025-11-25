@@ -1,3 +1,15 @@
+<a name="20.3.14"></a>
+
+# 20.3.14 (2025-11-25)
+
+### http
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [0276479e7d](https://github.com/angular/angular/commit/0276479e7d0e280e0f8d26fa567d3b7aa97a516f) | fix  | prevent XSRF token leakage to protocol-relative URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.13"></a>
 
 # 20.3.13 (2025-11-19)
