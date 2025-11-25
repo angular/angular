@@ -14,7 +14,7 @@ The injection context is available in these situations:
 
 Knowing when you are in an injection context will allow you to use the [`inject`](api/core/inject) function to inject instances.
 
-NOTE: For basic examples of using `inject()` in class constructors and field initializers, see the [overview guide](guide/di/overview#where-can-inject-be-used).
+NOTE: For basic examples of using `inject()` in class constructors and field initializers, see the [overview guide](/guide/di#where-can-inject-be-used).
 
 ## Stack frame in context
 
@@ -37,16 +37,16 @@ This requires access to a given injector, like the `EnvironmentInjector`, for ex
 <docs-code header="src/app/heroes/hero.service.ts" language="typescript"
            highlight="[9]">
 @Injectable({
-  providedIn: 'root',
+providedIn: 'root',
 })
 export class HeroService {
-  private environmentInjector = inject(EnvironmentInjector);
+private environmentInjector = inject(EnvironmentInjector);
 
-  someMethod() {
-    runInInjectionContext(this.environmentInjector, () => {
-      inject(SomeService); // Do what you need with the injected service
-    });
-  }
+someMethod() {
+runInInjectionContext(this.environmentInjector, () => {
+inject(SomeService); // Do what you need with the injected service
+});
+}
 }
 </docs-code>
 
