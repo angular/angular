@@ -9,7 +9,7 @@
 import type {SignalFormsConfig} from '../../../src/api/di';
 
 /**
- * A value that can be used for {@link SignalFormsConfig.classes} to automatically add
+ * A value that can be used for `SignalFormsConfig.classes` to automatically add
  * the `ng-*` status classes from reactive forms.
  *
  * @experimental 21.0.1
