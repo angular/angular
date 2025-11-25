@@ -22,19 +22,19 @@ Some APIs are designed to be run in an injection context. This is the case, for 
 
 Here is an example for `CanActivateFn`
 
-<docs-code language="typescript" highlight="[3]">
+```ts {highlight: [3]}
 const canActivateTeam: CanActivateFn =
-    (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-      return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
-    };
-</docs-code>
+  (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    return inject(PermissionsService).canActivate(inject(UserToken), route.params.id);
+  };
+```
 
 ## Run within an injection context
 
 When you want to run a given function in an injection context without already being in one, you can do so with `runInInjectionContext`.
 This requires access to a given injector, like the `EnvironmentInjector`, for example:
 
-```ts {highlight: [9]}
+```ts {highlight: [9], header"hero.service.ts"}
 @Injectable({
   providedIn: 'root'
 })
