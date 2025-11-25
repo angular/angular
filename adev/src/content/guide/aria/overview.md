@@ -3,7 +3,7 @@
 
 ## What is Angular Aria?
 
-Building accessible components seems straightforward, but implementing them according to the W3 Accessibility Guidelines requires significant effort and accessibility expertise.
+Building accessible components seems straightforward, but implementing them according to the W3C Accessibility Guidelines requires significant effort and accessibility expertise.
 
 Angular Aria is a collection of headless, accessible directives that implement common WAI-ARIA patterns. The directives handle keyboard interactions, ARIA attributes, focus management, and screen reader support. All you have to do is provide the HTML structure, CSS styling, and business logic!
 
