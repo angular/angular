@@ -30,7 +30,7 @@ describe('TextField', () => {
   });
 
   it('should update DOM when setting the value via the CVA', () => {
-    component.setValue('test');
+    component.value.set('test');
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('input').value).toBe('test');

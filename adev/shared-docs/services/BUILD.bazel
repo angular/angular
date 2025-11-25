@@ -27,6 +27,7 @@ ng_project(
     deps = [
         "//adev:node_modules/@angular/common",
         "//adev:node_modules/@angular/core",
+        "//adev:node_modules/@angular/forms",
         "//adev:node_modules/@angular/router",
         "//adev:node_modules/algoliasearch",
         "//adev:node_modules/rxjs",

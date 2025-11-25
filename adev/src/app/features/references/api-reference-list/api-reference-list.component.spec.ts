@@ -8,7 +8,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import ApiReferenceList, {ALL_TYPES_KEY, STATUSES} from './api-reference-list.component';
+import ApiReferenceList, {STATUSES} from './api-reference-list.component';
 import {ApiReferenceManager} from './api-reference-manager.service';
 import {signal} from '@angular/core';
 import {ApiItemType} from '../interfaces/api-item-type';
@@ -16,7 +16,7 @@ import {RouterTestingHarness} from '@angular/router/testing';
 import {provideRouter} from '@angular/router';
 import {Location} from '@angular/common';
 import {By} from '@angular/platform-browser';
-import {NavigationItem, TextField} from '@angular/docs';
+import {TextField} from '@angular/docs';
 import {ApiItem} from '../interfaces/api-item';
 
 describe('ApiReferenceList', () => {
@@ -121,32 +121,32 @@ describe('ApiReferenceList', () => {
     fixture.componentRef.setInput('type', ApiItemType.CLASS);
     fixture.detectChanges();
 
-    expect(component.type()).toEqual(ApiItemType.CLASS);
+    expect(component.searchState().type).toEqual(ApiItemType.CLASS);
     expect(component.filteredGroups()![0].items).toEqual([fakeItem2]);
   });
 
   it('should set selected type when provided type is different than selected', async () => {
-    expect(component.type()).toBe(ALL_TYPES_KEY);
+    expect(component.searchState().type).toBe('All');
     component.setItemType(ApiItemType.BLOCK);
     await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
-    expect(component.type()).toBe(ApiItemType.BLOCK);
+    expect(component.searchState().type).toBe(ApiItemType.BLOCK);
   });
 
   it('should reset selected type when provided type is equal to selected', async () => {
     component.setItemType(ApiItemType.BLOCK);
     const harness = await RouterTestingHarness.create(`/api?type=${ApiItemType.BLOCK}`);
-    expect(component.type()).toBe(ApiItemType.BLOCK);
+    expect(component.searchState().type).toBe(ApiItemType.BLOCK);
 
     component.setItemType(ApiItemType.BLOCK);
     harness.navigateByUrl(`/api`);
-    expect(component.type()).toBe(ALL_TYPES_KEY);
+    expect(component.searchState().type).toBe('All');
   });
 
   it('should set the value of the queryParam equal to the query text field', async () => {
     const location = TestBed.inject(Location);
 
     const textField = fixture.debugElement.query(By.directive(TextField));
-    (textField.componentInstance as TextField).setValue('item1');
+    (textField.componentInstance as TextField).value.set('item1');
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1`);
   });
@@ -155,7 +155,7 @@ describe('ApiReferenceList', () => {
     const location = TestBed.inject(Location);
 
     const textField = fixture.debugElement.query(By.directive(TextField));
-    (textField.componentInstance as TextField).setValue('item1');
+    (textField.componentInstance as TextField).value.set('item1');
     await fixture.whenStable();
     expect(location.path()).toBe(`?query=item1`);
 

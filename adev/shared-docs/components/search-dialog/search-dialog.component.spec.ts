@@ -15,7 +15,7 @@ import {FakeEventTarget} from '../../testing/index';
 import {By} from '@angular/platform-browser';
 import {AlgoliaIcon} from '../algolia-icon/algolia-icon.component';
 import {Router, provideRouter} from '@angular/router';
-import {ApplicationRef, provideZonelessChangeDetection, ResourceStatus} from '@angular/core';
+import {ApplicationRef, provideZonelessChangeDetection} from '@angular/core';
 import {SearchResult} from '../../interfaces';
 
 describe('SearchDialog', () => {
@@ -50,7 +50,7 @@ describe('SearchDialog', () => {
     const router = TestBed.inject(Router);
     const navigateByUrlSpy = spyOn(router, 'navigateByUrl');
 
-    search.searchQuery.set('fakeQuery');
+    search.query().value.set('fakeQuery');
     searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
 
     // Fire the request
@@ -80,7 +80,7 @@ describe('SearchDialog', () => {
   });
 
   it('should display `No results found` message when there are no results for provided query', async () => {
-    search.searchQuery.set('fakeQuery');
+    search.query().value.set('fakeQuery');
     searchResults.and.returnValue(Promise.resolve({results: [{hits: []}]}));
 
     // Fire the request
@@ -108,7 +108,7 @@ describe('SearchDialog', () => {
   });
 
   it('should display list of the search results when results exist', async () => {
-    search.searchQuery.set('fakeQuery');
+    search.query().value.set('fakeQuery');
     searchResults.and.returnValue(Promise.resolve({results: [{hits: fakeSearchResults}]}));
 
     // Fire the request
