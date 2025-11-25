@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 import {RuntimeError, RuntimeErrorCode} from '../../errors';
+import {performanceMarkFeature} from '../../util/performance';
 import {getClosureSafeProperty} from '../../util/property';
 import {assertFirstCreatePass} from '../assert';
 import {bindingUpdated} from '../bindings';
@@ -54,9 +55,12 @@ export function ɵɵcontrolCreate(): void {
   }
 
   const control = getControlDirective(tNode, lView);
+
   if (!control) {
     return;
   }
+
+  performanceMarkFeature('NgSignalForms');
 
   if (tNode.flags & TNodeFlags.isFormValueControl) {
     listenToCustomControl(lView, tNode, control, 'value');
