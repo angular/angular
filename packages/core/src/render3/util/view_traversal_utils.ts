@@ -9,7 +9,7 @@
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
+import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
 
@@ -64,4 +64,22 @@ function getNearestLContainer(viewOrContainer: LContainer | LView | null) {
     viewOrContainer = viewOrContainer[NEXT];
   }
   return viewOrContainer as LContainer | null;
+}
+
+/** Generates all the {@link LView} and {@link LContainer} descendants of the given input. */
+export function* walkDescendants(
+  parent: LView | LContainer,
+): Generator<LView | LContainer, void, void> {
+  for (const child of walkChildren(parent)) {
+    yield child;
+    yield* walkDescendants(child);
+  }
+}
+
+function* walkChildren(parent: LView | LContainer): Generator<LView | LContainer, void, void> {
+  let child = isLContainer(parent) ? parent[CONTAINER_HEADER_OFFSET] : parent[CHILD_HEAD];
+  while (child) {
+    yield child;
+    child = child[NEXT];
+  }
 }
