@@ -34,21 +34,20 @@ const canActivateTeam: CanActivateFn =
 When you want to run a given function in an injection context without already being in one, you can do so with `runInInjectionContext`.
 This requires access to a given injector, like the `EnvironmentInjector`, for example:
 
-<docs-code header="src/app/heroes/hero.service.ts" language="typescript"
-           highlight="[9]">
+```ts {highlight: [9]}
 @Injectable({
-providedIn: 'root',
+  providedIn: 'root'
 })
 export class HeroService {
-private environmentInjector = inject(EnvironmentInjector);
+  private environmentInjector = inject(EnvironmentInjector);
 
-someMethod() {
-runInInjectionContext(this.environmentInjector, () => {
-inject(SomeService); // Do what you need with the injected service
-});
+  someMethod() {
+    runInInjectionContext(this.environmentInjector, () => {
+      inject(SomeService); // Do what you need with the injected service
+    });
+  }
 }
-}
-</docs-code>
+```
 
 Note that `inject` will return an instance only if the injector can resolve the required token.
 
