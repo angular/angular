@@ -4,6 +4,6 @@ template: function MyComponent_Template(rf, ctx) {
 		i0.ɵɵnamespaceSVG();
 		i0.ɵɵelement(0, "use")(1, "use", 0);
 	} if (rf & 2) {
-		i0.ɵɵattribute("href", ctx.value, null, "xlink");
+		i0.ɵɵattribute("href", ctx.value, i0.ɵɵsanitizeUrl, "xlink");
 	}
 }

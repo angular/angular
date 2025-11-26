@@ -15,7 +15,6 @@ import {SecurityContext} from '../core';
 // =================================================================================================
 //
 //        DO NOT EDIT THIS LIST OF SECURITY SENSITIVE PROPERTIES WITHOUT A SECURITY REVIEW!
-//                               Reach out to mprobst for details.
 //
 // =================================================================================================
 
@@ -32,21 +31,49 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     // NB: no SCRIPT contexts here, they are never allowed due to the parser stripping them.
     registerContext(SecurityContext.URL, [
       '*|formAction',
-      'area|href',
-      'area|ping',
-      'audio|src',
       'a|href',
       'a|ping',
+      'a|xlink:href',
+      'animate|href',
+      'animate|xlink:href',
+      'animateMotion|href',
+      'animateMotion|xlink:href',
+      'animateTransform|href',
+      'animateTransform|xlink:href',
+      'area|href',
+      'area|ping',
+      'area|xlink:href',
+      'audio|src',
       'blockquote|cite',
       'body|background',
       'del|cite',
+      'feImage|href',
+      'feImage|xlink:href',
+      'filter|href',
+      'filter|xlink:href',
       'form|action',
+      'image|href',
+      'image|xlink:href',
       'img|src',
       'input|src',
       'ins|cite',
+      'linearGradient|href',
+      'linearGradient|xlink:href',
+      'mpath|href',
+      'mpath|xlink:href',
+      'pattern|href',
+      'pattern|xlink:href',
       'q|cite',
+      'radialGradient|href',
+      'radialGradient|xlink:href',
+      'set|href',
+      'set|xlink:href',
       'source|src',
+      'textPath|href',
+      'textPath|xlink:href',
       'track|src',
+      'use|href',
+      'use|xlink:href',
       'video|poster',
       'video|src',
     ]);
