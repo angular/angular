@@ -113,6 +113,17 @@ describe('public PendingTasks', () => {
     await expectAsync(appRef.whenStable()).toBeResolved();
     expect(spy).toHaveBeenCalled();
   });
+
+  it('should automatically cleanup the pending task once its declaration block is exited', async () => {
+    const appRef = TestBed.inject(ApplicationRef);
+    const pendingTasks = TestBed.inject(PendingTasks);
+    {
+      using removeTask = pendingTasks.add();
+      await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(false);
+    }
+    TestBed.inject(ApplicationRef).tick();
+    await expectAsync(applicationRefIsStable(appRef)).toBeResolvedTo(true);
+  });
 });
 
 function applicationRefIsStable(applicationRef: ApplicationRef) {
