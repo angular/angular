@@ -10,7 +10,6 @@
     // page don't affect them, however they can be somewhat aggressive. To prevent them from
     // affecting structural styles like the CDK overlay's positioning CSS, we include
     // them in the global stylesheet, as early as possible.
-    *,
     code::before,
     code,
     pre,
