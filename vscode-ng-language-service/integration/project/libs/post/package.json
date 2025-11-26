@@ -2,7 +2,7 @@
 	"name": "post",
 	"version": "0.0.1",
 	"peerDependencies": {
-		"@angular/core": "^21.0.0-next"
+		"@angular/core": "^21.1.0-next"
 	},
 	"dependencies": {
 		"tslib": "^2.3.0"
