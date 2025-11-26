@@ -6,12 +6,15 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+import {DOCUMENT} from '../../document';
+import {StyleRoot} from '../../render';
+import {asStyleRoot} from '../../render/api';
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
 import {readPatchedLView} from '../context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {isLContainer, isLView, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CONTEXT, LView, NEXT} from '../interfaces/view';
+import {CHILD_HEAD, CONTEXT, HOST, INJECTOR, LView, NEXT, RENDERER} from '../interfaces/view';
 
 import {getLViewParent} from './view_utils';
 
@@ -82,4 +85,25 @@ function* walkChildren(parent: LView | LContainer): Generator<LView | LContainer
     yield child;
     child = child[NEXT];
   }
+}
+
+/** Returns the {@link StyleRoot} where styles for the component should be applied. */
+export function getStyleRoot(lView: LView): StyleRoot | undefined {
+  // DOM emulation does not support shadow DOM and `Node.prototype.getRootNode`, so we
+  // need to feature detect and fallback even though it is already Baseline Widely
+  // Available. In theory, we could do this only on SSR, but Jest, Vitest, and other
+  // Node testing solutions lack DOM emulation as well.
+  if (!Node.prototype.getRootNode) {
+    const injector = lView[INJECTOR];
+    const doc = injector.get(DOCUMENT);
+    return doc;
+  }
+
+  const renderer = lView[RENDERER];
+  if (renderer?.shadowRoot) return renderer.shadowRoot;
+
+  const hostRNode = lView[HOST];
+  ngDevMode && assertDefined(hostRNode, 'hostRNode');
+
+  return asStyleRoot(hostRNode!.getRootNode());
 }
