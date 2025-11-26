@@ -194,8 +194,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 64,
-        "endLine": 170
+        "startLine": 65,
+        "endLine": 176
       }
     },
     {
@@ -255,8 +255,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 190,
-        "endLine": 236
+        "startLine": 196,
+        "endLine": 242
       }
     },
     {
@@ -276,8 +276,8 @@
       "implements": [],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 268,
-        "endLine": 273
+        "startLine": 274,
+        "endLine": 279
       }
     },
     {
@@ -317,8 +317,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 285,
-        "endLine": 300
+        "startLine": 291,
+        "endLine": 306
       }
     },
     {
@@ -397,8 +397,8 @@
       ],
       "source": {
         "filePath": "src/aria/combobox/combobox.ts",
-        "startLine": 317,
-        "endLine": 367
+        "startLine": 323,
+        "endLine": 373
       }
     }
   ],
@@ -425,6 +425,10 @@
     ],
     [
       "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "forwardRef",
       "@angular/core"
     ],
     [
