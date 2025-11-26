@@ -8,7 +8,7 @@
 
 import {Component, inject, signal, provideZonelessChangeDetection, viewChild} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
-import {debounce, disabled, Field, form} from '@angular/forms/signals';
+import {debounce, disabled, Field, form, type FormValueControl} from '@angular/forms/signals';
 import {TestBed} from '@angular/core/testing';
 
 describe('ControlValueAccessor', () => {
@@ -21,13 +21,13 @@ describe('ControlValueAccessor', () => {
   @Component({
     selector: 'custom-control',
     template: `
-        <input
-          [value]="value"
-          [disabled]="disabled"
-          (blur)="onBlur()"
-          (input)="onInput($event.target.value)"
-        />
-      `,
+      <input
+        [value]="value"
+        [disabled]="disabled"
+        (blur)="onBlur()"
+        (input)="onInput($event.target.value)"
+      />
+    `,
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: CustomControl, multi: true}],
   })
   class CustomControl implements ControlValueAccessor {
@@ -66,7 +66,8 @@ describe('ControlValueAccessor', () => {
   it('synchronizes value', () => {
     @Component({
       imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal('test'));
@@ -97,7 +98,8 @@ describe('ControlValueAccessor', () => {
 
     @Component({
       imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal(''), (p) => {
@@ -123,7 +125,8 @@ describe('ControlValueAccessor', () => {
   it('should mark field dirty on changes', () => {
     @Component({
       imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal(''));
@@ -146,7 +149,8 @@ describe('ControlValueAccessor', () => {
   it('should propagate touched events to field', () => {
     @Component({
       imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal('test'));
@@ -162,9 +166,11 @@ describe('ControlValueAccessor', () => {
 
   it('should propagate disabled status from field', () => {
     const enabled = signal(true);
+
     @Component({
       imports: [Field, CustomControl],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       f = form<string>(signal('test'), (p) => {
@@ -183,14 +189,17 @@ describe('ControlValueAccessor', () => {
     expect(input.disabled).toBe(false);
   });
 
-  it(`should use 'NgControl.valueAccessor' if 'NG_VALUE_ACCESSOR' was not provided`, () => {
+  it(`!!!2should use 'NgControl.valueAccessor' - if 'NG_VALUE_ACCESSOR' was not provided`, () => {
+    debugger;
     @Component({
       selector: 'custom-control',
       template: `
-        <input [value]="value" (blur)="onBlur()" (input)="onInput($event.target.value)"/>
+        <input [value]="value" (blur)="onBlur()" (input)="onInput($event.target.value)" />
       `,
     })
     class CustomControl implements ControlValueAccessor {
+      readonly ngControl = inject(NgControl);
+
       constructor() {
         inject(NgControl).valueAccessor = this;
       }
@@ -223,7 +232,8 @@ describe('ControlValueAccessor', () => {
 
     @Component({
       imports: [CustomControl, Field],
-      template: `<custom-control [field]="f" />`,
+      template: `
+        <custom-control [field]="f" />`,
     })
     class TestCmp {
       readonly f = form(signal('test'));
@@ -234,6 +244,7 @@ describe('ControlValueAccessor', () => {
     const control = fixture.componentInstance.control;
     const input = fixture.nativeElement.querySelector('input');
 
+    debugger;
     // Initial state
     expect(control().value).toBe('test');
 
@@ -291,7 +302,8 @@ describe('ControlValueAccessor', () => {
     @Component({
       selector: 'app-root',
       imports: [CustomControl, Field],
-      template: `<signal-custom-control [field]="f" />`,
+      template: `
+        <signal-custom-control [field]="f" />`,
     })
     class App {
       disabled = signal(false);
