@@ -4,13 +4,12 @@ package(default_visibility = ["//devtools:__subpackages__"])
 
 ng_project(
     name = "signal-graph",
-    srcs = [
-        "devtools-signal-graph.ts",
-        "index.ts",
-        "signal-graph-manager.ts",
-        "signal-graph-types.ts",
-        "utils.ts",
-    ],
+    srcs = glob(
+        ["*.ts"],
+        exclude = [
+            "*.spec.ts",
+        ],
+    ),
     deps = [
         "//:node_modules/@angular/core",
         "//devtools/projects/protocol",

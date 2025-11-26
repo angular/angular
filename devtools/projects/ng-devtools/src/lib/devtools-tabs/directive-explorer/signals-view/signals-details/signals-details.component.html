@@ -33,9 +33,9 @@
 </div>
 
 <dl>
-  @if (name(); as name) {
+  @if (node.label) {
     <dt>Name:</dt>
-    <dd class="node-name">{{ name }}</dd>
+    <dd class="node-name">{{ node.label }}</dd>
   }
   @if (isSignalNode) {
     <dt>Type:</dt>

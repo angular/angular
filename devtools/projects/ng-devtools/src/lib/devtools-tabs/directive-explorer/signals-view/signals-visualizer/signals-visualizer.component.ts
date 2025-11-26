@@ -15,8 +15,10 @@ import {
   effect,
   ElementRef,
   inject,
+  Injector,
   input,
   output,
+  runInInjectionContext,
   signal,
   untracked,
   viewChild,
@@ -64,38 +66,34 @@ export class SignalsVisualizerComponent {
   private observer = new ResizeObserver(this.onResize);
 
   constructor() {
-    const renderGraph = () => {
-      const graph = this.graph();
-      if (graph) {
-        this.signalsVisualizer?.render(graph);
-      }
-    };
-    const setSelected = () => {
-      const selected = this.selectedNodeId();
-      if (selected) {
-        this.signalsVisualizer?.setSelected(selected);
-      }
-    };
+    const injector = inject(Injector);
 
     afterNextRender({
       write: () => {
         this.setUpSignalsVisualizer();
-        renderGraph();
-        setSelected();
+
+        runInInjectionContext(injector, () => {
+          effect(() => {
+            const graph = this.graph();
+            this.signalsVisualizer!.render(graph!);
+          });
+
+          effect(() => {
+            const selected = this.selectedNodeId();
+            this.signalsVisualizer!.setSelected(selected);
+          });
+
+          effect(() => {
+            this.element();
+            // Reset the visualizer when the element changes.
+            //
+            // Since `reset` triggers callbacks that
+            // use signals, we untrack the call.
+            untracked(() => this.signalsVisualizer!.reset());
+          });
+        });
         this.observer.observe(this.svgHost().nativeElement);
       },
-    });
-
-    effect(renderGraph);
-    effect(setSelected);
-
-    effect(() => {
-      this.element();
-      // Reset the visualizer when the element changes.
-      //
-      // Since `reset` triggers callbacks that
-      // use signals, we untrack the call.
-      untracked(() => this.signalsVisualizer?.reset());
     });
 
     inject(DestroyRef).onDestroy(() => {

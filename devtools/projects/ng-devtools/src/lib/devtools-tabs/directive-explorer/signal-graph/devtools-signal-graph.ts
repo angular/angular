@@ -12,7 +12,7 @@ import {
   DevtoolsSignalGraph,
   DevtoolsSignalGraphNode,
 } from './signal-graph-types';
-import {checkClusterMatch} from './utils';
+import {checkClusterMatch, ClusterLabelFormatType, getNodeNames} from './utils';
 
 interface Cluster {
   id: string;
@@ -24,10 +24,19 @@ interface Cluster {
   previewNode?: number;
 }
 
-type ClusterIdentifier = (nodes: DebugSignalGraph) => Cluster[];
+const PREVIEW_NODES: {[key in ClusterLabelFormatType]: string | null} = {
+  'resource': 'value',
+};
 
-// Finds all `resource` clusters in the graph.
-const resourceClusterIdentifier: ClusterIdentifier = (graph) => {
+/**
+ * Returns a cluster identifier based on the label string.
+ * Intended for format: <Cluster_Type>#<Cluster_Name>.<Compound_Node_Name>
+ *
+ * Note: Currently, the only supported type of cluster identifiers.
+ * Introducing a new type of identifiers will require extending the utilities
+ * for matching and name extraction in `utils.ts`.
+ */
+function identifyClusters(graph: DebugSignalGraph): Cluster[] {
   const clusters: Map<string, Cluster> = new Map();
 
   const isNodePartOfCluster = (n: DebugSignalGraphNode, name: string) => {
@@ -46,8 +55,8 @@ const resourceClusterIdentifier: ClusterIdentifier = (graph) => {
     let cluster = clusters.get(name);
     if (!cluster) {
       cluster = {
-        id: `cl_${name}`,
-        type: 'resource',
+        id: `cl_${name}`, // `cl_` prefix acts purely as a visual cue
+        type: match.clusterType,
         name,
         consumers: new Set(),
         producers: new Set(),
@@ -71,16 +80,13 @@ const resourceClusterIdentifier: ClusterIdentifier = (graph) => {
       }
     }
 
-    if (match.signalName === 'value') {
+    if (match.signalName === PREVIEW_NODES[match.clusterType]) {
       cluster.previewNode = i;
     }
   }
 
-  return [...clusters].map(([, cluster]) => cluster);
-};
-
-// All supported clusters.
-const CLUSTER_IDENTIFIERS: ClusterIdentifier[] = [resourceClusterIdentifier];
+  return Array.from(clusters.values());
+}
 
 /**
  * Convert a `DebugSignalGraph` to a DevTools-FE specific `DevtoolsSignalGraph`.
@@ -99,10 +105,7 @@ export function convertToDevtoolsSignalGraph(
   }
 
   // Identify clusters
-  let clusters: Cluster[] = [];
-  for (const identifier of CLUSTER_IDENTIFIERS) {
-    clusters = clusters.concat(identifier(debugSignalGraph));
-  }
+  const clusters = identifyClusters(debugSignalGraph);
 
   // Add clusters
   signalGraph.clusters = clusters
@@ -117,6 +120,7 @@ export function convertToDevtoolsSignalGraph(
       ...n,
       nodeType: 'signal',
       clusterId: cluster ? cluster.id : undefined,
+      ...(n.label ? {label: getNodeNames(n).signalName} : {}), // We keep only the node name
     } satisfies DevtoolsSignalGraphNode;
   });
 
