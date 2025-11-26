@@ -6,6 +6,7 @@
   "entries": [
     {
       "name": "Toolbar",
+      "aliases" : ["ngToolbar"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -123,6 +124,7 @@
     },
     {
       "name": "ToolbarWidget",
+      "aliases" : ["ngToolbarWidget"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -302,6 +304,7 @@
     },
     {
       "name": "ToolbarWidgetGroup",
+      "aliases" : ["ngToolbarWidgetGroup"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [

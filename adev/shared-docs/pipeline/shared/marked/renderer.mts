@@ -18,7 +18,7 @@ import {HighlighterGeneric} from 'shiki';
 
 export interface RendererContext {
   markdownFilePath?: string;
-  apiEntries?: Record<string, string>;
+  apiEntries?: Record<string, {moduleName: string; aliases?: string[]}>;
   highlighter: HighlighterGeneric<any, any>;
 }
 

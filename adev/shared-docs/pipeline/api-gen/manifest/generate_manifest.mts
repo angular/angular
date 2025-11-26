@@ -11,6 +11,7 @@ import type {DocEntry, EntryCollection, FunctionEntry, JsDocTagEntry} from '@ang
 
 export interface ManifestEntry {
   name: string;
+  aliases?: string[];
   type: string;
   category: string | undefined;
   deprecated: {version: string | undefined} | undefined;
@@ -81,6 +82,7 @@ export function generateManifest(apiCollections: EntryCollection[]): Manifest {
       .filter((entry) => !isHiddenEntry(entry))
       .map((entry: DocEntry) => ({
         name: entry.name,
+        ...(entry.aliases && {aliases: entry.aliases}),
         type: entry.entryType,
         deprecated: getTagSinceVersion(entry, 'deprecated', true),
         developerPreview: getTagSinceVersion(entry, 'developerPreview'),

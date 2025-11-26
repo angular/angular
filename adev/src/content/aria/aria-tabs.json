@@ -6,6 +6,7 @@
   "entries": [
     {
       "name": "Tabs",
+      "aliases" : ["ngTabs"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -43,6 +44,7 @@
     },
     {
       "name": "TabList",
+      "aliases" : ["ngTabList"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -301,6 +303,7 @@
     },
     {
       "name": "Tab",
+      "aliases" : ["ngTab"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -500,6 +503,7 @@
     },
     {
       "name": "TabPanel",
+      "aliases" : ["ngTabPanel"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -631,6 +635,7 @@
     },
     {
       "name": "TabContent",
+      "aliases" : ["ngTabContent"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [],

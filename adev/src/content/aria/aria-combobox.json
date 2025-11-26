@@ -6,6 +6,7 @@
   "entries": [
     {
       "name": "Combobox",
+      "aliases": ["ngCombobox"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -200,6 +201,7 @@
     },
     {
       "name": "ComboboxInput",
+      "aliases": ["ngComboboxInput"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -261,6 +263,7 @@
     },
     {
       "name": "ComboboxPopupContainer",
+      "aliases": ["ngComboboxPopupContainer"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [],
@@ -282,6 +285,7 @@
     },
     {
       "name": "ComboboxPopup",
+      "aliases": ["ngComboboxPopup"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -323,6 +327,7 @@
     },
     {
       "name": "ComboboxDialog",
+      "aliases": ["ngComboboxDialog"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [

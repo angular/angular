@@ -229,6 +229,7 @@
     },
     {
       "name": "TreeItem",
+      "aliases" : ["ngTreeItem"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
