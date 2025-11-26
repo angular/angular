@@ -86,7 +86,7 @@ import { MyService } from './service';
 export class MyComp {
 private service = inject(MyService);
 
-/\*_ Inserted by Angular inject() migration for backwards compatibility _/
+/* Inserted by Angular inject() migration for backwards compatibility */
 constructor(...args: unknown[]);
 
 constructor() {}

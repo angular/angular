@@ -25,7 +25,7 @@ See more details in the section [below](#vscode-extension).
 
 **Before**
 
-```typescript
+```angular-ts
 import {Component, Input} from '@angular/core';
 
 @Component({
@@ -45,24 +45,25 @@ export class MyComponent {
 
 **After**
 
-<docs-code language="angular-ts" highlight="[[4],[7], [10,12]]">
+```angular-ts {[[4],[7], [10,12]]}
 import {Component, input} from '@angular/core';
 
 @Component({
-template: `Name: {{name() ?? ''}}`
+  template: `Name: {{name() ?? ''}}`
 })
 export class MyComponent {
-readonly name = input<string>();
+  readonly name = input<string>();
 
-someMethod(): number {
-const name = this.name();
-if (name) {
-return name.length;
+  someMethod(): number {
+    const name = this.name();
+    if (name) {
+      return name.length;
+    }
+    return -1;
+  }
+
 }
-return -1;
-}
-}
-</docs-code>
+```
 
 ## Configuration options
 
