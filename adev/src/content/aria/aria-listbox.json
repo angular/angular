@@ -232,8 +232,8 @@
       "implements": [],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 47,
-        "endLine": 209
+        "startLine": 48,
+        "endLine": 216
       }
     },
     {
@@ -350,8 +350,8 @@
       ],
       "source": {
         "filePath": "/src/aria/listbox/listbox.ts",
-        "startLine": 226,
-        "endLine": 283
+        "startLine": 233,
+        "endLine": 290
       }
     }
   ],
@@ -378,6 +378,10 @@
     ],
     [
       "ElementRef",
+      "@angular/core"
+    ],
+    [
+      "forwardRef",
       "@angular/core"
     ],
     [
