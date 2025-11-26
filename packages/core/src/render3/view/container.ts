@@ -8,7 +8,7 @@
 
 import {addToArray, removeFromArray} from '../../util/array_utils';
 import {assertDefined, assertEqual} from '../../util/assert';
-import {assertLContainer, assertLView} from '../assert';
+import {assertLContainer, assertLViewOrUndefined, assertLView} from '../assert';
 import {
   CONTAINER_HEADER_OFFSET,
   LContainer,
@@ -89,7 +89,7 @@ export function getLViewFromLContainer<T>(
   // avoid reading past the array boundaries
   if (adjustedIndex < lContainer.length) {
     const lView = lContainer[adjustedIndex];
-    ngDevMode && assertLView(lView);
+    ngDevMode && assertLViewOrUndefined(lView);
     return lView as LView<T>;
   }
   return undefined;

@@ -17,7 +17,7 @@ import {
 } from '../../hydration/views';
 import {assertDefined, assertFunction} from '../../util/assert';
 import {performanceMarkFeature} from '../../util/performance';
-import {assertLContainer, assertLView, assertTNode} from '../assert';
+import {assertLContainer, assertLViewOrUndefined, assertTNode} from '../assert';
 import {bindingUpdated} from '../bindings';
 import {CONTAINER_HEADER_OFFSET, LContainer} from '../interfaces/container';
 import {ComponentTemplate} from '../interfaces/definition';
@@ -612,14 +612,14 @@ function maybeInitDetachAnimationList(lContainer: LContainer, index: number): vo
 
 function detachExistingView<T>(lContainer: LContainer, index: number): LView<T> {
   const existingLView = detachView(lContainer, index);
-  ngDevMode && assertLView(existingLView);
+  ngDevMode && assertLViewOrUndefined(existingLView);
 
   return existingLView as LView<T>;
 }
 
 function getExistingLViewFromLContainer<T>(lContainer: LContainer, index: number): LView<T> {
   const existingLView = getLViewFromLContainer<T>(lContainer, index);
-  ngDevMode && assertLView(existingLView);
+  ngDevMode && assertLViewOrUndefined(existingLView);
 
   return existingLView!;
 }
