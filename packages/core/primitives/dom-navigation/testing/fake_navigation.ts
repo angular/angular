@@ -956,10 +956,8 @@ function dispatchNavigateEvent({
       }
     }
     (navigation.transition as InternalNavigationTransition)?.committedResolve();
-    const promisesList = handlers.map((handler) => handler());
-    if (promisesList.length === 0) {
-      promisesList.push(Promise.resolve());
-    }
+    const promisesList: Array<Promise<unknown>> = handlers.map((handler) => handler());
+    promisesList.push(result.committed);
     Promise.all(promisesList)
       .then(() => {
         // Follows steps outlined under "Wait for all of promisesList, with the following success steps:"
