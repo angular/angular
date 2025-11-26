@@ -23,7 +23,6 @@ import { ResourceRef } from '@angular/core';
 import { Signal } from '@angular/core';
 import { StandardSchemaV1 } from '@standard-schema/spec';
 import { ValidationErrors } from '@angular/forms';
-import { ValidatorFn } from '@angular/forms';
 import { WritableSignal } from '@angular/core';
 import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
