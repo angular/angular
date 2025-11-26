@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {CommonModule, NgForOf} from '@angular/common';
+import { CommonModule, NgForOf } from '@angular/common';
 import {
   Component,
   inject,
@@ -15,8 +15,10 @@ import {
   Type,
   NgModule,
   signal,
+  ViewChild,
+  ViewContainerRef,
 } from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   provideRouter,
   Router,
@@ -25,9 +27,9 @@ import {
   withComponentInputBinding,
   ROUTER_OUTLET_DATA,
 } from '../../index';
-import {RouterTestingHarness} from '../../testing';
-import {InjectionToken} from '../../../core/src/di';
-import {timeout, useAutoTick} from '../helpers';
+import { RouterTestingHarness } from '../../testing';
+import { InjectionToken } from '../../../core/src/di';
+import { timeout, useAutoTick } from '../helpers';
 
 describe('router outlet name', () => {
   useAutoTick();
@@ -43,10 +45,10 @@ describe('router outlet name', () => {
     @Component({
       template: 'popup component',
     })
-    class PopupCmp {}
+    class PopupCmp { }
 
     TestBed.configureTestingModule({
-      imports: [RouterModule.forRoot([{path: '', outlet: 'popup', component: PopupCmp}])],
+      imports: [RouterModule.forRoot([{ path: '', outlet: 'popup', component: PopupCmp }])],
     });
     const router = TestBed.inject(Router);
     const fixture = await createRoot(router, RootCmp);
@@ -65,18 +67,18 @@ describe('router outlet name', () => {
     @Component({
       template: 'hello world',
     })
-    class GreetingCmp {}
+    class GreetingCmp { }
 
     @Component({
       template: 'goodbye cruel world',
     })
-    class FarewellCmp {}
+    class FarewellCmp { }
 
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([
-          {path: '', outlet: 'greeting', component: GreetingCmp},
-          {path: '', outlet: 'farewell', component: FarewellCmp},
+          { path: '', outlet: 'greeting', component: GreetingCmp },
+          { path: '', outlet: 'farewell', component: FarewellCmp },
         ]),
       ],
     });
@@ -113,44 +115,44 @@ describe('router outlet name', () => {
     @Component({
       template: 'component 1',
     })
-    class Cmp1 {}
+    class Cmp1 { }
 
     @Component({
       template: 'component 2',
     })
-    class Cmp2 {}
+    class Cmp2 { }
 
     @Component({
       template: 'component 3',
     })
-    class Cmp3 {}
+    class Cmp3 { }
 
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([
-          {path: '1', outlet: 'outlet1', component: Cmp1},
-          {path: '2', outlet: 'outlet2', component: Cmp2},
-          {path: '3', outlet: 'outlet3', component: Cmp3},
+          { path: '1', outlet: 'outlet1', component: Cmp1 },
+          { path: '2', outlet: 'outlet2', component: Cmp2 },
+          { path: '3', outlet: 'outlet3', component: Cmp3 },
         ]),
       ],
     });
     const router = TestBed.inject(Router);
     const fixture = await createRoot(router, RootCmp);
 
-    router.navigate([{outlets: {'outlet1': '1'}}]);
+    router.navigate([{ outlets: { 'outlet1': '1' } }]);
     await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toContain('component 1');
     expect(fixture.nativeElement.innerHTML).not.toContain('component 2');
     expect(fixture.nativeElement.innerHTML).not.toContain('component 3');
 
-    await router.navigate([{outlets: {'outlet1': null, 'outlet2': '2', 'outlet3': '3'}}]);
+    await router.navigate([{ outlets: { 'outlet1': null, 'outlet2': '2', 'outlet3': '3' } }]);
     await advance(fixture);
     expect(fixture.nativeElement.innerHTML).not.toContain('component 1');
     expect(fixture.nativeElement.innerHTML).toMatch('.*component 2.*component 3');
 
     // reverse the outlets
     fixture.componentInstance.outlets.set(['outlet3', 'outlet2', 'outlet1']);
-    await router.navigate([{outlets: {'outlet1': '1', 'outlet2': '2', 'outlet3': '3'}}]);
+    await router.navigate([{ outlets: { 'outlet1': '1', 'outlet2': '2', 'outlet3': '3' } }]);
     await advance(fixture);
     expect(fixture.nativeElement.innerHTML).toMatch('.*component 3.*component 2.*component 1');
   });
@@ -170,12 +172,12 @@ describe('router outlet name', () => {
     @Component({
       template: 'child component',
     })
-    class ChildCmp {}
+    class ChildCmp { }
 
     TestBed.configureTestingModule({
       imports: [
         RouterModule.forRoot([
-          {path: 'parent', component: ParentCmp, children: [{path: 'child', component: ChildCmp}]},
+          { path: 'parent', component: ParentCmp, children: [{ path: 'child', component: ChildCmp }] },
         ]),
       ],
     });
@@ -208,7 +210,7 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding()),
+        provideRouter([{ path: '**', component: MyComponent }], withComponentInputBinding()),
       ],
     });
     const harness = await RouterTestingHarness.create();
@@ -243,8 +245,8 @@ describe('component input binding', () => {
             {
               path: '**',
               component: MyComponent,
-              data: {'dataA': 'My static data'},
-              resolve: {'resolveA': () => 'My resolved data'},
+              data: { 'dataA': 'My static data' },
+              resolve: { 'resolveA': () => 'My resolved data' },
             },
           ],
           withComponentInputBinding(),
@@ -269,7 +271,7 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding()),
+        provideRouter([{ path: '**', component: MyComponent }], withComponentInputBinding()),
       ],
     });
     const harness = await RouterTestingHarness.create();
@@ -294,7 +296,7 @@ describe('component input binding', () => {
             {
               path: 'withData',
               component: MyComponent,
-              data: {'result': 'from data'},
+              data: { 'result': 'from data' },
             },
             {
               path: 'withoutData',
@@ -338,7 +340,7 @@ describe('component input binding', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}], withComponentInputBinding()),
+        provideRouter([{ path: '**', component: MyComponent }], withComponentInputBinding()),
       ],
     });
     const harness = await RouterTestingHarness.create();
@@ -362,7 +364,7 @@ describe('component input binding', () => {
       template: '<router-outlet/>',
       imports: [RouterOutlet],
     })
-    class OutletWrapper {}
+    class OutletWrapper { }
 
     TestBed.configureTestingModule({
       providers: [
@@ -371,7 +373,7 @@ describe('component input binding', () => {
             {
               path: 'root',
               component: OutletWrapper,
-              children: [{path: '**', component: MyComponent}],
+              children: [{ path: '**', component: MyComponent }],
             },
           ],
           withComponentInputBinding(),
@@ -395,23 +397,23 @@ describe('injectors', () => {
     })
     class Child {
       constructor() {
-        childTokenValue = inject(TOKEN as any, {optional: true});
+        childTokenValue = inject(TOKEN as any, { optional: true });
       }
     }
 
     @NgModule({
-      providers: [{provide: TOKEN, useValue: 'some value'}],
+      providers: [{ provide: TOKEN, useValue: 'some value' }],
     })
-    class ModWithProviders {}
+    class ModWithProviders { }
 
     @Component({
       template: '<router-outlet/>',
       imports: [RouterOutlet, ModWithProviders],
     })
-    class App {}
+    class App { }
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{path: 'a', component: Child}])],
+      providers: [provideRouter([{ path: 'a', component: Child }])],
     });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
@@ -428,7 +430,7 @@ describe('injectors', () => {
     })
     class Child {
       constructor() {
-        childTokenValue = inject(TOKEN, {optional: true});
+        childTokenValue = inject(TOKEN, { optional: true });
       }
     }
 
@@ -436,13 +438,13 @@ describe('injectors', () => {
       template: '<router-outlet/>',
       imports: [RouterOutlet],
     })
-    class App {}
+    class App { }
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
-          {path: 'a', providers: [{provide: TOKEN, useValue: 'a value'}], component: Child},
-          {path: 'b', component: Child},
+          { path: 'a', providers: [{ provide: TOKEN, useValue: 'a value' }], component: Child },
+          { path: 'b', component: Child },
         ]),
       ],
     });
@@ -459,16 +461,16 @@ describe('injectors', () => {
 
 describe('router outlet data', () => {
   it('is injectable even when not set', async () => {
-    @Component({template: ''})
+    @Component({ template: '' })
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }
 
-    @Component({template: '<router-outlet />', imports: [RouterOutlet]})
-    class App {}
+    @Component({ template: '<router-outlet />', imports: [RouterOutlet] })
+    class App { }
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([{path: '**', component: MyComponent}])],
+      providers: [provideRouter([{ path: '**', component: MyComponent }])],
     });
 
     const fixture = TestBed.createComponent(App);
@@ -481,14 +483,14 @@ describe('router outlet data', () => {
   });
 
   it('can set and update value', async () => {
-    @Component({template: ''})
+    @Component({ template: '' })
     class MyComponent {
       data = inject(ROUTER_OUTLET_DATA);
     }
 
     TestBed.configureTestingModule({
       providers: [
-        provideRouter([{path: '**', component: MyComponent}]),
+        provideRouter([{ path: '**', component: MyComponent }]),
         provideZonelessChangeDetection(),
       ],
     });
@@ -525,7 +527,7 @@ describe('router outlet data', () => {
           {
             path: 'child',
             component: Child,
-            children: [{path: 'grandchild', component: GrandChild}],
+            children: [{ path: 'grandchild', component: GrandChild }],
           },
         ]),
       ],
@@ -560,7 +562,7 @@ describe('router outlet data', () => {
           {
             path: 'child',
             component: Child,
-            children: [{path: 'grandchild', component: GrandChild}],
+            children: [{ path: 'grandchild', component: GrandChild }],
           },
         ]),
       ],
@@ -571,6 +573,44 @@ describe('router outlet data', () => {
 
     await harness.navigateByUrl('/child/grandchild');
     expect(harness.routeNativeElement?.innerText).toContain('parent|not provided');
+  });
+});
+
+describe('custom location', () => {
+  it('should allow overriding the location', async () => {
+    @Component({
+      selector: 'custom-outlet',
+      template: '<ng-container #loc></ng-container>',
+      providers: [{ provide: RouterOutlet, useExisting: CustomOutlet }],
+      imports: [RouterOutlet],
+    })
+    class CustomOutlet extends RouterOutlet {
+      @ViewChild('loc', { read: ViewContainerRef, static: true }) customLocation!: ViewContainerRef;
+
+      protected override get location(): ViewContainerRef {
+        return this.customLocation;
+      }
+    }
+
+    @Component({ template: 'child' })
+    class ChildCmp { }
+
+    @Component({
+      template: '<custom-outlet></custom-outlet>',
+      imports: [CustomOutlet],
+    })
+    class RootCmp { }
+
+    TestBed.configureTestingModule({
+      imports: [
+        RouterModule.forRoot([{ path: '', component: ChildCmp }]),
+      ],
+    });
+
+    const router = TestBed.inject(Router);
+    const fixture = await createRoot(router, RootCmp);
+
+    expect(fixture.nativeElement.innerHTML).toContain('child');
   });
 });
 

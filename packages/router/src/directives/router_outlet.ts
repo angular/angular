@@ -27,14 +27,14 @@ import {
   SimpleChanges,
   ViewContainerRef,
 } from '@angular/core';
-import {combineLatest, of, Subscription} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
+import { combineLatest, of, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
-import {RuntimeErrorCode} from '../errors';
-import {Data} from '../models';
-import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRoute} from '../router_state';
-import {PRIMARY_OUTLET} from '../shared';
+import { RuntimeErrorCode } from '../errors';
+import { Data } from '../models';
+import { ChildrenOutletContexts } from '../router_outlet_context';
+import { ActivatedRoute } from '../router_state';
+import { PRIMARY_OUTLET } from '../shared';
 
 /**
  * An `InjectionToken` provided by the `RouterOutlet` and can be set using the `routerOutletData`
@@ -242,16 +242,19 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   readonly routerOutletData = input<unknown>();
 
   private parentContexts = inject(ChildrenOutletContexts);
-  private location = inject(ViewContainerRef);
+  private readonly _location = inject(ViewContainerRef);
+  protected get location(): ViewContainerRef {
+    return this._location;
+  }
   private changeDetector = inject(ChangeDetectorRef);
-  private inputBinder = inject(INPUT_BINDER, {optional: true});
+  private inputBinder = inject(INPUT_BINDER, { optional: true });
   /** @docs-private */
   readonly supportsBindingToComponentInputs = true;
 
   /** @docs-private */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['name']) {
-      const {firstChange, previousValue} = changes['name'];
+      const { firstChange, previousValue } = changes['name'];
       if (firstChange) {
         // The first change is handled by ngOnInit. Because ngOnChanges doesn't get called when no
         // input is set at all, we need to centrally handle the first change there.
@@ -382,7 +385,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
       throw new RuntimeError(
         RuntimeErrorCode.OUTLET_ALREADY_ACTIVATED,
         (typeof ngDevMode === 'undefined' || ngDevMode) &&
-          'Cannot activate an already activated outlet',
+        'Cannot activate an already activated outlet',
       );
     }
     this._activatedRoute = activatedRoute;
@@ -416,7 +419,7 @@ class OutletInjector implements Injector {
     private childContexts: ChildrenOutletContexts,
     private parent: Injector,
     private outletData: Signal<unknown>,
-  ) {}
+  ) { }
 
   get(token: any, notFoundValue?: any): any {
     if (token === ActivatedRoute) {
@@ -468,7 +471,7 @@ export class RoutedComponentInputBinder {
   }
 
   private subscribeToRouteData(outlet: RouterOutlet) {
-    const {activatedRoute} = outlet;
+    const { activatedRoute } = outlet;
     const dataSubscription = combineLatest([
       activatedRoute.queryParams,
       activatedRoute.params,
@@ -476,7 +479,7 @@ export class RoutedComponentInputBinder {
     ])
       .pipe(
         switchMap(([queryParams, params, data], index) => {
-          data = {...queryParams, ...params, ...data};
+          data = { ...queryParams, ...params, ...data };
           // Get the first result from the data subscription synchronously so it's available to
           // the component as soon as possible (and doesn't require a second change detection).
           if (index === 0) {
@@ -507,7 +510,7 @@ export class RoutedComponentInputBinder {
           return;
         }
 
-        for (const {templateName} of mirror.inputs) {
+        for (const { templateName } of mirror.inputs) {
           outlet.activatedComponentRef.setInput(templateName, data[templateName]);
         }
       });
