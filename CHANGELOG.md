@@ -1,3 +1,15 @@
+<a name="19.2.16"></a>
+
+# 19.2.16 (2025-11-26)
+
+### http
+
+| Commit                                                                                           | Type | Description                                          |
+| ------------------------------------------------------------------------------------------------ | ---- | ---------------------------------------------------- |
+| [05fe6686a9](https://github.com/angular/angular/commit/05fe6686a97fa0bcd3cf157805b3612033f975bc) | fix  | prevent XSRF token leakage to protocol-relative URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="21.1.0-next.0"></a>
 
 # 21.1.0-next.0 (2025-11-25)
