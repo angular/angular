@@ -16,7 +16,9 @@ import {
   input,
   ɵCONTROL,
   ɵControl,
+  ɵcontrolUpdate as updateControlBinding,
   ɵInteropControl,
+  ɵɵcontrolCreate as createControlBinding,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';
@@ -33,6 +35,14 @@ import type {FieldTree} from './types';
 export const FIELD = new InjectionToken<Field<unknown>>(
   typeof ngDevMode !== undefined && ngDevMode ? 'FIELD' : '',
 );
+
+/**
+ * Instructions for dynamically binding a {@link Field} to a form control.
+ */
+const controlInstructions = {
+  create: createControlBinding,
+  update: updateControlBinding,
+} as const;
 
 /**
  * Binds a form `FieldTree` to a UI control that edits it. A UI control can be one of several things:
@@ -68,7 +78,7 @@ export class Field<T> implements ɵControl<T> {
   );
   readonly field = input.required<FieldTree<T>>();
   readonly state = computed(() => this.field()());
-  readonly [ɵCONTROL] = undefined;
+  readonly [ɵCONTROL] = controlInstructions;
 
   /** Any `ControlValueAccessor` instances provided on the host element. */
   private readonly controlValueAccessors = inject(NG_VALUE_ACCESSOR, {optional: true, self: true});
