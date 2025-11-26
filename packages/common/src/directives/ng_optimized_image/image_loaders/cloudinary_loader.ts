@@ -8,6 +8,7 @@
 
 import {Provider} from '@angular/core';
 import {createImageLoader, ImageLoaderConfig, ImageLoaderInfo} from './image_loader';
+import {normalizeLoaderTransform} from './normalized_options';
 
 /**
  * Name and URL tester for Cloudinary.
@@ -65,6 +66,12 @@ function createCloudinaryUrl(path: string, config: ImageLoaderConfig) {
 
   if (config.loaderParams?.['rounded']) {
     params += `,r_max`;
+  }
+
+  // Allows users to add any Cloudinary transformation parameters as a string or object
+  if (config.loaderParams?.['transform']) {
+    const transformStr = normalizeLoaderTransform(config.loaderParams['transform'], '_');
+    params += `,${transformStr}`;
   }
 
   return `${path}/image/upload/${params}/${config.src}`;
