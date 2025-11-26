@@ -190,7 +190,6 @@ describe('ControlValueAccessor', () => {
   });
 
   it(`!!!2should use 'NgControl.valueAccessor' - if 'NG_VALUE_ACCESSOR' was not provided`, () => {
-    debugger;
     @Component({
       selector: 'custom-control',
       template: `
@@ -244,7 +243,6 @@ describe('ControlValueAccessor', () => {
     const control = fixture.componentInstance.control;
     const input = fixture.nativeElement.querySelector('input');
 
-    debugger;
     // Initial state
     expect(control().value).toBe('test');
 
