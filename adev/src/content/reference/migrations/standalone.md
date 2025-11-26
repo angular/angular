@@ -77,7 +77,7 @@ HELPFUL: The schematic ignores NgModules which bootstrap a component during this
 export class SharedModule {}
 ```
 
-```typescript
+```angular-ts
 // greeter.component.ts
 @Component({
   selector: 'greeter',
@@ -100,7 +100,7 @@ export class GreeterComponent {
 export class SharedModule {}
 ```
 
-```typescript
+```angular-ts
 // greeter.component.ts
 @Component({
   selector: 'greeter',
