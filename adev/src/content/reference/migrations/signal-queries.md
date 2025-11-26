@@ -26,7 +26,7 @@ See more details in the section [below](#vscode-extension).
 
 **Before**
 
-```typescript
+```angular-ts
 import {Component, ContentChild} from '@angular/core';
 
 @Component({
@@ -45,7 +45,7 @@ export class MyComponent {
 
 **After**
 
-```typescript
+```angular-ts
 import {Component, contentChild} from '@angular/core';
 
 @Component({
