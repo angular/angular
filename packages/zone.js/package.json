@@ -13,7 +13,7 @@
     "@externs/nodejs": "1.5.0",
     "@types/jasmine": "5.1.13",
     "@types/node": "^24.3.0",
-    "@types/systemjs": "6.15.3",
+    "@types/systemjs": "6.15.4",
     "bluebird": "3.7.2",
     "domino": "https://github.com/angular/domino.git#93e720f143d0296dd2726ffbcf4fc12283363a7b",
     "esbuild-plugin-umd-wrapper": "3.0.0",
