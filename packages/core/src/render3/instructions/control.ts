@@ -56,7 +56,6 @@ export function ɵɵcontrolCreate(): void {
   }
 
   const control = getControlDirective(tNode, lView);
-
   if (!control) {
     return;
   }
@@ -102,12 +101,23 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 }
 
 /**
- * Updates a `ɵControl` to manage a native or custom form control.
+ * A wrapper for {@link updateControl} used for dynamic input bindings.
+ */
+export function ɵɵcontrolUpdate(): void {
+  const lView = getLView();
+  const tNode = getSelectedTNode();
+  updateControl(lView, tNode);
+}
+
+/**
+ * Updates the form control properties of a `field` bound form control.
+ *
+ * Does nothing if the current node is not a `field` bound form control.
  *
  * @param lView The `LView` that contains the control.
  * @param tNode The `TNode` of the control.
  */
-export function updateControl<T>(lView: LView, tNode: TNode): void {
+function updateControl<T>(lView: LView, tNode: TNode): void {
   const control = getControlDirective(tNode, lView);
   if (control) {
     updateControlClasses(lView, tNode, control);
