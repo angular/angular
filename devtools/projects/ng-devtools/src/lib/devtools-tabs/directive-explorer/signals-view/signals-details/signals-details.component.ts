@@ -17,7 +17,7 @@ import {
   isSignalNode,
   DevtoolsSignalGraphNode,
   SignalGraphManager,
-  checkClusterMatch,
+  getNodeNames,
   DevtoolsClusterNodeType,
   DevtoolsSignalNode,
   DevtoolsClusterNode,
@@ -68,10 +68,7 @@ export class SignalsDetailsComponent {
   protected readonly name = computed(() => {
     const node = this.node();
     if (isSignalNode(node) && node.clusterId) {
-      const match = checkClusterMatch(node);
-      if (match) {
-        return match.signalName;
-      }
+      return getNodeNames(node).signalName;
     }
     return node.label;
   });
@@ -79,7 +76,7 @@ export class SignalsDetailsComponent {
   protected readonly cluster = computed(() => {
     const node = this.node();
     if (isSignalNode(node) && node.clusterId) {
-      return this.signalGraph.graph()?.clusters[node.clusterId] || null;
+      return this.signalGraph.graph()?.clusters[node.clusterId]!;
     }
     return null;
   });
@@ -122,13 +119,14 @@ export class SignalsDetailsComponent {
   });
 
   private getCompoundNodeValueHof(node: DevtoolsClusterNode) {
-    const compoundNodes = this.signalGraph
+    const compoundNodes = (this.signalGraph
       .graph()
-      ?.nodes.filter((n) => isSignalNode(n) && n.clusterId === node.id);
+      ?.nodes.filter((n) => isSignalNode(n) && n.clusterId === node.id) ||
+      []) as DevtoolsSignalNode[];
 
     return (name: string) =>
-      (
-        compoundNodes?.find((n) => n.label?.includes(name)) as DevtoolsSignalNode | undefined
-      )?.preview.preview.replace(/"/g, '');
+      compoundNodes
+        ?.find((n) => getNodeNames(n).signalName === name)
+        ?.preview.preview.replace(/"/g, '');
   }
 }

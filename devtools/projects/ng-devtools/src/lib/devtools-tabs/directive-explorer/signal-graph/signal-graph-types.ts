@@ -6,6 +6,12 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+/**
+ * @fileoverview Contains the FE-specific signal graph types – `DevtoolsSignalGraph` with its corresponding
+ * node and edge types. The `Devtools*` types represent a superset of the `Debug*` types. They decorate them
+ * with  cluster information that allows the visualizer to render the so-called compound nodes.
+ */
+
 import {DebugSignalGraphEdge, DebugSignalGraphNode} from '../../../../../../protocol';
 
 export type DevtoolsClusterNodeType = 'resource';
@@ -39,7 +45,7 @@ export interface DevtoolsClusterNode {
   /** Node label that represents the cluster name (e.g. a `resource` name). */
   label: string;
 
-  /** A child/compound node of the cluster that acts as a preview of the whole cluster. */
+  /** Index of a child/compound node of the cluster that acts as a preview of the whole cluster. */
   previewNode?: number;
 }
 
