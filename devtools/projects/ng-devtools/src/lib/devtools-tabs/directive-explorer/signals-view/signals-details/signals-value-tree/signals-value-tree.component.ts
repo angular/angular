@@ -46,14 +46,14 @@ export class SignalsValueTreeComponent {
 
   protected readonly node = input.required<DevtoolsSignalNode>();
 
-  protected treeControl = computed<FlatTreeControl<FlatNode>>(() => {
+  protected readonly treeControl = computed<FlatTreeControl<FlatNode>>(() => {
     return new FlatTreeControl(
       (node) => node.level,
       (node) => node.expandable,
     );
   });
 
-  protected dataSource = computed<DataSource<FlatNode>>(() => {
+  protected readonly dataSource = computed<DataSource<FlatNode>>(() => {
     const node = this.node();
 
     return new SignalDataSource(

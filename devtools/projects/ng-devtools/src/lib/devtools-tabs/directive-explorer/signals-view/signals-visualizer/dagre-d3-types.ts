@@ -39,7 +39,6 @@ export interface DagreGraphEdge {
 // Improve Graphlib types
 export declare class DagreGraph extends graphlib.Graph {
   override setNode(id: string, value: DagreGraphNode | DagreGraphCluster, ...args: any[]): this;
-  override setEdge(producerId: string, consumerId: string, value: DagreGraphEdge): this;
   override node(id: string): DagreGraphNode | DagreGraphCluster;
   override edges(): {v: string; w: string}[];
 }

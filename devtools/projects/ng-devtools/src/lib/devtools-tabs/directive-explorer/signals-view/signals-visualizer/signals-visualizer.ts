@@ -118,6 +118,7 @@ export class SignalsGraphVisualizer {
     for (const timeout of this.timeouts) {
       clearTimeout(timeout);
     }
+    this.timeouts.clear();
   }
 
   reset() {
@@ -125,7 +126,7 @@ export class SignalsGraphVisualizer {
       this.graph.removeNode(node);
     }
     for (const {v, w} of this.graph.edges()) {
-      this.graph.removeEdge(v, w, null);
+      this.graph.removeEdge(v, w, undefined);
     }
     this.animatedNodesMap.clear();
     this.expandedClustersIds.clear();
@@ -323,7 +324,8 @@ export class SignalsGraphVisualizer {
     }
 
     const epochAnimTimeout = setTimeout(() => {
-      this.updateNodeEpochAnimations(updatedNodes, epochAnimTimeout);
+      this.timeouts.delete(epochAnimTimeout);
+      this.updateNodeEpochAnimations(updatedNodes);
     }, NODE_EPOCH_UPDATE_ANIM_DURATION);
     this.timeouts.add(epochAnimTimeout);
 
@@ -404,12 +406,7 @@ export class SignalsGraphVisualizer {
     }
   }
 
-  private updateNodeEpochAnimations(
-    updatedNodes: string[],
-    timeout: ReturnType<typeof setTimeout>,
-  ) {
-    this.timeouts.delete(timeout);
-
+  private updateNodeEpochAnimations(updatedNodes: string[]) {
     for (const id of updatedNodes) {
       const count = this.animatedNodesMap.get(id) ?? 0;
       if (count > 0) {
