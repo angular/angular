@@ -11,8 +11,9 @@ import {RuntimeError, RuntimeErrorCode} from '../errors';
 import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
-import {ɵɵcontrolCreate as controlCreate, updateControl} from './instructions/control';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
+import {ɵCONTROL} from './interfaces/control';
+import {TNode} from './interfaces/node';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
@@ -103,6 +104,23 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
 }
 
 /**
+ * Instructions for dynamically binding a `Field` to a form control.
+ */
+interface ControlBinding {
+  create: () => void;
+  update: () => void;
+}
+
+/**
+ * Returns a {@link ControlBinding} for the target directive if it is a 'Field' directive.
+ */
+function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding | undefined {
+  const lView = getLView();
+  const directive = lView[tNode.directiveStart + binding.targetIdx!];
+  return directive[ɵCONTROL];
+}
+
+/**
  * Creates an input binding.
  * @param publicName Public name of the input to bind to.
  * @param value Callback that returns the current value for the binding. Can be either a signal or
@@ -125,15 +143,16 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   if (publicName === 'field') {
     const binding: BindingInternal = {
       [BINDING]: FIELD_BINDING_METADATA,
-      create: () => controlCreate(),
+      create: () => {
+        // Set up the form control bindings, if this is a 'Field' directive bound to a form control.
+        controlBinding(binding, getCurrentTNode()!)?.create();
+      },
       update: () => {
-        // Update the [field] input binding.
-        inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value());
+        // Update the [field] input binding, regardless of whether this targets a 'Field' directive.
+        inputBindingUpdate(binding.targetIdx!, publicName, value());
 
         // Update the form control bindings, if this is a 'Field' directive bound to a form control.
-        const lView = getLView();
-        const tNode = getSelectedTNode();
-        updateControl(lView, tNode);
+        controlBinding(binding, getSelectedTNode()!)?.update();
       },
     };
     return binding;
@@ -143,7 +162,7 @@ export function inputBinding(publicName: string, value: () => unknown): Binding 
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
-    update: () => inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value()),
+    update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
   };
 
   return binding;
