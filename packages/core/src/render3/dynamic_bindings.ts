@@ -12,6 +12,8 @@ import {Type, Writable} from '../interface/type';
 import {assertNotDefined} from '../util/assert';
 import {bindingUpdated} from './bindings';
 import {setDirectiveInput, storePropertyBindingMetadata} from './instructions/shared';
+import {ɵCONTROL} from './interfaces/control';
+import {TNode} from './interfaces/node';
 import {TVIEW} from './interfaces/view';
 import {getCurrentTNode, getLView, getSelectedTNode, nextBindingIndex} from './state';
 import {stringifyForError} from './util/stringify_utils';
@@ -60,6 +62,7 @@ export interface DirectiveWithBindings<T> {
 
 // These are constant between all the bindings so we can reuse the objects.
 const INPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'input', requiredVars: 1};
+const FIELD_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'field', requiredVars: 2};
 const OUTPUT_BINDING_METADATA: BindingInternal[typeof BINDING] = {kind: 'output', requiredVars: 0};
 
 // TODO(pk): this is a sketch of an input binding instruction that still needs some cleanups
@@ -101,6 +104,23 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
 }
 
 /**
+ * Instructions for dynamically binding a `Field` to a form control.
+ */
+interface ControlBinding {
+  create: () => void;
+  update: () => void;
+}
+
+/**
+ * Returns a {@link ControlBinding} for the target directive if it is a 'Field' directive.
+ */
+function controlBinding(binding: BindingInternal, tNode: TNode): ControlBinding | undefined {
+  const lView = getLView();
+  const directive = lView[tNode.directiveStart + binding.targetIdx!];
+  return directive[ɵCONTROL];
+}
+
+/**
  * Creates an input binding.
  * @param publicName Public name of the input to bind to.
  * @param value Callback that returns the current value for the binding. Can be either a signal or
@@ -120,11 +140,29 @@ function inputBindingUpdate(targetDirectiveIdx: number, publicName: string, valu
  * @see [Binding inputs, outputs and setting host directives at creation](guide/components/programmatic-rendering#binding-inputs-outputs-and-setting-host-directives-at-creation)
  */
 export function inputBinding(publicName: string, value: () => unknown): Binding {
+  if (publicName === 'field') {
+    const binding: BindingInternal = {
+      [BINDING]: FIELD_BINDING_METADATA,
+      create: () => {
+        // Set up the form control bindings, if this is a 'Field' directive bound to a form control.
+        controlBinding(binding, getCurrentTNode()!)?.create();
+      },
+      update: () => {
+        // Update the [field] input binding, regardless of whether this targets a 'Field' directive.
+        inputBindingUpdate(binding.targetIdx!, publicName, value());
+
+        // Update the form control bindings, if this is a 'Field' directive bound to a form control.
+        controlBinding(binding, getSelectedTNode()!)?.update();
+      },
+    };
+    return binding;
+  }
+
   // Note: ideally we would use a class here, but it seems like they
   // don't get tree shaken when constructed by a function like this.
   const binding: BindingInternal = {
     [BINDING]: INPUT_BINDING_METADATA,
-    update: () => inputBindingUpdate((binding as BindingInternal).targetIdx!, publicName, value()),
+    update: () => inputBindingUpdate(binding.targetIdx!, publicName, value()),
   };
 
   return binding;

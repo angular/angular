@@ -2201,7 +2201,7 @@ describe('field directive', () => {
     }
 
     expect(() => act(() => TestBed.createComponent(TestCmp))).toThrowError(
-      /'<div>' is an invalid \[field\] directive host\./,
+      /<div> is an invalid \[field\] directive host\./,
     );
   });
 
