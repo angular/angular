@@ -149,6 +149,21 @@ describe('sanitization', () => {
     ).toEqual('javascript:true');
   });
 
+  it('should sanitize SVG xlink:href', () => {
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'a', 'xlink:href')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'a', 'href')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'image', 'xlink:href')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+    expect(ɵɵsanitizeUrlOrResourceUrl('javascript:alert(1)', 'use', 'xlink:href')).toEqual(
+      'unsafe:javascript:alert(1)',
+    );
+  });
+
   it('should sanitize urls via sanitizeUrlOrResourceUrl', () => {
     expect(ɵɵsanitizeUrlOrResourceUrl('http://server', 'a', 'href')).toEqual('http://server');
     expect(ɵɵsanitizeUrlOrResourceUrl(new Wrap('http://server'), 'a', 'href')).toEqual(
