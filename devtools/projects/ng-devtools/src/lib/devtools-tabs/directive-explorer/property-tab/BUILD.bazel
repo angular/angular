@@ -23,6 +23,7 @@ ng_project(
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/defer-view",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-tab-header",
         "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/property-tab/property-view",
+        "//devtools/projects/ng-devtools/src/lib/devtools-tabs/directive-explorer/signal-graph",
         "//devtools/projects/protocol",
     ],
 )
