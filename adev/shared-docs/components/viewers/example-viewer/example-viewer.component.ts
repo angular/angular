@@ -188,7 +188,7 @@ export class ExampleViewer {
     const appendGapBefore = [];
 
     for (const [index, line] of lines.entries()) {
-      if (!linesToDisplay.includes(index)) {
+      if (!linesToDisplay.includes(index + 1)) {
         line.classList.add(HIDDEN_CLASS_NAME);
       } else if (!linesToDisplay.includes(index - 1)) {
         appendGapBefore.push(line);
