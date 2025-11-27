@@ -84,6 +84,8 @@ export const PLATFORM_INITIALIZER = new InjectionToken<ReadonlyArray<() => void>
 
 /**
  * A token that indicates an opaque platform ID.
+ *
+ * @see [Using platform detection](guide/ssr#using-platform-detection)
  * @publicApi
  */
 export const PLATFORM_ID = new InjectionToken<Object>(

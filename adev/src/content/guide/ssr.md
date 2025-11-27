@@ -274,6 +274,103 @@ This means that providers configured with `useValue` will keep their value acros
 
 If you want to generate a new value for each request, use a factory provider with `useFactory`. The factory function will run for every incoming request, ensuring that a new value is created and assigned to the token each time.
 
+## Providing platform-specific implementations
+
+When your application needs different behavior on the browser and server, provide separate service implementations for each platform. This approach centralizes platform logic in dedicated services.
+
+```ts
+export abstract class AnalyticsService {
+  abstract trackEvent(name: string): void;
+}
+```
+
+Create the browser implementation:
+
+```ts
+@Injectable()
+export class BrowserAnalyticsService implements AnalyticsService {
+  trackEvent(name: string): void {
+    // Sends the event to the browser-based third-party analytics provider
+  }
+}
+```
+
+Create the server implementation:
+
+```ts
+@Injectable()
+export class ServerAnalyticsService implements AnalyticsService {
+  trackEvent(name: string): void {
+    // Records the event on the server
+  }
+}
+```
+
+Register the browser implementation in your main application configuration:
+
+```ts
+// app.config.ts
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: AnalyticsService, useClass: BrowserAnalyticsService },
+  ]
+};
+```
+
+Override with the server implementation in your server configuration:
+
+```ts
+// app.config.server.ts
+const serverConfig: ApplicationConfig = {
+  providers: [
+    { provide: AnalyticsService, useClass: ServerAnalyticsService },
+  ]
+};
+```
+
+Inject and use the service in your components:
+
+```ts
+@Component({/* ... */})
+export class Checkout {
+  private analytics = inject(AnalyticsService);
+
+  onAction() {
+    this.analytics.trackEvent('action');
+  }
+}
+```
+
+NOTE: Prefer platform-specific providers over runtime checks with `isPlatformBrowser` or `isPlatformServer`.
+
+## Using platform detection
+
+To check which platform your code is running on, use the `PLATFORM_ID` token with the `isPlatformBrowser` and `isPlatformServer` helper functions.
+
+```ts
+import { Component, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+
+@Component({/* ... */})
+export class UserProfile {
+  private platformId = inject(PLATFORM_ID);
+
+  doSomething(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      // Safe to use browser-only APIs such as `window` or `localStorage`
+      // Or load third-party libraries that are not compatible with server-side rendering
+      const savedData = localStorage.getItem('user-preferences');
+    }
+
+    if (isPlatformServer(this.platformId)) {
+      // Server-specific logic
+    }
+  }
+}
+```
+
+IMPORTANT: Avoid using `isPlatformBrowser` in templates with `@if` or other conditionals to render different content on server and client. This causes hydration mismatches and layout shifts, negatively impacting user experience and [Core Web Vitals](https://web.dev/learn-core-web-vitals/). Instead, use `afterNextRender` for browser-specific initialization and keep rendered content consistent across platforms.
+
 ## Accessing Document via DI
 
 When working with server-side rendering, you should avoid directly referencing browser-specific globals like `document`. Instead, use the [`DOCUMENT`](api/core/DOCUMENT) token to access the document object in a platform-agnostic way.
