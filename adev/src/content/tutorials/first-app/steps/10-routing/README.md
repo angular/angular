@@ -20,8 +20,8 @@ In this lesson, you will enable routing in your application to navigate to the d
 
 <docs-workflow>
 
-<docs-step title="Create a default details component ">
-1. From the terminal, enter the following command to create the `Details`:
+<docs-step title="Create a default HousingLocationDetails component ">
+1. From the terminal, enter the following command to create the `HousingLocationDetails`:
 
     ```shell
     ng generate component details
@@ -59,7 +59,7 @@ In this lesson, you will enable routing in your application to navigate to the d
 In the previous step you removed the reference to the `<app-home>` component in the template. In this step, you will add a new route to that component.
 
 1. In `routes.ts`, perform the following updates to create a route.
-   1. Add a file level imports for the `Home`, `Details` and the `Routes` type that you'll use in the route definitions.
+   1. Add a file level imports for the `Home`, `HousingLocationDetails` and the `Routes` type that you'll use in the route definitions.
 
    <docs-code header="Import components and Routes" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/routes.ts" visibleLines="[1,3]"/>
    1. Define a variable called `routeConfig` of type `Routes` and define two routes for the app:

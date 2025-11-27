@@ -42,9 +42,9 @@ In this case, `:id` is dynamic and will change based on how the route is request
 </docs-step>
 
 <docs-step title="Get route parameters">
-In this step, you will get the route parameter in the `Details`. Currently, the app displays `details works!`. Next you'll update the code to display the `id` value passed using the route parameters.
+In this step, you will get the route parameter in the `HousingLocationDetails`. Currently, the app displays `details works!`. Next you'll update the code to display the `id` value passed using the route parameters.
 
-1. In `src/app/details/details.ts` update the template to import the functions, classes and services that you'll need to use in the `Details`:
+1. In `src/app/details/details.ts` update the template to import the functions, classes and services that you'll need to use in the `HousingLocationDetails`:
 
 <docs-code header="Update file level imports" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[1,4]"/>
 
@@ -54,10 +54,10 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
      template: `<p>details works! {{ housingLocationId }}</p>`,
    ```
 
-1. Update the body of the `Details` class with the following code:
+1. Update the body of the `HousingLocationDetails` class with the following code:
 
    ```ts
-   export class Details {
+   export class HousingLocationDetails {
      route: ActivatedRoute = inject(ActivatedRoute);
      housingLocationId = -1;
      constructor() {
@@ -66,37 +66,37 @@ In this step, you will get the route parameter in the `Details`. Currently, the 
    }
    ```
 
-   This code gives the `Details` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
+   This code gives the `HousingLocationDetails` access to the `ActivatedRoute` router feature that enables you to have access to the data about the current route. In the `constructor`, the code converts the `id` parameter acquired from the route from a string to a number.
 
 1. Save all changes.
 
 1. In the browser, click on one of the housing location's "Learn More" links and confirm that the numeric value displayed on the page matches the `id` property for that location in the data.
    </docs-step>
 
-<docs-step title="Customize the `Details`">
-Now that routing is working properly in the application this is a great time to update the template of the `Details` to display the specific data represented by the housing location for the route parameter.
+<docs-step title="Customize the `HousingLocationDetails`">
+Now that routing is working properly in the application this is a great time to update the template of the `HousingLocationDetails` to display the specific data represented by the housing location for the route parameter.
 
-To access the data you will add a call to the `HousingService`.
+To access the data you will add a call to the `HousingAPI`.
 
 1. Update the template code to match the following code:
 
-   <docs-code language="angular-ts" header="Update the Details template in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[8,29]"/>
+   <docs-code language="angular-ts" header="Update the HousingLocationDetails template in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[8,29]"/>
 
    Notice that the `housingLocation` properties are being accessed with the optional chaining operator `?`. This ensures that if the `housingLocation` value is null or undefined the application doesn't crash.
 
-1. Update the body of the `Details` class to match the following code:
+1. Update the body of the `HousingLocationDetails` class to match the following code:
 
-   <docs-code language="angular-ts" header="Update the Details class in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[32,41]"/>
+   <docs-code language="angular-ts" header="Update the HousingLocationDetails class in src/app/details/details.ts" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[32,41]"/>
 
-   Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingService` to pass the route parameter as an argument to the `getHousingLocationById` service function.
+   Now the component has the code to display the correct information based on the selected housing location. The `constructor` now includes a call to the `HousingAPI` to pass the route parameter as an argument to the `getHousingLocationById` service function.
 
 1. Copy the following styles into the `src/app/details/details.css` file:
 
-   <docs-code header="Add styles for the Details" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
+   <docs-code header="Add styles for the HousingLocationDetails" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.css" visibleLines="[1,71]"/>
 
    and save your changes
 
-1. In `Details` use the just created `details.css` file as the source for the styles:
+1. In `HousingLocationDetails` use the just created `details.css` file as the source for the styles:
    <docs-code language="angular-ts" header="Update details.ts to use the created css file" path="adev/src/content/tutorials/first-app/steps/12-forms/src/app/details/details.ts" visibleLines="[30]"/>
 
 1. In the browser refresh the page and confirm that when you click on the "Learn More" link for a given housing location the details page displays the correct information based on the data for that selected item.
@@ -124,7 +124,7 @@ You now know how to:
 
 - use route parameters to pass data to a route
 - use the `routerLink` directive to use dynamic data to create a route
-- use route parameter to retrieve data from the `HousingService` to display specific housing location information.
+- use route parameter to retrieve data from the `HousingAPI` to display specific housing location information.
 
 Really great work so far.
 

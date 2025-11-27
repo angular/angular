@@ -53,8 +53,8 @@ In the **Edit** pane of your IDE:
 
 1. In `src/app/home/home.ts`, from `Home`, copy the `housingLocationList` variable and its array value.
 1. In `src/app/housing.service.ts`:
-   1. Inside the `HousingService` class, paste the variable that you copied from `Home` in the previous step.
-   1. Inside the `HousingService` class, paste these functions after the data you just copied.
+   1. Inside the `HousingAPI` class, paste the variable that you copied from `Home` in the previous step.
+   1. Inside the `HousingAPI` class, paste these functions after the data you just copied.
       These functions allow dependencies to access the service's data.
 
       <docs-code header="Service functions in src/app/housing.service.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/housing.service.ts" visibleLines="[112,118]"/>
@@ -79,11 +79,11 @@ In the **Edit** pane of your IDE, in `src/app/home/home.ts`:
 
 <docs-code language="angular-ts" header="Update to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[1]"/>
 
-1. Add a new file level import for the `HousingService`:
+1. Add a new file level import for the `HousingAPI`:
 
 <docs-code language="angular-ts" header="Add import to src/app/home/home.ts" path="adev/src/content/tutorials/first-app/steps/10-routing/src/app/home/home.ts" visibleLines="[4]"/>
 
-1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingService`.
+1. From `Home`, delete the `housingLocationList` array entries and assign `housingLocationList` the value of empty array (`[]`). In a few steps you will update the code to pull the data from the `HousingAPI`.
 
 1. In `Home`, add the following code to inject the new service and initialize the data for the app. The `constructor` is the first function that runs when this component is created. The code in the `constructor` will assign the `housingLocationList` the value returned from the call to `getAllHousingLocations`.
 
