@@ -17,6 +17,7 @@ You can set the change detection strategy of a component to `OnPush` in the `@Co
 
 ```ts
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
