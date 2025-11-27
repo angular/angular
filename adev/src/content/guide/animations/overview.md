@@ -32,13 +32,13 @@ To get started with adding Angular animations to your project, import the animat
 <docs-step title="Enabling the animations module">
 Import `provideAnimationsAsync` from `@angular/platform-browser/animations/async` and add it to the providers list in the `bootstrapApplication` function call.
 
-<docs-code header="Enabling Animations" language="ts" linenums>
+```ts {header: "Enabling Animations", linenums}
 bootstrapApplication(AppComponent, {
   providers: [
     provideAnimationsAsync(),
   ]
 });
-</docs-code>
+```
 
 <docs-callout important title="If you need immediate animations in your application">
   If you need to have an animation happen immediately when your application is loaded,
