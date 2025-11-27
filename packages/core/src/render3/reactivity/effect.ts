@@ -15,7 +15,7 @@ import {
   BASE_EFFECT_NODE,
   runEffect,
 } from '../../../primitives/signals';
-import {FLAGS, LViewFlags, LView, EFFECTS} from '../interfaces/view';
+import {FLAGS, LViewFlags, type LView, EFFECTS} from '../interfaces/view';
 import {markAncestorsForTraversal} from '../util/view_utils';
 import {inject} from '../../di/injector_compatibility';
 import {Injector} from '../../di/injector';
@@ -198,6 +198,7 @@ export interface EffectNode extends BaseEffectNode, SchedulableEffect {
   cleanupFns: EffectCleanupFn[] | undefined;
   injector: Injector;
   notifier: ChangeDetectionScheduler;
+  destroyed: boolean;
 
   onDestroyFns: (() => void)[] | null;
 }
@@ -215,6 +216,7 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'noti
     ...BASE_EFFECT_NODE,
     cleanupFns: undefined,
     zone: null,
+    destroyed: false,
     onDestroyFns: null,
     run(this: EffectNode): void {
       if (ngDevMode && isInNotificationPhase()) {
@@ -243,7 +245,8 @@ export const EFFECT_NODE: Omit<EffectNode, 'fn' | 'destroy' | 'injector' | 'noti
           this.cleanupFns.pop()!();
         }
       } finally {
-        this.cleanupFns = [];
+        // Set to `undefined` instead of `[]` (no allocation required).
+        this.cleanupFns = undefined;
         setActiveConsumer(prevConsumer);
       }
     },
@@ -279,6 +282,9 @@ export const VIEW_EFFECT_NODE: Omit<ViewEffectNode, 'fn' | 'view' | 'injector' |
       this.notifier.notify(NotificationSource.ViewEffect);
     },
     destroy(this: ViewEffectNode): void {
+      // Set destroyed flag BEFORE `cleanup()` so `createEffectFn` can detect
+      // mid-execution destruction and run subsequently-registered cleanups immediately.
+      this.destroyed = true;
       consumerDestroy(this);
 
       if (this.onDestroyFns !== null) {
@@ -327,6 +333,18 @@ export function createRootEffect(
 
 function createEffectFn(node: EffectNode, fn: (onCleanup: EffectCleanupRegisterFn) => void) {
   return () => {
-    fn((cleanupFn) => (node.cleanupFns ??= []).push(cleanupFn));
+    fn((cleanupFn) => {
+      // Handle synchronous view destruction during effect execution.
+      // When an effect destroys its own view (e.g., `viewRef.destroy()`),
+      // `destroy()` sets `node.destroyed=true` and calls `cleanup()`. Any cleanup
+      // registered after that point would be lost since `cleanup()` already ran.
+      // Running it immediately ensures the cleanup contract is always honored,
+      // preventing memory leaks from event listeners, subscriptions, etc.
+      if (node.destroyed) {
+        cleanupFn();
+      } else {
+        (node.cleanupFns ??= []).push(cleanupFn);
+      }
+    });
   };
 }
