@@ -9,10 +9,10 @@
 import {ChangeDetectionStrategy, Component, computed, inject, input, output} from '@angular/core';
 import {DebugSignalGraphNode, DirectivePosition} from '../../../../../../../protocol';
 
-import {ElementPropertyResolver, FlatNode} from '../../property-resolver/element-property-resolver';
+import {ElementPropertyResolver} from '../../property-resolver/element-property-resolver';
 import {PropertyViewBodyComponent} from './property-view-body/property-view-body.component';
 import {PropertyViewHeaderComponent} from './property-view-header/property-view-header.component';
-import {CdkAutofill} from '@angular/cdk/text-field';
+import {FlatNode} from '../../../../shared/object-tree-explorer/object-tree-types';
 
 @Component({
   selector: 'ng-property-view',

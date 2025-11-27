@@ -1,3 +1,4 @@
+<!-- TODO: Reconsider the existence of this component. -->
 <th>{{label()}}</th>
 <td>
   @switch (type()) {
@@ -19,11 +20,20 @@
     }
     @default {
       @if (rowValue() && renderValueAsJson()) {
-        <ng-route-data-tree
-          (viewSource)="actionBtnClick.emit($event)"
-          [showViewSourceButton]="actionBtnType() === 'view-source'"
-          [data]="rowValue()"
-        />
+        <ng-object-tree-explorer
+          [dataSource]="treeData()"
+          [childrenAccessor]="treeDataChildrenAccessor"
+          [omitRootNodesNames]="true"
+        >
+          <ng-template let-node>
+            @if (!node.expandable) {
+              <ng-container
+                [ngTemplateOutlet]="actionBtn"
+                [ngTemplateOutletContext]="{ value: node.prop.descriptor.preview }"
+              />
+            }
+          </ng-template>
+        </ng-object-tree-explorer>
       } @else {
         <div class="value-container">
           <span> {{ rowValue() || '[empty string] ' }} </span
