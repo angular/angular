@@ -5,8 +5,8 @@ import { Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestDir {
     constructor() {
-        this.counter = input(0, Object.assign({}, (ngDevMode ? { debugName: "counter" } : {})));
-        this.name = input.required(Object.assign({}, (ngDevMode ? { debugName: "name" } : {})));
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name" }] : []));
     }
 }
 TestDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -34,8 +34,8 @@ import { Component, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class TestComp {
     constructor() {
-        this.counter = input(0, Object.assign({}, (ngDevMode ? { debugName: "counter" } : {})));
-        this.name = input.required(Object.assign({}, (ngDevMode ? { debugName: "name" } : {})));
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
+        this.name = input.required(...(ngDevMode ? [{ debugName: "name" }] : []));
     }
 }
 TestComp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComp, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -68,7 +68,7 @@ function convertToBoolean(value) {
 }
 export class TestDir {
     constructor() {
-        this.counter = input(0, Object.assign({}, (ngDevMode ? { debugName: "counter" } : {})));
+        this.counter = input(0, ...(ngDevMode ? [{ debugName: "counter" }] : []));
         this.signalWithTransform = input(false, Object.assign(Object.assign({}, (ngDevMode ? { debugName: "signalWithTransform" } : {})), { transform: convertToBoolean }));
         this.signalWithTransformAndAlias = input(false, Object.assign(Object.assign({}, (ngDevMode ? { debugName: "signalWithTransformAndAlias" } : {})), { alias: 'publicNameSignal', transform: convertToBoolean }));
         this.decoratorInput = true;
