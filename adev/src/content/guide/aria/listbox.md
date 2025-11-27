@@ -108,14 +108,19 @@ With `orientation="horizontal"`, left and right arrow keys navigate between opti
 
 ### Selection modes
 
-Listbox supports two selection modes that control when items become selected. Choose the mode that matches your interface's interaction pattern.
+Listbox supports two selection modes that control when items become selected.
 
-<docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/modes/app/app.ts">
+<!-- <docs-code-multifile preview hideCode path="adev/src/content/examples/aria/listbox/src/modes/app/app.ts">
   <docs-code header="app.ts" path="adev/src/content/examples/aria/listbox/src/modes/app/app.ts" />
   <docs-code header="app.html" path="adev/src/content/examples/aria/listbox/src/modes/app/app.html" />
-</docs-code-multifile>
+</docs-code-multifile> -->
 
-The `'follow'` mode automatically selects the focused item, providing faster interaction when selection changes frequently. The `'explicit'` mode requires Space or Enter to confirm selection, preventing accidental changes while navigating. Dropdown patterns typically use `'follow'` mode for single selection.
+| Mode         | Description                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------------ |
+| `'follow'`   | Automatically selects the focused item, providing faster interaction when selection changes frequently |
+| `'explicit'` | Requires Space or Enter to confirm selection, preventing accidental changes while navigating           |
+
+TIP: Dropdown patterns typically use `'follow'` mode for single selection.
 
 ## APIs
 
