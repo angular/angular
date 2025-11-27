@@ -332,6 +332,33 @@ describe('FieldNode', () => {
       expect(f().readonly()).toBe(false);
       expect(f().dirty()).toBe(true);
     });
+
+    it('should mark the field and all descendants as dirty', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: {
+            c: 2,
+            d: 3,
+          },
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().dirty()).toBeFalse();
+      expect(f.a().dirty()).toBeFalse();
+      expect(f.b().dirty()).toBeFalse();
+      expect(f.b.c().dirty()).toBeFalse();
+      expect(f.b.d().dirty()).toBeFalse();
+
+      f().markAllAsDirty();
+
+      expect(f().dirty()).toBeTrue();
+      expect(f.a().dirty()).toBeTrue();
+      expect(f.b().dirty()).toBeTrue();
+      expect(f.b.c().dirty()).toBeTrue();
+      expect(f.b.d().dirty()).toBeTrue();
+    });
   });
 
   describe('touched', () => {

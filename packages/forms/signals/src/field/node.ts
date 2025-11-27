@@ -230,6 +230,16 @@ export class FieldNode implements FieldState<unknown> {
   }
 
   /**
+   * Marks this field and all descendant fields as dirty.
+   */
+  markAllAsDirty(): void {
+    this.markAsDirty();
+    for (const child of this.structure.children()) {
+      child.markAllAsDirty();
+    }
+  }
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.

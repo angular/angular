@@ -320,6 +320,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   markAllAsTouched(): void;
 
   /**
+   * Marks this field and its descendants as dirty.
+   */
+  markAllAsDirty(): void;
+
+  /**
    * Resets the {@link touched} and {@link dirty} state of the field and its descendants.
    *
    * Note this does not change the data model, which can be reset directly if desired.
