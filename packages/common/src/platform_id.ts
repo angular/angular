@@ -11,6 +11,9 @@ export const PLATFORM_SERVER_ID = 'server';
 
 /**
  * Returns whether a platform id represents a browser platform.
+ *
+ * @see [Using platform detection](guide/ssr#using-platform-detection)
+ *
  * @publicApi
  */
 export function isPlatformBrowser(platformId: Object): boolean {
@@ -19,6 +22,9 @@ export function isPlatformBrowser(platformId: Object): boolean {
 
 /**
  * Returns whether a platform id represents a server platform.
+ *
+ * @see [Using platform detection](guide/ssr#using-platform-detection)
+ *
  * @publicApi
  */
 export function isPlatformServer(platformId: Object): boolean {
