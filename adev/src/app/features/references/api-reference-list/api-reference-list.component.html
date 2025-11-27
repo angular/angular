@@ -4,7 +4,7 @@
 
 <div class="adev-reference-list-filter">
   <div class="adev-reference-list-query-filter">
-    <docs-text-field name="query" placeholder="Filter" [(ngModel)]="query" />
+    <docs-text-field attributeName="query" placeholder="Filter" [field]="queryForm.query" />
   </div>
 
   <div class="adev-reference-list-status">
@@ -21,9 +21,10 @@
   <p class="adev-reference-list-type-filter-label">Filter by Identifier type</p>
   <ul class="adev-reference-list-type-filter">
     @for (itemType of itemTypes; track itemType) {
+      @let type = queryForm.type().value();
       <li
         class="adev-reference-list-type-filter-item"
-        [class.adev-reference-list-type-filter-item-active]="type() === itemType"
+        [class.adev-reference-list-type-filter-item-active]="type === itemType"
         (click)="setItemType(itemType)"
       >
         <docs-api-item-label [type]="itemType" mode="short" class="docs-api-item-label" />

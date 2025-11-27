@@ -23,6 +23,7 @@ import {
   SearchResponses,
   SearchResult as AlgoliaSearchResult,
 } from 'algoliasearch/lite';
+import {form} from '@angular/forms/signals';
 
 export const SEARCH_DELAY = 200;
 // Maximum number of facet values to return for each facet during a regular search.
@@ -43,13 +44,13 @@ export const provideAlgoliaSearchClient = (config: Environment): Provider => {
   providedIn: 'root',
 })
 export class Search {
-  readonly searchQuery = signal('');
+  readonly query = form(signal(''));
 
   private readonly config = inject(ENVIRONMENT);
   private readonly client = inject(ALGOLIA_CLIENT);
 
   readonly resultsResource = resource({
-    params: () => this.searchQuery() || undefined, // coerces empty string to undefined
+    params: () => this.query().value() || undefined, // coerces empty string to undefined
     loader: async ({params: query, abortSignal}) => {
       // Until we have a better alternative we debounce by awaiting for a short delay.
       await wait(SEARCH_DELAY, abortSignal);
@@ -99,7 +100,7 @@ export class Search {
 
   readonly searchResults = linkedSignal<SearchResultItem[] | undefined, SearchResultItem[]>({
     source: this.resultsResource.value,
-    computation: (next, prev) => (!next && this.searchQuery() ? prev?.value : next) ?? [],
+    computation: (next, prev) => (!next && this.query().value() ? prev?.value : next) ?? [],
   });
 
   private getUniqueSearchResultItems(items: SearchResult[]): SearchResult[] {
