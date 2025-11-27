@@ -8,14 +8,19 @@
 
 import {
   Component,
+  ComponentRef,
   computed,
   Directive,
   effect,
   EventEmitter,
   inject,
   input,
+  OnChanges,
+  OnDestroy,
+  output,
   Output,
   signal,
+  SimpleChanges,
   TemplateRef,
   viewChild,
   ViewChild,
@@ -27,6 +32,7 @@ import {ViewEncapsulation} from '@angular/compiler';
 import {By} from '@angular/platform-browser';
 import {tickAnimationFrames} from '../../animation_utils/tick_animation_frames';
 import {isNode} from '@angular/private/testing';
+import {Subscription} from 'rxjs';
 
 describe('signal inputs', () => {
   beforeEach(() =>
@@ -518,6 +524,135 @@ describe('signal inputs', () => {
       tickAnimationFrames(1);
 
       expect(fixture.debugElement.query(By.css('app-content'))).toBeNull();
+    }));
+
+    it('should run animations using the root injector so that the animation queue still runs when the component is destroyed before afterNextRender occurs', fakeAsync(() => {
+      const animateStyles = `
+        .fade-out {
+          animation: fade-out 100ms;
+        }
+        @keyframes fade-out {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+      `;
+
+      @Component({
+        selector: 'notification',
+        styles: animateStyles,
+        template: ` <div (click)="close()">{{ item?.id }}</div> `,
+        host: {
+          'animate.leave': 'fade-out',
+        },
+        encapsulation: ViewEncapsulation.None,
+      })
+      class Notification {
+        public item: any;
+        public closed: EventEmitter<any> = new EventEmitter<any>();
+        public close(): void {
+          this.closed.emit(this.item?.id);
+        }
+      }
+
+      @Directive({selector: '[messageRenderer]'})
+      class MessageRendererDirective implements OnChanges, OnDestroy {
+        protected componentRef: ComponentRef<Notification> | null = null;
+        protected closedSubscription: Subscription | undefined | null;
+
+        notification = input.required<any>({alias: 'messageRenderer'});
+        closed = output<string>();
+
+        protected get component(): any | null {
+          if (!this.componentRef) {
+            return null;
+          }
+          return this.componentRef.instance;
+        }
+
+        constructor(protected viewContainerRef: ViewContainerRef) {}
+
+        public ngOnChanges(changes: SimpleChanges): void {
+          // Clean up old subscription before clearing view and creating new component
+
+          this.closedSubscription?.unsubscribe();
+          this.closedSubscription = null; // Ensure it's nullified
+          this.viewContainerRef.clear();
+
+          if ('notification' in changes && changes['notification'].currentValue) {
+            const injector = this.viewContainerRef.injector;
+            this.componentRef = this.viewContainerRef.createComponent(Notification, {
+              injector,
+            });
+
+            // Assign input immediately after creation
+            if (this.component) {
+              this.component.item = this.notification();
+            }
+
+            // Manually trigger change detection for the newly created component
+            // to process its inputs and render its initial state.
+            this.componentRef.changeDetectorRef.detectChanges();
+            this.closedSubscription = this.component?.closed.subscribe(this.closedEmit);
+          }
+        }
+
+        public ngOnDestroy(): void {
+          this.closedSubscription?.unsubscribe();
+          this.closedSubscription = null;
+          this.componentRef?.destroy(); // Explicitly destroy the dynamically created component
+        }
+
+        protected closedEmit = (id: string): void => {
+          this.closed.emit(id);
+        };
+      }
+
+      @Component({
+        template: `
+          @for(itm of list(); track itm) {
+          <ng-template [messageRenderer]="itm" (closed)="removeItem($event)" />
+          }
+        `,
+        imports: [MessageRendererDirective],
+      })
+      class TestComponent {
+        list = signal([{id: '1'}]);
+
+        removeItem(id: string) {
+          this.list.update((l) => [...l.filter((i) => i.id !== id)]);
+        }
+      }
+
+      TestBed.configureTestingModule({animationsEnabled: true});
+      const fixture = TestBed.createComponent(TestComponent);
+      fixture.detectChanges();
+
+      const notification = fixture.nativeElement.querySelector('notification');
+
+      expect(notification).not.toBeNull();
+      expect(notification.classList.contains('fade-out')).toBe(false); // Initially no fade-out class
+
+      // remove the item from the list
+      fixture.componentInstance.removeItem(fixture.componentInstance.list()[0].id);
+      fixture.detectChanges(); // Detect changes for TestComponent to trigger leave animation
+      tickAnimationFrames(1); // Allow animation to start (will add 'fade-out' class)
+
+      const fadingOut = fixture.nativeElement.querySelector('notification');
+
+      expect(fadingOut).not.toBeNull();
+      expect(fadingOut.classList.contains('fade-out')).toBe(true);
+
+      // Trigger animation end to remove the element
+      notification.dispatchEvent(
+        new AnimationEvent('animationend', {animationName: 'fade-out', bubbles: true}),
+      );
+      tick(300); // Advance timers by animation duration (0.5s)
+      fixture.detectChanges(); // Detect changes after animation completes and element is removed
+      expect(fixture.nativeElement.querySelector('notification')).toBeNull(); // Verify element is removed
     }));
   });
 });
