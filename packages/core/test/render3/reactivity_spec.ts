@@ -42,7 +42,7 @@ import {
 import {SIGNAL} from '../../primitives/signals';
 import {toObservable} from '../../rxjs-interop';
 import {EffectNode} from '../../src/render3/reactivity/effect';
-import {TestBed} from '../../testing';
+import {type ComponentFixture, TestBed} from '../../testing';
 import {bootstrapApplication} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
@@ -484,6 +484,61 @@ describe('reactivity', () => {
 
         fix.destroy();
         expect(destroyed).toBeTrue();
+      });
+
+      it('should execute effects cleanup functions when their view is destroyed', async () => {
+        const recorder: string[] = [];
+        let fixture: ComponentFixture<TestCmp>;
+
+        @Component({})
+        class TestCmp {
+          readonly counter = signal(0);
+
+          constructor() {
+            effect((onCleanup) => {
+              const value = this.counter();
+              recorder.push(`counter: ${value}`);
+              if (value === 2) {
+                fixture.destroy();
+              }
+              onCleanup(() => {
+                recorder.push(`counter onCleanup: ${value}`);
+              });
+            });
+
+            const doubled = computed(() => this.counter() * 2);
+            effect((onCleanup) => {
+              const value = doubled();
+              recorder.push(`doubled counter: ${value}`);
+              onCleanup(() => recorder.push(`doubled counter onCleanup: ${value}`));
+            });
+          }
+
+          increment() {
+            this.counter.update((c) => c + 1);
+          }
+        }
+
+        fixture = TestBed.createComponent(TestCmp);
+        fixture.detectChanges();
+
+        fixture.componentInstance.increment();
+        await fixture.whenStable();
+        fixture.componentInstance.increment();
+        await fixture.whenStable();
+
+        expect(recorder).toEqual([
+          'counter: 0',
+          'doubled counter: 0',
+          'counter onCleanup: 0',
+          'counter: 1',
+          'doubled counter onCleanup: 0',
+          'doubled counter: 2',
+          'counter onCleanup: 1',
+          'counter: 2',
+          'doubled counter onCleanup: 2', // During destroy()
+          'counter onCleanup: 2', // After destroy(), via a fix in `createEffectFn` (effect.ts)
+        ]);
       });
 
       it('should destroy effects when their DestroyRef is separately destroyed', () => {
