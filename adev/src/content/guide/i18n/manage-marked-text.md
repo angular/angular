@@ -28,13 +28,9 @@ The following example defines the `introductionHeader` custom ID in a heading el
 
 The following example defines the `introductionHeader` custom ID for a variable.
 
-<!--todo: replace with code example -->
-
-<docs-code language="typescript">
-
+```ts
 variableText1 = $localize`:@@introductionHeader:Hello i18n!`;
-
-</docs-code>
+```
 
 When you specify a custom ID, the extractor generates a translation unit with the custom ID.
 
@@ -54,13 +50,9 @@ The following example includes a description, followed by the custom ID.
 
 The following example defines the `introductionHeader` custom ID and description for a variable.
 
-<!--todo: replace with code example -->
-
-<docs-code language="typescript">
-
+```ts
 variableText2 = $localize`:An introduction header for this sample@@introductionHeader:Hello i18n!`;
-
-</docs-code>
+```
 
 The following example adds a meaning.
 
@@ -68,13 +60,9 @@ The following example adds a meaning.
 
 The following example defines the `introductionHeader` custom ID for a variable.
 
-<!--todo: replace with code example -->
-
-<docs-code language="typescript">
-
+```ts
 variableText3 = $localize`:site header|An introduction header for this sample@@introductionHeader:Hello i18n!`;
-
-</docs-code>
+```
 
 ### Define unique custom IDs
 

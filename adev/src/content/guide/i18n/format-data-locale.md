@@ -14,13 +14,9 @@ The data transformation pipes use the [`LOCALE_ID`][ApiCoreLocaleId] token to fo
 
 To display the current date in the format for the current locale, use the following format for the `DatePipe`.
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```angular-html
 {{ today | date }}
-
-</docs-code>
+```
 
 ## Override current locale for CurrencyPipe
 
@@ -28,13 +24,9 @@ Add the `locale` parameter to the pipe to override the current value of `LOCALE_
 
 To force the currency to use American English \(`en-US`\), use the following format for the `CurrencyPipe`
 
-<!--todo: replace with docs-code -->
-
-<docs-code language="typescript">
-
+```angular-html
 {{ amount | currency : 'en-US' }}
-
-</docs-code>
+```
 
 HELPFUL: The locale specified for the `CurrencyPipe` overrides the global `LOCALE_ID` token of your application.
 
