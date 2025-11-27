@@ -18,6 +18,13 @@ export function runEffectsInView(view: LView): void {
   let tryFlushEffects = true;
 
   while (tryFlushEffects) {
+    // Guard against `view[EFFECTS]` being set to `null` during the previous loop iteration.
+    // When `effect.run()` executes, it may trigger view destruction, component cleanup,
+    // or other operations that nullify `view[EFFECTS]`. This check prevents "not iterable"
+    // errors on subsequent while-loop iterations.
+    if (view[EFFECTS] === null) {
+      break;
+    }
     let foundDirtyEffect = false;
     for (const effect of view[EFFECTS]) {
       if (!effect.dirty) {
