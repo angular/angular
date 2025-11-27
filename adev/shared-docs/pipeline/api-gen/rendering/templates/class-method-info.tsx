@@ -7,7 +7,10 @@
  */
 
 import {Fragment, h} from 'preact';
-import {FunctionSignatureMetadataRenderable, ParameterEntryRenderable} from '../entities/renderables.mjs';
+import {
+  FunctionSignatureMetadataRenderable,
+  ParameterEntryRenderable,
+} from '../entities/renderables.mjs';
 import {PARAM_KEYWORD_CLASS_NAME, REFERENCE_MEMBER_CARD_ITEM} from '../styling/css-classes.mjs';
 import {DeprecatedLabel} from './deprecated-label';
 import {Parameter} from './parameter';
@@ -17,12 +20,7 @@ import {CodeSymbol} from './code-symbols';
 /**
  * Component to render the method-specific parts of a class's API reference.
  */
-export function ClassMethodInfo(props: {
-  entry: FunctionSignatureMetadataRenderable;
-  options?: {
-    showUsageNotes?: boolean;
-  };
-}) {
+export function ClassMethodInfo(props: {entry: FunctionSignatureMetadataRenderable}) {
   const entry = props.entry;
 
   return (
@@ -45,9 +43,9 @@ export function ClassMethodInfo(props: {
         <span className={PARAM_KEYWORD_CLASS_NAME}>@returns</span>
         <CodeSymbol code={entry.returnType} />
       </div>
-      {entry.htmlUsageNotes && props.options?.showUsageNotes ? (
+      {entry.htmlUsageNotes ? (
         <div className={'docs-usage-notes'}>
-          <span className={PARAM_KEYWORD_CLASS_NAME}>Usage notes</span>
+          <span className={'docs-usage-notes-heading'}>Usage notes</span>
           <RawHtml value={entry.htmlUsageNotes} />
         </div>
       ) : (

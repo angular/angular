@@ -37,7 +37,7 @@ export function ClassMember(props: {member: MemberEntryRenderable}) {
     const signature = method.signatures.length ? method.signatures : [method.implementation];
     return signature.map((sig) => {
       const renderableMember = getFunctionMetadataRenderable(sig, method.moduleName, method.repo);
-      return <ClassMethodInfo entry={renderableMember} options={{showUsageNotes: true}} />;
+      return <ClassMethodInfo entry={renderableMember} />;
     });
   };
 
