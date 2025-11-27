@@ -9,100 +9,94 @@
 import ts from 'typescript';
 
 function insertDebugNameIntoCallExpression(
-  callExpression: ts.CallExpression,
+  node: ts.CallExpression,
   debugName: string,
 ): ts.CallExpression {
-  const signalExpressionIsRequired = isRequiredSignalFunction(callExpression.expression);
-  let configPosition = signalExpressionIsRequired ? 0 : 1;
+  const isRequired = isRequiredSignalFunction(node.expression);
+  const hasNoArgs = node.arguments.length === 0;
+  const configPosition = hasNoArgs || isSignalWithObjectOnlyDefinition(node) || isRequired ? 0 : 1;
+  const existingArg =
+    configPosition >= node.arguments.length ? null : node.arguments[configPosition];
 
-  // 1. If the call expression has no arguments, we pretend that the config object is at position 0.
-  // We do this so that we can insert a spread element at the start of the args list in a way where
-  // undefined can be the first argument but still get tree-shaken out in production builds.
-  // or
-  // 2. If the signal has an object-only definition (e.g. `linkedSignal` or `resource`), we set
-  // the argument position to 0, i.e. reusing the existing object.
-  const signalExpressionHasNoArguments = callExpression.arguments.length === 0;
-  const signalWithObjectOnlyDefinition = isSignalWithObjectOnlyDefinition(callExpression);
-  if (signalExpressionHasNoArguments || signalWithObjectOnlyDefinition) {
-    configPosition = 0;
+  // Do nothing if the existing parameter isn't statically analyzable or already has a `debugName`.
+  if (
+    existingArg !== null &&
+    (!ts.isObjectLiteralExpression(existingArg) ||
+      existingArg.properties.some(
+        (prop) =>
+          ts.isPropertyAssignment(prop) &&
+          ts.isIdentifier(prop.name) &&
+          prop.name.text === 'debugName',
+      ))
+  ) {
+    return node;
   }
 
-  const nodeArgs = Array.from(callExpression.arguments);
-  let existingArgument = nodeArgs[configPosition];
-
-  if (existingArgument === undefined) {
-    existingArgument = ts.factory.createObjectLiteralExpression([]);
-  }
-
-  // Do nothing if an identifier is used as the config object
-  // Ex:
-  // const defaultObject = { equals: () => false };
-  // signal(123, defaultObject)
-  if (ts.isIdentifier(existingArgument)) {
-    return callExpression;
-  }
-
-  if (!ts.isObjectLiteralExpression(existingArgument)) {
-    return callExpression;
-  }
-
-  // Insert debugName into the existing config object
-  const properties = Array.from(existingArgument.properties);
-  const debugNameExists = properties.some(
-    (prop) =>
-      ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === 'debugName',
-  );
-
-  if (debugNameExists) {
-    return callExpression;
-  }
-
-  const ngDevModeIdentifier = ts.factory.createIdentifier('ngDevMode');
   const debugNameProperty = ts.factory.createPropertyAssignment(
     'debugName',
     ts.factory.createStringLiteral(debugName),
   );
-  const debugNameObject = ts.factory.createObjectLiteralExpression([debugNameProperty]);
-  const emptyObject = ts.factory.createObjectLiteralExpression();
 
-  // Create the spread expression: `...(ngDevMode ? { debugName: 'myDebugName' } : {})`
-  const spreadDebugNameExpression = ts.factory.createSpreadAssignment(
-    ts.factory.createParenthesizedExpression(
-      ts.factory.createConditionalExpression(
-        ngDevModeIdentifier,
-        undefined, // Question token
-        debugNameObject,
-        undefined, // Colon token
-        emptyObject,
+  let newArgs: ts.Expression[];
+
+  if (existingArg !== null) {
+    // If there's an existing object literal already, we transform it as follows:
+    // `signal(0, {equal})` becomes `signal(0, { ...(ngDevMode ? {debugName: "n"} : {}), equal })`.
+    // During minification the spread will be removed since it's pointing to an empty object.
+    const transformedArg = ts.factory.createObjectLiteralExpression([
+      ts.factory.createSpreadAssignment(
+        createNgDevModeConditional(
+          ts.factory.createObjectLiteralExpression([debugNameProperty]),
+          ts.factory.createObjectLiteralExpression(),
+        ),
       ),
-    ),
-  );
+      ...existingArg.properties,
+    ]);
 
-  const transformedConfigProperties = ts.factory.createObjectLiteralExpression([
-    spreadDebugNameExpression,
-    ...properties,
-  ]);
-
-  let transformedSignalArgs = [];
-
-  // The following expression handles 3 cases:
-  // 1. Non-`required` signals without an argument that need to be prepended with `undefined` (e.g. `model()`).
-  // 2. Signals with object-only definition like `resource` or `linkedSignal` with computation;
-  //    Or `required` signals.
-  // 3. All remaining cases where we have a signal with an argument (e.g `computed(Fn)` or `signal('foo')`).
-  if (signalExpressionHasNoArguments && !signalExpressionIsRequired) {
-    transformedSignalArgs = [ts.factory.createIdentifier('undefined'), transformedConfigProperties];
-  } else if (signalWithObjectOnlyDefinition || signalExpressionIsRequired) {
-    transformedSignalArgs = [transformedConfigProperties];
+    newArgs = node.arguments.map((arg) => (arg === existingArg ? transformedArg : arg));
   } else {
-    transformedSignalArgs = [nodeArgs[0], transformedConfigProperties];
+    // If there's no existing argument, we transform it as follows:
+    // `input(0)` becomes `input(0, ...(ngDevMode ? [{debugName: "n"}] : []))`
+    // Spreading into an empty literal allows for the array to be dropped during minification.
+    const spreadArgs: ts.Expression[] = [];
+
+    // If we're adding an argument, but the function requires a first argument (e.g. `input()`),
+    // we have to add `undefined` before the debug literal.
+    if (hasNoArgs && !isRequired) {
+      spreadArgs.push(ts.factory.createIdentifier('undefined'));
+    }
+
+    spreadArgs.push(ts.factory.createObjectLiteralExpression([debugNameProperty]));
+
+    newArgs = [
+      ...node.arguments,
+      ts.factory.createSpreadElement(
+        createNgDevModeConditional(
+          ts.factory.createArrayLiteralExpression(spreadArgs),
+          ts.factory.createArrayLiteralExpression(),
+        ),
+      ),
+    ];
   }
 
-  return ts.factory.updateCallExpression(
-    callExpression,
-    callExpression.expression,
-    callExpression.typeArguments,
-    ts.factory.createNodeArray(transformedSignalArgs),
+  return ts.factory.updateCallExpression(node, node.expression, node.typeArguments, newArgs);
+}
+
+/**
+ * Creates an expression in the form of `(ngDevMode ? <devModeExpression> : <prodModeExpression>)`.
+ */
+function createNgDevModeConditional(
+  devModeExpression: ts.Expression,
+  prodModeExpression: ts.Expression,
+): ts.ParenthesizedExpression {
+  return ts.factory.createParenthesizedExpression(
+    ts.factory.createConditionalExpression(
+      ts.factory.createIdentifier('ngDevMode'),
+      undefined,
+      devModeExpression,
+      undefined,
+      prodModeExpression,
+    ),
   );
 }
 
