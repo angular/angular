@@ -54,12 +54,7 @@ import {unHighlight} from './highlighter';
 import {disableTimingAPI, enableTimingAPI, initializeOrGetDirectiveForestHooks} from './hooks';
 import {start as startProfiling, stop as stopProfiling} from './hooks/capture';
 import {ComponentTreeNode} from './interfaces';
-import {
-  getElementRefByName,
-  getComponentRefByName,
-  parseRoutes,
-  RoutePropertyType,
-} from './router-tree';
+import {getRouterCallableConstructRef, parseRoutes, RoutePropertyType} from './router-tree';
 import {ngDebugClient, ngDebugDependencyInjectionApiIsSupported} from './ng-debug-api/ng-debug-api';
 import {setConsoleReference} from './set-console-reference';
 import {serializeDirectiveState, serializeValue} from './state-serializer/state-serializer';
@@ -203,24 +198,18 @@ const navigateRouteCallback = (messageBus: MessageBus<Events>) => (path: string)
 
 /**
  * Opens the source code of a component or a directive in the editor.
- * @param name - The name of the component, provider, or directive to view source for.
+ * @param constructName - The name of the class/function that represents a component, provider, guard
+ * or other callable to view source for.
  * @param type - The type of the element to view source for  component, provider, or directive.
  * @returns - The element instance of the component, provider, or directive.
  */
-export const viewSourceFromRouter = (name: string, type: RoutePropertyType) => {
+export const viewSourceFromRouter = (constructName: string, type: RoutePropertyType) => {
   const router: any = getRouterInstance();
 
-  if (router == null) {
+  if (router === null) {
     return;
   }
-
-  let element;
-  if (type === 'component') {
-    element = getComponentRefByName(router.config, name);
-  } else {
-    element = getElementRefByName(type, router.config, name);
-  }
-  return element;
+  return getRouterCallableConstructRef(router.config, type, constructName);
 };
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>

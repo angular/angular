@@ -21,8 +21,6 @@ export type RoutePropertyType =
 
 export type RouteGuard = 'canActivate' | 'canActivateChild' | 'canDeactivate' | 'canMatch';
 
-const routeGuards = ['canActivate', 'canActivateChild', 'canDeactivate', 'canMatch'];
-
 type Routes = any;
 type Router = any;
 
@@ -217,11 +215,7 @@ function getClassOrFunctionName(fn: Function, defaultName?: string) {
     return '[Function]';
   }
 
-  // Check if it's a class by examining the function's string representation
-  const isClass = /^class\s/.test(fn.toString());
-
-  // Return class name without parentheses, function name with parentheses
-  return isClass ? fn.name : `${fn.name}()`;
+  return fn.name;
 }
 
 function getPropertyName(
@@ -246,104 +240,75 @@ function childRouteName(child: AngularRoute): string {
 }
 
 /**
- *  Get the element reference by type & name from the routes array. Called recursively to search through all children.
- * @param type - type of element to search for (canActivate, canActivateChild, canDeactivate, canLoad, providers, redirectTo , title)
- * @param routes - array of routes to search through
- * @param name - name of the element to search for refers to the name of the guard or provider
- * @returns - the element reference if found, otherwise null
+ * Find a named callable construct (class or function) by type & name in a source routes tree.
+ *
+ * @param routes - Source routes tree to search through.
+ * @param type - Type of construct to search for (e.g. canActivate, providers, redirectTo, title, etc.).
+ * @param constructName - Name of the construct to search for.
+ * @returns - The callable construct reference (`Function`) if found; otherwise, `null`.
  */
-export function getElementRefByName(
-  type: RoutePropertyType,
+export function getRouterCallableConstructRef(
   routes: AngularRoute[],
-  name: string,
-): any | null {
-  for (const element of routes) {
-    if (type === 'resolvers' && element.resolve) {
-      for (const key in element.resolve) {
-        if (element.resolve.hasOwnProperty(key)) {
-          const functionName = getClassOrFunctionName(element.resolve[key]);
-          //TODO: improve this, not every ResolverFn has a name property
-          if (functionName === name) {
-            return element.resolve[key];
+  type: RoutePropertyType,
+  constructName: string,
+): Function | null {
+  for (const route of routes) {
+    switch (type) {
+      case 'component':
+        if (route.component?.name === constructName) {
+          return route.component;
+        }
+        break;
+
+      case 'resolvers':
+        if (route.resolve) {
+          for (const key of Object.keys(route.resolve)) {
+            const functionName = getClassOrFunctionName(route.resolve[key]);
+            if (functionName === constructName) {
+              return route.resolve[key];
+            }
           }
         }
-      }
-    }
+        break;
 
-    const functionProperties: Exclude<RoutePropertyType, 'resolvers'>[] = [
-      'title',
-      'redirectTo',
-      'matcher',
-      'runGuardsAndResolvers',
-    ];
-
-    for (const property of functionProperties) {
-      if (type === property && element[property] instanceof Function) {
-        const functionName = getClassOrFunctionName(element[property]);
-        // TODO: improve this, not every function has a name property
-        if (functionName === name) {
-          return element[property];
-        }
-      }
-    }
-
-    if (routeGuards.includes(type)) {
-      const routeGuard = type as RouteGuard;
-      if (element[routeGuard]) {
-        for (const guard of element[routeGuard]) {
-          // TODO: improve this, not every guard has a name property
-          if ((guard as any).name === name) {
-            return guard;
+      case 'title':
+      case 'redirectTo':
+      case 'matcher':
+      case 'runGuardsAndResolvers':
+        if (route[type] instanceof Function) {
+          const functionName = getClassOrFunctionName(route[type]);
+          if (functionName === constructName) {
+            return route[type];
           }
         }
-      }
+        break;
+
+      case 'canActivate':
+      case 'canActivateChild':
+      case 'canDeactivate':
+      case 'canMatch':
+      case 'providers':
+        if (route[type]) {
+          for (const callable of route[type]) {
+            if (callable instanceof Function && callable.name === constructName) {
+              return callable;
+            }
+          }
+        }
+        break;
     }
 
-    // _loadedRoutes is internal, we can't acess it with the dot notation
-    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
-    if (loadedRoutes) {
-      const result = getElementRefByName(type, loadedRoutes, name);
-      if (result !== null) {
-        return result;
-      }
-    }
+    // _loadedRoutes is internal, we can't access it with the dot notation
+    const loadedRoutes = (route as any)['_loadedRoutes'] as AngularRoute[] | undefined;
+    const childrenRoutes = loadedRoutes || route.children;
 
-    if (element?.children) {
-      const result = getElementRefByName(type, element.children, name);
+    if (childrenRoutes) {
+      const result = getRouterCallableConstructRef(childrenRoutes, type, constructName);
       if (result !== null) {
         return result;
       }
     }
   }
-}
 
-/**
- *  Get the componet reference by name from the routes array. Called recursively to search through all children.
- * @param routes - array of routes to search through
- * @param name - name of the component to search for
- * @returns - the element reference if found, otherwise null
- */
-export function getComponentRefByName(routes: AngularRoute[], name: string): any | null {
-  for (const element of routes) {
-    if (element?.component?.name === name) {
-      return element.component;
-    }
-
-    // _loadedRoutes is internal, we can't acess it with the dot notation
-    const loadedRoutes = (element as any)?.['_loadedRoutes'] as AngularRoute[] | undefined;
-    if (loadedRoutes) {
-      const result = getComponentRefByName(loadedRoutes, name);
-      if (result !== null) {
-        return result;
-      }
-    }
-
-    if (element?.children) {
-      const result = getComponentRefByName(element.children, name);
-      if (result !== null) {
-        return result;
-      }
-    }
-  }
   return null;
 }
