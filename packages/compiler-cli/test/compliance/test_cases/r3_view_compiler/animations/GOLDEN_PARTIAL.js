@@ -188,7 +188,7 @@ import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     constructor() {
-        this.enterClass = signal('slide', Object.assign({}, (ngDevMode ? { debugName: "enterClass" } : {})));
+        this.enterClass = signal('slide', ...(ngDevMode ? [{ debugName: "enterClass" }] : []));
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
@@ -299,7 +299,7 @@ import { Component, signal } from '@angular/core';
 import * as i0 from "@angular/core";
 export class MyComponent {
     constructor() {
-        this.leaveClass = signal('fade', Object.assign({}, (ngDevMode ? { debugName: "leaveClass" } : {})));
+        this.leaveClass = signal('fade', ...(ngDevMode ? [{ debugName: "leaveClass" }] : []));
     }
 }
 MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
