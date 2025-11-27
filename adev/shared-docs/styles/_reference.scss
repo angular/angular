@@ -336,6 +336,16 @@
           border-block-start: 1px solid var(--senary-contrast);
         }
       }
+
+      .docs-usage-notes {
+        border-block-start: 1px solid var(--senary-contrast);
+
+        .docs-usage-notes-heading {
+          color: var(--primary-contrast);
+          margin: 0.5rem 0;
+          font-size: 1.2rem;
+        }
+      }
     }
   }
 }
