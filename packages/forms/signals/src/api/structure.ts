@@ -61,7 +61,7 @@ export interface FormOptions {
  * as well.
  *
  * @example
- * ```
+ * ```ts
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -89,7 +89,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  * as well.
  *
  * @example
- * ```
+ * ```ts
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -102,7 +102,7 @@ export function form<TModel>(model: WritableSignal<TModel>): FieldTree<TModel>;
  * function that builds the schema by binding logic to a parts of the field structure.
  *
  * @example
- * ```
+ * ```ts
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
  *   pattern(name.last, /^[a-z]+$/i, {message: 'Alphabet characters only'});
@@ -139,7 +139,7 @@ export function form<TModel>(
  * as well.
  *
  * @example
- * ```
+ * ```ts
  * const nameModel = signal({first: '', last: ''});
  * const nameForm = form(nameModel);
  * nameForm.first().value.set('John');
@@ -152,7 +152,7 @@ export function form<TModel>(
  * function that builds the schema by binding logic to a parts of the field structure.
  *
  * @example
- * ```
+ * ```ts
  * const nameForm = form(signal({first: '', last: ''}), (name) => {
  *   required(name.first);
  *   validate(name.last, ({value}) => !/^[a-z]+$/i.test(value()) ? customError({kind: 'alphabet-only'}) : undefined);
@@ -195,7 +195,7 @@ export function form<TModel>(...args: any[]): FieldTree<TModel> {
  * Applies a schema to each item of an array.
  *
  * @example
- * ```
+ * ```ts
  * const nameSchema = schema<{first: string, last: string}>((name) => {
  *   required(name.first);
  *   required(name.last);
@@ -235,7 +235,7 @@ export function applyEach<TValue extends Object>(
  * Applies a predefined schema to a given `FieldPath`.
  *
  * @example
- * ```
+ * ```ts
  * const nameSchema = schema<{first: string, last: string}>((name) => {
  *   required(name.first);
  *   required(name.last);
@@ -336,7 +336,7 @@ export function applyWhenValue(
  * server error.
  *
  * @example
- * ```
+ * ```ts
  * async function registerNewUser(registrationForm: FieldTree<{username: string, password: string}>) {
  *   const result = await myClient.registerNewUser(registrationForm().value());
  *   if (result.errorCode === myClient.ErrorCode.USERNAME_TAKEN) {
