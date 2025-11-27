@@ -21,13 +21,13 @@ Angular helps you follow these principles by making it easy to factor your appli
 
 Here's an example of a service class that logs to the browser console:
 
-<docs-code header="logger.service.ts (class)" language="typescript">
+```ts {header: "logger.service.ts (class)"}
 export class Logger {
   log(msg: unknown) { console.log(msg); }
   error(msg: unknown) { console.error(msg); }
   warn(msg: unknown) { console.warn(msg); }
 }
-</docs-code>
+```
 
 Services can depend on other services.
 For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes.

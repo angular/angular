@@ -36,19 +36,17 @@ A change can be accepted or ignored, or throw an exception.
 When you create a new blank schematic with the [Schematics CLI](#schematics-cli), the generated entry function is a _rule factory_.
 A `RuleFactory` object defines a higher-order function that creates a `Rule`.
 
-<docs-code header="index.ts" language="typescript">
-
+```ts {header: "index.ts"}
 import { Rule, SchematicContext, Tree } from '@angular-devkit/schematics';
 
 // You don't have to export the function as default.
 // You can also have more than one rule factory per file.
 export function helloWorld(\_options: any): Rule {
-return (tree: Tree,\_context: SchematicContext) => {
-return tree;
-};
+   return (tree: Tree,\_context: SchematicContext) => {
+    return tree;
+  };
 }
-
-</docs-code>
+```
 
 Your rules can make changes to your projects by calling external tools and implementing logic.
 You need a rule, for example, to define how a template in the schematic is to be merged into the hosting project.
@@ -56,7 +54,7 @@ You need a rule, for example, to define how a template in the schematic is to be
 Rules can make use of utilities provided with the `@schematics/angular` package.
 Look for helper functions for working with modules, dependencies, TypeScript, AST, JSON, Angular CLI workspaces and projects, and more.
 
-<docs-code header="index.ts" language="typescript">
+```ts {header: "index.ts"}
 
 import {
 JsonAstObject,
@@ -67,8 +65,7 @@ normalize,
 parseJsonAst,
 strings,
 } from '@angular-devkit/core';
-
-</docs-code>
+```
 
 ### Defining input options with a schema and interfaces
 

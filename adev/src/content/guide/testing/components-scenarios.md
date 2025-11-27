@@ -304,12 +304,10 @@ To enable it, set a global flag before importing `zone-testing`.
 
 If you use the Angular CLI, configure this flag in `src/test.ts`.
 
-<docs-code language="typescript">
-
+```ts
 [window as any]('__zone_symbol__fakeAsyncPatchLock') = true;
 import 'zone.js/testing';
-
-</docs-code>
+```
 
 <docs-code path="adev/src/content/examples/testing/src/app/demo/async-helper.spec.ts" visibleRegion="fake-async-test-clock"/>
 
