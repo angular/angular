@@ -78,7 +78,7 @@ export class MyComp {
 
 #### After
 
-```typescript
+```ts
 import { Component } from '@angular/core';
 import { MyService } from './service';
 
@@ -86,10 +86,10 @@ import { MyService } from './service';
 export class MyComp {
 private service = inject(MyService);
 
-/* Inserted by Angular inject() migration for backwards compatibility */
-constructor(...args: unknown[]);
+  /\*_ Inserted by Angular inject() migration for backwards compatibility _/
+  constructor(...args: unknown[]);
 
-constructor() {}
+  constructor() {}
 }
 ```
 
