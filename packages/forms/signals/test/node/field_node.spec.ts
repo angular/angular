@@ -561,6 +561,33 @@ describe('FieldNode', () => {
       expect(f().hidden()).toBe(false);
       expect(f().touched()).toBe(true);
     });
+
+    it('should mark the field and all descendants as touched', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: {
+            c: 2,
+            d: 3,
+          },
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+
+      expect(f().touched()).toBeFalse();
+      expect(f.a().touched()).toBeFalse();
+      expect(f.b().touched()).toBeFalse();
+      expect(f.b.c().touched()).toBeFalse();
+      expect(f.b.d().touched()).toBeFalse();
+
+      f().markAllAsTouched();
+
+      expect(f().touched()).toBeTrue();
+      expect(f.a().touched()).toBeTrue();
+      expect(f.b().touched()).toBeTrue();
+      expect(f.b.c().touched()).toBeTrue();
+      expect(f.b.d().touched()).toBeTrue();
+    });
   });
 
   describe('arrays', () => {
