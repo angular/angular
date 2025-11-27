@@ -10,7 +10,15 @@
 // Example when there is a conflict between API entries and compiler features.
 // eg: "animate" is both an Animation API entry and an template instruction "animation.enter"
 // or "style" is a generic term but also an Animation API entry.
-const LINK_EXEMPT = new Set(['animate', 'animate.enter', 'animate.leave', 'style']);
+const LINK_EXEMPT = new Set([
+  'animate',
+  'animate.enter',
+  'animate.leave',
+  'style',
+  'readonly',
+  'disabled',
+  'hidden',
+]);
 
 export function shouldLinkSymbol(symbol: string): boolean {
   return !LINK_EXEMPT.has(symbol);
