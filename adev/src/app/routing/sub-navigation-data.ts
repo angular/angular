@@ -110,6 +110,11 @@ const DOCS_SUB_NAVIGATION_DATA: NavigationItem[] = [
             path: 'guide/signals/resource',
             contentPath: 'guide/signals/resource',
           },
+          {
+            label: 'Side effects for non-reactives APIs',
+            path: 'guide/signals/effect',
+            contentPath: 'guide/signals/effect',
+          },
         ],
       },
       {
