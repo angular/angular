@@ -273,3 +273,17 @@ function getSanitizer(): Sanitizer | null {
   const lView = getLView();
   return lView && lView[ENVIRONMENT].sanitizer;
 }
+
+/**
+ * Validates that the attribute binding is safe to use.
+ *
+ * @param value The value of the attribute.
+ * @param tagName The name of the tag.
+ * @param attributeName The name of the attribute.
+ */
+export function ɵɵValidateAttribute(_value: any, tagName: string, attributeName: string): never {
+  const errorMessage =
+    `Binding to attribute '${attributeName}' of '${tagName}' is disallowed for security reasons, ` +
+    `please use ${attributeName}="..."`;
+  throw new RuntimeError(RuntimeErrorCode.INVALID_ATTRIBUTE_BINDING, errorMessage);
+}

@@ -74,6 +74,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     INVALID_APP_ID = 211,
     // (undocumented)
+    INVALID_ATTRIBUTE_BINDING = 319,
+    // (undocumented)
     INVALID_BINDING_TARGET = 316,
     // (undocumented)
     INVALID_DIFFER_INPUT = 900,

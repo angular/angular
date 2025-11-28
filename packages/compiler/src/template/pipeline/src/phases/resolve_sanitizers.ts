@@ -23,6 +23,7 @@ const sanitizerFns = new Map<SecurityContext, o.ExternalReference>([
   [SecurityContext.SCRIPT, Identifiers.sanitizeScript],
   [SecurityContext.STYLE, Identifiers.sanitizeStyle],
   [SecurityContext.URL, Identifiers.sanitizeUrl],
+  [SecurityContext.ATTRIBUTE_NO_BINDING, Identifiers.validateAttribute],
 ]);
 
 /**
@@ -63,8 +64,8 @@ export function resolveSanitizers(job: CompilationJob): void {
           if (
             Array.isArray(op.securityContext) &&
             op.securityContext.length === 2 &&
-            op.securityContext.indexOf(SecurityContext.URL) > -1 &&
-            op.securityContext.indexOf(SecurityContext.RESOURCE_URL) > -1
+            op.securityContext.includes(SecurityContext.URL) &&
+            op.securityContext.includes(SecurityContext.RESOURCE_URL)
           ) {
             // When the host element isn't known, some URL attributes (such as "src" and "href") may
             // be part of multiple different security contexts. In this case we use special

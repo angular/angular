@@ -301,8 +301,8 @@ export {
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
+  ɵɵValidateAttribute,
 } from './sanitization/sanitization';
-export {ɵɵvalidateIframeAttribute} from './sanitization/iframe_attrs_validation';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
 export {depsTracker as ɵdepsTracker} from './render3/deps_tracker/deps_tracker';

@@ -726,3 +726,21 @@ describe('iframe processing', () => {
     });
   });
 });
+
+describe('SVG animation processing', () => {
+  it('should error when `attributeName` is bound', () => {
+    @Component({
+      template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+    })
+    class TestCmp {
+      attr = 'href';
+    }
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0319: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
+    );
+  });
+});

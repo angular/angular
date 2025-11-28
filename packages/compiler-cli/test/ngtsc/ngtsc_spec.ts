@@ -9258,6 +9258,33 @@ runInEachFileSystem((os: string) => {
       });
     });
 
+    describe('SVG animation processing', () => {
+      it('should generate SVG animation validation instruction', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+              standalone: false,
+            })
+            export class TestCmp {
+              attr = 'opacity';
+            }
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵattribute("attributeName", ctx.attr, i0.ɵɵValidateAttribute);',
+        );
+      });
+    });
+
     describe('inline resources', () => {
       it('should process inline <style> tags', () => {
         env.write(
