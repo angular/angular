@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {readFileSync, writeFileSync} from 'fs';
+import {readFile, writeFile} from 'fs/promises';
 import path from 'path';
 import {initHighlighter} from '../shared/shiki.mjs';
 import {parseMarkdownAsync} from '../shared/marked/parse.mjs';
@@ -20,48 +20,50 @@ interface ApiManifestPackage {
 
 async function main() {
   const [paramFilePath] = process.argv.slice(2);
-  const rawParamLines = readFileSync(paramFilePath, {encoding: 'utf8'}).split('\n');
+  const rawParamLines = (await readFile(paramFilePath, {encoding: 'utf8'})).split('\n');
   const [srcs, outputFilenameExecRootRelativePath, apiManifestPath] = rawParamLines;
 
   // The highlighter needs to be setup asynchronously
   // so we're doing it at the start of the pipeline
   const highlighter = await initHighlighter();
 
-  for (const filePath of srcs.split(',')) {
-    if (!filePath.endsWith('.md')) {
-      throw new Error(`Input file "${filePath}" does not end in a ".md" file extension.`);
-    }
-
-    let apiManifest: ApiManifest = [];
-    if (apiManifestPath) {
-      try {
-        const apiManifestStr = readFileSync(apiManifestPath, {encoding: 'utf8'});
-        apiManifest = JSON.parse(apiManifestStr);
-      } catch (error) {
-        console.warn('Failed to load API entries:', error);
+  await Promise.all(
+    srcs.split(',').map(async (filePath) => {
+      if (!filePath.endsWith('.md')) {
+        throw new Error(`Input file "${filePath}" does not end in a ".md" file extension.`);
       }
-    }
 
-    const markdownContent = readFileSync(filePath, {encoding: 'utf8'});
-    const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
-      markdownFilePath: filePath,
-      apiEntries: mapManifestToEntries(apiManifest),
-      highlighter,
-    });
+      let apiManifest: ApiManifest = [];
+      if (apiManifestPath) {
+        try {
+          const apiManifestStr = await readFile(apiManifestPath, {encoding: 'utf8'});
+          apiManifest = JSON.parse(apiManifestStr);
+        } catch (error) {
+          console.warn('Failed to load API entries:', error);
+        }
+      }
 
-    // The expected file name structure is the [name of the file].md.html.
-    const htmlFileName = filePath + '.html';
-    const htmlOutputPath = path.join(outputFilenameExecRootRelativePath, htmlFileName);
+      const markdownContent = await readFile(filePath, {encoding: 'utf8'});
+      const htmlOutputContent = await parseMarkdownAsync(markdownContent, {
+        markdownFilePath: filePath,
+        apiEntries: mapManifestToEntries(apiManifest),
+        highlighter,
+      });
 
-    const unknownAnchor = hasUnknownAnchors(htmlOutputContent);
-    if (unknownAnchor) {
-      throw new Error(
-        `The file "${filePath}" contains an anchor link to "${unknownAnchor}" which does not exist in the document.`,
-      );
-    }
+      // The expected file name structure is the [name of the file].md.html.
+      const htmlFileName = filePath + '.html';
+      const htmlOutputPath = path.join(outputFilenameExecRootRelativePath, htmlFileName);
 
-    writeFileSync(htmlOutputPath, htmlOutputContent, {encoding: 'utf8'});
-  }
+      const unknownAnchor = hasUnknownAnchors(htmlOutputContent);
+      if (unknownAnchor) {
+        throw new Error(
+          `The file "${filePath}" contains an anchor link to "${unknownAnchor}" which does not exist in the document.`,
+        );
+      }
+
+      await writeFile(htmlOutputPath, htmlOutputContent, {encoding: 'utf8'});
+    }),
+  );
 }
 
 main();
