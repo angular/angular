@@ -7,6 +7,7 @@
  */
 
 import {
+  ApplicationRef,
   Component,
   computed,
   Directive,
@@ -44,6 +45,7 @@ import {
   type ValidationError,
   type WithOptionalField,
 } from '../../public_api';
+import {exec} from 'child_process';
 
 @Component({
   selector: 'string-control',
@@ -2526,6 +2528,48 @@ describe('field directive', () => {
       expect(customCtrl.classList.contains('always')).toBe(true);
       expect(customSubform.classList.contains('always')).toBe(false);
     });
+  });
+
+  it('should create & bind input when a macro task is running', async () => {
+    const {promise, resolve} = promiseWithResolvers<void>();
+
+    @Component({
+      selector: 'app-form',
+      imports: [Field],
+      template: `
+        <form>
+          <select [field]="form">
+            <option value="us">United States</option>
+            <option value="ca">Canada</option>
+          </select>
+        </form>
+  `,
+    })
+    class FormComponent {
+      form = form(signal('us'));
+    }
+
+    @Component({
+      selector: 'app-root',
+      template: ``,
+    })
+    class App {
+      vcr = inject(ViewContainerRef);
+      constructor() {
+        promise.then(() => {
+          this.vcr.createComponent(FormComponent);
+        });
+      }
+    }
+
+    Error.stackTraceLimit = 1000;
+    const fixture = act(() => TestBed.createComponent(App));
+
+    resolve();
+    await fixture.whenStable();
+
+    const select = fixture.debugElement.parent!.nativeElement.querySelector('select');
+    expect(select.value).toBe('us');
   });
 });
 

@@ -10,9 +10,8 @@ MyComponent.ɵcmp = /* @__PURE__ */i0.ɵɵdefineComponent({
       i0.ɵɵelementStart(1, "div");
       i0.ɵɵtext(2, "Not a form control either.");
       i0.ɵɵelementEnd();
-      i0.ɵɵelementStart(3, "input", 1);
+      i0.ɵɵelement(3, "input", 1);
       i0.ɵɵcontrolCreate();
-      i0.ɵɵelementEnd();
     }
     if (rf & 2) {
       i0.ɵɵadvance();
