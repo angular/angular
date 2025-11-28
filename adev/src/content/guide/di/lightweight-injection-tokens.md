@@ -49,7 +49,7 @@ class LibCardComponent {
 }
 ```
 
-Because `<lib-header>` is optional, the element can appear in the template in its minimal form, `<lib-card></lib-card>`.
+Because `<lib-header>` is optional, the element can appear in the template in its minimal form, `<lib-card />`.
 In this case, `<lib-header>` is not used and you would expect it to be tree-shaken, but that is not what happens.
 This is because `LibCardComponent` actually contains two references to the `LibHeaderComponent`:
 
