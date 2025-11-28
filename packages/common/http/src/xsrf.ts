@@ -101,14 +101,18 @@ export function xsrfInterceptorFn(
     return next(req);
   }
 
-  // Skip requests to different origins
-  const locationHref = inject(PlatformLocation).href;
-  const {origin: locationOrigin} = new URL(locationHref);
+  try {
+    const locationHref = inject(PlatformLocation).href;
+    const {origin: locationOrigin} = new URL(locationHref);
+    // new URL('//something.com', 'https://example.com') ->
+    // 'https://something.com'
+    const {origin: requestOrigin} = new URL(req.url, locationOrigin);
 
-  // new URL('//something.com', 'https://example.com') -> 'https://something.com'
-  const {origin: requestOrigin} = new URL(req.url, locationOrigin);
-
-  if (locationOrigin !== requestOrigin) {
+    if (locationOrigin !== requestOrigin) {
+      return next(req);
+    }
+  } catch {
+    // Handle invalid URLs gracefully.
     return next(req);
   }
 
