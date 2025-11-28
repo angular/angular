@@ -69,10 +69,10 @@ When displaying a route, the `<router-outlet>` element remains present in the DO
 
 ```angular-html
 <!-- Content rendered on the page when the user visits /admin -->
-<app-header>...</app-header>
-<router-outlet></router-outlet>
-<app-admin-page>...</app-admin-page>
-<app-footer>...</app-footer>
+<app-header />
+<router-outlet />
+<app-admin-page />
+<app-footer />
 ```
 
 ## Nesting routes with child routes
