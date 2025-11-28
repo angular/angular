@@ -1,7 +1,3 @@
-
-HTML
-TS
-CSS
 .example-container {
   width: 400px;
   max-width: 100%;
@@ -31,6 +27,7 @@ CSS
   cursor: move;
   background: white;
   font-size: 14px;
+  font-family: sans-serif;
 }
 
 .cdk-drag-preview {
