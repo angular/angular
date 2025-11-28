@@ -7,6 +7,7 @@
   background: white;
   border-radius: 4px;
   overflow: hidden;
+  font-family: sans-serif;
 }
 
 .example-box {
@@ -21,6 +22,7 @@
   cursor: move;
   background: white;
   font-size: 14px;
+  font-family: sans-serif;
 }
 
 .cdk-drag-preview {
