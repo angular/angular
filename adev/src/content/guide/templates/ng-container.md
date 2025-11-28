@@ -80,7 +80,7 @@ You can also apply structural directives to `<ng-container>` elements. Common ex
 ```angular-html
 <ng-container *ngIf="permissions == 'admin'">
   <h1>Admin Dashboard</h1>
-  <admin-infographic></admin-infographic>
+  <admin-infographic />
 </ng-container>
 
 <ng-container *ngFor="let item of items; index as i; trackBy: trackByFn">

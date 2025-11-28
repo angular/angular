@@ -331,7 +331,7 @@ Components are used in your templates, as in the following example:
 
 ```html
 <app-root>
-  <app-child></app-child>;
+  <app-child />;
 </app-root>
 ```
 
@@ -673,11 +673,11 @@ Next, add the following to `child.component.html`:
 
 <div class="container">
   <h3>Content projection</h3>
-  <ng-content></ng-content>
+  <ng-content />
 </div>
 <h3>Inside the view</h3>
 
-<app-inspector></app-inspector>
+<app-inspector />
 ```
 
 `<ng-content>` allows you to project content, and `<app-inspector>` inside the `ChildComponent` template makes the `InspectorComponent` a child component of `ChildComponent`.
@@ -686,7 +686,7 @@ Next, add the following to `app.component.html` to take advantage of content pro
 
 ```html
 <app-child>
-  <app-inspector></app-inspector>
+  <app-inspector />
 </app-child>
 ```
 

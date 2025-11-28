@@ -13,9 +13,9 @@ import {CartDisplay} from './cart-display';
           Cart: {{ cartStore.totalQuantity() }} items (\${{ cartStore.totalPrice() }})
         </div>
       </header>
-      
+
       <main>
-        <cart-display></cart-display>
+        <cart-display />
       </main>
     </div>
   `,
