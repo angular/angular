@@ -23,6 +23,7 @@
   text-align: center;
   font-size: 14px;
   min-width: 115px;
+  font-family: sans-serif;
 }
 
 .cdk-drag-preview {
