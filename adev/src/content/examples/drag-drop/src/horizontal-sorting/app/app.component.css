@@ -24,6 +24,7 @@
   font-size: 14px;
   flex-grow: 1;
   flex-basis: 0;
+  font-family: sans-serif;
 }
 
 .cdk-drag-preview {
