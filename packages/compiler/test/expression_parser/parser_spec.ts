@@ -126,6 +126,16 @@ describe('parser', () => {
     it('should parse in expressions', () => {
       checkAction(`'key' in obj`, `"key" in obj`);
       checkAction(`('key' in obj) && true`, `("key" in obj) && true`);
+      checkAction(`'in' in {in: foo}`, `"in" in {in: foo}`);
+    });
+
+    it('should throw on invalid in expressions', () => {
+      expectActionError('in', 'Unexpected token in');
+      expectActionError('in foo', 'Unexpected token in');
+      expectActionError(
+        `'foo' in`,
+        `Unexpected end of expression: 'foo' in at the end of the expression ['foo' in]`,
+      );
     });
 
     it('should ignore comments in expressions', () => {
