@@ -111,7 +111,7 @@
     "angular-mocks-1.7": "npm:angular-mocks@1.7",
     "angular-mocks-1.8": "npm:angular-mocks@1.8",
     "chalk": "^5.4.1",
-    "chokidar": "^4.0.0",
+    "chokidar": "^5.0.0",
     "convert-source-map": "^1.5.1",
     "d3": "^7.0.0",
     "dagre-d3-es": "^7.0.11",
