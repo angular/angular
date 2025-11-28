@@ -49,7 +49,7 @@ In this lesson, you will enable routing in your application to navigate to the d
    2. Add `RouterOutlet` and `RouterLink` to the `@Component` metadata imports
 
    <docs-code language="angular-ts" header="Add router directives to component imports in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[6]"/>
-   3. In the `template` property, replace the `<app-home></app-home>` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
+   3. In the `template` property, replace the `<app-home />` tag with the `<router-outlet>` directive and add a link back to the home page. Your code should match this code:
 
    <docs-code language="angular-ts" header="Add router-outlet in src/app/app.ts" path="adev/src/content/tutorials/first-app/steps/11-details-page/src/app/app.ts" visibleLines="[7,18]"/>
 
