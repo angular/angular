@@ -17,8 +17,8 @@ import {ParseError, ParseSourceSpan} from '../parse_util';
 import {
   AbsoluteSourceSpan,
   ArrowFunction,
-  ArrowFunctionParameter,
   ArrowFunctionIdentifierParameter,
+  ArrowFunctionParameter,
   AST,
   ASTWithSource,
   Binary,
@@ -969,7 +969,7 @@ class _ParseAST {
     let result = this.parseAdditive();
     while (
       this.next.type == TokenType.Operator ||
-      this.next.isKeywordIn() || // Should be invoked. This is bug here that will be fixed by #65249 when the breaking change window opens.
+      this.next.isKeywordIn() ||
       this.next.isKeywordInstanceOf()
     ) {
       const operator = this.next.strValue;
@@ -1144,9 +1144,6 @@ class _ParseAST {
     } else if (this.next.isKeywordFalse()) {
       this.advance();
       return new LiteralPrimitive(this.span(start), this.sourceSpan(start), false);
-    } else if (this.next.isKeywordIn()) {
-      this.advance();
-      return new LiteralPrimitive(this.span(start), this.sourceSpan(start), 'in');
     } else if (this.next.isKeywordThis()) {
       this.advance();
       return new ThisReceiver(this.span(start), this.sourceSpan(start));

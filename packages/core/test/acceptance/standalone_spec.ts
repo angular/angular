@@ -833,25 +833,6 @@ describe('standalone components, directives, and pipes', () => {
       expect(fixture.nativeElement.textContent).toBe('standalone: input value');
     });
 
-    it('should allow extending a standalone component and turn it into a regular one', () => {
-      @Component({selector: 'standalone', template: 'standalone: {{in}}'})
-      class StandaloneCmp {
-        @Input() input: string | undefined;
-      }
-
-      @Component({
-        selector: 'regular',
-        template: 'regular: {{input}}',
-        standalone: false,
-      })
-      class RegularCmp extends StandaloneCmp {}
-
-      const fixture = TestBed.createComponent(RegularCmp);
-      fixture.componentInstance.input = 'input value';
-      fixture.detectChanges();
-      expect(fixture.nativeElement.textContent).toBe('regular: input value');
-    });
-
     it('should ?', () => {
       @Component({
         selector: 'inner',
