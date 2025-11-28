@@ -7,7 +7,7 @@
  */
 
 import {CompilerOptions} from '@angular/compiler-cli';
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {NgCompiler} from '@angular/compiler-cli/private/language_service';
 import {MigrationConfig} from '@angular/core/schematics/migrations/signal-migration/src';
 import {ApplyRefactoringProgressFn, ApplyRefactoringResult} from '../../../api';
 import ts from 'typescript';
