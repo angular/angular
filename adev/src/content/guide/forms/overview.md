@@ -269,7 +269,7 @@ The first example performs the following steps to verify the view-to-model data 
 1. Set the new value for the input to _Red_, and dispatch the "input" event on the form input element.
 1. Assert that the component's `favoriteColorControl` value matches the value from the input.
 
-<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
+<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="view-to-model"/>
 
 The next example performs the following steps to verify the model-to-view data flow.
 
@@ -277,7 +277,7 @@ The next example performs the following steps to verify the model-to-view data f
 1. Query the view for the form input element.
 1. Assert that the new value set on the control matches the value in the input.
 
-<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
+<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/reactive/favorite-color/favorite-color.component.spec.ts" region="model-to-view"/>
 
 ### Testing template-driven forms
 
@@ -287,7 +287,7 @@ The following tests use the favorite color components mentioned earlier to verif
 
 The following test verifies the data flow from view to model.
 
-<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="view-to-model"/>
+<docs-code header="Favorite color test - view to model" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="view-to-model"/>
 
 Here are the steps performed in the view to model test.
 
@@ -298,7 +298,7 @@ Here are the steps performed in the view to model test.
 
 The following test verifies the data flow from model to view.
 
-<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" visibleRegion="model-to-view"/>
+<docs-code header="Favorite color test - model to view" path="adev/src/content/examples/forms-overview/src/app/template/favorite-color/favorite-color.component.spec.ts" region="model-to-view"/>
 
 Here are the steps performed in the model to view test.
 
