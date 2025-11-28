@@ -19,9 +19,9 @@ The Angular CLI MCP server provides several tools to assist you in your developm
 
 Some tools are provided in experimental / preview status since they are new or not fully tested. Enable them individually with the [`--experimental-tool`](#command-options) option and use them with caution.
 
-| Name        | Description                                                                                                                                                                                            | `local-only` | `read-only` |
-| :---------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
-| `modernize` | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](https://angular.dev/reference/migrations) |      ✅      |     ❌      |
+| Name        | Description                                                                                                                                                                         | `local-only` | `read-only` |
+| :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------: | :---------: |
+| `modernize` | Performs code migrations and provides further instructions on how to modernize Angular code to align with the latest best practices and syntax. [Learn more](/reference/migrations) |      ✅      |     ❌      |
 
 ## Get Started
 
