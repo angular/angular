@@ -147,6 +147,18 @@ describe('withPlatformNavigation feature', () => {
       await timeout();
       expect(navigation.transition).toBeNull();
     });
+
+    it('retains the original traversal NavigateEvent', async () => {
+      router.resetConfig([{path: '**', children: []}]);
+      await router.navigateByUrl('/first');
+      await timeout();
+
+      const navigateEvents: NavigateEvent[] = [];
+      navigation.addEventListener('navigate', (e: NavigateEvent) => navigateEvents.push(e));
+      await navigation.back().finished;
+      expect(navigateEvents.length).toBe(1);
+      expect(navigateEvents[0].navigationType).toBe('traverse');
+    });
   });
 
   describe('eager url update', () => {
