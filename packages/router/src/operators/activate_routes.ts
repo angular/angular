@@ -6,35 +6,13 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {MonoTypeOperatorFunction} from 'rxjs';
-import {map} from 'rxjs/operators';
-
 import {ActivationEnd, ChildActivationEnd, Event} from '../events';
-import type {NavigationTransition} from '../navigation_transition';
 import type {DetachedRouteHandleInternal, RouteReuseStrategy} from '../route_reuse_strategy';
 import type {ChildrenOutletContexts} from '../router_outlet_context';
 import {ActivatedRoute, advanceActivatedRoute, RouterState} from '../router_state';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 let warnedAboutUnsupportedInputBinding = false;
-
-export const activateRoutes = (
-  rootContexts: ChildrenOutletContexts,
-  routeReuseStrategy: RouteReuseStrategy,
-  forwardEvent: (evt: Event) => void,
-  inputBindingEnabled: boolean,
-): MonoTypeOperatorFunction<NavigationTransition> =>
-  map((t) => {
-    new ActivateRoutes(
-      routeReuseStrategy,
-      t.targetRouterState!,
-      t.currentRouterState,
-      forwardEvent,
-      inputBindingEnabled,
-    ).activate(rootContexts);
-    return t;
-  });
-
 export class ActivateRoutes {
   constructor(
     private routeReuseStrategy: RouteReuseStrategy,
