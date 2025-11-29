@@ -456,7 +456,7 @@ export class Identifiers {
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
   static validateAttribute: o.ExternalReference = {
-    name: 'ɵɵValidateAttribute',
+    name: 'ɵɵvalidateAttribute',
     moduleName: CORE,
   };
   static sanitizeResourceUrl: o.ExternalReference = {

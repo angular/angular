@@ -275,14 +275,21 @@ function getSanitizer(): Sanitizer | null {
   return lView && lView[ENVIRONMENT].sanitizer;
 }
 
-const attributeName: ReadonlyArray<string> = ['attributename'];
+const attributeName: ReadonlySet<string> = new Set(['attributename']);
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.
  * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
  */
-const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlyArray<string>>> = {
-  'iframe': ['sandbox', 'allow', 'allowfullscreen', 'referrerpolicy', 'csp', 'fetchpriority'],
+const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
+  'iframe': new Set([
+    'sandbox',
+    'allow',
+    'allowfullscreen',
+    'referrerpolicy',
+    'csp',
+    'fetchpriority',
+  ]),
   'animate': attributeName,
   'set': attributeName,
   'animatemotion': attributeName,
@@ -296,10 +303,10 @@ const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlyArray<string>
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵValidateAttribute(value: any, tagName: string, attributeName: string) {
+export function ɵɵvalidateAttribute(value: any, tagName: string, attributeName: string) {
   const lowerCaseTagName = tagName.toLowerCase();
   const lowerCaseAttrName = attributeName.toLowerCase();
-  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.includes(lowerCaseAttrName)) {
+  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {
     return value;
   }
 
@@ -312,7 +319,7 @@ export function ɵɵValidateAttribute(value: any, tagName: string, attributeName
   const errorMessage =
     ngDevMode &&
     `Binding to attribute '${attributeName}' of '${tagName}' is disallowed for security reasons, ` +
-      `please use ${attributeName}="..."`;
+      `please use regular static attributes instead: ${attributeName}="..."`;
 
   throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
 }

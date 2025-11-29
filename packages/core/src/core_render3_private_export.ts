@@ -301,7 +301,7 @@ export {
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
-  ɵɵValidateAttribute,
+  ɵɵvalidateAttribute,
 } from './sanitization/sanitization';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';
 export {AfterRenderManager as ɵAfterRenderManager} from './render3/after_render/manager';
