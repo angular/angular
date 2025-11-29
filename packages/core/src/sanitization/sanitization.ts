@@ -275,7 +275,7 @@ function getSanitizer(): Sanitizer | null {
   return lView && lView[ENVIRONMENT].sanitizer;
 }
 
-const attributeName: ReadonlyArray<string> = ['attributeName'];
+const attributeName: ReadonlyArray<string> = ['attributename'];
 
 /**
  * @remarks Keep this in sync with DOM Security Schema.

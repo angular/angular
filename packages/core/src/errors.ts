@@ -124,6 +124,7 @@ export const enum RuntimeErrorCode {
   /**
    * @deprecated use `UNSAFE_ATTRIBUTE_BINDING` instead.
    */
+  // tslint:disable-next-line:no-duplicate-enum-values
   UNSAFE_IFRAME_ATTRS = -910,
   VIEW_ALREADY_DESTROYED = 911,
   COMPONENT_ID_COLLISION = -912,
