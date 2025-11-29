@@ -241,7 +241,7 @@ TypeScript path mappings should _not_ point to the library source `.ts` files.
 ### Linking libraries for local development
 
 This section explains how to use your package manager's local linking feature
-(such as [`npm link`](https://pnpm.io/cli/link) or [`pnpm link`](https://pnpm.io/cli/link)) to test a standalone Angular library with an external application during
+(such as [`npm link`](https://docs.npmjs.com/cli/v11/commands/npm-link) or [`pnpm link`](https://pnpm.io/cli/link)) to test a standalone Angular library with an external application during
 local development, without relying on the monorepo workspace structure or publishing to the NPM registry.
 
 NOTE: If your library and application are in the same Angular workspace (a monorepo setup), the standard monorepo workflow automatically handles the linking and is generally more efficient. This local linking approach is best when:
