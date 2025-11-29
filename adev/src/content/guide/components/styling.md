@@ -71,10 +71,22 @@ as `::shadow` or `::part`.
 
 #### `::ng-deep`
 
-Angular's emulated encapsulation mode supports a custom pseudo class, `::ng-deep`. Applying this
-pseudo class to a CSS rule disables encapsulation for that rule, effectively turning it into a
-global style. **The Angular team strongly discourages new use of `::ng-deep`**. These APIs remain
+Angular's emulated encapsulation mode supports a custom pseudo class, `::ng-deep`.
+**The Angular team strongly discourages new use of `::ng-deep`**. These APIs remain
 exclusively for backwards compatibility.
+
+How it works is that when you have `::ng-deep` in a CSS selector, the parts of the selector that come
+*after* `::ng-deep` will be matched with elements irrespective of whether they are inside the component's template.
+For instance:
+- a CSS rule whose selector is `p a` will match `<a>` elements inside the component's template, which are also
+  descendants of a `<p>` element that's itself also inside the component's template. That's Angular's default behavior.
+- `::ng-deep p a` will match `<a>` elements anywhere in the page, descendants of a `<p>` element anywhere in the page.
+  That effectively makes it a global style.
+- `p ::ng-deep a` will match `<a>` elements anywhere in the page, but only those that are descendents
+  of a `<p>` element inside the component's template.
+  So, effectively, the `<a>` can only be in the component's template, or among the component's children.
+- `:host ::ng-deep p a` will match `<a>` elements descendants of `<p>` elements, both being descendants of the component.
+  That means, which are both either in the component's template, or among its children.
 
 ### ViewEncapsulation.ShadowDom
 
