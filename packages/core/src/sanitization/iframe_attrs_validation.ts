@@ -25,7 +25,7 @@ import {trustedHTMLFromString} from '../util/security/trusted_types';
  *
  * @codeGenApi
  */
-export function ɵɵvalidateIframeAttribute(attrValue: any, tagName: string, attrName: string) {
+export function validateIframeAttribute(attrValue: any, tagName: string, attrName: string) {
   const lView = getLView();
   const tNode = getSelectedTNode()!;
   const element = getNativeByTNode(tNode, lView) as RElement | RComment;
@@ -51,7 +51,8 @@ export function ɵɵvalidateIframeAttribute(attrValue: any, tagName: string, att
         `as a static attribute only. \n` +
         `To fix this, switch the \`${attrName}\` binding to a static attribute ` +
         `in a template or in host bindings section.`;
-    throw new RuntimeError(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS, errorMessage);
+    throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
   }
+
   return attrValue;
 }

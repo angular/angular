@@ -22,6 +22,7 @@ import {
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {validateIframeAttribute} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
@@ -274,6 +275,20 @@ function getSanitizer(): Sanitizer | null {
   return lView && lView[ENVIRONMENT].sanitizer;
 }
 
+const attributeName: ReadonlyArray<string> = ['attributeName'];
+
+/**
+ * @remarks Keep this in sync with DOM Security Schema.
+ * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
+ */
+const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlyArray<string>>> = {
+  'iframe': ['sandbox', 'allow', 'allowfullscreen', 'referrerpolicy', 'csp', 'fetchpriority'],
+  'animate': attributeName,
+  'set': attributeName,
+  'animatemotion': attributeName,
+  'animatetransform': attributeName,
+};
+
 /**
  * Validates that the attribute binding is safe to use.
  *
@@ -281,9 +296,23 @@ function getSanitizer(): Sanitizer | null {
  * @param tagName The name of the tag.
  * @param attributeName The name of the attribute.
  */
-export function ɵɵValidateAttribute(_value: any, tagName: string, attributeName: string): never {
+export function ɵɵValidateAttribute(value: any, tagName: string, attributeName: string) {
+  const lowerCaseTagName = tagName.toLowerCase();
+  const lowerCaseAttrName = attributeName.toLowerCase();
+  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.includes(lowerCaseAttrName)) {
+    return value;
+  }
+
+  // Restrict any dynamic bindings of security-sensitive attributes/properties
+  // on an <iframe> for security reasons.
+  if (lowerCaseTagName === 'iframe') {
+    return validateIframeAttribute(value, tagName, attributeName);
+  }
+
   const errorMessage =
+    ngDevMode &&
     `Binding to attribute '${attributeName}' of '${tagName}' is disallowed for security reasons, ` +
-    `please use ${attributeName}="..."`;
-  throw new RuntimeError(RuntimeErrorCode.INVALID_ATTRIBUTE_BINDING, errorMessage);
+      `please use ${attributeName}="..."`;
+
+  throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
 }

@@ -67,7 +67,7 @@ describe('iframe processing', () => {
     });
   });
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
+    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING).toString();
     return new RegExp(errorMessagePart);
   }
 
@@ -740,7 +740,31 @@ describe('SVG animation processing', () => {
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
     }).toThrowError(
-      /NG0319: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
+      /NG0910: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
+    );
+  });
+
+  it(`should error when a directive sets a 'attributeName' as an attribute binding`, () => {
+    @Directive({
+      selector: '[dir]',
+      host: {
+        '[attr.attributeName]': "'href'",
+      },
+    })
+    class animateAttrDir {}
+
+    @Component({
+      imports: [animateAttrDir],
+      selector: 'my-comp',
+      template: '<svg><animate dir></animate></svg>',
+    })
+    class TestCmp {}
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0910: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
     );
   });
 });

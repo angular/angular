@@ -474,10 +474,6 @@ export class Identifiers {
     name: 'ɵɵtrustConstantResourceUrl',
     moduleName: CORE,
   };
-  static validateIframeAttribute: o.ExternalReference = {
-    name: 'ɵɵvalidateIframeAttribute',
-    moduleName: CORE,
-  };
 
   // Decorators
   static inputDecorator: o.ExternalReference = {name: 'Input', moduleName: CORE};
