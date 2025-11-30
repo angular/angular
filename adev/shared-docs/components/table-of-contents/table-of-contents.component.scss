@@ -61,6 +61,9 @@
       display: block; // to prevent overflow from the li parent
       padding: 0.5rem 0.5rem 0.5rem 1rem;
       font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &.docs-toc-item-h3 a {
