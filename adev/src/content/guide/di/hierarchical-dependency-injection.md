@@ -171,7 +171,7 @@ HELPFUL: For `NgModule` based applications, Angular will search the `ModuleInjec
 ## Resolution modifiers
 
 Angular's resolution behavior can be modified with `optional`, `self`, `skipSelf` and `host`.
-Import each of them from `@angular/core` and use each in the `inject` configuration when you inject your service.
+Import each of them from `@angular/core` and use each in the [`inject`](/api/core/inject) configuration when you inject your service.
 
 ### Types of modifiers
 
