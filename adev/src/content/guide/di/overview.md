@@ -93,7 +93,7 @@ export class NavbarComponent {
 
 ### Where can `inject()` be used?
 
-You can inject dependencies during construction of a component, directive, or service. The call to `inject` can appear in either the `constructor` or in a field initializer. Here are some common examples:
+You can inject dependencies during construction of a component, directive, or service. The call to [`inject`](/api/core/inject) can appear in either the `constructor` or in a field initializer. Here are some common examples:
 
 ```ts
 @Component({...})
@@ -137,7 +137,7 @@ export const authGuard = () => {
 }
 ```
 
-Angular uses the term "injection context" to describe any place in your code where you can call `inject`. While component, directive, and service construction is the most common, see [injection contexts](/guide/di/dependency-injection-context) for more details.
+Angular uses the term "injection context" to describe any place in your code where you can call [`inject`](/api/core/inject). While component, directive, and service construction is the most common, see [injection contexts](/guide/di/dependency-injection-context) for more details.
 
 For more information, see the [inject API docs](api/core/inject#usage-notes).
 

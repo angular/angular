@@ -1,8 +1,8 @@
 # Migration to the `inject` function
 
-Angular's `inject` function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
+Angular's [`inject`](/api/core/inject) function offers more accurate types and better compatibility with standard decorators, compared to constructor-based injection.
 
-This schematic converts constructor-based injection in your classes to use the `inject` function instead.
+This schematic converts constructor-based injection in your classes to use the [`inject`](/api/core/inject) function instead.
 
 Run the schematic using the following command:
 
@@ -52,7 +52,7 @@ migrate the entire directory.
 ### `migrateAbstractClasses`
 
 Angular doesn't validate that parameters of abstract classes are injectable. This means that the
-migration can't reliably migrate them to `inject` without risking breakages which is why they're
+migration can't reliably migrate them to [`inject`](/api/core/inject) without risking breakages which is why they're
 disabled by default. Enable this option if you want abstract classes to be migrated, but note
 that you may have to **fix some breakages manually**.
 

@@ -231,7 +231,7 @@ Lazily loading routes can significantly improve the load speed of your Angular a
 
 ### Injection context lazy loading
 
-The Router executes `loadComponent` and `loadChildren` within the **injection context of the current route**, allowing you to call `inject` inside these loader functions to access providers declared on that route, inherited from parent routes through hierarchical dependency injection, or available globally. This enables context-aware lazy loading.
+The Router executes `loadComponent` and `loadChildren` within the **injection context of the current route**, allowing you to call [`inject`](/api/core/inject)inside these loader functions to access providers declared on that route, inherited from parent routes through hierarchical dependency injection, or available globally. This enables context-aware lazy loading.
 
 ```ts
 import { Routes } from '@angular/router';
