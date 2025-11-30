@@ -1,5 +1,4 @@
 @use '../../../styles/links' as links;
-@use '../../../styles/anchor' as anchor;
 @use '../../../styles/media-queries' as mq;
 
 :host {
@@ -56,14 +55,17 @@
       color: inherit;
       max-width: 100%;
 
-      @include anchor.docs-anchor();
-
       code {
         // This can be useful on mobile if the heading contains a long code block
         overflow: hidden;
         text-overflow: ellipsis;
         vertical-align: middle;
       }
+    }
+
+    // Show copy link button when hovering the heading
+    &:hover docs-copy-link-button {
+      opacity: 1;
     }
   }
 

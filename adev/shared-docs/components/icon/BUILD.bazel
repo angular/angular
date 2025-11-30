@@ -12,6 +12,7 @@ ng_project(
     ],
     visibility = [
         "//adev/shared-docs/components:__pkg__",
+        "//adev/shared-docs/components/copy-link-anchor:__pkg__",
         "//adev/shared-docs/components/copy-source-code-button:__pkg__",
         "//adev/shared-docs/components/navigation-list:__pkg__",
         "//adev/shared-docs/components/table-of-contents:__pkg__",

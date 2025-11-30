@@ -1,5 +1,3 @@
-@use '@angular/docs/styles/anchor' as anchor;
-
 .adev-api-items-section-header {
   display: flex;
 
@@ -92,6 +90,4 @@
 
 .adev-api-anchor {
   color: inherit;
-
-  @include anchor.docs-anchor();
 }

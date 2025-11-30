@@ -41,10 +41,11 @@ export function formatHeading(
   const customId = customIdRegex.exec(anchorLessText)?.[1];
   const link = customId ?? getHeaderId(anchorLessText);
   const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
+  const normalizedLabel = label.replace(/<\/?code>/g, '');
 
   return `
   <h${depth} id="${link}">
-    <a href="#${link}" class="docs-anchor" tabindex="-1" aria-label="Link to ${label}">${label}</a>
+    <a href="#${link}" class="docs-anchor" tabindex="-1" aria-label="Link to ${normalizedLabel}">${label}</a>
   </h${depth}>
   `;
 }
