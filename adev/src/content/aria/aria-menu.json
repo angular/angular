@@ -159,14 +159,14 @@
           "name": "V"
         }
       ],
-      "description": "A trigger for a menu.\n\nThe `ngMenuTrigger` directive is used to open and close menus. It can be applied to\nany interactive element (e.g., a button) to associate it with a `ngMenu` instance.\nIt also supports linking to sub-menus when applied to a `ngMenuItem`.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Item 1</div>\n  <div ngMenuItem>Item 2</div>\n</div>\n```",
+      "description": "A trigger for a menu.\n\nThe `ngMenuTrigger` directive is used to open and close menus. It can be applied to\nany interactive element (e.g., a button) to associate it with a `ngMenu` instance.\nIt also supports linking to sub-menus when applied to a `ngMenuItem`.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Item 1\">Item 1</div>\n  <div ngMenuItem value=\"Item 2\">Item 2</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Item 1</div>\n *   <div ngMenuItem>Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A trigger for a menu.\n *\n * The `ngMenuTrigger` directive is used to open and close menus. It can be applied to\n * any interactive element (e.g., a button) to associate it with a `ngMenu` instance.\n * It also supports linking to sub-menus when applied to a `ngMenuItem`.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Open Menu</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Item 1\">Item 1</div>\n *   <div ngMenuItem value=\"Item 2\">Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "button[ngMenuTrigger]",
@@ -331,14 +331,14 @@
           "name": "V"
         }
       ],
-      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem>Star</div>\n  <div ngMenuItem>Edit</div>\n  <div ngMenuItem [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem>Sub Item 1</div>\n  <div ngMenuItem>Sub Item 2</div>\n</div>\n```",
+      "description": "A list of menu items.\n\nA `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\nwithin other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\nand `ngMenuItem` directives.\n\n```html\n<button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n\n<div ngMenu #myMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Star\">Star</div>\n  <div ngMenuItem value=\"Edit\">Edit</div>\n  <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n</div>\n\n<div ngMenu #subMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n  <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem>Star</div>\n *   <div ngMenuItem>Edit</div>\n *   <div ngMenuItem [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem>Sub Item 1</div>\n *   <div ngMenuItem>Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A list of menu items.\n *\n * A `ngMenu` is used to offer a list of menu item choices to users. Menus can be nested\n * within other menus to create sub-menus. It works in conjunction with `ngMenuTrigger`\n * and `ngMenuItem` directives.\n *\n * ```html\n * <button ngMenuTrigger [menu]=\"myMenu\">Options</button>\n *\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Star\">Star</div>\n *   <div ngMenuItem value=\"Edit\">Edit</div>\n *   <div ngMenuItem value=\"More\" [submenu]=\"subMenu\">More</div>\n * </div>\n *\n * <div ngMenu #subMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Sub Item 1\">Sub Item 1</div>\n *   <div ngMenuItem value=\"Sub Item 2\">Sub Item 2</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
@@ -488,14 +488,14 @@
           "name": "V"
         }
       ],
-      "description": "A menu bar of menu items.\n\nLike the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\nHowever, a menubar is used to display a persistent, top-level, always-visible set of\nmenu item choices, typically found at the top of an application window.\n\n```html\n<div ngMenuBar>\n  <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n  <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n</div>\n\n<div ngMenu #fileMenu=\"ngMenu\">\n  <div ngMenuItem>New</div>\n  <div ngMenuItem>Open</div>\n</div>\n\n<div ngMenu #editMenu=\"ngMenu\">\n  <div ngMenuItem>Cut</div>\n  <div ngMenuItem>Copy</div>\n</div>\n```",
+      "description": "A menu bar of menu items.\n\nLike the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\nHowever, a menubar is used to display a persistent, top-level, always-visible set of\nmenu item choices, typically found at the top of an application window.\n\n```html\n<div ngMenuBar>\n  <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n  <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n</div>\n\n<div ngMenu #fileMenu=\"ngMenu\">\n  <div ngMenuItem value=\"New\">New</div>\n  <div ngMenuItem value=\"Open\">Open</div>\n</div>\n\n<div ngMenu #editMenu=\"ngMenu\">\n  <div ngMenuItem value=\"Cut\">Cut</div>\n  <div ngMenuItem value=\"Copy\">Copy</div>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * A menu bar of menu items.\n *\n * Like the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\n * However, a menubar is used to display a persistent, top-level, always-visible set of\n * menu item choices, typically found at the top of an application window.\n *\n * ```html\n * <div ngMenuBar>\n *   <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n *   <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n * </div>\n *\n * <div ngMenu #fileMenu=\"ngMenu\">\n *   <div ngMenuItem>New</div>\n *   <div ngMenuItem>Open</div>\n * </div>\n *\n * <div ngMenu #editMenu=\"ngMenu\">\n *   <div ngMenuItem>Cut</div>\n *   <div ngMenuItem>Copy</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * A menu bar of menu items.\n *\n * Like the `ngMenu`, a `ngMenuBar` is used to offer a list of menu item choices to users.\n * However, a menubar is used to display a persistent, top-level, always-visible set of\n * menu item choices, typically found at the top of an application window.\n *\n * ```html\n * <div ngMenuBar>\n *   <button ngMenuTrigger [menu]=\"fileMenu\">File</button>\n *   <button ngMenuTrigger [menu]=\"editMenu\">Edit</button>\n * </div>\n *\n * <div ngMenu #fileMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"New\">New</div>\n *   <div ngMenuItem value=\"Open\">Open</div>\n * </div>\n *\n * <div ngMenu #editMenu=\"ngMenu\">\n *   <div ngMenuItem value=\"Cut\">Cut</div>\n *   <div ngMenuItem value=\"Copy\">Copy</div>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngMenuBar]",
@@ -702,14 +702,14 @@
           "name": "V"
         }
       ],
-      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n\n<div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n```",
+      "description": "An item in a Menu.\n\n`ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\nor action a user can take. They can also act as triggers for sub-menus.\n\n```html\n<div ngMenuItem value=\"Action Item\" (onSelect)=\"doAction()\">Action Item</div>\n\n<div ngMenuItem value=\"Submenu Trigger\" [submenu]=\"anotherMenu\">Submenu Trigger</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenuItem (onSelect)=\"doAction()\">Action Item</div>\n *\n * <div ngMenuItem [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * An item in a Menu.\n *\n * `ngMenuItem` directives can be used in `ngMenu` and `ngMenuBar` to represent a choice\n * or action a user can take. They can also act as triggers for sub-menus.\n *\n * ```html\n * <div ngMenuItem value=\"Action Item\" (onSelect)=\"doAction()\">Action Item</div>\n *\n * <div ngMenuItem value=\"Submenu Trigger\" [submenu]=\"anotherMenu\">Submenu Trigger</div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "isStandalone": true,
       "selector": "[ngMenuItem]",
@@ -728,14 +728,14 @@
       "entryType": "undecorated_class",
       "members": [],
       "generics": [],
-      "description": "Defers the rendering of the menu content.\n\nThis structural directive should be applied to an `ng-template` within a `ngMenu`\nor `ngMenuBar` to lazily render its content only when the menu is opened.\n\n```html\n<div ngMenu #myMenu=\"ngMenu\">\n  <ng-template ngMenuContent>\n    <div ngMenuItem>Lazy Item 1</div>\n    <div ngMenuItem>Lazy Item 2</div>\n  </ng-template>\n</div>\n```",
+      "description": "Defers the rendering of the menu content.\n\nThis structural directive should be applied to an `ng-template` within a `ngMenu`\nor `ngMenuBar` to lazily render its content only when the menu is opened.\n\n```html\n<div ngMenu #myMenu=\"ngMenu\">\n  <ng-template ngMenuContent>\n    <div ngMenuItem value=\"Lazy Item 1\">Lazy Item 1</div>\n    <div ngMenuItem value=\"Lazy Item 2\">Lazy Item 2</div>\n  </ng-template>\n</div>\n```",
       "jsdocTags": [
         {
           "name": "developerPreview",
           "comment": "21.0"
         }
       ],
-      "rawComment": "/**\n * Defers the rendering of the menu content.\n *\n * This structural directive should be applied to an `ng-template` within a `ngMenu`\n * or `ngMenuBar` to lazily render its content only when the menu is opened.\n *\n * ```html\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <ng-template ngMenuContent>\n *     <div ngMenuItem>Lazy Item 1</div>\n *     <div ngMenuItem>Lazy Item 2</div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
+      "rawComment": "/**\n * Defers the rendering of the menu content.\n *\n * This structural directive should be applied to an `ng-template` within a `ngMenu`\n * or `ngMenuBar` to lazily render its content only when the menu is opened.\n *\n * ```html\n * <div ngMenu #myMenu=\"ngMenu\">\n *   <ng-template ngMenuContent>\n *     <div ngMenuItem value=\"Lazy Item 1\">Lazy Item 1</div>\n *     <div ngMenuItem value=\"Lazy Item 2\">Lazy Item 2</div>\n *   </ng-template>\n * </div>\n * ```\n *\n * @developerPreview 21.0\n */",
       "implements": [],
       "source": {
         "filePath": "/src/aria/menu/menu.ts",
