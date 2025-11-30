@@ -4,7 +4,7 @@ Images are a big part of many applications, and can be a major contributor to ap
 
 Image optimization can be a complex topic, but Angular handles most of it for you, with the `NgOptimizedImage` directive.
 
-Note: Learn more about [image optimization with NgOptimizedImage in the in-depth guide](/guide/image-optimization).
+NOTE: Learn more about [image optimization with NgOptimizedImage in the in-depth guide](/guide/image-optimization).
 
 In this activity, you'll learn how to use `NgOptimizedImage` to ensure your images are loaded efficiently.
 

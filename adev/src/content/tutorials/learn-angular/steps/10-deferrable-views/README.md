@@ -4,7 +4,7 @@ Sometimes in app development, you end up with a lot of components that you need 
 
 Maybe they are below the visible fold or are heavy components that aren't interacted with until later. In that case, we can load some of those resources later with deferrable views.
 
-Note: Learn more about [deferred loading with @defer in the in-depth guide](/guide/templates/defer).
+NOTE: Learn more about [deferred loading with @defer in the in-depth guide](/guide/templates/defer).
 
 In this activity, you'll learn how to use deferrable views to defer load a section of your component template.
 

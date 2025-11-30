@@ -2,7 +2,7 @@
 
 Often when building web applications, you need to repeat some code a specific number of times - for example, given an array of names, you may want to display each name in a `<p>` tag.
 
-Note: Learn more about [control flow in the essentials guide](/essentials/templates#control-flow-with-if-and-for).
+NOTE: Learn more about [control flow in the essentials guide](/essentials/templates#control-flow-with-if-and-for).
 
 In this activity, you'll learn how to use `@for` to repeat elements in a template.
 

@@ -2,7 +2,7 @@
 
 You can take your use of pipes even further by configuring them. Pipes can be configured by passing options to them.
 
-Note: Learn more about [formatting data with pipes in the in-depth guide](/guide/templates/pipes).
+NOTE: Learn more about [formatting data with pipes in the in-depth guide](/guide/templates/pipes).
 
 In this activity, you will work with some pipes and pipe parameters.
 

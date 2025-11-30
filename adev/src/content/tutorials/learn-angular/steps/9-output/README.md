@@ -4,7 +4,7 @@ When working with components it may be required to notify other components that 
 
 Angular uses the `output()` function to enable this type of behavior.
 
-Note: Learn more about [custom events in the outputs guide](/guide/components/outputs).
+NOTE: Learn more about [custom events in the outputs guide](/guide/components/outputs).
 
 In this activity, you'll learn how to use the `output()` function to communicate with components.
 

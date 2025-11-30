@@ -2,7 +2,7 @@
 
 Event handling enables interactive features on web apps. It gives you the ability as a developer to respond to user actions like button presses, form submissions and more.
 
-Note: Learn more about [handling user interaction in the essentials guide](/essentials/templates#handling-user-interaction).
+NOTE: Learn more about [handling user interaction in the essentials guide](/essentials/templates#handling-user-interaction).
 
 In this activity, you'll learn how to add an event handler.
 

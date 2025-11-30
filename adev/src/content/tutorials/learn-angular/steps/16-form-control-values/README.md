@@ -2,7 +2,7 @@
 
 Now that your forms are set up with Angular, the next step is to access the values from the form controls.
 
-Note: Learn more about [adding a basic form control in the in-depth guide](/guide/forms/reactive-forms#adding-a-basic-form-control).
+NOTE: Learn more about [adding a basic form control in the in-depth guide](/guide/forms/reactive-forms#adding-a-basic-form-control).
 
 In this activity, you'll learn how to get the value from your form input.
 
