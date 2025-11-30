@@ -27,6 +27,7 @@ const APP_ID_ATTRIBUTE_NAME = 'ng-app-id';
 interface UsageRecord<T> {
   elements: T[];
   usage: number;
+  server?: boolean;
 }
 
 /**
@@ -36,6 +37,26 @@ interface UsageRecord<T> {
 function removeElements(elements: Iterable<HTMLElement>): void {
   for (const element of elements) {
     element.remove();
+  }
+}
+
+/**
+ * When a component that has styles is destroyed, we disable stylesheets
+ * instead of removing them to avoid performance issues related to style
+ * recalculation in a browser.
+ */
+function disableStyles(elements: Iterable<HTMLStyleElement | HTMLLinkElement>): void {
+  for (const element of elements) {
+    element.disabled = true;
+  }
+}
+/**
+ * Enables a stylesheet in a browser, see the `disableStyles` function
+ * docs for additional info.
+ */
+function enableStyles(elements: Iterable<HTMLStyleElement | HTMLLinkElement>): void {
+  for (const element of elements) {
+    element.disabled = false;
   }
 }
 
@@ -70,7 +91,7 @@ function addServerStyles(
     `style[${APP_ID_ATTRIBUTE_NAME}="${appId}"],link[${APP_ID_ATTRIBUTE_NAME}="${appId}"]`,
   );
 
-  if (elements) {
+  if (elements && doc.head) {
     for (const styleElement of elements) {
       styleElement.removeAttribute(APP_ID_ATTRIBUTE_NAME);
       if (styleElement instanceof HTMLLinkElement) {
@@ -79,9 +100,14 @@ function addServerStyles(
         external.set(styleElement.href.slice(styleElement.href.lastIndexOf('/') + 1), {
           usage: 0,
           elements: [styleElement],
+          server: true,
         });
       } else if (styleElement.textContent) {
-        inline.set(styleElement.textContent, {usage: 0, elements: [styleElement]});
+        inline.set(styleElement.textContent, {
+          usage: 0,
+          elements: [styleElement],
+          server: true,
+        });
       }
     }
   }
@@ -148,15 +174,15 @@ export class SharedStylesHost implements OnDestroy {
    * Removes embedded styles from the DOM that were added as HTML `style` elements.
    * @param styles An array of style content strings.
    */
-  removeStyles(styles: string[], urls?: string[]): void {
+  disableStyles(styles: string[], urls?: string[]): void {
     for (const value of styles) {
-      this.removeUsage(value, this.inline);
+      this.disableUsage(value, this.inline);
     }
 
-    urls?.forEach((value) => this.removeUsage(value, this.external));
+    urls?.forEach((value) => this.disableUsage(value, this.external));
   }
 
-  protected addUsage<T extends HTMLElement>(
+  protected addUsage<T extends HTMLLinkElement | HTMLStyleElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
     creator: (value: string, doc: Document) => T,
@@ -166,10 +192,13 @@ export class SharedStylesHost implements OnDestroy {
 
     // If existing, just increment the usage count
     if (record) {
-      if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.usage === 0) {
-        // A usage count of zero indicates a preexisting server generated style.
+      if ((typeof ngDevMode === 'undefined' || ngDevMode) && record.server) {
+        // `record.server` indicates a preexisting server generated style.
         // This attribute is solely used for debugging purposes of SSR style reuse.
         record.elements.forEach((element) => element.setAttribute('ng-style-reused', ''));
+      }
+      if (record.usage === 0) {
+        enableStyles(record.elements);
       }
       record.usage++;
     } else {
@@ -181,7 +210,7 @@ export class SharedStylesHost implements OnDestroy {
     }
   }
 
-  protected removeUsage<T extends HTMLElement>(
+  protected disableUsage<T extends HTMLLinkElement | HTMLStyleElement>(
     value: string,
     usages: Map<string, UsageRecord<T>>,
   ): void {
@@ -189,12 +218,11 @@ export class SharedStylesHost implements OnDestroy {
     const record = usages.get(value);
 
     // If there is a record, reduce the usage count and if no longer used,
-    // remove from DOM and delete usage record.
+    // disable the stylesheet
     if (record) {
       record.usage--;
-      if (record.usage <= 0) {
-        removeElements(record.elements);
-        usages.delete(value);
+      if (record.usage === 0) {
+        disableStyles(record.elements);
       }
     }
   }
