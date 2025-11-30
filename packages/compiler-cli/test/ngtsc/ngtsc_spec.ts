@@ -9258,6 +9258,33 @@ runInEachFileSystem((os: string) => {
       });
     });
 
+    describe('SVG animation processing', () => {
+      it('should generate SVG animation validation instruction', () => {
+        env.write(
+          'test.ts',
+          `
+            import {Component} from '@angular/core';
+
+            @Component({
+              selector: 'test-cmp',
+              template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+              standalone: false,
+            })
+            export class TestCmp {
+              attr = 'opacity';
+            }
+          `,
+        );
+
+        env.driveMain();
+
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain(
+          'i0.ɵɵattribute("attributeName", ctx.attr, i0.ɵɵvalidateAttribute);',
+        );
+      });
+    });
+
     describe('inline resources', () => {
       it('should process inline <style> tags', () => {
         env.write(
@@ -9679,11 +9706,11 @@ runInEachFileSystem((os: string) => {
         // Only `sandbox` has an extra validation fn (since it's security-sensitive),
         // the `title` property doesn't have an extra validation fn.
         expect(jsContents).toContain(
-          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)("title", "Hi!")',
+          'ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateAttribute)("title", "Hi!")',
         );
 
         // The `allow` property is also security-sensitive, thus an extra validation fn.
-        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -9713,7 +9740,7 @@ runInEachFileSystem((os: string) => {
           // Make sure that the `sandbox` has an extra validation fn,
           // and the check is case-insensitive (since the `setAttribute` DOM API
           // is case-insensitive as well).
-          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateAttribute)');
         },
       );
 
@@ -9771,11 +9798,11 @@ runInEachFileSystem((os: string) => {
         // The `sandbox` is potentially a security-sensitive attribute of an <iframe>.
         // Generate an extra validation function to invoke at runtime, which would
         // check if an underlying host element is an <iframe>.
-        expect(jsContents).toContain('ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵdomProperty("sandbox", "", i0.ɵɵvalidateAttribute)');
 
         // Similar to the above, but for an attribute binding (host attributes are
         // represented via `ɵɵattribute`).
-        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateIframeAttribute)');
+        expect(jsContents).toContain('ɵɵattribute("allow", "", i0.ɵɵvalidateAttribute)');
       });
 
       it(
@@ -9801,7 +9828,7 @@ runInEachFileSystem((os: string) => {
 
           // Make sure that we generate a validation fn for the `sandbox` attribute,
           // even when it was declared as `SANDBOX`.
-          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateIframeAttribute)');
+          expect(jsContents).toContain('ɵɵattribute("SANDBOX", "", i0.ɵɵvalidateAttribute)');
         },
       );
     });

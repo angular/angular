@@ -67,7 +67,7 @@ describe('iframe processing', () => {
     });
   });
   function getErrorMessageRegexp() {
-    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_IFRAME_ATTRS).toString();
+    const errorMessagePart = 'NG0' + Math.abs(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING).toString();
     return new RegExp(errorMessagePart);
   }
 
@@ -724,5 +724,47 @@ describe('iframe processing', () => {
         });
       });
     });
+  });
+});
+
+describe('SVG animation processing', () => {
+  it('should error when `attributeName` is bound', () => {
+    @Component({
+      template: '<svg><animate [attr.attributeName]="attr"></animate></svg>',
+    })
+    class TestCmp {
+      attr = 'href';
+    }
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
+    );
+  });
+
+  it(`should error when a directive sets a 'attributeName' as an attribute binding`, () => {
+    @Directive({
+      selector: '[dir]',
+      host: {
+        '[attr.attributeName]': "'href'",
+      },
+    })
+    class animateAttrDir {}
+
+    @Component({
+      imports: [animateAttrDir],
+      selector: 'my-comp',
+      template: '<svg><animate dir></animate></svg>',
+    })
+    class TestCmp {}
+
+    expect(() => {
+      const fixture = TestBed.createComponent(TestCmp);
+      fixture.detectChanges();
+    }).toThrowError(
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
+    );
   });
 });

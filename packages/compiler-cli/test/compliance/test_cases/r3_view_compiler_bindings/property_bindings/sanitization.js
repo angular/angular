@@ -11,7 +11,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵadvance();
     $r3$.ɵɵdomProperty("src", ctx.evil, $r3$.ɵɵsanitizeUrl);
     $r3$.ɵɵadvance();
-    $r3$.ɵɵdomProperty("sandbox", ctx.evil, $r3$.ɵɵvalidateIframeAttribute);
+    $r3$.ɵɵdomProperty("sandbox", ctx.evil, $r3$.ɵɵvalidateAttribute);
     $r3$.ɵɵadvance();
     $r3$.ɵɵdomProperty("href", $r3$.ɵɵinterpolate2("", ctx.evil, "", ctx.evil), $r3$.ɵɵsanitizeUrl);
     $r3$.ɵɵadvance();

@@ -183,11 +183,11 @@ export const angularCoreEnv: {[name: string]: unknown} = (() => ({
   'ɵɵsanitizeStyle': sanitization.ɵɵsanitizeStyle,
   'ɵɵsanitizeResourceUrl': sanitization.ɵɵsanitizeResourceUrl,
   'ɵɵsanitizeScript': sanitization.ɵɵsanitizeScript,
+  'ɵɵvalidateAttribute': sanitization.ɵɵvalidateAttribute,
   'ɵɵsanitizeUrl': sanitization.ɵɵsanitizeUrl,
   'ɵɵsanitizeUrlOrResourceUrl': sanitization.ɵɵsanitizeUrlOrResourceUrl,
   'ɵɵtrustConstantHtml': sanitization.ɵɵtrustConstantHtml,
   'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
-  'ɵɵvalidateIframeAttribute': iframe_attrs_validation.ɵɵvalidateIframeAttribute,
 
   'forwardRef': forwardRef,
   'resolveForwardRef': resolveForwardRef,
