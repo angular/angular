@@ -124,7 +124,7 @@ Instead, use `computed` signals to model state that depends on other state.
 
 ### Injection context
 
-By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the `inject` function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
+By default, you can only create an `effect()` within an [injection context](guide/di/dependency-injection-context) (where you have access to the [`inject`](/api/core/inject) function). The easiest way to satisfy this requirement is to call `effect` within a component, directive, or service `constructor`:
 
 ```ts
 @Component({...})

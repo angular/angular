@@ -85,7 +85,7 @@ CRITICAL: The body of a request or response is **not** protected from deep mutat
 
 ## Dependency injection in interceptors
 
-Interceptors are run in the _injection context_ of the injector which registered them, and can use Angular's `inject` API to retrieve dependencies.
+Interceptors are run in the _injection context_ of the injector which registered them, and can use Angular's [`inject`](/api/core/inject) API to retrieve dependencies.
 
 For example, suppose an application has a service called `AuthService`, which creates authentication tokens for outgoing requests. An interceptor can inject and use this service:
 

@@ -31,7 +31,7 @@ export class Calculator {
 When you want to use a service in a component, you need to:
 
 1. Import the service
-2. Declare a class field where the service is injected. Assign the class field to the result of the call of the built-in function `inject` which creates the service
+2. Declare a class field where the service is injected. Assign the class field to the result of the call of the built-in function [`inject`](/api/core/inject) which creates the service
 
 Here’s what it might look like in the `Receipt` component:
 
@@ -50,7 +50,7 @@ export class Receipt {
 }
 ```
 
-In this example, the `Calculator` is being used by calling the Angular function `inject` and passing in the service to it.
+In this example, the `Calculator` is being used by calling the Angular function [`inject`](/api/core/inject) and passing in the service to it.
 
 ## Next Step
 
