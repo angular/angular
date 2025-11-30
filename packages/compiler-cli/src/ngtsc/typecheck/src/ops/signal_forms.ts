@@ -26,7 +26,7 @@ import {TcbOp} from './base';
 import type {Context} from './context';
 import type {Scope} from './scope';
 import {addParseSpanInfo} from '../diagnostics';
-import {tsDeclareVariable} from '../ts_util';
+import {tsCreateVariable, tsDeclareVariable} from '../ts_util';
 import {TypeCheckableDirectiveMeta} from '../../api';
 import {tcbExpression} from './expression';
 import {markIgnoreDiagnostics} from '../comments';
@@ -120,12 +120,52 @@ export class TcbNativeFieldDirectiveTypeOp extends TcbOp {
 
     checkUnsupportedFieldBindings(this.node, this.unsupportedBindingFields, this.tcb);
 
+    const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
+
+    // For radio inputs, we allow any type and type-check the [value] bindings instead.
+    if (this.inputType === 'radio') {
+      // Create a variable to hold the field's value. TypeScript will infer the type from
+      // the field binding, allowing us to type-check [value] bindings against it.
+      const fieldValueId = this.tcb.allocateId();
+      const fieldValueVar = tsCreateVariable(fieldValueId, value);
+      addParseSpanInfo(
+        fieldValueVar,
+        fieldBinding.valueSpan ?? fieldBinding.sourceSpan,
+      );
+      this.scope.addStatement(fieldValueVar);
+
+      // Type-check all [value] bindings on this radio input to ensure they're assignable
+      // to the field's value type.
+      const valueBindings = inputs.filter(
+        (input) => input.type === BindingType.Property && input.name === 'value',
+      );
+
+      for (const valueBinding of valueBindings) {
+        const valueExpr = tcbExpression(valueBinding.value, this.tcb, this.scope);
+        // Create an assignment that tries to assign the [value] binding to the field value.
+        // TypeScript will type-check this assignment, ensuring the [value] binding is
+        // assignable to the field's value type.
+        const valueAssignment = ts.factory.createBinaryExpression(
+          fieldValueId,
+          ts.SyntaxKind.EqualsToken,
+          valueExpr,
+        );
+        addParseSpanInfo(
+          valueAssignment,
+          valueBinding.valueSpan ?? valueBinding.sourceSpan,
+        );
+        this.scope.addStatement(ts.factory.createExpressionStatement(valueAssignment));
+      }
+
+      // For radio inputs, we don't restrict the field type - it can be any type.
+      // The type-checking of [value] bindings above ensures type safety.
+      return null;
+    }
+
     const expectedType =
       this.node instanceof TmplAstElement
         ? this.getExpectedTypeFromDomNode(this.node)
         : this.getUnsupportedType();
-
-    const value = extractFieldValue(fieldBinding.value, this.tcb, this.scope);
 
     // Create a variable with the expected type and check that the field value is assignable, e.g.
     // var t1 = null! as string | number; t1 = f().value()`.

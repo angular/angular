@@ -379,6 +379,91 @@ runInEachFileSystem(() => {
       expect(diags.length).toBe(0);
     });
 
+    it('should allow non-string types for radio inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: \`
+              <form>
+                <input type="radio" [value]="true" [field]="f">
+                <input type="radio" [value]="false" [field]="f">
+              </form>
+            \`,
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(true));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(0);
+    });
+
+    it('should type-check [value] bindings on radio inputs', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: \`
+              <form>
+                <input type="radio" [value]="true" [field]="f">
+                <input type="radio" [value]="'invalid'" [field]="f">
+              </form>
+            \`,
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal(true));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `Type 'string' is not assignable to type 'boolean'`,
+      );
+    });
+
+    it('should type-check [value] bindings on radio inputs with union types', () => {
+      env.write(
+        'test.ts',
+        `
+          import {Component, signal} from '@angular/core';
+          import {Field, form} from '@angular/forms/signals';
+
+          @Component({
+            template: \`
+              <form>
+                <input type="radio" [value]="'yes'" [field]="f">
+                <input type="radio" [value]="'no'" [field]="f">
+                <input type="radio" [value]="'invalid'" [field]="f">
+              </form>
+            \`,
+            imports: [Field]
+          })
+          export class Comp {
+            f = form(signal<'yes' | 'no'>('yes'));
+          }
+        `,
+      );
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(extractMessage(diags[0])).toContain(
+        `Type '"invalid"' is not assignable to type '"yes" | "no"'`,
+      );
+    });
+
     it('should report unsupported static attributes of a field', () => {
       env.write(
         'test.ts',

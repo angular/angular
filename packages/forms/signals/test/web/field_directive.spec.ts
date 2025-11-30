@@ -1215,6 +1215,90 @@ describe('field directive', () => {
     expect(cmp.f().value()).toBe('b');
   });
 
+  it('synchronizes with a radio group using boolean values', () => {
+    @Component({
+      imports: [Field],
+      template: `
+        <form>
+          <input type="radio" [value]="true" [field]="f">
+          <input type="radio" [value]="false" [field]="f">
+        </form>
+      `,
+    })
+    class TestCmp {
+      f = form(signal(true), {
+        name: 'test',
+      });
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const formEl = (fix.nativeElement as HTMLElement).firstChild as HTMLFormElement;
+    const inputs = Array.from(formEl.children) as HTMLInputElement[];
+
+    const [inputTrue, inputFalse] = inputs;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Model -> View
+    expect(inputTrue.checked).toBe(true);
+    expect(inputFalse.checked).toBe(false);
+
+    act(() => cmp.f().value.set(false));
+    expect(inputTrue.checked).toBe(false);
+    expect(inputFalse.checked).toBe(true);
+
+    // View -> Model
+    act(() => {
+      inputTrue.click();
+    });
+    expect(inputTrue.checked).toBe(true);
+    expect(inputFalse.checked).toBe(false);
+    expect(cmp.f().value()).toBe(true);
+  });
+
+  it('synchronizes with a radio group using number values', () => {
+    @Component({
+      imports: [Field],
+      template: `
+        <form>
+          <input type="radio" [value]="1" [field]="f">
+          <input type="radio" [value]="2" [field]="f">
+          <input type="radio" [value]="3" [field]="f">
+        </form>
+      `,
+    })
+    class TestCmp {
+      f = form(signal(1), {
+        name: 'test',
+      });
+    }
+
+    const fix = act(() => TestBed.createComponent(TestCmp));
+    const formEl = (fix.nativeElement as HTMLElement).firstChild as HTMLFormElement;
+    const inputs = Array.from(formEl.children) as HTMLInputElement[];
+
+    const [input1, input2, input3] = inputs;
+    const cmp = fix.componentInstance as TestCmp;
+
+    // Model -> View
+    expect(input1.checked).toBe(true);
+    expect(input2.checked).toBe(false);
+    expect(input3.checked).toBe(false);
+
+    act(() => cmp.f().value.set(3));
+    expect(input1.checked).toBe(false);
+    expect(input2.checked).toBe(false);
+    expect(input3.checked).toBe(true);
+
+    // View -> Model
+    act(() => {
+      input2.click();
+    });
+    expect(input1.checked).toBe(false);
+    expect(input2.checked).toBe(true);
+    expect(input3.checked).toBe(false);
+    expect(cmp.f().value()).toBe(2);
+  });
+
   it('synchronizes with a textarea', () => {
     @Component({
       imports: [Field],

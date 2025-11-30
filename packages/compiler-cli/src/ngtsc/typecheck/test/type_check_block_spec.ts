@@ -2605,7 +2605,6 @@ describe('type check blocks', () => {
 
     [
       {inputType: 'text', expectedType: 'string'},
-      {inputType: 'radio', expectedType: 'string'},
       {inputType: 'checkbox', expectedType: 'boolean'},
       {inputType: 'number', expectedType: 'string | number'},
       {inputType: 'range', expectedType: 'string | number'},
@@ -2623,6 +2622,19 @@ describe('type check blocks', () => {
         expect(block).toContain('var _t2 = null! as i0.Field;');
         expect(block).toContain('_t2.field = (((this).f));');
       });
+    });
+
+    it('should allow any type for radio inputs and type-check [value] bindings', () => {
+      const block = tcb(
+        `<input type="radio" [field]="f" [value]="true"/>`,
+        [FieldMock],
+      );
+      // Radio inputs don't generate a type constraint check - they allow any type.
+      // Instead, [value] bindings are type-checked against the field's value type.
+      expect(block).toContain('var _t1 = ((this).f)().value();');
+      expect(block).toContain('_t1 = true;');
+      expect(block).toContain('var _t2 = null! as i0.Field;');
+      expect(block).toContain('_t2.field = (((this).f));');
     });
 
     it('should generate a string field for a textarea', () => {
