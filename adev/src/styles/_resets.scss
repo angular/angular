@@ -29,7 +29,8 @@
     hr,
     input,
     select,
-    table {
+    table, 
+    :not(svg|*) {
       all: revert;
     }
   }
