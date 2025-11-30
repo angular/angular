@@ -1,5 +1,3 @@
-@use './anchor' as anchor;
-
 /* Common styles for the API & CLI references */
 @mixin reference-common() {
   .docs-code {
@@ -71,7 +69,6 @@
     }
 
     & > a {
-      @include anchor.docs-anchor();
       color: inherit;
     }
   }
