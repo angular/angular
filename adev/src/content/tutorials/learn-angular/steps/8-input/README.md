@@ -4,7 +4,7 @@ Sometimes app development requires you to send data into a component. This data 
 
 Angular uses a concept called `input`. This is similar to `props` in other frameworks. To create an `input` property, use the `input()` function.
 
-Note: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
+NOTE: Learn more about [accepting data with input properties in the inputs guide](/guide/components/inputs).
 
 In this activity, you'll learn how to use the `input()` function to send information to components.
 

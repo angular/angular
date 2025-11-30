@@ -258,7 +258,7 @@ There are many factors to consider when deciding on whether a route should be ea
 
 In general, eager loading is recommended for primary landing page(s) while other pages would be lazy-loaded.
 
-Note: While lazy routes have the upfront performance benefit of reducing the amount of initial data requested by the user, it adds future data requests that could be undesirable. This is particularly true when dealing with nested lazy loading at multiple levels, which can significantly impact performance.
+NOTE: While lazy routes have the upfront performance benefit of reducing the amount of initial data requested by the user, it adds future data requests that could be undesirable. This is particularly true when dealing with nested lazy loading at multiple levels, which can significantly impact performance.
 
 ## Redirects
 
