@@ -49,7 +49,7 @@ export class HeroService {
 }
 ```
 
-Note that `inject` will return an instance only if the injector can resolve the required token.
+Note that [`inject`](/api/core/inject) will return an instance only if the injector can resolve the required token.
 
 ## Asserts the context
 

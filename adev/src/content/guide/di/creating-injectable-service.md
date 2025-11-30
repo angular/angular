@@ -101,7 +101,7 @@ For clarity and maintainability, it is recommended that you define components an
 
 ## Injecting services
 
-To inject a service as a dependency into a component, you can declare a class field representing the dependency and use Angular's `inject` function to initialize it.
+To inject a service as a dependency into a component, you can declare a class field representing the dependency and use Angular's [`inject`](/api/core/inject) function to initialize it.
 
 The following example specifies the `HeroService` in the `HeroListComponent`.
 The type of `heroService` is `HeroService`.
@@ -120,7 +120,7 @@ It is also possible to inject a service into a component using the component's c
   constructor(private heroService: HeroService)
 ```
 
-The `inject` method can be used in both classes and functions, while the constructor method can naturally only be used in a class constructor. However, in either case a dependency may only be injected in a valid [injection context](guide/di/dependency-injection-context), usually in the construction or initialization of a component.
+The [`inject`](/api/core/inject) method can be used in both classes and functions, while the constructor method can naturally only be used in a class constructor. However, in either case a dependency may only be injected in a valid [injection context](guide/di/dependency-injection-context), usually in the construction or initialization of a component.
 
 ## Injecting services in other services
 
