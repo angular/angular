@@ -740,7 +740,7 @@ describe('SVG animation processing', () => {
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
     }).toThrowError(
-      /NG0910: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
     );
   });
 
@@ -764,7 +764,7 @@ describe('SVG animation processing', () => {
       const fixture = TestBed.createComponent(TestCmp);
       fixture.detectChanges();
     }).toThrowError(
-      /NG0910: Binding to attribute 'attributeName' of 'animate' is disallowed for security reasons/,
+      /NG0910: Angular has detected that the `attributeName` was applied as a binding to the <animate>/,
     );
   });
 });
