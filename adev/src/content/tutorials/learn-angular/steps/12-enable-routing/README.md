@@ -2,7 +2,7 @@
 
 For most apps, there comes a point where the app requires more than a single page. When that time inevitably comes, routing becomes a big part of the performance story for users.
 
-Note: Learn more about [routing in the in-depth guide](/guide/routing).
+NOTE: Learn more about [routing in the in-depth guide](/guide/routing).
 
 In this activity, you'll learn how to set up and configure your app to use Angular Router.
 

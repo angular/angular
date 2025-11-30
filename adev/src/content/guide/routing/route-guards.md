@@ -26,7 +26,7 @@ All route guards share the same possible return types. This gives you flexibilit
 | `UrlTree` or `RedirectCommand`  | Redirects to another route instead of blocking                                    |
 | `Promise<T>` or `Observable<T>` | Router uses the first emitted value and then unsubscribes                         |
 
-Note: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
+NOTE: `CanMatch` behaves differently— when it returns `false`, Angular tries other matching routes instead of completely blocking navigation.
 
 ## Types of route guards
 
