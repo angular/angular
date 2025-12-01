@@ -84,6 +84,7 @@ export enum SecurityContext {
   SCRIPT = 3,
   URL = 4,
   RESOURCE_URL = 5,
+  ATTRIBUTE_NO_BINDING = 6,
 }
 
 /**
