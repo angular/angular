@@ -268,7 +268,7 @@ export class UserComponent {
   userForm = form(this.userModel)
 
   setName(name: string) {
-    userForm.name().value.set(name);
+    this.userForm.name().value.set(name);
     // Input automatically displays 'Bob'
   }
 }
