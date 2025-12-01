@@ -9,10 +9,8 @@
 import {SecurityContext} from '../../../../core';
 import * as o from '../../../../output/output_ast';
 import {Identifiers} from '../../../../render3/r3_identifiers';
-import {isIframeSecuritySensitiveAttr} from '../../../../schema/dom_security_schema';
 import * as ir from '../../ir';
 import {CompilationJob, CompilationJobKind} from '../compilation';
-import {createOpXrefMap} from '../util/elements';
 
 /**
  * Map of security contexts to their sanitizer function.
@@ -23,6 +21,7 @@ const sanitizerFns = new Map<SecurityContext, o.ExternalReference>([
   [SecurityContext.SCRIPT, Identifiers.sanitizeScript],
   [SecurityContext.STYLE, Identifiers.sanitizeStyle],
   [SecurityContext.URL, Identifiers.sanitizeUrl],
+  [SecurityContext.ATTRIBUTE_NO_BINDING, Identifiers.validateAttribute],
 ]);
 
 /**
@@ -38,8 +37,6 @@ const trustedValueFns = new Map<SecurityContext, o.ExternalReference>([
  */
 export function resolveSanitizers(job: CompilationJob): void {
   for (const unit of job.units) {
-    const elements = createOpXrefMap(unit);
-
     // For normal element bindings we create trusted values for security sensitive constant
     // attributes. However, for host bindings we skip this step (this matches what
     // TemplateDefinitionBuilder does).
@@ -63,8 +60,8 @@ export function resolveSanitizers(job: CompilationJob): void {
           if (
             Array.isArray(op.securityContext) &&
             op.securityContext.length === 2 &&
-            op.securityContext.indexOf(SecurityContext.URL) > -1 &&
-            op.securityContext.indexOf(SecurityContext.RESOURCE_URL) > -1
+            op.securityContext.includes(SecurityContext.URL) &&
+            op.securityContext.includes(SecurityContext.RESOURCE_URL)
           ) {
             // When the host element isn't known, some URL attributes (such as "src" and "href") may
             // be part of multiple different security contexts. In this case we use special
@@ -74,44 +71,13 @@ export function resolveSanitizers(job: CompilationJob): void {
           } else {
             sanitizerFn = sanitizerFns.get(getOnlySecurityContext(op.securityContext)) ?? null;
           }
+
           op.sanitizer = sanitizerFn !== null ? o.importExpr(sanitizerFn) : null;
 
-          // If there was no sanitization function found based on the security context of an
-          // attribute/property, check whether this attribute/property is one of the
-          // security-sensitive <iframe> attributes (and that the current element is actually an
-          // <iframe>).
-          if (op.sanitizer === null) {
-            let isIframe = false;
-            if (job.kind === CompilationJobKind.Host || op.kind === ir.OpKind.DomProperty) {
-              // Note: for host bindings defined on a directive, we do not try to find all
-              // possible places where it can be matched, so we can not determine whether
-              // the host element is an <iframe>. In this case, we just assume it is and append a
-              // validation function, which is invoked at runtime and would have access to the
-              // underlying DOM element to check if it's an <iframe> and if so - run extra checks.
-              isIframe = true;
-            } else {
-              // For a normal binding we can just check if the element its on is an iframe.
-              const ownerOp = elements.get(op.target);
-              if (ownerOp === undefined || !ir.isElementOrContainerOp(ownerOp)) {
-                throw Error('Property should have an element-like owner');
-              }
-              isIframe = isIframeElement(ownerOp);
-            }
-            if (isIframe && isIframeSecuritySensitiveAttr(op.name)) {
-              op.sanitizer = o.importExpr(Identifiers.validateIframeAttribute);
-            }
-          }
           break;
       }
     }
   }
-}
-
-/**
- * Checks whether the given op represents an iframe element.
- */
-function isIframeElement(op: ir.ElementOrContainerOps): boolean {
-  return op.kind === ir.OpKind.ElementStart && op.tag?.toLowerCase() === 'iframe';
 }
 
 /**
