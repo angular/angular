@@ -45,6 +45,25 @@ In your `angular.json` file, find the `test` target for your project and change 
 }
 ```
 
+Update the project’s test TypeScript configuration (`tsconfig.spec.json`) to replace Jasmine with Vitest globals. With this change, TypeScript now loads Vitest’s global type definitions, which means we can use `expect`, `it`, `describe`, and other testing globals without explicitly importing them in every test file.
+
+```json
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": [
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.spec.ts"
+  ]
+}
+```
+
+
 The `unit-test` builder defaults to `"tsConfig": "tsconfig.spec.json"` and `"buildTarget": "::development"`. You can explicitly set these options if your project requires different values. For example, if the `development` build configuration is missing or you need different options for testing, you can create and use a `testing` or similarly named build configuration for `buildTarget`.
 
 The `@angular/build:karma` builder previously allowed build options (like `polyfills`, `assets`, or `styles`) to be configured directly within the `test` target. The new `@angular/build:unit-test` builder does not support this. If your test-specific build options differ from your existing `development` build configuration, you must move them to a dedicated build target configuration. If your test build options already match your `development` build configuration, no action is needed.
