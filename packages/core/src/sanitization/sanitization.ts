@@ -8,10 +8,14 @@
 
 import {XSS_SECURITY_URL} from '../error_details_base_url';
 import {RuntimeError, RuntimeErrorCode} from '../errors';
+import {getTemplateLocationDetails} from '../render3/instructions/element_validation';
 import {getDocument} from '../render3/interfaces/document';
+import {TNodeType} from '../render3/interfaces/node';
+import {RElement} from '../render3/interfaces/renderer_dom';
 import {ENVIRONMENT} from '../render3/interfaces/view';
-import {getLView} from '../render3/state';
+import {getLView, getSelectedTNode} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
+import {getNativeByTNode} from '../render3/util/view_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {
@@ -22,6 +26,7 @@ import {
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
+import {enforceIframeSecurity} from './iframe_attrs_validation';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
@@ -272,4 +277,65 @@ export function validateAgainstEventAttributes(name: string) {
 function getSanitizer(): Sanitizer | null {
   const lView = getLView();
   return lView && lView[ENVIRONMENT].sanitizer;
+}
+
+const attributeName: ReadonlySet<string> = new Set(['attributename']);
+
+/**
+ * @remarks Keep this in sync with DOM Security Schema.
+ * @see [SECURITY_SCHEMA](../../../compiler/src/schema/dom_security_schema.ts)
+ */
+const SECURITY_SENSITIVE_ELEMENTS: Readonly<Record<string, ReadonlySet<string>>> = {
+  'iframe': new Set([
+    'sandbox',
+    'allow',
+    'allowfullscreen',
+    'referrerpolicy',
+    'csp',
+    'fetchpriority',
+  ]),
+  'animate': attributeName,
+  'set': attributeName,
+  'animatemotion': attributeName,
+  'animatetransform': attributeName,
+};
+
+/**
+ * Validates that the attribute binding is safe to use.
+ *
+ * @param value The value of the attribute.
+ * @param tagName The name of the tag.
+ * @param attributeName The name of the attribute.
+ */
+export function ɵɵvalidateAttribute(
+  value: unknown,
+  tagName: string,
+  attributeName: string,
+): unknown {
+  const lowerCaseTagName = tagName.toLowerCase();
+  const lowerCaseAttrName = attributeName.toLowerCase();
+  if (!SECURITY_SENSITIVE_ELEMENTS[lowerCaseTagName]?.has(lowerCaseAttrName)) {
+    return value;
+  }
+
+  const tNode = getSelectedTNode()!;
+  if (tNode.type !== TNodeType.Element) {
+    return value;
+  }
+
+  const lView = getLView();
+  if (lowerCaseTagName === 'iframe') {
+    const element = getNativeByTNode(tNode, lView) as RElement;
+    enforceIframeSecurity(element as HTMLIFrameElement);
+  }
+
+  const errorMessage =
+    ngDevMode &&
+    `Angular has detected that the \`${attributeName}\` was applied ` +
+      `as a binding to the <${tagName}> element${getTemplateLocationDetails(lView)}. ` +
+      `For security reasons, the \`${attributeName}\` can be set on the <${tagName}> element ` +
+      `as a static attribute only. \n` +
+      `To fix this, switch the \`${attributeName}\` binding to a static attribute ` +
+      `in a template or in host bindings section.`;
+  throw new RuntimeError(RuntimeErrorCode.UNSAFE_ATTRIBUTE_BINDING, errorMessage);
 }
