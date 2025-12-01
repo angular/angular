@@ -881,7 +881,7 @@ export class HostBindingDir {
     }
 }
 HostBindingDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "innerHtml": "evil", "href": "evil", "attr.style": "evil", "src": "evil", "sandbox": "evil" } }, ngImport: i0 });
+HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingDir, isStandalone: true, selector: "[hostBindingDir]", host: { properties: { "innerHtml": "evil", "href": "evil", "attr.style": "evil", "src": "evil", "sandbox": "evil", "attr.attributeName": "nonEvil" } }, ngImport: i0 });
 i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir, decorators: [{
             type: Directive,
             args: [{
@@ -892,12 +892,14 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                         '[attr.style]': 'evil',
                         '[src]': 'evil',
                         '[sandbox]': 'evil',
+                        '[attr.attributeName]': 'nonEvil',
                     },
                 }]
         }] });
 export class HostBindingDir2 {
     constructor() {
         this.evil = 'evil';
+        this.nonEvil = 'nonEvil';
     }
 }
 HostBindingDir2.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingDir2, deps: [], target: i0.ɵɵFactoryTarget.Directive });
@@ -915,6 +917,22 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDE
                     },
                 }]
         }] });
+export class HostBindingSvgAnimateDir {
+    constructor() {
+        this.evil = 'evil';
+    }
+}
+HostBindingSvgAnimateDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingSvgAnimateDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+HostBindingSvgAnimateDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "14.0.0", version: "0.0.0-PLACEHOLDER", type: HostBindingSvgAnimateDir, isStandalone: true, selector: "animateMotion[hostBindingSvgAnimateDir]", host: { properties: { "attr.attributeName": "evil" } }, ngImport: i0 });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: HostBindingSvgAnimateDir, decorators: [{
+            type: Directive,
+            args: [{
+                    selector: 'animateMotion[hostBindingSvgAnimateDir]',
+                    host: {
+                        '[attr.attributeName]': 'evil',
+                    },
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: sanitization.d.ts
@@ -927,8 +945,14 @@ export declare class HostBindingDir {
 }
 export declare class HostBindingDir2 {
     evil: string;
+    nonEvil: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir2, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir2, "a", never, {}, {}, never, never, true, never>;
+}
+export declare class HostBindingSvgAnimateDir {
+    evil: string;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingSvgAnimateDir, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingSvgAnimateDir, "animateMotion[hostBindingSvgAnimateDir]", never, {}, {}, never, never, true, never>;
 }
 
 /****************************************************************************************************
