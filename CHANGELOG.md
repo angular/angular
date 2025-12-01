@@ -1,3 +1,15 @@
+<a name="21.0.2"></a>
+
+# 21.0.2 (2025-12-01)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                       |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------- |
+| [78fd159b78](https://github.com/angular/angular/commit/78fd159b78d32cb8b94891e3fc6013076d7838af) | fix  | prevent XSS via SVG animation `attributeName` and MathML/SVG URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="20.3.15"></a>
 
 # 20.3.15 (2025-12-01)
