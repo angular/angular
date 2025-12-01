@@ -220,7 +220,7 @@ export type RestoredState = {
 /**
  * Information about a navigation operation.
  * Retrieve the most recent navigation object with the
- * [Router.getCurrentNavigation() method](api/router/Router#getcurrentnavigation) .
+ * [Router.currentNavigation() method](api/router/Router#currentNavigation) .
  *
  * * *id* : The unique identifier of the current navigation.
  * * *initialUrl* : The target URL passed into the `Router#navigateByUrl()` call before navigation.
