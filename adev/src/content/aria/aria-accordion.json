@@ -6,7 +6,6 @@
   "entries": [
     {
       "name": "AccordionPanel",
-      "aliases": ["ngAccordionPanel"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -158,7 +157,6 @@
     },
     {
       "name": "AccordionTrigger",
-      "aliases": ["ngAccordionTrigger"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -359,7 +357,6 @@
     },
     {
       "name": "AccordionGroup",
-      "aliases": ["ngAccordionGroup"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -525,7 +522,6 @@
     },
     {
       "name": "AccordionContent",
-      "aliases": ["ngAccordionContent"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [],

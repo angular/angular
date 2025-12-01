@@ -6,7 +6,6 @@
   "entries": [
     {
       "name": "MenuTrigger",
-      "aliases" : ["ngMenuTrigger"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -182,7 +181,6 @@
     },
     {
       "name": "Menu",
-      "aliases" : ["ngMenu"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [
@@ -350,7 +348,6 @@
     },
     {
       "name": "MenuBar",
-      "aliases" : ["ngMenuBar"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -513,7 +510,6 @@
     },
     {
       "name": "MenuItem",
-      "aliases" : ["ngMenuItem"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -728,7 +724,6 @@
     },
     {
       "name": "MenuContent",
-      "aliases" : ["ngMenuContent"],
       "isAbstract": false,
       "entryType": "undecorated_class",
       "members": [],

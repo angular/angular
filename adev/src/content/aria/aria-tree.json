@@ -204,16 +204,8 @@
           "name": "V"
         }
       ],
-      "description": "A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\nIt manages the overall state of the tree, including selection, expansion, and keyboard\nnavigation.\n\n```html\n<ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n  <ng-template\n    [ngTemplateOutlet]=\"treeNodes\"\n    [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n  />\n</ul>\n\n<ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">",
+      "description": "A container that transforms nested lists into an accessible, ARIA-compliant tree structure.\nIt manages the overall state of the tree, including selection, expansion, and keyboard\nnavigation.\n\n```html\n<ul ngTree [(value)]=\"selectedItems\" [multi]=\"true\">\n  <ng-template\n    [ngTemplateOutlet]=\"treeNodes\"\n    [ngTemplateOutletContext]=\"{nodes: treeData, parent: tree}\"\n  />\n</ul>\n\n<ng-template #treeNodes let-nodes=\"nodes\" let-parent=\"parent\">\n  @for (node of nodes; track node.name) {\n    <li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n      {{ node.name }}\n      @if (node.children) {\n        <ul role=\"group\">\n          <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n            <ng-template\n              [ngTemplateOutlet]=\"treeNodes\"\n              [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n            />\n          </ng-template>\n        </ul>\n      }\n    </li>\n  }\n</ng-template>\n```",
       "jsdocTags": [
-        {
-          "name": "for",
-          "comment": "(node of nodes; track node.name) {\n<li ngTreeItem [parent]=\"parent\" [value]=\"node.name\" [label]=\"node.name\">\n{{ node.name }}"
-        },
-        {
-          "name": "if",
-          "comment": "(node.children) {\n  <ul role=\"group\">\n    <ng-template ngTreeItemGroup [ownedBy]=\"treeItem\" #group=\"ngTreeItemGroup\">\n      <ng-template\n        [ngTemplateOutlet]=\"treeNodes\"\n        [ngTemplateOutletContext]=\"{nodes: node.children, parent: group}\"\n      />\n    </ng-template>\n  </ul>\n}\n</li>\n}\n</ng-template>\n```"
-        },
         {
           "name": "developerPreview",
           "comment": "21.0"
@@ -229,7 +221,6 @@
     },
     {
       "name": "TreeItem",
-      "aliases" : ["ngTreeItem"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
