@@ -570,6 +570,10 @@ export class Identifiers {
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵɵsanitizeHtml', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵɵsanitizeStyle', moduleName: CORE};
+  static validateAttribute: o.ExternalReference = {
+    name: 'ɵɵvalidateAttribute',
+    moduleName: CORE,
+  };
   static sanitizeResourceUrl: o.ExternalReference = {
     name: 'ɵɵsanitizeResourceUrl',
     moduleName: CORE,
@@ -583,10 +587,6 @@ export class Identifiers {
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
   static trustConstantResourceUrl: o.ExternalReference = {
     name: 'ɵɵtrustConstantResourceUrl',
-    moduleName: CORE,
-  };
-  static validateIframeAttribute: o.ExternalReference = {
-    name: 'ɵɵvalidateIframeAttribute',
     moduleName: CORE,
   };
 
