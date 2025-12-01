@@ -7,8 +7,12 @@
  */
 
 import {FieldTree} from '../../../../src/api/types';
-import {customError, minError, ValidationError} from '../../../../src/api/validation_errors';
-import {ensureCustomValidationResult} from '../../../../src/api/validators/util';
+import {
+  customError,
+  minError,
+  ValidationError,
+} from '../../../../src/api/rules/validation/validation_errors';
+import {ensureCustomValidationResult} from '../../../../src/api/rules/validation/util';
 import {addDefaultField} from '../../../../src/field/validation';
 
 describe('validators utils', () => {

@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {isArray} from '../../util/type_guards';
-import {LogicFn, OneOrMany, PathKind, ValidationResult, type FieldContext} from '../types';
-import {customError, ValidationError} from '../validation_errors';
+import {isArray} from '../../../util/type_guards';
+import {LogicFn, OneOrMany, PathKind, ValidationResult, type FieldContext} from '../../types';
+import {customError, ValidationError} from './validation_errors';
 
 /** Represents a value that has a length or size, such as an array or string, or set. */
 export type ValueWithLengthOrSize = {length: number} | {size: number};

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import type {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import type {AggregateMetadataKey, MetadataKey} from '../api/rules/metadata';
 import type {
   AsyncValidationResult,
   DisabledReason,
@@ -14,7 +14,7 @@ import type {
   LogicFn,
   ValidationResult,
 } from '../api/types';
-import type {ValidationError} from '../api/validation_errors';
+import type {ValidationError} from '../api/rules/validation/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
 import {type BoundPredicate, DYNAMIC, LogicContainer, type Predicate} from './logic';
 

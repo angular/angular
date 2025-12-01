@@ -8,7 +8,7 @@
 
 import {FieldPathNode} from '../../schema/path_node';
 import {assertPathIsCurrent} from '../../schema/schema';
-import {AggregateMetadataKey} from '../metadata';
+import {AggregateMetadataKey} from './metadata';
 import type {SchemaPath, LogicFn, PathKind, SchemaPathRules} from '../types';
 
 /**

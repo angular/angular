@@ -29,7 +29,7 @@ import type {
   SchemaPath,
   TreeValidationResult,
 } from './types';
-import type {ValidationError} from './validation_errors';
+import type {ValidationError} from './rules/validation/validation_errors';
 
 /**
  * Options that may be specified when creating a form.

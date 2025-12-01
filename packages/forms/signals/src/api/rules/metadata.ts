@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {FieldPathNode} from '../schema/path_node';
-import {assertPathIsCurrent} from '../schema/schema';
-import type {FieldContext, PathKind, SchemaPath, SchemaPathRules} from './types';
+import {FieldPathNode} from '../../schema/path_node';
+import {assertPathIsCurrent} from '../../schema/schema';
+import type {FieldContext, PathKind, SchemaPath, SchemaPathRules} from '../types';
 
 /**
  * Represents metadata that may be defined on a field when it is created using a `metadata` rule

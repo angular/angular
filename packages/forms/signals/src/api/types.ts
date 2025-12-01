@@ -9,8 +9,8 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
-import type {AggregateMetadataKey, MetadataKey} from './metadata';
-import type {ValidationError} from './validation_errors';
+import type {AggregateMetadataKey, MetadataKey} from './rules/metadata';
+import type {ValidationError} from './rules/validation/validation_errors';
 
 /**
  * Symbol used to retain generic type information when it would otherwise be lost.

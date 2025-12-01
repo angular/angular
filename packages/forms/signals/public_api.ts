@@ -11,14 +11,12 @@
  * @description
  * Entry point for all public APIs of this package.
  */
-export * from './src/api/async';
 export * from './src/api/control';
-export * from './src/api/debounce';
+export * from './src/api/rules/debounce';
 export * from './src/api/di';
 export * from './src/api/field_directive';
-export * from './src/api/logic/index';
-export * from './src/api/metadata';
+export * from './src/api/rules';
+export * from './src/api/rules/metadata';
 export * from './src/api/structure';
 export * from './src/api/types';
-export * from './src/api/validation_errors';
-export * from './src/api/validators';
+export * from './src/api/rules/validation/validation_errors';
