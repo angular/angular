@@ -6,7 +6,6 @@
   "entries": [
     {
       "name": "Grid",
-      "aliases" : ["ngGrid"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -149,16 +148,8 @@
         }
       ],
       "generics": [],
-      "description": "The container for a grid. It provides keyboard navigation and focus management for the grid's\nrows and cells. It manages the overall behavior of the grid, including focus\nwrapping, selection, and disabled states.\n\n```html\n<table ngGrid [multi]=\"true\" [enableSelection]=\"true\">",
+      "description": "The container for a grid. It provides keyboard navigation and focus management for the grid's\nrows and cells. It manages the overall behavior of the grid, including focus\nwrapping, selection, and disabled states.\n\n```html\n<table ngGrid [multi]=\"true\" [enableSelection]=\"true\">\n  @for (row of gridData; track row) {\n    <tr ngGridRow>\n      @for (cell of row; track cell) {\n        <td ngGridCell [disabled]=\"cell.disabled\">\n          {{cell.value}}\n        </td>\n      }\n    </tr>\n  }\n</table>\n```",
       "jsdocTags": [
-        {
-          "name": "for",
-          "comment": "(row of gridData; track row) {\n<tr ngGridRow>"
-        },
-        {
-          "name": "for",
-          "comment": "(cell of row; track cell) {\n <td ngGridCell [disabled]=\"cell.disabled\">\n   {{cell.value}}\n </td>\n}\n</tr>\n}\n</table>\n```"
-        },
         {
           "name": "developerPreview",
           "comment": "21.0"
@@ -179,7 +170,6 @@
     },
     {
       "name": "GridRow",
-      "aliases" : ["ngGridRow"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -230,7 +220,6 @@
     },
     {
       "name": "GridCell",
-      "aliases" : ["ngGridCell"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
@@ -446,7 +435,6 @@
     },
     {
       "name": "GridCellWidget",
-      "aliases" : ["ngGridCellWidget"],
       "isAbstract": false,
       "entryType": "directive",
       "members": [
