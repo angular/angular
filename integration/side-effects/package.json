@@ -16,5 +16,5 @@
     "@angular/router": "link:./in-existing-linked-by-bazel",
     "check-side-effects": "0.0.23"
   },
-  "packageManager": "pnpm@10.23.0"
+  "packageManager": "pnpm@10.24.0"
 }
