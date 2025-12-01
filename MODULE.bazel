@@ -18,7 +18,7 @@ bazel_dep(name = "yq.bzl", version = "0.3.2")
 bazel_dep(name = "rules_angular")
 git_override(
     module_name = "rules_angular",
-    commit = "9b751f826628cab386d1e8ae9c1fa766dbc6a495",
+    commit = "940945071ebab1e8a323e93882d661d753c920f5",
     remote = "https://github.com/devversion/rules_angular.git",
 )
 
