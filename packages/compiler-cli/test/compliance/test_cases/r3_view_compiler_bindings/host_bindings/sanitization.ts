@@ -8,6 +8,7 @@ import {Directive} from '@angular/core';
     '[attr.style]': 'evil',
     '[src]': 'evil',
     '[sandbox]': 'evil',
+    '[attr.attributeName]': 'nonEvil',
   },
 })
 export class HostBindingDir {
@@ -25,5 +26,16 @@ export class HostBindingDir {
   },
 })
 export class HostBindingDir2 {
+  evil = 'evil';
+  nonEvil = 'nonEvil';
+}
+
+@Directive({
+  selector: 'animateMotion[hostBindingSvgAnimateDir]',
+  host: {
+    '[attr.attributeName]': 'evil',
+  },
+})
+export class HostBindingSvgAnimateDir {
   evil = 'evil';
 }

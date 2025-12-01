@@ -182,6 +182,8 @@ export const enum RuntimeErrorCode {
     // (undocumented)
     UNKNOWN_ELEMENT = 304,
     // (undocumented)
+    UNSAFE_ATTRIBUTE_BINDING = -910,
+    // @deprecated (undocumented)
     UNSAFE_IFRAME_ATTRS = -910,
     // (undocumented)
     UNSAFE_VALUE_IN_RESOURCE_URL = 904,
