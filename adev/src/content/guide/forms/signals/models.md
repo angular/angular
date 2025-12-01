@@ -108,22 +108,6 @@ const userModel = signal<UserData>({
 
 Fields set to `undefined` are excluded from the field tree. A model with `{value: undefined}` behaves identically to `{}` - accessing the field returns `undefined` rather than a `FieldTree`.
 
-### Dynamic field addition
-
-You can dynamically add fields by updating the model with new properties. The field tree automatically updates to include new fields when they appear in the model value.
-
-```ts
-// Start with just email
-const model = signal({ email: '' })
-const myForm = form(model)
-
-// Later, add a password field
-model.update(current => ({ ...current, password: '' }))
-// myForm.password is now available
-```
-
-This pattern is useful when fields become relevant based on user choices or loaded data.
-
 ## Reading model values
 
 You can access form values in two ways: directly from the model signal, or through individual fields. Each approach serves a different purpose.
@@ -176,12 +160,6 @@ TIP: Field state includes many more signals beyond `value()`, such as validation
 
 ## Updating form models programmatically
 
-Form models update through programmatic mechanisms:
-
-1. [Replace the entire form model](#replacing-form-models-with-set) with `set()`
-2. [Update one or more fields](#update-one-or-more-fields-with-update) with `update()`
-3. [Update a single field directly](#update-a-single-field-directly-with-set) through field state
-
 ### Replacing form models with `set()`
 
 Use `set()` on the form model to replace the entire value:
@@ -205,21 +183,6 @@ resetForm() {
 ```
 
 This approach works well when loading data from an API or resetting the entire form.
-
-### Update one or more fields with `update()`
-
-Use `update()` to modify specific fields while preserving others:
-
-```ts
-updateEmail(newEmail: string) {
-  this.userModel.update(current => ({
-    ...current,
-    email: newEmail,
-  }));
-}
-```
-
-This pattern is useful when you need to change one or more fields based on the current model state.
 
 ### Update a single field directly with `set()`
 
@@ -305,7 +268,7 @@ export class UserComponent {
   userForm = form(this.userModel)
 
   setName(name: string) {
-    this.userModel.update(current => ({ ...current, name }))
+    userForm.name().value.set(name);
     // Input automatically displays 'Bob'
   }
 }
