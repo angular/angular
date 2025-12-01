@@ -15,6 +15,7 @@ import * as i0 from '@angular/core';
 import { InjectionToken } from '@angular/core';
 import { Injector } from '@angular/core';
 import { InputSignal } from '@angular/core';
+import { InputSignalWithTransform } from '@angular/core';
 import { ModelSignal } from '@angular/core';
 import { NgControl } from '@angular/forms';
 import { OutputRef } from '@angular/core';
@@ -216,22 +217,22 @@ export interface FormOptions {
 
 // @public
 export interface FormUiControl {
-    readonly dirty?: InputSignal<boolean>;
-    readonly disabled?: InputSignal<boolean>;
-    readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]>;
-    readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]>;
-    readonly hidden?: InputSignal<boolean>;
-    readonly invalid?: InputSignal<boolean>;
-    readonly max?: InputSignal<number | undefined>;
-    readonly maxLength?: InputSignal<number | undefined>;
-    readonly min?: InputSignal<number | undefined>;
-    readonly minLength?: InputSignal<number | undefined>;
-    readonly name?: InputSignal<string>;
-    readonly pattern?: InputSignal<readonly RegExp[]>;
-    readonly pending?: InputSignal<boolean>;
-    readonly readonly?: InputSignal<boolean>;
-    readonly required?: InputSignal<boolean>;
-    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | OutputRef<boolean>;
+    readonly dirty?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly disabled?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly disabledReasons?: InputSignal<readonly WithOptionalField<DisabledReason>[]> | InputSignalWithTransform<readonly WithOptionalField<DisabledReason>[], unknown>;
+    readonly errors?: InputSignal<readonly WithOptionalField<ValidationError>[]> | InputSignalWithTransform<readonly WithOptionalField<ValidationError>[], unknown>;
+    readonly hidden?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly invalid?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly max?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly maxLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly min?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly minLength?: InputSignal<number | undefined> | InputSignalWithTransform<number | undefined, unknown>;
+    readonly name?: InputSignal<string> | InputSignalWithTransform<string, unknown>;
+    readonly pattern?: InputSignal<readonly RegExp[]> | InputSignalWithTransform<readonly RegExp[], unknown>;
+    readonly pending?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly readonly?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly required?: InputSignal<boolean> | InputSignalWithTransform<boolean, unknown>;
+    readonly touched?: ModelSignal<boolean> | InputSignal<boolean> | InputSignalWithTransform<boolean, unknown> | OutputRef<boolean>;
 }
 
 // @public

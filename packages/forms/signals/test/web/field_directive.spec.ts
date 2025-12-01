@@ -7,6 +7,7 @@
  */
 
 import {
+  booleanAttribute,
   Component,
   computed,
   Directive,
@@ -16,6 +17,7 @@ import {
   input,
   inputBinding,
   model,
+  numberAttribute,
   signal,
   viewChild,
   viewChildren,
@@ -1130,6 +1132,143 @@ describe('field directive', () => {
         act(() => component.field.set(component.f.y));
         expect(component.customControl().pattern()).toEqual([]);
       });
+    });
+  });
+
+  describe('input transforms', () => {
+    it('should accept InputSignal without transform', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly disabled = input(false);
+        readonly readonly = input(false);
+        readonly required = input(false);
+        readonly hidden = input(false);
+        readonly invalid = input(false);
+        readonly pending = input(false);
+        readonly dirty = input(false);
+        readonly touched = input(false);
+        readonly min = input<number | undefined>(1);
+        readonly max = input<number | undefined>(1_0000);
+        readonly minLength = input<number | undefined>(1);
+        readonly maxLength = input<number | undefined>(5);
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `<custom-control [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
+    it('should accept InputSignalWithTransform for boolean properties', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly disabled = input(false, {transform: booleanAttribute});
+        readonly readonly = input(false, {transform: booleanAttribute});
+        readonly required = input(false, {transform: booleanAttribute});
+        readonly hidden = input(false, {transform: booleanAttribute});
+        readonly invalid = input(false, {transform: booleanAttribute});
+        readonly pending = input(false, {transform: booleanAttribute});
+        readonly dirty = input(false, {transform: booleanAttribute});
+        readonly touched = input(false, {transform: booleanAttribute});
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `<custom-control [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
+    it('should accept InputSignalWithTransform for number properties', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<number> {
+        readonly value = model(0);
+        readonly min = input<number | undefined, unknown>(undefined, {transform: numberAttribute});
+        readonly max = input<number | undefined, unknown>(undefined, {transform: numberAttribute});
+        readonly minLength = input<number | undefined, unknown>(undefined, {
+          transform: numberAttribute,
+        });
+        readonly maxLength = input<number | undefined, unknown>(undefined, {
+          transform: numberAttribute,
+        });
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `<custom-control [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(0));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
+    it('should accept custom transform for arrays', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly name = input('', {transform: (v: unknown) => String(v ?? '')});
+        readonly pattern = input<readonly RegExp[], unknown>([], {
+          transform: (v: unknown) => (Array.isArray(v) ? v : []),
+        });
+        readonly errors = input<readonly WithOptionalField<ValidationError>[], unknown>([], {
+          transform: (v: unknown) => (Array.isArray(v) ? v : []),
+        });
+        readonly disabledReasons = input<readonly WithOptionalField<DisabledReason>[], unknown>(
+          [],
+          {
+            transform: (v: unknown) => (Array.isArray(v) ? v : []),
+          },
+        );
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `<custom-control [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
+    });
+
+    it('should accept mixed InputSignal and InputSignalWithTransform', () => {
+      @Component({selector: 'custom-control', template: ``})
+      class CustomControl implements FormValueControl<string> {
+        readonly value = model('');
+        readonly disabled = input(false);
+        readonly readonly = input(false, {transform: booleanAttribute});
+        readonly required = input(false);
+        readonly name = input('', {transform: (v: unknown) => String(v ?? '')});
+      }
+
+      @Component({
+        imports: [Field, CustomControl],
+        template: `<custom-control [field]="f" />`,
+      })
+      class TestCmp {
+        readonly f = form(signal(''));
+      }
+
+      const fixture = act(() => TestBed.createComponent(TestCmp));
+      expect(fixture.componentInstance).toBeDefined();
     });
   });
 
