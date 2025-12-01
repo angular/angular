@@ -1,3 +1,15 @@
+<a name="19.2.17"></a>
+
+# 19.2.17 (2025-12-01)
+
+### compiler
+
+| Commit                                                                                           | Type | Description                                                       |
+| ------------------------------------------------------------------------------------------------ | ---- | ----------------------------------------------------------------- |
+| [7c42e2ebeb](https://github.com/angular/angular/commit/7c42e2ebebc135e9949a9e9a0295ef3ccf261b82) | fix  | prevent XSS via SVG animation `attributeName` and MathML/SVG URLs |
+
+<!-- CHANGELOG SPLIT MARKER -->
+
 <a name="19.2.16"></a>
 
 # 19.2.16 (2025-11-26)
@@ -168,10 +180,12 @@
   The getter behavior has been standardized so signal inputs can now be accessed directly, matching the behavior of decorator inputs:
 
   Before:
+
   - Decorator Input: `elementRef.oldInput`
   - Signal Input: `elementRef.newInput()`
 
   After:
+
   - Decorator Input: `elementRef.oldInput`
   - Signal Input: `elementRef.newInput`
 
@@ -2546,6 +2560,7 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
   - `ng update` for v19 will take care of this automatically.
 - TypeScript versions less than 5.5 are no longer supported.
 - Timing changes for `effect` API (in developer preview):
+
   - effects which are triggered outside of change detection run as part of
     the change detection process instead of as a microtask. Depending on the
     specifics of application/test setup, this can result in them executing
@@ -2561,6 +2576,7 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
   automatic change detection of the fixture be reported to the `ErrorHandler`.
   This change may cause custom error handlers to observe new failures that were previously unreported.
 - `createComponent` will now render default fallback with empty `projectableNodes`.
+
   - When passing an empty array to `projectableNodes` in the `createComponent` API, the default fallback content
     of the `ng-content` will be rendered if present. To prevent rendering the default content, pass `document.createTextNode('')` as a `projectableNode`.
 
@@ -2578,6 +2594,7 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
   resolved by ensuring the test environment is set up correctly to
   complete change detection successfully. There are two alternatives to
   catch the errors:
+
   - Instead of waiting for automatic change detection to happen, trigger
     it synchronously and expect the error. For example, a jasmine test
     could write `expect(() => TestBed.inject(ApplicationRef).tick()).toThrow()`
@@ -3636,6 +3653,7 @@ Blog post: https://blog.angular.dev/meet-angular-v19-7b29dfd05b84
 - Legacy handling or Node.js URL parsing has been removed from `ServerPlatformLocation`.
 
   The main differences are;
+
   - `pathname` is always suffixed with a `/`.
   - `port` is empty when `http:` protocol and port in url is `80`
   - `port` is empty when `https:` protocol and port in url is `443`
@@ -4800,6 +4818,7 @@ Live long and prosper 🖖🏻
   This should instead be configured through the provideRouter or RouterModule.forRoot APIs.
 - The following Router properties have been removed from
   the public API:
+
   - canceledNavigationResolution
   - paramsInheritanceStrategy
   - titleStrategy
@@ -6489,12 +6508,14 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens
   The following strategies are meant to be configured by registering the
   application strategy in DI via the `providers` in the root `NgModule` or
   `bootstrapApplication`:
+
   - `routeReuseStrategy`
   - `titleStrategy`
   - `urlHandlingStrategy`
 
   The following options are meant to be configured using the options
   available in `RouterModule.forRoot` or `provideRouter`.
+
   - `onSameUrlNavigation`
   - `paramsInheritanceStrategy`
   - `urlUpdateStrategy`
@@ -6502,6 +6523,7 @@ Alan Agius, Alex Rickabaugh, Andrew Scott, Aristeidis Bampakos, Bob Watson, Jens
 
   The following options are available in `RouterModule.forRoot` but not
   available in `provideRouter`:
+
   - `malformedUriErrorHandler` - This was found to not be used anywhere
     internally.
   - `errorHandler` - Developers can instead subscribe to `Router.events`
@@ -6788,6 +6810,7 @@ Andrew Kushnir
   will no longer match.
 
   The recommended solutions in this case are to either:
+
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
@@ -6858,6 +6881,7 @@ Andrew Kushnir
   incorrectly, in circumstances where `providedIn: 'root'` should be
   preferred. If providers should truly be scoped to a specific NgModule, use
   `NgModule.providers` instead.
+
   - The ability to set `providedIn: 'any'` for an `@Injectable` or
     `InjectionToken` is now deprecated.
 
@@ -7695,6 +7719,7 @@ Adrien Crivelli, Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Dyla
   will no longer match.
 
   The recommended solutions in this case are to either:
+
   - change the component's view encapsulation to the `None` or `ShadowDom`
   - define keyframes rules in global stylesheets (e.g styles.css)
   - define keyframes rules programmatically in code.
