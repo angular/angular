@@ -6,17 +6,17 @@ Every component defines
 a [CSS selector](https://developer.mozilla.org/docs/Web/CSS/CSS_selectors) that determines how
 the component is used:
 
-<docs-code language="angular-ts" highlight="[2]">
+```angular-ts {highlight: [2]}
 @Component({
   selector: 'profile-photo',
   ...
 })
 export class ProfilePhoto { }
-</docs-code>
+```
 
 You use a component by creating a matching HTML element in the templates of _other_ components:
 
-<docs-code language="angular-ts" highlight="[3]">
+```angular-ts {highlight: [3]}
 @Component({
   template: `
     <profile-photo />
@@ -24,7 +24,7 @@ You use a component by creating a matching HTML element in the templates of _oth
   ...,
 })
 export class UserProfile { }
-</docs-code>
+```
 
 **Angular matches selectors statically at compile-time**. Changing the DOM at run-time, either via
 Angular bindings or with DOM APIs, does not affect the components rendered.
@@ -63,13 +63,13 @@ You can append this pseudo-class to any other selector to narrow which elements 
 selector matches. For example, you could define a `[dropzone]` attribute selector and prevent
 matching `textarea` elements:
 
-<docs-code language="angular-ts" highlight="[2]">
+```angular-ts {highlight: [2]}
 @Component({
   selector: '[dropzone]:not(textarea)',
   ...
 })
 export class DropZone { }
-</docs-code>
+```
 
 Angular does not support any other pseudo-classes or pseudo-elements in component selectors.
 
@@ -78,23 +78,23 @@ Angular does not support any other pseudo-classes or pseudo-elements in componen
 You can combine multiple selectors by concatenating them. For example, you can match `<button>`
 elements that specify `type="reset"`:
 
-<docs-code language="angular-ts" highlight="[2]">
+```angular-ts {highlight: [2]}
 @Component({
   selector: 'button[type="reset"]',
   ...
 })
 export class ResetButton { }
-</docs-code>
+```
 
 You can also define multiple selectors with a comma-separated list:
 
-<docs-code language="angular-ts" highlight="[2]">
+```angular-ts {highlight: [2]}
 @Component({
   selector: 'drop-zone, [dropzone]',
   ...
 })
 export class DropZone { }
-</docs-code>
+```
 
 Angular creates a component for each element that matches _any_ of the selectors in the list.
 
@@ -126,13 +126,13 @@ You should consider an attribute selector when you want to create a component on
 element. For example, if you want to create a custom button component, you can take advantage of the
 standard `<button>` element by using an attribute selector:
 
-<docs-code language="angular-ts" highlight="[2]">
+```angular-ts {highlight: [2]}
 @Component({
   selector: 'button[yt-upload]',
    ...
 })
 export class YouTubeUploadButton { }
-</docs-code>
+```
 
 This approach allows consumers of the component to directly use all the element's standard APIs
 without extra work. This is especially valuable for ARIA attributes such as `aria-label`.

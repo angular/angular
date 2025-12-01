@@ -4,25 +4,25 @@ TIP: This guide assumes you've already read the [Essentials Guide](essentials). 
 
 Components can optionally include CSS styles that apply to that component's DOM:
 
-<docs-code language="angular-ts" highlight="[4]">
+```angular-ts {highlight:[4]}
 @Component({
   selector: 'profile-photo',
   template: `<img src="profile-photo.jpg" alt="Your profile photo">`,
   styles: ` img { border-radius: 50%; } `,
 })
 export class ProfilePhoto { }
-</docs-code>
+```
 
 You can also choose to write your styles in separate files:
 
-<docs-code language="angular-ts" highlight="[4]">
+```angular-ts {highlight:[4]}
 @Component({
   selector: 'profile-photo',
   templateUrl: 'profile-photo.html',
   styleUrl: 'profile-photo.css',
 })
 export class ProfilePhoto { }
-</docs-code>
+```
 
 When Angular compiles your component, these styles are emitted with your component's JavaScript
 output. This means that component styles participate in the JavaScript module system. When you
@@ -39,13 +39,13 @@ Every component has a **view encapsulation** setting that determines how the fra
 component's styles. There are four view encapsulation modes: `Emulated`, `ShadowDom`, `ExperimentalIsolatedShadowDom`, and `None`.
 You can specify the mode in the `@Component` decorator:
 
-<docs-code language="angular-ts" highlight="[3]">
+```angular-ts {highlight:[3]}
 @Component({
   ...,
   encapsulation: ViewEncapsulation.None,
 })
 export class ProfilePhoto { }
-</docs-code>
+```
 
 ### ViewEncapsulation.Emulated
 
