@@ -116,7 +116,7 @@ describe('property interpolation', () => {
   it('should not allow unsanitary urls in interpolated properties', () => {
     @Component({
       template: `
-        <img src="{{naughty}}">
+        <a href="{{naughty}}">text</a>
       `,
       standalone: false,
     })
@@ -127,15 +127,15 @@ describe('property interpolation', () => {
     TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-    const img: HTMLImageElement = fixture.nativeElement.querySelector('img');
+    const a = fixture.nativeElement.querySelector('a');
 
-    expect(img.src.indexOf('unsafe:')).toBe(0);
+    expect(a.href.indexOf('unsafe:')).toBe(0);
   });
 
   it('should not allow unsanitary urls in interpolated properties, even if you are tricky', () => {
     @Component({
       template: `
-        <img src="{{ja}}{{va}}script:{{naughty}}">
+        <a href="{{ja}}{{va}}script:{{naughty}}">text</a>
       `,
       standalone: false,
     })
@@ -148,9 +148,9 @@ describe('property interpolation', () => {
     TestBed.configureTestingModule({declarations: [App]});
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-    const img = fixture.nativeElement.querySelector('img');
+    const a = fixture.nativeElement.querySelector('a');
 
-    expect(img.src.indexOf('unsafe:')).toBe(0);
+    expect(a.href.indexOf('unsafe:')).toBe(0);
   });
 
   it('should handle interpolations with 10+ values', () => {

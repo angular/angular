@@ -32,23 +32,9 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     registerContext(SecurityContext.URL, [
       '*|formAction',
       'area|href',
-      'area|ping',
-      'audio|src',
       'a|href',
       'a|xlink:href',
-      'a|ping',
-      'blockquote|cite',
-      'body|background',
-      'del|cite',
       'form|action',
-      'img|src',
-      'input|src',
-      'ins|cite',
-      'q|cite',
-      'source|src',
-      'track|src',
-      'video|poster',
-      'video|src',
 
       // MathML namespace
       // https://crsrc.org/c/third_party/blink/renderer/core/sanitizer/sanitizer.cc;l=753-768;drc=b3eb16372dcd3317d65e9e0265015e322494edcd;bpv=1;bpt=1
@@ -121,16 +107,11 @@ export function SECURITY_SCHEMA(): {[k: string]: SecurityContext} {
     ]);
 
     registerContext(SecurityContext.RESOURCE_URL, [
-      'applet|code',
-      'applet|codebase',
       'base|href',
       'embed|src',
       'frame|src',
-      'head|profile',
-      'html|manifest',
       'iframe|src',
       'link|href',
-      'media|src',
       'object|codebase',
       'object|data',
       'script|src',
