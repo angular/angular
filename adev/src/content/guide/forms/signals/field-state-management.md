@@ -610,7 +610,7 @@ export class Registration {
   })
 
   onSubmit() {
-    submit(this.registrationForm, () => {
+    submit(this.registrationForm, async () => {
       this.submitToServer()
     })
   }
