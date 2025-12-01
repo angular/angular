@@ -2409,7 +2409,7 @@ describe('field directive', () => {
         providers: [
           provideSignalFormsConfig({
             classes: {
-              'my-invalid-class': (state) => state.invalid(),
+              'my-invalid-class text-red': (state) => state.invalid(),
             },
           }),
         ],

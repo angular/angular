@@ -466,17 +466,25 @@ function updateControlClasses(lView: LView, tNode: TNode, control: ɵControl<unk
   if (control.classes) {
     const bindings = getControlBindings(lView);
     bindings.classes ??= {};
-    const state = control.state();
+
     const renderer = lView[RENDERER];
     const element = getNativeByTNode(tNode, lView) as HTMLElement;
 
     for (const [className, enabled] of control.classes) {
       const isEnabled = enabled();
+
       if (controlClassBindingUpdated(bindings.classes, className, isEnabled)) {
+        // Handle multiple classes: split on whitespace
+        const classTokens = className.split(/\s+/).filter(Boolean);
+
         if (isEnabled) {
-          renderer.addClass(element, className);
+          for (const token of classTokens) {
+            renderer.addClass(element, token);
+          }
         } else {
-          renderer.removeClass(element, className);
+          for (const token of classTokens) {
+            renderer.removeClass(element, token);
+          }
         }
       }
     }
