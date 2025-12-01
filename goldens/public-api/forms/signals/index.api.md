@@ -29,6 +29,8 @@ import { ɵCONTROL } from '@angular/core';
 import { ɵControl } from '@angular/core';
 import { ɵFieldState } from '@angular/core';
 import { ɵInteropControl } from '@angular/core';
+import { ɵɵcontrolCreate } from '@angular/core';
+import { ɵɵcontrolUpdate } from '@angular/core';
 
 // @public
 export function aggregateMetadata<TValue, TMetadataItem, TPathKind extends PathKind = PathKind.Root>(path: SchemaPath<TValue, SchemaPathRules.Supported, TPathKind>, key: AggregateMetadataKey<any, TMetadataItem>, logic: NoInfer<LogicFn<TValue, TMetadataItem, TPathKind>>): void;
@@ -144,7 +146,10 @@ export const FIELD: InjectionToken<Field<unknown>>;
 // @public
 export class Field<T> implements ɵControl<T> {
     // (undocumented)
-    readonly [ɵCONTROL]: undefined;
+    readonly [ɵCONTROL]: {
+        readonly create: typeof ɵɵcontrolCreate;
+        readonly update: typeof ɵɵcontrolUpdate;
+    };
     // (undocumented)
     readonly classes: (readonly [string, i0.Signal<boolean>])[];
     // (undocumented)

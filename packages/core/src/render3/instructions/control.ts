@@ -101,7 +101,11 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
 }
 
 /**
- * A wrapper for {@link updateControl} used for dynamic input bindings.
+ * Calls {@link updateControl} with the current `LView` and selected `TNode`.
+ *
+ * NOTE: This instruction exists solely to accommodate tree-shakeable, dynamic control bindings.
+ * It's intended to be referenced exclusively by the Signal Forms `Field` directive and should not
+ * be referenced by any other means.
  */
 export function ɵɵcontrolUpdate(): void {
   const lView = getLView();
