@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {AggregateMetadataKey, MetadataKey} from '../api/metadata';
+import type {AggregateMetadataKey, MetadataKey} from '../api/metadata';
 import type {
   AsyncValidationResult,
   DisabledReason,
@@ -16,7 +16,7 @@ import type {
 } from '../api/types';
 import type {ValidationError} from '../api/validation_errors';
 import {setBoundPathDepthForResolution} from '../field/resolution';
-import {BoundPredicate, DYNAMIC, LogicContainer, Predicate} from './logic';
+import {type BoundPredicate, DYNAMIC, LogicContainer, type Predicate} from './logic';
 
 /**
  * Abstract base class for building a `LogicNode`.
@@ -56,6 +56,7 @@ export abstract class AbstractLogicNodeBuilder {
 
   /** Adds a factory function to produce a data value associated with a field. */
   abstract addMetadataFactory<D>(key: MetadataKey<D>, factory: (ctx: FieldContext<any>) => D): void;
+
   /**
    * Gets a builder for a child node associated with the given property key.
    * @param key The property key of the child.

@@ -7,8 +7,8 @@
  */
 
 import {computed} from '@angular/core';
-import {aggregateMetadata, metadata, validate} from '../logic';
-import {MAX_LENGTH} from '../metadata';
+import {aggregateMetadata, validate} from '../logic';
+import {metadata, MAX_LENGTH} from '../metadata';
 import {SchemaPath, SchemaPathRules, LogicFn, PathKind} from '../types';
 import {maxLengthError} from '../validation_errors';
 import {

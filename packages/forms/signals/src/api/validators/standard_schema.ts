@@ -10,7 +10,8 @@ import {computed, resource, ɵisPromise, Signal} from '@angular/core';
 import type {StandardSchemaV1} from '@standard-schema/spec';
 import {addDefaultField} from '../../field/validation';
 import {validateAsync} from '../async';
-import {metadata, validateTree} from '../logic';
+import {validateTree} from '../logic';
+import {metadata} from '../metadata';
 import type {SchemaPath, SchemaPathTree, FieldTree} from '../types';
 import {standardSchemaError, StandardSchemaValidationError} from '../validation_errors';
 

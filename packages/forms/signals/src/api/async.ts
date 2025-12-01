@@ -12,7 +12,7 @@ import {FieldNode} from '../field/node';
 import {addDefaultField} from '../field/validation';
 import {FieldPathNode} from '../schema/path_node';
 import {assertPathIsCurrent} from '../schema/schema';
-import {metadata} from './logic';
+import {metadata} from './metadata';
 import {FieldContext, SchemaPath, PathKind, TreeValidationResult, SchemaPathRules} from './types';
 
 /**

@@ -16,7 +16,7 @@ export * from './src/api/control';
 export * from './src/api/debounce';
 export * from './src/api/di';
 export * from './src/api/field_directive';
-export * from './src/api/logic';
+export * from './src/api/logic/index';
 export * from './src/api/metadata';
 export * from './src/api/structure';
 export * from './src/api/types';

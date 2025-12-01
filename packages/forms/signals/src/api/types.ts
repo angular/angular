@@ -9,7 +9,7 @@
 import {Signal, ɵFieldState} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import type {Field} from './field_directive';
-import {AggregateMetadataKey, MetadataKey} from './metadata';
+import type {AggregateMetadataKey, MetadataKey} from './metadata';
 import type {ValidationError} from './validation_errors';
 
 /**
