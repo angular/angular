@@ -80,7 +80,7 @@ export interface FormUiControl {
    * An input to receive the min value for the field. If implemented, the `Field` directive will
    * automatically bind the min value from the bound field to this input.
    */
-  readonly min?: InputSignal<number | undefined>;
+  readonly min?: InputSignal<unknown>;
   /**
    * An input to receive the min length for the field. If implemented, the `Field` directive will
    * automatically bind the min length from the bound field to this input.
@@ -90,7 +90,7 @@ export interface FormUiControl {
    * An input to receive the max value for the field. If implemented, the `Field` directive will
    * automatically bind the max value from the bound field to this input.
    */
-  readonly max?: InputSignal<number | undefined>;
+  readonly max?: InputSignal<unknown>;
   /**
    * An input to receive the max length for the field. If implemented, the `Field` directive will
    * automatically bind the max length from the bound field to this input.
