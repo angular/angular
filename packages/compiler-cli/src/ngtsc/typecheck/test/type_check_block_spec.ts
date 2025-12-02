@@ -2625,6 +2625,16 @@ describe('type check blocks', () => {
       });
     });
 
+    it('should generate expressions to check the field and value bindings of a radio input', () => {
+      const block = tcb('<input type="radio" [field]="f" [value]="expr"/>', [FieldMock]);
+      expect(block).toContain('var _t1 = null! as string;');
+      expect(block).toContain('_t1 = ((this).f)().value();');
+      expect(block).toContain('var _t2 = null! as string;');
+      expect(block).toContain('_t2 = ((this).expr);');
+      expect(block).toContain('var _t3 = null! as i0.Field;');
+      expect(block).toContain('_t3.field = (((this).f));');
+    });
+
     it('should generate a string field for a textarea', () => {
       const block = tcb('<textarea [field]="f"></textarea>', [FieldMock]);
       expect(block).toContain('var _t1 = null! as string;');
