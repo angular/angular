@@ -19,7 +19,13 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import {TreeD3Node, TreeNode, TreeVisualizer, TreeVisualizerConfig} from './tree-visualizer';
+import {
+  TreeD3Node,
+  TreeNode,
+  TreeNodeEqualityFn,
+  TreeVisualizer,
+  TreeVisualizerConfig,
+} from './tree-visualizer';
 
 let instanceIdx = 0;
 
@@ -45,6 +51,7 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
   protected readonly group = viewChild.required<ElementRef>('group');
 
   readonly root = input.required<T>();
+  protected readonly nodeEqualityFn = input<TreeNodeEqualityFn<T> | null>(null);
   protected readonly config = input<Partial<TreeVisualizerConfig<T>>>();
   protected readonly a11yTitle = input.required<string>();
   protected readonly a11yTitleId = `tree-vis-host-${++instanceIdx}`;
@@ -68,6 +75,7 @@ export class TreeVisualizerComponent<T extends TreeNode = TreeNode> {
           new TreeVisualizer<T>(
             this.container().nativeElement,
             this.group().nativeElement,
+            this.nodeEqualityFn(),
             this.config(),
           ),
         );
