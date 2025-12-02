@@ -395,6 +395,37 @@ describe('Forms compat', () => {
       expect(f().dirty()).withContext('form is dirty when the child is dirty').toBeTrue();
     });
 
+    it('propagates pristine state to parent', () => {
+      const control = new FormControl(5, Validators.min(3));
+      const cat = signal({
+        name: 'pirojok-the-cat',
+        age: control,
+      });
+
+      const f = compatForm(cat, {
+        injector: TestBed.inject(Injector),
+      });
+
+      expect(f.age().pristine()).withContext('age is initially pristine').toBeTrue();
+      expect(f().pristine()).withContext('form is initially pristine').toBeTrue();
+
+      control.markAsDirty();
+
+      expect(f.age().pristine()).withContext('age is not pristine, when control is dirty').toBeFalse();
+      expect(f().pristine()).withContext('form is not pristine when the child is dirty').toBeFalse();
+
+      control.markAsPristine();
+
+      expect(f.age().pristine()).withContext('age is pristine when marked as pristine').toBeTrue();
+      expect(f().pristine())
+        .withContext('form is pristine when age is marked as pristine')
+        .toBeTrue();
+
+      f.age().markAsDirty();
+      expect(f.age().pristine()).withContext('age is not pristine, when control is dirty').toBeFalse();
+      expect(f().pristine()).withContext('form is not pristine when the child is dirty').toBeFalse();
+    });
+
     it('allows resetting state', () => {
       const control = new FormControl(5, Validators.min(3));
       const cat = signal({
@@ -411,6 +442,7 @@ describe('Forms compat', () => {
 
       expect(f.age().dirty()).toBeTrue();
       expect(f.age().touched()).toBeTrue();
+      expect(f.age().pristine()).toBeFalse();
 
       f.age().reset();
 
@@ -418,6 +450,7 @@ describe('Forms compat', () => {
       expect(f.age().touched()).toBeFalse();
       expect(f().dirty()).toBeFalse();
       expect(f().touched()).toBeFalse();
+      expect(f().pristine()).toBeTrue();
     });
   });
 

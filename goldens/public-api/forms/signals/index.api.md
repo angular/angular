@@ -180,6 +180,7 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
     metadata<M>(key: AggregateMetadataKey<M, any>): Signal<M>;
     metadata<M>(key: MetadataKey<M>): M | undefined;
     readonly pending: Signal<boolean>;
+    readonly pristine: Signal<boolean>;
     reset(value?: TValue): void;
     readonly submitting: Signal<boolean>;
     readonly valid: Signal<boolean>;

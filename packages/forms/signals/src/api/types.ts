@@ -234,6 +234,11 @@ export interface FieldState<TValue, TKey extends string | number = string | numb
   readonly dirty: Signal<boolean>;
 
   /**
+   * A signal indicating whether the field value has not been changed by user.
+   */
+  readonly pristine: Signal<boolean>;
+
+  /**
    * A signal indicating whether a field is hidden.
    *
    * When a field is hidden it is ignored when determining the valid, touched, and dirty states.

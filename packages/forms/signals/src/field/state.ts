@@ -85,6 +85,14 @@ export class FieldNodeState {
   });
 
   /**
+   * Whether this field is considered pristine.
+   *
+   * A field is considered pristine if it has not been dirtied by the user.
+   * This is the logical opposite of {@link dirty}.
+   */
+  readonly pristine: Signal<boolean> = computed(() => !this.dirty());
+
+  /**
    * Whether this field is considered touched.
    *
    * A field is considered touched if one of the following is true:

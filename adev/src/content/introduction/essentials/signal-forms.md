@@ -256,6 +256,7 @@ Every `field()` provides these state signals:
 | `valid()`    | Returns `true` if the field passes all validation rules                    |
 | `touched()`  | Returns `true` if the user has focused and blurred the field               |
 | `dirty()`    | Returns `true` if the user has changed the value                           |
+| `pristine()` | Returns `true` if the user has not changed the value                       |
 | `disabled()` | Returns `true` if the field is disabled                                    |
 | `readonly()` | Returns `true` if the field is readonly                                    |
 | `pending()`  | Returns `true` if async validation is in progress                          |

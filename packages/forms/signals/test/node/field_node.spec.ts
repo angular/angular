@@ -334,6 +334,58 @@ describe('FieldNode', () => {
     });
   });
 
+  describe('pristine', () => {
+    it('is pristine initially', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().pristine()).toBe(true);
+      expect(f.a().pristine()).toBe(true);
+    });
+
+    it('is not pristine when dirty', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().pristine()).toBe(true);
+
+      f().markAsDirty();
+      expect(f().pristine()).toBe(false);
+    });
+
+    it('becomes pristine after reset', () => {
+      const model = signal({a: 1, b: 2});
+      const f = form(model, {injector: TestBed.inject(Injector)});
+      f().markAsDirty();
+      expect(f().pristine()).toBe(false);
+
+      f().reset();
+      expect(f().pristine()).toBe(true);
+    });
+
+    it('is not pristine when child is dirty', () => {
+      const f = form(
+        signal({
+          a: 1,
+          b: 2,
+        }),
+        {injector: TestBed.inject(Injector)},
+      );
+      expect(f().pristine()).toBe(true);
+
+      f.a().markAsDirty();
+      expect(f().pristine()).toBe(false);
+    });
+  });
+
   describe('touched', () => {
     it('is untouched initially', () => {
       const f = form(

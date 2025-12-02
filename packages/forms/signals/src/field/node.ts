@@ -134,6 +134,10 @@ export class FieldNode implements FieldState<unknown> {
     return this.nodeState.dirty;
   }
 
+  get pristine(): Signal<boolean> {
+    return this.nodeState.pristine;
+  }
+
   get touched(): Signal<boolean> {
     return this.nodeState.touched;
   }
