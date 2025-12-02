@@ -16,9 +16,9 @@ import {
   input,
   ɵCONTROL,
   ɵControl,
+  ɵcontrolUpdate as updateControlBinding,
   ɵInteropControl,
   ɵɵcontrolCreate as createControlBinding,
-  ɵɵcontrolUpdate as updateControlBinding,
 } from '@angular/core';
 import {NG_VALUE_ACCESSOR, NgControl} from '@angular/forms';
 import {InteropNgControl} from '../controls/interop_ng_control';

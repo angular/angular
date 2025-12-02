@@ -95,7 +95,7 @@ export {
   ɵɵproperty,
   ɵɵcontrol,
   ɵɵcontrolCreate,
-  ɵɵcontrolUpdate,
+  ɵcontrolUpdate,
   ɵɵcontentQuery,
   ɵɵcontentQuerySignal,
   ɵɵloadQuery,

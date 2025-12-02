@@ -94,7 +94,7 @@ export {
   ɵɵcontentQuerySignal,
   ɵɵcontrol,
   ɵɵcontrolCreate,
-  ɵɵcontrolUpdate,
+  ɵcontrolUpdate,
   ɵɵcomponentInstance,
   ɵɵdefineComponent,
   ɵɵdefineDirective,

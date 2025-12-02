@@ -107,7 +107,7 @@ export function ɵɵcontrol<T>(value: T, sanitizer?: SanitizerFn | null): void {
  * It's intended to be referenced exclusively by the Signal Forms `Field` directive and should not
  * be referenced by any other means.
  */
-export function ɵɵcontrolUpdate(): void {
+export function ɵcontrolUpdate(): void {
   const lView = getLView();
   const tNode = getSelectedTNode();
   updateControl(lView, tNode);
