@@ -693,6 +693,123 @@ describe('recognize', () => {
         checkActivatedRoute(s.root.firstChild!, 'bar', {}, ComponentA);
       });
     });
+
+    describe('with wildcard and parameters', () => {
+      it('should support path parameter after a wildcard', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {
+                  path: '**/b/:id',
+                  component: ComponentB,
+                },
+              ],
+            },
+          ],
+          'a/1/2/b/3',
+        );
+        const a = s.root.firstChild!;
+        checkActivatedRoute(a, 'a', {}, ComponentA);
+
+        const wildcard = a.firstChild!;
+        checkActivatedRoute(wildcard, '1/2/b/3', {id: '3'}, ComponentB);
+      });
+
+      it('should support path parameter directly after a wildcard', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {
+                  path: '**/:id',
+                  component: ComponentB,
+                },
+              ],
+            },
+          ],
+          'a/1/2/3',
+        );
+        const a = s.root.firstChild!;
+        checkActivatedRoute(a, 'a', {}, ComponentA);
+
+        const wildcard = a.firstChild!;
+        checkActivatedRoute(wildcard, '1/2/3', {id: '3'}, ComponentB);
+      });
+
+      it('should support multiple path parameters after a wildcard', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {
+                  path: '**/:id1/:id2',
+                  component: ComponentB,
+                },
+              ],
+            },
+          ],
+          'a/1/2/3/4',
+        );
+        const a = s.root.firstChild!;
+        checkActivatedRoute(a, 'a', {}, ComponentA);
+
+        const wildcard = a.firstChild!;
+        checkActivatedRoute(wildcard, '1/2/3/4', {id1: '3', id2: '4'}, ComponentB);
+      });
+
+      it('should support path parameter before a wildcard', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {
+                  path: ':id/**',
+                  component: ComponentB,
+                },
+              ],
+            },
+          ],
+          'a/1/2/3',
+        );
+        const a = s.root.firstChild!;
+        checkActivatedRoute(a, 'a', {}, ComponentA);
+
+        const wildcard = a.firstChild!;
+        checkActivatedRoute(wildcard, '1/2/3', {id: '1'}, ComponentB);
+      });
+
+      it('should support multiple path parameters before a wildcard', async () => {
+        const s = await recognize(
+          [
+            {
+              path: 'a',
+              component: ComponentA,
+              children: [
+                {
+                  path: ':id1/:id2/**',
+                  component: ComponentB,
+                },
+              ],
+            },
+          ],
+          'a/1/2/3/4',
+        );
+        const a = s.root.firstChild!;
+        checkActivatedRoute(a, 'a', {}, ComponentA);
+
+        const wildcard = a.firstChild!;
+        checkActivatedRoute(wildcard, '1/2/3/4', {id1: '1', id2: '2'}, ComponentB);
+      });
+    });
   });
 
   describe('componentless routes', () => {

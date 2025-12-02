@@ -58,7 +58,7 @@ import {
   isRedirectingNavigationCancelingError,
   redirectingNavigationError,
 } from './navigation_canceling_error';
-import {activateRoutes} from './operators/activate_routes';
+import {ActivateRoutes} from './operators/activate_routes';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {resolveData} from './operators/resolve_data';
@@ -725,6 +725,7 @@ export class NavigationTransitions {
 
           switchTap(() => this.afterPreactivation()),
 
+          // TODO(atscott): Move this into the last block below.
           switchMap(() => {
             const {currentSnapshot, targetSnapshot} = overallTransitionState;
             const viewTransitionStarted = this.createViewTransition?.(
@@ -740,35 +741,56 @@ export class NavigationTransitions {
               : of(overallTransitionState);
           }),
 
+          // Ensure that if some observable used to drive the transition doesn't
+          // complete, the navigation still finalizes This should never happen, but
+          // this is done as a safety measure to avoid surfacing this error (#49567).
+          take(1),
+
           map((t: NavigationTransition) => {
             const targetRouterState = createRouterState(
               router.routeReuseStrategy,
               t.targetSnapshot!,
               t.currentRouterState,
             );
-            this.currentTransition = overallTransitionState = {...t, targetRouterState};
+            this.currentTransition = overallTransitionState = t = {...t, targetRouterState};
             this.currentNavigation.update((nav) => {
               nav!.targetRouterState = targetRouterState;
               return nav;
             });
-            return overallTransitionState;
-          }),
 
-          tap(() => {
             this.events.next(new BeforeActivateRoutes());
+            if (!shouldContinueNavigation()) {
+              return;
+            }
+
+            new ActivateRoutes(
+              router.routeReuseStrategy,
+              overallTransitionState.targetRouterState!,
+              overallTransitionState.currentRouterState,
+              (evt: Event) => this.events.next(evt),
+              this.inputBindingEnabled,
+            ).activate(this.rootContexts);
+
+            if (!shouldContinueNavigation()) {
+              return;
+            }
+
+            completedOrAborted = true;
+            this.currentNavigation.update((nav) => {
+              (nav as Writable<Navigation>).abort = noop;
+              return nav;
+            });
+            this.lastSuccessfulNavigation.set(untracked(this.currentNavigation));
+            this.events.next(
+              new NavigationEnd(
+                t.id,
+                this.urlSerializer.serialize(t.extractedUrl),
+                this.urlSerializer.serialize(t.urlAfterRedirects!),
+              ),
+            );
+            this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
+            t.resolve(true);
           }),
-
-          activateRoutes(
-            this.rootContexts,
-            router.routeReuseStrategy,
-            (evt: Event) => this.events.next(evt),
-            this.inputBindingEnabled,
-          ),
-
-          // Ensure that if some observable used to drive the transition doesn't
-          // complete, the navigation still finalizes This should never happen, but
-          // this is done as a safety measure to avoid surfacing this error (#49567).
-          take(1),
 
           takeUntil(
             abortSignalToObservable(abortController.signal).pipe(
@@ -785,23 +807,6 @@ export class NavigationTransitions {
           ),
 
           tap({
-            next: (t: NavigationTransition) => {
-              completedOrAborted = true;
-              this.currentNavigation.update((nav) => {
-                (nav as Writable<Navigation>).abort = noop;
-                return nav;
-              });
-              this.lastSuccessfulNavigation.set(untracked(this.currentNavigation));
-              this.events.next(
-                new NavigationEnd(
-                  t.id,
-                  this.urlSerializer.serialize(t.extractedUrl),
-                  this.urlSerializer.serialize(t.urlAfterRedirects!),
-                ),
-              );
-              this.titleStrategy?.updateTitle(t.targetRouterState!.snapshot);
-              t.resolve(true);
-            },
             complete: () => {
               completedOrAborted = true;
             },
@@ -849,6 +854,7 @@ export class NavigationTransitions {
             }
           }),
           catchError((e) => {
+            completedOrAborted = true;
             // If the application is already destroyed, the catch block should not
             // execute anything in practice because other resources have already
             // been released and destroyed.
@@ -857,7 +863,6 @@ export class NavigationTransitions {
               return EMPTY;
             }
 
-            completedOrAborted = true;
             /* This error type is issued during Redirect, and is handled as a
              * cancellation rather than an error. */
             if (isNavigationCancelingError(e)) {

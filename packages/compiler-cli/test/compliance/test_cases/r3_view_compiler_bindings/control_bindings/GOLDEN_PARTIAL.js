@@ -5,7 +5,7 @@ import { Component, Directive, input } from '@angular/core';
 import * as i0 from "@angular/core";
 export class Field {
     constructor() {
-        this.field = input(undefined, Object.assign({}, (ngDevMode ? { debugName: "field" } : {})));
+        this.field = input(...(ngDevMode ? [undefined, { debugName: "field" }] : []));
     }
 }
 Field.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Field, deps: [], target: i0.ɵɵFactoryTarget.Directive });
