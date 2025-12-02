@@ -145,14 +145,14 @@ function initializeDirectives(
   ngDevMode && assertFirstCreatePass(tView);
 
   const directivesLength = directives.length;
-  let hasSeenComponent = false;
+  let componentDef: ComponentDef<unknown> | null = null;
 
   // Publishes the directive types to DI so they can be injected. Needs to
   // happen in a separate pass before the TNode flags have been initialized.
   for (let i = 0; i < directivesLength; i++) {
     const def = directives[i];
-    if (!hasSeenComponent && isComponentDef(def)) {
-      hasSeenComponent = true;
+    if (componentDef === null && isComponentDef(def)) {
+      componentDef = def;
       markAsComponentHost(tView, tNode, i);
     }
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, lView), tView, def.type);
@@ -166,9 +166,17 @@ function initializeDirectives(
   // - the last directive in NgModule.declarations has priority over the previous one
   // So to match these rules, the order in which providers are added in the arrays is very
   // important.
+  if (componentDef?.viewProvidersResolver) {
+    // Only components can have `viewProviders`, `viewProviders` are registered first and there
+    // can only be one component so we check for it specifically.
+    componentDef.viewProvidersResolver(componentDef);
+  }
+
   for (let i = 0; i < directivesLength; i++) {
     const def = directives[i];
-    if (def.providersResolver) def.providersResolver(def);
+    if (def.providersResolver) {
+      def.providersResolver(def);
+    }
   }
   let preOrderHooksFound = false;
   let preOrderCheckHooksFound = false;
