@@ -37,7 +37,7 @@ In addition to the default Angular application framework, you will also create a
 
 1. In your code editor, locate the file, `profile.component.html` and replace the placeholder content with the following HTML.
 
-   <docs-code header="profile/profile.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.component.html"/>
+   <docs-code header="profile.component.html" path="adev/src/content/examples/routing-with-urlmatcher/src/app/profile/profile.component.html"/>
 
 1. In your code editor, locate the file, `app.component.html` and replace the placeholder content with the following HTML.
 
