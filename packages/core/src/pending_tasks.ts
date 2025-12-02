@@ -6,6 +6,16 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
+declare global {
+  interface SymbolConstructor {
+    readonly dispose: unique symbol;
+  }
+
+  interface Disposable {
+    [Symbol.dispose](): void;
+  }
+}
+
 import {inject} from './di/injector_compatibility';
 import {ɵɵdefineInjectable} from './di/interface/defs';
 import {

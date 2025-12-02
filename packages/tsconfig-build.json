@@ -19,7 +19,7 @@
     "moduleResolution": "bundler",
     "module": "esnext",
     "target": "es2022",
-    "lib": ["es2020", "es2022", "esnext.disposable", "dom", "dom.iterable"],
+    "lib": ["es2020", "es2022", "dom", "dom.iterable"],
     "skipLibCheck": true,
     // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
     "types": [],
