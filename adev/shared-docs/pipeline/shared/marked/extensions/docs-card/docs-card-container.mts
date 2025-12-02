@@ -8,13 +8,13 @@
 
 import {Tokens, Token, RendererThis, TokenizerThis} from 'marked';
 import {loadWorkspaceRelativeFile} from '../../helpers.mjs';
-import {formatHeading} from '../../transformations/heading.mjs';
 
 interface DocsCardContainerToken extends Tokens.Generic {
   type: 'docs-card-container';
   cards: string;
   headerTitle?: string;
   headerImgSrc?: string;
+  header: Tokens.Heading;
   tokens: Token[];
 }
 
@@ -40,13 +40,20 @@ export const docsCardContainerExtension = {
       const headerImgSrc = headerImgSrcRule.exec(attr);
 
       const body = match[2].trim();
+      const header = headerTitle ? headerTitle[1] : '';
 
       const token: DocsCardContainerToken = {
         type: 'docs-card-container',
         raw: match[0],
         cards: body ?? '',
-        headerTitle: headerTitle ? headerTitle[1] : undefined,
         headerImgSrc: headerImgSrc ? headerImgSrc[1] : undefined,
+        header: {
+          text: header,
+          raw: header,
+          tokens: this.lexer.inlineTokens(header, []),
+          type: 'heading',
+          depth: 2,
+        },
         tokens: [],
       };
       this.lexer.blockTokens(token.cards, token.tokens);
@@ -55,7 +62,7 @@ export const docsCardContainerExtension = {
     return undefined;
   },
   renderer(this: RendererThis, token: DocsCardContainerToken) {
-    return token.headerTitle
+    return token.header.text
       ? getContainerWithHeader(this, token)
       : getStandardContainer(this, token);
   },
@@ -78,7 +85,7 @@ function getContainerWithHeader(renderer: RendererThis, token: DocsCardContainer
   return `
     <div class="docs-card-container-wrapper">
       <div class="docs-card-container-header">
-        ${formatHeading({text: token.headerTitle!, depth: 2})}
+        ${renderer.parser.renderer.heading(token.header)}
           <span class="header-img">${illustration}</span>
       </div>
       <div class="docs-card-container-content docs-card-grid">

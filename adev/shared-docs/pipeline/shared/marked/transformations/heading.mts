@@ -7,24 +7,15 @@
  */
 
 import {Tokens} from 'marked';
-import {getHeaderId} from '../state.mjs';
 import {AdevDocsRenderer} from '../renderer.mjs';
 
 export function headingRender(this: AdevDocsRenderer, {depth, tokens}: Tokens.Heading): string {
   const text = this?.parser.parseInline(tokens);
-  return formatHeading({text, depth}, this.context.markdownFilePath);
-}
-
-export function formatHeading(
-  {text, depth}: {text: string; depth: number},
-  markdownFilePath?: string,
-): string {
   if (depth === 1) {
     return `
     <header class="docs-header">
       <docs-breadcrumb></docs-breadcrumb>
-
-      ${getPageTitle(text, markdownFilePath)}
+      ${getPageTitle(text, this.context.markdownFilePath)}
     </header>
     `;
   }
@@ -39,7 +30,7 @@ export function formatHeading(
   // ex:  ## MyHeading {# myId}
   const customIdRegex = /{#\s*([\w-]+)\s*}/g;
   const customId = customIdRegex.exec(anchorLessText)?.[1];
-  const link = customId ?? getHeaderId(anchorLessText);
+  const link = customId ?? this.getHeaderId(anchorLessText);
   const label = anchorLessText.replace(/`(.*?)`/g, '<code>$1</code>').replace(customIdRegex, '');
   const normalizedLabel = label.replace(/<\/?code>/g, '');
 
