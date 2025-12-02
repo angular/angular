@@ -41,7 +41,16 @@ export const FIELD_PROXY_HANDLER: ProxyHandler<() => FieldNode> = {
       // Allow access to the iterator. This allows the user to spread the field array into a
       // standard array in order to call methods like `filter`, `map`, etc.
       if (p === Symbol.iterator) {
-        return Array.prototype[p as any];
+        return () => {
+          // When creating an iterator, we need to account for reactivity. The iterator itself will
+          // read things each time `.next()` is called, but that may happen outside of the context
+          // where the iterator was created (e.g. with `@for`, actual diffing happens outside the
+          // reactive context of the template).
+          //
+          // Instead, side-effectfully read the value here to ensure iterator creation is reactive.
+          tgt.value();
+          return Array.prototype[Symbol.iterator].apply(tgt.fieldProxy);
+        };
       }
       // Note: We can consider supporting additional array methods if we want in the future,
       // but they should be thoroughly tested. Just forwarding the method directly from the
