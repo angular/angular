@@ -6,9 +6,20 @@
  * found in the LICENSE file at https://angular.dev/license
  */
 
-import {Injector, signal} from '@angular/core';
+import {
+  Component,
+  Input,
+  Injector,
+  input,
+  signal,
+  ApplicationRef,
+  effect,
+  untracked,
+  computed,
+} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {form} from '../../public_api';
+import {form, FieldTree} from '../../public_api';
+import {ChangeDetectionStrategy} from '@angular/compiler';
 
 describe('FieldTree proxy', () => {
   it('should not forward methods through the proxy', () => {
@@ -52,6 +63,56 @@ describe('FieldTree proxy', () => {
       ['1', 2],
     ]);
     expect(Object.values(f).map((child) => child().value())).toEqual([1, 2]);
+  });
+
+  it('should be reactive when children change, but not on value mutations', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = injector.get(ApplicationRef);
+    const value = signal<{a: number; b?: number}>({a: 1});
+    const f = form(value, {injector});
+    expect(f.b).not.toBeDefined();
+
+    const log: string[] = [];
+
+    effect(
+      () => {
+        log.push(`a: ${f.a().value()}`);
+      },
+      {injector},
+    );
+    await appRef.whenStable();
+    expect(log).toEqual(['a: 1']);
+
+    value.set({a: 1, b: 2});
+    await appRef.whenStable();
+    expect(log).toEqual(['a: 1']);
+
+    value.set({a: 2, b: 2});
+    await appRef.whenStable();
+    expect(log).toEqual(['a: 1', 'a: 2']);
+  });
+
+  it('should be reactive to array values swapping', async () => {
+    const injector = TestBed.inject(Injector);
+    const appRef = injector.get(ApplicationRef);
+    const value = signal([{value: 1}, {value: 2}]);
+    const f = form(value, {injector});
+
+    const log: string[] = [];
+
+    effect(
+      () => {
+        log.push(`[${untracked(f[0]().value).value}, ${untracked(f[1]().value).value}]`);
+      },
+      {injector},
+    );
+    await appRef.whenStable();
+    expect(log).toEqual(['[1, 2]']);
+
+    value.update((v) => [v[1], v[0]]);
+
+    appRef.tick();
+    expect(log).toEqual(['[1, 2]', '[2, 1]']);
   });
 
   it('should get keys and values for primitive field', () => {
