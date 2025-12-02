@@ -940,7 +940,7 @@ importers:
     dependencies:
       '@angular/core':
         specifier: ^21.0.0-next
-        version: 21.0.0(@angular/compiler@packages+compiler)
+        version: 21.0.2(@angular/compiler@21.0.2)
       reflect-metadata:
         specifier: ^0.2.0
         version: 0.2.2
@@ -1376,7 +1376,7 @@ importers:
     dependencies:
       '@angular/common':
         specifier: 21.0.2
-        version: 21.0.2(@angular/core@21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 21.0.2(@angular/core@21.0.2(@angular/compiler@21.0.2))(rxjs@7.8.2)
       '@angular/compiler':
         specifier: 21.0.2
         version: 21.0.2
@@ -1385,7 +1385,7 @@ importers:
         version: 21.0.2(@angular/compiler@21.0.2)(typescript@5.9.3)
       '@angular/core':
         specifier: 21.0.2
-        version: 21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2)
+        version: 21.0.2(@angular/compiler@21.0.2)
       rxjs:
         specifier: 7.8.2
         version: 7.8.2
@@ -1741,21 +1741,11 @@ packages:
     peerDependencies:
       zone.js: ~0.14.10
 
-  '@angular/core@21.0.0':
-    resolution: {integrity: sha512-bqi8fT4csyITeX8vdN5FJDBWx5wuWzdCg4mKSjHd+onVzZLyZ8bcnuAKz4mklgvjvwuXoRYukmclUurLwfq3Rg==}
-    engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
-    peerDependencies:
-      '@angular/compiler': 21.0.0
-    peerDependenciesMeta:
-      '@angular/compiler':
-        optional: true
-
   '@angular/core@21.0.2':
     resolution: {integrity: sha512-jj2lYmwMKYY7tmZ7ml8rXJRKwkVMJamFIf6VQuIlSFK79Pmn6AeUhZwDlrAmK7sY9kakEKUmslSg0XLL3bfiyw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
     peerDependencies:
       '@angular/compiler': 21.0.2
-      rxjs: ^6.5.3 || ^7.4.0
     peerDependenciesMeta:
       '@angular/compiler':
         optional: true
@@ -10367,6 +10357,10 @@ packages:
     resolution: {integrity: sha512-6zqls5xFvJbgFjB1B2U6yITtyGBjDBORB7suI4zA4T/sZ1OmkMFlaQSNB/4K0LtXNA1t4OprAFxPisadK5O2ag==}
     engines: {node: ^20.17.0 || >=22.9.0}
 
+  npm-package-arg@13.0.2:
+    resolution: {integrity: sha512-IciCE3SY3uE84Ld8WZU23gAPPV9rIYod4F+rc+vJ7h7cwAJt9Vk6TVsK60ry7Uj3SRS3bqRRIGuTp9YVlk6WNA==}
+    engines: {node: ^20.17.0 || >=22.9.0}
+
   npm-packlist@10.0.3:
     resolution: {integrity: sha512-zPukTwJMOu5X5uvm0fztwS5Zxyvmk38H/LfidkOMt3gbZVCyro2cD/ETzwzVPcWZA3JOyPznfUN/nkyFiyUbxg==}
     engines: {node: ^20.17.0 || >=22.9.0}
@@ -12765,6 +12759,10 @@ packages:
     resolution: {integrity: sha512-IUoow1YUtvoBBC06dXs8bR8B9vuA3aJfmQNKMoaPG/OFsPmoQvw8xh+6Ye25Gx9DQhoEom3Pcu9MKHerm/NpUQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
+  validate-npm-package-name@7.0.0:
+    resolution: {integrity: sha512-bwVk/OK+Qu108aJcMAEiU4yavHUI7aN20TgZNBj9MR2iU1zPUl1Z1Otr7771ExfYTPTvfN8ZJ1pbr5Iklgt4xg==}
+    engines: {node: ^20.17.0 || >=22.9.0}
+
   value-or-function@4.0.0:
     resolution: {integrity: sha512-aeVK81SIuT6aMJfNo9Vte8Dw0/FZINGBV8BfCraGtqVxIeLAEhJyoWs8SmvRVmXfGss2PmmOwZCuBPbZR+IYWg==}
     engines: {node: '>= 10.13.0'}
@@ -14085,9 +14083,9 @@ snapshots:
       rxjs: 7.8.2
       tslib: 2.8.1
 
-  '@angular/common@21.0.2(@angular/core@21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@angular/common@21.0.2(@angular/core@21.0.2(@angular/compiler@21.0.2))(rxjs@7.8.2)':
     dependencies:
-      '@angular/core': 21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2)
+      '@angular/core': 21.0.2(@angular/compiler@21.0.2)
       rxjs: 7.8.2
       tslib: 2.8.1
 
@@ -14117,15 +14115,7 @@ snapshots:
       tslib: 2.8.1
       zone.js: 0.15.0
 
-  '@angular/core@21.0.0(@angular/compiler@packages+compiler)':
-    dependencies:
-      rxjs: 7.8.2
-      tslib: 2.8.1
-      zone.js: 0.15.1
-    optionalDependencies:
-      '@angular/compiler': link:packages/compiler
-
-  '@angular/core@21.0.2(@angular/compiler@21.0.2)(rxjs@7.8.2)':
+  '@angular/core@21.0.2(@angular/compiler@21.0.2)':
     dependencies:
       rxjs: 7.8.2
       tslib: 2.8.1
@@ -24739,6 +24729,13 @@ snapshots:
       semver: 7.7.3
       validate-npm-package-name: 6.0.2
 
+  npm-package-arg@13.0.2:
+    dependencies:
+      hosted-git-info: 9.0.2
+      proc-log: 6.0.0
+      semver: 7.7.3
+      validate-npm-package-name: 7.0.0
+
   npm-packlist@10.0.3:
     dependencies:
       ignore-walk: 8.0.0
@@ -24748,7 +24745,7 @@ snapshots:
     dependencies:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
-      npm-package-arg: 13.0.1
+      npm-package-arg: 13.0.2
       semver: 7.7.3
 
   npm-pick-manifest@9.1.0:
@@ -24766,7 +24763,7 @@ snapshots:
       minipass: 7.1.2
       minipass-fetch: 5.0.0
       minizlib: 3.1.0
-      npm-package-arg: 13.0.1
+      npm-package-arg: 13.0.2
       proc-log: 6.0.0
     transitivePeerDependencies:
       - supports-color
@@ -24996,7 +24993,7 @@ snapshots:
       cacache: 20.0.3
       fs-minipass: 3.0.3
       minipass: 7.1.2
-      npm-package-arg: 13.0.1
+      npm-package-arg: 13.0.2
       npm-packlist: 10.0.3
       npm-pick-manifest: 11.0.3
       npm-registry-fetch: 19.1.1
@@ -27623,6 +27620,8 @@ snapshots:
   validate-npm-package-name@5.0.1: {}
 
   validate-npm-package-name@6.0.2: {}
+
+  validate-npm-package-name@7.0.0: {}
 
   value-or-function@4.0.0: {}
 
