@@ -29,14 +29,15 @@ import {FieldMetadataState} from './metadata';
 import {FIELD_PROXY_HANDLER} from './proxy';
 import {FieldNodeState} from './state';
 import {
-  type ChildFieldNodeOptions,
   ChildFieldNodeStructure,
   type FieldNodeOptions,
   type FieldNodeStructure,
   RootFieldNodeStructure,
+  type TrackingKey,
 } from './structure';
 import {FieldSubmitState} from './submit';
 import {ValidationState} from './validation';
+import {DYNAMIC} from '../schema/logic';
 
 /**
  * Internal node in the form tree for a given field.
@@ -68,8 +69,10 @@ export class FieldNode implements FieldState<unknown> {
    * Proxy to this node which allows navigation of the form graph below it.
    */
   readonly fieldProxy = new Proxy(() => this, FIELD_PROXY_HANDLER) as unknown as FieldTree<any>;
+  private readonly pathNode: FieldPathNode;
 
   constructor(options: FieldNodeOptions) {
+    this.pathNode = options.pathNode;
     this.fieldAdapter = options.fieldAdapter;
     this.structure = this.fieldAdapter.createStructure(this, options);
     this.validationState = this.fieldAdapter.createValidationState(this, options);
@@ -299,34 +302,49 @@ export class FieldNode implements FieldState<unknown> {
     return adapter.newRoot(fieldManager, value, pathNode, adapter);
   }
 
-  /**
-   * Creates a child field node based on the given options.
-   */
-  private static newChild(options: ChildFieldNodeOptions): FieldNode {
-    return options.fieldAdapter.newChild(options);
-  }
-
   createStructure(options: FieldNodeOptions) {
     return options.kind === 'root'
       ? new RootFieldNodeStructure(
           this,
-          options.pathNode,
           options.logic,
           options.fieldManager,
           options.value,
-          options.fieldAdapter,
-          FieldNode.newChild,
+          this.newChild.bind(this),
         )
       : new ChildFieldNodeStructure(
           this,
-          options.pathNode,
           options.logic,
           options.parent,
           options.identityInParent,
           options.initialKeyInParent,
-          options.fieldAdapter,
-          FieldNode.newChild,
+          this.newChild.bind(this),
         );
+  }
+
+  private newChild(key: string, trackingId: TrackingKey | undefined, isArray: boolean): FieldNode {
+    // Determine the logic for the field that we're defining.
+    let childPath: FieldPathNode | undefined;
+    let childLogic: LogicNode;
+    if (isArray) {
+      // Fields for array elements have their logic defined by the `element` mechanism.
+      // TODO: other dynamic data
+      childPath = this.pathNode.getChild(DYNAMIC);
+      childLogic = this.structure.logic.getChild(DYNAMIC);
+    } else {
+      // Fields for plain properties exist in our logic node's child map.
+      childPath = this.pathNode.getChild(key);
+      childLogic = this.structure.logic.getChild(key);
+    }
+
+    return this.fieldAdapter.newChild({
+      kind: 'child',
+      parent: this as ParentFieldNode,
+      pathNode: childPath,
+      logic: childLogic,
+      initialKeyInParent: key,
+      identityInParent: trackingId,
+      fieldAdapter: this.fieldAdapter,
+    });
   }
 }
 
