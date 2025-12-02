@@ -70,13 +70,13 @@ Add the `@tailwindcss/postcss` plugin into your PostCSS configuration.
 
 Add an `@import` to `./src/styles.css` that imports Tailwind CSS.
 
-<docs-code language="css" header="src/styles.css">
+<docs-code language="css" header="styles.css">
 @import "tailwindcss";
 </docs-code>
 
 If you're using SCSS, add `@use` to `./src/styles.scss`.
 
-<docs-code language="scss" header="src/styles.scss">
+<docs-code language="scss" header="styles.scss">
 @use "tailwindcss";
 </docs-code>
 

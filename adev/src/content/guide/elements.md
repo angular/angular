@@ -119,8 +119,7 @@ There are a few options if you want to get correct types for your custom element
 Assume you create a `my-dialog` custom element based on the following component:
 
 ```ts
-
-@Component(…)
+@Component(/* ... */)
 class MyDialog {
   content =  input(string);
 }

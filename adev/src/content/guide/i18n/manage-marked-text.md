@@ -75,7 +75,7 @@ For example, in the following code snippet the same `myId` custom ID is defined 
 
 The following displays the translation in French.
 
-<docs-code header="src/locale/messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" visibleRegion="i18n-duplicate-custom-id"/>
+<docs-code header="messages.fr.xlf" path="adev/src/content/examples/i18n/doc-files/messages.fr.xlf.html" visibleRegion="i18n-duplicate-custom-id"/>
 
 Both elements now use the same translation \(`Bonjour`\), because both were defined with the same custom ID.
 
